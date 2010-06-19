@@ -1,0 +1,6 @@
+/server-side/uploads
+
+.*
+Thumbs.db
+
+!.gitignore
