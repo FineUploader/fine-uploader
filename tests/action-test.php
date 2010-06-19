@@ -1,4 +1,7 @@
 <?php
+
+usleep(300);
+
 $fileName;
 
 if (isset($_GET['qqfile'])){

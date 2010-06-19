@@ -13,13 +13,14 @@ jQuery(function(){
 	
 	var uploadTimeout = 500,
 		loadTimeout = 100;
-		
+	
+	
 	//
 	module('qq.UploadHandlerForm');
 	//
 	
 	asyncTest("_getIframeContentJSON", function() {						
-		expect(2);
+		expect(3);
 		setTimeout(start, loadTimeout);		
 		
 		var exampleObject = {
@@ -40,6 +41,13 @@ jQuery(function(){
 		createIframe('iframe-content-tests/text-html.php', function(iframe){
 			same(testedFn(iframe), exampleObject, "text-html");
 		});			
+		
+		// test larger response (>4k)
+		//http://www.coderholic.com/firefox-4k-xml-node-limit/
+        createIframe('iframe-content-tests/text-html-large.php', function(iframe){
+            same(testedFn(iframe).length, 5000, ">4k");
+        });         
+				
 		
 		function createIframe(src, onLoad){
 			var iframe = document.createElement('iframe');			
@@ -126,85 +134,89 @@ jQuery(function(){
 	//		
 	module('qq.UploadHandlerXhr');
 	//
+
+    if (!qq.UploadHandlerXhr.isSupported()){
+        $('.handlerxhr').remove();    
+    } else {	
+    	asyncTest("upload", function() {		
+    	    expect(7);
+    	    	
+    		var data = {stringOne: 'rtdfghdfhfh',stringTwo: 'dfsgsdfgsdg',stringThree: 'dfsgfhdfhdg'};
+    		var onProgressCalled = false;
+    		var expectedId, expectedName;
+    														
+    		var uploadHandler = new qq.UploadHandlerXhr({
+    			action: 'action-test.php',
+    			onProgress: function(id, fileName, loaded, total){
+    				if (!onProgressCalled) {
+    					onProgressCalled = true;
+    					
+    					same(id, expectedId, 'progress event fired with correct id param');
+    					same(fileName, expectedName, 'progress event fired with correct fileName param')					
+    					ok(loaded <= total && loaded > 0 && total > 0, 'progress event fired with possible loaded and total');					
+    				}
+    			},
+    			onComplete: function(id, fileName, response){
+                    same(id, expectedId, 'progress event fired with correct id param');
+                    same(fileName, expectedName, 'progress event fired with correct fileName param')
+                                    				
+    				data.fileName = fileName;
+    				delete response.qqfile;
+    				
+    				same(response, data, 'server received passed params'); 
+    			}
+    		});
+    			
+    		var input = document.getElementById('handlerxhr1');
+    		
+    		qq.attach(input, 'change', function(){
+    			setTimeout(start, uploadTimeout);
+    										
+    			var id = uploadHandler.add(input.files[0]);
+    			ok(id != null, 'id returned by add');
+    			expectedId = id;
+    			expectedName = input.files[0].name;
+    			
+    			uploadHandler.upload(id, data);
+    			
+    			qq.remove(input);			
+    		});
+    	});	    
+        	
+    	asyncTest("cancel", function() {						
+    		var uploadHandler = new qq.UploadHandlerXhr({
+    			action: 'action-slow.php',
+    			onProgress: function(id, fileName, response){
+    			    ok(false, 'onProgress should not run, the request should be cancelled');
+    			},
+    			onComplete: function(id, fileName, response){
+    				ok(false, 'onComplete should not run, the request should be cancelled');
+    			}
+    		});
+    			
+    		var input = document.getElementById('handlerxhr2');
+    		if (!input){
+    			// input removed because uploading via XHR is not supported
+    			return;
+    		}
+    		
+    		qq.attach(input, 'change', function(){						
+    			var id = uploadHandler.add(input.files[0]);
+    			uploadHandler.upload(id);
+    			uploadHandler.cancel(id);
+    			
+    			start();			
+    			qq.remove(input);								
+    		});
+    	});		
+	}
 	
-	asyncTest("upload", function() {		
-	    expect(7);
-	    	
-		var data = {stringOne: 'rtdfghdfhfh',stringTwo: 'dfsgsdfgsdg',stringThree: 'dfsgfhdfhdg'};
-		var onProgressCalled = false;
-		var expectedId, expectedName;
-														
-		var uploadHandler = new qq.UploadHandlerXhr({
-			action: 'action-test.php',
-			onProgress: function(id, fileName, loaded, total){
-				if (!onProgressCalled) {
-					onProgressCalled = true;
-					
-					same(id, expectedId, 'progress event fired with correct id param');
-					same(fileName, expectedName, 'progress event fired with correct fileName param')					
-					ok(loaded <= total && loaded > 0 && total > 0, 'progress event fired with possible loaded and total');					
-				}
-			},
-			onComplete: function(id, fileName, response){
-                same(id, expectedId, 'progress event fired with correct id param');
-                same(fileName, expectedName, 'progress event fired with correct fileName param')
-                                				
-				data.fileName = fileName;
-				delete response.qqfile;
-				
-				same(response, data, 'server received passed params'); 
-			}
-		});
-			
-		var input = document.getElementById('handlerxhr1');
-		
-		qq.attach(input, 'change', function(){
-			if (!input.files){
-				start();
-				ok(true, 'File uploading via XHR is not supported');
-				$('.handlerxhr').remove();
-				return;					
-			}
-						
-			setTimeout(start, uploadTimeout);
-										
-			var id = uploadHandler.add(input.files[0]);
-			ok(id != null, 'id returned by add');
-			expectedId = id;
-			expectedName = input.files[0].name;
-			
-			uploadHandler.upload(id, data);
-			
-			qq.remove(input);			
-		});
-	});	    
-    	
-	asyncTest("cancel", function() {						
-		var uploadHandler = new qq.UploadHandlerXhr({
-			action: 'action-slow.php',
-			onProgress: function(id, fileName, response){
-			    ok(false, 'onProgress should not run, the request should be cancelled');
-			},
-			onComplete: function(id, fileName, response){
-				ok(false, 'onComplete should not run, the request should be cancelled');
-			}
-		});
-			
-		var input = document.getElementById('handlerxhr2');
-		if (!input){
-			// input removed because uploading via XHR is not supported
-			return;
-		}
-		
-		qq.attach(input, 'change', function(){						
-			var id = uploadHandler.add(input.files[0]);
-			uploadHandler.upload(id);
-			uploadHandler.cancel(id);
-			
-			start();			
-			qq.remove(input);								
-		});
-	});		
+	test('going back', function(){
+	    setTimeout(function(){
+	       alert('the page should now change.'); 
+	       window.history.back();    
+	    }, 3000);	    
+	});
 	
 });
 	</script>  
@@ -219,17 +231,17 @@ jQuery(function(){
 		And there shouldn't be any errors.</p>
 	
 	<p>Please select a file for each input below (in order)</p>
-	
+
+    <p>qq.FileUploader</p>
+    <div id="fileuploader1"></div>
+    	
 	<p>qq.UploadHandlerForm</p>
 	<input id="testinput1" type="file">
 	<input id="testinput2" type="file">
 
-	<p>qq.UploadHandlerXhr</p>
+	<p>qq.UploadHandlerXhr</p>	
 	<input class="handlerxhr" id="handlerxhr1" type="file">
-	<input class="handlerxhr" id="handlerxhr2" type="file">
-		 
-	<p>qq.FileUploader - Please select 2 files</p>
-	<div id="fileuploade1"></div>
+	<input class="handlerxhr" id="handlerxhr2" type="file">		 
 		
 </body> 
 </html>

@@ -16,8 +16,8 @@ qq.FileUploader = function(o){
         action: 'upload-test.php',
         // additional data to send, name-value pairs
         params: {},
-        // ex. 'jpg png jpeg tiff'
-        allowedExtensions: '',        
+        // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+        allowedExtensions: [],        
         // size limit in bytes, 0 - no limit
         // this option isn't supported in all browsers
         sizeLimit: 0,
@@ -29,28 +29,22 @@ qq.FileUploader = function(o){
         // UI customizations
 
         template: '<div class="qq-upload-button">Upload a file</div>' +
-            '<div class="qq-upload-message"></div>' +
             '<ul class="qq-upload-list"></ul>',
 
         // template for one item in file list
         fileTemplate: '<li>' +
-                '<span class="qq-upload-file-name"></span>' +
+                '<span class="qq-upload-file"></span>' +
                 '<span class="qq-upload-spinner"></span>' +
-                '<span class="qq-upload-progress"></span>' +
-                '<span class="qq-upload-cancel">cancel</span>' +
+                '<span class="qq-upload-size"></span>' +
+                '<a class="qq-upload-cancel" href="#">Cancel</span> ' +
             '</li>',
 
         classes: {
-            // added to this._element if xhr with progress 
-            // is used for uploads
-            ajaxUpload: 'qq-upload-ajax',
-                                    
             // used to get elements from templates
             button: 'qq-upload-button',
-            message: 'qq-upload-message',
             list: 'qq-upload-list',
-            fileName: 'qq-upload-file-name',
-            progress: 'qq-upload-progress',
+            file: 'qq-upload-file',
+            size: 'qq-upload-size',
             cancel: 'qq-upload-cancel',
             
             // are set after some events
@@ -63,7 +57,10 @@ qq.FileUploader = function(o){
         messages: {
             serverError: "File wasn't uploaded, please contact support and/or try again.",
             typeError: "You selected invalid file, only % are allowed.",
-            sizeError: "The file you selected is too large, maximum file size is %",            
+            sizeError: "The file you selected is too large, maximum file size is %"            
+        },
+        showMessage: function(message){
+            alert(message);
         }
     };
 
@@ -76,17 +73,12 @@ qq.FileUploader = function(o){
     }
 
     this._element.innerHTML = this._options.template;
-
-    // get elements for faster access
-
-    this._button = this._getElement('button');
-    this._list = this._getElement('list');
-    this._message = this._getElement('message');
+    this._button = this._getElement('button');   
 
     // number of files being uploaded
     this._filesInProgress = 0;
     
-    // for easier access
+    // easier access
     this._classes = this._options.classes;
     
     // make button suitable container for input
@@ -98,29 +90,23 @@ qq.FileUploader = function(o){
         direction: 'ltr'
     });
 
-    this._input = this._createInput();
-    this._handler = this._createUploadHandler();
     
-    if (this._handler instanceof qq.UploadHanderXhr){
-        qq.addClass(this._element, this._classes.ajaxUpload);
-    }
+    this._handler = this._createUploadHandler();
+    this._input = this._createInput();
     
     this._bindCancelEvent();
 };
 
 qq.FileUploader.prototype = {
-    overwriteParams: function(){
-        
+    overwriteParams: function(params){
+        this._options.params = params;
     },
     /**
-     * Returns true if some file is being uploaded, false otherwise
+     * Returns true if some files are being uploaded, false otherwise
      */
     isUploading: function(){
-        return !! self._filesInProgress;
-    },
-    showMessage: function(message){
-        qq.setText(this._message, message);
-    },   
+        return !!self._filesInProgress;
+    },  
     /**
      * Gets one of the elements listed in this._options.classes
      * 
@@ -131,32 +117,51 @@ qq.FileUploader.prototype = {
      *  1. this._getElement('button');
      *  2. this._getElement(item, 'file'); 
      **/
-    _getElement: function(parent, type){
-        if (typeof arguments[0] == 'string'){
-            parent = this._element;
-            type = arguments[0];       
+    _getElement: function(parent, type){                        
+        if (typeof parent == 'string'){
+            // parent was not passed
+            type = parent;
+            parent = this._element;                   
         }
         
-        return qq.getByClass(parent, this._options.classes[type])[0];
+        var element = qq.getByClass(parent, this._options.classes[type])[0];
+        
+        if (!element){
+            throw new Error('element not found ' + type);
+        }
+        
+        return element;
     },
-    _getMessage: function(code){
+    _error: function(code){
         var message = this._options.messages[code];
+        
         if (code == 'typeError'){
             message = message.replace('%', this._options.allowedExtensions.join(', '));
         } else if (code == 'sizeError'){
-            message = message.replace('%', this._options.sizeLimit);
-        }
-        
-        return message; 
+            message = message.replace('%', this._formatSize(this._options.sizeLimit));
+        }       
+                
+        this._options.showMessage(message);  
     },
     _isAllowedExtension: function(fileName){
-        return true;
+        var ext = (-1 !== fileName.indexOf('.')) ? fileName.replace(/.*[.]/, '').toLowerCase() : '';
+        var allowed = this._options.allowedExtensions;
+        
+        if (!allowed.length){return true;}        
+        
+        for (var i=0; i<allowed.length; i++){
+            if (allowed[i].toLowerCase() == ext){
+                return true;
+            }    
+        }
+        
+        return false;
     },
     _createUploadHandler: function(){
         var self = this,
             handlerClass;        
         
-        if( qq.UploadHandlerXhr.isSupported()){            
+        if(qq.UploadHandlerXhr.isSupported()){           
             handlerClass = 'UploadHandlerXhr';                        
         } else {
             handlerClass = 'UploadHandlerForm';
@@ -168,14 +173,20 @@ qq.FileUploader.prototype = {
                 // is only called for xhr upload
                 self._updateProgress(id, loaded, total);                    
             },
-            onComplete: function(id, fileName, result){
-                                
+            onComplete: function(id, fileName, result){                             
                 self._options.onComplete(id, fileName, result);
-                
-                self._markCompleted(id);
+                self._filesInProgress--;
+                // mark completed
+                var item = self._getItemByFileId(id);
+                qq.addClass(item, self._classes.completed);
+                qq.remove(self._getElement(item, 'cancel'));
 
                 if (!result.success){
-                    self.showMessage(result.error || self.getText("serverError"));
+                    if (result.error){
+                       self._options.showMessage(result.error); 
+                    } else {
+                       self._error("serverError"); 
+                    }
                 }
             }
         });
@@ -184,7 +195,11 @@ qq.FileUploader.prototype = {
     },
     _createInput: function(){
         var input = document.createElement("input");
-        //input.setAttribute("multiple", "multiple");
+        
+        if (this._handler instanceof qq.UploadHandlerXhr){
+            input.setAttribute("multiple", "multiple");
+        }
+        
         input.setAttribute("type", "file");
         input.setAttribute("name", "file");
         qq.css(input, {
@@ -232,8 +247,7 @@ qq.FileUploader.prototype = {
         return input;
     },
     _onInputChange: function(){        
-        if (this._handler instanceof qq.UploadHandlerXhr){
-            
+        if (this._handler instanceof qq.UploadHandlerXhr){            
             var files = this._input.files;
             var i = files.length;
             while (i--){
@@ -268,48 +282,60 @@ qq.FileUploader.prototype = {
                     
         }                                   
     },  
-    _addToList: function(fileName, id){
-        var item = qq.toElement(this._options.fileTemplate);          
-        
+    _addToList: function(id, fileName){
+        var item = qq.toElement(this._options.fileTemplate);                
         item.qqFileId = id;
 
-        var fileElement = qq._getElement(item, 'file');        
-        qq.setText(fileElement, fileName);
-        
+        var fileElement = this._getElement(item, 'file');        
+        qq.setText(fileElement, fileName);        
 
-        this._list.appendChild(item);
+        this._getElement('list').appendChild(item);
 
         this._filesInProgress++;
     },
-    _markCompleted: function(id){
-        var item = this._getItemByFileId(id);        
-        qq.addClass(item, this._classes.completed);
-    },
     _updateProgress: function(id, loaded, total){
         var item = this._getItemByFileId(id);
-        var progress = this._getElement(item, 'progress');
+        var progress = this._getElement(item, 'size');
         
-        qq.setText(progress, loaded + ' / ' + total);
+        var text; 
+        if (loaded != total){
+            text = Math.round(loaded / total * 100) + '% from ' + this._formatSize(total);
+        } else {                                   
+            text = this._formatSize(total);
+        }          
+        
+        qq.setText(progress, text);
+    },
+    _formatSize: function(bytes){
+        var i = -1;                                    
+        do {
+            bytes = bytes / 1024;
+            i++;  
+        } while (bytes > 99);
+        
+        return bytes.toFixed(1) + ['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i];          
     },
     _getItemByFileId: function(id){
-        var item = this._list.firstChild;
+        var item = this._getElement('list').firstChild;
         
-        // there can't be text nodes in this._list
+        // there can't be text nodes in our dynamically created list
         // because of that we can safely use nextSibling
-        
-        while (item){
-            item = item.nextSibling;
+        while (item){            
             if (item.qqFileId == id){
                 return item;
             }
+            
+            item = item.nextSibling;
         }          
     },
     /**
      * delegate click event for cancel link 
      **/
     _bindCancelEvent: function(){
-        var self = this;
-        qq.attach(this._list, 'click', function(e){
+        var self = this,
+            list = this._getElement('list');            
+        
+        qq.attach(list, 'click', function(e){
             e = e || window.event;
             var target = e.target || e.srcElement;
 
@@ -322,7 +348,7 @@ qq.FileUploader.prototype = {
             }
         });
 
-    },    
+    }    
 };
 
 /**
@@ -476,7 +502,7 @@ qq.UploadHandlerForm.prototype = {
         var form = qq.toElement('<form method="post" enctype="multipart/form-data"></form>');
 
         var queryString = '?';
-        for (key in params){
+        for (var key in params){
             queryString += '&' + key + '=' + encodeURIComponent(params[key]);
         }
 
@@ -505,6 +531,12 @@ qq.UploadHandlerXhr = function(o){
     this._files = [];
     this._xhrs = [];
 };
+
+// static method
+qq.UploadHandlerXhr.isSupported = function(){
+    return typeof File != "undefined";    
+};
+
 qq.UploadHandlerXhr.prototype = {
     /**
      * Adds file to the queue
@@ -540,7 +572,9 @@ qq.UploadHandlerXhr.prototype = {
             }
             
             if (xhr.readyState == 4){
-
+                                
+                self._options.onProgress(id, file.name, file.size, file.size);
+                
                 self._files[id] = null;
                 self._xhrs[id] = null;
 
@@ -563,7 +597,7 @@ qq.UploadHandlerXhr.prototype = {
 
         // build query string
         var queryString = '?qqfile=' + encodeURIComponent(file.fileName);
-        for (key in params){
+        for (var key in params){
             queryString += '&' + key + '=' + encodeURIComponent(params[key]);
         }
 
@@ -593,7 +627,7 @@ var qq = qq || {};
  * Adds all missing properties from obj2 to obj1
  */
 qq.extend = function(obj1, obj2){
-    for (prop in obj2){
+    for (var prop in obj2){
         obj1[prop] = obj2[prop];
     }
 };
@@ -632,7 +666,7 @@ qq.preventDefault = function(e){
     } else{
         e.returnValue = false;
     }
-}
+};
 //
 // Node manipulations
 
@@ -656,9 +690,9 @@ qq.toElement = (function(){
     var div = document.createElement('div');
     return function(html){
         div.innerHTML = html;
-        var el = div.firstChild;
-        div.removeChild(el)
-        return el;
+        var element = div.firstChild;
+        div.removeChild(element);
+        return element;
     };
 })();
 
@@ -669,13 +703,13 @@ qq.toElement = (function(){
  * Sets styles for an element.
  * Fixes opacity in IE6-8.
  */
-qq.css = function(el, styles){
+qq.css = function(element, styles){
     if (styles.opacity != null){
-        if (typeof el.style.opacity != 'string' && typeof(el.filters) != 'undefined'){
+        if (typeof element.style.opacity != 'string' && typeof(element.filters) != 'undefined'){
             styles.filter = 'alpha(opacity=' + Math.round(100 * styles.opacity) + ')';
         }
     }
-    qq.extend(el.style, styles);
+    qq.extend(element.style, styles);
 };
 qq.hasClass = function(element, name){
     var re = new RegExp('(^| )' + name + '( |$)');
@@ -690,9 +724,9 @@ qq.removeClass = function(element, name){
     var re = new RegExp('(^| )' + name + '( |$)');
     element.className = element.className.replace(re, ' ').replace(/^\s+|\s+$/g, "");
 };
-qq.setText = function(el, text){
-    el.innerText = text;
-    el.textContent = text;
+qq.setText = function(element, text){
+    element.innerText = text;
+    element.textContent = text;
 };
 
 //

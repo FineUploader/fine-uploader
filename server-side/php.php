@@ -69,6 +69,9 @@ function handleUpload(){
 	return array(success=>true);
 }
 
+// for localhost demo
+sleep(1);
+
 $result = handleUpload();
 
 // to pass data through iframe you will need to encode all html tags
