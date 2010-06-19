@@ -1,0 +1,2 @@
+This widget will be licensed under dual licensing model similar to extjs. 
+http://www.extjs.com/company/dual.php
