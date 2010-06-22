@@ -69,8 +69,6 @@ function handleUpload(){
 	return array(success=>true);
 }
 
-// for localhost demo
-sleep(1);
 
 $result = handleUpload();
 
