@@ -57,10 +57,10 @@ qq.FileUploader = function(o){
             fail: 'qq-upload-fail'
         },
         messages: {
-            serverError: "{files} was not uploaded, please contact support and/or try again.",
-            typeError: "{files} has invalid extension. {extensions} are allowed.",
-            sizeError: "{files} is too large, maximum file size is {sizeLimit}.",
-            emptyError: "{files} is empty."            
+            //serverError: "Some files were not uploaded, please contact support and/or try again.",
+            typeError: "{file} has invalid extension. Only {extensions} are allowed.",
+            sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
+            emptyError: "{file} is empty, please select files again without it."            
         },
         showMessage: function(message){
             alert(message);
@@ -99,6 +99,7 @@ qq.FileUploader = function(o){
             self._onInputChange(input);
         }        
     });        
+
 };
 
 qq.FileUploader.prototype = {
@@ -137,36 +138,11 @@ qq.FileUploader.prototype = {
         return element;
     },
     _error: function(code, fileName){
-        var self = this;
-        
-        this._errorQueue = this._errorQueue || [];
-        this._errorQueue[code] = this._errorQueue[code] || [];
-        this._errorTimeout = this._errorTimeout || [];        
-                
-        this._errorQueue[code].push(fileName);
-                
-        if (this._errorTimeout[code]){
-            clearTimeout(this._errorTimeout[code]);
-        }
-                  
-        this._errorTimeout[code] = setTimeout(function(){
-            
-            var message = self._options.messages[code];
-            var files = self._errorQueue[code];
-                         
-            var i = files.length;
-            while(i--){
-                files[i] = self._formatFileName(files[i]);
-            }
-                      
-            message = message.replace('{files}', files.join(', '));
-            message = message.replace('{extensions}', self._options.allowedExtensions.join(', '));
-            message = message.replace('{sizeLimit}', self._formatSize(self._options.sizeLimit));
-            self._options.showMessage(message);
-            
-            self._errorQueue[code] = [];            
-        }, 10);
-                
+        var message = this._options.messages[code];
+        message = message.replace('{file}', this._formatFileName(fileName));
+        message = message.replace('{extensions}', this._options.allowedExtensions.join(', '));
+        message = message.replace('{sizeLimit}', this._formatSize(this._options.sizeLimit));
+        this._options.showMessage(message);                
     },
     _formatFileName: function(name){
         if (name.length > 33){
@@ -219,8 +195,6 @@ qq.FileUploader.prototype = {
                     
                     if (result.error){
                        self._options.showMessage(result.error); 
-                    } else {
-                       self._error("serverError", fileName); 
                     }
                 }
             }
@@ -228,61 +202,70 @@ qq.FileUploader.prototype = {
 
         return handler;
     },
-    _onInputChange: function(input){       
+    _onInputChange: function(input){
+
         if (this._handler instanceof qq.UploadHandlerXhr){            
-            var files = input.files;
+            var files = input.files,
+                valid = true;
+
             var i = files.length;
-            while (i--){
-                var file = files[i];
-                
-                // Safari 4 uses fileName and fileSize instead
-                var name = file.name || file.fileName;
-                var size = file.size || file.fileSize;                
-                
-                this._uploadFile(file, name, size);
-            }            
+            while (i--){         
+                if (!this._validateFile(files[i])){
+                    valid = false;
+                }
+            }  
             
-        } else {            
-            // Some browsers have path, others just file name
-            var name = this._input.value.replace(/.*(\/|\\)/, "");
-            this._uploadFile(this._input, name);                                    
+            if (valid){                                      
+                var i = files.length;
+                while (i--){ this._uploadFile(files[i]); }  
+            }
+            
+        } else {
+             
+            if (this._validateFile(this._input)){                
+                this._uploadFile(this._input);                                    
+            }
+                      
+        }        
+        
+        this._button.reset();   
+    },  
+    _uploadFile: function(fileContainer){            
+        var id = this._handler.add(fileContainer);
+        var name = this._handler.getName(id);        
+        this._options.onSubmit(id, name);        
+        this._addToList(id, name);            
+        this._handler.upload(id, this._options.params);        
+    },      
+    _validateFile: function(file){
+        var name,size;
+        
+        if (file.value){
+            // it is a file input
+            
+            // get input value and remove path to normalize
+            name = fileContainer.value.replace(/.*(\/|\\)/, "");
+        } else {
+            // fix missing properties in Safari
+            name = file.fileName != null ? file.fileName : file.name;
+            size = file.fileSize != null ? file.fileSize : file.size;
+        }
+                    
+        if (! this._isAllowedExtension(name)){            
+            this._error('typeError',name);
+            return false;
+            
+        } else if (size === 0){            
+            this._error('emptyError',name);
+            return false;
+                                                     
+        } else if (size && this._options.sizeLimit && size > this._options.sizeLimit){            
+            this._error('sizeError',name);
+            return false;            
         }
         
-        this._button.reset();
-        
-        //this._button.getInput().blur();
-        //qq.removeClass(this._button, this._classes.buttonFocus);
-    },     
-    /**
-     * Uploads passed file or fileInput, size param is optional.
-     **/
-    _uploadFile: function(fileContainer, name, size){        
-        var id = this._handler.add(fileContainer);
-        
-        var name = this._handler.getName(id),
-            size = this._handler.getSize ? this._handler.getSize(id) : undefined;
-        
-        if (! this._isAllowedExtension(name)){
-            
-            this._error('typeError', name);
-            this._handler.cancel(id); 
-
-        } else if (size === 0){
-            
-            this._error('emptyError', name);
-            this._handler.cancel(id);            
-                             
-        } else if (size && this._options.sizeLimit && size > this._options.sizeLimit){
-            
-            this._error('sizeError', name);
-            this._handler.cancel(id);
-            
-        } else if (this._options.onSubmit(id, name) !== false){
-            
-            this._addToList(id, name);            
-            this._handler.upload(id, this._options.params);            
-        }   
-    },  
+        return true;                
+    },
     _addToList: function(id, fileName){
         var item = qq.toElement(this._options.fileTemplate);                
         item.qqFileId = id;
@@ -391,6 +374,7 @@ qq.UploadButton.prototype = {
             qq.remove(this._input);    
         }                
         
+        qq.removeClass(this._element, this._options.focusClass);
         this._input = this._createInput();
     },    
     _createInput: function(){                

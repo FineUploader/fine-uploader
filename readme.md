@@ -16,8 +16,8 @@ and small. (4KB minified and gzipped)
 
 ### Todos ###
 
-* think if adding total size limit is a good idea
 * merge multiple same type alerts into one (or completely rework them)
+* think if adding total size limit is a good idea
 * add drag-and-drop upload functionality
 * add an confirmation alert when user leaves page when the file is being uploaded
 * add remove method
@@ -50,7 +50,7 @@ Initialize uploader when the DOM is ready.
 
 Don't forget to setup the server side script, some examples can be found in the "server" folder.
 Due to diversity of server platforms, it's quite probable, that I don't have an example for
-your, in that case please send me a mail (andrew@valums.com). I will be glad to help.
+your, in that case please send me a mail (andrew [at] valums.com). I will be glad to help.
 
 ### Configuring ###
 
@@ -67,7 +67,6 @@ Below is the list of important options, more details are given below.
     // size limit in bytes, 0 - no limit
     // this option isn't supported in all browsers
     sizeLimit: 0,
-    // return false to cancel
     onSubmit: function(id, fileName){},
     onComplete: function(id, fileName, responseJSON){},
     messages: {
@@ -103,21 +102,7 @@ script.
 
 If you limited file types and max size, you will probably want to change the default alert and
 messages as you see fit, this is possible using showMessage callback and messages option.
-% in messages is replaced with type or size. Also this is the only thing, you need to change for
-localization.
-
-    var uploader = new qq.FileUploader({
-        element: document.getElementById('file-uploader'),
-        action: '/server-side.upload',
-        messages: {
-            serverError: "File wasn't uploaded, please contact support and/or try again.",
-            typeError: "You selected invalid file, only % are allowed.",
-            sizeError: "The file you selected is too large, maximum file size is %"            
-        },
-        showMessage: function(message){
-            alert(message);
-        }
-    });
+This also makes localization much easier. Look into options in qq.FileUploader for default values.
 
 #### Sending additional params ####
 
@@ -143,21 +128,19 @@ It can be nicely used in onSubmit callback.
 
 #### Callbacks ####
 
-You can use the onSubmit callback, to cancel upload in certain situations.     
+You can use the onSubmit callback, to set parameters based on the state of your app.     
     
     onSubmit: function(id, fileName){
-        // check a name, or something in your app state
-        // return false to cancel
     },
     onComplete: function(id, fileName, responseJSON){        
     }
 
 #### Changing design ####
+
 If you want to change markup look into template, fileTemplate, classes option in fileuploader.js
-For most purposes customization of the css file should be enough. 
+But for most purposes customization of the css file should be enough. 
     
 #### Further questions ####
 
-If you need commercial support, contact andrew at valums.com     
-
-
+If you have a simple question, leave a comment on my blog.
+For commercial support, contact andrew (at) valums.com    

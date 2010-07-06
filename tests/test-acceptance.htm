@@ -12,7 +12,7 @@
 
 jQuery(function(){    
     asyncTest("qq.FileUploader", function() {
-        expect(9);
+        expect(8);
         
         var submitFileName, submitId;
                
@@ -35,26 +35,21 @@ jQuery(function(){
                     same(uploader.isUploading(), false, 'isUploading');                    
                     setTimeout(function(){
                         same(uploader.isUploading(), true, 'isUploading');
-                    });                                                          
-                } else if (fileName == '7text.txt'){
-                    ok(true, 'cancelling upload');
-                    start();
-                    return false;
-                } 
+                    });                                                                                                
+                }
             },
             onComplete: function(id, fileName, responseJSON){
+
                 if (fileName == '4text.txt'){
                     same(responseJSON, {}, 'should be empty if server returned malformed json');
                 } else if (fileName == '5text.txt'){
                     same(submitId, id, "id in both callbacks match");
-                    same(submitFileName, fileName, "filename in both callbacks match");
-    
+                    same(submitFileName, fileName, "filename in both callbacks match");    
                     ok(responseJSON.one === 'value1' && responseJSON.two === 'value2', "server received default params");
                     same(responseJSON.fileName, fileName, "filename in onComplete correct");
                 } else if (fileName == '6text.txt'){                    
-                    ok(responseJSON['new'] === 'newvalue' && responseJSON.one == null, "server received new params");                    
-                } else if (fileName == '7text.txt'){                    
-                    ok(false, 'request should be already cancelled in onSubmit');                    
+                    ok(responseJSON['new'] === 'newvalue' && responseJSON.one == null, "server received new params");
+                    start();                    
                 }                                                                                
             }
         });           
@@ -73,10 +68,10 @@ jQuery(function(){
         <li>select 1imagelong...long.gif, invalid ext error should appear</li>        
         <li>select 2larger.txt, invalid size message should appear (in FF3.6+,Safari4+,Chrome without doing request)</li>
         <li>select 3empty.txt, invalid size message should appear (in FF3.6+,Safari4+,Chrome without doing request)</li>
-        <li>select 4text.txt, server error should appear</li>             
+        <li>select 4text.txt, uploaded file should be marked as failed</li>             
         <li>select 5text.txt, callback argument tests</li>        
         <li>select 6text.txt, setParams, isUploading</li>
-        <li>select 7text.txt, testing return false in onSubmit</li>
+        <li>In browsers that support multiple select, select all files at once, only 1 error should appear</li>
     </ol>
     
     <div id="file-uploader"></div>        
