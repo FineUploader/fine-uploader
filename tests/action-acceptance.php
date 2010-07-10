@@ -1,6 +1,6 @@
 <?php
 
-usleep(50);
+usleep(100000);
 
 $fileName;
 $fileSize;

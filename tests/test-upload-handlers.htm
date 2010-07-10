@@ -192,7 +192,7 @@ jQuery(function(){
                    window.history.back();
                    
                    start();
-                   ok(false, "the page didn't change");
+                   ok(false, "the page didn't change (fails in Opera)");
                 }              
             }, 1000);               
         });    	
@@ -221,7 +221,7 @@ jQuery(function(){
     					
     					same(id, expectedId, 'progress event fired with correct id param');
     					same(fileName, expectedName, 'progress event fired with correct fileName param')					
-    					ok(loaded <= total && loaded > 0 && total > 0, 'progress event fired with possible loaded and total');
+    					ok(loaded <= total && total > 0, 'progress event fired with possible loaded and total');
     					
     					same(total, uploadHandler.getSize(id), 'getSize method');					
     				}
@@ -262,9 +262,6 @@ jQuery(function(){
     	asyncTest("cancel", function() {						
     		var uploadHandler = new qq.UploadHandlerXhr({
     			action: 'action-slow-response.php',
-    			onProgress: function(id, fileName, response){
-    			    ok(false, 'onProgress should not run, the request should be cancelled');
-    			},
     			onComplete: function(id, fileName, response){
     				ok(false, 'onComplete should not run, the request should be cancelled');
     			}

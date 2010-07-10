@@ -28,7 +28,7 @@ qq.FileUploader = function(o){
         // UI customizations
 
         template: '<div class="qq-uploader">' + 
-                '<div class="qq-upload-drop-area"><span>Drop file here to upload</span></div>' +
+                '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
                 '<div class="qq-upload-button">Upload a file</div>' +
                 '<ul class="qq-upload-list"></ul>' + 
              '</div>',
@@ -170,30 +170,38 @@ qq.FileUploader.prototype = {
         return false;
     },
     _setupDragDrop: function(){
+        function isValidDrag(e){            
+            var dt = e.dataTransfer,
+                // do not check dt.types.contains in webkit, because it crashes safari 4            
+                isWebkit = navigator.userAgent.indexOf("AppleWebKit") > -1;                        
+            
+            // dt.effectAllowed is none in Safari 5
+            // dt.types.contains check is for firefox            
+            return dt && dt.effectAllowed != 'none' && 
+                (dt.files || (!isWebkit && dt.types.contains && dt.types.contains('Files')));
+        }
+        
         var self = this,
             dropArea = this._getElement('drop');                        
         
         dropArea.style.display = 'none';
         
-        var hideTimeout;
+        var hideTimeout;        
+        qq.attach(document, 'dragenter', function(e){            
+            e.preventDefault(); 
+        });        
 
-        qq.attach(document, 'dragenter', function(e){
-            e.preventDefault();
-        });
-        
-        qq.attach(document, 'dragover', function(e){                 
-            if (e.dataTransfer && e.dataTransfer.files){
-                                
+        qq.attach(document, 'dragover', function(e){
+            if (isValidDrag(e)){
+                                                
                 if (hideTimeout){
                     clearTimeout(hideTimeout);
                 }
                 
-                if (qq.contains(dropArea,e.target)){
-                                                                                                   
-                    e.dataTransfer.dropEffect = 'copy';
+                if (dropArea == e.target || qq.contains(dropArea,e.target)){
+                    e.dataTransfer.dropEffect = 'copy';                                                                                     
                     qq.addClass(dropArea, self._classes.dropActive);     
-                    e.stopPropagation();
-                                                           
+                    e.stopPropagation();                                                           
                 } else {
                     dropArea.style.display = 'block';
                     e.dataTransfer.dropEffect = 'none';    
@@ -203,14 +211,12 @@ qq.FileUploader.prototype = {
             }            
         });         
         
-        qq.attach(document, 'dragleave', function(e){            
-            if (e.dataTransfer && e.dataTransfer.files){
+        qq.attach(document, 'dragleave', function(e){  
+            if (isValidDrag(e)){
                                 
-                if (qq.contains(dropArea, e.target)){
-                                        
+                if (dropArea == e.target || qq.contains(dropArea,e.target)){                                        
                     qq.removeClass(dropArea, self._classes.dropActive);      
-                    e.stopPropagation();
-                                       
+                    e.stopPropagation();                                       
                 } else {
                                         
                     if (hideTimeout){
@@ -224,10 +230,10 @@ qq.FileUploader.prototype = {
             }            
         });
         
-        qq.attach(dropArea, 'drop', function(e){
-            
+        qq.attach(dropArea, 'drop', function(e){            
             dropArea.style.display = 'none';
-            self._uploadFileList(e.dataTransfer.files);
+            self._uploadFileList(e.dataTransfer.files);            
+            e.preventDefault();
         });                      
     },
     _createUploadHandler: function(){
@@ -246,9 +252,8 @@ qq.FileUploader.prototype = {
                 // is only called for xhr upload
                 self._updateProgress(id, loaded, total);                    
             },
-            onComplete: function(id, fileName, result){    
-                self._options.onComplete(id, fileName, result);
-                self._filesInProgress--;                
+            onComplete: function(id, fileName, result){
+                self._filesInProgress--;
 
                 // mark completed
                 var item = self._getItemByFileId(id);                
@@ -263,6 +268,8 @@ qq.FileUploader.prototype = {
                        self._options.showMessage(result.error); 
                     }
                 }
+                    
+                self._options.onComplete(id, fileName, result);                                
             }
         });
 
@@ -276,8 +283,8 @@ qq.FileUploader.prototype = {
             
         } else {
              
-            if (this._validateFile(this._input)){                
-                this._uploadFile(this._input);                                    
+            if (this._validateFile(input)){                
+                this._uploadFile(input);                                    
             }
                       
         }        
@@ -291,6 +298,7 @@ qq.FileUploader.prototype = {
         while (i--){         
             if (!this._validateFile(files[i])){
                 valid = false;
+                break;
             }
         }  
         
@@ -303,17 +311,21 @@ qq.FileUploader.prototype = {
         var id = this._handler.add(fileContainer);
         var name = this._handler.getName(id);        
         this._options.onSubmit(id, name);        
-        this._addToList(id, name);            
+        this._addToList(id, name);
+          
+        if (typeof File != 'undefined' && fileContainer instanceof File){
+            this._updateProgress(id, 0, this._handler.getSize(id));    
+        }                  
+         
         this._handler.upload(id, this._options.params);        
     },      
     _validateFile: function(file){
         var name,size;
-        
+ 
         if (file.value){
-            // it is a file input
-            
+            // it is a file input            
             // get input value and remove path to normalize
-            name = fileContainer.value.replace(/.*(\/|\\)/, "");
+            name = file.value.replace(/.*(\/|\\)/, "");
         } else {
             // fix missing properties in Safari
             name = file.fileName != null ? file.fileName : file.name;
@@ -716,14 +728,8 @@ qq.UploadHandlerXhr.prototype = {
         }
                         
         var xhr = this._xhrs[id] = new XMLHttpRequest();
-
         var self = this;
-        
-        // we always fire at least 2 on progress events, for start and finish                        
-        setTimeout(function(){                
-            self._options.onProgress(id, name, 0, size);                  
-        }, 1);
-                                
+                                        
         xhr.upload.onprogress = function(e){
             if (e.lengthComputable){
                 self._options.onProgress(id, name, e.loaded, e.total);
