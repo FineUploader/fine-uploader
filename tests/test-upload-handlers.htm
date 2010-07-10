@@ -12,7 +12,22 @@
 jQuery(function(){
 
     module('qq');
-    
+
+    test("contains", function(){
+        var el1 = document.createElement('div');
+        var el2 = document.createElement('div');
+        var el3 = document.createElement('div');
+        el1.appendChild(el2);
+        el2.appendChild(el3);
+        
+        var el4 = document.createElement('div');
+
+        ok(qq.contains(el1,el2));
+        ok(qq.contains(el1,el3));
+        ok(!qq.contains(el1,el4));
+        ok(!qq.contains(el3,el2));
+    }); 
+        
     test("hasClass, addClass, removeClass", function(){
         var element = document.createElement('div');
         qq.addClass(element, 'some-class');

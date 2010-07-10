@@ -21,15 +21,17 @@ qq.FileUploader = function(o){
         // size limit in bytes, 0 - no limit
         // this option isn't supported in all browsers
         sizeLimit: 0,
-        // return false to cancel
         onSubmit: function(id, fileName){},
         onComplete: function(id, fileName, responseJSON){},
 
         //
         // UI customizations
 
-        template: '<div class="qq-upload-button">Upload a file</div>' +
-            '<ul class="qq-upload-list"></ul>',
+        template: '<div class="qq-uploader">' + 
+                '<div class="qq-upload-drop-area"><span>Drop file here to upload</span></div>' +
+                '<div class="qq-upload-button">Upload a file</div>' +
+                '<ul class="qq-upload-list"></ul>' + 
+             '</div>',
 
         // template for one item in file list
         fileTemplate: '<li>' +
@@ -46,6 +48,8 @@ qq.FileUploader = function(o){
             
             // used to get elements from templates
             button: 'qq-upload-button',
+            drop: 'qq-upload-drop-area',
+            dropActive: 'qq-upload-drop-area-active',
             list: 'qq-upload-list',
             file: 'qq-upload-file',
             size: 'qq-upload-size',
@@ -99,7 +103,8 @@ qq.FileUploader = function(o){
             self._onInputChange(input);
         }        
     });        
-
+    
+    this._setupDragDrop();
 };
 
 qq.FileUploader.prototype = {
@@ -164,6 +169,67 @@ qq.FileUploader.prototype = {
         
         return false;
     },
+    _setupDragDrop: function(){
+        var self = this,
+            dropArea = this._getElement('drop');                        
+        
+        dropArea.style.display = 'none';
+        
+        var hideTimeout;
+
+        qq.attach(document, 'dragenter', function(e){
+            e.preventDefault();
+        });
+        
+        qq.attach(document, 'dragover', function(e){                 
+            if (e.dataTransfer && e.dataTransfer.files){
+                                
+                if (hideTimeout){
+                    clearTimeout(hideTimeout);
+                }
+                
+                if (qq.contains(dropArea,e.target)){
+                                                                                                   
+                    e.dataTransfer.dropEffect = 'copy';
+                    qq.addClass(dropArea, self._classes.dropActive);     
+                    e.stopPropagation();
+                                                           
+                } else {
+                    dropArea.style.display = 'block';
+                    e.dataTransfer.dropEffect = 'none';    
+                }
+                                
+                e.preventDefault();                
+            }            
+        });         
+        
+        qq.attach(document, 'dragleave', function(e){            
+            if (e.dataTransfer && e.dataTransfer.files){
+                                
+                if (qq.contains(dropArea, e.target)){
+                                        
+                    qq.removeClass(dropArea, self._classes.dropActive);      
+                    e.stopPropagation();
+                                       
+                } else {
+                                        
+                    if (hideTimeout){
+                        clearTimeout(hideTimeout);
+                    }
+                    
+                    hideTimeout = setTimeout(function(){                                                
+                        dropArea.style.display = 'none';                            
+                    }, 77);
+                }   
+            }            
+        });
+        
+        qq.attach(dropArea, 'drop', function(e){
+            
+            dropArea.style.display = 'none';
+            self._uploadFileList(e.dataTransfer.files);
+        });                      
+    },
     _createUploadHandler: function(){
         var self = this,
             handlerClass;        
@@ -204,21 +270,9 @@ qq.FileUploader.prototype = {
     },
     _onInputChange: function(input){
 
-        if (this._handler instanceof qq.UploadHandlerXhr){            
-            var files = input.files,
-                valid = true;
-
-            var i = files.length;
-            while (i--){         
-                if (!this._validateFile(files[i])){
-                    valid = false;
-                }
-            }  
+        if (this._handler instanceof qq.UploadHandlerXhr){     
             
-            if (valid){                                      
-                var i = files.length;
-                while (i--){ this._uploadFile(files[i]); }  
-            }
+            this._uploadFileList(input.files);       
             
         } else {
              
@@ -230,6 +284,21 @@ qq.FileUploader.prototype = {
         
         this._button.reset();   
     },  
+    _uploadFileList: function(files){
+        var valid = true;
+
+        var i = files.length;
+        while (i--){         
+            if (!this._validateFile(files[i])){
+                valid = false;
+            }
+        }  
+        
+        if (valid){                                      
+            var i = files.length;
+            while (i--){ this._uploadFile(files[i]); }  
+        }
+    },
     _uploadFile: function(fileContainer){            
         var id = this._handler.add(fileContainer);
         var name = this._handler.getName(id);        
@@ -784,6 +853,14 @@ qq.insertBefore = function(a, b){
 };
 qq.remove = function(element){
     element.parentNode.removeChild(element);
+};
+
+qq.contains = function(parent, descendant){
+    if (parent.contains){
+        return parent.contains(descendant);
+    } else {
+        return !!(descendant.compareDocumentPosition(parent) & 8);
+    }
 };
 
 /**

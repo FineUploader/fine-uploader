@@ -1,4 +1,4 @@
-THE COMPONENT IS NOT READY YET, PLEASE DO NOT USE.
+THE COMPONENT IS NOT READY YET, DO NOT USE.
 
 This plugin uses XHR for uploading multiple files with progress-bar in FF3.6+, Safari4+,
 Chrome and falls back to hidden iframe based upload in other browsers,
@@ -8,20 +8,20 @@ and small. (4KB minified and gzipped)
 ### For demo <a href="http://github.com/valums/file-uploader/zipball/test">download</a> and open client/demo.htm ###
 ### Features ###
 
-* progress-bar and keyboard support in FF,Chrome,Safari
-* multiple file select in same browsers
-* ability to cancel upload
-* fully tested with https
+In FF,Chrome,Safari
+* progress-bar and keyboard support
+* multiple file select
+* drag-and-drop file select
+
+In all browsers
+* stylable via CSS
+* uploads are cancellable
 * self contained (no external dependencies)
+* tested with https
+* doesn't use Flash
 
-### Todos ###
-
-* merge multiple same type alerts into one (or completely rework them)
-* think if adding total size limit is a good idea
-* add drag-and-drop upload functionality
-* add an confirmation alert when user leaves page when the file is being uploaded
-* add remove method
-* fix back button functionality in Opera
+### Known Issues ###
+Plugin breaks back button functionality in Opera.
 
 ### License ###
 Not selected yet. Product not ready, do not use.
@@ -50,7 +50,7 @@ Initialize uploader when the DOM is ready.
 
 Don't forget to setup the server side script, some examples can be found in the "server" folder.
 Due to diversity of server platforms, it's quite probable, that I don't have an example for
-your, in that case please send me a mail (andrew [at] valums.com). I will be glad to help.
+yours, in that case please send me a mail andrew(at)valums.com. I will be glad to help.
 
 ### Configuring ###
 
@@ -106,7 +106,7 @@ This also makes localization much easier. Look into options in qq.FileUploader f
 
 #### Sending additional params ####
 
-To add a parameter that will be passed as query string with each upload use params option. 
+To add a parameter that will be passed as a query string with each upload use params option. 
 
     var uploader = new qq.FileUploader({
         element: document.getElementById('file-uploader'),
@@ -130,17 +130,14 @@ It can be nicely used in onSubmit callback.
 
 You can use the onSubmit callback, to set parameters based on the state of your app.     
     
-    onSubmit: function(id, fileName){
-    },
-    onComplete: function(id, fileName, responseJSON){        
-    }
+    onSubmit: function(id, fileName){},
+    onComplete: function(id, fileName, responseJSON){}
 
 #### Changing design ####
 
 If you want to change markup look into template, fileTemplate, classes option in fileuploader.js
-But for most purposes customization of the css file should be enough. 
+But for most purposes customization of the css file should be enough.
     
 #### Further questions ####
 
-If you have a simple question, leave a comment on my blog.
-For commercial support, contact andrew (at) valums.com    
+If you have a simple question, leave comment on my blog. For commercial support, contact andrew(at)valums.com    
