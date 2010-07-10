@@ -7,13 +7,14 @@ and small. (4KB minified and gzipped)
 
 ### For demo <a href="http://github.com/valums/file-uploader/zipball/test">download</a> and open client/demo.htm ###
 ### Features ###
-
 In FF,Chrome,Safari
+
 * progress-bar and keyboard support
 * multiple file select
 * drag-and-drop file select
 
 In all browsers
+
 * stylable via CSS
 * uploads are cancellable
 * self contained (no external dependencies)
