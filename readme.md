@@ -6,20 +6,16 @@ providing good experience for everyone. It is highly customizable, easily stylea
 and small. (4KB minified and gzipped)
 
 ### For demo <a href="http://github.com/valums/file-uploader/zipball/test">download</a> and open client/demo.htm ###
+
 ### Features ###
-In FF,Chrome,Safari
 
-* progress-bar and keyboard support
-* multiple file select
-* drag-and-drop file select
-
-In all browsers
-
+* progress-bar and keyboard support in FF,Chrome,Safari
+* multiple file select in FF,Chrome,Safari
+* drag-and-drop file select in FF,Chrome,Safari
 * stylable via CSS
 * uploads are cancellable
-* self contained (no external dependencies)
-* tested with https
-* doesn't use Flash
+* no external dependencies
+* tested with https and doesn't use Flash
 
 ### Known Issues ###
 Plugin breaks back button functionality in Opera.
