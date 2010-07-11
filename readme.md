@@ -18,7 +18,7 @@ and small. (4KB minified and gzipped)
 * fully working with https
 
 ### Supported Browsers ###
-IE7-8, Firefox 3-4beta, Chrome, Safari4-5, Opera10+
+IE6-8, Firefox 3-4beta, Safari4-5, Chrome, Opera
 
 ### Known Issues ###
 Plugin breaks back button functionality in Opera.
