@@ -20,7 +20,7 @@ Plugin breaks back button functionality in Opera.
 
 ### License ###
 This plugin is open sourced under <a href="http://www.gnu.org/copyleft/gpl.html">GNU GPL</a>.
-If this license doesn't suit you contact andrew(at)valums.com for another options.
+If this license doesn't suit you contact andrew (at) valums.com for another options.
 	
 ### Setting up ###
 
@@ -45,7 +45,7 @@ Initialize uploader when the DOM is ready.
     });
 
 Don't forget to setup the server side script, some examples can be found in the "server" folder.
-If I don't have an example for your server platform, pleasese send me a mail andrew(at)valums.com.
+If you can't find an example for your server platform, send me a mail to andrew (at) valums.com.
 I will be glad to help.
 
 ### Configuring ###
@@ -66,7 +66,7 @@ Below is the list of important options, more details are given below.
     onSubmit: function(id, fileName){},
     onComplete: function(id, fileName, responseJSON){},
     messages: {
-        // contains test string, see fileuploade.js for details            
+        // contains test string, see fileuploader.js for details            
     },
     showMessage: function(message){
         alert(message);
@@ -98,7 +98,7 @@ script.
 
 If you limited file types and max size, you will probably want to change the default alert and
 messages as you see fit, this is possible using showMessage callback and messages option.
-This also makes localization much easier. Look into options in qq.FileUploader for default values.
+This also makes localization much easier. Look into qq.FileUploader for default values.
 
 #### Sending additional params ####
 
@@ -131,9 +131,9 @@ You can use the onSubmit callback, to set parameters based on the state of your 
 
 #### Changing design ####
 
-If you want to change markup look into template, fileTemplate, classes option in fileuploader.js
+If you want to change markup, look into template, fileTemplate, classes option in fileuploader.js
 But for most purposes customization of the css file should be enough.
     
 #### Further questions ####
 
-If you have a simple question, leave comment on my blog. For commercial support, contact andrew(at)valums.com    
+If you have a short question, leave comment on my blog. For commercial support, contact andrew (at) valums.com    
