@@ -50,15 +50,14 @@ qq.FileUploader = function(o){
             '</li>',
 
         classes: {
-            // added to container when xhr upload with progress is used
-            xhrUpload: 'qq-upload-xhr',
-            
             // used to get elements from templates
             button: 'qq-upload-button',
             drop: 'qq-upload-drop-area',
             dropActive: 'qq-upload-drop-area-active',
             list: 'qq-upload-list',
+                        
             file: 'qq-upload-file',
+            spinner: 'qq-upload-spinner',
             size: 'qq-upload-size',
             cancel: 'qq-upload-cancel',
 
@@ -97,10 +96,6 @@ qq.FileUploader = function(o){
     this._handler = this._createUploadHandler();    
     
     this._bindCancelEvent();
-    
-    if (qq.UploadHandlerXhr.isSupported()){
-        qq.addClass(this._element, this._classes.xhrUpload);    
-    }
     
     var self = this;
     this._button = new qq.UploadButton({
@@ -265,6 +260,7 @@ qq.FileUploader.prototype = {
                 // mark completed
                 var item = self._getItemByFileId(id);                
                 qq.remove(self._getElement(item, 'cancel'));
+                qq.remove(self._getElement(item, 'spinner'));
                 
                 if (result.success){
                     qq.addClass(item, self._classes.success);    
@@ -319,11 +315,6 @@ qq.FileUploader.prototype = {
         var name = this._handler.getName(id);        
         this._options.onSubmit(id, name);        
         this._addToList(id, name);
-          
-        if (typeof File != 'undefined' && fileContainer instanceof File){
-            this._updateProgress(id, 0, this._handler.getSize(id));    
-        }                  
-         
         this._handler.upload(id, this._options.params);        
     },      
     _validateFile: function(file){
@@ -359,7 +350,8 @@ qq.FileUploader.prototype = {
         item.qqFileId = id;
 
         var fileElement = this._getElement(item, 'file');        
-        qq.setText(fileElement, this._formatFileName(fileName));        
+        qq.setText(fileElement, this._formatFileName(fileName));
+        this._getElement(item, 'size').style.display = 'none';        
 
         this._getElement('list').appendChild(item);
 
@@ -367,7 +359,8 @@ qq.FileUploader.prototype = {
     },
     _updateProgress: function(id, loaded, total){
         var item = this._getItemByFileId(id);
-        var progress = this._getElement(item, 'size');
+        var size = this._getElement(item, 'size');
+        size.style.display = 'inline';
         
         var text; 
         if (loaded != total){
@@ -376,7 +369,7 @@ qq.FileUploader.prototype = {
             text = this._formatSize(total);
         }          
         
-        qq.setText(progress, text);
+        qq.setText(size, text);
     },
     _formatSize: function(bytes){
         var i = -1;                                    

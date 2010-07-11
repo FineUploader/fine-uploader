@@ -5,14 +5,15 @@ providing good user experience everywhere.
 ### For demo <a href="http://github.com/valums/file-uploader/zipball/test">download</a> and open client/demo.htm ###
 
 ### Features ###
-* progress-bar and keyboard support in FF, Chrome, Safari
 * multiple file select in FF, Chrome, Safari
-* drag-and-drop file select in FF, Chrome
+* progress-bar in FF, Chrome6+, Safari
+* drag-and-drop file select in FF, Chrome 
 * stylable via CSS
 * uploads are cancellable
 * no external dependencies
 * doesn't use Flash
 * fully working with https
+* keyboard support in FF, Chrome, Safari
 * supports IE6-8, Firefox 3-4beta, Safari4-5, Chrome, Opera
 
 ### Known Issues ###

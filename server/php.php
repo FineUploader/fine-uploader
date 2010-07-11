@@ -35,7 +35,7 @@ class UploadFileForm {
 
 function handleUpload(){
 	$uploaddir = 'uploads/';
-	$maxFileSize = 5 * 1024 * 1024;
+	$maxFileSize = 100 * 1024 * 1024;
 		
 	if (isset($_GET['qqfile'])){
 		$file = new UploadFileXhr();
