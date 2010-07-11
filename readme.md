@@ -10,7 +10,7 @@ and small. (4KB minified and gzipped)
 ### Features ###
 * progress-bar and keyboard support in FF, Chrome, Safari
 * multiple file select in FF, Chrome, Safari
-* drag-and-drop file select in FF, Chrome, Safari
+* drag-and-drop file select in FF, Chrome
 * stylable via CSS
 * uploads are cancellable
 * no external dependencies

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>      
+
+<script>
+window.addEventListener('load', function(){
+    document.addEventListener('dragenter', function(e){
+        e.preventDefault();
+    },false);
+    document.addEventListener('dragover', function(e){
+        e.preventDefault();        
+        // e.dataTransfer.effectAllowed is none
+        e.dataTransfer.dropEffect = 'copy';
+    },false);    
+},false);
+</script>
+</html>
