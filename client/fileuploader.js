@@ -176,7 +176,7 @@ qq.FileUploader.prototype = {
             var dt = e.dataTransfer,
                 // do not check dt.types.contains in webkit, because it crashes safari 4            
                 isWebkit = navigator.userAgent.indexOf("AppleWebKit") > -1;                        
-            
+
             // dt.effectAllowed is none in Safari 5
             // dt.types.contains check is for firefox            
             return dt && dt.effectAllowed != 'none' && 
@@ -195,13 +195,18 @@ qq.FileUploader.prototype = {
 
         qq.attach(document, 'dragover', function(e){
             if (isValidDrag(e)){
-                                                
+                         
                 if (hideTimeout){
                     clearTimeout(hideTimeout);
                 }
                 
                 if (dropArea == e.target || qq.contains(dropArea,e.target)){
-                    e.dataTransfer.dropEffect = 'copy';                                                                                     
+                    var effect = e.dataTransfer.effectAllowed;
+                    if (effect == 'move' || effect == 'linkMove'){
+                        e.dataTransfer.dropEffect = 'move'; // for FF (only move allowed)    
+                    } else {                    
+                        e.dataTransfer.dropEffect = 'copy'; // for Chrome
+                    }                                                                                    
                     qq.addClass(dropArea, self._classes.dropActive);     
                     e.stopPropagation();                                                           
                 } else {
