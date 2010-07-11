@@ -2,7 +2,7 @@ This plugin uses XHR for uploading multiple files with progress-bar in FF3.6+, S
 Chrome and falls back to hidden iframe based upload in other browsers,
 providing good user experience everywhere.
 
-### For demo <a href="http://github.com/valums/file-uploader/zipball/test">download</a> and open client/demo.htm ###
+### <a href="http://valums.com/files/2010/file-uploader/demo.htm">Demo</a> ###
 
 ### Features ###
 * multiple file select in FF, Chrome, Safari
