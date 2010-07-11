@@ -1,8 +1,15 @@
 /**
- * Multiple file upload with progress-bar, drag-and-drop. 
- * © Andrew Valums (andrew at valums.com)
- */
-
+ * http://github.com/valums/file-uploader
+ * 
+ * Multiple file upload component with progress-bar, drag-and-drop. 
+ * © 2010 Andrew Valums andrew(at)valums.com 
+ * 
+ * Licensed under GNU GPL.
+ *  
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ */    
+    
 var qq = qq || {};
 
 /**

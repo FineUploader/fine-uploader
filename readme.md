@@ -1,9 +1,6 @@
-THE COMPONENT IS NOT READY YET, DO NOT USE.
-
 This plugin uses XHR for uploading multiple files with progress-bar in FF3.6+, Safari4+,
 Chrome and falls back to hidden iframe based upload in other browsers,
-providing good experience for everyone. It is highly customizable, easily styleable,
-and small. (4KB minified and gzipped)
+providing good user experience everywhere.
 
 ### For demo <a href="http://github.com/valums/file-uploader/zipball/test">download</a> and open client/demo.htm ###
 
@@ -16,15 +13,14 @@ and small. (4KB minified and gzipped)
 * no external dependencies
 * doesn't use Flash
 * fully working with https
-
-### Supported Browsers ###
-IE6-8, Firefox 3-4beta, Safari4-5, Chrome, Opera
+* supports IE6-8, Firefox 3-4beta, Safari4-5, Chrome, Opera
 
 ### Known Issues ###
 Plugin breaks back button functionality in Opera.
 
 ### License ###
-Not selected yet. Product not ready, do not use.
+This plugin is open sourced under <a href="http://www.gnu.org/copyleft/gpl.html">GNU GPL</a>.
+If this license doesn't suit you contact andrew(at)valums.com for another options.
 	
 ### Setting up ###
 
@@ -49,8 +45,8 @@ Initialize uploader when the DOM is ready.
     });
 
 Don't forget to setup the server side script, some examples can be found in the "server" folder.
-Due to diversity of server platforms, it's quite probable, that I don't have an example for
-yours, in that case please send me a mail andrew(at)valums.com. I will be glad to help.
+If I don't have an example for your server platform, pleasese send me a mail andrew(at)valums.com.
+I will be glad to help.
 
 ### Configuring ###
 
