@@ -16,12 +16,12 @@ providing good user experience everywhere.
 * keyboard support in FF, Chrome, Safari
 * supports IE6-8, Firefox 3-4beta, Safari4-5, Chrome, Opera
 
-### Known Issues ###
-Plugin breaks back button functionality in Opera.
-
 ### License ###
 This plugin is open sourced under <a href="http://www.gnu.org/copyleft/gpl.html">GNU GPL</a>.
 If this license doesn't suit you contact andrew (at) valums.com for another options.
+
+### Known Issues ###
+Plugin breaks back button functionality in Opera.
 	
 ### Setting up ###
 
@@ -67,7 +67,7 @@ Below is the list of important options, more details are given below.
     onSubmit: function(id, fileName){},
     onComplete: function(id, fileName, responseJSON){},
     messages: {
-        // contains test string, see fileuploader.js for details            
+        // error messages, see fileuploader.js for details            
     },
     showMessage: function(message){
         alert(message);
@@ -99,7 +99,7 @@ script.
 
 If you limited file types and max size, you will probably want to change the default alert and
 messages as you see fit, this is possible using showMessage callback and messages option.
-This also makes localization much easier. Look into qq.FileUploader for default values.
+Localization also meant to be done using this option. Look into qq.FileUploader for default values.
 
 #### Sending additional params ####
 
