@@ -674,10 +674,7 @@ qq.UploadHandlerForm.prototype = {
         // Because in this case file won't be attached to request
         var form = qq.toElement('<form method="post" enctype="multipart/form-data"></form>');
 
-        var queryString = '?';
-        for (var key in params){
-            queryString += '&' + key + '=' + encodeURIComponent(params[key]);
-        }
+        var queryString = '?' + obj2url(params);
 
         form.setAttribute('action', this._options.action + queryString);
         form.setAttribute('target', iframe.name);
@@ -772,10 +769,7 @@ qq.UploadHandlerXhr.prototype = {
         };
 
         // build query string
-        var queryString = '?qqfile=' + encodeURIComponent(name);
-        for (var key in params){
-            queryString += '&' + key + '=' + encodeURIComponent(params[key]);
-        }
+        var queryString = '?qqfile=' + encodeURIComponent(name) + '&' + obj2url(params);
 
         xhr.open("POST", this._options.action + queryString, true);
         xhr.send(file);        
@@ -954,3 +948,39 @@ qq.getByClass = function(element, className){
     }
     return result;
 };
+
+(function(window,undefined){
+  /**
+   * obj2url() takes an object as argument and generates
+   * a querystring. pretty much like $.param() but without $
+   *
+   * @param Object var myObject = {foo:'bar',a:[{b:'c',d:'e'}],..}
+   * @param String current string of the querystring-part
+   * @param Array collected querystring-part's
+   * @return String decoded querystring
+   */
+  function obj2url(obj, temp, uristrings) {
+    var nextTemp = '';
+    if (temp === undefined) temp='';
+    if (uristrings === undefined) uristrings=[];
+    if ((obj.length === undefined) &&
+        (obj != null) &&
+        (Object.prototype.toString.call(obj) === '[object Object]')) { // object
+      for (var key in obj) {
+        if (/\]$/.test(temp)) nextTemp = temp+'['+key+']';
+        else nextTemp = temp+key;
+        obj2url(obj[key], nextTemp, uristrings);
+      }
+    } else if (Object.prototype.toString.call(obj) === '[object Array]') { // array
+      for (var i = 0, len = obj.length; i<len; ++i) {
+        obj2url(obj[i], temp+'['+i+']', uristrings);
+      }
+    } else {
+      uristrings[uristrings.length] = encodeURIComponent(temp)+"="+
+                                      encodeURIComponent(obj);
+    }
+    return uristrings.join("&");
+  };
+  
+  this.obj2url = obj2url;
+})(this);
