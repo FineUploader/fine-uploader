@@ -481,7 +481,7 @@ qq.UploadButton.prototype = {
             right: 0,
             top: 0,
             zIndex: 1,
-            fontSize: '460px',
+            fontSize: '46px',
             margin: 0,
             padding: 0,
             cursor: 'pointer',
