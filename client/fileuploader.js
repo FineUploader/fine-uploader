@@ -953,34 +953,29 @@ qq.getByClass = function(element, className){
  * obj2url() takes an object as argument and generates
  * a querystring. pretty much like $.param() but without $
  *
- * @param Object var myObject = {foo:'bar',a:[{b:'c',d:'e'}],..}
- * @param String current string of the querystring-part
- * @param Array collected querystring-part's
- * @return String decoded querystring
+ * @param  Object JSON-Object
+ * @param  String current querystring-part
+ * @return String encoded querystring
  */
-qq.obj2url = function(obj, temp, uristrings){   
-    var nextTemp = '';
-    if (temp === undefined) temp='';
-    if (uristrings === undefined) uristrings=[];
-    if ((obj.length === undefined) &&
-        (obj != null) &&
-        (Object.prototype.toString.call(obj) === '[object Object]')) { // object
-        for (var key in obj) {
-            if (/\]$/.test(temp)) {
-                nextTemp = temp+'['+key+']';
-            } else {
-                nextTemp = temp+key;
-            }
-            qq.obj2url(obj[key], nextTemp, uristrings);
-        }        
-    } else if (Object.prototype.toString.call(obj) === '[object Array]') { // array
+qq.obj2url = function(obj, temp){   
+    var uristrings = [];
+    if (Object.prototype.toString.call(obj) === '[object Array]') {
+        // this is for performance
+        // see http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml?showone=for-in_loop#for-in_loop
         for (var i = 0, len = obj.length; i<len; ++i) {
-            qq.obj2url(obj[i], temp+'['+i+']', uristrings);
+            var nextTemp = temp ? temp+'['+i+']' : i, nextObj = obj[i];
+            uristrings.push(typeof nextObj == 'object' ?
+                qq.obj2url(nextObj, nextTemp) :
+                encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj));
         }
     } else {
-        uristrings[uristrings.length] = encodeURIComponent(temp)+"="+
-                                        encodeURIComponent(obj);
+        for (var i in obj) {
+            var nextTemp = temp ? temp+'['+i+']' : i, nextObj = obj[i];
+            uristrings.push(typeof nextObj == 'object' ?
+                qq.obj2url(nextObj, nextTemp) :
+                encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj));
+        }
     }
-    return uristrings.join("&");
+    return uristrings.join('&');
 };
 
