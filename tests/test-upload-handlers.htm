@@ -59,23 +59,29 @@ jQuery(function(){
     }); 
 
     test("obj2url", function(){
-        var obj1 = {a:'b',c:'d',e:'f'};     // a=b&c=d&e=f
-        var obj2 = {a:[1,2,3,4]};           // a[0]=1&a[1]=2&a[2]=3&a[3]=4
-        var obj3 = {a:1,b:2,c:3,d:4};       // a=1&b=2&c=3&d=4
-        var obj4 = {a:'b',c:'d',            // a=b&c=d&
+        var obj1 = {a:'b',c:'d',e:'f'},     // a=b&c=d&e=f
+            obj2 = {a:[1,2,3,4]},           // a[0]=1&a[1]=2&a[2]=3&a[3]=4
+            obj3 = {a:1,b:2,c:3,d:4},       // a=1&b=2&c=3&d=4
+            obj4 = {a:'b',c:'d',            // a=b&c=d&
                     e:['f',{g:'h',          // e[0]=f&e[1][g]=h&e[1][g]=h&
                     i:['j',{k:'l',m:'n'}],  // e[1][i][0]=j&e[1][i][1][k]=l&e[1][i][1][m]=n&e[1][o]=p&
                     o:undefined,            // e[1][o]=undefined&
-                    p:true,q:false}]};      // e[1][p]=true&e[1][q]=false
-        var obj5 = function(){};
-        var obj6 = null;
+                    p:true,q:false}]},      // e[1][p]=true&e[1][q]=false
+            obj5 = {a:function(){return 'b';}}        
+            obj6 = {a:function(){}},
+            obj7 = {a:null},
+            obj8 = {a:[1,2,3],'b[]':[4,5,6],'c[d]':[7,8,9]},
+            obj9 = {a:'All your base are belong to us'};
         
-        same(decodeURI(qq.obj2url(obj1)), 'a=b&c=d&e=f', 'obj2url(obj1)');
-        same(decodeURI(qq.obj2url(obj2)), 'a[0]=1&a[1]=2&a[2]=3&a[3]=4', 'obj2url(obj2)');
-        same(decodeURI(qq.obj2url(obj3)), 'a=1&b=2&c=3&d=4', 'obj2url(obj3)');
-        same(decodeURI(qq.obj2url(obj4)), 'a=b&c=d&e[0]=f&e[1][g]=h&e[1][i][0]=j&e[1][i][1][k]=l&e[1][i][1][m]=n&e[1][o]=undefined&e[1][p]=true&e[1][q]=false', 'obj2url(obj4)');
-        same(decodeURI(qq.obj2url(obj5)), '', 'obj2url(obj5)');
-        same(decodeURI(qq.obj2url(obj6)), '', 'obj2url(obj6)');
+        same(decodeURIComponent(qq.obj2url(obj1)), 'a=b&c=d&e=f', 'general json');
+        same(decodeURIComponent(qq.obj2url(obj2)), 'a[0]=1&a[1]=2&a[2]=3&a[3]=4', 'general array');
+        same(decodeURIComponent(qq.obj2url(obj3)), 'a=1&b=2&c=3&d=4', 'general json');
+        same(decodeURIComponent(qq.obj2url(obj4)), 'a=b&c=d&e[0]=f&e[1][g]=h&e[1][i][0]=j&e[1][i][1][k]=l&e[1][i][1][m]=n&e[1][o]=undefined&e[1][p]=true&e[1][q]=false', 'complex json');
+        same(decodeURIComponent(qq.obj2url(obj5)), 'a=b', 'function returns value');
+        same(decodeURIComponent(qq.obj2url(obj6)), 'a=undefined', 'function without return');
+        same(decodeURIComponent(qq.obj2url(obj7)), 'a=null', 'null');
+        same(decodeURIComponent(qq.obj2url(obj8)), 'a[0]=1&a[1]=2&a[2]=3&b[]=4&b[]=5&b[]=6&c[d][0]=7&c[d][1]=8&c[d][2]=9', 'prevent double-encoding');
+        same(decodeURIComponent(qq.obj2url(obj9)), 'a=All+your+base+are+belong+to+us', 'spaces');
     }); 
     
     	
