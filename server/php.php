@@ -1,8 +1,27 @@
 <?php
 /**
  * Base class for file uploads
+ * <code>
+ * //Only allow images to be uploaded
+ * $validTypes = array('jpeg', 'png', 'jpg', 'gif', 'bmp');
+ * //determine what kind of upload we are getting from the client
+ * if (isset($_GET['qqfile'])) {
+ *	$file = new UploadFileXhr($validTypes);
+ * } elseif (isset($_FILES['qqfile'])) {
+ * 	$file = new UploadFileForm($validTypes);
+ * } else {
+ * 	$result = array('success' => FALSE, 'error'=> 'No files were uploaded.');
+ * }
+ *
+ * if(empty($result)){
+ *	$result['success'] = $file->handleUpload('uploads/');
+ *	$result['error'] = $file->getError();
+ * }
+ * // to pass data through iframe you will need to encode all html tags
+ * echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
+ * </code>
  */
-abstract class uploader {
+abstract class Uploader {
 	/**
 	 * The valid extensions for this uploader (like jpeg, xml, bmp, xls...)
 	 */
@@ -109,7 +128,7 @@ abstract class uploader {
  * Handle file uploads via XMLHttpRequest
  * @link http://www.w3.org/TR/XMLHttpRequest/
  */
-class UploadFileXhr Extends uploader {
+class UploadFileXhr Extends Uploader {
 	/**
 	 * Save the file to the specified path
 	 * @param string $path
@@ -149,7 +168,7 @@ class UploadFileXhr Extends uploader {
  * Handle file uploads via regular form post (uses the $_FILES array)
  * @link http://php.net/manual/en/reserved.variables.files.php
  */
-class UploadFileForm Extends uploader {
+class UploadFileForm Extends Uploader {
 
 	/**
 	 * Save the file to the specified path
@@ -177,7 +196,11 @@ class UploadFileForm Extends uploader {
 		return $_FILES['qqfile']['size'];
 	}
 }
-$validTypes = array('exe');
+
+/**
+ * This is the example that is used for demo.htm
+ */
+$validTypes = array();
 //determine what kind of upload we are getting from the client
 if (isset($_GET['qqfile'])) {
 	$file = new UploadFileXhr($validTypes);
