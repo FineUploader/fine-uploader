@@ -65,11 +65,10 @@ abstract class Uploader {
 	abstract protected function getSize();
 
 	/**
-	 * Make sure that the filename is valid and so is the extension
-	 * @param string $fileName The file's name
+	 * Make sure that the file extension is valid
 	 * @param string $ext The file's extension
 	 */
-	private function validate($fileName, $ext){
+	private function validateExtension($ext){
 		//make sure that the file has one of the allowed extensions
 		if($this->validExtensions && !in_array($ext, $this->validExtensions)){
 			$these = implode(', ', $this->validExtensions);
@@ -81,6 +80,16 @@ abstract class Uploader {
 			return FALSE;
 		}
 		return TRUE;
+	}
+	/**
+	 * Remove invalid characters from the file name (based on what windows says are bad characters to be safe)
+	 * @param string $filename The filename without the extension
+	 * @return string
+	 */
+	private function removeBadCharacters($filename){
+		$seach = array('\\','/',':','*','?','"','<','>','|');
+		$replace = '_';
+		return str_replace($search, $replace, $filename);
 	}
 	/**
 	 * Handle the uploading of the file
@@ -101,15 +110,14 @@ abstract class Uploader {
 			$this->error = 'File is too large';
 			return FALSE;
 		}
-
+		$uploaded = $this->getName();
+		$this->removeBadCharacters($uploaded);
 		$pathinfo = pathinfo($this->getName());
 		$filename = $pathinfo['filename'];
 		$ext = $pathinfo['extension'];
-
-		if(!$this->validate($filename, $ext)){
+		if(!$this->validateExtension($ext)){
 			return FALSE;
 		}
-
 		if(!$replaceOldFile){
 			/// don't overwrite previous files that were uploaded
 			while (file_exists($uploadDirectory . $filename . '.' . $ext)) {
