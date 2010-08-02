@@ -24,6 +24,7 @@
 abstract class Uploader {
 	/**
 	 * The valid extensions for this uploader (like jpeg, xml, bmp, xls...)
+	 * @var array
 	 */
 	private $validExtensions = array();
 	/**
