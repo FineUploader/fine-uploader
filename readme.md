@@ -138,3 +138,8 @@ But for most purposes customization of the css file should be enough.
 #### Further questions ####
 
 If you have a short question, leave comment on my blog. For commercial support, contact andrew (at) valums.com    
+
+#### Contributors ####
+
+Thanks to everybody who cotributed, either by sending bug reports or donating. 
+And also thanks to Andy Newby for his perl code, Ivan Valles, SeanJA, Patrick Pfeiffer, and others.

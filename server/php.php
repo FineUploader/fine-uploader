@@ -13,7 +13,7 @@ class UploadFileXhr {
 		fclose($input);			
 	}
 	function getName(){
-		return $_GET['name'];
+		return $_GET['qqfile'];
 	}
 	function getSize(){
 		$headers = apache_request_headers();
