@@ -221,7 +221,10 @@ if (isset($_GET['qqfile'])) {
 
 if(empty($result)){
 	$result['success'] = $file->handleUpload('uploads/');
-	$result['error'] = $file->getError();
+	//if we failed, get the error message
+	if(!$result['success']){
+		$result['error'] = $file->getError();
+	}
 }
 
 // to pass data through iframe you will need to encode all html tags
