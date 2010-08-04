@@ -1,6 +1,8 @@
 <?php
 /**
- * Base class for file uploads
+ * @license GPL2
+ * @version 0.9
+ * @brief Base class for file uploads
  * <code>
  * //Only allow images to be uploaded
  * $validTypes = array('jpeg', 'png', 'jpg', 'gif', 'bmp');
@@ -115,6 +117,7 @@ abstract class Uploader {
 		$this->removeBadCharacters($uploaded);
 		$pathinfo = pathinfo($this->getName());
 		$filename = $pathinfo['filename'];
+		$filename = md5(uniqid());
 		$ext = $pathinfo['extension'];
 		if(!$this->validateExtension($ext)){
 			return FALSE;
@@ -206,20 +209,29 @@ class UploadFileForm Extends Uploader {
 	}
 }
 
+//send back json headers if you want...
+//header('Cache-Control: no-cache, must-revalidate');
+//header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+//header('Content-type: application/json');
+
 /**
  * This is the example that is used for demo.htm
  */
 $validTypes = array();
 //determine what kind of upload we are getting from the client
 if (isset($_GET['qqfile'])) {
-	$file = new UploadFileXhr($validTypes);
+	$class = 'UploadFileXhr';
 } elseif (isset($_FILES['qqfile'])) {
-	$file = new UploadFileForm($validTypes);
+	$class = 'UploadFileForm';
 } else {
 	$result = array('success' => FALSE, 'error'=> 'No files were uploaded.');
 }
 
 if(empty($result)){
+	/**
+	 * @var Uploader
+	 */
+	$file = new $class($validTypes);
 	$result['success'] = $file->handleUpload('uploads/');
 	//if we failed, get the error message
 	if(!$result['success']){
