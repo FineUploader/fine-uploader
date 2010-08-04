@@ -778,6 +778,7 @@ qq.UploadHandlerXhr.prototype = {
         }
 
         xhr.open("POST", this._options.action + queryString, true);
+        xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         xhr.send(file);        
     },
     cancel: function(id){
