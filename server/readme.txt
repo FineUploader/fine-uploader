@@ -8,7 +8,7 @@ post data and write it to the file.
 
 return values, you should return json as a text/html
 
-{"success":true} when successfull
-{"error":"error message to display"} in case of error
+{"success":true} when successful
+{"success":false, "error":"error message to display"} in case of error
 
 Send me a mail to andrew (at) valums.com, if you will have any questions.
