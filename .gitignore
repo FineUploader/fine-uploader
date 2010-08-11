@@ -1,4 +1,4 @@
-/server-side/uploads
+/server/uploads/*
 
 .*
 Thumbs.db
