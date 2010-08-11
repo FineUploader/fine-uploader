@@ -771,9 +771,11 @@ qq.UploadHandlerXhr.prototype = {
         // build query string
         var queryString = '?qqfile=' + encodeURIComponent(name) + '&' + qq.obj2url(params);
 
-		xhr.open("POST", this._options.action + queryString, true);
-		xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-		xhr.send(file);        
+        xhr.open("POST", this._options.action + queryString, true);
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
+        xhr.send(file);
+
     },
     cancel: function(id){
         this._files[id] = null;
