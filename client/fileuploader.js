@@ -28,6 +28,11 @@ qq.FileUploader = function(o){
         // size limit in bytes, 0 - no limit
         // this option isn't supported in all browsers
         sizeLimit: 0,
+        // min size limit in bytes, 0 - no limit
+        // this option isn't supported in all browsers
+        minsizeLimit: 0,
+        // enable/disable multiple file upload
+        multipleFileUpload: true,
         onSubmit: function(id, fileName){},
         onComplete: function(id, fileName, responseJSON){},
 
@@ -70,6 +75,7 @@ qq.FileUploader = function(o){
             //serverError: "Some files were not uploaded, please contact support and/or try again.",
             typeError: "{file} has invalid extension. Only {extensions} are allowed.",
             sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
+            minsizeError: "{file} is too small, minimum file size is {minsizeLimit}.",
             emptyError: "{file} is empty, please select files again without it."            
         },
         showMessage: function(message){
@@ -100,7 +106,7 @@ qq.FileUploader = function(o){
     var self = this;
     this._button = new qq.UploadButton({
         element: this._getElement('button'),
-        multiple: qq.UploadHandlerXhr.isSupported(),
+        multiple: (this._options.multipleFileUpload && qq.UploadHandlerXhr.isSupported()),
         onChange: function(input){
             self._onInputChange(input);
         }        
@@ -346,6 +352,9 @@ qq.FileUploader.prototype = {
         } else if (size && this._options.sizeLimit && size > this._options.sizeLimit){            
             this._error('sizeError',name);
             return false;            
+        } else if (size && this._options.minsizeLimit && size < this._options.minsizeLimit){
+            this._error('minsizeError',name);
+            return false; 
         }
         
         return true;                
@@ -358,7 +367,10 @@ qq.FileUploader.prototype = {
         qq.setText(fileElement, this._formatFileName(fileName));
         this._getElement(item, 'size').style.display = 'none';        
 
-        this._getElement('list').appendChild(item);
+        if (this._getElement('list').childNodes.length == 0 || this._options.multipleFileUpload)
+          this._getElement('list').appendChild(item);
+        else
+          this._getElement('list').replaceChild(item, this._getElement('list').firstChild);
 
         this._filesInProgress++;
     },
