@@ -954,7 +954,7 @@ qq.getByClass = function(element, className){
 
 /**
  * obj2url() takes a json-object as argument and generates
- * a querystring. pretty much like $.param() but without $
+ * a querystring. pretty much like jQuery.param()
  *
  * @param  Object JSON-Object
  * @param  String current querystring-part
@@ -963,29 +963,38 @@ qq.getByClass = function(element, className){
 qq.obj2url = function(obj, temp){   
     var uristrings = [],
         add = function(nextObj, i){
-          var nextTemp = temp 
+            
+            var nextTemp = temp 
               ? (/\[\]$/.test(temp)) // prevent double-encoding
                   ? temp
                   : temp+'['+i+']'
               : i;
+              
           uristrings.push(typeof nextObj === 'object' 
               ? qq.obj2url(nextObj, nextTemp)
               : (Object.prototype.toString.call(nextObj) === '[object Function]')
                   ? encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj())
-                  : encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj));      
-        }; 
-    if (Object.prototype.toString.call(obj) === '[object Array]') { 
+                  : encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj));
+        };
+        
+    if (Object.prototype.toString.call(obj) === '[object Array]'){ 
         // we wont use a for-in-loop on an array (performance)
-        for (var i = 0, len = obj.length; i < len; ++i) add(obj[i], i);
+        for (var i = 0, len = obj.length; i < len; ++i){
+            add(obj[i], i);
+        }
+        
     } else if ((obj !== undefined) && 
                (obj !== null) && 
-               (typeof obj === "object")) {
+               (typeof obj === "object")){
+                   
         // for anything else but a scalar, we will use for-in-loop
-        for (var i in obj) add(obj[i], i);
+        for (var i in obj){
+            add(obj[i], i);
+        }
     } else {
-        uristrings.push(encodeURIComponent(temp) + '=' + 
-                        encodeURIComponent(obj));
+        uristrings.push(encodeURIComponent(temp) + '=' + encodeURIComponent(obj));
     }
+    
     return uristrings.join('&').replace(/%20/g, '+');
 };
 

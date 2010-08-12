@@ -59,7 +59,8 @@ jQuery(function(){
     }); 
 
     test("obj2url", function(){
-        var obj1 = {a:'b',c:'d',e:'f'},     // a=b&c=d&e=f
+        var obj0 = {},                      // empty string
+            obj1 = {a:'b',c:'d',e:'f'},     // a=b&c=d&e=f
             obj2 = {a:[1,2,3,4]},           // a[0]=1&a[1]=2&a[2]=3&a[3]=4
             obj3 = {a:1,b:2,c:3,d:4},       // a=1&b=2&c=3&d=4
             obj4 = {a:'b',c:'d',            // a=b&c=d&
@@ -73,6 +74,7 @@ jQuery(function(){
             obj8 = {a:[1,2,3],'b[]':[4,5,6],'c[d]':[7,8,9]},
             obj9 = {a:'All your base are belong to us'};
         
+        same(decodeURIComponent(qq.obj2url(obj0)), '', 'empty string');
         same(decodeURIComponent(qq.obj2url(obj1)), 'a=b&c=d&e=f', 'general json');
         same(decodeURIComponent(qq.obj2url(obj2)), 'a[0]=1&a[1]=2&a[2]=3&a[3]=4', 'general array');
         same(decodeURIComponent(qq.obj2url(obj3)), 'a=1&b=2&c=3&d=4', 'general json');
