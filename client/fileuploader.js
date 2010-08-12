@@ -704,8 +704,13 @@ qq.UploadHandlerXhr = function(o){
 
 // static method
 qq.UploadHandlerXhr.isSupported = function(){
-    return typeof File != "undefined" &&
-        typeof (new XMLHttpRequest()).upload != "undefined";    
+    var input = document.createElement('input');
+    input.type = 'file';        
+    
+    return (
+        'multiple' in input &&
+        typeof File != "undefined" &&
+        typeof (new XMLHttpRequest()).upload != "undefined" );       
 };
 
 qq.UploadHandlerXhr.prototype = {
