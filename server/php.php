@@ -2,24 +2,24 @@
 /**
  * Handle file uploads via XMLHttpRequest
  */
-class UploadedFileXhr {
+class qqUploadedFileXhr {
     /**
      * Save the file to the specified path
      * @return boolean TRUE on success
      */
     function save($path) {
         $input = fopen("php://input", "r");
-        $fp = fopen($path, "w");
+        $fp = @fopen($path, "w");        
         if(!$fp){
-            $this->error = 'Could not save uploaded file.';
-            return FALSE;
-        }
+            return false;
+        }        
         while ($data = fread($input, 1024)) {
             fwrite($fp, $data);
-        }
+        }        
+
         fclose($fp);
         fclose($input);
-        return TRUE;
+        return true;
     }
     function getName() {
         return $_GET['qqfile'];
@@ -27,23 +27,22 @@ class UploadedFileXhr {
     function getSize() {
         $headers = apache_request_headers();
         return (int) $headers['Content-Length'];
-    }
+    }   
 }
 
 /**
  * Handle file uploads via regular form post (uses the $_FILES array)
  */
-class UploadedFileForm {  
+class qqUploadedFileForm {  
     /**
      * Save the file to the specified path
      * @return boolean TRUE on success
      */
     function save($path) {
         if(!@move_uploaded_file($_FILES['qqfile']['tmp_name'], $path)){
-            $this->error = 'Could not save uploaded file.';
-            return FALSE;
+            return false;
         }
-        return TRUE;
+        return true;
     }
     function getName() {
         return $_FILES['qqfile']['name'];
@@ -53,19 +52,21 @@ class UploadedFileForm {
     }
 }
 
-class FileUploader {
+class qqFileUploader {
     private $allowedExtensions = array();
     private $sizeLimit = 10485760;
     private $file;
 
-    function __construct(array $allowedExtensions = array(), $sizeLimit = 10485760){    
-        $this->validExtensions = $allowedExtensions;
+    function __construct(array $allowedExtensions = array(), $sizeLimit = 10485760){
+        $allowedExtensions = array_map("strtolower", $allowedExtensions);
+            
+        $this->allowedExtensions = $allowedExtensions;        
         $this->sizeLimit = $sizeLimit;       
 
         if (isset($_GET['qqfile'])) {
-            $this->file = new UploadedFileXhr();
+            $this->file = new qqUploadedFileXhr();
         } elseif (isset($_FILES['qqfile'])) {
-            $this->file = new UploadedFileForm();
+            $this->file = new qqUploadedFileForm();
         } else {
             $this->file = false; 
         }
@@ -91,12 +92,12 @@ class FileUploader {
         
         $pathinfo = pathinfo($this->file->getName());
         $filename = $pathinfo['filename'];
-        $filename = md5(uniqid());
+        //$filename = md5(uniqid());
         $ext = $pathinfo['extension'];
-        
-        if($this->allowedExtensions && !in_array($ext, $this->allowedExtensions)){
-            $these = implode(', ', $this->validExtensions);
-            return array('error'=> 'File has an invalid extension, it should be one of '. $these . '.');
+
+        if($this->allowedExtensions && !in_array(strtolower($ext), $this->allowedExtensions)){
+            $these = implode(', ', $this->allowedExtensions);
+            return array('error' => 'File has an invalid extension, it should be one of '. $these . '.');
         }
         
         if(!$replaceOldFile){
@@ -109,7 +110,7 @@ class FileUploader {
         if ($this->file->save($uploadDirectory . $filename . '.' . $ext)){
             return array('success'=>true);
         } else {
-            return array('error'=> 'Server error. File was not saved.');
+            return array('error'=> 'Server error. Could not save uploaded file.');
         }
         
     }    
@@ -118,9 +119,9 @@ class FileUploader {
 // list of valid extensions, ex. array("jpeg", "xml", "bmp")
 $allowedExtensions = array();
 // max file size in bytes
-$sizeLimit = 10485760;
+$sizeLimit = 4 * 1024 * 1024;
 
-$uploader = new FileUploader();
+$uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
 $result = $uploader->handleUpload('uploads/');
 // to pass data through iframe you will need to encode all html tags
 echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
