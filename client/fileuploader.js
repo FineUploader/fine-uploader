@@ -480,7 +480,6 @@ qq.UploadButton.prototype = {
             // the right side of the input
             right: 0,
             top: 0,
-            zIndex: 1,
             fontFamily: 'Arial',
             fontSize: '128px',
             margin: 0,
