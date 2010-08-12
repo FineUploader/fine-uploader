@@ -16,7 +16,7 @@ providing good user experience everywhere.
 * doesn't use Flash
 * fully working with https
 * keyboard support in FF, Chrome, Safari
-* supports IE6-8, Firefox 3-4beta, Safari4-5, Chrome, Opera
+* tested in IE7,8; Firefox 3,3.5,3.6; Safari4,5; Chrome5,6; Opera10.60;
 
 ### License ###
 This plugin is open sourced under <a href="http://www.gnu.org/licenses/gpl-2.0.html">GNU GPL 2</a> or later.
