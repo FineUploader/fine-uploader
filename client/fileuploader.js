@@ -4,7 +4,7 @@
  * Multiple file upload component with progress-bar, drag-and-drop. 
  * © 2010 Andrew Valums andrew(at)valums.com 
  * 
- * Licensed under GNU GPL.
+ * Licensed under GNU GPL 2 or later, see license.txt.
  *  
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>. 
@@ -492,8 +492,8 @@ qq.UploadButton.prototype = {
             // the right side of the input
             right: 0,
             top: 0,
-            zIndex: 1,
-            fontSize: '460px',
+            fontFamily: 'Arial',
+            fontSize: '128px',
             margin: 0,
             padding: 0,
             cursor: 'pointer',
@@ -686,10 +686,7 @@ qq.UploadHandlerForm.prototype = {
         // Because in this case file won't be attached to request
         var form = qq.toElement('<form method="post" enctype="multipart/form-data"></form>');
 
-        var queryString = '?';
-        for (var key in params){
-            queryString += '&' + key + '=' + encodeURIComponent(params[key]);
-        }
+        var queryString = '?' + qq.obj2url(params);
 
         form.setAttribute('action', this._options.action + queryString);
         form.setAttribute('target', iframe.name);
@@ -719,8 +716,13 @@ qq.UploadHandlerXhr = function(o){
 
 // static method
 qq.UploadHandlerXhr.isSupported = function(){
-    return typeof File != "undefined" &&
-        typeof (new XMLHttpRequest()).upload != "undefined";    
+    var input = document.createElement('input');
+    input.type = 'file';        
+    
+    return (
+        'multiple' in input &&
+        typeof File != "undefined" &&
+        typeof (new XMLHttpRequest()).upload != "undefined" );       
 };
 
 qq.UploadHandlerXhr.prototype = {
@@ -784,13 +786,13 @@ qq.UploadHandlerXhr.prototype = {
         };
 
         // build query string
-        var queryString = '?qqfile=' + encodeURIComponent(name);
-        for (var key in params){
-            queryString += '&' + key + '=' + encodeURIComponent(params[key]);
-        }
+        var queryString = '?qqfile=' + encodeURIComponent(name) + '&' + qq.obj2url(params);
 
         xhr.open("POST", this._options.action + queryString, true);
-        xhr.send(file);        
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
+        xhr.send(file);
+
     },
     cancel: function(id){
         this._files[id] = null;
@@ -966,3 +968,50 @@ qq.getByClass = function(element, className){
     }
     return result;
 };
+
+/**
+ * obj2url() takes a json-object as argument and generates
+ * a querystring. pretty much like jQuery.param()
+ *
+ * @param  Object JSON-Object
+ * @param  String current querystring-part
+ * @return String encoded querystring
+ */
+qq.obj2url = function(obj, temp){   
+    var uristrings = [],
+        add = function(nextObj, i){
+            
+            var nextTemp = temp 
+              ? (/\[\]$/.test(temp)) // prevent double-encoding
+                  ? temp
+                  : temp+'['+i+']'
+              : i;
+              
+          uristrings.push(typeof nextObj === 'object' 
+              ? qq.obj2url(nextObj, nextTemp)
+              : (Object.prototype.toString.call(nextObj) === '[object Function]')
+                  ? encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj())
+                  : encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj));
+        };
+        
+    if (Object.prototype.toString.call(obj) === '[object Array]'){ 
+        // we wont use a for-in-loop on an array (performance)
+        for (var i = 0, len = obj.length; i < len; ++i){
+            add(obj[i], i);
+        }
+        
+    } else if ((obj !== undefined) && 
+               (obj !== null) && 
+               (typeof obj === "object")){
+                   
+        // for anything else but a scalar, we will use for-in-loop
+        for (var i in obj){
+            add(obj[i], i);
+        }
+    } else {
+        uristrings.push(encodeURIComponent(temp) + '=' + encodeURIComponent(obj));
+    }
+    
+    return uristrings.join('&').replace(/%20/g, '+');
+};
+
