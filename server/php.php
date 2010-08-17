@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Handle file uploads via XMLHttpRequest
  */
@@ -7,26 +8,32 @@ class qqUploadedFileXhr {
      * Save the file to the specified path
      * @return boolean TRUE on success
      */
-    function save($path) {
+    function save($path) {    
         $input = fopen("php://input", "r");
-        $fp = @fopen($path, "w");        
-        if(!$fp){
-            return false;
-        }        
-        while ($data = fread($input, 1024)) {
-            fwrite($fp, $data);
-        }        
-
-        fclose($fp);
+        $temp = tmpfile();
+        $realSize = stream_copy_to_stream($input, $temp);
         fclose($input);
+        
+        if ($realSize != $this->getSize()){            
+            return false;
+        }
+        
+        $target = fopen($path, "w");        
+        fseek($temp, 0, SEEK_SET);
+        stream_copy_to_stream($temp, $target);
+        fclose($target);
+        
         return true;
     }
     function getName() {
         return $_GET['qqfile'];
     }
     function getSize() {
-        $headers = apache_request_headers();
-        return (int) $headers['Content-Length'];
+        if (isset($_SERVER["CONTENT_LENGTH"])){
+            return (int)$_SERVER["CONTENT_LENGTH"];            
+        } else {
+            throw new Exception('Getting content length is not supported.');
+        }      
     }   
 }
 
@@ -39,7 +46,7 @@ class qqUploadedFileForm {
      * @return boolean TRUE on success
      */
     function save($path) {
-        if(!@move_uploaded_file($_FILES['qqfile']['tmp_name'], $path)){
+        if(!move_uploaded_file($_FILES['qqfile']['tmp_name'], $path)){
             return false;
         }
         return true;
@@ -75,7 +82,11 @@ class qqFileUploader {
     /**
      * Returns array('success'=>true) or array('error'=>'error message')
      */
-    function handleUpload($uploadDirectory, $replaceOldFile = FALSE) {
+    function handleUpload($uploadDirectory, $replaceOldFile = FALSE){
+        if (!is_writable($uploadDirectory)){
+            return array('error' => "Server error. Upload directory isn't writable.");
+        }
+        
         if (!$this->file){
             return array('error' => 'No files were uploaded.');
         }
@@ -110,7 +121,8 @@ class qqFileUploader {
         if ($this->file->save($uploadDirectory . $filename . '.' . $ext)){
             return array('success'=>true);
         } else {
-            return array('error'=> 'Server error. Could not save uploaded file.');
+            return array('error'=> 'Could not save uploaded file.' .
+                'The upload was cancelled, or server error encountered');
         }
         
     }    
@@ -119,7 +131,7 @@ class qqFileUploader {
 // list of valid extensions, ex. array("jpeg", "xml", "bmp")
 $allowedExtensions = array();
 // max file size in bytes
-$sizeLimit = 4 * 1024 * 1024;
+$sizeLimit = 6 * 1024 * 1024;
 
 $uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
 $result = $uploader->handleUpload('uploads/');
