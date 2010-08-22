@@ -481,7 +481,9 @@ qq.UploadButton.prototype = {
             right: 0,
             top: 0,
             fontFamily: 'Arial',
-            fontSize: '256px',
+            // if larger button becomes visible (filter is not applied in IE8 on SOME PCs)
+            // probably related to http://social.msdn.microsoft.com/forums/en-US/iewebdevelopment/thread/29d0b0e7-4326-4b3e-823c-51420d4cf253
+            fontSize: '243px',
             margin: 0,
             padding: 0,
             cursor: 'pointer',
