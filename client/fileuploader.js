@@ -172,76 +172,46 @@ qq.FileUploader.prototype = {
         return false;
     },
     _setupDragDrop: function(){
-        function isValidDrag(e){            
-            var dt = e.dataTransfer,
-                // do not check dt.types.contains in webkit, because it crashes safari 4            
-                isWebkit = navigator.userAgent.indexOf("AppleWebKit") > -1;                        
-
-            // dt.effectAllowed is none in Safari 5
-            // dt.types.contains check is for firefox            
-            return dt && dt.effectAllowed != 'none' && 
-                (dt.files || (!isWebkit && dt.types.contains && dt.types.contains('Files')));
-        }
-        
         var self = this,
             dropArea = this._getElement('drop');                        
-        
-        dropArea.style.display = 'none';
-        
-        var hideTimeout;        
-        qq.attach(document, 'dragenter', function(e){            
-            e.preventDefault(); 
-        });        
 
-        qq.attach(document, 'dragover', function(e){
-            if (isValidDrag(e)){
-                         
-                if (hideTimeout){
-                    clearTimeout(hideTimeout);
-                }
+        var dz = new qq.FileDropZone({
+            element: dropArea,
+            onEnter: function(e){
+                qq.addClass(dropArea, self._classes.dropActive);
+                e.stopPropagation();
+            },
+            onLeave: function(e){
+                e.stopPropagation();
+            },
+            onLeaveNotDescendants: function(e){
+                qq.removeClass(dropArea, self._classes.dropActive);  
+            },
+            onDrop: function(e){
+                dropArea.style.display = 'none';
+                qq.removeClass(dropArea, self._classes.dropActive);
+                self._uploadFileList(e.dataTransfer.files);    
+            }
+        });
                 
-                if (dropArea == e.target || qq.contains(dropArea,e.target)){
-                    var effect = e.dataTransfer.effectAllowed;
-                    if (effect == 'move' || effect == 'linkMove'){
-                        e.dataTransfer.dropEffect = 'move'; // for FF (only move allowed)    
-                    } else {                    
-                        e.dataTransfer.dropEffect = 'copy'; // for Chrome
-                    }                                                                                    
-                    qq.addClass(dropArea, self._classes.dropActive);     
-                    e.stopPropagation();                                                           
-                } else {
-                    dropArea.style.display = 'block';
-                    e.dataTransfer.dropEffect = 'none';    
-                }
-                                
-                e.preventDefault();                
-            }            
+        dropArea.style.display = 'none';
+
+        qq.attach(document, 'dragenter', function(e){     
+            if (!dz._isValidFileDrag(e)) return; 
+            
+            dropArea.style.display = 'block';            
         });         
         
-        qq.attach(document, 'dragleave', function(e){  
-            if (isValidDrag(e)){
-                                
-                if (dropArea == e.target || qq.contains(dropArea,e.target)){                                        
-                    qq.removeClass(dropArea, self._classes.dropActive);      
-                    e.stopPropagation();                                       
-                } else {
-                                        
-                    if (hideTimeout){
-                        clearTimeout(hideTimeout);
-                    }
-                    
-                    hideTimeout = setTimeout(function(){                                                
-                        dropArea.style.display = 'none';                            
-                    }, 77);
-                }   
-            }            
-        });
-        
-        qq.attach(dropArea, 'drop', function(e){            
-            dropArea.style.display = 'none';
-            self._uploadFileList(e.dataTransfer.files);            
-            e.preventDefault();
-        });                      
+        qq.attach(document, 'dragleave', function(e){
+            if (!dz._isValidFileDrag(e)) return;
+            
+            var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
+
+            // only fire when leaving document out
+            if ( ! relatedTarget || relatedTarget.nodeName == "HTML"){               
+                dropArea.style.display = 'none';                                            
+            }
+        });                
     },
     _createUploadHandler: function(){
         var self = this,
@@ -420,6 +390,91 @@ qq.FileUploader.prototype = {
 
     }    
 };
+
+qq.FileDropZone = function(o){
+    this._options = {
+        element: null,  
+        onEnter: function(e){},
+        onLeave: function(e){},  
+        // is not fired when leaving element by hovering descendants   
+        onLeaveNotDescendants: function(e){},   
+        onDrop: function(e){}                       
+    };
+    qq.extend(this._options, o); 
+    
+    this._element = this._options.element;
+    
+    this._disableDropOutside();
+    this._attachEvents();   
+};
+
+qq.FileDropZone.prototype = {
+    _disableDropOutside: function(e){
+        // run only once for all instances
+        if (!qq.FileDropZone.dropOutsideDisabled ){
+
+            qq.attach(document, 'dragover', function(e){
+                e.dataTransfer.dropEffect = 'none';
+                e.preventDefault();            
+            });
+            
+            qq.FileDropZone.dropOutsideDisabled = true; 
+        }        
+    },
+    _attachEvents: function(){
+        var self = this;              
+                  
+        qq.attach(self._element, 'dragover', function(e){
+            if (!self._isValidFileDrag(e)) return;
+            
+            var effect = e.dataTransfer.effectAllowed;
+            if (effect == 'move' || effect == 'linkMove'){
+                e.dataTransfer.dropEffect = 'move'; // for FF (only move allowed)    
+            } else {                    
+                e.dataTransfer.dropEffect = 'copy'; // for Chrome
+            }
+                                                     
+            e.stopPropagation();
+            e.preventDefault();                                                                    
+        });
+        
+        qq.attach(self._element, 'dragenter', function(e){
+            if (!self._isValidFileDrag(e)) return;
+                        
+            self._options.onEnter(e);
+        });
+        
+        qq.attach(self._element, 'dragleave', function(e){
+            if (!self._isValidFileDrag(e)) return;
+            
+            self._options.onLeave(e);
+            
+            var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);                      
+            // do not fire when moving a mouse over a descendant
+            if (qq.contains(this, relatedTarget)) return;
+                        
+            self._options.onLeaveNotDescendants(e); 
+        });
+                
+        qq.attach(self._element, 'drop', function(e){
+            if (!self._isValidFileDrag(e)) return;
+            
+            e.preventDefault();
+            self._options.onDrop(e);
+        });          
+    },
+    _isValidFileDrag: function(e){
+        var dt = e.dataTransfer,
+            // do not check dt.types.contains in webkit, because it crashes safari 4            
+            isWebkit = navigator.userAgent.indexOf("AppleWebKit") > -1;                        
+
+        // dt.effectAllowed is none in Safari 5
+        // dt.types.contains check is for firefox            
+        return dt && dt.effectAllowed != 'none' && 
+            (dt.files || (!isWebkit && dt.types.contains && dt.types.contains('Files')));
+        
+    }        
+}; 
 
 qq.UploadButton = function(o){
     this._options = {
@@ -871,7 +926,10 @@ qq.remove = function(element){
     element.parentNode.removeChild(element);
 };
 
-qq.contains = function(parent, descendant){
+qq.contains = function(parent, descendant){       
+    // compareposition returns false in this case
+    if (parent == descendant) return true;
+    
     if (parent.contains){
         return parent.contains(descendant);
     } else {

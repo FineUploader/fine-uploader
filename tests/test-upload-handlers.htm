@@ -21,7 +21,8 @@ jQuery(function(){
         el2.appendChild(el3);
         
         var el4 = document.createElement('div');
-
+        
+        ok(qq.contains(el1,el1));
         ok(qq.contains(el1,el2));
         ok(qq.contains(el1,el3));
         ok(!qq.contains(el1,el4));
