@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <style>
+        .drop-zone {height:100px; width:256px; background:gray; margin:20px;}
+    </style>  
+    <script src="jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script src="../client/fileuploader.js" type="text/javascript" ></script>    
+    <script>
+    
+function createDropZone(selector){
+    var element = $(selector)[0];  
+          
+    new qq.FileDropZone({
+        element: element,
+        onEnter: function(){
+            console.log('enter')
+            $(element).css('background', 'green');
+        },
+        onLeave: function(){
+            console.log('leave')
+        },
+        onLeaveNotDescendants: function(){
+            console.log('onLeaveNotDescendants')
+            $(element).css('background', 'gray');
+        },
+        onDrop: function(e){
+            $(element).css('background', 'gray');
+            console.log('drop');
+            console.log(e.dataTransfer.files);
+        } 
+    });    
+}    
+
+jQuery(function(){
+    createDropZone('#drop-zone1');
+    createDropZone('#drop-zone2');                
+});
+
+    </script>      
+</head>
+<body> 
+    <div id="drop-zone1" class="drop-zone"><p>drop-zone1</p></div>
+    <div id="drop-zone2" class="drop-zone"><p>drop-zone2</p></div>          
+</body> 
+</html>
+
+
