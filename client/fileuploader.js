@@ -175,7 +175,7 @@ qq.FileUploader.prototype = {
         var self = this,
             dropArea = this._getElement('drop');                        
 
-        var dz = new qq.FileDropZone({
+        var dz = new qq.UploadDropZone({
             element: dropArea,
             onEnter: function(e){
                 qq.addClass(dropArea, self._classes.dropActive);
@@ -391,7 +391,7 @@ qq.FileUploader.prototype = {
     }    
 };
 
-qq.FileDropZone = function(o){
+qq.UploadDropZone = function(o){
     this._options = {
         element: null,  
         onEnter: function(e){},
@@ -408,17 +408,17 @@ qq.FileDropZone = function(o){
     this._attachEvents();   
 };
 
-qq.FileDropZone.prototype = {
+qq.UploadDropZone.prototype = {
     _disableDropOutside: function(e){
         // run only once for all instances
-        if (!qq.FileDropZone.dropOutsideDisabled ){
+        if (!qq.UploadDropZone.dropOutsideDisabled ){
 
             qq.attach(document, 'dragover', function(e){
                 e.dataTransfer.dropEffect = 'none';
                 e.preventDefault();            
             });
             
-            qq.FileDropZone.dropOutsideDisabled = true; 
+            qq.UploadDropZone.dropOutsideDisabled = true; 
         }        
     },
     _attachEvents: function(){
