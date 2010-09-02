@@ -30,6 +30,7 @@ qq.FileUploader = function(o){
         sizeLimit: 0,
         onSubmit: function(id, fileName){},
         onComplete: function(id, fileName, responseJSON){},
+        multipleFileUpload: true, // Allow or disallow multiple file upload.
 
         //
         // UI customizations
@@ -100,7 +101,7 @@ qq.FileUploader = function(o){
     var self = this;
     this._button = new qq.UploadButton({
         element: this._getElement('button'),
-        multiple: qq.UploadHandlerXhr.isSupported(),
+        multiple: this._options.multipleFileUpload && qq.UploadHandlerXhr.isSupported(),
         onChange: function(input){
             self._onInputChange(input);
         }        
@@ -1063,4 +1064,3 @@ qq.obj2url = function(obj, temp){
     
     return uristrings.join('&').replace(/%20/g, '+');
 };
-
