@@ -157,9 +157,7 @@ If you have a short question, leave comment on my blog. For commercial support, 
 
 #### Contributors ####
 
-Thanks to everybody who contributed, either by sending bug reports or donating. 
-
-And special thanks to
+Thanks to everybody who contributed, either by sending bug reports or donating. And special thanks to:
 
 Andy Newby   
 Sean Sandy (SeanJA)   
