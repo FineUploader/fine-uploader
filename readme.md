@@ -161,7 +161,7 @@ Thanks to everybody who contributed, either by sending bug reports or donating.
 
 And special thanks to
 
-Andy Newby
-Sean Sandy (SeanJA)
-Ivan Valles
-Patrick Pfeiffer
+Andy Newby   
+Sean Sandy (SeanJA)   
+Ivan Valles   
+Patrick Pfeiffer   
