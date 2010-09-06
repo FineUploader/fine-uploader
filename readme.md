@@ -27,14 +27,14 @@ Plugin breaks back button functionality in Opera.
 	
 ### Getting started ###
 The fileuploader.js contains two classes that are meant to be used directly.
-If you need a complete upload widget (which you can see above) to quickly drop
+If you need a complete upload widget (from demo) to quickly drop
 into your current design, use qq.FileUploader.
 
 If you want to customize uploader, by using a different looking file list
 or change the behaviour or functionality use qq.FileUploaderBasic.
 
 The difference between them is that qq.FileUploader provides a list of files,
-and drag-and-drop, but qq.FileUploaderBasic doesn't limit your choise of UI at all.
+drag-and-drop, but qq.FileUploaderBasic doesn't limit possible customization.
 
 qq.FileUploader extends qq.FileUploaderBasic, so that all the options present
 in the basic uploader also exist in the full widget.  
@@ -53,8 +53,8 @@ Create container element.
     
 Initialize uploader when the DOM is ready. Change the action option.
 For example ../server/php.php for the default folder structure.
-If the server folder you will find examples for different platforms,
-if you can't find the one you need check check the readme.txt. 
+In the server folder you will find examples for different platforms.
+If you can't find the one you need, check the readme.txt in server folder. 
 
     var uploader = new qq.FileUploader({
         // pass the dom node (ex. $(selector)[0] for jQuery users)
@@ -75,7 +75,7 @@ Below is the list of important options, more details are given below.
     // validation
     // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
     allowedExtensions: [],        
-    // size limits in bytes, 0 - no limit
+    // each file size limit in bytes
     // this option isn't supported in all browsers
     sizeLimit: 0, // max size   
     minSizeLimit: 0, // min size
@@ -157,5 +157,11 @@ If you have a short question, leave comment on my blog. For commercial support, 
 
 #### Contributors ####
 
-Thanks to everybody who cotributed, either by sending bug reports or donating. 
-And also thanks to Andy Newby for his perl code, Ivan Valles, SeanJA, Patrick Pfeiffer, and others.
+Thanks to everybody who contributed, either by sending bug reports or donating. 
+
+And special thanks to
+
+Andy Newby
+Sean Sandy (SeanJA)
+Ivan Valles
+Patrick Pfeiffer
