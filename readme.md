@@ -20,17 +20,30 @@ providing good user experience everywhere.
 
 ### License ###
 This plugin is open sourced under <a href="http://www.gnu.org/licenses/gpl-2.0.html">GNU GPL 2</a> or later.
-If this license doesn't suit you contact andrew (at) valums.com for another options.
+If this license doesn't suit you contact andrew (at) valums.com for other options.
 
 Please [donate][donation_link] if you are willing to support the further development of file upload plugin.  
 
 ### Known Issues ###
 Plugin breaks back button functionality in Opera.
 	
-### Setting up ###
+### Getting started ###
+The fileuploader.js contains two classes that are meant to be used directly.
+If you need a complete upload widget (which you can see above) to quickly drop
+into your current design, use qq.FileUploader.
+
+If you want to customize uploader, by using a different looking file list
+or change the behaviour or functionality use qq.FileUploaderBasic.
+
+The difference between them is that qq.FileUploader provides a list of files,
+and drag-and-drop, but qq.FileUploaderBasic doesn't limit your choise of UI at all.
+
+qq.FileUploader extends qq.FileUploaderBasic, so that all the options present
+in the basic uploader also exist in the full widget.  
+
+### Quick setup of full widget (qq.FileUploader) ###
 
 Include fileuploader.js and fileuploader.css into your page.
-
 Create container element.
 
     <div id="file-uploader">       
@@ -40,47 +53,49 @@ Create container element.
         </noscript>         
     </div>
     
-Initialize uploader when the DOM is ready.
+Initialize uploader when the DOM is ready. Change the action option.
+For example ../server/php.php for the default folder structure.
+If the server folder you will find examples for different platforms,
+if you can't find the one you need check check the readme.txt. 
 
     var uploader = new qq.FileUploader({
         // pass the dom node (ex. $(selector)[0] for jQuery users)
         element: document.getElementById('file-uploader'),
         // path to server-side upload script
         action: '/server/upload'
-    });
+    }); 
 
-Don't forget to setup the server side script, some examples can be found in the "server" folder.
-If you can't find an example for your server platform, send me a mail to andrew (at) valums.com.
-I will be glad to help.
-
-### Configuring ###
+### Options of both basic uploader and full widget ###
 
 Below is the list of important options, more details are given below. 
-
-    // container element DOM node (ex. $(selector)[0] for jQuery users)
-    element: null,
+    
     // url of the server-side upload script, should be on the same domain
     action: '/server/upload',
     // additional data to send, name-value pairs
     params: {},
+    
+    // validation
     // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
     allowedExtensions: [],        
-    // size limit in bytes, 0 - no limit
+    // size limits in bytes, 0 - no limit
     // this option isn't supported in all browsers
-    sizeLimit: 0,
+    sizeLimit: 0, // max size   
+    minSizeLimit: 0, // min size
+    
+    // events     
     onSubmit: function(id, fileName){},
+    onProgress: function(id, fileName, loaded, total){},
     onComplete: function(id, fileName, responseJSON){},
+    onCancel: function(id, fileName){},
+    
     messages: {
-        // error messages, see fileuploader.js for details            
+        // error messages, see qq.FileUploaderBasic for content            
     },
-    showMessage: function(message){
-        alert(message);
-    }        
+    showMessage: function(message){ alert(message); }        
 
 Instance methods
 
-* setParams(newParams)        
-* isUploading() Returns true if some files are being uploaded, false otherwise 
+* setParams(newParams)         
 
 #### Limiting file type and size ####
 
@@ -92,18 +107,15 @@ script.
     var uploader = new qq.FileUploader({
         element: document.getElementById('file-uploader'),
         action: '/server-side.upload',
-        // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
-        allowedExtensions: [],        
-        // size limit in bytes, 0 - no limit
-        // this option isn't supported in all browsers
-        sizeLimit: 0        
+        allowedExtensions: [], // ex. ['jpg', 'jpeg', 'png', 'gif']       
+        sizeLimit: 0,      
+        minSizeLimit: 0  
     });
 
 #### Changing alert/messages to something more user friendly ####
 
 If you limited file types and max size, you will probably want to change the default alert and
 messages as you see fit, this is possible using showMessage callback and messages option.
-Localization also meant to be done using this option. Look into qq.FileUploader for default values.
 
 #### Sending additional params ####
 
@@ -132,11 +144,13 @@ It can be nicely used in onSubmit callback.
 You can use the onSubmit callback, to set parameters based on the state of your app.     
     
     onSubmit: function(id, fileName){},
-    onComplete: function(id, fileName, responseJSON){}
+    onProgress: function(id, fileName, loaded, total){},
+    onComplete: function(id, fileName, responseJSON){},
+    onCancel: function(id, fileName){}
 
 #### Changing design ####
 
-If you want to change markup, look into template, fileTemplate, classes option in fileuploader.js
+If you want to change markup, look into template, fileTemplate, classes option in qq.FileUploader
 But for most purposes customization of the css file should be enough.
     
 #### Further questions ####
