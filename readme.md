@@ -7,10 +7,8 @@ providing good user experience everywhere.
 ### <a href="http://valums.com/files/2010/file-uploader/demo.htm">Demo</a> [Donate][donation_link] ###
 
 ### Features ###
-* multiple file select in FF, Chrome, Safari
-* progress-bar in FF, Chrome6+, Safari
+* multiple file select, progress-bar in FF, Chrome, Safari
 * drag-and-drop file select in FF, Chrome 
-* stylable via CSS
 * uploads are cancellable
 * no external dependencies
 * doesn't use Flash
@@ -20,7 +18,7 @@ providing good user experience everywhere.
 
 ### License ###
 This plugin is open sourced under <a href="http://www.gnu.org/licenses/gpl-2.0.html">GNU GPL 2</a> or later.
-If this license doesn't suit you contact andrew (at) valums.com for other options.
+If this license doesn't suit you mail me at andrew (at) valums.com.
 
 Please [donate][donation_link] if you are willing to support the further development of file upload plugin.  
 
