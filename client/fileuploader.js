@@ -335,6 +335,9 @@ qq.FileUploaderBasic.prototype = {
     },
     _onComplete: function(id, fileName, result){
         this._filesInProgress--;                 
+        if (result.error){
+            this._options.showMessage(result.error);
+        }             
     },
     _onCancel: function(id, fileName){
         this._filesInProgress--;        

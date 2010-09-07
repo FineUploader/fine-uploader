@@ -110,16 +110,16 @@ jQuery(function(){
         ];
         
         for (var i = 0, l = tests.length; i<l; i++) {
-          console.log('------------------ obj2url-test'+(i+1)+': '+tests[i].title);
-          console.log('object: '+tests[i].obj);
-          console.log('prefix: '+tests[i].prefix); 
+          //console.log('------------------ obj2url-test'+(i+1)+': '+tests[i].title);
+          //console.log('object: '+tests[i].obj);
+          //console.log('prefix: '+tests[i].prefix); 
           var result = '';
           if (tests[i].prefix) {
             result = qq.obj2url(tests[i].obj, tests[i].prefix);
           } else {
             result = qq.obj2url(tests[i].obj);
           }
-          console.log('result: '+result);
+          //console.log('result: '+result);
           same(decodeURIComponent(result), tests[i].expect, tests[i].title);
         }
     }); 

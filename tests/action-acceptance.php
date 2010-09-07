@@ -26,6 +26,10 @@ if ($fileSize == 0){
     die ('{error: "server-error file size is zero"}');
 }
 
+if ($fileSize < 10){
+    die ('{error: "server-error file size is smaller than 10 bytes"}');
+}
+
 if ($fileSize > 9 * 1024){
     die ('{error: "server-error file size is bigger than 9kB"}');
 }
