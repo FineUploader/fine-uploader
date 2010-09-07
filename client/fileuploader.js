@@ -248,7 +248,7 @@ qq.FileUploaderBasic = function(o){
         messages: {
             typeError: "{file} has invalid extension. Only {extensions} are allowed.",
             sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
-            minSizeError: "{file} is too small, minimum file size is {minsizeLimit}.",
+            minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
             emptyError: "{file} is empty, please select files again without it.",
             onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."            
         },
@@ -787,7 +787,7 @@ qq.UploadButton.prototype = {
             top: 0,
             fontFamily: 'Arial',
             // 4 persons reported this, the max values that worked for them were 243, 236, 236, 118
-            fontSize: '118px'
+            fontSize: '118px',
             margin: 0,
             padding: 0,
             cursor: 'pointer',

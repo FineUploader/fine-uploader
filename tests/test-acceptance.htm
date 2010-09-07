@@ -31,6 +31,7 @@ jQuery(function(){
             },
             allowedExtensions: ['txt', 'val', 'webm'], 
             sizeLimit: 9 * 1024, 
+            minSizeLimit: 10,
             onSubmit: function(id, fileName){
                 if (fileName == '5text.txt'){
                     submitId = id;
@@ -89,6 +90,7 @@ jQuery(function(){
         <li>select 5text.txt, callback argument tests</li>        
         <li>select 6text.txt, setParams, isUploading</li>
         <li>select 7text.txt, returning false in onSubmit cancells upload, file should not be added to list</li>
+        <li>select 8small.txt, too small size message should appear</li>
         <li>
             In FF,Chrome, select all files using drag-and-drop, only 1 error should appear.            
         </li>
