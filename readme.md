@@ -34,12 +34,13 @@ If you want to customize uploader, by using a different looking file list
 or change the behaviour or functionality use qq.FileUploaderBasic.
 
 The difference between them is that qq.FileUploader provides a list of files,
-drag-and-drop, but qq.FileUploaderBasic doesn't limit possible customization.
+drag-and-drop, but qq.FileUploaderBasic only creates button and handles validation.
+Basic uploader is easier extendable, and doesn't limit possible customization.
 
 qq.FileUploader extends qq.FileUploaderBasic, so that all the options present
 in the basic uploader also exist in the full widget.  
 
-### Quick setup of full widget (qq.FileUploader) ###
+### qq.FileUploader - Setting up full upload widget ###
 
 Include fileuploader.js and fileuploader.css into your page.
 Create container element.
@@ -54,7 +55,7 @@ Create container element.
 Initialize uploader when the DOM is ready. Change the action option.
 For example ../server/php.php for the default folder structure.
 In the server folder you will find examples for different platforms.
-If you can't find the one you need, check the readme.txt in server folder. 
+If you can't find the one you need, check the readme.txt in the same folder. 
 
     var uploader = new qq.FileUploader({
         // pass the dom node (ex. $(selector)[0] for jQuery users)
@@ -63,9 +64,7 @@ If you can't find the one you need, check the readme.txt in server folder.
         action: '/server/upload'
     }); 
 
-### Options of both basic uploader and full widget ###
-
-Below is the list of important options, more details are given below. 
+### Options of both classes ###
     
     // url of the server-side upload script, should be on the same domain
     action: '/server/upload',
@@ -81,6 +80,7 @@ Below is the list of important options, more details are given below.
     minSizeLimit: 0, // min size
     
     // events     
+    // you can return false to abort submit
     onSubmit: function(id, fileName){},
     onProgress: function(id, fileName, loaded, total){},
     onComplete: function(id, fileName, responseJSON){},
@@ -94,21 +94,6 @@ Below is the list of important options, more details are given below.
 Instance methods
 
 * setParams(newParams)         
-
-#### Limiting file type and size ####
-
-Pass them as the options to constructor, the uploader will show a message if the 
-user selects a file that doesn't match the criteria. The sizeLimit option only works
-in most modern browsers at the moment. And you must add the same checks in your server-side
-script.
-
-    var uploader = new qq.FileUploader({
-        element: document.getElementById('file-uploader'),
-        action: '/server-side.upload',
-        allowedExtensions: [], // ex. ['jpg', 'jpeg', 'png', 'gif']       
-        sizeLimit: 0,      
-        minSizeLimit: 0  
-    });
 
 #### Changing alert/messages to something more user friendly ####
 
@@ -135,25 +120,21 @@ To change params based on the state of your app, use
        anotherParam: 'value' 
     });
 
-It can be nicely used in onSubmit callback.
+It can be nicely used in onSubmit callback.      
 
-#### Callbacks ####
+#### Troubleshooting ####
+If you can't get the uploader to work, try the following steps before asking for help.
 
-You can use the onSubmit callback, to set parameters based on the state of your app.     
-    
-    onSubmit: function(id, fileName){},
-    onProgress: function(id, fileName, loaded, total){},
-    onComplete: function(id, fileName, responseJSON){},
-    onCancel: function(id, fileName){}
+Install Chrome or Safari to get their excellent developer tools,
+or alternatively use Firebug. Open resources tab in developer tools.
 
-#### Changing design ####
+Try to upload a file, you will either see an error in the console, or
+a new item will be added to the resource list which should point to your upload
+script.
 
-If you want to change markup, look into template, fileTemplate, classes option in qq.FileUploader
-But for most purposes customization of the css file should be enough.
-    
-#### Further questions ####
-
-If you have a short question, leave comment on my blog. For commercial support, contact andrew (at) valums.com    
+Select a content tab, and there you will see a server response. It
+should be {success:true} for completed requests. If it's not, you will
+probably see a reason there.
 
 #### Contributors ####
 

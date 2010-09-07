@@ -213,7 +213,7 @@ qq.obj2url = function(obj, temp){
 var qq = qq || {};
     
 /**
- * Creates upload button, validates upload, but doesn't implement file list or dd. 
+ * Creates upload button, validates upload, but doesn't create file list or dd. 
  */
 qq.FileUploaderBasic = function(o){
     this._options = {
@@ -226,6 +226,7 @@ qq.FileUploaderBasic = function(o){
         sizeLimit: 0,   
         minSizeLimit: 0,                             
         // events
+        // return false to cancel submit
         onSubmit: function(id, fileName){},
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, responseJSON){},
@@ -259,6 +260,9 @@ qq.FileUploaderBasic.prototype = {
     setParams: function(params){
         this._options.params = params;
     },
+    getInProgress: function(){
+        return this._filesInProgress;         
+    },
     _createUploadButton: function(element){
         var self = this;
         
@@ -282,15 +286,17 @@ qq.FileUploaderBasic.prototype = {
 
         var handler = new qq[handlerClass]({
             action: this._options.action,            
-            onProgress: function(id, fileName, loaded, total){
+            onProgress: function(id, fileName, loaded, total){                
                 self._onProgress(id, fileName, loaded, total);
-                // I wish .bind would be included in all browsers                    
+                self._options.onProgress(id, fileName, loaded, total);                    
             },            
             onComplete: function(id, fileName, result){
                 self._onComplete(id, fileName, result);
+                self._options.onComplete(id, fileName, result);
             },
             onCancel: function(id, fileName){
                 self._onCancel(id, fileName);
+                self._options.onCancel(id, fileName);
             }
         });
 
@@ -310,22 +316,14 @@ qq.FileUploaderBasic.prototype = {
         });        
     },    
     _onSubmit: function(id, fileName){
-        if (this._options.onSubmit(id, fileName) === false){
-            this._submitAllowed = false;
-        }
-        
         this._filesInProgress++;  
     },
-    _onProgress: function(id, fileName, loaded, total){
-        this._options.onProgress(id, fileName, loaded, total);
-    },
+    _onProgress: function(id, fileName, loaded, total){},
     _onComplete: function(id, fileName, result){
-        this._filesInProgress--;
-        this._options.onComplete(id, fileName, result);         
+        this._filesInProgress--;                 
     },
     _onCancel: function(id, fileName){
-        this._filesInProgress--;
-        this._options.onCancel(id, fileName);
+        this._filesInProgress--;        
     },
     _onInputChange: function(input){
         if (this._handler instanceof qq.UploadHandlerXhr){                
@@ -349,15 +347,13 @@ qq.FileUploaderBasic.prototype = {
         }        
     },       
     _uploadFile: function(fileContainer){      
-        this._submitAllowed = true;      
-        
         var id = this._handler.add(fileContainer);
-        var name = this._handler.getName(id);        
-        this._onSubmit(id, name);  
+        var fileName = this._handler.getName(id);
         
-        if (this._submitAllowed){              
+        if (this._options.onSubmit(id, fileName) !== false){
+            this._onSubmit(id, fileName);
             this._handler.upload(id, this._options.params);
-        }        
+        }
     },      
     _validateFile: function(file){
         var name, size;
@@ -434,8 +430,10 @@ qq.FileUploaderBasic.prototype = {
        
 /**
  * Class that creates upload widget with drag-and-drop and file list
+ * @inherits qq.FileUploaderBasic
  */
 qq.FileUploader = function(o){
+    // call parent constructor
     qq.FileUploaderBasic.apply(this, arguments);
     
     // additional options    
@@ -542,13 +540,11 @@ qq.extend(qq.FileUploader.prototype, {
             if (!dz._isValidFileDrag(e)) return; 
             
             dropArea.style.display = 'block';            
-        });         
-        
+        });                 
         qq.attach(document, 'dragleave', function(e){
-            if (!dz._isValidFileDrag(e)) return;
+            if (!dz._isValidFileDrag(e)) return;            
             
             var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
-
             // only fire when leaving document out
             if ( ! relatedTarget || relatedTarget.nodeName == "HTML"){               
                 dropArea.style.display = 'none';                                            
@@ -557,7 +553,7 @@ qq.extend(qq.FileUploader.prototype, {
     },
     _onSubmit: function(id, fileName){
         qq.FileUploaderBasic.prototype._onSubmit.apply(this, arguments);
-        this._addToList(id, name);  
+        this._addToList(id, fileName);  
     },
     _onProgress: function(id, fileName, loaded, total){
         qq.FileUploaderBasic.prototype._onProgress.apply(this, arguments);
@@ -599,26 +595,13 @@ qq.extend(qq.FileUploader.prototype, {
 
         this._getElement('list').appendChild(item);
     },
-
-    _formatSize: function(bytes){
-        var i = -1;                                    
-        do {
-            bytes = bytes / 1024;
-            i++;  
-        } while (bytes > 99);
-        
-        return Math.max(bytes, 0.1).toFixed(1) + ['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i];          
-    },
     _getItemByFileId: function(id){
-        var item = this._getElement('list').firstChild;
+        var item = this._getElement('list').firstChild;        
         
-        // there can't be text nodes in our dynamically created list
-        // because of that we can safely use nextSibling
+        // there can't be txt nodes in dynamically created list
+        // and we can  use nextSibling
         while (item){            
-            if (item.qqFileId == id){
-                return item;
-            }
-            
+            if (item.qqFileId == id) return item;            
             item = item.nextSibling;
         }          
     },
@@ -629,21 +612,18 @@ qq.extend(qq.FileUploader.prototype, {
         var self = this,
             list = this._getElement('list');            
         
-        qq.attach(list, 'click', function(e){
+        qq.attach(list, 'click', function(e){            
             e = e || window.event;
             var target = e.target || e.srcElement;
-
+            
             if (qq.hasClass(target, self._classes.cancel)){                
                 qq.preventDefault(e);
                
                 var item = target.parentNode;
                 self._handler.cancel(item.qqFileId);
                 qq.remove(item);
-                
-                this._filesInProgress--;
             }
         });
-
     }    
 });
     

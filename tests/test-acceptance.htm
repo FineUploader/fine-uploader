@@ -18,7 +18,7 @@ jQuery(function(){
     $("#dialog").dialog();
         
     asyncTest("qq.FileUploader", function() {
-        expect(9);
+        expect(10);
         
         var submitFileName, submitId;
                
@@ -38,11 +38,19 @@ jQuery(function(){
                 } else if (fileName == '6text.txt'){
                     uploader.setParams({'new':'newvalue'});  
                     
-                    same(uploader.isUploading(), false, 'isUploading');                    
+                    same(uploader.getInProgress(), 0, 'getFilesInProgress');                    
                     
                     setTimeout(function(){
-                        same(uploader.isUploading(), true, 'isUploading');
+                        same(uploader.getInProgress(), 1, 'getFilesInProgress');
                     }, 1);                                                                                                                   
+                } else if (fileName == '7text.txt'){
+                    
+                    setTimeout(function(){
+                        same(uploader.getInProgress(), 0, 'all uploads should have finished');
+                        start(); // check test results    
+                    }, 1000);
+                    
+                    return false;
                 }
             },
             onComplete: function(id, fileName, responseJSON){
@@ -56,8 +64,9 @@ jQuery(function(){
                     same(responseJSON.fileName, fileName, "filename in onComplete correct");
                 } else if (fileName == '6text.txt'){                    
                     ok(responseJSON['new'] === 'newvalue' && responseJSON.one == null, "server received new params");                    
-                    same(uploader.isUploading(), false, 'upload should have finished');
-                    start();                    
+                    same(uploader.getInProgress(), 0, 'upload should have finished');                                                            
+                } else if (fileName == '7text.txt'){
+                    ok(false, "upload should be cancelled by returning false in onSubmit");                    
                 }                                                                                
             }
         });           
@@ -79,6 +88,7 @@ jQuery(function(){
         <li>select 4text.txt, uploaded file should be marked as failed</li>             
         <li>select 5text.txt, callback argument tests</li>        
         <li>select 6text.txt, setParams, isUploading</li>
+        <li>select 7text.txt, returning false in onSubmit cancells upload, file should not be added to list</li>
         <li>
             In FF,Chrome, select all files using drag-and-drop, only 1 error should appear.            
         </li>

@@ -11,7 +11,7 @@
 function createDropZone(selector){
     var element = $(selector)[0];  
           
-    new qq.FileDropZone({
+    new qq.UploadDropZone({
         element: element,
         onEnter: function(){
             console.log('enter')
