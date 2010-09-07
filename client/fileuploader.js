@@ -667,8 +667,10 @@ qq.UploadDropZone.prototype = {
         if (!qq.UploadDropZone.dropOutsideDisabled ){
 
             qq.attach(document, 'dragover', function(e){
-                e.dataTransfer.dropEffect = 'none';
-                e.preventDefault();            
+                if (e.dataTransfer){
+                    e.dataTransfer.dropEffect = 'none';
+                    e.preventDefault(); 
+                }           
             });
             
             qq.UploadDropZone.dropOutsideDisabled = true; 
