@@ -60,31 +60,68 @@ jQuery(function(){
     }); 
 
     test("obj2url", function(){
-        var obj0 = {},                      // empty string
-            obj1 = {a:'b',c:'d',e:'f'},     // a=b&c=d&e=f
-            obj2 = {a:[1,2,3,4]},           // a[0]=1&a[1]=2&a[2]=3&a[3]=4
-            obj3 = {a:1,b:2,c:3,d:4},       // a=1&b=2&c=3&d=4
-            obj4 = {a:'b',c:'d',            // a=b&c=d&
-                    e:['f',{g:'h',          // e[0]=f&e[1][g]=h&e[1][g]=h&
-                    i:['j',{k:'l',m:'n'}],  // e[1][i][0]=j&e[1][i][1][k]=l&e[1][i][1][m]=n&e[1][o]=p&
-                    o:undefined,            // e[1][o]=undefined&
-                    p:true,q:false}]},      // e[1][p]=true&e[1][q]=false
-            obj5 = {a:function(){return 'b';}}        
-            obj6 = {a:function(){}},
-            obj7 = {a:null},
-            obj8 = {a:[1,2,3],'b[]':[4,5,6],'c[d]':[7,8,9]},
-            obj9 = {a:'All your base are belong to us'};
+        var tests = [
+          {title:'empty',                   obj:{}, expect:''},
+          {title:'general json',            obj:{a:'b',c:'d',e:'f'}, expect:'a=b&c=d&e=f'},
+          {title:'general json',            obj:{a:1,b:2,c:3,d:4}, expect:'a=1&b=2&c=3&d=4'},
+          {title:'general json array',      obj:{a:[1,2,3,4]}, expect:'a[0]=1&a[1]=2&a[2]=3&a[3]=4'},
+          {title:'complex json',            obj:{a:'b',c:'d',e:['f',{g:'h',i:['j',{k:'l',m:'n'}],
+                                                 o:undefined,p:true,q:false}]}, 
+                                            expect:'a=b&c=d&'
+                                                  +'e[0]=f&'
+                                                  +'e[1][g]=h&'
+                                                  +'e[1][i][0]=j&'
+                                                  +'e[1][i][1][k]=l&'
+                                                  +'e[1][i][1][m]=n&'
+                                                  +'e[1][o]=undefined&'
+                                                  +'e[1][p]=true&'
+                                                  +'e[1][q]=false'},
+          {title:'function',                obj:{a:function(){return 'b';}}, expect:'a=b'},
+          {title:'function no return',      obj:{a:function(){},undefined:'b'}, expect:'a=undefined'},
+          {title:'null',                    obj:{a:null}, expect:'a=null'},
+          {title:'prevent double encoding', obj:{a:[1,2,3],'b[]':[4,5,6],'c[d]':[7,8,9]}, 
+                                            expect:'a[0]=1&a[1]=2&a[2]=3&'
+                                                  +'b[]=4&b[]=5&b[]=6&'
+                                                  +'c[d][0]=7&c[d][1]=8&c[d][2]=9'},
+          {title:'spaces',                  obj:{a:'All your base are belong to us'}, 
+                                            expect:'a=All+your+base+are+belong+to+us'},
+          {title:'undefined simple',        obj:{undefined:undefined}, expect:''},
+          {title:'undefined complex',       obj:{undefined:undefined,
+                                                 a:{undefined:undefined},
+                                                 b:[{undefined:'c'},undefined,{d:'e'}]}, 
+                                            expect:'b[1]=undefined&b[2][d]=e'},
+          {title:'prefix url no params',    obj:{a:'b'}, 
+                                            prefix:'http://any.url', 
+                                            expect:'http://any.url?a=b'},
+          {title:'prefix url trailing ?',   obj:{a:'b'}, 
+                                            prefix:'http://any.url?', 
+                                            expect:'http://any.url?a=b'},
+          {title:'prefix url param',        obj:{a:'b'}, prefix:'http://any.url?foo', 
+                                            expect:'http://any.url?foo&a=b'},
+          {title:'prefix url param=value',  obj:{a:'b'}, 
+                                            prefix:'http://any.url?foo=bar', 
+                                            expect:'http://any.url?foo=bar&a=b'},
+          {title:'prefix url multi param',  obj:{a:'b'}, 
+                                            prefix:'http://any.url?foo=bar&bla=blub', 
+                                            expect:'http://any.url?foo=bar&bla=blub&a=b'},
+          {title:'prefix url array param',  obj:{a:'b',c:'d'}, 
+                                            prefix:'http://any.url?foo[0]=bla&foo[1]=blub', 
+                                            expect:'http://any.url?foo[0]=bla&foo[1]=blub&a=b&c=d'} 
+        ];
         
-        same(decodeURIComponent(qq.obj2url(obj0)), '', 'empty string');
-        same(decodeURIComponent(qq.obj2url(obj1)), 'a=b&c=d&e=f', 'general json');
-        same(decodeURIComponent(qq.obj2url(obj2)), 'a[0]=1&a[1]=2&a[2]=3&a[3]=4', 'general array');
-        same(decodeURIComponent(qq.obj2url(obj3)), 'a=1&b=2&c=3&d=4', 'general json');
-        same(decodeURIComponent(qq.obj2url(obj4)), 'a=b&c=d&e[0]=f&e[1][g]=h&e[1][i][0]=j&e[1][i][1][k]=l&e[1][i][1][m]=n&e[1][o]=undefined&e[1][p]=true&e[1][q]=false', 'complex json');
-        same(decodeURIComponent(qq.obj2url(obj5)), 'a=b', 'function returns value');
-        same(decodeURIComponent(qq.obj2url(obj6)), 'a=undefined', 'function without return');
-        same(decodeURIComponent(qq.obj2url(obj7)), 'a=null', 'null');
-        same(decodeURIComponent(qq.obj2url(obj8)), 'a[0]=1&a[1]=2&a[2]=3&b[]=4&b[]=5&b[]=6&c[d][0]=7&c[d][1]=8&c[d][2]=9', 'prevent double-encoding');
-        same(decodeURIComponent(qq.obj2url(obj9)), 'a=All+your+base+are+belong+to+us', 'spaces');
+        for (var i = 0, l = tests.length; i<l; i++) {
+          console.log('------------------ obj2url-test'+(i+1)+': '+tests[i].title);
+          console.log('object: '+tests[i].obj);
+          console.log('prefix: '+tests[i].prefix); 
+          var result = '';
+          if (tests[i].prefix) {
+            result = qq.obj2url(tests[i].obj, tests[i].prefix);
+          } else {
+            result = qq.obj2url(tests[i].obj);
+          }
+          console.log('result: '+result);
+          same(decodeURIComponent(result), tests[i].expect, tests[i].title);
+        }
     }); 
     
     	
