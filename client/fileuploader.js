@@ -161,38 +161,49 @@ qq.getByClass = function(element, className){
 /**
  * obj2url() takes a json-object as argument and generates
  * a querystring. pretty much like jQuery.param()
+ * 
+ * how to use:
+ *
+ *    `qq.obj2url({a:'b',c:'d'},'http://any.url/upload?otherParam=value');`
+ *
+ * will result in:
+ *
+ *    `http://any.url/upload?otherParam=value&a=b&c=d`
  *
  * @param  Object JSON-Object
  * @param  String current querystring-part
  * @return String encoded querystring
  */
-qq.obj2url = function(obj, temp){   
+qq.obj2url = function(obj, temp, prefixDone){
     var uristrings = [],
+        prefix = '&',
         add = function(nextObj, i){
-            
             var nextTemp = temp 
-              ? (/\[\]$/.test(temp)) // prevent double-encoding
-                  ? temp
-                  : temp+'['+i+']'
-              : i;
-              
-          uristrings.push(typeof nextObj === 'object' 
-              ? qq.obj2url(nextObj, nextTemp)
-              : (Object.prototype.toString.call(nextObj) === '[object Function]')
-                  ? encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj())
-                  : encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj));
-        };
-        
-    if (Object.prototype.toString.call(obj) === '[object Array]'){ 
+                ? (/\[\]$/.test(temp)) // prevent double-encoding
+                   ? temp
+                   : temp+'['+i+']'
+                : i;
+            if ((nextTemp != 'undefined') && (i != 'undefined')) {  
+                uristrings.push(
+                    (typeof nextObj === 'object') 
+                        ? qq.obj2url(nextObj, nextTemp, true)
+                        : (Object.prototype.toString.call(nextObj) === '[object Function]')
+                            ? encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj())
+                            : encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj)                                                          
+                );
+            }
+        }; 
+
+    if (!prefixDone && temp) {
+      prefix = (/\?/.test(temp)) ? (/\?$/.test(temp)) ? '' : '&' : '?';
+      uristrings.push(temp);
+      uristrings.push(qq.obj2url(obj));
+    } else if ((Object.prototype.toString.call(obj) === '[object Array]') && (typeof obj != 'undefined') ) {
         // we wont use a for-in-loop on an array (performance)
         for (var i = 0, len = obj.length; i < len; ++i){
             add(obj[i], i);
         }
-        
-    } else if ((obj !== undefined) && 
-               (obj !== null) && 
-               (typeof obj === "object")){
-                   
+    } else if ((typeof obj != 'undefined') && (obj !== null) && (typeof obj === "object")){
         // for anything else but a scalar, we will use for-in-loop
         for (var i in obj){
             add(obj[i], i);
@@ -200,8 +211,10 @@ qq.obj2url = function(obj, temp){
     } else {
         uristrings.push(encodeURIComponent(temp) + '=' + encodeURIComponent(obj));
     }
-    
-    return uristrings.join('&').replace(/%20/g, '+');
+
+    return uristrings.join(prefix)
+                     .replace(/^&/, '')
+                     .replace(/%20/g, '+'); 
 };
 
 //
@@ -968,9 +981,9 @@ qq.UploadHandlerForm.prototype = {
         // Because in this case file won't be attached to request
         var form = qq.toElement('<form method="post" enctype="multipart/form-data"></form>');
 
-        var queryString = '?' + qq.obj2url(params);
+        var queryString = qq.obj2url(params, this._options.action);
 
-        form.setAttribute('action', this._options.action + queryString);
+        form.setAttribute('action', queryString);
         form.setAttribute('target', iframe.name);
         form.style.display = 'none';
         document.body.appendChild(form);
@@ -1079,9 +1092,11 @@ qq.UploadHandlerXhr.prototype = {
         };
 
         // build query string
-        var queryString = '?qqfile=' + encodeURIComponent(name) + '&' + qq.obj2url(params);
+        var queryString = qq.obj2url(params, this._options.action + 
+                                             '?qqfile=' + 
+                                             encodeURIComponent(name));
 
-        xhr.open("POST", this._options.action + queryString, true);
+        xhr.open("POST", queryString, true);
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         xhr.send(file);
