@@ -140,7 +140,7 @@ probably see a reason there.
 
 Thanks to everybody who contributed, either by sending bug reports or donating. And special thanks to:
 
-Andy Newby   
-Sean Sandy (SeanJA)   
+Patrick Pfeiffer
+Sean Sandy (SeanJA)
+Andy Newby      
 Ivan Valles   
-Patrick Pfeiffer   
