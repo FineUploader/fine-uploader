@@ -331,7 +331,8 @@ qq.FileUploaderBasic.prototype = {
     _onSubmit: function(id, fileName){
         this._filesInProgress++;  
     },
-    _onProgress: function(id, fileName, loaded, total){},
+    _onProgress: function(id, fileName, loaded, total){        
+    },
     _onComplete: function(id, fileName, result){
         this._filesInProgress--;                 
     },
@@ -1099,7 +1100,6 @@ qq.UploadHandlerXhr.prototype = {
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
         xhr.send(file);
-
     },
     cancel: function(id){
         this._files[id] = null;
@@ -1120,18 +1120,18 @@ qq.UploadHandlerXhr.prototype = {
     getSize: function(id){
         return this._total[id];
     },
-    getSizeAll: function(){
-        var total = 0;
-        for (var i=0; i<this._total.length; i++){
-            total += this._total[i];
-        }
-        return total;
-    },
     getLoadedAll: function(){
         var loaded = 0;
         for (var i=0; i<this._loaded.length; i++){
             loaded += this._loaded[i];
         }
         return loaded;        
-    }
+    },
+    getSizeAll: function(){
+        var total = 0;
+        for (var i=0; i<this._total.length; i++){
+            total += this._total[i];
+        }
+        return total;
+    }    
 };
