@@ -297,8 +297,8 @@ jQuery(function(){
                     same(fileName, expectedName, 'progress event fired with correct fileName param')
                                     				
     				data.fileName = fileName;
-    				delete response.qqfile;
-    				
+                    data.qqfile = fileName;
+
     				same(response, data, 'server received passed params, filenames match');
     				
     				same(fileName, uploadHandler.getName(id), 'getName method');    				 
