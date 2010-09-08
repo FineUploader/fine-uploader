@@ -859,7 +859,7 @@ qq.UploadHandlerAbstract = function(o){
     this._options = {
         action: '/upload.php',
         // maximum number of concurrent uploads        
-        maxConnections: 0,
+        maxConnections: 999,
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, response){},
         onCancel: function(id, fileName){}
@@ -896,7 +896,7 @@ qq.UploadHandlerAbstract.prototype = {
      */
     cancelAll: function(){
         for (var i=0; i<this._queue.length; i++){
-            this._cancel(id);
+            this._cancel(this._queue[i]);
         }
         this._queue = [];
     },
@@ -1214,13 +1214,13 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         this._dequeue(id);                    
     },
     _cancel: function(id){
+        this._options.onCancel(id, this.getName(id));
+        
         this._files[id] = null;
         
         if (this._xhrs[id]){
             this._xhrs[id].abort();
             this._xhrs[id] = null;                                   
         }
-        
-        this._options.onCancel(id, this.getName(id));
     }
 });
