@@ -969,9 +969,9 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         return this._inputs[id].value.replace(/.*(\/|\\)/, "");
     },    
     _cancel: function(id){
-        if (id in this._inputs){
-            delete this._inputs[id];
-        }        
+        this._options.onCancel(id, this.getName(id));
+        
+        delete this._inputs[id];        
 
         var iframe = document.getElementById(id);
         if (iframe){
@@ -982,8 +982,6 @@ qq.extend(qq.UploadHandlerForm.prototype, {
 
             qq.remove(iframe);
         }
-        
-        this._options.onCancel(id, this.getName(id));
     },     
     _upload: function(id, params){                        
         var input = this._inputs[id];
