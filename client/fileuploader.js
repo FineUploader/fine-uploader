@@ -21,6 +21,26 @@ qq.extend = function(first, second){
         first[prop] = second[prop];
     }
 };  
+
+/**
+ * Searches for a given element in the array, returns -1 if it is not present.
+ * @param {Number} [from] The index at which to begin the search
+ */
+qq.indexOf = function(arr, elt, from){
+    if (arr.indexOf) return arr.indexOf(elt, from);
+    
+    from = from || 0;
+    var len = arr.length;    
+    
+    if (from < 0) from += len;  
+
+    for (; from < len; from++){  
+        if (from in arr && arr[from] === elt){  
+            return from;
+        }
+    }  
+    return -1;  
+}; 
     
 qq.getUniqueId = (function(){
     var id = 0;
@@ -234,6 +254,7 @@ qq.FileUploaderBasic = function(o){
         params: {},
         button: null,
         multiple: true,
+        maxConnections: 3,
         // validation        
         allowedExtensions: [],               
         sizeLimit: 0,   
@@ -298,7 +319,8 @@ qq.FileUploaderBasic.prototype = {
         }
 
         var handler = new qq[handlerClass]({
-            action: this._options.action,            
+            action: this._options.action,         
+            maxConnections: this._options.maxConnections,   
             onProgress: function(id, fileName, loaded, total){                
                 self._onProgress(id, fileName, loaded, total);
                 self._options.onProgress(id, fileName, loaded, total);                    
@@ -831,25 +853,104 @@ qq.UploadButton.prototype = {
 };
 
 /**
+ * Class for uploading files, uploading itself is handled by child classes
+ */
+qq.UploadHandlerAbstract = function(o){
+    this._options = {
+        action: '/upload.php',
+        // maximum number of concurrent uploads        
+        maxConnections: 0,
+        onProgress: function(id, fileName, loaded, total){},
+        onComplete: function(id, fileName, response){},
+        onCancel: function(id, fileName){}
+    };
+    qq.extend(this._options, o);    
+    
+    this._queue = [];
+};
+qq.UploadHandlerAbstract.prototype = {
+    /**
+     * Adds file or file input to the queue
+     * @returns id
+     **/    
+    add: function(file){},
+    /**
+     * Sends the file identified by id and additional query params to the server
+     */
+    upload: function(id, params){
+        var len = this._queue.push(id);        
+        // too many active uploads, wait...
+        if (len > this._options.maxConnections) return;
+        
+        this._upload(id, params);
+    },
+    /**
+     * Cancels file upload by id
+     */
+    cancel: function(id){
+        this._cancel(id);
+        this._dequeue(id);
+    },
+    /**
+     * Cancells all uploads
+     */
+    cancelAll: function(){
+        for (var i=0; i<this._queue.length; i++){
+            this._cancel(id);
+        }
+        this._queue = [];
+    },
+    /**
+     * Returns name of the file identified by id
+     */
+    getName: function(id){},
+    /**
+     * Returns size of the file identified by id
+     */          
+    getSize: function(id){},
+    /**
+     * Returns id of files being uploaded or
+     * waiting for their turn
+     */
+    getQueue: function(){
+        return this._queue;
+    },
+    /**
+     * Actual upload method
+     */
+    _upload: function(id){},
+    /**
+     * Actual cancel method
+     */
+    _cancel: function(id){},     
+    /**
+     * Removes element from queue, starts upload of next
+     */
+    _dequeue: function(id){
+        var i = qq.indexOf(this._queue, id);
+        this._queue.splice(i, 1);
+                
+        var max = this._options.maxConnections;
+        
+        if (this._queue.length >= max){
+            this._upload(this._queue[max-1]);
+        }
+    }        
+};
+
+/**
  * Class for uploading files using form and iframe
+ * @inherits qq.UploadHandlerAbstract
  */
 qq.UploadHandlerForm = function(o){
-    this._options = {
-        // URL of the server-side upload script,
-        // should be on the same domain to get response
-        action: '/upload',
-        // fires for each file, when iframe finishes loading
-        onComplete: function(id, fileName, response){}
-    };
-    qq.extend(this._options, o);
+    qq.UploadHandlerAbstract.apply(this, arguments);
        
     this._inputs = {};
 };
-qq.UploadHandlerForm.prototype = {
-    /**
-     * Adds file input to the queue
-     * Returns id to use with upload, cancel
-     **/    
+// @inherits qq.UploadHandlerAbstract
+qq.extend(qq.UploadHandlerForm.prototype, qq.UploadHandlerAbstract.prototype);
+
+qq.extend(qq.UploadHandlerForm.prototype, {
     add: function(fileInput){
         fileInput.setAttribute('name', 'qqfile');
         var id = 'qq-upload-handler-iframe' + qq.getUniqueId();       
@@ -863,40 +964,11 @@ qq.UploadHandlerForm.prototype = {
                 
         return id;
     },
-    /**
-     * Sends the file identified by id and additional query params to the server
-     * @param {Object} params name-value string pairs
-     */
-    upload: function(id, params){                        
-        var input = this._inputs[id];
-        
-        if (!input){
-            throw new Error('file with passed id was not added, or already uploaded or cancelled');
-        }                
-        
-        var fileName = this.getName(id);
-                
-        var iframe = this._createIframe(id);
-        var form = this._createForm(iframe, params);
-        form.appendChild(input);
-
-        var self = this;
-        this._attachLoadEvent(iframe, function(){            
-            self._options.onComplete(id, fileName, self._getIframeContentJSON(iframe));
-            
-            delete self._inputs[id];
-            // timeout added to fix busy state in FF3.6
-            setTimeout(function(){
-                qq.remove(iframe);
-            }, 1);
-        });
-
-        form.submit();        
-        qq.remove(form);        
-        
-        return id;
-    },
-    cancel: function(id){        
+    getName: function(id){
+        // get input value and remove path to normalize
+        return this._inputs[id].value.replace(/.*(\/|\\)/, "");
+    },    
+    _cancel: function(id){
         if (id in this._inputs){
             delete this._inputs[id];
         }        
@@ -910,11 +982,39 @@ qq.UploadHandlerForm.prototype = {
 
             qq.remove(iframe);
         }
-    },
-    getName: function(id){
-        // get input value and remove path to normalize
-        return this._inputs[id].value.replace(/.*(\/|\\)/, "");
-    },  
+        
+        this._options.onCancel(id, this.getName(id));
+    },     
+    _upload: function(id, params){                        
+        var input = this._inputs[id];
+        
+        if (!input){
+            throw new Error('file with passed id was not added, or already uploaded or cancelled');
+        }                
+
+        var fileName = this.getName(id);
+                
+        var iframe = this._createIframe(id);
+        var form = this._createForm(iframe, params);
+        form.appendChild(input);
+
+        var self = this;
+        this._attachLoadEvent(iframe, function(){                        
+            self._options.onComplete(id, fileName, self._getIframeContentJSON(iframe));
+            self._dequeue(id);
+            
+            delete self._inputs[id];
+            // timeout added to fix busy state in FF3.6
+            setTimeout(function(){
+                qq.remove(iframe);
+            }, 1);
+        });
+
+        form.submit();        
+        qq.remove(form);        
+        
+        return id;
+    }, 
     _attachLoadEvent: function(iframe, callback){
         qq.attach(iframe, 'load', function(){
             // when we remove iframe from dom
@@ -946,7 +1046,7 @@ qq.UploadHandlerForm.prototype = {
         var doc = iframe.contentDocument ? iframe.contentDocument: iframe.contentWindow.document,
             response;
 
-        try{
+        try {
             response = eval("(" + doc.body.innerHTML + ")");
         } catch(err){
             response = {};
@@ -994,28 +1094,20 @@ qq.UploadHandlerForm.prototype = {
 
         return form;
     }
-};
+});
 
 /**
  * Class for uploading files using xhr
+ * @inherits qq.UploadHandlerAbstract
  */
 qq.UploadHandlerXhr = function(o){
-    this._options = {
-        // url of the server-side upload script,
-        // should be on the same domain
-        action: '/upload',
-        onProgress: function(id, fileName, loaded, total){},
-        onComplete: function(id, fileName, response){}
-    };
-    qq.extend(this._options, o);
+    qq.UploadHandlerAbstract.apply(this, arguments);
 
     this._files = [];
-    
-    // sizes in bytes for each file (by id) to track progress
-    this._loaded = [];
-    this._total = [];
-    
     this._xhrs = [];
+    
+    // current loaded size in bytes for each file 
+    this._loaded = [];
 };
 
 // static method
@@ -1029,7 +1121,10 @@ qq.UploadHandlerXhr.isSupported = function(){
         typeof (new XMLHttpRequest()).upload != "undefined" );       
 };
 
-qq.UploadHandlerXhr.prototype = {
+// @inherits qq.UploadHandlerAbstract
+qq.extend(qq.UploadHandlerXhr.prototype, qq.UploadHandlerAbstract.prototype)
+
+qq.extend(qq.UploadHandlerXhr.prototype, {
     /**
      * Adds file to the queue
      * Returns id to use with upload, cancel
@@ -1037,24 +1132,32 @@ qq.UploadHandlerXhr.prototype = {
     add: function(file){
         return this._files.push(file) - 1;        
     },
+    getName: function(id){        
+        var file = this._files[id];
+        // fix missing name in Safari 4
+        return file.fileName != null ? file.fileName : file.name;       
+    },
+    getSize: function(id){
+        var file = this._files[id];
+        return file.fileSize != null ? file.fileSize : file.size;
+    },    
+    /**
+     * Returns uploaded bytes for file identified by id 
+     */    
+    getLoaded: function(id){
+        return this._loaded[id] || 0; 
+    },
     /**
      * Sends the file identified by id and additional query params to the server
      * @param {Object} params name-value string pairs
      */    
-    upload: function(id, params){
+    _upload: function(id, params){
         var file = this._files[id],
-            name = this.getName(id);
-            
-        // fix missing size in Safari 4
-        var size = file.fileSize != null ? file.fileSize : file.size;
+            name = this.getName(id),
+            size = this.getSize(id);
                 
         this._loaded[id] = 0;
-        this._total[id] = size;
-        
-        if (!file){
-            throw new Error('file with passed id was not added, or already uploaded or cancelled');   
-        }
-                        
+                                
         var xhr = this._xhrs[id] = new XMLHttpRequest();
         var self = this;
                                         
@@ -1065,33 +1168,9 @@ qq.UploadHandlerXhr.prototype = {
             }
         };
 
-        xhr.onreadystatechange = function(){
-            // the request was aborted/cancelled
-            if (!self._files[id]){
-                return;
-            }
-            
+        xhr.onreadystatechange = function(){            
             if (xhr.readyState == 4){
-                                
-                self._options.onProgress(id, name, size, size);
-                
-                if (xhr.status == 200){
-                    var response;
-                    
-                    try {
-                        response = eval("(" + xhr.responseText + ")");
-                    } catch(err){
-                        response = {};
-                    }
-                    
-                    self._options.onComplete(id, name, response);
-                        
-                } else {                   
-                    self._options.onComplete(id, name, {});
-                }
-                
-                self._files[id] = null;
-                self._xhrs[id] = null;                
+                self._onComplete(id, xhr);                    
             }
         };
 
@@ -1106,37 +1185,42 @@ qq.UploadHandlerXhr.prototype = {
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
         xhr.send(file);
     },
-    cancel: function(id){
+    _onComplete: function(id, xhr){
+        // the request was aborted/cancelled
+        if (!this._files[id]) return;
+        
+        var name = this.getName(id);
+        var size = this.getSize(id);
+        
+        this._options.onProgress(id, name, size, size);
+                
+        if (xhr.status == 200){
+            var response;
+                    
+            try {
+                response = eval("(" + xhr.responseText + ")");
+            } catch(err){
+                response = {};
+            }
+            
+            this._options.onComplete(id, name, response);
+                        
+        } else {                   
+            this._options.onComplete(id, name, {});
+        }
+                
+        this._files[id] = null;
+        this._xhrs[id] = null;    
+        this._dequeue(id);                    
+    },
+    _cancel: function(id){
         this._files[id] = null;
         
         if (this._xhrs[id]){
             this._xhrs[id].abort();
             this._xhrs[id] = null;                                   
         }
-    },
-    getName: function(id){
-        // fix missing name in Safari 4
-        var file = this._files[id];
-        return file.fileName != null ? file.fileName : file.name;       
-    },
-    getLoaded: function(id){
-        return this._loaded[id]; 
-    },
-    getSize: function(id){
-        return this._total[id];
-    },
-    getLoadedAll: function(){
-        var loaded = 0;
-        for (var i=0; i<this._loaded.length; i++){
-            loaded += this._loaded[i];
-        }
-        return loaded;        
-    },
-    getSizeAll: function(){
-        var total = 0;
-        for (var i=0; i<this._total.length; i++){
-            total += this._total[i];
-        }
-        return total;
-    }    
-};
+        
+        this._options.onCancel(id, this.getName(id));
+    }
+});
