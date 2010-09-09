@@ -14,7 +14,7 @@ providing good user experience everywhere.
 * doesn't use Flash
 * fully working with https
 * keyboard support in FF, Chrome, Safari
-* tested in IE7,8; Firefox 3,3.5,3.6; Safari4,5; Chrome5,6; Opera10.60;
+* tested in IE7,8; Firefox 3,3.6,4; Safari4,5; Chrome; Opera10.60;
 
 ### License ###
 This plugin is open sourced under <a href="http://www.gnu.org/licenses/gpl-2.0.html">GNU GPL 2</a> or later.
@@ -71,7 +71,7 @@ If you can't find the one you need, check the readme.txt in the same folder.
     // additional data to send, name-value pairs
     params: {},
     
-    // validation
+    // validation    
     // ex. ['jpg', 'jpeg', 'png', 'gif'] or []
     allowedExtensions: [],        
     // each file size limit in bytes
@@ -79,7 +79,8 @@ If you can't find the one you need, check the readme.txt in the same folder.
     sizeLimit: 0, // max size   
     minSizeLimit: 0, // min size
     
-    // events     
+    // events    
+     
     // you can return false to abort submit
     onSubmit: function(id, fileName){},
     onProgress: function(id, fileName, loaded, total){},
@@ -140,7 +141,7 @@ probably see a reason there.
 
 Thanks to everybody who contributed, either by sending bug reports or donating. And special thanks to:
 
-Sidney Maestre
+Sidney Maestre  
 Patrick Pfeiffer  
 Sean Sandy (SeanJA)  
 Andy Newby     
