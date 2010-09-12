@@ -867,6 +867,8 @@ qq.UploadHandlerAbstract = function(o){
     qq.extend(this._options, o);    
     
     this._queue = [];
+    // params for files in queue
+    this._params = [];
 };
 qq.UploadHandlerAbstract.prototype = {
     /**
@@ -878,11 +880,16 @@ qq.UploadHandlerAbstract.prototype = {
      * Sends the file identified by id and additional query params to the server
      */
     upload: function(id, params){
-        var len = this._queue.push(id);        
-        // too many active uploads, wait...
-        if (len > this._options.maxConnections) return;
-        
-        this._upload(id, params);
+        var len = this._queue.push(id);
+
+        var copy = {};        
+        qq.extend(copy, params);
+        this._params[id] = copy;        
+                
+        // if too many active uploads, wait...
+        if (len <= this._options.maxConnections){               
+            this._upload(id, this._params[id]);
+        }
     },
     /**
      * Cancels file upload by id
@@ -933,7 +940,8 @@ qq.UploadHandlerAbstract.prototype = {
         var max = this._options.maxConnections;
         
         if (this._queue.length >= max){
-            this._upload(this._queue[max-1]);
+            var nextId = this._queue[max-1];
+            this._upload(nextId, this._params[nextId]);
         }
     }        
 };
@@ -1128,6 +1136,10 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
      * Returns id to use with upload, cancel
      **/    
     add: function(file){
+        if (!(file instanceof File)){
+            throw new Error('Passed obj in not a File (in qq.UploadHandlerXhr)');
+        }
+                
         return this._files.push(file) - 1;        
     },
     getName: function(id){        
