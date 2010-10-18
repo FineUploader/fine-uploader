@@ -522,7 +522,7 @@ qq.FileUploader = function(o){
 
     this._element = this._options.element;
     this._element.innerHTML = this._options.template;        
-    this._listElement = this._options._listElement || this._find(this._element, 'list');
+    this._listElement = this._options.listElement || this._find(this._element, 'list');
     
     this._classes = this._options.classes;
         
