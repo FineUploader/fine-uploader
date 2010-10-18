@@ -79,8 +79,10 @@ If you can't find the one you need, check the readme.txt in the same folder.
     sizeLimit: 0, // max size   
     minSizeLimit: 0, // min size
     
-    // events    
-     
+    // set to true to output server response to console
+    debug: false,
+    
+    // events         
     // you can return false to abort submit
     onSubmit: function(id, fileName){},
     onProgress: function(id, fileName, loaded, total){},
@@ -124,24 +126,25 @@ To change params based on the state of your app, use
 It can be nicely used in onSubmit callback.      
 
 #### Troubleshooting ####
-If you can't get the uploader to work, try the following steps before asking for help.
 
-Install Chrome or Safari to get their excellent developer tools,
-or alternatively use Firebug. Open resources tab in developer tools.
+If you can't get the uploader to work, please try the following steps
+before asking for help.
 
-Try to upload a file, you will either see an error in the console, or
-a new item will be added to the resource list which should point to your upload
-script.
+If the upload doesn't complete, saying failed.
 
-Select a content tab, and there you will see a server response. It
-should be {success:true} for completed requests. If it's not, you will
-probably see a reason there.
+* Set the debug option of the FileUploader to true.
+* Open the page where you have a FileUploader.
+* Open developer console in your browser.
+* Try to upload the file. You should see a server serponse.
+
+It should be {success:true} for completed requests. If it's not,
+then you have a problem with your server-side script.
 
 #### Contributors ####
 
 Thanks to everybody who contributed, either by sending bug reports or donating. And special thanks to:
 
-John Yeary
+John Yeary  
 Sidney Maestre  
 Patrick Pfeiffer  
 Sean Sandy (SeanJA)  

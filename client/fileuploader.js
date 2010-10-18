@@ -250,6 +250,8 @@ var qq = qq || {};
  */
 qq.FileUploaderBasic = function(o){
     this._options = {
+        // set to true to see the server response
+        debug: false,
         action: '/server/upload',
         params: {},
         button: null,
@@ -319,6 +321,7 @@ qq.FileUploaderBasic.prototype = {
         }
 
         var handler = new qq[handlerClass]({
+            debug: this._options.debug,
             action: this._options.action,         
             maxConnections: this._options.maxConnections,   
             onProgress: function(id, fileName, loaded, total){                
@@ -851,6 +854,7 @@ qq.UploadButton.prototype = {
  */
 qq.UploadHandlerAbstract = function(o){
     this._options = {
+        debug: false,
         action: '/upload.php',
         // maximum number of concurrent uploads        
         maxConnections: 999,
@@ -865,6 +869,9 @@ qq.UploadHandlerAbstract = function(o){
     this._params = [];
 };
 qq.UploadHandlerAbstract.prototype = {
+    log: function(str){
+        if (this._options.debug && window.console) console.log('[uploader] ' + str);        
+    },
     /**
      * Adds file or file input to the queue
      * @returns id
@@ -999,8 +1006,12 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         form.appendChild(input);
 
         var self = this;
-        this._attachLoadEvent(iframe, function(){                        
-            self._options.onComplete(id, fileName, self._getIframeContentJSON(iframe));
+        this._attachLoadEvent(iframe, function(){                                 
+            self.log('iframe loaded');
+            
+            var response = self._getIframeContentJSON(iframe);
+
+            self._options.onComplete(id, fileName, response);
             self._dequeue(id);
             
             delete self._inputs[id];
@@ -1045,12 +1056,15 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         // iframe.contentWindow.document - for IE<7
         var doc = iframe.contentDocument ? iframe.contentDocument: iframe.contentWindow.document,
             response;
-
+        
+        this.log("converting iframe's innerHTML to JSON");
+        this.log("innerHTML = " + doc.body.innerHTML);
+                        
         try {
             response = eval("(" + doc.body.innerHTML + ")");
         } catch(err){
             response = {};
-        }
+        }        
 
         return response;
     },
@@ -1199,6 +1213,9 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         this._options.onProgress(id, name, size, size);
                 
         if (xhr.status == 200){
+            this.log("xhr - server response received");
+            this.log("responseText = " + xhr.responseText);
+                        
             var response;
                     
             try {
