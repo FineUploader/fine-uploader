@@ -1,7 +1,11 @@
 File uploader component is licensed under GNU GPL 2 or later, see gpl-2.0.txt.
+© 2010 Andrew Valums
 
 This distribution also includes:
 
+    server/OctetStreamReader.java    
+    Dual Licensed under the MIT and GPL v.2        
+    
     jQuery JavaScript Library
     http://jquery.com/    
     Copyright 2010, John Resig

@@ -141,8 +141,9 @@ probably see a reason there.
 
 Thanks to everybody who contributed, either by sending bug reports or donating. And special thanks to:
 
+John Yeary
 Sidney Maestre  
 Patrick Pfeiffer  
 Sean Sandy (SeanJA)  
 Andy Newby     
-Ivan Valles   
+Ivan Valles  
