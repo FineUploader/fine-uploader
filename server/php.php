@@ -118,9 +118,7 @@ class qqFileUploader {
         
         if ($size == 0) {
             return array('error' => 'File is empty');
-        }
-        
-        if ($size > $this->sizeLimit) {
+        } elseif ($size > $this->sizeLimit) {
             return array('error' => 'File is too large');
         }
         
