@@ -68,7 +68,7 @@ class qqFileUploader {
         $allowedExtensions = array_map("strtolower", $allowedExtensions);
             
         $this->allowedExtensions = $allowedExtensions;        
-        $this->sizeLimit = $sizeLimit;
+        $this->sizeLimit = $this->toBytes($sizeLimit);
         
         $this->checkServerSettings();       
 
