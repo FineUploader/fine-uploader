@@ -123,6 +123,12 @@ class qqFileUploader {
         }
         
         $pathinfo = pathinfo($this->file->getName());
+        if (isset($pathinfo['filename'])) {
+            $filename = $pathinfo['filename'];
+        } else {
+            // fix for php < 5.2
+            $filename = substr($pathinfo['basename'], 0, strrpos($pathinfo['basename'], '.'));
+        }
         $filename = $pathinfo['filename'];
         //$filename = md5(uniqid());
         $ext = $pathinfo['extension'];
