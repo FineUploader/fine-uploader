@@ -65,7 +65,7 @@ class UploadHandler(tornado.web.RequestHandler):
         """)
         
     def post(self):
-        if len(self.request.files) > 0: # this dirty - i'd rather use some decorator // @is_xhr f.ex.
+        if len(self.request.files) > 0: # works ... a decorator would be nice
             
             filename = self.request.files["qqfile"][0]["filename"]
             targetFile = open('upload/' + filename, 'w')
