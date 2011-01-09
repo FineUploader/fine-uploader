@@ -72,7 +72,7 @@ class UploadHandler(tornado.web.RequestHandler):
             targetFile.write(self.request.files["qqfile"][0]["body"])
             targetFile.close()
             
-            self.write('{"success":true, fileSize:0}')
+            self.write('{"success":true}')
         else:
             
             filename = self.request.arguments["qqfile"][0]
