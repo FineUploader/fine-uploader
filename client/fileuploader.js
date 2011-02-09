@@ -965,6 +965,14 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         var id = 'qq-upload-handler-iframe' + qq.getUniqueId();       
         
         this._inputs[id] = fileInput;
+
+        // Ruby on Rails by default generates an authenticity_token that is used to 
+        // prevent CSRF attacks. If this is not copied to the iframed form, the POST will fail.
+        // Other frameworks potentially have their own CSRF protection strategies, 
+        // which would also need to be accomodated for here.
+        csrfInput = fileInput.form.childNodes[0].lastChild;
+        if (csrfInput && csrfInput.getAttribute('name') == 'authenticity_token')
+          this._inputs['_csrf'] = csrfInput;
         
         // remove file input from DOM
         if (fileInput.parentNode){
@@ -993,7 +1001,8 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         }
     },     
     _upload: function(id, params){                        
-        var input = this._inputs[id];
+        var input      = this._inputs[id];
+        var csrf_token = this._inputs['_csrf'];
         
         if (!input){
             throw new Error('file with passed id was not added, or already uploaded or cancelled');
@@ -1004,6 +1013,8 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         var iframe = this._createIframe(id);
         var form = this._createForm(iframe, params);
         form.appendChild(input);
+        if (csrf_token)
+          form.appendChild(csrf_token);
 
         var self = this;
         this._attachLoadEvent(iframe, function(){                                 
