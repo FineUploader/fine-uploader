@@ -636,7 +636,6 @@ qq.extend(qq.FileUploader.prototype, {
         function r(name, replacement){ message = message.replace(name, replacement); }
         r('{cancel}', this._options.strings.cancel);
         r('{failed}', this._options.strings.failed);
-        this._element.innerHTML = message;
         var item = qq.toElement(message);                
         item.qqFileId = id;
 
