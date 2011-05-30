@@ -606,9 +606,10 @@ qq.extend(qq.FileUploader.prototype, {
             text = Math.round(loaded / total * 100) + '% from ' + this._formatSize(total);
         } else {
             text = this._formatSize(total);
+            this._totalSizeText = text;
         }
 
-        qq.setText(size, text);
+        qq.setText(size, this._totalSizeText);
     },
     _onComplete: function(id, fileName, result){
         qq.FileUploaderBasic.prototype._onComplete.apply(this, arguments);
@@ -620,6 +621,10 @@ qq.extend(qq.FileUploader.prototype, {
 
         if (result.success){
             qq.addClass(item, this._classes.success);
+            var item = this._getItemByFileId(id);
+            var size = this._find(item, 'size');
+            qq.setText(size, this._totalSizeText);
+            this._totalSizeText = '';
         } else {
             qq.addClass(item, this._classes.fail);
         }
@@ -1061,10 +1066,10 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             response;
 
         this.log("converting iframe's innerHTML to JSON");
-        this.log("innerHTML = " + doc.body.innerHTML);
+        this.log("innerHTML = " + doc.body.firstChild.innerHTML);
 
         try {
-            response = eval("(" + doc.body.innerHTML + ")");
+            response = eval("(" + doc.body.firstChild.innerHTML + ")");
         } catch(err){
             response = {};
         }
