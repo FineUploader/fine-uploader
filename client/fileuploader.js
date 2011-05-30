@@ -255,6 +255,7 @@ qq.FileUploaderBasic = function(o){
         action: '/server/upload',
         params: {},
         button: null,
+        uploadButtonText: 'Upload a file',
         multiple: true,
         maxConnections: 3,
         // validation
@@ -302,13 +303,15 @@ qq.FileUploaderBasic.prototype = {
     _createUploadButton: function(element){
         var self = this;
 
-        return new qq.UploadButton({
+        var btn = new qq.UploadButton({
             element: element,
             multiple: this._options.multiple && qq.UploadHandlerXhr.isSupported(),
             onChange: function(input){
                 self._onInputChange(input);
             }
         });
+        $(btn._element).contents().first().replaceWith(this._options.uploadButtonText);
+        return btn;
     },
     _createUploadHandler: function(){
         var self = this,
