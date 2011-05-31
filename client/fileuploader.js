@@ -622,13 +622,24 @@ qq.extend(qq.FileUploader.prototype, {
 
         var text;
         if (loaded != total){
-            text = Math.round(loaded / total * 100) + '% from ' + this._formatSize(total);
+            text = Math.round(loaded / total * 100) + '% of ' + this._formatSize(total);
         } else {
             text = this._formatSize(total);
             this._totalSizeText = text;
         }
 
-        qq.setText(size, this._totalSizeText);
+        if(this._totalSizeText)
+        {
+            qq.setText(size, this._totalSizeText);
+        }
+        else if(text)
+        {
+            qq.setText(size, text);
+        }
+        else if(text)
+        {
+            qq.setText(size, "calculating...");
+        }
     },
     _onComplete: function(id, fileName, result){
         qq.FileUploaderBasic.prototype._onComplete.apply(this, arguments);
