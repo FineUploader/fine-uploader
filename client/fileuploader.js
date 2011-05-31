@@ -14,7 +14,7 @@
  *
  * Script now depends on jQuery for functioning.
  *
- * Licensed under GNU GPL 2 or later, see license.txt.
+ * Licensed under GNU GPL 2 or later and GNU LGPL 2 or later, see license.txt.
  */
 
 //
