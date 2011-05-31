@@ -6,6 +6,16 @@
  *
  * Licensed under GNU GPL 2 or later, see license.txt.
  */
+/**
+ * http://github.com/jgoguen/file-uploader
+ * Forked from http://github.com/valums/file-uploader
+ * © 2010 Andrew Valums ( andrew(at)valums.com )
+ * © 2011 Joel Goguen ( jgoguen(at)jgoguen.ca )
+ *
+ * Script now depends on jQuery for functioning.
+ *
+ * Licensed under GNU GPL 2 or later, see license.txt.
+ */
 
 //
 // Helper functions
