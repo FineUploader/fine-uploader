@@ -255,8 +255,10 @@ qq.FileUploaderBasic = function(o){
         action: '/server/upload',
         params: {},
         button: null,
+        uploadButtonText: 'Upload a file',
         multiple: true,
         maxConnections: 3,
+        useBase2Prefixes: false,
         // validation
         allowedExtensions: [],
         sizeLimit: 0,
@@ -302,13 +304,15 @@ qq.FileUploaderBasic.prototype = {
     _createUploadButton: function(element){
         var self = this;
 
-        return new qq.UploadButton({
+        var btn = new qq.UploadButton({
             element: element,
             multiple: this._options.multiple && qq.UploadHandlerXhr.isSupported(),
             onChange: function(input){
                 self._onInputChange(input);
             }
         });
+        $(btn._element).contents().first().replaceWith(this._options.uploadButtonText);
+        return btn;
     },
     _createUploadHandler: function(){
         var self = this,
@@ -459,13 +463,27 @@ qq.FileUploaderBasic.prototype = {
         return false;
     },
     _formatSize: function(bytes){
-        var i = -1;
-        do {
-            bytes = bytes / 1024;
-            i++;
-        } while (bytes > 99);
+        var i = 0;
+        var suffixes;
 
-        return Math.max(bytes, 0.1).toFixed(1) + ['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i];
+        if(this._options.useBase2Prefixes)
+        {
+            while (bytes > 1024) {
+                bytes = bytes / 1024;
+                i++;
+            }
+            suffixes = ['B', 'kiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'YiB'];
+        }
+        else
+        {
+            while (bytes > 1000) {
+                bytes = bytes / 1000;
+                i++;
+            }
+            suffixes = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'YB'];
+        }
+
+        return Math.max(bytes, 0.1).toFixed(1) + suffixes[i];
     }
 };
 
@@ -603,9 +621,10 @@ qq.extend(qq.FileUploader.prototype, {
             text = Math.round(loaded / total * 100) + '% from ' + this._formatSize(total);
         } else {
             text = this._formatSize(total);
+            this._totalSizeText = text;
         }
 
-        qq.setText(size, text);
+        qq.setText(size, this._totalSizeText);
     },
     _onComplete: function(id, fileName, result){
         qq.FileUploaderBasic.prototype._onComplete.apply(this, arguments);
@@ -617,6 +636,10 @@ qq.extend(qq.FileUploader.prototype, {
 
         if (result.success){
             qq.addClass(item, this._classes.success);
+            var item = this._getItemByFileId(id);
+            var size = this._find(item, 'size');
+            qq.setText(size, this._totalSizeText);
+            this._totalSizeText = '';
         } else {
             qq.addClass(item, this._classes.fail);
         }
@@ -1058,10 +1081,10 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             response;
 
         this.log("converting iframe's innerHTML to JSON");
-        this.log("innerHTML = " + doc.body.innerHTML);
+        this.log("innerHTML = " + doc.body.firstChild.innerHTML);
 
         try {
-            response = eval("(" + doc.body.innerHTML + ")");
+            response = eval("(" + doc.body.firstChild.innerHTML + ")");
         } catch(err){
             response = {};
         }
