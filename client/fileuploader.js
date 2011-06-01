@@ -646,7 +646,7 @@ qq.extend(qq.FileUploader.prototype, {
         {
             qq.setText(size, text);
         }
-        else if(text)
+		else
         {
             qq.setText(size, "calculating...");
         }
