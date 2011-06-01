@@ -661,10 +661,13 @@ qq.extend(qq.FileUploader.prototype, {
 
         if (result.success){
             qq.addClass(item, this._classes.success);
-            var item = this._getItemByFileId(id);
-            var size = this._find(item, 'size');
-            qq.setText(size, this._totalSizeText);
-            this._totalSizeText = '';
+            if(this._totalSizeText)
+            {
+                var item = this._getItemByFileId(id);
+                var size = this._find(item, 'size');
+                qq.setText(size, this._totalSizeText);
+                this._totalSizeText = '';
+            }
         } else {
             qq.addClass(item, this._classes.fail);
         }
@@ -1048,9 +1051,6 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         }
 
         var fileName = this.getName(id);
-
-        params = params || {};
-        params['qqfile'] = fileName;
 
         var iframe = this._createIframe(id);
         var form = this._createForm(iframe, params);
