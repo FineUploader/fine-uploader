@@ -256,6 +256,8 @@ qq.FileUploaderBasic = function(o){
         params: {},
         button: null,
         multiple: true,
+        // Rails csrf
+        csrf: false,
         maxConnections: 3,
         // validation        
         allowedExtensions: [],               
@@ -277,7 +279,7 @@ qq.FileUploaderBasic = function(o){
         },
         showMessage: function(message){
             alert(message);
-        }               
+        }
     };
     qq.extend(this._options, o);
         
@@ -335,7 +337,8 @@ qq.FileUploaderBasic.prototype = {
             onCancel: function(id, fileName){
                 self._onCancel(id, fileName);
                 self._options.onCancel(id, fileName);
-            }
+            },
+            csrf: this._options.csrf
         });
 
         return handler;
@@ -518,7 +521,8 @@ qq.FileUploader = function(o){
         }
     });
     // overwrite options with user supplied    
-    qq.extend(this._options, o);       
+    qq.extend(this._options, o);   
+    
 
     this._element = this._options.element;
     this._element.innerHTML = this._options.template;        
@@ -763,7 +767,6 @@ qq.UploadButton = function(o){
     };
     
     qq.extend(this._options, o);
-        
     this._element = this._options.element;
     
     // make button suitable container for input
@@ -1201,6 +1204,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
+        this._options.csrf && xhr.setRequestHeader("X-CSRF-Token", $("meta[name='csrf-token']").attr("content"));
         xhr.send(file);
     },
     _onComplete: function(id, xhr){
