@@ -17,7 +17,7 @@ providing good user experience everywhere.
 * tested in IE7,8; Firefox 3,3.6,4; Safari4,5; Chrome; Opera10.60;
 
 ### License ###
-This plugin is open sourced under <a href="http://www.gnu.org/licenses/gpl-2.0.html">GNU GPL 2</a> or later.
+This plugin is open sourced under <a href="http://www.gnu.org/licenses/gpl-2.0.html">GNU GPL 2</a> or later and <a href="http://www.gnu.org/licenses/lgpl-2.1.html">GNU LGPL 2</a> or later.
 If this license doesn't suit you mail me at andrew (at) valums.com.
 
 Please [donate][donation_link] if you are willing to support the further development of file upload plugin.  
