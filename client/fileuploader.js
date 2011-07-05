@@ -340,15 +340,15 @@ qq.FileUploaderBasic.prototype = {
             maxConnections: this._options.maxConnections,
             onProgress: function(id, fileName, loaded, total){
                 self._onProgress(id, fileName, loaded, total);
-                self._options.onProgress(id, fileName, loaded, total);
+                self._options.onProgress.call(self, id, fileName, loaded, total);
             },
             onComplete: function(id, fileName, result){
                 self._onComplete(id, fileName, result);
-                self._options.onComplete(id, fileName, result);
+                self._options.onComplete.call(self, id, fileName, result);
             },
             onCancel: function(id, fileName){
                 self._onCancel(id, fileName);
-                self._options.onCancel(id, fileName);
+                self._options.onCancel.call(self, id, fileName);
             }
         });
 
