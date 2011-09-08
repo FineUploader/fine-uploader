@@ -325,6 +325,7 @@ qq.FileUploaderBasic.prototype = {
             debug: this._options.debug,
             action: this._options.action,         
             maxConnections: this._options.maxConnections,   
+            inputName: this._options.inputName,
             onProgress: function(id, fileName, loaded, total){                
                 self._onProgress(id, fileName, loaded, total);
                 self._options.onProgress(id, fileName, loaded, total);                    
