@@ -314,13 +314,7 @@ qq.FileUploaderBasic.prototype = {
         var self = this,
             handlerClass;        
         
-        if(qq.UploadHandlerXhr.isSupported()){           
-            handlerClass = 'UploadHandlerXhr';                        
-        } else {
-            handlerClass = 'UploadHandlerForm';
-        }
-
-        var handler = new qq[handlerClass]({
+        var handlerOptions = {
             debug: this._options.debug,
             action: this._options.action,         
             maxConnections: this._options.maxConnections,   
@@ -336,9 +330,25 @@ qq.FileUploaderBasic.prototype = {
                 self._onCancel(id, fileName);
                 self._options.onCancel(id, fileName);
             }
-        });
+        };
 
-        return handler;
+        if (qq.UploadHandlerXhr.isSupported()){           
+            handlerClass = 'UploadHandlerXhr';                        
+            if (this._options.preSubmit && this._options.preSubmit.xhr) {
+                qq.extend(handlerOptions, {
+                    preSubmit: this._options.preSubmit.xhr
+                });
+            } 
+        } else {
+            handlerClass = 'UploadHandlerForm';
+            if (this._options.preSubmit && this._options.preSubmit.form) {
+                qq.extend(handlerOptions, {
+                    preSubmit: this._options.preSubmit.form
+                });
+            } 
+        }
+
+        return new qq[handlerClass](handlerOptions);
     },    
     _preventLeaveInProgress: function(){
         var self = this;
@@ -860,7 +870,8 @@ qq.UploadHandlerAbstract = function(o){
         maxConnections: 999,
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, response){},
-        onCancel: function(id, fileName){}
+        onCancel: function(id, fileName){},
+        preSubmit: function(id, form) {}
     };
     qq.extend(this._options, o);    
     
@@ -1021,6 +1032,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             }, 1);
         });
 
+        this._options.preSubmit(id, form);
         form.submit();        
         qq.remove(form);        
         
@@ -1201,6 +1213,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
+        this._options.preSubmit(id, xhr);
         xhr.send(file);
     },
     _onComplete: function(id, xhr){
