@@ -483,10 +483,12 @@ qq.FileUploader = function(o){
         element: null,
         // if set, will be used instead of qq-upload-list in template
         listElement: null,
+        
+        uploadButtonText: 'Upload a file',
                 
         template: '<div class="qq-uploader">' + 
                 '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
-                '<div class="qq-upload-button">Upload a file</div>' +
+                '<div class="qq-upload-button">{uploadButtonText}</div>' +
                 '<ul class="qq-upload-list"></ul>' + 
              '</div>',
 
@@ -518,7 +520,10 @@ qq.FileUploader = function(o){
         }
     });
     // overwrite options with user supplied    
-    qq.extend(this._options, o);       
+    qq.extend(this._options, o);
+    
+    // overwrite the upload button text if any
+    this._options.template = this._options.template.replace(/\{uploadButtonText\}/g, this._options.uploadButtonText);
 
     this._element = this._options.element;
     this._element.innerHTML = this._options.template;        
