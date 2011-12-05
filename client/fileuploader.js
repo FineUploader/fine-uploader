@@ -267,6 +267,7 @@ qq.FileUploaderBasic = function(o){
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, responseJSON){},
         onCancel: function(id, fileName){},
+        onUpload: function(id, fileName, xhr){},
         // messages                
         messages: {
             typeError: "{file} has invalid extension. Only {extensions} are allowed.",
@@ -335,6 +336,10 @@ qq.FileUploaderBasic.prototype = {
             onCancel: function(id, fileName){
                 self._onCancel(id, fileName);
                 self._options.onCancel(id, fileName);
+            },
+            onUpload: function(id, fileName, xhr){
+                self._onUpload(id, fileName, xhr);
+                self._options.onUpload(id, fileName, xhr);
             }
         });
 
@@ -366,6 +371,8 @@ qq.FileUploaderBasic.prototype = {
     },
     _onCancel: function(id, fileName){
         this._filesInProgress--;        
+    },
+    _onUpload: function(id, fileName, xhr){     
     },
     _onInputChange: function(input){
         if (this._handler instanceof qq.UploadHandlerXhr){                
@@ -860,7 +867,8 @@ qq.UploadHandlerAbstract = function(o){
         maxConnections: 999,
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, response){},
-        onCancel: function(id, fileName){}
+        onCancel: function(id, fileName){},
+        onUpload: function(id, fileName, xhr){}
     };
     qq.extend(this._options, o);    
     
@@ -992,7 +1000,8 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             qq.remove(iframe);
         }
     },     
-    _upload: function(id, params){                        
+    _upload: function(id, params){
+        this._options.onUpload(id, this.getName(id), false);                    
         var input = this._inputs[id];
         
         if (!input){
@@ -1170,6 +1179,8 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
      * @param {Object} params name-value string pairs
      */    
     _upload: function(id, params){
+        this._options.onUpload(id, this.getName(id), true);
+        
         var file = this._files[id],
             name = this.getName(id),
             size = this.getSize(id);
