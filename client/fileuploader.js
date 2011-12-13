@@ -560,7 +560,7 @@ qq.extend(qq.FileUploader.prototype, {
         this._options.extraDropzones.push(element); 
         this._setupDropZone(element);
     },
-    _setupDragZone: function(dropArea){
+    _setupDropZone: function(dropArea){
         var self = this;                       
 
         var dz = new qq.UploadDropZone({
