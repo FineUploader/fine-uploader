@@ -48,6 +48,15 @@ qq.getUniqueId = (function(){
 })();
 
 //
+// Browsers and platforms detection
+  
+qq.ie       = function(){ return navigator.userAgent.indexOf('MSIE') != -1; }
+qq.safari   = function(){ return navigator.vendor != undefined && navigator.vendor.indexOf("Apple") != -1; }
+qq.chrome   = function(){ return navigator.vendor != undefined && navigator.vendor.indexOf('Google') != -1; }
+qq.firefox  = function(){ return (navigator.userAgent.indexOf('Mozilla') != -1 && navigator.vendor != undefined && navigator.vendor == ''); }
+qq.windows  = function(){ return navigator.platform == "Win32"; }
+
+//
 // Events
 
 qq.attach = function(element, type, fn){
@@ -536,6 +545,10 @@ qq.FileUploader = function(o){
 qq.extend(qq.FileUploader.prototype, qq.FileUploaderBasic.prototype);
 
 qq.extend(qq.FileUploader.prototype, {
+    _leaving_document_out: function(e){
+        return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
+             || (qq.firefox() && !e.relatedTarget); // null e.relatedTarget for Firefox
+    },
     /**
      * Gets one of the elements listed in this._options.classes
      **/
@@ -558,7 +571,7 @@ qq.extend(qq.FileUploader.prototype, {
                 e.stopPropagation();
             },
             onLeave: function(e){
-                e.stopPropagation();
+                //e.stopPropagation();
             },
             onLeaveNotDescendants: function(e){
                 qq.removeClass(dropArea, self._classes.dropActive);  
@@ -572,20 +585,16 @@ qq.extend(qq.FileUploader.prototype, {
                 
         dropArea.style.display = 'none';
 
-        qq.attach(document, 'dragenter', function(e){     
-            if (!dz._isValidFileDrag(e)) return; 
-            
-            dropArea.style.display = 'block';            
+        qq.attach(document, 'dragenter', function(e){    
+            if(!qq.ie()) dropArea.style.display = 'block';            
         });                 
         qq.attach(document, 'dragleave', function(e){
-            if (!dz._isValidFileDrag(e)) return;            
-            
-            var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
-            // only fire when leaving document out
-            if ( ! relatedTarget || relatedTarget.nodeName == "HTML"){               
-                dropArea.style.display = 'none';                                            
-            }
-        });                
+            if (qq.FileUploader.prototype._leaving_document_out(e)) dropArea.style.display = 'none';
+        });  
+        qq.attach(document, 'drop', function(e){
+            dropArea.style.display = 'none';
+            e.preventDefault();
+        });            
     },
     _onSubmit: function(id, fileName){
         qq.FileUploaderBasic.prototype._onSubmit.apply(this, arguments);
@@ -681,17 +690,27 @@ qq.UploadDropZone = function(o){
 };
 
 qq.UploadDropZone.prototype = {
+    _dragover_should_be_canceled: function(){
+        return qq.safari() || (qq.firefox() && qq.windows());
+    },
     _disableDropOutside: function(e){
         // run only once for all instances
         if (!qq.UploadDropZone.dropOutsideDisabled ){
 
-            qq.attach(document, 'dragover', function(e){
-                if (e.dataTransfer){
-                    e.dataTransfer.dropEffect = 'none';
-                    e.preventDefault(); 
-                }           
-            });
-            
+            // for these cases we need to catch onDrop to reset dropArea
+            if (this._dragover_should_be_canceled){
+              qq.attach(document, 'dragover', function(e){
+                e.preventDefault();
+              });
+            } else {
+              qq.attach(document, 'dragover', function(e){
+                  if (e.dataTransfer){
+                      e.dataTransfer.dropEffect = 'none';
+                      e.preventDefault(); 
+                  }
+              });
+            }
+
             qq.UploadDropZone.dropOutsideDisabled = true; 
         }        
     },
@@ -701,10 +720,10 @@ qq.UploadDropZone.prototype = {
         qq.attach(self._element, 'dragover', function(e){
             if (!self._isValidFileDrag(e)) return;
             
-            var effect = e.dataTransfer.effectAllowed;
+            var effect = qq.ie() ? null : e.dataTransfer.effectAllowed;
             if (effect == 'move' || effect == 'linkMove'){
                 e.dataTransfer.dropEffect = 'move'; // for FF (only move allowed)    
-            } else {                    
+            } else {                 
                 e.dataTransfer.dropEffect = 'copy'; // for Chrome
             }
                                                      
@@ -740,13 +759,13 @@ qq.UploadDropZone.prototype = {
     _isValidFileDrag: function(e){
         var dt = e.dataTransfer,
             // do not check dt.types.contains in webkit, because it crashes safari 4            
-            isWebkit = navigator.userAgent.indexOf("AppleWebKit") > -1;                        
+            isSafari = qq.safari();                        
 
         // dt.effectAllowed is none in Safari 5
-        // dt.types.contains check is for firefox            
+        // dt.types.contains check is for firefox         
         return dt && dt.effectAllowed != 'none' && 
-            (dt.files || (!isWebkit && dt.types.contains && dt.types.contains('Files')));
-        
+            (dt.files || (!isSafari && dt.types.contains && dt.types.contains('Files')));
+
     }        
 }; 
 
