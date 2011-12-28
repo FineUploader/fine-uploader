@@ -578,7 +578,7 @@ qq.extend(qq.FileUploader.prototype, {
     },
     _setupExtraDropzone: function(element){
         this._options.extraDropzones.push(element); 
-        this._setupDropZone(element);
+        this._setupDropzone(element);
     },
     _setupDropzone: function(dropArea){
         var self = this;
