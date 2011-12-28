@@ -559,12 +559,16 @@ qq.extend(qq.FileUploader.prototype, qq.FileUploaderBasic.prototype);
 
 qq.extend(qq.FileUploader.prototype, {
     addExtraDropzone: function(element){
-      this._setupExtraDropzone(element);
+        this._setupExtraDropzone(element);
     },
     removeExtraDropzone: function(element){
-      var dzs = this._options.extraDropzones;  
-      for(var i in dzs) if (dzs[i] === element) return this._options.extraDropzones.splice(i,1);
+        var dzs = this._options.extraDropzones;  
+        for(var i in dzs) if (dzs[i] === element) return this._options.extraDropzones.splice(i,1);
     },
+    _leaving_document_out: function(e){
+        return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
+             || (qq.firefox() && !e.relatedTarget); // null e.relatedTarget for Firefox
+     },
     /**
      * Gets one of the elements listed in this._options.classes
      **/
@@ -615,14 +619,13 @@ qq.extend(qq.FileUploader.prototype, {
         
         qq.attach(document, 'dragenter', function(e){     
             if(!qq.ie()) {
-              for (var elem in dropzones){ dropzones[elem].style.display = 'block'; }
+                for (var elem in dropzones){ dropzones[elem].style.display = 'block'; }
             }            
         });                 
         qq.attach(document, 'dragleave', function(e){
             var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
             // only fire when leaving document out
-            if (((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) 
-                || (qq.firefox() && !e.relatedTarget) ) {        
+            if (qq.FileUploader.prototype._leaving_document_out(e)) {        
                 for (var elem in dropzones){ dropzones[elem].style.display = 'none'; }
             }
         }); 
@@ -725,22 +728,25 @@ qq.UploadDropZone = function(o){
 };
 
 qq.UploadDropZone.prototype = {
+    _dragover_should_be_canceled: function(){
+        return qq.safari() || (qq.firefox() && qq.windows());
+    },
     _disableDropOutside: function(e){
         // run only once for all instances
         if (!qq.UploadDropZone.dropOutsideDisabled ){
 
             // for these cases we need to catch onDrop to reset dropArea
-            if (qq.safari() || (qq.firefox() && qq.windows())){
-              qq.attach(document, 'dragover', function(e){
-                e.preventDefault();
-              });
+            if (this._dragover_should_be_canceled){
+                qq.attach(document, 'dragover', function(e){
+                    e.preventDefault();
+                });
             } else {
-              qq.attach(document, 'dragover', function(e){
-                  if (e.dataTransfer){
-                      e.dataTransfer.dropEffect = 'none';
-                      e.preventDefault(); 
-                  }
-              });
+                qq.attach(document, 'dragover', function(e){
+                    if (e.dataTransfer){
+                        e.dataTransfer.dropEffect = 'none';
+                        e.preventDefault(); 
+                    }
+                });
             }
 
             qq.UploadDropZone.dropOutsideDisabled = true; 
