@@ -612,25 +612,26 @@ qq.extend(qq.FileUploader.prototype, {
         var dropArea = this._find(this._element, 'drop');
         this._options.extraDropzones.push(dropArea); 
         
-        var dropzones = this._options.extraDropzones;                     
-        for (var elem in dropzones){
-            this._setupDropzone(dropzones[elem]);
+        var dropzones = this._options.extraDropzones;
+        var i;
+        for (i=0; i < dropzones.length; i++){
+            this._setupDropzone(dropzones[i]);
         }
         
         qq.attach(document, 'dragenter', function(e){     
             if(!qq.ie()) {
-                for (var elem in dropzones){ dropzones[elem].style.display = 'block'; }
+                for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'block'; }
             }            
         });                 
         qq.attach(document, 'dragleave', function(e){
             var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
             // only fire when leaving document out
             if (qq.FileUploader.prototype._leaving_document_out(e)) {        
-                for (var elem in dropzones){ dropzones[elem].style.display = 'none'; }
+                for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'none'; }
             }
         }); 
         qq.attach(document, 'drop', function(e){
-          for (var elem in dropzones){ dropzones[elem].style.display = 'none'; }
+          for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'none'; }
           e.preventDefault();
         });               
     },
