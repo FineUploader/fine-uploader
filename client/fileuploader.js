@@ -809,11 +809,11 @@ qq.UploadButton.prototype = {
             // the right side of the input
             right: 0,
             top: 0,
-            fontFamily: 'Arial',
+            fontFamily: 'Arial, Helvetica, sans-serif',
             // 4 persons reported this, the max values that worked for them were 243, 236, 236, 118
             fontSize: '118px',
             margin: 0,
-            padding: 0,
+            padding: '200px',
             cursor: 'pointer',
             opacity: 0
         });
