@@ -427,9 +427,9 @@ qq.FileUploaderBasic.prototype = {
             // get input value and remove path to normalize
             name = file.value.replace(/.*(\/|\\)/, "");
         } else {
-            // fix missing properties in Safari
-            name = file.fileName != null ? file.fileName : file.name;
-            size = file.fileSize != null ? file.fileSize : file.size;
+            // fix missing properties in Safari 4 and firefox 11.0a2
+            name = (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
+            size = file.fileSize !== null ? file.fileSize : file.size;
         }
                     
         if (! this._isAllowedExtension(name)){            
@@ -1216,7 +1216,8 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
     getName: function(id){        
         var file = this._files[id];
         // fix missing name in Safari 4
-        return file.fileName != null ? file.fileName : file.name;       
+        //NOTE: fixed missing name firefox 11.0a2 file.fileName is actually undefined
+        return (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
     },
     getSize: function(id){
         var file = this._files[id];
@@ -1266,6 +1267,8 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
+        //NOTE: return mime type in xhr works on chrome 16.0.9 firefox 11.0a2
+        xhr.setRequestHeader("X-Mime-Type",file.type );
         xhr.send(file);
     },
     _onComplete: function(id, xhr){
