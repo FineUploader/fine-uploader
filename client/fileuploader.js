@@ -284,7 +284,8 @@ qq.FileUploaderBasic = function(o){
             sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
             minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
             emptyError: "{file} is empty, please select files again without it.",
-            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."            
+            noFilesError: "No files to upload.",
+            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
         },
         showMessage: function(message){
             alert(message);
@@ -400,16 +401,21 @@ qq.FileUploaderBasic.prototype = {
         this._button.reset();   
     },  
     _uploadFileList: function(files){
-        for (var i=0; i<files.length; i++){
-            if ( !this._validateFile(files[i])){
-                return;
-            }            
+        if (files.length > 0) {
+			for (var i=0; i<files.length; i++){
+			    if ( !this._validateFile(files[i])){
+			        return;
+			    }
+			}
+
+			for (var i=0; i<files.length; i++){
+			    this._uploadFile(files[i]);
+			}
         }
-        
-        for (var i=0; i<files.length; i++){
-            this._uploadFile(files[i]);        
-        }        
-    },       
+        else {
+			this._error('noFilesError', "");
+        }
+    },
     _uploadFile: function(fileContainer){      
         var id = this._handler.add(fileContainer);
         var fileName = this._handler.getName(id);
