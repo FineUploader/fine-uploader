@@ -520,8 +520,10 @@ qq.FileUploader = function(o){
 
         // template for one item in file list
         fileTemplate: '<li>' +
-                '<span class="qq-upload-file"></span>' +
                 '<span class="qq-upload-spinner"></span>' +
+                '<span class="qq-upload-finished"></span>' +
+                '<span class="qq-upload-failed-icon"></span>' +
+                '<span class="qq-upload-file"></span>' +
                 '<span class="qq-upload-size"></span>' +
                 '<a class="qq-upload-cancel" href="#">Cancel</a>' +
                 '<span class="qq-upload-failed-text">Failed</span>' +
@@ -536,6 +538,8 @@ qq.FileUploader = function(o){
                         
             file: 'qq-upload-file',
             spinner: 'qq-upload-spinner',
+            finished: 'qq-upload-finished',
+            failedicon: 'qq-upload-failed-icon',
             size: 'qq-upload-size',
             cancel: 'qq-upload-cancel',
 
@@ -543,6 +547,12 @@ qq.FileUploader = function(o){
             // used in css to hide progress spinner
             success: 'qq-upload-success',
             fail: 'qq-upload-fail'
+        },
+
+		//if null, use default images specified in fileuploader.css
+        icons : {
+            finished: null,
+            failed: null
         }
     });
     // overwrite options with user supplied    
@@ -553,6 +563,7 @@ qq.FileUploader = function(o){
     this._listElement = this._options.listElement || this._find(this._element, 'list');
     
     this._classes = this._options.classes;
+    this._icons = this._options.icons;
         
     this._button = this._createUploadButton(this._find(this._element, 'button'));        
     
@@ -670,10 +681,18 @@ qq.extend(qq.FileUploader.prototype, {
         qq.remove(this._find(item, 'spinner'));
         
         if (result.success){
-            qq.addClass(item, this._classes.success);    
+            qq.addClass(item, this._classes.success);
+            this._find(item, 'finished').style.display = "inline-block";
+            if (this._icons.finished) {
+	            this._find(item, 'finished').style.background = "url('" + this._icons.finished + "')";
+            }
         } else {
             qq.addClass(item, this._classes.fail);
-        }         
+            this._find(item, 'failedicon').style.display = "inline-block";
+            if (this._icons.failed) {
+                this._find(item, 'failedicon').style.background = "url('" + this._icons.failed + "')";
+            }
+        }
     },
     _addToList: function(id, fileName){
         var item = qq.toElement(this._options.fileTemplate);                
