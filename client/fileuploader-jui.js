@@ -12,13 +12,14 @@ qq.jQueryUIUploader = function (o) {
 		// if set, will be used instead of qq-upload-list in template
 		listElement: null,
 
-		template:	'<div class="jq-uploader">' +
+		template: '<div class="jq-uploader">' +
 						'<div class="jq-upload-button">Upload a file</div>' +
 						'<ul class="jq-upload-list"></ul>' +
+						'<div class="jq-upload-dialog"></div>' +
 					'</div>',
 
 		// template for one item in file list
-		fileTemplate:	'<li>' +
+		fileTemplate: '<li>' +
 							'<span class="jq-upload-file"></span>' +
 							'<span class="jq-upload-size"></span>' +
 							'<br/><div class="jq-upload-progress"></div>' +
@@ -33,13 +34,18 @@ qq.jQueryUIUploader = function (o) {
 
 			file: 'jq-upload-file',
 			progress: 'jq-upload-progress',
+			dialog: 'jq-upload-dialog',
 			size: 'jq-upload-size',
 			cancel: 'jq-upload-cancel',
 
 			// added to list item when upload completes
-			// used in css to hide progress spinner
+			// used in css to hide progress bar
 			success: 'jq-upload-success',
 			fail: 'jq-upload-fail'
+		},
+		showMessage: function (message) {
+			$(".jq-upload-dialog").text(message);
+			$(".jq-upload-dialog").dialog("open");
 		}
 	});
 	// overwrite options with user supplied    
@@ -47,11 +53,19 @@ qq.jQueryUIUploader = function (o) {
 
 	this._element = this._options.element;
 	this._element.innerHTML = this._options.template;
+
 	this._listElement = this._options.listElement || this._find(this._element, 'list');
 
 	this._classes = this._options.classes;
 
 	this._button = this._createUploadButton(this._find(this._element, 'button'));
+
+	// Check if we already made a dialog once
+	if ($('.jq-upload-dialog').length > 1) {
+		qq.remove(this._find(this._element, 'dialog'));
+	} else {
+		this._dialog = this._createDialog(this._find(this._element, 'dialog'));
+	}
 
 	this._bindCancelEvent();
 };
@@ -73,6 +87,18 @@ qq.extend(qq.jQueryUIUploader.prototype, {
 				self._onInputChange(input);
 			}
 		});
+	},
+	/**
+	* Creates a reusable dialog for messages with jQueryUI instead of alert()
+	**/
+	_createDialog: function (element) {
+		return $(element).dialog({
+			modal: true,
+			autoOpen: false,
+			buttons: {
+				OK: function() { $(this).dialog("close"); }
+			}
+		})[0];
 	},
 	/**
 	* Gets one of the elements listed in this._options.classes
