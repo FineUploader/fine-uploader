@@ -266,6 +266,7 @@ qq.FileUploaderBasic = function(o){
         button: null,
         multiple: true,
         maxConnections: 3,
+        disableCancelForFormUploads: false,
         // validation        
         allowedExtensions: [],
         acceptFiles: null,               
@@ -566,7 +567,7 @@ qq.FileUploader = function(o){
     this._icons = this._options.icons;
         
     this._button = this._createUploadButton(this._find(this._element, 'button'));        
-    
+
     this._bindCancelEvent();
     this._setupDragDrop();
 };
@@ -676,8 +677,10 @@ qq.extend(qq.FileUploader.prototype, {
         qq.FileUploaderBasic.prototype._onComplete.apply(this, arguments);
 
         // mark completed
-        var item = this._getItemByFileId(id);                
-        qq.remove(this._find(item, 'cancel'));
+        var item = this._getItemByFileId(id);
+        if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
+            qq.remove(this._find(item, 'cancel'));
+        }
         qq.remove(this._find(item, 'spinner'));
         
         if (result.success){
@@ -695,7 +698,13 @@ qq.extend(qq.FileUploader.prototype, {
         }
     },
     _addToList: function(id, fileName){
-        var item = qq.toElement(this._options.fileTemplate);                
+        var item = qq.toElement(this._options.fileTemplate);
+
+        if (this._options.disableCancelForFormUploads && !qq.UploadHandlerXhr.isSupported()) {
+            var cancelLink = this._find(item, 'cancel');
+            qq.remove(cancelLink);
+        }
+
         item.qqFileId = id;
 
         var fileElement = this._find(item, 'file');        
