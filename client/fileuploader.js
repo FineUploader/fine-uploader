@@ -506,6 +506,7 @@ qq.FileUploader = function(o){
             button: 'qq-upload-button',
             drop: 'qq-upload-drop-area',
             dropActive: 'qq-upload-drop-area-active',
+            dropDisabled: 'qq-upload-drop-area-disabled',
             list: 'qq-upload-list',
                         
             file: 'qq-upload-file',
@@ -576,7 +577,8 @@ qq.extend(qq.FileUploader.prototype, {
 
         qq.attach(document, 'dragenter', function(e){     
             if (!dz._isValidFileDrag(e)) return; 
-            
+            if (qq.hasClass(dropArea, self._classes.dropDisabled)) return;
+
             dropArea.style.display = 'block';            
         });                 
         qq.attach(document, 'dragleave', function(e){
