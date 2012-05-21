@@ -1,10 +1,17 @@
-[donation_link]: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=3PMY37SL9L888&lc=US&item_name=JavaScript%20file%20uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
+### Note ###
+
+This is a public fork of Valum's File Uploader in an attempt to incorporate some of the best bugfixes and patches to make a version compatible with the latest browsers in 2012.
+
+Initiated by <a href="https://github.com/SimonEast">SimonEast</a>, but interested maintainers are welcome.
+
+
+### Summary ###
 
 This plugin uses XHR for uploading multiple files with progress-bar in FF3.6+, Safari4+,
 Chrome and falls back to hidden iframe based upload in other browsers,
 providing good user experience everywhere.
 
-### <a href="http://valums.com/files/2010/file-uploader/demo.htm">Demo</a> [Donate][donation_link] ###
+### <a href="http://valums.com/files/2010/file-uploader/demo.htm">Original Demo by Valum</a> ###
 
 ### Features ###
 * multiple file select, progress-bar in FF, Chrome, Safari
