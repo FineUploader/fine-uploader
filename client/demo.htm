@@ -19,6 +19,8 @@
 			<!-- or put a simple form for upload here -->
 		</noscript>         
 	</div>
+
+	<div class="qq-upload-extra-drop-area">Drop files here too</div>
     
     <script src="fileuploader.js" type="text/javascript"></script>
     <script>        
@@ -26,7 +28,8 @@
             var uploader = new qq.FileUploader({
                 element: document.getElementById('file-uploader-demo1'),
                 action: 'do-nothing.htm',
-                debug: true
+                debug: true,
+                extraDropzones: [qq.getByClass(document, 'qq-upload-extra-drop-area')[0]]
             });           
         }
         
