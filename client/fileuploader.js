@@ -838,8 +838,12 @@ qq.UploadDropZone.prototype = {
     _isValidFileDrag: function(e){
         var dt = e.dataTransfer,
             // do not check dt.types.contains in webkit, because it crashes safari 4            
-            isSafari = qq.safari();                        
-
+            isSafari = qq.safari();
+		
+		// e.dataTransfer currently causing IE errors
+		// any volunteers to get drag-and-drop uploading working in IE9?
+		if (qq.ie()) return false;
+		
         // dt.effectAllowed is none in Safari 5
         // dt.types.contains check is for firefox            
         return dt && dt.effectAllowed != 'none' && 
