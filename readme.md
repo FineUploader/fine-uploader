@@ -95,6 +95,7 @@ If you can't find the one you need, check the readme.txt in the same folder.
     onProgress: function(id, fileName, loaded, total){},
     onComplete: function(id, fileName, responseJSON){},
     onCancel: function(id, fileName){},
+    onError: function(id, fileName, xhr){}
     
     messages: {
         // error messages, see qq.FileUploaderBasic for content            
