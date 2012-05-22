@@ -1,9 +1,12 @@
 /**
- * http://github.com/valums/file-uploader
+ * http://github.com/Valums-File-Uploader/file-uploader
  * 
  * Multiple file upload component with progress-bar, drag-and-drop. 
- * © 2010 Andrew Valums ( andrew(at)valums.com ) 
  * 
+ * Have ideas for improving this JS for the general community? 
+ * Submit your changes at: https://github.com/Valums-File-Uploader/file-uploader
+ *
+ * Original version © 2010 Andrew Valums ( andrew(at)valums.com ) 
  * Licensed under GNU GPL 2 or later and GNU LGPL 2 or later, see license.txt.
  */    
 
@@ -273,7 +276,7 @@ qq.FileUploaderBasic = function(o){
         maxConnections: 3,
         // validation        
         allowedExtensions: [],
-        acceptFiles: null,               
+        acceptFiles: null,		// comma separated string of mime-types for browser to display in browse dialog
         sizeLimit: 0,   
         minSizeLimit: 0,                             
         // events
@@ -518,13 +521,10 @@ qq.FileUploader = function(o){
     qq.extend(this._options, {
         element: null,
         // if set, will be used instead of qq-upload-list in template
-        listElement: null,
-        
-        uploadButtonText: 'Upload a file',
-        
-        cancelButtonText: 'Cancel',
-        
-        failUploadText: 'Cancel',
+        listElement: null,        
+        uploadButtonText: 'Upload a file',        
+        cancelButtonText: 'Cancel',        
+        failUploadText: 'Upload failed',
                 
         template: '<div class="qq-uploader">' + 
                 '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
@@ -554,7 +554,7 @@ qq.FileUploader = function(o){
             size: 'qq-upload-size',
             cancel: 'qq-upload-cancel',
 
-            // added to list item when upload completes
+            // added to list item <li> when upload completes
             // used in css to hide progress spinner
             success: 'qq-upload-success',
             fail: 'qq-upload-fail'
@@ -567,7 +567,7 @@ qq.FileUploader = function(o){
     // same for the Cancel button and Fail message text
     this._options.template     = this._options.template.replace(/\{uploadButtonText\}/g, this._options.uploadButtonText);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.cancelButtonText);
-    this._options.fileTemplate = this._options.fileTemplate.replace(/\{failUploadtext\}/g, this._options.failUploadtext);
+    this._options.fileTemplate = this._options.fileTemplate.replace(/\{failUploadtext\}/g, this._options.failUploadText);
 
     this._element = this._options.element;
     this._element.innerHTML = this._options.template;        
