@@ -385,7 +385,6 @@ qq.FileUploaderBasic.prototype = {
             return self._options.messages.onLeave;             
         });        
     },
-
     _onSubmit: function(id, fileName){
         this._filesInProgress++;  
     },
@@ -482,7 +481,9 @@ qq.FileUploaderBasic.prototype = {
         return name;
     },
     _isAllowedExtension: function(fileName){
-        var ext = (-1 !== fileName.indexOf('.')) ? fileName.replace(/.*[.]/, '').toLowerCase() : '';
+        var ext = (-1 !== fileName.indexOf('.')) 
+					? fileName.replace(/.*[.]/, '').toLowerCase() 
+					: '';
         var allowed = this._options.allowedExtensions;
         
         if (!allowed.length){return true;}        
@@ -620,12 +621,13 @@ qq.extend(qq.FileUploader.prototype, {
             }
         });
 
-      this.addDisposer(function() { dz.dispose(); });
+		this.addDisposer(function() { dz.dispose(); });
 
-      dropArea.style.display = 'none';
-     },
+		dropArea.style.display = 'none';
+    },
     _setupDragDrop: function(){
         var dropArea = this._find(this._element, 'drop');
+		var self = this;
         this._options.extraDropzones.push(dropArea); 
         
         var dropzones = this._options.extraDropzones;
@@ -635,7 +637,8 @@ qq.extend(qq.FileUploader.prototype, {
         }
         
         this._attach(document, 'dragenter', function(e){
-            if (!dz._isValidFileDrag(e)) return; 
+            // console.log();
+			// if (!self._isValidFileDrag(e)) return; // now causing error. Need it be here?
             if (qq.hasClass(dropArea, self._classes.dropDisabled)) return;
 
             dropArea.style.display = 'block';        
@@ -650,7 +653,7 @@ qq.extend(qq.FileUploader.prototype, {
             if (qq.FileUploader.prototype._leaving_document_out(e)) {        
                 for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'none'; }
             }
-        });                
+        }); 
         qq.attach(document, 'drop', function(e){
           for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'none'; }
           e.preventDefault();
@@ -697,9 +700,12 @@ qq.extend(qq.FileUploader.prototype, {
         var fileElement = this._find(item, 'file');        
         qq.setText(fileElement, this._formatFileName(fileName));
         this._find(item, 'size').style.display = 'none';        
-
+		if (!this._options.multiple) this._clearList();
         this._listElement.appendChild(item);
     },
+	_clearList: function(){
+		this._listElement.innerHTML = '';
+	},
     _getItemByFileId: function(id){
         var item = this._listElement.firstChild;        
         
