@@ -265,7 +265,7 @@ qq.FileUploaderBasic = function(o){
         // return false to cancel submit
         onSubmit: function(id, fileName){},
         onProgress: function(id, fileName, loaded, total){},
-        onComplete: function(id, fileName, responseJSON){},
+        onComplete: function(id, fileName, response){},
         onCancel: function(id, fileName){},
         // messages                
         messages: {
