@@ -521,13 +521,14 @@ qq.FileUploader = function(o){
     qq.extend(this._options, {
         element: null,
         // if set, will be used instead of qq-upload-list in template
-        listElement: null,        
+        listElement: null,
+        dragText: 'Drop files here to upload',      
         uploadButtonText: 'Upload a file',        
         cancelButtonText: 'Cancel',        
         failUploadText: 'Upload failed',
                 
         template: '<div class="qq-uploader">' + 
-                '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
+                '<div class="qq-upload-drop-area"><span>{dragText}</span></div>' +
                 '<div class="qq-upload-button">{uploadButtonText}</div>' +
                 '<ul class="qq-upload-list"></ul>' + 
              '</div>',
@@ -565,6 +566,7 @@ qq.FileUploader = function(o){
     
     // overwrite the upload button text if any
     // same for the Cancel button and Fail message text
+    this._options.template     = this._options.template.replace(/\{dragText\}/g, this._options.dragText);
     this._options.template     = this._options.template.replace(/\{uploadButtonText\}/g, this._options.uploadButtonText);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.cancelButtonText);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{failUploadtext\}/g, this._options.failUploadText);
