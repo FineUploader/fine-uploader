@@ -249,7 +249,9 @@ var qq = qq || {};
  * Creates upload button, validates upload, but doesn't create file list or dd. 
  */
 qq.FileUploaderBasic = function(o){
+
     this._options = {
+        method: 'POST',
         // set to true to see the server response
         debug: false,
         action: '/server/upload',
@@ -277,10 +279,11 @@ qq.FileUploaderBasic = function(o){
         },
         showMessage: function(message){
             alert(message);
-        }               
+        }         
     };
+
     qq.extend(this._options, o);
-        
+
     // number of files being uploaded
     this._filesInProgress = 0;
     this._handler = this._createUploadHandler(); 
@@ -394,7 +397,7 @@ qq.FileUploaderBasic.prototype = {
         
         if (this._options.onSubmit(id, fileName) !== false){
             this._onSubmit(id, fileName);
-            this._handler.upload(id, this._options.params);
+            this._handler.upload(id, this._options.params, this._options.method);
         }
     },      
     _validateFile: function(file){
@@ -880,7 +883,8 @@ qq.UploadHandlerAbstract.prototype = {
     /**
      * Sends the file identified by id and additional query params to the server
      */
-    upload: function(id, params){
+    upload: function(id, params, method){
+      
         var len = this._queue.push(id);
 
         var copy = {};        
@@ -888,8 +892,8 @@ qq.UploadHandlerAbstract.prototype = {
         this._params[id] = copy;        
                 
         // if too many active uploads, wait...
-        if (len <= this._options.maxConnections){               
-            this._upload(id, this._params[id]);
+        if (len <= this._options.maxConnections){     
+            this._upload(id, this._params[id], method);
         }
     },
     /**
@@ -1139,6 +1143,7 @@ qq.UploadHandlerXhr.isSupported = function(){
 qq.extend(qq.UploadHandlerXhr.prototype, qq.UploadHandlerAbstract.prototype)
 
 qq.extend(qq.UploadHandlerXhr.prototype, {
+      
     /**
      * Adds file to the queue
      * Returns id to use with upload, cancel
@@ -1169,7 +1174,8 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
      * Sends the file identified by id and additional query params to the server
      * @param {Object} params name-value string pairs
      */    
-    _upload: function(id, params){
+    _upload: function(id, params, method){
+
         var file = this._files[id],
             name = this.getName(id),
             size = this.getSize(id);
@@ -1197,7 +1203,8 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         params['qqfile'] = name;
         var queryString = qq.obj2url(params, this._options.action);
 
-        xhr.open("POST", queryString, true);
+
+        xhr.open(method, queryString, true);
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
