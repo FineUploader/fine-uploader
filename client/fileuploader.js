@@ -1198,6 +1198,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         var queryString = qq.obj2url(params, this._options.action);
 
         xhr.open("POST", queryString, true);
+        xhr.setRequestHeader("Accept", "text/javascript");
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
