@@ -275,6 +275,12 @@ qq.FileUploaderBasic = function(o){
             emptyError: "{file} is empty, please select files again without it.",
             onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."            
         },
+        strings: {
+            upload: "Upload a file",
+            drop: "Drop files here to upload",
+            cancel: "Cancel",
+            failed: "Failed"
+        },
         showMessage: function(message){
             alert(message);
         }               
@@ -485,8 +491,8 @@ qq.FileUploader = function(o){
         listElement: null,
                 
         template: '<div class="qq-uploader">' + 
-                '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
-                '<div class="qq-upload-button">Upload a file</div>' +
+                '<div class="qq-upload-drop-area"><span>{drop}</span></div>' +
+                '<div class="qq-upload-button">{upload}</div>' +
                 '<ul class="qq-upload-list"></ul>' + 
              '</div>',
 
@@ -495,8 +501,8 @@ qq.FileUploader = function(o){
                 '<span class="qq-upload-file"></span>' +
                 '<span class="qq-upload-spinner"></span>' +
                 '<span class="qq-upload-size"></span>' +
-                '<a class="qq-upload-cancel" href="#">Cancel</a>' +
-                '<span class="qq-upload-failed-text">Failed</span>' +
+                '<a class="qq-upload-cancel" href="#">{cancel}</a>' +
+                '<span class="qq-upload-failed-text">{failed}</span>' +
             '</li>',        
         
         classes: {
@@ -521,7 +527,11 @@ qq.FileUploader = function(o){
     qq.extend(this._options, o);       
 
     this._element = this._options.element;
-    this._element.innerHTML = this._options.template;        
+    var message = this._options.template;
+    function r(name, replacement){ message = message.replace(name, replacement); }
+    r('{drop}', this._options.strings.drop);
+    r('{upload}', this._options.strings.upload);
+    this._element.innerHTML = message;     
     this._listElement = this._options.listElement || this._find(this._element, 'list');
     
     this._classes = this._options.classes;
@@ -622,7 +632,12 @@ qq.extend(qq.FileUploader.prototype, {
         }         
     },
     _addToList: function(id, fileName){
-        var item = qq.toElement(this._options.fileTemplate);                
+        var message = this._options.fileTemplate;
+        function r(name, replacement){ message = message.replace(name, replacement); }
+        r('{cancel}', this._options.strings.cancel);
+        r('{failed}', this._options.strings.failed);
+        this._element.innerHTML = message;
+        var item = qq.toElement(message);                
         item.qqFileId = id;
 
         var fileElement = this._find(item, 'file');        
