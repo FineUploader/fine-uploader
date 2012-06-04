@@ -1166,10 +1166,15 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         // iframe.contentWindow.document - for IE<7
         var doc = iframe.contentDocument ? iframe.contentDocument: iframe.contentWindow.document,
             response;
-        
+
+        var innerHTML = doc.body.innerHTML;
         this.log("converting iframe's innerHTML to JSON");
-        this.log("innerHTML = " + doc.body.innerHTML);
-                        
+        this.log("innerHTML = " + innerHTML);
+        //plain text response may be wrapped in <pre> tag
+        if (innerHTML.slice(0, 5).toLowerCase() == '<pre>' && innerHTML.slice(-6).toLowerCase() == '</pre>') {
+            innerHTML = doc.body.firstChild.innerText;
+        }
+
         try {
             response = eval("(" + doc.body.innerHTML + ")");
         } catch(err){
