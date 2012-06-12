@@ -111,6 +111,21 @@ qq.toElement = (function(){
     };
 })();
 
+/**
+ * Decodes HTML encoded string
+ */
+qq.htmlDec = (function(){
+    var textarea = document.createElement('textarea');
+    return function(html){
+        var decoded = html;
+        try {
+            textarea.innerHTML = html;
+            decoded = textarea.value;
+        } catch(e) {}
+        return decoded;
+    };
+})();
+
 //
 // Node properties and attributes
 
@@ -323,7 +338,8 @@ qq.FileUploaderBasic.prototype = {
         var handler = new qq[handlerClass]({
             debug: this._options.debug,
             action: this._options.action,         
-            maxConnections: this._options.maxConnections,   
+            encoding: this._options.encoding,
+            maxConnections: this._options.maxConnections,
             onProgress: function(id, fileName, loaded, total){                
                 self._onProgress(id, fileName, loaded, total);
                 self._options.onProgress(id, fileName, loaded, total);                    
@@ -1059,9 +1075,16 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         
         this.log("converting iframe's innerHTML to JSON");
         this.log("innerHTML = " + doc.body.innerHTML);
-                        
+
+        var jsonString = doc.body.innerHTML;
+        //IE wraps plain text responses in <pre> tag
+        if (jsonString.slice(0, 5).toLowerCase() == '<pre>' && jsonString.slice(-6).toLowerCase() == '</pre>') {
+          //Characters in <pre> may be encoded as HTML entities (e.g. &amp;)
+          jsonString = qq.htmlDec(jsonString.slice(5, -6));
+        }
+
         try {
-            response = eval("(" + doc.body.innerHTML + ")");
+            response = eval("(" + jsonString + ")");
         } catch(err){
             response = {};
         }        
@@ -1200,8 +1223,14 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         xhr.open("POST", queryString, true);
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
-        xhr.setRequestHeader("Content-Type", "application/octet-stream");
-        xhr.send(file);
+        if (this._options.encoding == 'multipart' && typeof FormData !== 'undefined') {
+            var formData = new FormData();
+            formData.append('qqfile', file);
+            xhr.send(formData);
+        } else {
+            xhr.setRequestHeader("Content-Type", "application/octet-stream");
+            xhr.send(file);
+        }
     },
     _onComplete: function(id, xhr){
         // the request was aborted/cancelled
