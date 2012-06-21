@@ -19,20 +19,47 @@
 			<!-- or put a simple form for upload here -->
 		</noscript>         
 	</div>
+	
+	<p>The following example doesn't start the upload on change, but is triggered by a predefined action.</p>
+	<p>In this case a click on a link.</p>
+	<div id="file-uploader-demo2"></div>
+	<a href="javascript:void();" id="start-upload">Start upload</a>
     
     <script src="fileuploader.js" type="text/javascript"></script>
     <script>        
-        function createUploader(){            
+        function createUploaders(){
             var uploader = new qq.FileUploader({
                 element: document.getElementById('file-uploader-demo1'),
                 action: 'do-nothing.htm',
                 debug: true
-            });           
+            });
+            
+            var buttonUploader = new qq.ButtonFileUploader({
+            	element: document.getElementById('file-uploader-demo2'),
+            	action: 'do-nothing.htm',
+            	debug: true,
+            	// overruling the template is optional, it's just a textual change
+            	template: '<div class="qq-uploader">' + 
+                	'<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
+                	'<div class="qq-upload-button">Select a file</div>' +
+                	'<ul class="qq-upload-list"></ul>' + 
+             	'</div>',
+            	button: null,
+            	onChange: function(filename) {
+            		// return false if invalid extension
+            		return (filename.split('.').pop().toLowerCase() in ['png','jpg','gif']);
+            	}
+            });
+            
+            document.getElementById('start-upload').onclick = function() {
+            	buttonUploader.startUploads();
+            	return false;
+            };
         }
         
         // in your app create uploader as soon as the DOM is ready
         // don't wait for the window to load  
-        window.onload = createUploader;     
+        window.onload = createUploaders;     
     </script>    
 </body>
 </html>
