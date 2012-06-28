@@ -445,8 +445,9 @@ qq.FileUploaderBasic.prototype = {
         } else {
             // fix missing properties in Safari 4 and firefox 11.0a2
             name = (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
-            size = file.fileSize !== null ? file.fileSize : file.size;
         }
+        
+        size = (file.fileSize !== null && file.fileSize !== undefined) ? file.fileSize : file.size;
                     
         if (! this._isAllowedExtension(name)){            
             this._error('typeError', name);
