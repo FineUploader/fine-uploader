@@ -6,9 +6,10 @@
  * Have ideas for improving this JS for the general community? 
  * Submit your changes at: https://github.com/Valums-File-Uploader/file-uploader
  *
- * Original version © 2010 Andrew Valums ( andrew(at)valums.com ) 
+ * VERSION 2.0 beta
+ * Original version 1.0 © 2010 Andrew Valums ( andrew(at)valums.com ) 
  * Licensed under GNU GPL 2 or later and GNU LGPL 2 or later, see license.txt.
- */    
+ */
 
 //
 // Helper functions
@@ -289,7 +290,7 @@ qq.FileUploaderBasic = function(o){
 		onError: function(id, fileName, xhr) {},
         // messages                
         messages: {
-            typeError: "{file} has invalid extension. Only {extensions} are allowed.",
+            typeError: "Unfortunately the file(s) you selected weren't the type we were expecting. Only {extensions} files are allowed.",
             sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
             minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
             emptyError: "{file} is empty, please select files again without it.",
@@ -445,10 +446,9 @@ qq.FileUploaderBasic.prototype = {
         } else {
             // fix missing properties in Safari 4 and firefox 11.0a2
             name = (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
+			size = (file.fileSize !== null && file.fileSize !== undefined) ? file.fileSize : file.size;
         }
-        
-        size = (file.fileSize !== null && file.fileSize !== undefined) ? file.fileSize : file.size;
-                    
+		
         if (! this._isAllowedExtension(name)){            
             this._error('typeError', name);
             return false;
@@ -537,6 +537,7 @@ qq.FileUploader = function(o){
 
         // template for one item in file list
         fileTemplate: '<li>' +
+                '<span class="qq-progress-bar"></span>' +
                 '<span class="qq-upload-file"></span>' +
                 '<span class="qq-upload-spinner"></span>' +
                 '<span class="qq-upload-size"></span>' +
@@ -551,7 +552,7 @@ qq.FileUploader = function(o){
             dropActive: 'qq-upload-drop-area-active',
             dropDisabled: 'qq-upload-drop-area-disabled',
             list: 'qq-upload-list',
-                        
+            progressBar: 'qq-progress-bar',
             file: 'qq-upload-file',
             spinner: 'qq-upload-spinner',
             size: 'qq-upload-size',
@@ -652,17 +653,19 @@ qq.extend(qq.FileUploader.prototype, {
             this._setupDropzone(dropzones[i]);
         }
         
-        this._attach(document, 'dragenter', function(e){
-            // console.log();
-			// if (!self._isValidFileDrag(e)) return; // now causing error. Need it be here?
-            if (qq.hasClass(dropArea, self._classes.dropDisabled)) return;
+		// IE <= 9 does not support the File API used for drag+drop uploads
+		// Any volunteers to enable & test this for IE10?
+		if (!qq.ie()) {
+			this._attach(document, 'dragenter', function(e){
+				// console.log();
+				if (!self._isValidFileDrag(e)) return; // now causing error. Need it be here?
+				if (qq.hasClass(dropArea, self._classes.dropDisabled)) return;
 
-            dropArea.style.display = 'block';        
-    
-            if(!qq.ie()) {
-                for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'block'; }
-            }            
-        });                 
+				dropArea.style.display = 'block';        
+				for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'block'; }
+				
+			});
+		}
         this._attach(document, 'dragleave', function(e){
             var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
             // only fire when leaving document out
@@ -679,19 +682,27 @@ qq.extend(qq.FileUploader.prototype, {
         qq.FileUploaderBasic.prototype._onSubmit.apply(this, arguments);
         this._addToList(id, fileName);  
     },
+	// Update the progress bar & percentage as the file is uploaded
     _onProgress: function(id, fileName, loaded, total){
         qq.FileUploaderBasic.prototype._onProgress.apply(this, arguments);
 
         var item = this._getItemByFileId(id);
         var size = this._find(item, 'size');
         size.style.display = 'inline';
-        
-        var text; 
-        if (loaded != total){
-            text = Math.round(loaded / total * 100) + '% from ' + this._formatSize(total);
-        } else {                                   
+		
+        var text;
+		var percent = Math.round(loaded / total * 100);
+
+        if (loaded != total) {
+			// If still uploading, display percentage
+            text = percent + '% from ' + this._formatSize(total);	
+        } else {
+			// If complete, just display final size
             text = this._formatSize(total);
         }          
+		
+		// Update progress bar <span> tag
+		this._find(item, 'progressBar').style.width = percent + '%';
         
         qq.setText(size, text);         
     },
@@ -840,13 +851,14 @@ qq.UploadDropZone.prototype = {
         });          
     },
     _isValidFileDrag: function(e){
+		// e.dataTransfer currently causing IE errors
+		// IE9 does NOT support file API, so drag-and-drop is not possible
+		// IE10 should work, but currently has not been tested - any volunteers?
+		if (qq.ie()) return false;
+		
         var dt = e.dataTransfer,
             // do not check dt.types.contains in webkit, because it crashes safari 4            
             isSafari = qq.safari();
-		
-		// e.dataTransfer currently causing IE errors
-		// any volunteers to get drag-and-drop uploading working in IE9?
-		if (qq.ie()) return false;
 		
         // dt.effectAllowed is none in Safari 5
         // dt.types.contains check is for firefox            
@@ -963,6 +975,7 @@ qq.UploadButton.prototype = {
  * Class for uploading files, uploading itself is handled by child classes
  */
 qq.UploadHandlerAbstract = function(o){
+	// Default options, can be overridden by the user
     this._options = {
         debug: false,
         action: '/upload.php',
