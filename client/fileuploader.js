@@ -1192,6 +1192,57 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
             }
         };
 
+        var Tools = {
+
+            init : function(file, name, params){
+                this._paramsFile(file, name);
+                this._params(params);
+                var request  = "--" + this._getBoundary() + this._CRLF;
+                    request += this._contents.join("--" + this._getBoundary() + this._CRLF);
+                    request += "--" + this._getBoundary() + "--" + this._CRLF;
+                return request;
+            },
+            
+            _contents : [],
+            _boundary : null,
+            _CRLF : "\r\n",
+            
+            _getBoundary : function(){
+                if(!this._boundary){
+                    this._boundary = "-------------" + (new Date).getTime();
+                }
+                return this._boundary;
+            },
+
+            _paramsFile : function(file, name){
+                var contentPart = "";
+                contentPart  = 'Content-Disposition: form-data; ';
+                contentPart += 'name="qqfile"; ';
+                contentPart += 'filename="' + name + '"' + this._CRLF;
+                contentPart += "Content-Type: application/octet-stream";
+                contentPart += this._CRLF + this._CRLF;
+                contentPart += file.getAsBinary() + this._CRLF;
+                this._contents.push(contentPart);
+                return this._contents;
+            },
+
+            _params : function(params){
+                var contentPart = "";
+                for(var key in params){
+                    contentPart  = 'Content-Disposition: form-data; ';
+                    contentPart += 'name="' + key + '"' + this._CRLF  + this._CRLF ;
+                    contentPart += params[key] + this._CRLF ;
+                    this._contents.push(contentPart);
+                }
+                return this._contents;
+            },
+
+            contentType : function(){
+                return "multipart/form-data; boundary=" + this._getBoundary();
+            }
+        }       
+
+            
         // build query string
         params = params || {};
         params['qqfile'] = name;
@@ -1201,7 +1252,14 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
-        xhr.send(file);
+        
+        try{
+            var data = Tools.init(file, name, params);
+            xhr.setRequestHeader("Content-Type",Tools.contentType());
+            xhr.sendAsBinary(data);            
+        } catch(e){
+            xhr.send(file);
+        }
     },
     _onComplete: function(id, xhr){
         // the request was aborted/cancelled
