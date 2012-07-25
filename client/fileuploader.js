@@ -277,7 +277,8 @@ qq.FileUploaderBasic = function(o){
         },
         showMessage: function(message){
             alert(message);
-        }               
+        },
+        extraDropzones : []               
     };
     qq.extend(this._options, o);
         
@@ -324,6 +325,7 @@ qq.FileUploaderBasic.prototype = {
             debug: this._options.debug,
             action: this._options.action,         
             maxConnections: this._options.maxConnections,   
+            extraDropzones: this._options.extraDropzones,
             onProgress: function(id, fileName, loaded, total){                
                 self._onProgress(id, fileName, loaded, total);
                 self._options.onProgress(id, fileName, loaded, total);                    
@@ -536,6 +538,13 @@ qq.FileUploader = function(o){
 qq.extend(qq.FileUploader.prototype, qq.FileUploaderBasic.prototype);
 
 qq.extend(qq.FileUploader.prototype, {
+    addExtraDropzone: function(element){
+      this._setupExtraDropzone(element);
+    },
+    removeExtraDropzone: function(element){
+      var dzs = this._options.extraDropzones;  
+      for(var i in dzs) if (dzs[i] === element) return this._options.extraDropzones.splice(i,1);
+    },
     /**
      * Gets one of the elements listed in this._options.classes
      **/
@@ -547,10 +556,13 @@ qq.extend(qq.FileUploader.prototype, {
         
         return element;
     },
-    _setupDragDrop: function(){
-        var self = this,
-            dropArea = this._find(this._element, 'drop');                        
-
+    _setupExtraDropzone: function(element){
+        this._options.extraDropzones.push(element); 
+        this._setupDropzone(element);
+    },
+    _setupDropzone: function(dropArea){
+        var self = this;
+        
         var dz = new qq.UploadDropZone({
             element: dropArea,
             onEnter: function(e){
@@ -571,21 +583,35 @@ qq.extend(qq.FileUploader.prototype, {
         });
                 
         dropArea.style.display = 'none';
-
+     },
+    _setupDragDrop: function(){
+        var dropArea = this._find(this._element, 'drop');
+        this._options.extraDropzones.push(dropArea); 
+        
+        var dropzones = this._options.extraDropzones;                     
+        for (var elem in dropzones){
+            this._setupDropzone(dropzones[elem]);
+        }
+        
         qq.attach(document, 'dragenter', function(e){     
-            if (!dz._isValidFileDrag(e)) return; 
+            if (!qq.UploadDropZone.prototype._isValidFileDrag(e)) return; 
             
-            dropArea.style.display = 'block';            
+            for (var elem in dropzones){ dropzones[elem].style.display = 'block'; }            
         });                 
         qq.attach(document, 'dragleave', function(e){
-            if (!dz._isValidFileDrag(e)) return;            
+            if (!qq.UploadDropZone.prototype._isValidFileDrag(e)) return;            
             
             var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
             // only fire when leaving document out
             if ( ! relatedTarget || relatedTarget.nodeName == "HTML"){               
-                dropArea.style.display = 'none';                                            
+                for (var elem in dropzones){ dropzones[elem].style.display = 'none'; }
             }
-        });                
+        }); 
+        qq.attach(document, 'drop', function(e){
+          for (var elem in dropzones){ dropzones[elem].style.display = 'none'; }
+          
+          e.preventDefault();
+        });               
     },
     _onSubmit: function(id, fileName){
         qq.FileUploaderBasic.prototype._onSubmit.apply(this, arguments);
