@@ -22,6 +22,8 @@ qq.extend = function(first, second){
     }
 };  
 
+
+
 /**
  * Searches for a given element in the array, returns -1 if it is not present.
  * @param {Number} [from] The index at which to begin the search
@@ -1139,6 +1141,24 @@ qq.UploadHandlerXhr.isSupported = function(){
 qq.extend(qq.UploadHandlerXhr.prototype, qq.UploadHandlerAbstract.prototype)
 
 qq.extend(qq.UploadHandlerXhr.prototype, {
+
+    // helper for csrf
+    getCookie: function(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    },
+
     /**
      * Adds file to the queue
      * Returns id to use with upload, cancel
@@ -1201,6 +1221,12 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         xhr.setRequestHeader("Content-Type", "application/octet-stream");
+        // csrf
+        var csrf = this.getCookie('csrftoken');
+        if(csrf !== null) {
+            xhr.setRequestHeader("X-CSRFToken", csrf);   
+        }
+        
         xhr.send(file);
     },
     _onComplete: function(id, xhr){
