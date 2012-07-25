@@ -1061,7 +1061,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         this.log("innerHTML = " + doc.body.innerHTML);
                         
         try {
-            response = eval("(" + doc.body.innerHTML + ")");
+            response = JSON.parse("(" + doc.body.innerHTML + ")");
         } catch(err){
             response = {};
         }        
@@ -1219,7 +1219,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
             var response;
                     
             try {
-                response = eval("(" + xhr.responseText + ")");
+                response = JSON.parse("(" + xhr.responseText + ")");
             } catch(err){
                 response = {};
             }
