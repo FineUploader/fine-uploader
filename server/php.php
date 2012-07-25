@@ -14,11 +14,11 @@ class qqUploadedFileXhr {
         $realSize = stream_copy_to_stream($input, $temp);
         fclose($input);
         
-        if ($realSize != $this->getSize()){            
+        if ($realSize != $this->getSize()){
             return false;
         }
         
-        $target = fopen($path, "w");        
+        $target = fopen($path, "w");
         fseek($temp, 0, SEEK_SET);
         stream_copy_to_stream($temp, $target);
         fclose($target);
@@ -63,7 +63,6 @@ class qqFileUploader {
     private $allowedExtensions = array();
     private $sizeLimit = 10485760;
     private $file;
-
     function __construct(array $allowedExtensions = array(), $sizeLimit = 10485760){        
         $allowedExtensions = array_map("strtolower", $allowedExtensions);
             
@@ -101,11 +100,17 @@ class qqFileUploader {
         }
         return $val;
     }
-    
+    /*
+     * Returns fiel info array
+     */
+    function fileInfo($options = 0)
+    {
+        return pathinfo($this->file->getName(), $options);
+    }
     /**
      * Returns array('success'=>true) or array('error'=>'error message')
      */
-    function handleUpload($uploadDirectory, $replaceOldFile = FALSE){
+    function handleUpload($uploadDirectory, $replaceOldFile = FALSE, $filename = NULL, $extension = NULL){
         if (!is_writable($uploadDirectory)){
             return array('error' => "Server error. Upload directory isn't writable.");
         }
@@ -123,32 +128,31 @@ class qqFileUploader {
         if ($size > $this->sizeLimit) {
             return array('error' => 'File is too large');
         }
-        
-        $pathinfo = pathinfo($this->file->getName());
-        $filename = $pathinfo['filename'];
-        //$filename = md5(uniqid());
-        $ext = $pathinfo['extension'];
 
-        if($this->allowedExtensions && !in_array(strtolower($ext), $this->allowedExtensions)){
+        $filename   = ($filename) ? $filename : $this->fileInfo(PATHINFO_FILENAME);
+
+        $extension  = ($extension) ? $extension : $this->fileInfo(PATHINFO_EXTENSION);
+
+        if($this->allowedExtensions && !in_array(strtolower($this->fileInfo(PATHINFO_EXTENSION)), $this->allowedExtensions)){
             $these = implode(', ', $this->allowedExtensions);
-            return array('error' => 'File has an invalid extension, it should be one of '. $these . '.');
+            return array('error' => 'File has an invalid extension ['.strtolower($this->fileInfo(PATHINFO_EXTENSION)).'], it should be one of '.$these.'.');
         }
         
         if(!$replaceOldFile){
             /// don't overwrite previous files that were uploaded
-            while (file_exists($uploadDirectory . $filename . '.' . $ext)) {
+            while (file_exists($uploadDirectory . $filename . '.' . $extension)) {
                 $filename .= rand(10, 99);
             }
         }
         
-        if ($this->file->save($uploadDirectory . $filename . '.' . $ext)){
+        if ($this->file->save($uploadDirectory . $filename . '.' . $extension)){
             return array('success'=>true);
         } else {
             return array('error'=> 'Could not save uploaded file.' .
                 'The upload was cancelled, or server error encountered');
         }
-        
-    }    
+
+    }
 }
 
 // list of valid extensions, ex. array("jpeg", "xml", "bmp")
@@ -157,6 +161,7 @@ $allowedExtensions = array();
 $sizeLimit = 10 * 1024 * 1024;
 
 $uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
-$result = $uploader->handleUpload('uploads/');
+$filename = md5(time().$uploader->fileInfo(PATHINFO_FILENAME));
+$result = $uploader->handleUpload('uploads/', FALSE, $filename);
 // to pass data through iframe you will need to encode all html tags
 echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
