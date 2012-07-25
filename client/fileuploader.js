@@ -624,6 +624,7 @@ qq.extend(qq.FileUploader.prototype, {
     _addToList: function(id, fileName){
         var item = qq.toElement(this._options.fileTemplate);                
         item.qqFileId = id;
+        item.dataset.uploader_id = id;
 
         var fileElement = this._find(item, 'file');        
         qq.setText(fileElement, this._formatFileName(fileName));
