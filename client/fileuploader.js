@@ -404,6 +404,9 @@ qq.FileUploaderBasic.prototype = {
             // it is a file input            
             // get input value and remove path to normalize
             name = file.value.replace(/.*(\/|\\)/, "");
+			if(file.files) {
+				size = file.files[0].fileSize;
+			}
         } else {
             // fix missing properties in Safari
             name = file.fileName != null ? file.fileName : file.name;
