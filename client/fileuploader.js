@@ -267,6 +267,7 @@ qq.FileUploaderBasic = function(o){
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, responseJSON){},
         onCancel: function(id, fileName){},
+        onError: function(id, fileName, xhr) {},
         // messages                
         messages: {
             typeError: "{file} has invalid extension. Only {extensions} are allowed.",
@@ -335,7 +336,8 @@ qq.FileUploaderBasic.prototype = {
             onCancel: function(id, fileName){
                 self._onCancel(id, fileName);
                 self._options.onCancel(id, fileName);
-            }
+            },
+            onError : self._options.onError
         });
 
         return handler;
@@ -1226,7 +1228,8 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
             
             this._options.onComplete(id, name, response);
                         
-        } else {                   
+        } else {
+            this._options.onError(id, name, xhr);
             this._options.onComplete(id, name, {});
         }
                 
