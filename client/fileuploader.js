@@ -261,8 +261,11 @@ qq.FileUploaderBasic = function(o){
         allowedExtensions: [],               
         sizeLimit: 0,   
         minSizeLimit: 0,                             
+        autoUpload: true,
+        dragDrop: true,
         // events
         // return false to cancel submit
+        onQueue: function(fileNames){},
         onSubmit: function(id, fileName){},
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, responseJSON){},
@@ -299,6 +302,9 @@ qq.FileUploaderBasic.prototype = {
     getInProgress: function(){
         return this._filesInProgress;         
     },
+    startUpload: function (){
+        this._onInputChange(this._button._input);
+    },
     _createUploadButton: function(element){
         var self = this;
         
@@ -306,7 +312,20 @@ qq.FileUploaderBasic.prototype = {
             element: element,
             multiple: this._options.multiple && qq.UploadHandlerXhr.isSupported(),
             onChange: function(input){
-                self._onInputChange(input);
+                self._handler.reset();
+                if (self._options.autoUpload) {
+                    self._onInputChange(input);
+                    return;
+                }
+                if (input.files) {
+                    var filenames = [];
+
+                    for (var i = 0; i < input.files.length; i++) {
+                        filenames.push(input.files[i].name || input.files[i].fileName);
+                    }
+
+                    self._options.onQueue(filenames, input.files);
+                }
             }        
         });           
     },    
@@ -484,11 +503,14 @@ qq.FileUploader = function(o){
         // if set, will be used instead of qq-upload-list in template
         listElement: null,
                 
-        template: '<div class="qq-uploader">' + 
+        template: (typeof o.dragDrop != "undefined" && !o.dragDrop ? '<div class="qq-uploader">' +
+                '<div class="qq-upload-button">Upload a file</div>' +
+                '<ul class="qq-upload-list"></ul>' +
+             '</div>' : '<div class="qq-uploader">' +
                 '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
                 '<div class="qq-upload-button">Upload a file</div>' +
                 '<ul class="qq-upload-list"></ul>' + 
-             '</div>',
+             '</div>'),
 
         // template for one item in file list
         fileTemplate: '<li>' +
@@ -529,7 +551,7 @@ qq.FileUploader = function(o){
     this._button = this._createUploadButton(this._find(this._element, 'button'));        
     
     this._bindCancelEvent();
-    this._setupDragDrop();
+    if (this._options.dragDrop) this._setupDragDrop();
 };
 
 // inherit from Basic Uploader
@@ -1149,6 +1171,10 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         }
                 
         return this._files.push(file) - 1;        
+    },
+    reset: function(){
+        this._files.length = 0;
+        return this;
     },
     getName: function(id){        
         var file = this._files[id];
