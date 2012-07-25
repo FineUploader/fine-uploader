@@ -447,13 +447,13 @@ qq.FileUploaderBasic.prototype = {
         return name;
     },
     _isAllowedExtension: function(fileName){
-        var ext = (-1 !== fileName.indexOf('.')) ? fileName.replace(/.*[.]/, '').toLowerCase() : '';
-        var allowed = this._options.allowedExtensions;
+        var allowed = this._options.allowedExtensions.map(function(n){return '.' + n});
+        var lcaseFn = fileName.toLowerCase();
         
         if (!allowed.length){return true;}        
         
         for (var i=0; i<allowed.length; i++){
-            if (allowed[i].toLowerCase() == ext){ return true;}    
+            if (allowed[i].toLowerCase() == lcaseFn.substr(-allowed[i].length)){ return true;}
         }
         
         return false;
