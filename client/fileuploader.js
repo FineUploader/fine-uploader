@@ -277,7 +277,8 @@ qq.FileUploaderBasic = function(o){
         },
         showMessage: function(message){
             alert(message);
-        }               
+        },
+        inputName: 'qqfile'
     };
     qq.extend(this._options, o);
         
@@ -324,6 +325,7 @@ qq.FileUploaderBasic.prototype = {
             debug: this._options.debug,
             action: this._options.action,         
             maxConnections: this._options.maxConnections,   
+            inputName: this._options.inputName,
             onProgress: function(id, fileName, loaded, total){                
                 self._onProgress(id, fileName, loaded, total);
                 self._options.onProgress(id, fileName, loaded, total);                    
@@ -961,7 +963,7 @@ qq.extend(qq.UploadHandlerForm.prototype, qq.UploadHandlerAbstract.prototype);
 
 qq.extend(qq.UploadHandlerForm.prototype, {
     add: function(fileInput){
-        fileInput.setAttribute('name', 'qqfile');
+        fileInput.setAttribute('name', this._options.inputName);
         var id = 'qq-upload-handler-iframe' + qq.getUniqueId();       
         
         this._inputs[id] = fileInput;
@@ -1194,7 +1196,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
 
         // build query string
         params = params || {};
-        params['qqfile'] = name;
+        params[this._options.inputName] = name;
         var queryString = qq.obj2url(params, this._options.action);
 
         xhr.open("POST", queryString, true);
