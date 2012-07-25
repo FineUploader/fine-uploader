@@ -68,7 +68,7 @@ class qqFileUploader {
         $allowedExtensions = array_map("strtolower", $allowedExtensions);
             
         $this->allowedExtensions = $allowedExtensions;        
-        $this->sizeLimit = $sizeLimit;
+        $this->sizeLimit = $this->toBytes($sizeLimit);
         
         $this->checkServerSettings();       
 
@@ -87,7 +87,7 @@ class qqFileUploader {
         
         if ($postSize < $this->sizeLimit || $uploadSize < $this->sizeLimit){
             $size = max(1, $this->sizeLimit / 1024 / 1024) . 'M';             
-            die("{'error':'increase post_max_size and upload_max_filesize to $size'}");    
+            die('{"error":"Increase \'post_max_size\' and/or \'upload_max_filesize\' to '. $size .'."}');
         }        
     }
     
@@ -118,14 +118,13 @@ class qqFileUploader {
         
         if ($size == 0) {
             return array('error' => 'File is empty');
-        }
-        
-        if ($size > $this->sizeLimit) {
+        } elseif ($size > $this->sizeLimit) {
             return array('error' => 'File is too large');
         }
         
         $pathinfo = pathinfo($this->file->getName());
-        $filename = $pathinfo['filename'];
+        // fix for php < 5.2
+        $filename = isset($pathinfo['filename']) ? $pathinfo['filename'] : substr($pathinfo['basename'], 0, strrpos($pathinfo['basename'], '.'));
         //$filename = md5(uniqid());
         $ext = $pathinfo['extension'];
 
@@ -142,7 +141,10 @@ class qqFileUploader {
         }
         
         if ($this->file->save($uploadDirectory . $filename . '.' . $ext)){
-            return array('success'=>true);
+            return array(
+                'success'  => TRUE,
+                'filename' => $filename .'.'. $ext
+            );
         } else {
             return array('error'=> 'Could not save uploaded file.' .
                 'The upload was cancelled, or server error encountered');
