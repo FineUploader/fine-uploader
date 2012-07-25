@@ -483,10 +483,16 @@ qq.FileUploader = function(o){
         element: null,
         // if set, will be used instead of qq-upload-list in template
         listElement: null,
+        
+        uploadButtonText: 'Upload a file',
+        
+        cancelButtonText: 'Cancel',
+        
+        failUploadText: 'Cancel',
                 
         template: '<div class="qq-uploader">' + 
                 '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
-                '<div class="qq-upload-button">Upload a file</div>' +
+                '<div class="qq-upload-button">{uploadButtonText}</div>' +
                 '<ul class="qq-upload-list"></ul>' + 
              '</div>',
 
@@ -495,8 +501,8 @@ qq.FileUploader = function(o){
                 '<span class="qq-upload-file"></span>' +
                 '<span class="qq-upload-spinner"></span>' +
                 '<span class="qq-upload-size"></span>' +
-                '<a class="qq-upload-cancel" href="#">Cancel</a>' +
-                '<span class="qq-upload-failed-text">Failed</span>' +
+                '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
+                '<span class="qq-upload-failed-text">{failUploadtext}</span>' +
             '</li>',        
         
         classes: {
@@ -518,7 +524,13 @@ qq.FileUploader = function(o){
         }
     });
     // overwrite options with user supplied    
-    qq.extend(this._options, o);       
+    qq.extend(this._options, o);
+    
+    // overwrite the upload button text if any
+    // same for the Cancel button and Fail message text
+    this._options.template     = this._options.template.replace(/\{uploadButtonText\}/g, this._options.uploadButtonText);
+    this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.cancelButtonText);
+    this._options.fileTemplate = this._options.fileTemplate.replace(/\{failUploadtext\}/g, this._options.failUploadtext);
 
     this._element = this._options.element;
     this._element.innerHTML = this._options.template;        
