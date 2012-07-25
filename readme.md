@@ -86,11 +86,27 @@ If you can't find the one you need, check the readme.txt in the same folder.
     onProgress: function(id, fileName, loaded, total){},
     onComplete: function(id, fileName, responseJSON){},
     onCancel: function(id, fileName){},
+
+		// if you'd like to handle dragged image elements from a browser window
+		urlHandler: function( event, image_url ) { }
     
     messages: {
         // error messages, see qq.FileUploaderBasic for content            
     },
-    showMessage: function(message){ alert(message); }        
+    showMessage: function(message){ alert(message); },
+
+    // provide html element for a custome drop zone
+    dropElement: document.getElementById('my-drop-zone'),
+
+    // For use with dropElement, skip upload button creation for a drop-only uploader
+    skipUploadElement: true,
+
+		// like the former, but for drop elements
+    skipDropElement: true,
+
+		// more html elements in which to create file upload buttons
+		additionalUploadIds: ['elid']
+		
 
 Instance methods
 

@@ -267,13 +267,16 @@ qq.FileUploaderBasic = function(o){
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, responseJSON){},
         onCancel: function(id, fileName){},
+		// optional handler to catch image elements drag/dropped from browser window
+		urlHandler: false,
         // messages                
         messages: {
             typeError: "{file} has invalid extension. Only {extensions} are allowed.",
             sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
             minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
             emptyError: "{file} is empty, please select files again without it.",
-            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."            
+            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled.",            
+            noFiles: "Only files on your computer can be uploaded."            
         },
         showMessage: function(message){
             alert(message);
@@ -378,6 +381,13 @@ qq.FileUploaderBasic.prototype = {
         this._button.reset();   
     },  
     _uploadFileList: function(files){
+        
+        if (typeof files == 'undefined' || files.length < 1)
+        {
+            this._error('noFiles', 'empty');
+            return false;
+        }
+        
         for (var i=0; i<files.length; i++){
             if ( !this._validateFile(files[i])){
                 return;
@@ -481,8 +491,11 @@ qq.FileUploader = function(o){
     // additional options    
     qq.extend(this._options, {
         element: null,
+        dropElement: null,
         // if set, will be used instead of qq-upload-list in template
         listElement: null,
+        skipDropElement : false,
+        skipUploadElement : false,
                 
         template: '<div class="qq-uploader">' + 
                 '<div class="qq-upload-drop-area"><span>Drop files here to upload</span></div>' +
@@ -515,21 +528,37 @@ qq.FileUploader = function(o){
             // used in css to hide progress spinner
             success: 'qq-upload-success',
             fail: 'qq-upload-fail'
-        }
+        },
+		additionalUploadIds: false
+
     });
     // overwrite options with user supplied    
     qq.extend(this._options, o);       
 
     this._element = this._options.element;
-    this._element.innerHTML = this._options.template;        
+
+    if (!this._options.skipDropTemplate) {
+      this._dropElement = this._options.dropElement ? this._options.dropElement : this._options.element;
+    }
+
+    if (!(this._options.skipUploadTemplate && this._options.dropElement)) {
+      this._element.innerHTML = this._options.template;
+      this._button = this._createUploadButton(this._find(this._element, 'button'));
+	  if (this._options.additionalUploadIds)
+	  {
+		for (var i=0; i < this._options.additionalUploadIds.length; i++ )
+		{
+			this._createUploadButton($(this._options.additionalUploadIds[i]));
+		}
+	  }
+    }
+
     this._listElement = this._options.listElement || this._find(this._element, 'list');
     
     this._classes = this._options.classes;
-        
-    this._button = this._createUploadButton(this._find(this._element, 'button'));        
-    
+
     this._bindCancelEvent();
-    this._setupDragDrop();
+    if (!this._options.skipDropTemplate) this._setupDragDrop();
 };
 
 // inherit from Basic Uploader
@@ -549,7 +578,7 @@ qq.extend(qq.FileUploader.prototype, {
     },
     _setupDragDrop: function(){
         var self = this,
-            dropArea = this._find(this._element, 'drop');                        
+            dropArea = this._find(this._dropElement, 'drop');                        
 
         var dz = new qq.UploadDropZone({
             element: dropArea,
@@ -564,9 +593,34 @@ qq.extend(qq.FileUploader.prototype, {
                 qq.removeClass(dropArea, self._classes.dropActive);  
             },
             onDrop: function(e){
-                dropArea.style.display = 'none';
-                qq.removeClass(dropArea, self._classes.dropActive);
-                self._uploadFileList(e.dataTransfer.files);    
+                // changed to remove ALL drop zone notes when dropped!
+                var els = qq.getByClass(document, self._options.classes['drop']);
+                for (var i=0; i<els.length; i++) {
+                  if (els[i]) {
+                    qq.removeClass(els[i], self._classes.dropActive);
+                    els[i].style.display = 'none';
+                  }
+                }
+
+				
+				if (self._options.urlHandler && e.dataTransfer.files.length == 0)
+				{
+					if (e.dataTransfer.types.indexOf && -1 != e.dataTransfer.types.indexOf("text/html") || e.dataTransfer.types.contains && -1 != e.dataTransfer.types.contains("text/html"))
+					{
+						var dropData = e.dataTransfer.getData("text/html");
+						var dropDataEl = new Element('div');
+						dropDataEl.update(e.dataTransfer.getData("text/html"));
+						var droppedImage = dropDataEl.down('img', null, 0);
+						
+
+						if (droppedImage && droppedImage.src.indexOf("data:") < 0)
+							return self._options.urlHandler( e, droppedImage.src );
+						else
+							return self._options.urlHandler( e, null );
+					}
+				}
+
+				self._uploadFileList(e.dataTransfer.files);    
             }
         });
                 
@@ -582,8 +636,8 @@ qq.extend(qq.FileUploader.prototype, {
             
             var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
             // only fire when leaving document out
-            if ( ! relatedTarget || relatedTarget.nodeName == "HTML"){               
-                dropArea.style.display = 'none';                                            
+            if ( ! relatedTarget || relatedTarget.nodeName == "HTML" || relatedTarget.nodeName == "BODY"){               
+              dropArea.style.display = 'none';
             }
         });                
     },
