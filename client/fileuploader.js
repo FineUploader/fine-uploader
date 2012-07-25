@@ -50,11 +50,15 @@ qq.getUniqueId = (function(){
 //
 // Events
 
+/** Returns the function which detaches attached event */
 qq.attach = function(element, type, fn){
     if (element.addEventListener){
         element.addEventListener(type, fn, false);
     } else if (element.attachEvent){
         element.attachEvent('on' + type, fn);
+    }
+    return function() {
+      qq.detach(element, type, fn)
     }
 };
 qq.detach = function(element, type, fn){
@@ -280,10 +284,11 @@ qq.FileUploaderBasic = function(o){
         }               
     };
     qq.extend(this._options, o);
-        
+    qq.extend(this, qq.DisposeSupport);
+
     // number of files being uploaded
     this._filesInProgress = 0;
-    this._handler = this._createUploadHandler(); 
+    this._handler = this._createUploadHandler();
     
     if (this._options.button){ 
         this._button = this._createUploadButton(this._options.button);
@@ -302,13 +307,16 @@ qq.FileUploaderBasic.prototype = {
     _createUploadButton: function(element){
         var self = this;
         
-        return new qq.UploadButton({
+        var button = new qq.UploadButton({
             element: element,
             multiple: this._options.multiple && qq.UploadHandlerXhr.isSupported(),
             onChange: function(input){
                 self._onInputChange(input);
             }        
-        });           
+        });
+
+        this.addDisposer(function() { button.dispose(); });
+        return button;
     },    
     _createUploadHandler: function(){
         var self = this,
@@ -343,7 +351,7 @@ qq.FileUploaderBasic.prototype = {
     _preventLeaveInProgress: function(){
         var self = this;
         
-        qq.attach(window, 'beforeunload', function(e){
+        this._attach(window, 'beforeunload', function(e){
             if (!self._filesInProgress){return;}
             
             var e = e || window.event;
@@ -352,7 +360,8 @@ qq.FileUploaderBasic.prototype = {
             // for webkit
             return self._options.messages.onLeave;             
         });        
-    },    
+    },
+
     _onSubmit: function(id, fileName){
         this._filesInProgress++;  
     },
@@ -569,15 +578,17 @@ qq.extend(qq.FileUploader.prototype, {
                 self._uploadFileList(e.dataTransfer.files);    
             }
         });
-                
-        dropArea.style.display = 'none';
 
-        qq.attach(document, 'dragenter', function(e){     
+      this.addDisposer(function() { dz.dispose(); });
+
+      dropArea.style.display = 'none';
+
+        this._attach(document, 'dragenter', function(e){
             if (!dz._isValidFileDrag(e)) return; 
             
             dropArea.style.display = 'block';            
         });                 
-        qq.attach(document, 'dragleave', function(e){
+        this._attach(document, 'dragleave', function(e){
             if (!dz._isValidFileDrag(e)) return;            
             
             var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
@@ -648,7 +659,7 @@ qq.extend(qq.FileUploader.prototype, {
         var self = this,
             list = this._listElement;            
         
-        qq.attach(list, 'click', function(e){            
+        this._attach(list, 'click', function(e){
             e = e || window.event;
             var target = e.target || e.srcElement;
             
@@ -672,8 +683,9 @@ qq.UploadDropZone = function(o){
         onLeaveNotDescendants: function(e){},   
         onDrop: function(e){}                       
     };
-    qq.extend(this._options, o); 
-    
+    qq.extend(this._options, o);
+    qq.extend(this, qq.DisposeSupport);
+
     this._element = this._options.element;
     
     this._disableDropOutside();
@@ -698,7 +710,7 @@ qq.UploadDropZone.prototype = {
     _attachEvents: function(){
         var self = this;              
                   
-        qq.attach(self._element, 'dragover', function(e){
+        self._attach(self._element, 'dragover', function(e){
             if (!self._isValidFileDrag(e)) return;
             
             var effect = e.dataTransfer.effectAllowed;
@@ -711,14 +723,14 @@ qq.UploadDropZone.prototype = {
             e.stopPropagation();
             e.preventDefault();                                                                    
         });
-        
-        qq.attach(self._element, 'dragenter', function(e){
+
+        self._attach(self._element, 'dragenter', function(e){
             if (!self._isValidFileDrag(e)) return;
                         
             self._options.onEnter(e);
         });
-        
-        qq.attach(self._element, 'dragleave', function(e){
+
+        self._attach(self._element, 'dragleave', function(e){
             if (!self._isValidFileDrag(e)) return;
             
             self._options.onLeave(e);
@@ -729,8 +741,8 @@ qq.UploadDropZone.prototype = {
                         
             self._options.onLeaveNotDescendants(e); 
         });
-                
-        qq.attach(self._element, 'drop', function(e){
+
+        self._attach(self._element, 'drop', function(e){
             if (!self._isValidFileDrag(e)) return;
             
             e.preventDefault();
@@ -763,7 +775,8 @@ qq.UploadButton = function(o){
     };
     
     qq.extend(this._options, o);
-        
+    qq.extend(this, qq.DisposeSupport);
+
     this._element = this._options.element;
     
     // make button suitable container for input
@@ -821,20 +834,20 @@ qq.UploadButton.prototype = {
         this._element.appendChild(input);
 
         var self = this;
-        qq.attach(input, 'change', function(){
+        this._attach(input, 'change', function(){
             self._options.onChange(input);
         });
-                
-        qq.attach(input, 'mouseover', function(){
+
+        this._attach(input, 'mouseover', function(){
             qq.addClass(self._element, self._options.hoverClass);
         });
-        qq.attach(input, 'mouseout', function(){
+        this._attach(input, 'mouseout', function(){
             qq.removeClass(self._element, self._options.hoverClass);
         });
-        qq.attach(input, 'focus', function(){
+        this._attach(input, 'focus', function(){
             qq.addClass(self._element, self._options.focusClass);
         });
-        qq.attach(input, 'blur', function(){
+        this._attach(input, 'blur', function(){
             qq.removeClass(self._element, self._options.focusClass);
         });
 
@@ -1017,6 +1030,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             delete self._inputs[id];
             // timeout added to fix busy state in FF3.6
             setTimeout(function(){
+                self._detach_event();
                 qq.remove(iframe);
             }, 1);
         });
@@ -1027,7 +1041,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         return id;
     }, 
     _attachLoadEvent: function(iframe, callback){
-        qq.attach(iframe, 'load', function(){
+        this._detach_event = qq.attach(iframe, 'load', function(){
             // when we remove iframe from dom
             // the request stops, but in IE load
             // event fires
@@ -1245,3 +1259,28 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         }
     }
 });
+
+/**
+ * A generic module which supports object disposing in dispose() method.
+ * */
+qq.DisposeSupport = {
+  _disposers: [],
+
+  /** Run all registered disposers */
+  dispose: function() {
+    var disposer;
+    while (disposer = this._disposers.shift()) {
+      disposer();
+    }
+  },
+
+  /** Add disposer to the collection */
+  addDisposer: function(disposeFunction) {
+    this._disposers.push(disposeFunction);
+  },
+
+  /** Attach event handler and register de-attacher as a disposer */
+  _attach: function() {
+    this.addDisposer(qq.attach.apply(this, arguments));
+  }
+};
