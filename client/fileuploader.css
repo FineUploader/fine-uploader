@@ -3,9 +3,9 @@
 .qq-upload-button {
     display:block; /* or inline-block */
     width: 105px; padding: 7px 0; text-align:center;    
-    background:#880000; border-bottom:1px solid #ddd;color:#fff;
+    background-color:#880000; border-bottom:1px solid #ddd;color:#fff;
 }
-.qq-upload-button-hover {background:#cc0000;}
+.qq-upload-button-hover {background-color:#cc0000;}
 .qq-upload-button-focus {outline:1px dotted black;}
 
 .qq-upload-drop-area {
