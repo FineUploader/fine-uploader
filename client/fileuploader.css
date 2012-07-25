@@ -29,3 +29,52 @@
 
 .qq-upload-failed-text {display:none;}
 .qq-upload-fail .qq-upload-failed-text {display:inline;}
+
+
+
+/* jQueryUI classes */
+.jq-uploader { position:relative; width: 100%;}
+
+
+/*
+ * jQuery File Upload UI Plugin CSS 6.3
+ * https://github.com/blueimp/jQuery-File-Upload
+ *
+ * Copyright 2010, Sebastian Tschan
+ * https://blueimp.net
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+.jq-upload-button {
+	position: relative;
+	overflow: hidden;
+	float: left;
+	margin-right: 5px;
+}
+.jq-upload-button input {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	border: solid transparent;
+	border-width: 0 0 78px 200px;
+	opacity: 0;
+	filter: alpha(opacity=0);
+	-moz-transform: translate(-300, 0) scale(4);
+	direction: ltr;
+	cursor: pointer;
+}
+
+.jq-upload-list {clear: both; margin-top:0px; padding:0; list-style:none;}
+.jq-upload-list li { margin-top: 5px; font-size:12px;}
+.jq-upload-file, .jq-upload-progress, .jq-upload-size, .jq-upload-cancel, .jq-upload-failed-text {
+    margin-right: 7px;
+}
+
+.jq-upload-file {}
+.jq-upload-progress {height: 1.3em;}
+.jq-upload-size,.qq-upload-cancel {font-size:11px;}
+
+.jq-upload-failed-text {display:none;}
+.jq-upload-fail .qq-upload-failed-text {display:inline;}
