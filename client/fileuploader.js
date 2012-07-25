@@ -258,7 +258,8 @@ qq.FileUploaderBasic = function(o){
         multiple: true,
         maxConnections: 3,
         // validation        
-        allowedExtensions: [],               
+        allowedExtensions: [],
+        acceptFiles: null,               
         sizeLimit: 0,   
         minSizeLimit: 0,                             
         // events
@@ -305,6 +306,7 @@ qq.FileUploaderBasic.prototype = {
         return new qq.UploadButton({
             element: element,
             multiple: this._options.multiple && qq.UploadHandlerXhr.isSupported(),
+            acceptFiles: this._options.acceptFiles,
             onChange: function(input){
                 self._onInputChange(input);
             }        
@@ -755,6 +757,7 @@ qq.UploadButton = function(o){
         element: null,  
         // if set to true adds multiple attribute to file input      
         multiple: false,
+        acceptFiles: null,
         // name attribute of file input
         name: 'file',
         onChange: function(input){},
@@ -798,6 +801,8 @@ qq.UploadButton.prototype = {
         if (this._options.multiple){
             input.setAttribute("multiple", "multiple");
         }
+        
+        if (this._options.acceptFiles) input.setAttribute("accept", this._options.acceptFiles);
                 
         input.setAttribute("type", "file");
         input.setAttribute("name", this._options.name);
