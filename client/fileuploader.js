@@ -266,6 +266,7 @@ qq.FileUploaderBasic = function(o){
         onSubmit: function(id, fileName){},
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, responseJSON){},
+        onAllComplete: function(completed_files){},
         onCancel: function(id, fileName){},
         // messages                
         messages: {
@@ -331,6 +332,9 @@ qq.FileUploaderBasic.prototype = {
             onComplete: function(id, fileName, result){
                 self._onComplete(id, fileName, result);
                 self._options.onComplete(id, fileName, result);
+            },
+            onAllComplete: function(completed_files){
+                self._options.onAllComplete(completed_files);
             },
             onCancel: function(id, fileName){
                 self._onCancel(id, fileName);
@@ -860,6 +864,7 @@ qq.UploadHandlerAbstract = function(o){
         maxConnections: 999,
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, response){},
+        onAllComplete: function(completed_files){},
         onCancel: function(id, fileName){}
     };
     qq.extend(this._options, o);    
@@ -867,10 +872,11 @@ qq.UploadHandlerAbstract = function(o){
     this._queue = [];
     // params for files in queue
     this._params = [];
+    this._completed_files = [];
 };
 qq.UploadHandlerAbstract.prototype = {
     log: function(str){
-        if (this._options.debug && window.console) console.log('[uploader] ' + str);        
+        if (this._options.debug && window.console) console.log('[uploader] ' + str);
     },
     /**
      * Adds file or file input to the queue
@@ -888,7 +894,7 @@ qq.UploadHandlerAbstract.prototype = {
         this._params[id] = copy;        
                 
         // if too many active uploads, wait...
-        if (len <= this._options.maxConnections){               
+        if (len <= this._options.maxConnections){
             this._upload(id, this._params[id]);
         }
     },
@@ -944,7 +950,14 @@ qq.UploadHandlerAbstract.prototype = {
             var nextId = this._queue[max-1];
             this._upload(nextId, this._params[nextId]);
         }
-    }        
+        
+        if (this._queue.length == 0){
+          this._onAllComplete();
+        }
+    },
+    _onAllComplete: function(){
+      this._options.onAllComplete(this._completed_files);
+    }
 };
 
 /**
@@ -953,7 +966,7 @@ qq.UploadHandlerAbstract.prototype = {
  */
 qq.UploadHandlerForm = function(o){
     qq.UploadHandlerAbstract.apply(this, arguments);
-       
+    
     this._inputs = {};
 };
 // @inherits qq.UploadHandlerAbstract
@@ -992,7 +1005,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             qq.remove(iframe);
         }
     },     
-    _upload: function(id, params){                        
+    _upload: function(id, params){
         var input = this._inputs[id];
         
         if (!input){
@@ -1006,7 +1019,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         form.appendChild(input);
 
         var self = this;
-        this._attachLoadEvent(iframe, function(){                                 
+        this._attachLoadEvent(iframe, function(){
             self.log('iframe loaded');
             
             var response = self._getIframeContentJSON(iframe);
@@ -1021,7 +1034,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             }, 1);
         });
 
-        form.submit();        
+        form.submit();
         qq.remove(form);        
         
         return id;
@@ -1145,12 +1158,12 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
      **/    
     add: function(file){
         if (!(file instanceof File)){
-            throw new Error('Passed obj in not a File (in qq.UploadHandlerXhr)');
+            throw new Error('Passed obj is not a File (in qq.UploadHandlerXhr)');
         }
                 
         return this._files.push(file) - 1;        
     },
-    getName: function(id){        
+    getName: function(id){
         var file = this._files[id];
         // fix missing name in Safari 4
         return file.fileName != null ? file.fileName : file.name;       
@@ -1186,9 +1199,9 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
             }
         };
 
-        xhr.onreadystatechange = function(){            
+        xhr.onreadystatechange = function(){
             if (xhr.readyState == 4){
-                self._onComplete(id, xhr);                    
+                self._onComplete(id, xhr);
             }
         };
 
@@ -1212,7 +1225,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         
         this._options.onProgress(id, name, size, size);
                 
-        if (xhr.status == 200){
+        if (xhr.status == 200 || xhr.status == 201){
             this.log("xhr - server response received");
             this.log("responseText = " + xhr.responseText);
                         
@@ -1223,16 +1236,17 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
             } catch(err){
                 response = {};
             }
-            
+            this._completed_files.push({file: this._files[id], response: response})
             this._options.onComplete(id, name, response);
-                        
-        } else {                   
+
+        } else {
+            this._completed_files.push({file: this._files[id], response: {} })
             this._options.onComplete(id, name, {});
         }
-                
+        
         this._files[id] = null;
-        this._xhrs[id] = null;    
-        this._dequeue(id);                    
+        this._xhrs[id] = null;
+        this._dequeue(id);
     },
     _cancel: function(id){
         this._options.onCancel(id, this.getName(id));
