@@ -64,7 +64,7 @@ var uploadFile = function(req, targetdir, callback) {
 
     // Direct async xhr stream data upload, yeah baby.
     if(req.xhr) {
-        var fName = req.header('x-file-name');
+        var fname = req.header('x-file-name');
 
         // Be sure you can write to '/tmp/'
         var tmpfile = '/tmp/'+uuid.v1();
@@ -76,7 +76,7 @@ var uploadFile = function(req, targetdir, callback) {
             callback({success: false, error: "Sorry, could not open writestream."});
         });
         ws.on('close', function(err) {
-            moveToDestination(tmpfile, targetdir+fName);
+            moveToDestination(tmpfile, targetdir+fname);
         });
 
         // Writing filedata into writestream
