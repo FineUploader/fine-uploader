@@ -24,8 +24,8 @@ var express = require('express'),
 
 // Settings
 var settings = {
-        node_port: process.argv[2] || 3000,
-        uploadpath: __dirname + '/uploads/'
+    node_port: process.argv[2] || 3000,
+    uploadpath: __dirname + '/uploads/'
 };
 
 // Configuration
@@ -62,7 +62,7 @@ var uploadFile = function(req, targetdir, callback) {
         });
     };
 
-	// Direct async xhr stream data upload, yeah baby.
+    // Direct async xhr stream data upload, yeah baby.
     if(req.xhr) {
         var fName = req.header('x-file-name');
 
@@ -70,17 +70,17 @@ var uploadFile = function(req, targetdir, callback) {
         var tmpfile = '/tmp/'+uuid.v1();
 
         // Open a temporary writestream
-		var ws = fs.createWriteStream(tmpfile);
+        var ws = fs.createWriteStream(tmpfile);
         ws.on('error', function(err) {
-			console.log("uploadFile() - req.xhr - could not open writestream.");
-			callback({success: false, error: "Sorry, could not open writestream."});
+            console.log("uploadFile() - req.xhr - could not open writestream.");
+            callback({success: false, error: "Sorry, could not open writestream."});
         });
         ws.on('close', function(err) {
             moveToDestination(tmpfile, targetdir+fName);
         });
 
         // Writing filedata into writestream
-		req.on('data', function(data) {
+        req.on('data', function(data) {
             ws.write(data);
         });
         req.on('end', function() {
