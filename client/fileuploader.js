@@ -1058,10 +1058,10 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             response;
         
         this.log("converting iframe's innerHTML to JSON");
-        this.log("innerHTML = " + doc.body.innerHTML);
+        this.log("innerHTML = " + doc.body.innerText);
                         
         try {
-            response = eval("(" + doc.body.innerHTML + ")");
+            response = eval("(" + doc.body.innerText + ")");
         } catch(err){
             response = {};
         }        
