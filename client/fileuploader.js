@@ -250,8 +250,7 @@ var qq = qq || {};
  */
 qq.FileUploaderBasic = function(o){
     this._options = {
-        // set to true to see the server response            response = eval("(" + doc.body.innerText + ")");
-
+        // set to true to see the server response
         debug: false,
         action: '/server/upload',
         params: {},
