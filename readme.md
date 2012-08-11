@@ -155,7 +155,7 @@ If the upload doesn't complete, saying "failed":
 * Set the `debug` option of the FileUploader to true.
 * Open the page where you have a FileUploader.
 * Open developer console in your browser.
-* Try to upload the file. You should see a server serponse.
+* Try to upload the file. You should see a server response.
 
 It should be `{success:true}` for completed requests. If it's not,
 then you have a problem with your server-side script.
