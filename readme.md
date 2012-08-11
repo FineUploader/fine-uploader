@@ -11,6 +11,12 @@ See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/qu
 
 Initiated by <a href="https://github.com/SimonEast">SimonEast</a>, interested maintainers are welcome!
 
+We are currently looking for an experienced person who is willing to take over the project.
+The person would decide the direction the project should move and would be responsible
+for merging contributions, maintaining the code quality, and making sure that the documentation is up-to-date.
+
+If you are interested please send an email to andrew (at) valums.com.
+
 ### Summary ###
 
 This plugin uses an XMLHttpRequest (AJAX) for uploading multiple files with a progress-bar in
