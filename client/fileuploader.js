@@ -657,8 +657,6 @@ qq.extend(qq.FileUploader.prototype, {
 		// Any volunteers to enable & test this for IE10?
 		if (!qq.ie()) {
 			this._attach(document, 'dragenter', function(e){
-				// console.log();
-				if (!self._isValidFileDrag(e)) return; // now causing error. Need it be here?
 				if (qq.hasClass(dropArea, self._classes.dropDisabled)) return;
 
 				dropArea.style.display = 'block';
