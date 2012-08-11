@@ -8,7 +8,8 @@
  *
  * VERSION 2.0 beta
  * Original version 1.0 © 2010 Andrew Valums ( andrew(at)valums.com )
- * Licensed under GNU GPL 2 or later and GNU LGPL 2 or later, see license.txt.
+ *
+ * Licensed under MIT license, GNU GPL 2 or later, GNU LGPL 2 or later, see license.txt.
  */
 
 //

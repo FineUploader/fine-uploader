@@ -1,22 +1,40 @@
-File uploader component is licensed under GNU GPL 2 or later and GNU LGPL 2 or later.
+File uploader component is licensed under the following licenses, choose one that suits your needs better.
+
+- MIT license
+
+The MIT License (MIT)
+Copyright (c) 2010 Andrew Valums
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+- GNU GPL 2 or later
+http://www.gnu.org/licenses/gpl-2.0.txt
+
+- GNU LGPL 2 or later
+http://www.gnu.org/licenses/lgpl-2.0.txt
+
 © 2010 Andrew Valums
 
 This distribution also includes:
 
-    server/OctetStreamReader.java    
-    Dual Licensed under the MIT and GPL v.2        
-    
+    server/OctetStreamReader.java
+    Dual Licensed under the MIT and GPL v.2
+
     jQuery JavaScript Library
-    http://jquery.com/    
+    http://jquery.com/
     Copyright 2010, John Resig
     Dual licensed under the MIT or GPL Version 2 licenses.
     http://jquery.org/license
-    
+
     Sizzle.js - CSS selector engine used by jQuery
     http://sizzlejs.com/
     Copyright 2010, The Dojo Foundation
     Released under the MIT, BSD, and GPL Licenses.
-        
+
     QUnit - A JavaScript Unit Testing Framework
     http://docs.jquery.com/QUnit
     Copyright (c) 2009 John Resig, Jörn Zaefferer
