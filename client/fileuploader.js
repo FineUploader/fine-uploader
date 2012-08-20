@@ -267,6 +267,7 @@ var qq = qq || {};
  * Creates upload button, validates upload, but doesn't create file list or dd.
  */
 qq.FileUploaderBasic = function(o){
+    var that = this;
     this._options = {
         // set to true to see the server response
         debug: false,
@@ -276,7 +277,9 @@ qq.FileUploaderBasic = function(o){
         button: null,
         multiple: true,
         maxConnections: 3,
-        // validation
+        disableCancelForFormUploads: false,
+        autoUpload: true,
+        // validation        
         allowedExtensions: [],
         acceptFiles: null,		// comma separated string of mime-types for browser to display in browse dialog
         sizeLimit: 0,
@@ -284,17 +287,24 @@ qq.FileUploaderBasic = function(o){
         // events
         // return false to cancel submit
         onSubmit: function(id, fileName){},
-        onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, responseJSON){},
         onCancel: function(id, fileName){},
         onUpload: function(id, fileName, xhr){},
-		onError: function(id, fileName, xhr) {},
+        onProgress: function(id, fileName, loaded, total){
+            if (loaded === total) {
+                var item = that._getItemByFileId(id);
+                var cancelLink = that._find(item, 'cancel');
+                cancelLink.style.display = 'none';
+            }
+        },
+        onError: function(id, fileName, xhr) {},
         // messages
         messages: {
-            typeError: "Unfortunately the file(s) you selected weren't the type we were expecting. Only {extensions} files are allowed.",
+            typeError: "{file} has an invalid extension. Only {extensions} {isAre} allowed.",
             sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
             minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
             emptyError: "{file} is empty, please select files again without it.",
+            noFilesError: "No files to upload.",
             onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
         },
         showMessage: function(message){
@@ -308,9 +318,12 @@ qq.FileUploaderBasic = function(o){
 
     // number of files being uploaded
     this._filesInProgress = 0;
-    this._handler = this._createUploadHandler();
 
-    if (this._options.button){
+    this._storedFiles = [];
+
+    this._handler = this._createUploadHandler(); 
+    
+    if (this._options.button){ 
         this._button = this._createUploadButton(this._options.button);
     }
 
@@ -323,6 +336,18 @@ qq.FileUploaderBasic.prototype = {
     },
     getInProgress: function(){
         return this._filesInProgress;
+    },
+    uploadStoredFiles: function(){
+        for (var i = 0; i < this._storedFiles.length; i++) {
+            var item = this._getItemByFileId(this._storedFiles[i]);
+            this._find(item, 'spinner').style.display = "";
+            this._filesInProgress++;
+            this._handler.upload(this._storedFiles[i], this._options.params);
+        }
+    },
+    clearStoredFiles: function(){
+        this._storedFiles = [];
+        this._options.listElement.innerHTML = "";
     },
     _createUploadButton: function(element){
         var self = this;
@@ -418,14 +443,19 @@ qq.FileUploaderBasic.prototype = {
         this._button.reset();
     },
     _uploadFileList: function(files){
-        for (var i=0; i<files.length; i++){
-            if ( !this._validateFile(files[i])){
-                return;
-            }
-        }
+        if (files.length > 0) {
+			for (var i=0; i<files.length; i++){
+			    if ( !this._validateFile(files[i])){
+			        return;
+			    }
+			}
 
-        for (var i=0; i<files.length; i++){
-            this._uploadFile(files[i]);
+			for (var i=0; i<files.length; i++){
+			    this._uploadFile(files[i]);
+			}
+        }
+        else {
+			this._error('noFilesError', "");
         }
     },
     _uploadFile: function(fileContainer){
@@ -434,7 +464,15 @@ qq.FileUploaderBasic.prototype = {
 
         if (this._options.onSubmit(id, fileName) !== false){
             this._onSubmit(id, fileName);
-            this._handler.upload(id, this._options.params);
+            if (this._options.autoUpload) {
+                this._handler.upload(id, this._options.params);
+            }
+            else {
+                this._filesInProgress--;
+                var item = this._getItemByFileId(id);
+                this._find(item, 'spinner').style.display = "none";
+                this._storedFiles.push(id);
+            }
         }
     },
     _validateFile: function(file){
@@ -473,12 +511,15 @@ qq.FileUploaderBasic.prototype = {
         var message = this._options.messages[code];
         function r(name, replacement){ message = message.replace(name, replacement); }
 
-        r('{file}', this._formatFileName(fileName));
-        r('{extensions}', this._options.allowedExtensions.join(', '));
+        var extensions = this._options.allowedExtensions.join(', ');
+
+        r('{file}', this._formatFileName(fileName));        
+        r('{extensions}', extensions);
         r('{sizeLimit}', this._formatSize(this._options.sizeLimit));
         r('{minSizeLimit}', this._formatSize(this._options.minSizeLimit));
+        r('{isAre}', extensions.indexOf(",") != -1 ? "are" : "is");
 
-        this._options.showMessage(message);
+        this._options.showMessage(message);                
     },
     _formatFileName: function(name){
         if (name.length > 33){
@@ -539,8 +580,10 @@ qq.FileUploader = function(o){
         // template for one item in file list
         fileTemplate: '<li>' +
                 '<span class="qq-progress-bar"></span>' +
-                '<span class="qq-upload-file"></span>' +
                 '<span class="qq-upload-spinner"></span>' +
+                '<span class="qq-upload-finished"></span>' +
+                '<span class="qq-upload-failed-icon"></span>' +
+                '<span class="qq-upload-file"></span>' +
                 '<span class="qq-upload-size"></span>' +
                 '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
                 '<span class="qq-upload-failed-text">{failUploadtext}</span>' +
@@ -556,6 +599,8 @@ qq.FileUploader = function(o){
             progressBar: 'qq-progress-bar',
             file: 'qq-upload-file',
             spinner: 'qq-upload-spinner',
+            finished: 'qq-upload-finished',
+            failedicon: 'qq-upload-failed-icon',
             size: 'qq-upload-size',
             cancel: 'qq-upload-cancel',
 
@@ -563,6 +608,12 @@ qq.FileUploader = function(o){
             // used in css to hide progress spinner
             success: 'qq-upload-success',
             fail: 'qq-upload-fail'
+        },
+
+		//if null, use default images specified in fileuploader.css
+        icons : {
+            finished: null,
+            failed: null
         }
     });
     // overwrite options with user supplied
@@ -580,8 +631,9 @@ qq.FileUploader = function(o){
     this._listElement = this._options.listElement || this._find(this._element, 'list');
 
     this._classes = this._options.classes;
-
-    this._button = this._createUploadButton(this._find(this._element, 'button'));
+    this._icons = this._options.icons;
+        
+    this._button = this._createUploadButton(this._find(this._element, 'button'));        
 
     this._bindCancelEvent();
     this._setupDragDrop();
@@ -710,17 +762,33 @@ qq.extend(qq.FileUploader.prototype, {
 
         // mark completed
         var item = this._getItemByFileId(id);
-        qq.remove(this._find(item, 'cancel'));
+        if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
+            qq.remove(this._find(item, 'cancel'));
+        }
         qq.remove(this._find(item, 'spinner'));
 
         if (result.success){
             qq.addClass(item, this._classes.success);
+            this._find(item, 'finished').style.display = "inline-block";
+            if (this._icons.finished) {
+	            this._find(item, 'finished').style.background = "url('" + this._icons.finished + "')";
+            }
         } else {
+            var errorReason = result.reason ? result.reason : "Unknown error";
             qq.addClass(item, this._classes.fail);
+            this._find(item, 'failedicon').style.display = "inline-block";
+            this._find(item, 'failedicon').title = errorReason;
+            if (this._icons.failed) {
+                this._find(item, 'failedicon').style.background = "url('" + this._icons.failed + "')";
+            }
         }
     },
     _addToList: function(id, fileName){
         var item = qq.toElement(this._options.fileTemplate);
+        if (this._options.disableCancelForFormUploads && !qq.UploadHandlerXhr.isSupported()) {
+            var cancelLink = this._find(item, 'cancel');
+            qq.remove(cancelLink);
+        }
         item.qqFileId = id;
 
         var fileElement = this._find(item, 'file');
@@ -1152,25 +1220,27 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         return id;
     },
     _attachLoadEvent: function(iframe, callback){
-        this._detach_event = qq.attach(iframe, 'load', function(){
-            // when we remove iframe from dom
-            // the request stops, but in IE load
-            // event fires
-            if (!iframe.parentNode){
-                return;
-            }
-
-            // fixing Opera 10.53
-            if (iframe.contentDocument &&
-                iframe.contentDocument.body &&
-                iframe.contentDocument.body.innerHTML == "false"){
-                // In Opera event is fired second time
-                // when body.innerHTML changed from false
-                // to server response approx. after 1 sec
-                // when we upload file with iframe
-                return;
-            }
-
+        qq.attach(iframe, 'load', function(){
+/////////REMOVED DURING MERGE (from remote repo) - may be useful
+//        this._detach_event = qq.attach(iframe, 'load', function(){
+//            // when we remove iframe from dom
+//            // the request stops, but in IE load
+//            // event fires
+//            if (!iframe.parentNode){
+//                return;
+//            }
+//
+//            // fixing Opera 10.53
+//            if (iframe.contentDocument &&
+//                iframe.contentDocument.body &&
+//                iframe.contentDocument.body.innerHTML == "false"){
+//                // In Opera event is fired second time
+//                // when body.innerHTML changed from false
+//                // to server response approx. after 1 sec
+//                // when we upload file with iframe
+//                return;
+//            }
+/////////REMOVED DURING MERGE (from remote repo) - may be useful
             callback();
         });
     },
@@ -1178,20 +1248,31 @@ qq.extend(qq.UploadHandlerForm.prototype, {
      * Returns json object received by iframe from server.
      */
     _getIframeContentJSON: function(iframe){
-        // iframe.contentWindow.document - for IE<7
-        var doc = iframe.contentDocument ? iframe.contentDocument: iframe.contentWindow.document,
-            response;
-
-        var innerHTML = doc.body.innerHTML;
-        this.log("converting iframe's innerHTML to JSON");
-        this.log("innerHTML = " + innerHTML);
-        //plain text response may be wrapped in <pre> tag
-        if (innerHTML.slice(0, 5).toLowerCase() == '<pre>' && innerHTML.slice(-6).toLowerCase() == '</pre>') {
-          innerHTML = doc.body.firstChild.firstChild.nodeValue;
-        }
-
         try {
-            response = eval("(" + innerHTML + ")");
+            // iframe.contentWindow.document - for IE<7
+            var doc = iframe.contentDocument ? iframe.contentDocument: iframe.contentWindow.document,
+                response;
+
+            this.log("converting iframe's innerHTML to JSON");
+            this.log("innerHTML = " + doc.body.innerHTML);
+                        
+            response = eval("(" + doc.body.innerHTML + ")");
+/////////REMOVED DURING MERGE (from remote repo) - may be useful
+//        // iframe.contentWindow.document - for IE<7
+//        var doc = iframe.contentDocument ? iframe.contentDocument: iframe.contentWindow.document,
+//            response;
+//
+//        var innerHTML = doc.body.innerHTML;
+//        this.log("converting iframe's innerHTML to JSON");
+//        this.log("innerHTML = " + innerHTML);
+//        //plain text response may be wrapped in <pre> tag
+//        if (innerHTML.slice(0, 5).toLowerCase() == '<pre>' && innerHTML.slice(-6).toLowerCase() == '</pre>') {
+//          innerHTML = doc.body.firstChild.firstChild.nodeValue;
+//        }
+//
+//        try {
+//            response = eval("(" + innerHTML + ")");
+/////////REMOVED DURING MERGE (from remote repo) - may be useful
         } catch(err){
             response = {};
         }
@@ -1357,25 +1438,39 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
 
         this._options.onProgress(id, name, size, size);
 
-        if (xhr.status == 200){
-            this.log("xhr - server response received");
-            this.log("responseText = " + xhr.responseText);
+        this.log("xhr - server response received");
+        this.log("responseText = " + xhr.responseText);
 
-            var response;
+        var response;
 
-            try {
-                response = eval("(" + xhr.responseText + ")");
-            } catch(err){
-                response = {};
-            }
-
-            this._options.onComplete(id, name, response);
-
-        } else {
-            this._options.onError(id, name, xhr);
-            this._options.onComplete(id, name, {});
+        try {
+            response = eval("(" + xhr.responseText + ")");
+        } catch(err){
+            response = {};
         }
 
+        this._options.onComplete(id, name, response);
+
+/////////REMOVED DURING MERGE (from remote repo) - may be useful
+//        if (xhr.status == 200){
+//            this.log("xhr - server response received");
+//            this.log("responseText = " + xhr.responseText);
+//
+//            var response;
+//
+//            try {
+//                response = eval("(" + xhr.responseText + ")");
+//            } catch(err){
+//                response = {};
+//            }
+//
+//            this._options.onComplete(id, name, response);
+//
+//        } else {
+//            this._options.onError(id, name, xhr);
+//            this._options.onComplete(id, name, {});
+//        }
+/////////REMOVED DURING MERGE (from remote repo) - may be useful
         this._files[id] = null;
         this._xhrs[id] = null;
         this._dequeue(id);
