@@ -37,7 +37,7 @@ It does not use Flash, jQuery, or any external libraries.
 * Keyboard support in FF, Chrome, Safari
 * Tested in IE7/8, Firefox 3/3.6/4, Safari 4/5, Chrome, and Opera 10.60
 * Ability to upload files as soon as they are selected, or "queue" them for uploading at user's request later
-* Display specific error messages from server on upload failure (hover over failure icon next to file)
+* Display specific error messages from server on upload failure (hover over failed upload item)
 
 ### License ###
 This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
