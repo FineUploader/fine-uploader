@@ -859,6 +859,22 @@ qq.UploadDropZone.prototype = {
             // do not check dt.types.contains in webkit, because it crashes safari 4
             isSafari = qq.safari();
 
+    	var isChrome = navigator.userAgent.indexOf("Chrome") > -1;
+		var isSafari = $.browser.safari && !isChrome;
+		var isOpera = navigator.userAgent.indexOf("Opera") > -1;
+
+		if (isSafari)
+		{
+			return dt && dt.effectAllowed != 'none' && typeof dt.types != 'undefined' && dt.types == null &&
+				typeof dt.files != 'undefined' || (!isWebkit && dt.types.contains && dt.types.contains('Files'));
+		}
+
+		if (isChrome || isOpera) {
+			return  dt && dt.effectAllowed != 'none' &&
+					typeof dt.types != 'undefined' && dt.types[0] === 'Files' &&
+					typeof dt.files != 'undefined';
+		}
+
         // dt.effectAllowed is none in Safari 5
         // dt.types.contains check is for firefox
         return dt && dt.effectAllowed != 'none' &&
