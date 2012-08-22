@@ -1,6 +1,6 @@
 ### Valums' File Uploader v2.0 beta ###
 
-Originally developed/designed by Andrew Valums.
+Originally developed/designed by Andrew Valums.<br/>
 Currently maintained by Ray Nicholus.
 
 Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
