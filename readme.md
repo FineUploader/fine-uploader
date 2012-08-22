@@ -3,6 +3,8 @@
 Originally developed/designed by Andrew Valums.<br/>
 Currently maintained by Ray Nicholus.
 
+Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com/forum/#!forum/file-uploader-js).
+
 Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
 It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
 
