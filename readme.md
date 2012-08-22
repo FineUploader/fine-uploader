@@ -1,21 +1,13 @@
 ### Valums' File Uploader v2.0 beta ###
 
+Originally developed/designed by Andrew Valums.
+Currently maintained by Ray Nicholus.
+
 Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
 It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
 
-This is a public fork of Valums' File Uploader (v1) in an attempt to incorporate some of the best
-bugfixes and patches to make a version compatible with the latest browsers in 2012.
-
 We would love developers to contribute any improvements and bugfixes they produce.
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
-
-Initiated by <a href="https://github.com/SimonEast">SimonEast</a>, interested maintainers are welcome!
-
-We are currently looking for an experienced person who is willing to take over the project.
-The person would decide the direction the project should move and would be responsible
-for merging contributions, maintaining the code quality, and making sure that the documentation is up-to-date.
-
-If you are interested please send an email to andrew (at) valums.com.
 
 ### Summary ###
 
