@@ -3,10 +3,12 @@
 Originally developed/designed by Andrew Valums.<br/>
 Currently maintained by Ray Nicholus.
 
-Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com/forum/#!forum/file-uploader-js).
-
 Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
 It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
+
+Have a look at the evolving [Demo](valums.github.com/file-uploader/) page.
+
+Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com/forum/#!forum/file-uploader-js).
 
 We would love developers to contribute any improvements and bugfixes they produce.
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
@@ -19,8 +21,6 @@ providing good user experience everywhere.
 
 It does not use Flash, jQuery, or any external libraries.
 
-#### <a href="http://valums.com/files/2010/file-uploader/demo.htm">Original Demo</a> ####
-
 ### Features ###
 * Multiple file select, progress-bar in FF, Chrome, Safari
 * Drag-and-drop file select in FF, Chrome
@@ -32,6 +32,7 @@ It does not use Flash, jQuery, or any external libraries.
 * Tested in IE7/8, Firefox 3/3.6/4, Safari 4/5, Chrome, and Opera 10.60
 * Ability to upload files as soon as they are selected, or "queue" them for uploading at user's request later
 * Display specific error messages from server on upload failure (hover over failed upload item)
+* Automatic uploads (as files are selected) or queue files to me manually triggered when ready
 
 ### License ###
 This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
