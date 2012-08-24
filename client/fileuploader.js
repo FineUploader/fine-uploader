@@ -382,7 +382,6 @@ qq.FileUploaderBasic.prototype = {
 			customHeaders: this._options.customHeaders,
 			inputName: this._options.inputName,
 			extraDropzones: this._options.extraDropzones,
-            demoMode: this._options.demoMode,
 			onProgress: function(id, fileName, loaded, total){
 				self._onProgress(id, fileName, loaded, total);
 				self._options.onProgress(id, fileName, loaded, total);
@@ -418,7 +417,9 @@ qq.FileUploaderBasic.prototype = {
 		});
 	},
 	_onSubmit: function(id, fileName){
-		this._filesInProgress++;
+		if (this._options.autoUpload) {
+			this._filesInProgress++;
+		}
 	},
 	_onProgress: function(id, fileName, loaded, total){
 	},
@@ -429,7 +430,9 @@ qq.FileUploaderBasic.prototype = {
 		}
 	},
 	_onCancel: function(id, fileName){
-		this._filesInProgress--;
+		if (this._options.autoUpload) {
+			this._filesInProgress--;
+		}
 	},
 	_onUpload: function(id, fileName, xhr){
 	},
@@ -469,7 +472,6 @@ qq.FileUploaderBasic.prototype = {
 				this._handler.upload(id, this._options.params);
 			}
 			else {
-				this._filesInProgress--;
 				var item = this._getItemByFileId(id);
 				this._find(item, 'spinner').style.display = "none";
 				this._storedFiles.push(id);
@@ -1295,8 +1297,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
 		// form.setAttribute('method', 'post');
 		// form.setAttribute('enctype', 'multipart/form-data');
 		// Because in this case file won't be attached to request
-        var protocol = this._options.demoMode ? "GET" : "POST"
-		var form = qq.toElement('<form method=protocol enctype="multipart/form-data"></form>');
+		var form = qq.toElement('<form method="post" enctype="multipart/form-data"></form>');
 
 		var queryString = qq.obj2url(params, this._options.action);
 
@@ -1400,8 +1401,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
 		params[this._options.inputName] = name;
 		var queryString = qq.obj2url(params, this._options.action);
 
-        var protocol = this._options.demoMode ? "GET" : "POST";
-		xhr.open(protocol, queryString, true);
+		xhr.open("POST", queryString, true);
 		xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 		xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
 		if (this._options.encoding == 'multipart') {
