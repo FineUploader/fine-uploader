@@ -382,6 +382,7 @@ qq.FileUploaderBasic.prototype = {
 			customHeaders: this._options.customHeaders,
 			inputName: this._options.inputName,
 			extraDropzones: this._options.extraDropzones,
+            demoMode: this._options.demoMode,
 			onProgress: function(id, fileName, loaded, total){
 				self._onProgress(id, fileName, loaded, total);
 				self._options.onProgress(id, fileName, loaded, total);
@@ -1297,7 +1298,8 @@ qq.extend(qq.UploadHandlerForm.prototype, {
 		// form.setAttribute('method', 'post');
 		// form.setAttribute('enctype', 'multipart/form-data');
 		// Because in this case file won't be attached to request
-		var form = qq.toElement('<form method="post" enctype="multipart/form-data"></form>');
+        var protocol = this._options.demoMode ? "GET" : "POST"
+        var form = qq.toElement('<form method=protocol enctype="multipart/form-data"></form>');
 
 		var queryString = qq.obj2url(params, this._options.action);
 
@@ -1401,7 +1403,8 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
 		params[this._options.inputName] = name;
 		var queryString = qq.obj2url(params, this._options.action);
 
-		xhr.open("POST", queryString, true);
+        var protocol = this._options.demoMode ? "GET" : "POST";
+        xhr.open(protocol, queryString, true);
 		xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 		xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
 		if (this._options.encoding == 'multipart') {
