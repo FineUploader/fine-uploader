@@ -8,7 +8,7 @@ It's built as a Javascript plugin for developers looking to incorporate file-upl
 
 Looking for the comment thread from valums.com website? It's located at the bottom of the new evolving [Demo](http://fineuploader.com) page.
 
-Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com/forum/#!forum/file-uploader-js).
+Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com/forum/#!forum/fineuploader).
 
 We would love developers to contribute any improvements and bugfixes they produce.
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
