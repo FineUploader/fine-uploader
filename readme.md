@@ -1,4 +1,4 @@
-### Valums' File Uploader v2.0 beta ###
+### Valums' Fine Uploader v2.0 beta ###
 
 Originally developed/designed by Andrew Valums.<br/>
 Currently maintained by Ray Nicholus.
@@ -6,7 +6,7 @@ Currently maintained by Ray Nicholus.
 Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
 It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
 
-Looking for the comment thread from valums.com website? It's located at the bottom of the new evolving [Demo](http://valums.github.com/file-uploader/) page.
+Looking for the comment thread from valums.com website? It's located at the bottom of the new evolving [Demo](http://fineuploader.com) page.
 
 Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com/forum/#!forum/file-uploader-js).
 
