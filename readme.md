@@ -6,9 +6,11 @@ Currently maintained by Ray Nicholus.
 Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
 It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
 
-Looking for the comment thread from valums.com website? It's located at the bottom of the new evolving [Demo](http://fineuploader.com) page.
+Take a look at the new evolving [Demo](http://fineuploader.com) page.
 
 Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com/forum/#!forum/fineuploader).
+
+Looking for the [comment thread](http://fineuploader.com/discussions.html) from the valums.com website? It is still available, but please use the [forum](https://groups.google.com/forum/#!forum/fineuploader) instead.
 
 We would love developers to contribute any improvements and bugfixes they produce.
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
