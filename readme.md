@@ -90,9 +90,7 @@ var uploader = new qq.FileUploader({
             <th>Note</th>
         </tr>
     </thead>
-
     <tbody>
-
         <tr>
             <td>`debug`</td>
             <td>boolean</td>
@@ -101,7 +99,6 @@ var uploader = new qq.FileUploader({
             If your browser does not support the [`window.console` object](https://developer.mozilla.org/en-US/docs/DOM/console.log),
             the value of this option is irrelevant.</td>
         </tr>
-
         <tr>
             <td>`action`</td>
             <td>string (path)</td>
@@ -110,21 +107,18 @@ var uploader = new qq.FileUploader({
             form's `action` attribute value along with all parameters.  In the case of the ajax uplaoder, it is makes up part of the URL
             of the XHR request (again, along with the parameters).</td>
         </tr>
-
         <tr>
             <td>`params`</td>
             <td>object</td>
             <td>`{}`</td>
             <td>These parameters are sent with the request to the endpoint specified in the `action` option.</td>
         </tr>
-
         <tr>
             <td>`customHeaders`</td>
             <td>object</td>
             <td>`{}`</td>
             <td>Additional headers sent along with the XHR POST request.  Note that is option is only relevant to the ajax/XHR uploader.</td>
         </tr>
-
         <tr>
             <td>`multiple`</td>
             <td>boolean</td>
@@ -132,7 +126,6 @@ var uploader = new qq.FileUploader({
             <td>Set to `false` puts the uploader into what is best described as 'single-file upload mode'.  See the
             [demo](http://fineuploader.com) for an example.</td>
         </tr>
-
     </tbody>
 <table>
 
