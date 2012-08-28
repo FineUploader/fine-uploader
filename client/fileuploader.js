@@ -1299,7 +1299,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
 		// form.setAttribute('enctype', 'multipart/form-data');
 		// Because in this case file won't be attached to request
         var protocol = this._options.demoMode ? "GET" : "POST"
-        var form = qq.toElement('<form method=protocol enctype="multipart/form-data"></form>');
+		var form = qq.toElement('<form method="' + protocol + '" enctype="multipart/form-data"></form>');
 
 		var queryString = qq.obj2url(params, this._options.action);
 
