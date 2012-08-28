@@ -192,9 +192,86 @@ var uploader = new qq.FileUploader({
 <table>
 
 
+### Options of (only) FileUploaderBasic ###
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`button`</td>
+            <td>element</td>
+            <td>`null`</td>
+            <td>Specify an element to use as the "select files" button</td>
+        </tr>
+    </tbody>
+</table>
+
+
+### Options of (only) FileUploader (TODO) ###
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>`element`</td>
+            <td>element</td>
+            <td>`null`</td>
+            <td>Container for the default drop zone (if supported by browser) and files list.  **Required**</td>
+        </tr>
+        <tr>
+            <td>`listElement`</td>
+            <td>element</td>
+            <td>`null`</td>
+            <td>Container for the file list.  If null, the list defined in the template will be used.</td>
+        </tr>
+        <tr>
+            <td>`uploadButtonText`</td>
+            <td>string</td>
+            <td>`Upload a file`</td>
+            <td>Label for the file selector button</td>
+        </tr>
+        <tr>
+            <td>`cancelButtonText`</td>
+            <td>string</td>
+            <td>`cancel`</td>
+            <td>The cancel button text (which is more of a link than a button).</td>
+        </tr>
+        <tr>
+            <td>`failUploadText`</td>
+            <td>string</td>
+            <td>`Upload failed`</td>
+            <td>Text that appears next to a failed file item</td>
+        </tr>
+    </tbody>
+</table>
+
+
+### Styling FileUploader (TODO) ###
+
+
+### Callbacks (FileUploader & FileUploaderBasic) (TODO) ###
+
+
+### Messages (FileUploader & FileUploaderBasic) (TODO) ###
+
+
+
 Instance methods
 
-* `setParams(newParams)`
+* `setParams(Object newParams)` - Set the parameters sent along with the request after initializing the uploader.
+* `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
 
 #### Changing alert/messages to something more user friendly ####
 
