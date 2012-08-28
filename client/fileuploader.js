@@ -1144,6 +1144,7 @@ qq.UploadHandlerForm = function(o){
 	qq.UploadHandlerAbstract.apply(this, arguments);
 
 	this._inputs = {};
+	this._detach_load_events = {};
 };
 // @inherits qq.UploadHandlerAbstract
 qq.extend(qq.UploadHandlerForm.prototype, qq.UploadHandlerAbstract.prototype);
@@ -1170,6 +1171,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
 		this._options.onCancel(id, this.getName(id));
 
 		delete this._inputs[id];
+		delete this._detach_load_events[id];
 
 		var iframe = document.getElementById(id);
 		if (iframe){
@@ -1207,7 +1209,8 @@ qq.extend(qq.UploadHandlerForm.prototype, {
 			delete self._inputs[id];
 			// timeout added to fix busy state in FF3.6
 			setTimeout(function(){
-				self._detach_event();
+				self._detach_load_events[id]();
+				delete self._detach_load_events[id];
 				qq.remove(iframe);
 			}, 1);
 		});
@@ -1218,7 +1221,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
 		return id;
 	},
 	_attachLoadEvent: function(iframe, callback){
-		this._detach_event = qq.attach(iframe, 'load', function(){
+		this._detach_load_events[iframe.id] = qq.attach(iframe, 'load', function(){
 			// when we remove iframe from dom
 			// the request stops, but in IE load
 			// event fires
