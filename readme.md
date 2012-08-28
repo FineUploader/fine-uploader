@@ -92,99 +92,99 @@ var uploader = new qq.FileUploader({
     </thead>
     <tbody>
         <tr>
-            <td>`debug`</td>
+            <td>debug</td>
             <td>boolean</td>
-            <td>`false`</td>
+            <td>false</td>
             <td>If enabled, this will result in log messages (such as server response) being written to the javascript console.
-            If your browser does not support the [`window.console` object](https://developer.mozilla.org/en-US/docs/DOM/console.log),
+            If your browser does not support the [window.console object](https://developer.mozilla.org/en-US/docs/DOM/console.log),
             the value of this option is irrelevant.</td>
         </tr>
         <tr>
-            <td>`action`</td>
+            <td>action</td>
             <td>string (path)</td>
-            <td>`/server/upload`</td>
+            <td>/server/upload</td>
             <td>The is the endpoint used by both the form and ajax uploader.  In the case of the form uploader, it is part of the
-            form's `action` attribute value along with all parameters.  In the case of the ajax uplaoder, it is makes up part of the URL
+            form's action attribute value along with all parameters.  In the case of the ajax uplaoder, it is makes up part of the URL
             of the XHR request (again, along with the parameters).</td>
         </tr>
         <tr>
-            <td>`params`</td>
+            <td>params</td>
             <td>object</td>
-            <td>`{}`</td>
-            <td>These parameters are sent with the request to the endpoint specified in the `action` option.</td>
+            <td>{}</td>
+            <td>These parameters are sent with the request to the endpoint specified in the action option.</td>
         </tr>
         <tr>
-            <td>`customHeaders`</td>
+            <td>customHeaders</td>
             <td>object</td>
-            <td>`{}`</td>
+            <td>{}</td>
             <td>Additional headers sent along with the XHR POST request.  Note that is option is only relevant to the ajax/XHR uploader.</td>
         </tr>
         <tr>
-            <td>`multiple`</td>
+            <td>multiple</td>
             <td>boolean</td>
-            <td>`true`</td>
-            <td>Set to `false` puts the uploader into what is best described as 'single-file upload mode'.  See the
+            <td>true</td>
+            <td>Set to false puts the uploader into what is best described as 'single-file upload mode'.  See the
             [demo](http://fineuploader.com) for an example.</td>
         </tr>
         <tr>
-            <td>`maxConnections`</td>
+            <td>maxConnections</td>
             <td>integer</td>
-            <td>`3`</td>
+            <td>3</td>
             <td>Maximum allowable concurrent uploads.</td>
         </tr>
         <tr>
-            <td>`disableCancelForFormUploads`</td>
+            <td>disableCancelForFormUploads</td>
             <td>boolean</td>
-            <td>`false`</td>
-            <td>If `true`, the cancel link does not appear next to files when the form uploader is used.  This may be desired
+            <td>false</td>
+            <td>If true, the cancel link does not appear next to files when the form uploader is used.  This may be desired
             since it may not be possible to interrupt a form-based upload in some cases.</td>
         </tr>
         <tr>
-            <td>`autoUpload`</td>
+            <td>autoUpload</td>
             <td>boolean</td>
-            <td>`true`</td>
-            <td>Set to `false` if you want to be able to begin uploading selected/queued files later, by calling `uploadStoredFiles()`.</td>
+            <td>true</td>
+            <td>Set to false if you want to be able to begin uploading selected/queued files later, by calling uploadStoredFiles().</td>
         </tr>
         <tr>
-            <td>`allowedExtensions`</td>
+            <td>allowedExtensions</td>
             <td>array of strings</td>
-            <td>`[]`</td>
+            <td>[]</td>
             <td>This may be helpful if you want to restrict uploaded files to specific file types.  Note that this validation
             option is only enforced by examining the extension of uploaded file names.  For a more complete verification of the
-            file type, you should use, for example, magic byte file identification on the server side and return `{success: false}`
+            file type, you should use, for example, magic byte file identification on the server side and return {success: false}
             in the response if the file type is not on your whitelist.</td>
         </tr>
         <tr>
-            <td>`acceptFiles`</td>
+            <td>acceptFiles</td>
             <td>comma-separated strings</td>
-            <td>`null`</td>
+            <td>null</td>
             <td>This option is used solely by the file selection dialog.  If you'd like to restict valid file types that appear in the
-            selection dialog, you can do this here by listing valid content type specifiers.  See the [documentation on the `accept`
-            attribute of the `input` element](https://developer.mozilla.org/en-US/docs/HTML/Element/Input) for more information.</td>
+            selection dialog, you can do this here by listing valid content type specifiers.  See the [documentation on the accept
+            attribute of the input element](https://developer.mozilla.org/en-US/docs/HTML/Element/Input) for more information.</td>
         </tr>
         <tr>
-            <td>`sizeLimit`</td>
+            <td>sizeLimit</td>
             <td>integer</td>
-            <td>`0` (no limit)</td>
+            <td>0 (no limit)</td>
             <td>Maximum allowable size, in bytes, for a file.</td>
         </tr>
         <tr>
-            <td>`minSizeLimit`</td>
+            <td>minSizeLimit</td>
             <td>integer</td>
-            <td>`0` (no limit)</td>
+            <td>0 (no limit)</td>
             <td>Minimum allowable size, in bytes, for a file.</td>
         </tr>
         <tr>
-            <td>`inputName`</td>
+            <td>inputName</td>
             <td>string</td>
-            <td>`qqfile`</td>
+            <td>qqfile</td>
             <td>This usually only useful with the ajax uploader, which sends the name of the file as a parameter, using a key name
-            equal to the value of this options.  In the case of the form uploader, this is simply the value of the `name` attribute
-            of the file's associated `input` element.</td>
+            equal to the value of this options.  In the case of the form uploader, this is simply the value of the name attribute
+            of the file's associated input element.</td>
         </tr>
-            <td>`extraDropzones`</td>
+            <td>extraDropzones</td>
             <td>array of elements</td>
-            <td>`[]`</td>
+            <td>[]</td>
             <td>Useful if you'd like to to designate additional dropozones for file input.  Of course, this is not relevant if the
             form uploader is used.</td>
         </tr>
@@ -204,9 +204,9 @@ var uploader = new qq.FileUploader({
     </thead>
     <tbody>
         <tr>
-            <td>`button`</td>
+            <td>button</td>
             <td>element</td>
-            <td>`null`</td>
+            <td>null</td>
             <td>Specify an element to use as the "select files" button</td>
         </tr>
     </tbody>
@@ -225,33 +225,33 @@ var uploader = new qq.FileUploader({
     </thead>
     <tbody>
         <tr>
-            <td>`element`</td>
             <td>element</td>
-            <td>`null`</td>
+            <td>element</td>
+            <td>null</td>
             <td>Container for the default drop zone (if supported by browser) and files list.  **Required**</td>
         </tr>
         <tr>
-            <td>`listElement`</td>
+            <td>listElement</td>
             <td>element</td>
-            <td>`null`</td>
+            <td>null</td>
             <td>Container for the file list.  If null, the list defined in the template will be used.</td>
         </tr>
         <tr>
-            <td>`uploadButtonText`</td>
+            <td>uploadButtonText</td>
             <td>string</td>
-            <td>`Upload a file`</td>
+            <td>Upload a file</td>
             <td>Label for the file selector button</td>
         </tr>
         <tr>
-            <td>`cancelButtonText`</td>
+            <td>cancelButtonText</td>
             <td>string</td>
-            <td>`cancel`</td>
+            <td>cancel</td>
             <td>The cancel button text (which is more of a link than a button).</td>
         </tr>
         <tr>
-            <td>`failUploadText`</td>
+            <td>failUploadText</td>
             <td>string</td>
-            <td>`Upload failed`</td>
+            <td>Upload failed</td>
             <td>Text that appears next to a failed file item</td>
         </tr>
     </tbody>
