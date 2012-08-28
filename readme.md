@@ -189,10 +189,10 @@ var uploader = new qq.FileUploader({
             form uploader is used.</td>
         </tr>
     </tbody>
-<table>
+</table>
 
 
-### Options of (only) FileUploaderBasic ###
+### Options of FileUploaderBasic ###
 <table>
     <thead>
         <tr>
@@ -213,7 +213,7 @@ var uploader = new qq.FileUploader({
 </table>
 
 
-### Options of (only) FileUploader (TODO) ###
+### Options of FileUploader ###
 <table>
     <thead>
         <tr>
