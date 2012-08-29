@@ -13,6 +13,7 @@ Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com
 We would love developers to contribute any improvements and bugfixes they produce.
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
 
+
 ### Summary ###
 
 This plugin uses an XMLHttpRequest (AJAX) for uploading multiple files with a progress-bar in
@@ -20,6 +21,7 @@ FF3.6+, Safari4+, Chrome and falls back to hidden-iframe-based upload in other b
 providing good user experience everywhere.
 
 It does not use Flash, jQuery, or any external libraries.
+
 
 ### Features ###
 * Multiple file select, progress-bar in FF, Chrome, Safari
@@ -34,8 +36,10 @@ It does not use Flash, jQuery, or any external libraries.
 * Display specific error messages from server on upload failure (hover over failed upload item)
 * Automatic uploads (as files are selected) or queue files to me manually triggered when ready
 
+
 ### License ###
 This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
+
 
 ### Getting started ###
 The `fileuploader.js` contains two classes that are meant to be used directly.
@@ -51,6 +55,7 @@ Basic uploader is easier extendable, and doesn't limit possible customization.
 
 `qq.FileUploader` extends `qq.FileUploaderBasic`, so that all the options present
 in the basic uploader also exist in the full widget.
+
 
 ### qq.FileUploader - Setting up full upload widget ###
 
@@ -79,6 +84,7 @@ var uploader = new qq.FileUploader({
 	action: '/server/upload'
 });
 ```
+
 
 ### Options of both FileUploader & FileUploaderBasic ###
 <table>
@@ -258,53 +264,42 @@ var uploader = new qq.FileUploader({
 </table>
 
 
-### Styling FileUploader (TODO) ###
+### Styling FileUploader ###
+The `template` option contains default elements with default classes that make up the uploader as a whole in the DOM.  For example,
+the first default element in `template` is a `div` with a class of `qq-uploader`.  This is the parent element of the uploader.
+The default drop area, button, and file list elements are also, by default, contained in this option.  You can use this option to
+add additional elements, modify default template elements, etc.
+
+There is also a `fileTemplate` option which contains default elements that make up one file item in the file list.
+
+Finally, a `classes` option allows you to change the default class names for these elements.  Be sure the values in `classes`
+match the class names used in the corresponding template elements (where appropriate).
 
 
-### Callbacks (FileUploader & FileUploaderBasic) (TODO) ###
+### Callbacks (FileUploader & FileUploaderBasic) ###
+`onSubmit(String id, String fileName)` - called when the file is submitted to the uploader portion of the code.
+Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
+`onComplete(String id, String fileName, Object responseJSON)` - called when the file upload has finished.
+`onCancel(String id, String fileName)` - called when the file upload has been cancelled.
+`onUpload(String id, String fileName)` - called just before the file upload begins
+`onProgress(String id, String fileName, int uploadedBytes, int totalBytes) - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
 
 
-### Messages (FileUploader & FileUploaderBasic) (TODO) ###
-
-
-
-Instance methods
-
-* `setParams(Object newParams)` - Set the parameters sent along with the request after initializing the uploader.
-* `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
-
-#### Changing alert/messages to something more user friendly ####
+### Changing alert/messages to something more user friendly ###
 
 If you limited file types and max size, you will probably want to change the default alert and
-messages as you see fit, this is possible using showMessage callback and messages option.
+messages as you see fit, this is possible by overriding the `showMessage` function option, as well as the and `messages` options.  The
+default `showMessage` function simply invokes `alert` with the message text.  One instance in which this is used is when the user attempts
+to select an invalid file for upload.  There are general message types with default text that can be overriden as well.
 
-#### Sending additional params ####
 
-To add a parameter that will be passed as a query string with each upload use params option.
+### Instance methods ###
 
-```javascript
-    var uploader = new qq.FileUploader({
-        element: document.getElementById('file-uploader'),
-        action: '/server-side.upload',
-        // additional data to send, name-value pairs
-        params: {
-            param1: 'value1',
-            param2: 'value2'
-        }
-    });
-```
+* `setParams(Object newParams)` - Set the parameters sent along with the request after initializing the uploader.  It can be nicely used in `onSubmit` callback.
+* `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
 
-To change params based on the state of your app, use
 
-```javascript
-    uploader.setParams({
-       anotherParam: 'value'
-    });
-```
-
-It can be nicely used in `onSubmit` callback.
-
-#### Troubleshooting ####
+### Troubleshooting ###
 
 If you can't get the uploader to work, please try the following steps
 before asking for help.
@@ -319,6 +314,7 @@ If the upload doesn't complete, saying "failed":
 It should be `{success:true}` for completed requests. If it's not,
 then you have a problem with your server-side script.
 
-#### Contributors ####
+
+### Contributors ###
 
 Thanks to everybody who contributed, either by sending bug reports or donating. The project wouldn't be possible without all this generous help. Thank you!
