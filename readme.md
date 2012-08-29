@@ -16,6 +16,22 @@ We would love developers to contribute any improvements and bugfixes they produc
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
 
 
+**Table of Contents**
+- [Summary](#summary)
+- [Features](#features)
+- [License](#license)
+- [Getting started](#getting-started)
+- [qq.FileUploader - Setting up full upload widget](#qqfileuploader---setting-up-full-upload-widget)
+- [Options of both FileUploader & FileUploaderBasic](#options-of-both-fileuploader--fileuploaderbasic)
+- [Options of FileUploaderBasic](#options-of-fileuploaderbasic)
+- [Options of FileUploader](#options-of-fileuploader)
+- [Styling FileUploader](#styling-fileuploader)
+- [Callbacks (FileUploader & FileUploaderBasic)](#callbacks-fileuploader--fileuploaderbasic)
+- [Changing alert/messages to something more user friendly](#changing-alertmessages-to-something-more-user-friendly)
+- [Instance methods](#instance-methods)
+- [Troubleshooting](#troubleshooting)
+- [Contributors](#contributors)
+
 ### Summary ###
 
 This plugin uses an XMLHttpRequest (AJAX) for uploading multiple files with a progress-bar in
@@ -279,12 +295,12 @@ match the class names used in the corresponding template elements (where appropr
 
 
 ### Callbacks (FileUploader & FileUploaderBasic) ###
-`onSubmit(String id, String fileName)` - called when the file is submitted to the uploader portion of the code.
+* `onSubmit(String id, String fileName)` - called when the file is submitted to the uploader portion of the code.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
-`onComplete(String id, String fileName, Object responseJSON)` - called when the file upload has finished.
-`onCancel(String id, String fileName)` - called when the file upload has been cancelled.
-`onUpload(String id, String fileName)` - called just before the file upload begins
-`onProgress(String id, String fileName, int uploadedBytes, int totalBytes) - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
+* `onComplete(String id, String fileName, Object responseJSON)` - called when the file upload has finished.
+* `onCancel(String id, String fileName)` - called when the file upload has been cancelled.
+* `onUpload(String id, String fileName)` - called just before the file upload begins
+* `onProgress(String id, String fileName, int uploadedBytes, int totalBytes) - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
 
 
 ### Changing alert/messages to something more user friendly ###
