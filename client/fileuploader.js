@@ -347,9 +347,6 @@ qq.FileUploaderBasic.prototype = {
 	},
 	clearStoredFiles: function(){
 		this._storedFiles = [];
-        if (this._options.listElement !== null){
-            this._options.listElement.innerHTML = "";
-        }
 	},
 	_createUploadButton: function(element){
 		var self = this;
@@ -643,6 +640,10 @@ qq.FileUploader = function(o){
 qq.extend(qq.FileUploader.prototype, qq.FileUploaderBasic.prototype);
 
 qq.extend(qq.FileUploader.prototype, {
+    clearStoredFiles: function() {
+        qq.FileUploaderBasic.prototype.clearStoredFiles.apply(this, arguments);
+        this._listElement.innerHTML = "";
+    },
 	addExtraDropzone: function(element){
 		this._setupExtraDropzone(element);
 	},
