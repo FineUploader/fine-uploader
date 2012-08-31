@@ -347,7 +347,9 @@ qq.FileUploaderBasic.prototype = {
 	},
 	clearStoredFiles: function(){
 		this._storedFiles = [];
-		this._options.listElement.innerHTML = "";
+        if (this._options.listElement !== null){
+            this._options.listElement.innerHTML = "";
+        }
 	},
 	_createUploadButton: function(element){
 		var self = this;
