@@ -85,6 +85,7 @@ class qqFileUploader {
     private $allowedExtensions = array();
     private $sizeLimit = 10485760;
     private $file;
+	private $uploadName;
 
     function __construct(array $allowedExtensions = array(), $sizeLimit = 10485760){        
         $allowedExtensions = array_map("strtolower", $allowedExtensions);
@@ -103,6 +104,11 @@ class qqFileUploader {
         }
     }
     
+	public function getUploadName(){
+		if( isset( $this->uploadName ) )
+			return $this->uploadName;
+	}
+	
 	public function getName(){
 		if ($this->file)
 			return $this->file->getName();
@@ -168,6 +174,8 @@ class qqFileUploader {
             }
         }
         
+		$this->uploadName = $filename . '.' . $ext;
+		
         if ($this->file->save($uploadDirectory . $filename . '.' . $ext)){
             return array('success'=>true);
         } else {
