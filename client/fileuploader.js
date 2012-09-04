@@ -342,7 +342,11 @@ qq.FileUploaderBasic.prototype = {
 			var item = this._getItemByFileId(this._storedFiles[i]);
 			this._find(item, 'spinner').style.display = "";
 			this._filesInProgress++;
-			this._handler.upload(this._storedFiles[i], this._options.params);
+			var params = this._options.params;
+			if (typeof params === 'function') {
+				params = params(this._storedFiles[i]);
+			} 
+			this._handler.upload(this._storedFiles[i], params);
 		}
 	},
 	clearStoredFiles: function(){
