@@ -1,105 +1,194 @@
 /* Have ideas for improving this CSS for the general community? Submit your changes at: https://github.com/Valums-File-Uploader/file-uploader */
-.qq-uploader {
-	position: relative;
-	width: 100%;
+
+/* Reset styles */
+/* These styles prevent unexpected inheritance and overriding of fileuploader styles by previously applied CSS */
+
+.qq-uploader,
+.qq-uploader div,
+.qq-uploader ul,
+.qq-uploader li,
+.qq-uploader span,
+.qq-uploader a 
+{
+    margin: 0px;
+    padding: 0px;
+    overflow: auto;
+    position: relative;
+    float: none;
 }
-.qq-upload-button {
-	display: block;
-	/*or inline-block*/
-	width: 105px;
-	padding: 7px 0;
-	text-align: center;
-	background: #880000;
-	border-bottom: 1px solid #DDD;
-	color: #FFF;
+.qq-uploader div,
+.qq-uploader ul,
+.qq-uploader li {
+    display: block;
 }
-.qq-upload-button-hover {
-	background: #CC0000;
+.qq-uploader span,
+.qq-uploader a {
+    display: inline;
 }
-.qq-upload-button-focus {
-	outline: 1px dotted #000000;
+
+/* Container */
+
+.qq-uploader 
+{
+    position: static;
+    overflow: hidden;
 }
-.qq-upload-drop-area, .qq-upload-extra-drop-area {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	min-height: 30px;
-	z-index: 2;
-	background: #FF9797;
-	text-align: center;
+.qq-uploader input
+{
+    cursor: pointer;
+    cursor: hand;
 }
-.qq-upload-drop-area span {
-	display: block;
-	position: absolute;
-	top: 50%;
-	width: 100%;
-	margin-top: -8px;
-	font-size: 16px;
+
+/* Button */
+
+.qq-uploader .qq-upload-button 
+{   
+    display: block; /*or inline-block*/
+    width: 105px;
+    padding: 7px 0px;
+    text-align: center;
+    background: #880000;
+    border-bottom: 1px solid #DDD;
+    color: #FFF;
 }
-.qq-upload-extra-drop-area {
-	position: relative;
-	margin-top: 50px;
-	font-size: 16px;
-	padding-top: 30px;
-	height: 20px;
-	min-height: 40px;
+.qq-uploader .qq-upload-button-hover {
+    background: #CC0000;
 }
-.qq-upload-drop-area-active {
-	background: #FF7171;
+.qq-uploader .qq-upload-button-focus {
+    outline: 1px dotted #000000;
 }
-.qq-upload-list {
-	margin: 0;
-	padding: 0;
-	list-style: none;
+.qq-uploader .qq-upload-button-icon 
+{
+    padding: 0px;
+    text-align: left;
+    background: none;
+    outline: none;
+    border: none;
+    width: 15px;
+    height: 15px;
 }
-.qq-upload-list li {
-	margin: 0;
-	padding: 9px;
-	line-height: 15px;
-	font-size: 16px;
-	background-color: #FFF0BD;
+
+/* Drop area */
+
+.qq-uploader .qq-upload-drop-area,
+.qq-uploader .qq-upload-extra-drop-area
+{  
+    position: absolute;
+    width: 105px;
+    min-height: 30px;
+    overflow: hidden;
+    padding: 0px;
+    background: #FF9797;
+    text-align: center;
+    z-index: 1000;
 }
-.qq-upload-file, .qq-upload-spinner, .qq-upload-size, .qq-upload-cancel, .qq-upload-failed-text, .qq-upload-finished {
-	margin-right: 12px;
+.qq-uploader .qq-upload-drop-area span 
+{
+    font-size: 16px;
 }
-.qq-upload-file {
+.qq-uploader .qq-upload-extra-drop-area {
+    position: relative;
+    margin-top: 50px;
+    font-size: 16px;
+    padding-top: 30px;
+    height: 20px;
+    min-height: 40px;
 }
-.qq-upload-spinner {
-	display: inline-block;
-	background: url("loading.gif");
-	width: 15px;
-	height: 15px;
-	vertical-align: text-bottom;
+.qq-uploader .qq-upload-drop-area-active 
+{
+    background: #FF7171;
 }
-.qq-upload-finished {
-    display:none;
-    width:15px;
-    height:15px;
-    vertical-align:text-bottom;
+
+/* Upload-list */
+
+.qq-uploader .qq-upload-list 
+{
+    list-style: none;
+    position: absolute;	
+    z-index: 999;
 }
-.qq-upload-size, .qq-upload-cancel {
-	font-size: 12px;
-	font-weight: normal;
+.qq-uploader .qq-upload-list li 
+{   
+    padding: 9px;
+    line-height: 15px;
+    font-size: 16px;
+    color: #000;
+    background-color: #FFF0BD;
 }
-.qq-upload-failed-text {
-	display: none;
+.qq-uploader .qq-progress-bar-container,
+.qq-uploader .qq-upload-file,
+.qq-uploader .qq-upload-spinner,
+.qq-uploader .qq-upload-size,
+.qq-uploader .qq-upload-cancel,
+.qq-uploader .qq-upload-failed-text,
+.qq-uploader .qq-upload-finished 
+{
+    display: block;
+    float: left;
+    overflow: hidden;
+    margin-right: 12px;
 }
-.qq-upload-failed-icon {
-    display:none;
-    width:15px;
-    height:15px;
-    vertical-align:text-bottom;
+.qq-uploader .qq-upload-file {
 }
-.qq-upload-fail .qq-upload-failed-text {
-	display: inline;
+.qq-uploader .qq-progress-bar-container {
+    display: none; /* Is set to inline-block by script in all browsers except IE */
+    width: 25px;
+    height: 5px;
+    margin-top: 5px;
+    border: 1px solid black;
+    background: #fff;
 }
-.qq-upload-list li.qq-upload-success {
-	background-color: #5DA30C;
-	color: #FFFFFF;
+.qq-uploader .qq-progress-bar {
+    display: block;
+    height: 5px; 
+    background-color: Green;
 }
-.qq-upload-list li.qq-upload-fail {
-	background-color: #D60000;
-	color: #FFFFFF;
+.qq-uploader .qq-upload-spinner {
+    display: inline-block;
+    background: url("loading.gif");
+    width: 15px;
+    height: 15px;
+    vertical-align: text-bottom;
+    margin-bottom: 2px;
+}
+.qq-uploader .qq-upload-finished {
+    display: none;
+    width: 15px;
+    height: 15px;
+    vertical-align: text-bottom;
+}
+.qq-uploader .qq-upload-size,
+.qq-uploader .qq-upload-cancel {
+    font-size: 12px;
+    font-weight: normal;
+}
+.qq-uploader .qq-upload-failed-text {
+    display: none;
+}
+.qq-uploader .qq-upload-failed-icon {
+    display: none;
+    width: 15px;
+    height: 15px;
+    vertical-align: text-bottom;
+}
+.qq-uploader .qq-upload-fail .qq-upload-failed-text {
+    display: inline;
+}
+.qq-uploader .qq-upload-list .qq-upload-success {
+    background-color: #5DA30C;
+    color: #FFFFFF;
+}
+.qq-uploader .qq-upload-list .qq-upload-fail {
+    background-color: #D60000;
+    color: #FFFFFF;
+}
+
+/* There is a bug in IE7 that causes problems when using z-index. Because of this the list of uploads may be hidden behind other elements. */
+/* This is because IE7 incorrectly implements stacking contexts (see: http://stackoverflow.com/questions/1287439/ie7-z-index-layering-issues) */
+/* To fix this problem, apply the following class to the element containing the fileuploader (or the first parent element that is in the correct stacking context). */
+
+.file-uploader-parent
+{
+    position: static;
+    z-index: 1;
 }

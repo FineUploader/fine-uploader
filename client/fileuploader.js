@@ -571,18 +571,21 @@ qq.FileUploader = function(o){
 		listElement: null,
 		dragText: 'Drop files here to upload',
 		uploadButtonText: 'Upload a file',
+                uploadButtonTitle: 'Upload a file',
+                uploadButtonIconMode: false,
+                uploadButtonIcon: 'paperclip.png',
 		cancelButtonText: 'Cancel',
 		failUploadText: 'Upload failed',
 
 		template: '<div class="qq-uploader">' +
 				'<div class="qq-upload-drop-area"><span>{dragText}</span></div>' +
-				'<div class="qq-upload-button">{uploadButtonText}</div>' +
+				'<div class="qq-upload-button" title=\"{uploadButtonTitle}\">{uploadButtonText}</div>' +
 				'<ul class="qq-upload-list"></ul>' +
 				'</div>',
 
 		// template for one item in file list
 		fileTemplate: '<li>' +
-				'<span class="qq-progress-bar"></span>' +
+                                '<span class="qq-progress-bar-container"><span class="qq-progress-bar"></span></span>' +
 				'<span class="qq-upload-spinner"></span>' +
 				'<span class="qq-upload-finished"></span>' +
 				'<span class="qq-upload-file"></span>' +
@@ -599,6 +602,7 @@ qq.FileUploader = function(o){
 			dropDisabled: 'qq-upload-drop-area-disabled',
 			list: 'qq-upload-list',
 			progressBar: 'qq-progress-bar',
+                        progressBarContainer: 'qq-progress-bar-container',
 			file: 'qq-upload-file',
 			spinner: 'qq-upload-spinner',
 			finished: 'qq-upload-finished',
@@ -620,9 +624,16 @@ qq.FileUploader = function(o){
 	// overwrite the upload button text if any
 	// same for the Cancel button and Fail message text
 	this._options.template     = this._options.template.replace(/\{dragText\}/g, this._options.dragText);
-	this._options.template     = this._options.template.replace(/\{uploadButtonText\}/g, this._options.uploadButtonText);
+        this._options.template     = this._options.template.replace(/\{uploadButtonTitle\}/g, this._options.uploadButtonTitle);
 	this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.cancelButtonText);
 	this._options.fileTemplate = this._options.fileTemplate.replace(/\{failUploadtext\}/g, this._options.failUploadText);
+        // if uploadButtonIconMode is set to true, add an img tag and a class. Otherwise add uploadButtonText
+        if (this._options.uploadButtonIconMode) {
+            this._options.template = this._options.template.replace(/\{uploadButtonText\}/g, "<img alt=\"" +   this._options.uploadButtonTitle + "\"  src=\"" + this._options.uploadButtonIcon + "\"/>");
+            this._options.template = this._options.template.replace(/qq-upload-button/g, "qq-upload-button qq-upload-button-icon");
+        } else {
+            this._options.template = this._options.template.replace(/\{uploadButtonText\}/g, this._options.uploadButtonText);
+        }
 
 	this._element = this._options.element;
 	this._element.innerHTML = this._options.template;
@@ -746,11 +757,16 @@ qq.extend(qq.FileUploader.prototype, {
 		var percent = Math.round(loaded / total * 100);
 
 		if (loaded != total) {
-			// If still uploading, display percentage
-			text = percent + '% from ' + this._formatSize(total);
+		    // If still uploading, display percentage
+		    text = percent + '% of ' + this._formatSize(total);
+                    // Hide progressbar in IE
+                    if (!qq.ie()) {
+                        this._find(item, 'progressBarContainer').style.display = 'inline-block';
+                    }
 		} else {
-			// If complete, just display final size
-			text = this._formatSize(total);
+                    // If complete, just display final size and hide progressbar
+	            text = this._formatSize(total);
+                    this._find(item, 'progressBarContainer').style.display = 'none';
 		}
 
 		// Update progress bar <span> tag
@@ -1004,7 +1020,6 @@ qq.UploadButton.prototype = {
 			fontSize: '118px',
 			margin: 0,
 			padding: 0,
-			cursor: 'pointer',
 			opacity: 0
 		});
 
