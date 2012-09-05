@@ -102,24 +102,18 @@ var moveFile = function(source, dest, callback) {
         console.log('moveFile() - Could not open readstream.');
         callback('Sorry, could not open readstream.')
     });
-
-    is.on('open', function() {
-        var os = fs.createWriteStream(dest);
-
-        os.on('error', function(err) {
-            console.log('moveFile() - Could not open writestream.');
-            callback('Sorry, could not open writestream.');
-        });
-
-        os.on('open', function() {
-
-            util.pump(is, os, function() {
-                fs.unlinkSync(source);
-            });
-
-            callback();
-        });
+    is.on('end', function() {
+        fs.unlinkSync(source);
+        callback();
     });
+    
+    var os = fs.createWriteStream(dest);
+    os.on('error', function(err) {
+        console.log('moveFile() - Could not open writestream.');
+        callback('Sorry, could not open writestream.');
+    });
+    
+    is.pipe(os);
 };
 
 // Starting the express server
