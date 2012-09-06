@@ -1420,7 +1420,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         if (this._options.encoding == 'multipart') {
             var formData = new FormData();
-            formData.append(name, file);
+            formData.append(this._options.inputName, file);
             file = formData;
         } else {
             xhr.setRequestHeader("Content-Type", "application/octet-stream");
