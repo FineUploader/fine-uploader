@@ -290,13 +290,7 @@ qq.FileUploaderBasic = function(o){
         onComplete: function(id, fileName, responseJSON){},
         onCancel: function(id, fileName){},
         onUpload: function(id, fileName, xhr){},
-        onProgress: function(id, fileName, loaded, total){
-            if (loaded === total) {
-                var item = that._getItemByFileId(id);
-                var cancelLink = that._find(item, 'cancel');
-                cancelLink.style.display = 'none';
-            }
-        },
+        onProgress: function(id, fileName, loaded, total){},
         onError: function(id, fileName, xhr) {},
         // messages
         messages: {
@@ -339,8 +333,6 @@ qq.FileUploaderBasic.prototype = {
     },
     uploadStoredFiles: function(){
         for (var i = 0; i < this._storedFileIds.length; i++) {
-            var item = this._getItemByFileId(this._storedFileIds[i]);
-            this._find(item, 'spinner').style.display = "";
             this._filesInProgress++;
             this._handler.upload(this._storedFileIds[i], this._options.params);
         }
@@ -429,6 +421,11 @@ qq.FileUploaderBasic.prototype = {
     _onProgress: function(id, fileName, loaded, total){
     },
     _onComplete: function(id, fileName, result){
+        var indexToRemove = this._storedFileIds.indexOf(id);
+        if (indexToRemove >= 0) {
+            this._storedFileIds.splice(indexToRemove, 1);
+        }
+
         this._filesInProgress--;
         if (result.error){
             this._options.showMessage(result.error);
@@ -477,11 +474,12 @@ qq.FileUploaderBasic.prototype = {
                 this._handler.upload(id, this._options.params);
             }
             else {
-                var item = this._getItemByFileId(id);
-                this._find(item, 'spinner').style.display = "none";
-                this._storedFileIds.push(id);
+                this._storeFileForLater(id);
             }
         }
+    },
+    _storeFileForLater: function(id) {
+        this._storedFileIds.push(id);
     },
     _validateFile: function(file){
         var name, size;
@@ -660,6 +658,11 @@ qq.extend(qq.FileUploader.prototype, {
         return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
             || (qq.firefox() && !e.relatedTarget); // null e.relatedTarget for Firefox
     },
+    _storeFileForLater: function(id) {
+        qq.FileUploaderBasic.prototype._storeFileForLater.apply(this, arguments);
+        var item = this._getItemByFileId(id);
+        this._find(item, 'spinner').style.display = "none";
+    },
     /**
      * Gets one of the elements listed in this._options.classes
      **/
@@ -744,6 +747,12 @@ qq.extend(qq.FileUploader.prototype, {
         qq.FileUploaderBasic.prototype._onProgress.apply(this, arguments);
 
         var item = this._getItemByFileId(id);
+
+        if (loaded === total) {
+            var cancelLink = this._find(item, 'cancel');
+            cancelLink.style.display = 'none';
+        }
+
         var size = this._find(item, 'size');
         size.style.display = 'inline';
 
