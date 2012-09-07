@@ -1454,10 +1454,13 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         if (xhr.status == 200){
             this.log("xhr - server response received");
             this.log("responseText = " + xhr.responseText);
-
             var response;
             try {
-                response = eval("(" + xhr.responseText + ")");
+                if (typeof JSON.parse === "function") {
+                    response = JSON.parse(xhr.responseText);
+                } else {
+                    response = eval("(" + xhr.responseText + ")");
+                }
             } catch(err){
                 response = {};
             }
