@@ -1442,8 +1442,9 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         xhr.send(file);
     },
     _onComplete: function(id, xhr){
+        "use strict";
         // the request was aborted/cancelled
-        if (!this._files[id]) return;
+        if (!this._files[id]) { return; }
 
         var name = this.getName(id);
         var size = this.getSize(id);
@@ -1455,15 +1456,12 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
             this.log("responseText = " + xhr.responseText);
 
             var response;
-
             try {
                 response = eval("(" + xhr.responseText + ")");
             } catch(err){
                 response = {};
             }
-
             this._options.onComplete(id, name, response);
-
         } else {
             this._options.onError(id, name, xhr);
             this._options.onComplete(id, name, {});
