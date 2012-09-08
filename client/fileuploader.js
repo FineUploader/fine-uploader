@@ -1469,7 +1469,6 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
             this._options.onComplete(id, name, {});
         }
 
-        this._files[id] = null;
         this._xhrs[id] = null;
         this._dequeue(id);
     },
