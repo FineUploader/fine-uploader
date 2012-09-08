@@ -12,7 +12,13 @@
     use CGI;
     my $IN = new CGI;
 
-    my $file = $IN->param('POSTDATA');
+    my $file;
+    if ($IN->param('POSTDATA')) {
+      $file = $IN->param('POSTDATA');
+    } else {
+      $file = $IN->upload('qqfile');
+    }
+
     my $temp_id = $IN->param('temp_id');
 
 	# make a random filename, and we guess the file type later on...
@@ -38,8 +44,15 @@
 
     mkdir("$uploaddir/$temp_id");
 
+    binmode(WRITEIT);
     open(WRITEIT, ">$uploaddir/$name.$type") or die "Cant write to $uploaddir/$name.$type. Reason: $!";
+    if ($IN->param('POSTDATA')) {
         print WRITEIT $file;
+    } else {
+        while (<$file>) {
+          print WRITEIT;
+        }
+    }
     close(WRITEIT);
 
     my $check_size = -s "$uploaddir/$name.$type";
