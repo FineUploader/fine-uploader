@@ -814,6 +814,7 @@ qq.extend(qq.FileUploader.prototype, {
     },
     _clearList: function(){
         this._listElement.innerHTML = '';
+        this.clearStoredFiles();
     },
     _getItemByFileId: function(id){
         var item = this._listElement.firstChild;
