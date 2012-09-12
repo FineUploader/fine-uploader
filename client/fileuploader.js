@@ -381,7 +381,7 @@ qq.FileUploaderBasic.prototype = {
                 self._options.onComplete(id, fileName, result);
             },
             onCancel: function(id, fileName){
-                var indexToRemove = self._storedFileIds.indexOf(id);
+                var indexToRemove = qq.indexOf(self._storedFileIds, id);
                 if (indexToRemove >= 0) {
                     self._storedFileIds.splice(indexToRemove, 1);
                 }
@@ -419,7 +419,7 @@ qq.FileUploaderBasic.prototype = {
     _onProgress: function(id, fileName, loaded, total){
     },
     _onComplete: function(id, fileName, result){
-        var indexToRemove = this._storedFileIds.indexOf(id);
+        var indexToRemove = qq.indexOf(this._storedFileIds, id);
         if (indexToRemove >= 0) {
             this._storedFileIds.splice(indexToRemove, 1);
         }
@@ -804,6 +804,15 @@ qq.extend(qq.FileUploader.prototype, {
                 qq.addClass(item, this._classes.failIcon)
             }
             item.title = errorReason;
+        }
+    },
+    _onUpload: function(id, fileName, xhr){
+        qq.FileUploaderBasic.prototype._onUpload.apply(this, arguments);
+
+        var item = this._getItemByFileId(id);
+        var spinnerEl = this._find(item, 'spinner');
+        if (spinnerEl.style.display == "none") {
+            spinnerEl.style.display = "inline-block";
         }
     },
     _addToList: function(id, fileName){
