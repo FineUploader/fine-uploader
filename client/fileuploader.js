@@ -381,7 +381,7 @@ qq.FileUploaderBasic.prototype = {
                 self._options.onComplete(id, fileName, result);
             },
             onCancel: function(id, fileName){
-                var indexToRemove = self._storedFileIds.indexOf(id);
+                var indexToRemove = qq.indexOf(self._storedFileIds, id);
                 if (indexToRemove >= 0) {
                     self._storedFileIds.splice(indexToRemove, 1);
                 }
@@ -419,11 +419,9 @@ qq.FileUploaderBasic.prototype = {
     _onProgress: function(id, fileName, loaded, total){
     },
     _onComplete: function(id, fileName, result){
-        if(this._storedFileIds.length > 0) {
-            var indexToRemove = this._storedFileIds.indexOf(id);
-            if (indexToRemove >= 0) {
-                this._storedFileIds.splice(indexToRemove, 1);
-            }
+        var indexToRemove = qq.indexOf(this._storedFileIds, id);
+        if (indexToRemove >= 0) {
+            this._storedFileIds.splice(indexToRemove, 1);
         }
 
         this._filesInProgress--;
