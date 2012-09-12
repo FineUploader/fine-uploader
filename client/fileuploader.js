@@ -419,9 +419,11 @@ qq.FileUploaderBasic.prototype = {
     _onProgress: function(id, fileName, loaded, total){
     },
     _onComplete: function(id, fileName, result){
-        var indexToRemove = this._storedFileIds.indexOf(id);
-        if (indexToRemove >= 0) {
-            this._storedFileIds.splice(indexToRemove, 1);
+        if(this._storedFileIds.length > 0) {
+            var indexToRemove = this._storedFileIds.indexOf(id);
+            if (indexToRemove >= 0) {
+                this._storedFileIds.splice(indexToRemove, 1);
+            }
         }
 
         this._filesInProgress--;
