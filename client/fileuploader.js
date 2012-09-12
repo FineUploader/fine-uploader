@@ -304,8 +304,7 @@ qq.FileUploaderBasic = function(o){
         showMessage: function(message){
             alert(message);
         },
-        inputName: 'qqfile',
-        extraDropzones : []
+        inputName: 'qqfile'
     };
     qq.extend(this._options, o);
     qq.extend(this, qq.DisposeSupport);
@@ -372,7 +371,6 @@ qq.FileUploaderBasic.prototype = {
             maxConnections: this._options.maxConnections,
             customHeaders: this._options.customHeaders,
             inputName: this._options.inputName,
-            extraDropzones: this._options.extraDropzones,
             demoMode: this._options.demoMode,
             onProgress: function(id, fileName, loaded, total){
                 self._onProgress(id, fileName, loaded, total);
@@ -573,9 +571,12 @@ qq.FileUploader = function(o){
         // if set, will be used instead of qq-upload-list in template
         listElement: null,
         dragText: 'Drop files here to upload',
+        extraDropzones : [],
         uploadButtonText: 'Upload a file',
         cancelButtonText: 'Cancel',
         failUploadText: 'Upload failed',
+
+        multipleFileDropNotAllowedMessage: "You may only drop one file",
 
         template: '<div class="qq-uploader">' +
             '<div class="qq-upload-drop-area"><span>{dragText}</span></div>' +
@@ -619,6 +620,8 @@ qq.FileUploader = function(o){
     });
     // overwrite options with user supplied
     qq.extend(this._options, o);
+
+    this._options.messages.tooManyFilesError = this._options.multipleFileDropNotAllowedMessage;
 
     // overwrite the upload button text if any
     // same for the Cancel button and Fail message text
@@ -696,7 +699,12 @@ qq.extend(qq.FileUploader.prototype, {
             onDrop: function(e){
                 dropArea.style.display = 'none';
                 qq.removeClass(dropArea, self._classes.dropActive);
-                self._uploadFileList(e.dataTransfer.files);
+                if (e.dataTransfer.files.length > 1 && !self._options.multiple) {
+                    self._error('tooManyFilesError', "");
+                }
+                else {
+                    self._uploadFileList(e.dataTransfer.files);
+                }
             }
         });
 
