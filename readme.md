@@ -206,12 +206,6 @@ var uploader = new qq.FileUploader({
             equal to the value of this options.  In the case of the form uploader, this is simply the value of the name attribute
             of the file's associated input element.</td>
         </tr>
-            <td>extraDropzones</td>
-            <td>array of elements</td>
-            <td>[]</td>
-            <td>Useful if you'd like to to designate additional dropozones for file input.  Of course, this is not relevant if the
-            form uploader is used.</td>
-        </tr>
     </tbody>
 </table>
 
@@ -277,6 +271,19 @@ var uploader = new qq.FileUploader({
             <td>string</td>
             <td>Upload failed</td>
             <td>Text that appears next to a failed file item</td>
+        </tr>
+        <tr>
+            <td>extraDropzones</td>
+            <td>array of elements</td>
+            <td>[]</td>
+            <td>Useful if you'd like to to designate additional dropozones for file input.  Of course, this is not relevant if the
+            form uploader is used.</td>
+        </tr>
+        <tr>
+            <td>multipleFileDropNotAllowedMessage</td>
+            <td>string</td>
+            <td>"You may only drop one file"</td>
+            <td>Can be used to customize the message used when one attempts to drop multiple files when multiple == false.</td>
         </tr>
     </tbody>
 </table>
