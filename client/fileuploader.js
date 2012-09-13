@@ -5,9 +5,11 @@
  *
  * Have ideas for improving this JS for the general community?
  * Submit your changes at: https://github.com/Valums-File-Uploader/file-uploader
+ * Readme at https://github.com/valums/file-uploader/blob/2.0/readme.md
  *
- * VERSION 2.0 beta
- * Original version 1.0 © 2010 Andrew Valums ( andrew(at)valums.com )
+ * VERSION 2.0
+ * Original version: 1.0 © 2010 Andrew Valums ( andrew(at)valums.com )
+ * Current Maintainer (2.0+): © 2012, Ray Nicholus ( fineuploader(at)garstasio.com )
  *
  * Licensed under MIT license, GNU GPL 2 or later, GNU LGPL 2 or later, see license.txt.
  */
