@@ -167,16 +167,18 @@ class qqFileUploader {
             return array('error' => 'File has an invalid extension, it should be one of '. $these . '.');
         }
         
+        $ext = ($ext == '') ? $ext : '.' . $ext;
+        
         if(!$replaceOldFile){
             /// don't overwrite previous files that were uploaded
-            while (file_exists($uploadDirectory . $filename . '.' . $ext)) {
+            while (file_exists($uploadDirectory . $filename . $ext)) {
                 $filename .= rand(10, 99);
             }
         }
         
-		$this->uploadName = $filename . '.' . $ext;
+		$this->uploadName = $filename . $ext;
 		
-        if ($this->file->save($uploadDirectory . $filename . '.' . $ext)){
+        if ($this->file->save($uploadDirectory . $filename . $ext)){
             return array('success'=>true);
         } else {
             return array('error'=> 'Could not save uploaded file.' .
