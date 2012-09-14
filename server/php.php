@@ -86,12 +86,16 @@ class qqFileUploader {
     private $sizeLimit = 10485760;
     private $file;
 	private $uploadName;
+	private $changeFilename;
 
-    function __construct(array $allowedExtensions = array(), $sizeLimit = 10485760){        
+    function __construct(array $allowedExtensions = array(), $sizeLimit = 10485760,$changeFilename = false){        
         $allowedExtensions = array_map("strtolower", $allowedExtensions);
             
         $this->allowedExtensions = $allowedExtensions;        
         $this->sizeLimit = $sizeLimit;
+        
+        //should the original filename of the uploaded file be changed?
+        $this->changeFilename = $changeFilename;
         
         $this->checkServerSettings();       
 
@@ -159,7 +163,11 @@ class qqFileUploader {
         
         $pathinfo = pathinfo($this->file->getName());
         $filename = $pathinfo['filename'];
-        //$filename = md5(uniqid());
+        
+        if($this->changeFilename){
+        	$filename = md5(uniqid()); 
+        }
+        
         $ext = @$pathinfo['extension'];		// hide notices if extension is empty
 
         if($this->allowedExtensions && !in_array(strtolower($ext), $this->allowedExtensions)){
@@ -177,7 +185,7 @@ class qqFileUploader {
 		$this->uploadName = $filename . '.' . $ext;
 		
         if ($this->file->save($uploadDirectory . $filename . '.' . $ext)){
-            return array('success'=>true);
+            return array('success'=>true,'filename'=>$filename.'.'.$ext);
         } else {
             return array('error'=> 'Could not save uploaded file.' .
                 'The upload was cancelled, or server error encountered');
