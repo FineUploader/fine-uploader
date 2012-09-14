@@ -6,8 +6,8 @@ Currently maintained by Ray Nicholus.
 Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
 It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
 
-You can [download released versions](https://github.com/valums/file-uploader/wiki/Releases), or, if you are more daring,
-use the snapshot version on the master branch.  
+**You can [download released versions](https://github.com/valums/file-uploader/wiki/Releases), or, if you are more daring,
+use the snapshot version on the master branch.**  
 
 Take a look at the new evolving [Demo](http://fineuploader.com) page.
 
