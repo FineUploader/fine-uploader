@@ -1,26 +1,12 @@
-### Fine Uploader ###
+# Fine Uploader #
 
-Originally developed/designed by Andrew Valums.<br/>
+Originally developed/designed by Andrew Valums.   
 Currently maintained by Ray Nicholus.
 
-Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
-It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
 
-**You can [download released versions](https://github.com/valums/file-uploader/wiki/Releases), or, if you are more daring,
-use the snapshot version on the master branch.**  
-
-Take a look at the new evolving [Demo](http://fineuploader.com) page.
-
-Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com/forum/#!forum/fineuploader).
-
-Looking for the [comment thread](http://fineuploader.com/discussions.html) from the valums.com website? It is still available, but please use the [forum](https://groups.google.com/forum/#!forum/fineuploader) instead.
-
-We would love developers to contribute any improvements and bugfixes they produce.
-See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
-
-
-**Table of Contents**
+###Table of Contents###
 - [Summary](#summary)
+- [Releases/Downloads](#releasesdownloads)
 - [Features](#features)
 - [License](#license)
 - [Getting started](#getting-started)
@@ -33,15 +19,32 @@ See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/qu
 - [Changing alert/messages to something more user friendly](#changing-alertmessages-to-something-more-user-friendly)
 - [Instance methods](#instance-methods)
 - [Troubleshooting](#troubleshooting)
+- [Issue Tracker](#issue-tracker)
 - [Contributors](#contributors)
 
+
 ### Summary ###
+
+Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
+It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
 
 This plugin uses an XMLHttpRequest (AJAX) for uploading multiple files with a progress-bar in
 FF3.6+, Safari4+, Chrome and falls back to hidden-iframe-based upload in other browsers (namely IE),
 providing good user experience everywhere.
 
 It does not use Flash, jQuery, or any external libraries.
+
+Take a look at the new evolving [Demo](http://fineuploader.com) page.
+
+Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com/forum/#!forum/fineuploader).
+
+Looking for the [comment thread](http://fineuploader.com/discussions.html) from the valums.com website? It is still available, but please use the [forum](https://groups.google.com/forum/#!forum/fineuploader) instead.
+
+
+### Releases/Downloads ###
+
+**You can [download released versions](https://github.com/valums/file-uploader/wiki/Releases), or, if you are more daring,
+use the snapshot version on the master branch.**  
 
 
 ### Features ###
@@ -343,6 +346,16 @@ It should be `{success:true}` for completed requests. If it's not,
 then you have a problem with your server-side script.
 
 
+### Issue Tracker ###
+
+Have a bug or feature request? Please [create an issue here on GitHub](https://github.com/valums/file-uploader/issues) 
+that conforms with [necolas's guidelines](https://github.com/necolas/issue-guidelines).
+
+
 ### Contributors ###
 
+We would love developers to contribute any improvements and bugfixes they produce.
+See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
+
 Thanks to everybody who contributed, either by sending bug reports or donating. The project wouldn't be possible without all this generous help. Thank you!
+
