@@ -1463,32 +1463,32 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         xhr.send(file);
     },
     _onComplete: function(id, xhr){
+        "use strict";
         // the request was aborted/cancelled
-        if (!this._files[id]) return;
+        if (!this._files[id]) { return; }
 
         var name = this.getName(id);
         var size = this.getSize(id);
+        var response; //the parsed JSON response from the server, or the empty object if parsing failed.
 
         this._options.onProgress(id, name, size, size);
 
-        if (xhr.status == 200){
-            this.log("xhr - server response received");
-            this.log("responseText = " + xhr.responseText);
+        this.log("xhr - server response received");
+        this.log("responseText = " + xhr.responseText);
 
-            var response;
-
-            try {
+        try {
+            if (typeof JSON.parse === "function") {
+                response = JSON.parse(xhr.responseText);
+            } else {
                 response = eval("(" + xhr.responseText + ")");
-            } catch(err){
-                response = {};
             }
-
-            this._options.onComplete(id, name, response);
-
-        } else {
-            this._options.onError(id, name, xhr);
-            this._options.onComplete(id, name, {});
+        } catch(err){
+            response = {};
         }
+        if (xhr.status !== 200){
+            this._options.onError(id, name, xhr);
+        }
+        this._options.onComplete(id, name, response);
 
         this._xhrs[id] = null;
         this._dequeue(id);
