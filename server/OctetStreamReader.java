@@ -102,14 +102,14 @@ public class OctetStreamReader extends HttpServlet {
             fos = new FileOutputStream(new File(realPath + filename));
             IOUtils.copy(is, fos);
             response.setStatus(response.SC_OK);
-            writer.print("{success: true}");
+            writer.print("{\"success\": true}");
         } catch (FileNotFoundException ex) {
             response.setStatus(response.SC_INTERNAL_SERVER_ERROR);
-            writer.print("{success: false}");
+            writer.print("{\"success\": false}");
             log(OctetStreamReader.class.getName() + "has thrown an exception: " + ex.getMessage());
         } catch (IOException ex) {
             response.setStatus(response.SC_INTERNAL_SERVER_ERROR);
-            writer.print("{success: false}");
+            writer.print("{\"success\": false}");
             log(OctetStreamReader.class.getName() + "has thrown an exception: " + ex.getMessage());
         } finally {
             try {

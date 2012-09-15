@@ -181,7 +181,7 @@ var uploader = new qq.FileUploader({
             <td>[]</td>
             <td>This may be helpful if you want to restrict uploaded files to specific file types.  Note that this validation
             option is only enforced by examining the extension of uploaded file names.  For a more complete verification of the
-            file type, you should use, for example, magic byte file identification on the server side and return {success: false}
+            file type, you should use, for example, magic byte file identification on the server side and return {"success": false}
             in the response if the file type is not on your whitelist.</td>
         </tr>
         <tr>
@@ -342,7 +342,7 @@ If the upload doesn't complete, saying "failed":
 * Open developer console in your browser.
 * Try to upload the file. You should see a server response.
 
-It should be `{success:true}` for completed requests. If it's not,
+It should be `{"success":true}` for completed requests. If it's not,
 then you have a problem with your server-side script.
 
 
