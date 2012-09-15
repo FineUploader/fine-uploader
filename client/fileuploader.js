@@ -1229,6 +1229,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         }
 
         var fileName = this.getName(id);
+        params[this._options.inputName] = fileName;
 
         var iframe = this._createIframe(id);
         var form = this._createForm(iframe, params);
