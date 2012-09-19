@@ -5,12 +5,10 @@ Currently maintained by Ray Nicholus.
 
 
 ### Announcements ###
-_September 18, 2012_ - I've created a [google doc spreadsheet](https://docs.google.com/spreadsheet/ccc?key=0AnQh9-ZBDuh_dEJGZFY1dEl2SDlGUGZNLUVfanZKeXc#gid=0
-) 
+_September 18, 2012_ - I've created a [google doc spreadsheet](https://docs.google.com/spreadsheet/ccc?key=0AnQh9-ZBDuh_dEJGZFY1dEl2SDlGUGZNLUVfanZKeXc#gid=0) 
 where people can include ideas for Fine Uploader 3.0.  For some initial information about 3.0, have a look at the initial 
 ideas I have in the spreadsheet, along with [this discussion](#326).  Anyone can add ideas to 
-[the spreadsheet]https://docs.google.com/spreadsheet/ccc?key=0AnQh9-ZBDuh_dEJGZFY1dEl2SDlGUGZNLUVfanZKeXc#gid=0
-).
+[the spreadsheet]https://docs.google.com/spreadsheet/ccc?key=0AnQh9-ZBDuh_dEJGZFY1dEl2SDlGUGZNLUVfanZKeXc#gid=0).
 
 
 
