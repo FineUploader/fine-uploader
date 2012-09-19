@@ -4,6 +4,15 @@ Originally developed/designed by Andrew Valums.
 Currently maintained by Ray Nicholus.
 
 
+## Announcements ##
+I've created a [google doc spreadsheet](https://docs.google.com/spreadsheet/ccc?key=0AnQh9-ZBDuh_dEJGZFY1dEl2SDlGUGZNLUVfanZKeXc) 
+where people can include ideas for Fine Uploader 3.0.  For some initial information about 3.0, have a look at the initial 
+ideas I have in the spreadsheet, along with [this discussion](#326).
+
+Anyone can add ideas to [the spreadsheet](https://docs.google.com/spreadsheet/ccc?key=0AnQh9-ZBDuh_dEJGZFY1dEl2SDlGUGZNLUVfanZKeXc).
+
+
+
 ###Table of Contents###
 - [Summary](#summary)
 - [Releases/Downloads](#releasesdownloads)
