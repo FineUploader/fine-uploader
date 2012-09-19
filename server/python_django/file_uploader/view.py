@@ -15,8 +15,8 @@ def index(request):
 @csrf_exempt
 def upload(request):
 
-    allowedExtension = [".jpg",".png",".ico"]
-    sizeLimit = 1024
+    allowedExtension = [".jpg",".png",".ico",".*"]
+    sizeLimit = 1024000
     
     uploader = qqFileUploader(allowedExtension,sizeLimit)
     

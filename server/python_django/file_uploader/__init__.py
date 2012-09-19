@@ -3,6 +3,7 @@
 @email: ferdinandsilva@ferdinandsilva.com
 @website: http://ferdinandsilva.com
 """
+import os
 
 class qqFileUploader(object):
     
@@ -22,13 +23,13 @@ class qqFileUploader(object):
         fileName = uploaded.im_self.META["HTTP_X_FILE_NAME"]
         
         #check first for allowed file extensions
-        if self._getExtensionFromFileName(fileName) in self.allowedExtensions:
+        if self._getExtensionFromFileName(fileName) in self.allowedExtensions or ".*" in self.allowedExtensions:
             #check file size
             
             if fileSize <= self.sizeLimit:
                 #upload file
                 #write file
-                file = open(uploadDirectory + fileName,"wb")
+                file = open(os.path.join(uploadDirectory,fileName),"wb+")
                 file.write(djangoRequest.read(fileSize))
                 file.close()
                 
