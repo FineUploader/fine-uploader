@@ -578,12 +578,10 @@ qq.FileUploader = function(o){
         cancelButtonText: 'Cancel',
         failUploadText: 'Upload failed',
 
-        multipleFileDropNotAllowedMessage: "You may only drop one file",
-
         template: '<div class="qq-uploader">' +
             '<div class="qq-upload-drop-area"><span>{dragText}</span></div>' +
             '<div class="qq-upload-button">{uploadButtonText}</div>' +
-            '<ul class="qq-upload-list"></ul>' +
+            (!this._options.listElement ? '<ul class="qq-upload-list"></ul>' : '') +
             '</div>',
 
         // template for one item in file list
@@ -618,12 +616,16 @@ qq.FileUploader = function(o){
 
             successIcon: null,
             failIcon: null
+        },
+        extraMessages: {
+            formatProgress: "{percent}% of {total_size}",
+            tooManyFilesError: "You may only drop one file"
         }
     });
     // overwrite options with user supplied
     qq.extend(this._options, o);
 
-    this._options.messages.tooManyFilesError = this._options.multipleFileDropNotAllowedMessage;
+    qq.extend(this._options.messages, this._options.extraMessages);
 
     // overwrite the upload button text if any
     // same for the Cancel button and Fail message text
@@ -771,7 +773,7 @@ qq.extend(qq.FileUploader.prototype, {
 
         if (loaded != total) {
             // If still uploading, display percentage
-            text = percent + '% from ' + this._formatSize(total);
+            text = this._formatProgress(loaded, total);
         } else {
             // If complete, just display final size
             text = this._formatSize(total);
@@ -864,6 +866,14 @@ qq.extend(qq.FileUploader.prototype, {
                 qq.remove(item);
             }
         });
+    },
+    _formatProgress: function (uploadedSize, totalSize) {
+        var message = this._options.messages.formatProgress;
+        function r(name, replacement) { message = message.replace(name, replacement); }
+
+        r('{percent}', Math.round(uploadedSize / totalSize * 100));
+        r('{total_size}', this._formatSize(totalSize));
+        return message;
     }
 });
 

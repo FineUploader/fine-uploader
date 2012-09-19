@@ -285,12 +285,6 @@ var uploader = new qq.FileUploader({
             <td>Useful if you'd like to to designate additional dropozones for file input.  Of course, this is not relevant if the
             form uploader is used.</td>
         </tr>
-        <tr>
-            <td>multipleFileDropNotAllowedMessage</td>
-            <td>string</td>
-            <td>"You may only drop one file"</td>
-            <td>Can be used to customize the message used when one attempts to drop multiple files when multiple == false.</td>
-        </tr>
     </tbody>
 </table>
 
@@ -318,10 +312,11 @@ Note that this does not mean the file upload will begin at this point.  Return `
 
 ### Changing alert/messages to something more user friendly ###
 
-If you limited file types and max size, you will probably want to change the default alert and
-messages as you see fit, this is possible by overriding the `showMessage` function option, as well as the and `messages` options.  The
-default `showMessage` function simply invokes `alert` with the message text.  One instance in which this is used is when the user attempts
-to select an invalid file for upload.  There are general message types with default text that can be overriden as well.
+You may want to change the default alert implementation and messages as you see fit.  This is possible by overriding the
+`showMessage` function option, as well as the `messages` properties in FileUploaderBasic and the `extraMessages` properties
+in FileUploader.  The default `showMessage` function simply invokes `alert` with the message text.  One instance in which t
+his is used is when the user attempts to select an invalid file for upload.  There are general message
+types with default text that can be overriden as well.
 
 
 ### Instance methods ###
