@@ -586,7 +586,7 @@ qq.FileUploader = function(o){
 
         // template for one item in file list
         fileTemplate: '<li>' +
-            '<span class="qq-progress-bar"></span>' +
+            '<div class="qq-progress-bar"></div>' +
             '<span class="qq-upload-spinner"></span>' +
             '<span class="qq-upload-finished"></span>' +
             '<span class="qq-upload-file"></span>' +
@@ -787,8 +787,12 @@ qq.extend(qq.FileUploader.prototype, {
     _onComplete: function(id, fileName, result){
         qq.FileUploaderBasic.prototype._onComplete.apply(this, arguments);
 
-        // mark completed
         var item = this._getItemByFileId(id);
+
+        if (qq.UploadHandlerXhr.isSupported()) {
+            qq.remove(this._find(item, 'progressBar'));
+        }
+
         if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
             qq.remove(this._find(item, 'cancel'));
         }
@@ -825,6 +829,11 @@ qq.extend(qq.FileUploader.prototype, {
             var cancelLink = this._find(item, 'cancel');
             qq.remove(cancelLink);
         }
+
+        if (!qq.UploadHandlerXhr.isSupported()) {
+            qq.remove(this._find(item, 'progressBar'));
+        }
+
         item.qqFileId = id;
 
         var fileElement = this._find(item, 'file');
