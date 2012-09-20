@@ -10,6 +10,9 @@ where people can include ideas for Fine Uploader 3.0.  For some initial informat
 ideas I have in the spreadsheet, along with [this discussion](#326).  Anyone can add ideas to 
 [the spreadsheet](https://docs.google.com/spreadsheet/ccc?key=0AnQh9-ZBDuh_dEJGZFY1dEl2SDlGUGZNLUVfanZKeXc#gid=0).
 
+Also, please vote in the [Fine Uploader 3.0 poll](http://www.easypolls.net/poll.html?p=505b6af5e4b07cc0aae7deba).  
+The choice is between a jQuery 3.0 version, or not.
+
 
 
 ###Table of Contents###
