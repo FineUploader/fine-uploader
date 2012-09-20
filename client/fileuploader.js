@@ -309,6 +309,7 @@ qq.FileUploaderBasic = function(o){
         inputName: 'qqfile'
     };
     qq.extend(this._options, o);
+    this._wrapCallbacks();
     qq.extend(this, qq.DisposeSupport);
 
     // number of files being uploaded
@@ -326,6 +327,9 @@ qq.FileUploaderBasic = function(o){
 };
 
 qq.FileUploaderBasic.prototype = {
+    log: function(str){
+        if (this._options.debug && window.console) console.log('[uploader] ' + str);
+    },
     setParams: function(params){
         this._options.params = params;
     },
@@ -555,6 +559,31 @@ qq.FileUploaderBasic.prototype = {
         } while (bytes > 99);
 
         return Math.max(bytes, 0.1).toFixed(1) + ['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i];
+    },
+    _wrapCallbacks: function() {
+        var self, safeCallback;
+
+        self = this;
+
+        safeCallback = function(callback, args) {
+            try {
+                return callback.apply(this, args);
+            }
+            catch (exception) {
+                self.log("Caught " + exception + " in callback: " + callback);
+            }
+        }
+
+        for (var prop in this._options) {
+            if (/^on[A-Z]/.test(prop)) {
+                (function() {
+                    var oldCallback = self._options[prop];
+                    self._options[prop] = function() {
+                        return safeCallback(oldCallback, arguments);
+                    }
+                }());
+            }
+        }
     }
 };
 
@@ -624,6 +653,7 @@ qq.FileUploader = function(o){
     });
     // overwrite options with user supplied
     qq.extend(this._options, o);
+    this._wrapCallbacks();
 
     qq.extend(this._options.messages, this._options.extraMessages);
 
