@@ -3,6 +3,9 @@
 Originally developed/designed by Andrew Valums.   
 Currently maintained by Ray Nicholus.
 
+*If you have found Fine Uploader useful, please consider [donating](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted) 
+to support continued maintenance and evolution of this library.*
+
 
 ### Announcements ###
 _September 18, 2012_ - I've created a [google doc spreadsheet](https://docs.google.com/spreadsheet/ccc?key=0AnQh9-ZBDuh_dEJGZFY1dEl2SDlGUGZNLUVfanZKeXc#gid=0) 
@@ -372,3 +375,5 @@ See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/qu
 
 Thanks to everybody who contributed, either by sending bug reports or donating. The project wouldn't be possible without all this generous help. Thank you!
 
+If you have found Fine Uploader useful, please consider [donating](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted) 
+to support continued maintenance and evolution of this library.
