@@ -281,6 +281,7 @@ qq.FileUploaderBasic = function(o){
         maxConnections: 3,
         disableCancelForFormUploads: false,
         autoUpload: true,
+        forceMultipart: false,
         // validation
         allowedExtensions: [],
         acceptFiles: null,		// comma separated string of mime-types for browser to display in browse dialog
@@ -373,7 +374,7 @@ qq.FileUploaderBasic.prototype = {
         var handler = new qq[handlerClass]({
             debug: this._options.debug,
             action: this._options.action,
-            encoding: this._options.encoding,
+            forceMultipart: this._options.forceMultipart,
             maxConnections: this._options.maxConnections,
             customHeaders: this._options.customHeaders,
             inputName: this._options.inputName,
@@ -1278,6 +1279,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         }
 
         var fileName = this.getName(id);
+        params[this._options.inputName] = fileName;
 
         var iframe = this._createIframe(id);
         var form = this._createForm(iframe, params);
@@ -1496,7 +1498,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         xhr.open(protocol, queryString, true);
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
-        if (this._options.encoding == 'multipart') {
+        if (this._options.forceMultipart) {
             var formData = new FormData();
             formData.append(this._options.inputName, file);
             file = formData;
