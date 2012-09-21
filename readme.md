@@ -223,6 +223,13 @@ var uploader = new qq.FileUploader({
             equal to the value of this options.  In the case of the form uploader, this is simply the value of the name attribute
             of the file's associated input element.</td>
         </tr>
+        <tr>
+            <td>forceMultipart</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>While form-based uploads will always be multipart requests, this forces XHR uploads to send files using 
+            multipart requests as well.</td>
+        </tr>
     </tbody>
 </table>
 
