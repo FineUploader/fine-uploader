@@ -456,9 +456,13 @@ qq.FileUploaderBasic.prototype = {
     _uploadFileList: function(files){
         if (files.length > 0) {
             for (var i=0; i<files.length; i++){
-                if (this._validateFile(files[i])){
-                    this._uploadFile(files[i]);
+                if ( !this._validateFile(files[i])){
+                    return;
                 }
+            }
+
+            for (var i=0; i<files.length; i++){
+                this._uploadFile(files[i]);
             }
         }
         else {
