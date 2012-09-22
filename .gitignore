@@ -3,4 +3,5 @@
 Thumbs.db
 !.gitignore
 uploads/
+uploadsTemp/
 *.ipr
