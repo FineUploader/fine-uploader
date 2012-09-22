@@ -345,6 +345,8 @@ types with default text that can be overriden as well.
 
 * `setParams(Object newParams)` - Set the parameters sent along with the request after initializing the uploader.  It can be nicely used in `onSubmit` callback.
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
+* `clearStoredFiles()` - Clears the internal list of stored files.  Only applicable when `autoUpload` is set to false.
+* `getInProgress()` - Returns the number of files that are either currently uploading or files waiting in line for upload.
 
 
 ### Troubleshooting ###
