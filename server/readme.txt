@@ -8,7 +8,7 @@ post data and write it to the file.
 
 ## Return values ##
 
-You should return json as a text/html, and escape all
+You should return json as a text/plain, and escape all
 '<' as '&lt;', '>' as '&gt;', and '&' as '&amp;'.
 
 Return

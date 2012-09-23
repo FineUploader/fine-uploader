@@ -17,7 +17,7 @@ public class UploadReceiver extends HttpServlet
     private static File UPLOAD_DIR = new File("uploads");
     private static File TEMP_DIR = new File("uploadsTemp");
 
-    private static String CONTENT_TYPE = "text/html";
+    private static String CONTENT_TYPE = "text/plain";
     private static String CONTENT_LENGTH = "Content-Length";
     private static int RESPONSE_CODE = 200;
 
