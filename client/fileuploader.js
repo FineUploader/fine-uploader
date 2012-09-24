@@ -287,6 +287,7 @@ qq.FileUploaderBasic = function(o){
         acceptFiles: null,		// comma separated string of mime-types for browser to display in browse dialog
         sizeLimit: 0,
         minSizeLimit: 0,
+        stopOnFirstInvalidFile: true,
         // events
         // return false to cancel submit
         onSubmit: function(id, fileName){},
@@ -456,13 +457,13 @@ qq.FileUploaderBasic.prototype = {
     _uploadFileList: function(files){
         if (files.length > 0) {
             for (var i=0; i<files.length; i++){
-                if ( !this._validateFile(files[i])){
-                    return;
+                if (this._validateFile(files[i])){
+                    this._uploadFile(files[i]);
+                } else {
+                    if (this._options.stopOnFirstInvalidFile){
+                        return; // Take it further and return msg or error code?
+                    }
                 }
-            }
-
-            for (var i=0; i<files.length; i++){
-                this._uploadFile(files[i]);
             }
         }
         else {
