@@ -294,7 +294,7 @@ qq.FileUploaderBasic = function(o){
         onCancel: function(id, fileName){},
         onUpload: function(id, fileName, xhr){},
         onProgress: function(id, fileName, loaded, total){},
-        onError: function(id, fileName, xhr) {},
+        onError: function(id, fileName, reason) {},
         // messages
         messages: {
             typeError: "{file} has an invalid extension. Only {extensions} {isAre} allowed.",
@@ -430,11 +430,7 @@ qq.FileUploaderBasic.prototype = {
         if (indexToRemove >= 0) {
             this._storedFileIds.splice(indexToRemove, 1);
         }
-
         this._filesInProgress--;
-        if (result.error){
-            this._options.showMessage(result.error);
-        }
     },
     _onCancel: function(id, fileName){
         if (this._options.autoUpload) {
@@ -530,6 +526,7 @@ qq.FileUploaderBasic.prototype = {
         r('{minSizeLimit}', this._formatSize(this._options.minSizeLimit));
         r('{isAre}', extensions.indexOf(",") != -1 ? "are" : "is");
 
+        this._options.onError(null, fileName, message);
         this._options.showMessage(message);
     },
     _formatFileName: function(name){
@@ -836,7 +833,8 @@ qq.extend(qq.FileUploader.prototype, {
                 qq.addClass(item, this._classes.successIcon)
             }
         } else {
-            var errorReason = result.reason ? result.reason : "Unknown error";
+            var errorReason = result.error ? result.error : this._options.failUploadText;
+            this._options.onError(id, fileName, errorReason);
             qq.addClass(item, this._classes.fail);
             if (this._classes.failIcon) {
                 this._find(item, 'finished').style.display = "inline-block";
@@ -1536,7 +1534,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
             response = {};
         }
         if (xhr.status !== 200){
-            this._options.onError(id, name, xhr);
+            this._options.onError(id, name, "XHR returned response code " + xhr.status);
         }
         this._options.onComplete(id, name, response);
 

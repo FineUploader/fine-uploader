@@ -107,7 +107,7 @@ public class UploadReceiver extends HttpServlet
         }
         else
         {
-            writer.print("{\"success\": false, \"reason\": \"" + failureReason + "\"}");
+            writer.print("{\"error\": \"" + failureReason + "\"}");
         }
     }
 }

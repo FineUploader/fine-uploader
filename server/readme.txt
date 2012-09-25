@@ -13,5 +13,5 @@ You should return json as a text/plain, and escape all
 
 Return
 {"success":true} when upload was successful
-{"success": false, "reason": "some reason"} if not successful, and you would like to associate an error message w/ the file
-{"error": "error message to display"} in case of error
+{"success": false} if not successful, no specific reason
+{"error": "error message to display"} if not successful, with a specific reason

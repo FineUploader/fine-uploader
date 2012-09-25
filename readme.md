@@ -325,7 +325,8 @@ Note that this does not mean the file upload will begin at this point.  Return `
 * `onComplete(String id, String fileName, Object responseJSON)` - called when the file upload has finished.
 * `onCancel(String id, String fileName)` - called when the file upload has been cancelled.
 * `onUpload(String id, String fileName)` - called just before the file upload begins
-* `onProgress(String id, String fileName, int uploadedBytes, int totalBytes) - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
+* `onProgress(String id, String fileName, int uploadedBytes, int totalBytes)` - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
+* `onError(String id, String fileName, String errorReason) - called whenever an exceptional condition occurs (during an upload, file selection, etc).
 
 
 ### Changing alert/messages to something more user friendly ###
