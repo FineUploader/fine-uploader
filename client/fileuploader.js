@@ -302,7 +302,9 @@ qq.FileUploaderBasic = function(o){
             minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
             emptyError: "{file} is empty, please select files again without it.",
             noFilesError: "No files to upload.",
-            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
+            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled.",
+            is: "is",
+            are: "are"
         },
         showMessage: function(message){
             alert(message);
@@ -524,7 +526,7 @@ qq.FileUploaderBasic.prototype = {
         r('{extensions}', extensions);
         r('{sizeLimit}', this._formatSize(this._options.sizeLimit));
         r('{minSizeLimit}', this._formatSize(this._options.minSizeLimit));
-        r('{isAre}', extensions.indexOf(",") != -1 ? "are" : "is");
+        r('{isAre}', extensions.indexOf(",") != -1 ? this._options.messages.are : this._options.messages.is);
 
         this._options.onError(null, fileName, message);
         this._options.showMessage(message);
