@@ -1,0 +1,31 @@
+//TODO add gradlew
+
+def version = "3.0"
+def filename = "fineuploader"
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.eriwen:gradle-js-plugin:1.0.2'
+    }
+}
+apply plugin: 'js'
+
+def jsSrcDir = 'client/js'
+
+combineJs {
+    source = fileTree(jsSrcDir)
+    dest = file("$buildDir/${filename}.js")
+}
+
+minifyJs {
+    source = combineJs
+    dest = file("$buildDir/${filename}.min.js")
+}
+
+gzipJs {
+    source = minifyJs
+    dest = file("$buildDir/${filename}-${version}.min.js")
+}
