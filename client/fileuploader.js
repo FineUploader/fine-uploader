@@ -297,7 +297,7 @@ qq.FileUploaderBasic = function(o){
         onError: function(id, fileName, reason) {},
         // messages
         messages: {
-            typeError: "{file} has an invalid extension. Only {extensions} {isAre} allowed.",
+            typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
             sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
             minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
             emptyError: "{file} is empty, please select files again without it.",
@@ -524,7 +524,6 @@ qq.FileUploaderBasic.prototype = {
         r('{extensions}', extensions);
         r('{sizeLimit}', this._formatSize(this._options.sizeLimit));
         r('{minSizeLimit}', this._formatSize(this._options.minSizeLimit));
-        r('{isAre}', extensions.indexOf(",") != -1 ? "are" : "is");
 
         this._options.onError(null, fileName, message);
         this._options.showMessage(message);
