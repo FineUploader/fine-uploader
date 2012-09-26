@@ -29,6 +29,7 @@ ideas I have in the spreadsheet, along with [this discussion](#326).  Anyone can
 - [Callbacks (FileUploader & FileUploaderBasic)](#callbacks-fileuploader--fileuploaderbasic)
 - [Changing alert/messages to something more user friendly](#changing-alertmessages-to-something-more-user-friendly)
 - [Instance methods](#instance-methods)
+- [Internet Explorer limitations](#internet-explorer-limitations)
 - [Troubleshooting](#troubleshooting)
 - [Issue Tracker](#issue-tracker)
 - [Contributors](#contributors)
@@ -367,6 +368,10 @@ types with default text that can be overriden as well.
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
 * `clearStoredFiles()` - Clears the internal list of stored files.  Only applicable when `autoUpload` is set to false.
 * `getInProgress()` - Returns the number of files that are either currently uploading or files waiting in line for upload.
+
+
+### Internet Explorer Limitations ###
+(coming soon)
 
 
 ### Troubleshooting ###
