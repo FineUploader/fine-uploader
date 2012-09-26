@@ -635,6 +635,7 @@ qq.FileUploader = function(o){
             finished: 'qq-upload-finished',
             size: 'qq-upload-size',
             cancel: 'qq-upload-cancel',
+            failText: 'qq-upload-failed-text',
 
             // added to list item <li> when upload completes
             // used in css to hide progress spinner
@@ -647,6 +648,12 @@ qq.FileUploader = function(o){
         extraMessages: {
             formatProgress: "{percent}% of {total_size}",
             tooManyFilesError: "You may only drop one file"
+        },
+        failedUploadTextDisplay: {
+            mode: 'default', //default, custom, or none
+            maxChars: 50,
+            responseProperty: 'error',
+            enableTooltip: true
         }
     });
     // overwrite options with user supplied
@@ -840,7 +847,7 @@ qq.extend(qq.FileUploader.prototype, {
                 this._find(item, 'finished').style.display = "inline-block";
                 qq.addClass(item, this._classes.failIcon)
             }
-            item.title = errorReason;
+            this._controlFailureTextDisplay(item, result);
         }
     },
     _onUpload: function(id, fileName, xhr){
@@ -912,6 +919,40 @@ qq.extend(qq.FileUploader.prototype, {
         r('{percent}', Math.round(uploadedSize / totalSize * 100));
         r('{total_size}', this._formatSize(totalSize));
         return message;
+    },
+    _controlFailureTextDisplay: function(item, response) {
+        var mode, maxChars, responseProperty, failureReason, shortFailureReason;
+
+        mode = this._options.failedUploadTextDisplay.mode;
+        maxChars = this._options.failedUploadTextDisplay.maxChars;
+        responseProperty = this._options.failedUploadTextDisplay.responseProperty;
+
+        if (mode === 'custom') {
+            var failureReason = response[responseProperty];
+            if (failureReason) {
+                if (failureReason.length > maxChars) {
+                    shortFailureReason = failureReason.substring(0, maxChars) + '...';
+                }
+                this._find(item, 'failText').innerText = shortFailureReason;
+
+                if (this._options.failedUploadTextDisplay.enableTooltip) {
+                    this._showTooltip(item, failureReason);
+                }
+            }
+            else {
+                this.log("'" + responseProperty + "' is not a valid property on the server response.");
+            }
+        }
+        else if (mode === 'none') {
+            qq.remove(this._find(item, 'failText'));
+        }
+        else if (mode !== 'default') {
+            this.log("failedUploadTextDisplay.mode value of '" + mode + "' is not valid");
+        }
+    },
+    //TODO turn this into a real tooltip, with click trigger (so it is usable on mobile devices).  See case #355 for details.
+    _showTooltip: function(item, text) {
+        item.title = text;
     }
 });
 

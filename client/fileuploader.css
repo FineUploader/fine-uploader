@@ -91,6 +91,8 @@
 }
 .qq-upload-failed-text {
     display: none;
+    font-style: italic;
+    font-weight: bold;
 }
 .qq-upload-failed-icon {
     display:none;
