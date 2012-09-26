@@ -1,7 +1,6 @@
-//TODO add gradlew
-
 def version = "3.0"
 def filename = "fineuploader"
+def jsSrcDir = 'client/js'
 
 buildscript {
     repositories {
@@ -13,7 +12,10 @@ buildscript {
 }
 apply plugin: 'js'
 
-def jsSrcDir = 'client/js'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.2'
+}
 
 combineJs {
     source = fileTree(jsSrcDir)
