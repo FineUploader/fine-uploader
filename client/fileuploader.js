@@ -932,7 +932,7 @@ qq.extend(qq.FileUploader.prototype, {
                 if (failureReason.length > maxChars) {
                     shortFailureReason = failureReason.substring(0, maxChars) + '...';
                 }
-                this._find(item, 'failText').innerText = shortFailureReason;
+                this._find(item, 'failText').innerText = shortFailureReason || failureReason;
 
                 if (this._options.failedUploadTextDisplay.enableTooltip) {
                     this._showTooltip(item, failureReason);
