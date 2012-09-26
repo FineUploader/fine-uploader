@@ -310,14 +310,18 @@ var uploader = new qq.FileUploader({
                  <code>responseProperty</code>: 'error',<br/>
                  <code>enableTooltip</code>: true}</td>
             <td>This object contains various properties used to control the display of error responses from the server for each file.
-            The styling of the error text is controlled by the <code>fail</code> class.<br/>
+            The styling of the error text is controlled by the <code>fail</code> class.<br/><br/><br/>
+            
             <code>mode</code>: Valid values are "default" (display the text defined in <code>failUploadText</code> next to each
             failed file), "none" (don't display any text next to a failed file), and "custom" (display error response text from the
-            server next to the failed file).<br/>
+            server next to the failed file).<br/><br/>
+            
             <code>maxChars</code>: The maximum amount of character of text to display next to the file.  After the limit has been reached,
-            "..." will terminate the string.  This is ignored unless <code>mode</code> is "custom".<br/>
+            "..." will terminate the string.  This is ignored unless <code>mode</code> is "custom".<br/><br/>
+            
             <code>responseProperty</code>: The property from the server response containing the error text to display next to the
-            failed file.  This is ignored unless <code>mode</code> is "custom".<br/>
+            failed file.  This is ignored unless <code>mode</code> is "custom".<br/><br/>
+            
             <code>enableTooltip:</code>: If set to true, a tooltip will display the full contents of the error message when the mouse pointer
             hovers over the failed file.  Note that this currently uses the title attribute of the failed file element, but there is an issue
             to improve this (see #355 for details).</td>
