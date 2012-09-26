@@ -2,6 +2,8 @@ def version = "3.0"
 def filename = "fineuploader"
 def jsSrcDir = 'client/js'
 
+apply plugin: 'js'
+
 buildscript {
     repositories {
         mavenCentral()
@@ -10,11 +12,9 @@ buildscript {
         classpath 'com.eriwen:gradle-js-plugin:1.0.2'
     }
 }
-apply plugin: 'js'
-
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.2'
+    gradleVersion = '1.0'
 }
 
 combineJs {
