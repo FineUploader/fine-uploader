@@ -606,7 +606,7 @@ qq.FileUploader = function(o){
 
         template: '<div class="qq-uploader">' +
             '<div class="qq-upload-drop-area"><span>{dragText}</span></div>' +
-            '<div class="qq-upload-button">{uploadButtonText}</div>' +
+            (!this._options.button ? '<div class="qq-upload-button">{uploadButtonText}</div>' : '') +
             (!this._options.listElement ? '<ul class="qq-upload-list"></ul>' : '') +
             '</div>',
 
@@ -674,7 +674,9 @@ qq.FileUploader = function(o){
 
     this._classes = this._options.classes;
 
-    this._button = this._createUploadButton(this._find(this._element, 'button'));
+    if (!this._button) {
+        this._button = this._createUploadButton(this._find(this._element, 'button'));
+    }
 
     this._bindCancelEvent();
     this._setupDragDrop();
