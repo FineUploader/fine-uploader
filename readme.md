@@ -8,9 +8,8 @@ to support continued maintenance and evolution of this library.*
 
 
 ### Announcements ###
-_September 18, 2012_ - I've created a [google doc spreadsheet](https://docs.google.com/spreadsheet/ccc?key=0AnQh9-ZBDuh_dEJGZFY1dEl2SDlGUGZNLUVfanZKeXc#gid=0) 
-where people can include ideas for Fine Uploader 3.0.  For some initial information about 3.0, have a look at the initial 
-ideas I have in the spreadsheet, along with [this discussion](#326).  Anyone can add ideas to 
+_September 26, 2012_ - Work on Fine Uploader 3.0 has started.  Check out the [3.0 branch](https://github.com/valums/file-uploader/tree/3.0) 
+from time to time if you are interested in the progress.  Also, feel free to add ideas for 3.0 to 
 [the spreadsheet](https://docs.google.com/spreadsheet/ccc?key=0AnQh9-ZBDuh_dEJGZFY1dEl2SDlGUGZNLUVfanZKeXc#gid=0).
 
 
