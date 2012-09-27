@@ -18,16 +18,23 @@ task wrapper(type: Wrapper) {
 }
 
 combineJs {
-    source = fileTree(jsSrcDir)
-    dest = file("$buildDir/${filename}.js")
+    source = files("${jsSrcDir}/util.js",
+                   "${jsSrcDir}/button.js",
+                   "${jsSrcDir}/uploader.basic.js",
+                   "${jsSrcDir}/uploader.js",
+                   "${jsSrcDir}/handler.base.js",
+                   "${jsSrcDir}/handler.form.js",
+                   "${jsSrcDir}/handler.xhr.js")
+
+    dest = file("$buildDir/${filename}-${version}.js")
 }
 
 minifyJs {
     source = combineJs
-    dest = file("$buildDir/${filename}.min.js")
+    dest = file("$buildDir/${filename}-${version}.min.js")
 }
 
 gzipJs {
     source = minifyJs
-    dest = file("$buildDir/${filename}-${version}.min.js")
+    dest = file("$buildDir/${filename}-${version}.min.gzip.js")
 }
