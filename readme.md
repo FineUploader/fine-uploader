@@ -163,8 +163,8 @@ var uploader = new qq.FileUploader({
             <td>button</td>
             <td>element</td>
             <td>null</td>
-            <td>Specify an element to use as the "select files" button.  Note that this may **NOT** be a &lt;button&gt;,
-            otherwise your button will not work in Internet Explorer.</td>
+            <td>Specify an element to use as the "select files" button.  Note that this may <b>NOT</b> be a &lt;button&gt;,
+            otherwise it will not work in Internet Explorer.  Please see issue #33 for details.</td>
         </tr>
         <tr>
             <td>multiple</td>
