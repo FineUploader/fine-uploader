@@ -23,7 +23,6 @@ ideas I have in the spreadsheet, along with [this discussion](#326).  Anyone can
 - [Getting started](#getting-started)
 - [qq.FileUploader - Setting up full upload widget](#qqfileuploader---setting-up-full-upload-widget)
 - [Options of both FileUploader & FileUploaderBasic](#options-of-both-fileuploader--fileuploaderbasic)
-- [Options of FileUploaderBasic](#options-of-fileuploaderbasic)
 - [Options of FileUploader](#options-of-fileuploader)
 - [Styling FileUploader](#styling-fileuploader)
 - [Callbacks (FileUploader & FileUploaderBasic)](#callbacks-fileuploader--fileuploaderbasic)
@@ -161,6 +160,13 @@ var uploader = new qq.FileUploader({
             <td>Additional headers sent along with the XHR POST request.  Note that is option is only relevant to the ajax/XHR uploader.</td>
         </tr>
         <tr>
+            <td>button</td>
+            <td>element</td>
+            <td>null</td>
+            <td>Specify an element to use as the "select files" button.  Note that this may **NOT** be a &lt;button&gt;,
+            otherwise your button will not work in Internet Explorer.</td>
+        </tr>
+        <tr>
             <td>multiple</td>
             <td>boolean</td>
             <td>true</td>
@@ -233,26 +239,6 @@ var uploader = new qq.FileUploader({
     </tbody>
 </table>
 
-
-### Options of FileUploaderBasic ###
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Default</th>
-            <th>Note</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>button</td>
-            <td>element</td>
-            <td>null</td>
-            <td>Specify an element to use as the "select files" button</td>
-        </tr>
-    </tbody>
-</table>
 
 
 ### Options of FileUploader ###
