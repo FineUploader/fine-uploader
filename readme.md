@@ -267,7 +267,7 @@ var uploader = new qq.FileUploader({
             <td>element</td>
             <td>element</td>
             <td>null</td>
-            <td>Container for the default drop zone (if supported by browser) and files list.  **Required**</td>
+            <td>Container for the default drop zone (if supported by browser) and files list.  <b>Required</b></td>
         </tr>
         <tr>
             <td>listElement</td>
