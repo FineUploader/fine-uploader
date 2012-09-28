@@ -457,7 +457,7 @@ qq.FileUploaderBasic.prototype = {
                     this._uploadFile(files[i]);
                 } else {
                     if (this._options.stopOnFirstInvalidFile){
-                        return; // Take it further and return msg or error code?
+                        return;
                     }
                 }
             }
