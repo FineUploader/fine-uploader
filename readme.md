@@ -226,10 +226,10 @@ var uploader = new qq.FileUploader({
             <td>true</td>
             <td>If true, when submitting multiple files, once a file is determined to be invalid, the upload process 
             will terminate.  If false, all valid files will be uploaded.  Note: One downside to a false value can be
-            seen if the default <code>sendMessage</code> implementation is not overriden.  In this case, an alert 
+            seen if the default <code>showMessage</code> implementation is not overriden.  In this case, an alert 
             dialog will appear for each invalid file in the batch, and the upload process will not continue until 
-            the dialog is dismissed.  If this is bothersome, simply override <code>sendMessage</code> with a 
-            desirable implementation.  3.0 will likely have a <code>sendMessage</code> default implementation that 
+            the dialog is dismissed.  If this is bothersome, simply override <code>showMessage</code> with a 
+            desirable implementation.  3.0 will likely have a <code>showMessage</code> default implementation that 
             does not use the <code>alert</code> function.</td>
         </tr>
         <tr>
@@ -301,7 +301,7 @@ var uploader = new qq.FileUploader({
             form uploader is used.</td>
         </tr>
         <tr>
-            <td>failUploadTextDisplay</td>
+            <td>failedUploadTextDisplay</td>
             <td>object</td>
             <td>{<code>mode</code>: 'default',<br/>
                  <code>maxChars</code>: 50,<br/>
