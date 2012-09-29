@@ -370,7 +370,7 @@ types with default text that can be overriden as well.
 ### Internet Explorer Limitations ###
 
 IE continues to lag _far_ behind all other browsers in terms of features.  IE10 is supposed to, finally, start to compete
-existing modern browsers.  For those of you with customers suffering with IE9 and older, here are some of the limitations
+with existing modern browsers.  For those of you with customers suffering with IE9 and older, here are some of the limitations
 you may want to be aware of when using Fine Uploader:
 
 <table>
@@ -397,7 +397,7 @@ you may want to be aware of when using Fine Uploader:
         </tr>
         <tr>
             <td>Content-Size header field value does not match the actual file size</td>
-            <td>This isn't technically an IE issue, but I'm going to call it once since we are forced to use multipart request
+            <td>This isn't technically an IE issue, but I'm going to call it one since we are forced to use multipart request
             in IE.  The content-size for multipart data requests does not refer only to the file.  Rather, it refers to the
             the total size of all sections in the request.</td>
             <td>N/A</td>
@@ -416,10 +416,10 @@ you may want to be aware of when using Fine Uploader:
         <tr>
             <td>Can't select multiple files in the file selection dialog</td>
             <td>The &lt;input&gt; element does not support the <code>multiple</code> attribute</td>
-            <td>Early versions still lacked this support, but I've read that the final version does support this attribute.</td>
+            <td>Early versions still lacked this support, but I've read that the final version does support this attribute</td>
         </tr>
         <tr>
-            <td>Only mulipart form request may be used to send files, via form submission.</td>
+            <td>Only mulipart form request may be used to send files, via form submission</td>
             <td>Lack of File API support</td>
             <td>Yes</td>
         </tr>
@@ -438,13 +438,13 @@ you may want to be aware of when using Fine Uploader:
             <td>Yes</td>
         </tr>
         <tr>
-            <td>Can't set use a &lt;button&gt; as the element when setting the <code>button</code> option.</td>
+            <td>Can't use a &lt;button&gt; as the element when setting the <code>button</code> option.</td>
             <td>The button receives the click event, instead of the child &lt;input&gt; element that ultimately triggers the
-            file dialog.</td>
+            file dialog</td>
             <td>Not sure</td>
         </tr>
         <tr>
-            <td>Any response content-type other than "text/plain" causes issues when trying to parse the JSON response.</td>
+            <td>Any response content-type other than "text/plain" causes issues when trying to parse the JSON response</td>
             <td>IE does strange things with the response when the content-type is, for example, "application/json" or
             "text/html".  The latter is only a problem if you return HTML in your JSON response.</td>
             <td>Not sure</td>
@@ -456,13 +456,14 @@ you may want to be aware of when using Fine Uploader:
             <td>Yes</td>
         </tr>
         <tr>
-            <td>Can't trigger the file selection dialog via javascript.</td>
+            <td>Can't trigger the file selection dialog via javascript</td>
             <td>IE strictly forbids this.  It will allow you to launch the dialog, but will throw a security exception once
             the form is also submitted via javascript.</td>
             <td>Not sure</td>
         </tr>
     </tbody>
 </table>
+\*Allegedly 
 
 
 ### Troubleshooting ###
