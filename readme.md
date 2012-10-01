@@ -221,7 +221,7 @@ var uploader = new qq.FileUploader({
             <td>Minimum allowable size, in bytes, for a file.</td>
         </tr>
         <tr>
-            <td>stopOnFirstInvalidValue</td>
+            <td>stopOnFirstInvalidFile</td>
             <td>boolean</td>
             <td>true</td>
             <td>If true, when submitting multiple files, once a file is determined to be invalid, the upload process 
