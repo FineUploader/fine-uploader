@@ -18,8 +18,7 @@ qq.FileUploader = function(o){
             cancelButton: 'Cancel',
             failUpload: 'Upload failed',
             dragZone: 'Drop files here to upload',
-            formatProgress: "{percent}% of {total_size}",
-            tooManyFilesError: "You may only drop one file"
+            formatProgress: "{percent}% of {total_size}"
         },
         template: '<div class="qq-uploader">' +
             '<div class="qq-upload-drop-area"><span>{dragZoneText}</span></div>' +
@@ -65,14 +64,15 @@ qq.FileUploader = function(o){
             maxChars: 50,
             responseProperty: 'error',
             enableTooltip: true
+        },
+        messages: {
+            tooManyFilesError: "You may only drop one file"
         }
-    });
+    }, true);
 
     // overwrite options with user supplied
     qq.extend(this._options, o, true);
     this._wrapCallbacks();
-
-    this._options.messages.tooManyFilesError = this._options.text.tooManyFilesError;
 
     // overwrite the upload button text if any
     // same for the Cancel button and Fail message text
