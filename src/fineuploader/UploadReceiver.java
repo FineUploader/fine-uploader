@@ -46,13 +46,13 @@ public class UploadReceiver extends HttpServlet
             {
                 requestParser = RequestParser.getInstance(req, new MultipartUploadParser(req, TEMP_DIR, getServletContext()));
                 doWriteTempFileForPostRequest(requestParser);
-                writeResponse(resp.getWriter(), null);
+                writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null);
             }
             else
             {
                 requestParser = RequestParser.getInstance(req, null);
                 writeToTempFile(req.getInputStream(), new File(UPLOAD_DIR, requestParser.getFilename()), expectedFileSize);
-                writeResponse(resp.getWriter(), null);
+                writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null);
             }
         } catch (Exception e)
         {

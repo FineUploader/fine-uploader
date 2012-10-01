@@ -7,7 +7,7 @@ qq.UploadHandlerAbstract = function(o){
     // Default options, can be overridden by the user
     this._options = {
         debug: false,
-        action: '/upload.php',
+        endpoint: '/upload.php',
         // maximum number of concurrent uploads
         maxConnections: 999,
         onProgress: function(id, fileName, loaded, total){},

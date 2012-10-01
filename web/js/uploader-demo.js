@@ -1,16 +1,12 @@
 $(document).ready(function() {
     var uploader = new qq.FileUploader({
         element: $('#basicUploadSuccessExample')[0],
-        action: "/upload/receiver",
+        endpoint: "/upload/receiver",
         debug: true,
-        onError: function(id, fileName, reason) {
-            console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
-        },
-        failedUploadTextDisplay: {
-            mode: 'custom',
-            maxChars: 4,
-            responseProperty: 'error',
-            enableTooltip: true
+        callbacks: {
+            onError: function(id, fileName, reason) {
+                console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+            }
         }
     });
 
@@ -18,11 +14,13 @@ $(document).ready(function() {
 
     var uploader2 = new qq.FileUploader({
         element: $('#manualUploadModeExample')[0],
-        action: "/upload/receiver",
+        endpoint: "/upload/receiver",
         autoUpload: false,
         uploadButtonText: "Select Files",
-        onError: function(id, fileName, reason) {
-            console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+        callbacks: {
+            onError: function(id, fileName, reason) {
+                console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+            }
         }
     });
 
@@ -33,32 +31,43 @@ $(document).ready(function() {
 
     var uploader3 = new qq.FileUploader({
         element: $('#basicUploadFailureExample')[0],
-        action: "/upload/receiver",
-        onError: function(id, fileName, reason) {
-            console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+        endpoint: "/upload/receiver",
+        callbacks: {
+            onError: function(id, fileName, reason) {
+                console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+            }
+        },
+        params: {"generateError": true},
+        failedUploadTextDisplay: {
+            mode: 'custom',
+            maxChars: 5
         }
     });
 
 
     var uploader4 = new qq.FileUploader({
         element: $('#uploadWithVariousOptionsExample')[0],
-        action: "/upload/receiver",
+        endpoint: "/upload/receiver",
         multiple: false,
         allowedExtensions: ['jpeg', 'jpg', 'txt'],
         sizeLimit: 50000,
         uploadButtonText: "Click Or Drop",
-        onError: function(id, fileName, reason) {
-            console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+        callbacks: {
+            onError: function(id, fileName, reason) {
+                console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+            }
         }
     });
 
     uploader5 = new qq.FileUploaderBasic({
         multiple: false,
         autoUpload: false,
-        action: "/upload/receiver",
+        endpoint: "/upload/receiver",
         button: $("#fubButton")[0],
-        onError: function(id, fileName, reason) {
-            console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+        callbacks: {
+            onError: function(id, fileName, reason) {
+                console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+            }
         },
         button: $('#fubUploadButton')[0]
     });

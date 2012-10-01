@@ -169,7 +169,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         var protocol = this._options.demoMode ? "GET" : "POST"
         var form = qq.toElement('<form method="' + protocol + '" enctype="multipart/form-data"></form>');
 
-        var queryString = qq.obj2url(params, this._options.action);
+        var queryString = qq.obj2url(params, this._options.endpoint);
 
         form.setAttribute('action', queryString);
         form.setAttribute('target', iframe.name);

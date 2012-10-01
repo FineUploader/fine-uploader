@@ -10,6 +10,7 @@ public class RequestParser
 
     private String filename;
     private FileItem uploadItem;
+    private boolean generateError;
 
     private RequestParser()
     {
@@ -30,7 +31,7 @@ public class RequestParser
             requestParser.filename = request.getParameter(FILENAME_PARAM);
         }
 
-        //grab other params here...
+        requestParser.generateError = Boolean.parseBoolean(request.getParameter("generateError"));
 
         return requestParser;
     }
@@ -44,5 +45,10 @@ public class RequestParser
     public FileItem getUploadItem()
     {
         return uploadItem;
+    }
+
+    public boolean generateError()
+    {
+        return generateError;
     }
 }

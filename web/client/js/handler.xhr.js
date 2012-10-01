@@ -89,7 +89,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         // build query string
         params = params || {};
         params[this._options.inputName] = name;
-        var queryString = qq.obj2url(params, this._options.action);
+        var queryString = qq.obj2url(params, this._options.endpoint);
 
         var protocol = this._options.demoMode ? "GET" : "POST";
         xhr.open(protocol, queryString, true);

@@ -11,16 +11,18 @@ qq.FileUploader = function(o){
     // additional options
     qq.extend(this._options, {
         element: null,
-        // if set, will be used instead of qq-upload-list in template
         listElement: null,
-        dragText: 'Drop files here to upload',
-        extraDropzones : [],
-        uploadButtonText: 'Upload a file',
-        cancelButtonText: 'Cancel',
-        failUploadText: 'Upload failed',
-
+        extraDropzones: [],
+        text: {
+            uploadButton: 'Upload a file',
+            cancelButton: 'Cancel',
+            failUpload: 'Upload failed',
+            dragZone: 'Drop files here to upload',
+            formatProgress: "{percent}% of {total_size}",
+            tooManyFilesError: "You may only drop one file"
+        },
         template: '<div class="qq-uploader">' +
-            '<div class="qq-upload-drop-area"><span>{dragText}</span></div>' +
+            '<div class="qq-upload-drop-area"><span>{dragZoneText}</span></div>' +
             (!this._options.button ? '<div class="qq-upload-button">{uploadButtonText}</div>' : '') +
             (!this._options.listElement ? '<ul class="qq-upload-list"></ul>' : '') +
             '</div>',
@@ -35,7 +37,6 @@ qq.FileUploader = function(o){
             '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
             '<span class="qq-upload-failed-text">{failUploadtext}</span>' +
             '</li>',
-
         classes: {
             // used to get elements from templates
             button: 'qq-upload-button',
@@ -59,10 +60,6 @@ qq.FileUploader = function(o){
             successIcon: null,
             failIcon: null
         },
-        extraMessages: {
-            formatProgress: "{percent}% of {total_size}",
-            tooManyFilesError: "You may only drop one file"
-        },
         failedUploadTextDisplay: {
             mode: 'default', //default, custom, or none
             maxChars: 50,
@@ -70,18 +67,19 @@ qq.FileUploader = function(o){
             enableTooltip: true
         }
     });
+
     // overwrite options with user supplied
-    qq.extend(this._options, o);
+    qq.extend(this._options, o, true);
     this._wrapCallbacks();
 
-    qq.extend(this._options.messages, this._options.extraMessages);
+    this._options.messages.tooManyFilesError = this._options.text.tooManyFilesError;
 
     // overwrite the upload button text if any
     // same for the Cancel button and Fail message text
-    this._options.template     = this._options.template.replace(/\{dragText\}/g, this._options.dragText);
-    this._options.template     = this._options.template.replace(/\{uploadButtonText\}/g, this._options.uploadButtonText);
-    this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.cancelButtonText);
-    this._options.fileTemplate = this._options.fileTemplate.replace(/\{failUploadtext\}/g, this._options.failUploadText);
+    this._options.template     = this._options.template.replace(/\{dragZoneText\}/g, this._options.text.dragZone);
+    this._options.template     = this._options.template.replace(/\{uploadButtonText\}/g, this._options.text.uploadButton);
+    this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.text.cancelButton);
+    this._options.fileTemplate = this._options.fileTemplate.replace(/\{failUploadtext\}/g, this._options.text.failUpload);
 
     this._element = this._options.element;
     this._element.innerHTML = this._options.template;
@@ -256,8 +254,8 @@ qq.extend(qq.FileUploader.prototype, {
                 qq.addClass(item, this._classes.successIcon)
             }
         } else {
-            var errorReason = result.error ? result.error : this._options.failUploadText;
-            this._options.onError(id, fileName, errorReason);
+            var errorReason = result.error ? result.error : this._options.text.failUpload;
+            this._options.callbacks.onError(id, fileName, errorReason);
             qq.addClass(item, this._classes.fail);
             if (this._classes.failIcon) {
                 this._find(item, 'finished').style.display = "inline-block";
@@ -329,7 +327,7 @@ qq.extend(qq.FileUploader.prototype, {
         });
     },
     _formatProgress: function (uploadedSize, totalSize) {
-        var message = this._options.messages.formatProgress;
+        var message = this._options.text.formatProgress;
         function r(name, replacement) { message = message.replace(name, replacement); }
 
         r('{percent}', Math.round(uploadedSize / totalSize * 100));
