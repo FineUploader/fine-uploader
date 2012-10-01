@@ -1,10 +1,8 @@
 var qq = qq || {};
 
-qq.type = Function.prototype.call.bind(Object.prototype.toString);
-
 qq.isObject = function(variable) {
     "use strict";
-    return qq.type(variable) === '[object Object]';
+    return variable && typeof(variable) === "object";
 };
 
 qq.extend = function (first, second, extendNested) {
