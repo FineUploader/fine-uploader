@@ -13,7 +13,7 @@ qq.extend = function (first, second, extendNested) {
     for (prop in second) {
         if (second.hasOwnProperty(prop)) {
             if (extendNested && qq.isObject(second[prop]) && first[prop]) {
-                qq.extend(first[prop], second[prop]);
+                qq.extend(first[prop], second[prop], true);
             }
             else {
                 first[prop] = second[prop];
