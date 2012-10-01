@@ -49,9 +49,13 @@ $(document).ready(function() {
         element: $('#uploadWithVariousOptionsExample')[0],
         endpoint: "/upload/receiver",
         multiple: false,
-        allowedExtensions: ['jpeg', 'jpg', 'txt'],
-        sizeLimit: 50000,
-        uploadButtonText: "Click Or Drop",
+        validation: {
+            allowedExtensions: ['jpeg', 'jpg', 'txt'],
+            sizeLimit: 50000
+        },
+        text: {
+            uploadButton: "Click Or Drop"
+        },
         callbacks: {
             onError: function(id, fileName, reason) {
                 console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
