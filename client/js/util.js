@@ -1,11 +1,24 @@
 var qq = qq || {};
 
-/**
- * Adds all missing properties from second obj to first obj
- */
-qq.extend = function(first, second){
-    for (var prop in second){
-        first[prop] = second[prop];
+qq.type = Function.prototype.call.bind(Object.prototype.toString);
+
+qq.isObject = function(variable) {
+    "use strict";
+    return qq.type(variable) === '[object Object]';
+};
+
+qq.extend = function (first, second, extendNested) {
+    "use strict";
+    var prop;
+    for (prop in second) {
+        if (second.hasOwnProperty(prop)) {
+            if (extendNested && qq.isObject(second[prop]) && first[prop]) {
+                qq.extend(first[prop], second[prop]);
+            }
+            else {
+                first[prop] = second[prop];
+            }
+        }
     }
 };
 
