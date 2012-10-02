@@ -425,8 +425,12 @@ qq.FileUploaderBasic.prototype = {
         this._filesInProgress--;
     },
     _onCancel: function(id, fileName){
-        if (this._options.autoUpload || qq.indexOf(this._storedFileIds, id) < 0) {
+        var storedFileIndex = qq.indexOf(this._storedFileIds, id);
+        if (this._options.autoUpload || storedFileIndex < 0) {
             this._filesInProgress--;
+        }
+        else if (!this._options.autoUpload) {
+            this._storedFileIds.splice(storedFileIndex, 1);
         }
     },
     _onUpload: function(id, fileName, xhr){
