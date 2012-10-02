@@ -238,9 +238,7 @@ qq.extend(qq.FileUploader.prototype, {
 
         var item = this._getItemByFileId(id);
 
-        if (qq.UploadHandlerXhr.isSupported()) {
-            qq.remove(this._find(item, 'progressBar'));
-        }
+        qq.remove(this._find(item, 'progressBar'));
 
         if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
             qq.remove(this._find(item, 'cancel'));
@@ -268,6 +266,11 @@ qq.extend(qq.FileUploader.prototype, {
         qq.FileUploaderBasic.prototype._onUpload.apply(this, arguments);
 
         var item = this._getItemByFileId(id);
+
+        if (qq.UploadHandlerXhr.isSupported()) {
+            this._find(item, 'progressBar').style.display = "block";
+        }
+
         var spinnerEl = this._find(item, 'spinner');
         if (spinnerEl.style.display == "none") {
             spinnerEl.style.display = "inline-block";
@@ -278,10 +281,6 @@ qq.extend(qq.FileUploader.prototype, {
         if (this._options.disableCancelForFormUploads && !qq.UploadHandlerXhr.isSupported()) {
             var cancelLink = this._find(item, 'cancel');
             qq.remove(cancelLink);
-        }
-
-        if (!qq.UploadHandlerXhr.isSupported()) {
-            qq.remove(this._find(item, 'progressBar'));
         }
 
         item.qqFileId = id;
