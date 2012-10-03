@@ -252,8 +252,6 @@ qq.extend(qq.FileUploader.prototype, {
                 qq.addClass(item, this._classes.successIcon)
             }
         } else {
-            var errorReason = result.error ? result.error : this._options.text.failUpload;
-            this._options.callbacks.onError(id, fileName, errorReason);
             qq.addClass(item, this._classes.fail);
             if (this._classes.failIcon) {
                 this._find(item, 'finished').style.display = "inline-block";

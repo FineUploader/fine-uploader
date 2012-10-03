@@ -161,6 +161,11 @@ qq.FileUploaderBasic.prototype = {
     },
     _onComplete: function(id, fileName, result){
         this._filesInProgress--;
+
+        if (!result.success){
+            var errorReason = result.error ? result.error : "Upload failure reason unknown";
+            this._options.callbacks.onError(id, fileName, errorReason);
+        }
     },
     _onCancel: function(id, fileName){
         var storedFileIndex = qq.indexOf(this._storedFileIds, id);
