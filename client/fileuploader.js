@@ -423,6 +423,11 @@ qq.FileUploaderBasic.prototype = {
     },
     _onComplete: function(id, fileName, result){
         this._filesInProgress--;
+
+        if (!result.success){
+            var errorReason = result.error ? result.error : "Upload failure reason unknown";
+            this._options.onError(id, fileName, errorReason);
+        }
     },
     _onCancel: function(id, fileName){
         var storedFileIndex = qq.indexOf(this._storedFileIds, id);
@@ -835,8 +840,6 @@ qq.extend(qq.FileUploader.prototype, {
                 qq.addClass(item, this._classes.successIcon)
             }
         } else {
-            var errorReason = result.error ? result.error : this._options.failUploadText;
-            this._options.onError(id, fileName, errorReason);
             qq.addClass(item, this._classes.fail);
             if (this._classes.failIcon) {
                 this._find(item, 'finished').style.display = "inline-block";
