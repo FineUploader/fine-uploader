@@ -2,7 +2,7 @@ var qq = qq || {};
 
 qq.isObject = function(variable) {
     "use strict";
-    return variable && typeof(variable) === "object";
+    return variable && typeof(variable) === "object" && variable.constructor === Object;
 };
 
 qq.extend = function (first, second, extendNested) {
@@ -10,7 +10,10 @@ qq.extend = function (first, second, extendNested) {
     var prop;
     for (prop in second) {
         if (second.hasOwnProperty(prop)) {
-            if (extendNested && qq.isObject(second[prop]) && first[prop]) {
+            if (extendNested && qq.isObject(second[prop])) {
+                if (first[prop] === undefined) {
+                    first[prop] = {};
+                }
                 qq.extend(first[prop], second[prop], true);
             }
             else {
