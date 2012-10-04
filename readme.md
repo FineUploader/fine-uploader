@@ -9,8 +9,7 @@ to support continued maintenance and evolution of this library.*
 
 ### Announcements ###
 _September 26, 2012_ - Work on Fine Uploader 3.0 has started.  Check out the [3.0 branch](https://github.com/valums/file-uploader/tree/3.0) 
-from time to time if you are interested in the progress.  Also, feel free to add ideas for 3.0 to 
-[the spreadsheet](https://docs.google.com/spreadsheet/ccc?key=0AnQh9-ZBDuh_dEJGZFY1dEl2SDlGUGZNLUVfanZKeXc#gid=0).
+from time to time if you are interested in the progress.  Also, feel free to add ideas for 3.0 using the [issue tracker](https://github.com/valums/file-uploader/issues).
 
 
 
@@ -221,7 +220,7 @@ var uploader = new qq.FileUploader({
             <td>Minimum allowable size, in bytes, for a file.</td>
         </tr>
         <tr>
-            <td>stopOnFirstInvalidValue</td>
+            <td>stopOnFirstInvalidFile</td>
             <td>boolean</td>
             <td>true</td>
             <td>If true, when submitting multiple files, once a file is determined to be invalid, the upload process 
@@ -299,6 +298,20 @@ var uploader = new qq.FileUploader({
             <td>[]</td>
             <td>Useful if you'd like to to designate additional dropozones for file input.  Of course, this is not relevant if the
             form uploader is used.</td>
+        </tr>
+        <tr>
+            <td>hideDropzones</td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>Useful if you do not want all dropzone elements to be hidden.  It is expected that some CSS would accompany setting
+            this option to false.  You may set this to false if you want to wrap some visible elements, such as the listElement,
+            in a drop zone.</td>
+        </tr>
+        <tr>
+            <td>disableDefaultDropzone</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>Set this to true if you are contributing your own drop zone(s) and do not want to use the default one.</td>
         </tr>
         <tr>
             <td>failedUploadTextDisplay</td>
