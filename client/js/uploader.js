@@ -12,7 +12,11 @@ qq.FileUploader = function(o){
     qq.extend(this._options, {
         element: null,
         listElement: null,
-        extraDropzones: [],
+        dragAndDrop: {
+            extraDropzones: [],
+            hideDropzones: true,
+            disableDefaultDropzone: false
+        },
         text: {
             uploadButton: 'Upload a file',
             cancelButton: 'Cancel',
@@ -21,7 +25,7 @@ qq.FileUploader = function(o){
             formatProgress: "{percent}% of {total_size}"
         },
         template: '<div class="qq-uploader">' +
-            '<div class="qq-upload-drop-area"><span>{dragZoneText}</span></div>' +
+            ((!this._options.dragAndDrop || !this._options.dragAndDrop.disableDefaultDropzone) ? '<div class="qq-upload-drop-area"><span>{dragZoneText}</span></div>' : '') +
             (!this._options.button ? '<div class="qq-upload-button">{uploadButtonText}</div>' : '') +
             (!this._options.listElement ? '<ul class="qq-upload-list"></ul>' : '') +
             '</div>',
@@ -107,8 +111,8 @@ qq.extend(qq.FileUploader.prototype, {
         this._setupExtraDropzone(element);
     },
     removeExtraDropzone: function(element){
-        var dzs = this._options.extraDropzones;
-        for(var i in dzs) if (dzs[i] === element) return this._options.extraDropzones.splice(i,1);
+        var dzs = this._options.dragAndDrop.extraDropzones;
+        for(var i in dzs) if (dzs[i] === element) return this._options.dragAndDrop.extraDropzones.splice(i,1);
     },
     _leaving_document_out: function(e){
         return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
@@ -131,7 +135,7 @@ qq.extend(qq.FileUploader.prototype, {
         return element;
     },
     _setupExtraDropzone: function(element){
-        this._options.extraDropzones.push(element);
+        this._options.dragAndDrop.extraDropzones.push(element);
         this._setupDropzone(element);
     },
     _setupDropzone: function(dropArea){
@@ -150,7 +154,10 @@ qq.extend(qq.FileUploader.prototype, {
                 qq.removeClass(dropArea, self._classes.dropActive);
             },
             onDrop: function(e){
-                dropArea.style.display = 'none';
+                if (self._options.dragAndDrop.hideDropzones) {
+                    dropArea.style.display = 'none';
+                }
+
                 qq.removeClass(dropArea, self._classes.dropActive);
                 if (e.dataTransfer.files.length > 1 && !self._options.multiple) {
                     self._error('tooManyFilesError', "");
@@ -163,14 +170,21 @@ qq.extend(qq.FileUploader.prototype, {
 
         this.addDisposer(function() { dz.dispose(); });
 
-        dropArea.style.display = 'none';
+        if (this._options.dragAndDrop.hideDropzones) {
+            dropArea.style.display = 'none';
+        }
     },
     _setupDragDrop: function(){
-        var dropArea = this._find(this._element, 'drop');
-        var self = this;
-        this._options.extraDropzones.push(dropArea);
+        var self, dropArea;
 
-        var dropzones = this._options.extraDropzones;
+        self = this;
+
+        if (!this._options.dragAndDrop.disableDefaultDropzone) {
+            dropArea = this._find(this._element, 'drop');
+            this._options.dragAndDrop.extraDropzones.push(dropArea);
+        }
+
+        var dropzones = this._options.dragAndDrop.extraDropzones;
         var i;
         for (i=0; i < dropzones.length; i++){
             this._setupDropzone(dropzones[i]);
@@ -178,7 +192,7 @@ qq.extend(qq.FileUploader.prototype, {
 
         // IE <= 9 does not support the File API used for drag+drop uploads
         // Any volunteers to enable & test this for IE10?
-        if (!qq.ie()) {
+        if (!this._options.dragAndDrop.disableDefaultDropzone && !qq.ie()) {
             this._attach(document, 'dragenter', function(e){
                 if (qq.hasClass(dropArea, self._classes.dropDisabled)) return;
 
@@ -188,14 +202,18 @@ qq.extend(qq.FileUploader.prototype, {
             });
         }
         this._attach(document, 'dragleave', function(e){
-            var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
-            // only fire when leaving document out
-            if (qq.FileUploader.prototype._leaving_document_out(e)) {
-                for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'none'; }
+            if (self._options.dragAndDrop.hideDropzones && qq.FileUploader.prototype._leaving_document_out(e)) {
+                for (i=0; i < dropzones.length; i++) {
+                    dropzones[i].style.display = 'none';
+                }
             }
         });
         qq.attach(document, 'drop', function(e){
-            for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'none'; }
+            if (self._options.dragAndDrop.hideDropzones) {
+                for (i=0; i < dropzones.length; i++) {
+                    dropzones[i].style.display = 'none';
+                }
+            }
             e.preventDefault();
         });
     },
