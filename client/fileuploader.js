@@ -601,12 +601,14 @@ qq.FileUploader = function(o){
         listElement: null,
         dragText: 'Drop files here to upload',
         extraDropzones : [],
+        hideDropzones : true,
+        disableDefaultDropzone: false,
         uploadButtonText: 'Upload a file',
         cancelButtonText: 'Cancel',
         failUploadText: 'Upload failed',
 
         template: '<div class="qq-uploader">' +
-            '<div class="qq-upload-drop-area"><span>{dragText}</span></div>' +
+            (!this._options.disableDefaultDropzone ? '<div class="qq-upload-drop-area"><span>{dragText}</span></div>' : '') +
             (!this._options.button ? '<div class="qq-upload-button">{uploadButtonText}</div>' : '') +
             (!this._options.listElement ? '<ul class="qq-upload-list"></ul>' : '') +
             '</div>',
@@ -738,7 +740,9 @@ qq.extend(qq.FileUploader.prototype, {
                 qq.removeClass(dropArea, self._classes.dropActive);
             },
             onDrop: function(e){
-                dropArea.style.display = 'none';
+                if (self._options.hideDropzones) {
+                    dropArea.style.display = 'none';
+                }
                 qq.removeClass(dropArea, self._classes.dropActive);
                 if (e.dataTransfer.files.length > 1 && !self._options.multiple) {
                     self._error('tooManyFilesError', "");
@@ -751,12 +755,17 @@ qq.extend(qq.FileUploader.prototype, {
 
         this.addDisposer(function() { dz.dispose(); });
 
-        dropArea.style.display = 'none';
+        if (this._options.hideDropzones) {
+            dropArea.style.display = 'none';
+        }
     },
     _setupDragDrop: function(){
-        var dropArea = this._find(this._element, 'drop');
         var self = this;
-        this._options.extraDropzones.push(dropArea);
+
+        if (!this._options.disableDefaultDropzone) {
+            var dropArea = this._find(this._element, 'drop');
+            this._options.extraDropzones.push(dropArea);
+        }
 
         var dropzones = this._options.extraDropzones;
         var i;
@@ -766,7 +775,7 @@ qq.extend(qq.FileUploader.prototype, {
 
         // IE <= 9 does not support the File API used for drag+drop uploads
         // Any volunteers to enable & test this for IE10?
-        if (!qq.ie()) {
+        if (!this._options.disableDefaultDropzone && !qq.ie()) {
             this._attach(document, 'dragenter', function(e){
                 if (qq.hasClass(dropArea, self._classes.dropDisabled)) return;
 
@@ -776,14 +785,19 @@ qq.extend(qq.FileUploader.prototype, {
             });
         }
         this._attach(document, 'dragleave', function(e){
-            var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
             // only fire when leaving document out
-            if (qq.FileUploader.prototype._leaving_document_out(e)) {
-                for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'none'; }
+            if (self._options.hideDropzones && qq.FileUploader.prototype._leaving_document_out(e)) {
+                for (i=0; i < dropzones.length; i++) {
+                    dropzones[i].style.display = 'none';
+                }
             }
         });
         qq.attach(document, 'drop', function(e){
-            for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'none'; }
+            if (self._options.hideDropzones) {
+                for (i=0; i < dropzones.length; i++){
+                    dropzones[i].style.display = 'none';
+                }
+            }
             e.preventDefault();
         });
     },

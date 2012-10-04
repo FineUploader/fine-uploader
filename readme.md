@@ -300,6 +300,20 @@ var uploader = new qq.FileUploader({
             form uploader is used.</td>
         </tr>
         <tr>
+            <td>hideDropzones</td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>Useful if you do not want all dropzone elements to be hidden.  It is expected that some CSS would accompany setting
+            this option to false.  You may set this to false if you want to wrap some visible elements, such as the listElement,
+            in a drop zone.</td>
+        </tr>
+        <tr>
+            <td>disableDefaultDropzone</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>Set this to true if you are contributing your own drop zone(s) and do not want to use the default one.</td>
+        </tr>
+        <tr>
             <td>failedUploadTextDisplay</td>
             <td>object</td>
             <td>{<code>mode</code>: 'default',<br/>
