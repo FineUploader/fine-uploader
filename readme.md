@@ -6,20 +6,21 @@ Currently maintained by Ray Nicholus.
 *If you have found Fine Uploader useful, please consider [donating](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted) 
 to support continued maintenance and evolution of this library.*
 
-
+<br/>
 ### Announcements ###
 _September 26, 2012_ - Work on Fine Uploader 3.0 has started.  Check out the [3.0 branch](https://github.com/valums/file-uploader/tree/3.0) 
 from time to time if you are interested in the progress.  Also, feel free to add ideas for 3.0 using the [issue tracker](https://github.com/valums/file-uploader/issues).
 
 
-
+<br/>
 ###Table of Contents###
 - [Summary](#summary)
-- [Releases/Downloads](#releasesdownloads)
+- [Downloading Fine Uploader](#downloading-fine-uploader)
 - [Features](#features)
 - [License](#license)
 - [Getting started](#getting-started)
 - [qq.FileUploader - Setting up full upload widget](#qqfileuploader---setting-up-full-upload-widget)
+- [How to override options](#how-to-override-options)
 - [Options of both FileUploader & FileUploaderBasic](#options-of-both-fileuploader--fileuploaderbasic)
 - [Options of FileUploader](#options-of-fileuploader)
 - [Styling FileUploader](#styling-fileuploader)
@@ -27,11 +28,12 @@ from time to time if you are interested in the progress.  Also, feel free to add
 - [Changing alert/messages to something more user friendly](#changing-alertmessages-to-something-more-user-friendly)
 - [Instance methods](#instance-methods)
 - [Internet Explorer limitations](#internet-explorer-limitations)
+- [Building and using the snapshot version](#building-and-using-the-snapshot-version)
 - [Troubleshooting](#troubleshooting)
 - [Issue Tracker](#issue-tracker)
 - [Contributors](#contributors)
 
-
+<br/>
 ### Summary ###
 
 Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
@@ -49,13 +51,14 @@ Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com
 
 Looking for the [comment thread](http://fineuploader.com/discussions.html) from the valums.com website? It is still available, but please use the [forum](https://groups.google.com/forum/#!forum/fineuploader) instead.
 
-
-### Releases/Downloads ###
+<br/>
+### Downloading Fine Uploader ###
 
 **You can [download released versions](https://github.com/valums/file-uploader/wiki/Releases), or, if you are more daring,
-use the snapshot version on the master branch.**  
+use the snapshot version in the 3.0 branch  Please see the [building and using the snapshot version](#building-and-using-the-snapshot-version) 
+section for more details.**  
 
-
+<br/>
 ### Features ###
 * Multiple file select, progress-bar in FF, Chrome, Safari
 * Drag-and-drop file select in FF, Chrome
@@ -68,11 +71,11 @@ use the snapshot version on the master branch.**
 * Ability to upload files as soon as they are selected, or "queue" them for uploading at user's request later
 * Display specific error messages from server on upload failure (hover over failed upload item)
 
-
+<br/>
 ### License ###
 This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
 
-
+<br/>
 ### Getting started ###
 The `fileuploader.js` contains two classes that are meant to be used directly.
 If you need a complete upload widget (from demo) to quickly drop
@@ -88,7 +91,7 @@ Basic uploader is easier extendable, and doesn't limit possible customization.
 `qq.FileUploader` extends `qq.FileUploaderBasic`, so that all the options present
 in the basic uploader also exist in the full widget.
 
-
+<br/>
 ### qq.FileUploader - Setting up full upload widget ###
 
 Include `fileuploader.js` and `fileuploader.css` into your page.
@@ -117,7 +120,24 @@ var uploader = new qq.FileUploader({
 });
 ```
 
+<br/>
+### How to Override Options ###
+This is mostly obvious, but you should know that it is actually much easier to override
+"sub-properties" than expected.  Take the `messages` option (object) in FileUploaderBasic,
+for example.  Suppose you only want to override the `typeError` default message, but want to
+use the default values for the other messages properties.  Well, simply define a new value for the
+`typeError` property when initializing your FileUploaderBasic (or FileUploader) instance:
+```
+messages: {
+   typeError: "This is not a valid type"
+}
+```
+Fine Uploader will know that you only want to change the `typeError` message value and keep all of the
+other default values.  This works for all options that are, themselves, objects with sub-options.
 
+
+
+<br/>
 ### Options of both FileUploader & FileUploaderBasic ###
 <table>
     <thead>
@@ -138,7 +158,7 @@ var uploader = new qq.FileUploader({
             the value of this option is irrelevant.</td>
         </tr>
         <tr>
-            <td>action</td>
+            <td>endpoint</td>
             <td>string (path)</td>
             <td>/server/upload</td>
             <td>The is the endpoint used by both the form and ajax uploader.  In the case of the form uploader, it is part of the
@@ -191,6 +211,34 @@ var uploader = new qq.FileUploader({
             <td>Set to false if you want to be able to begin uploading selected/queued files later, by calling uploadStoredFiles().</td>
         </tr>
         <tr>
+            <td>forceMultipart</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>While form-based uploads will always be multipart requests, this forces XHR uploads to send files using 
+            multipart requests as well.</td>
+        </tr>
+        <tr>
+            <td>inputName</td>
+            <td>string</td>
+            <td>qqfile</td>
+            <td>This usually only useful with the ajax uploader, which sends the name of the file as a parameter, using a key name
+            equal to the value of this options.  In the case of the form uploader, this is simply the value of the name attribute
+            of the file's associated input element.</td>
+        </tr>
+    </tbody>
+</table>
+##### `validation` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
             <td>allowedExtensions</td>
             <td>array of strings</td>
             <td>[]</td>
@@ -231,26 +279,10 @@ var uploader = new qq.FileUploader({
             desirable implementation.  3.0 will likely have a <code>showMessage</code> default implementation that 
             does not use the <code>alert</code> function.</td>
         </tr>
-        <tr>
-            <td>inputName</td>
-            <td>string</td>
-            <td>qqfile</td>
-            <td>This usually only useful with the ajax uploader, which sends the name of the file as a parameter, using a key name
-            equal to the value of this options.  In the case of the form uploader, this is simply the value of the name attribute
-            of the file's associated input element.</td>
-        </tr>
-        <tr>
-            <td>forceMultipart</td>
-            <td>boolean</td>
-            <td>false</td>
-            <td>While form-based uploads will always be multipart requests, this forces XHR uploads to send files using 
-            multipart requests as well.</td>
-        </tr>
     </tbody>
 </table>
 
-
-
+<br/>
 ### Options of FileUploader ###
 <table>
     <thead>
@@ -274,24 +306,19 @@ var uploader = new qq.FileUploader({
             <td>null</td>
             <td>Container for the file list.  If null, the list defined in the template will be used.</td>
         </tr>
+    </tbody>
+</table>
+##### `dragAndDrop` option properties: #####
+<table>
+    <thead>
         <tr>
-            <td>uploadButtonText</td>
-            <td>string</td>
-            <td>Upload a file</td>
-            <td>Label for the file selector button</td>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
         </tr>
-        <tr>
-            <td>cancelButtonText</td>
-            <td>string</td>
-            <td>cancel</td>
-            <td>The cancel button text (which is more of a link than a button).</td>
-        </tr>
-        <tr>
-            <td>failUploadText</td>
-            <td>string</td>
-            <td>Upload failed</td>
-            <td>Text that appears next to a failed file item</td>
-        </tr>
+    </thead>
+    <tbody>
         <tr>
             <td>extraDropzones</td>
             <td>array of elements</td>
@@ -313,34 +340,96 @@ var uploader = new qq.FileUploader({
             <td>false</td>
             <td>Set this to true if you are contributing your own drop zone(s) and do not want to use the default one.</td>
         </tr>
+    </tbody>
+</table>
+##### `text` option properties: #####
+<table>
+    <thead>
         <tr>
-            <td>failedUploadTextDisplay</td>
-            <td>object</td>
-            <td>{<code>mode</code>: 'default',<br/>
-                 <code>maxChars</code>: 50,<br/>
-                 <code>responseProperty</code>: 'error',<br/>
-                 <code>enableTooltip</code>: true}</td>
-            <td>This object contains various properties used to control the display of error responses from the server for each file.
-            The styling of the error text is controlled by the <code>fail</code> class.<br/><br/><br/>
-            
-            <code>mode</code>: Valid values are "default" (display the text defined in <code>failUploadText</code> next to each
-            failed file), "none" (don't display any text next to a failed file), and "custom" (display error response text from the
-            server next to the failed file).<br/><br/>
-            
-            <code>maxChars</code>: The maximum amount of character of text to display next to the file.  After the limit has been reached,
-            "..." will terminate the string.  This is ignored unless <code>mode</code> is "custom".<br/><br/>
-            
-            <code>responseProperty</code>: The property from the server response containing the error text to display next to the
-            failed file.  This is ignored unless <code>mode</code> is "custom".<br/><br/>
-            
-            <code>enableTooltip:</code>: If set to true, a tooltip will display the full contents of the error message when the mouse pointer
-            hovers over the failed file.  Note that this currently uses the title attribute of the failed file element, but there is an issue
-            to improve this (see #355 for details).</td>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>uploadButton</td>
+            <td>string</td>
+            <td>Upload a file</td>
+            <td>Label for the file selector button</td>
+        </tr>
+        <tr>
+            <td>cancelButton</td>
+            <td>string</td>
+            <td>cancel</td>
+            <td>The cancel button text (which is more of a link than a button).</td>
+        </tr>
+        <tr>
+            <td>failUpload</td>
+            <td>string</td>
+            <td>Upload failed</td>
+            <td>Text that appears next to a failed file item</td>
+        </tr>
+        <tr>
+            <td>dragZone</td>
+            <td>string</td>
+            <td>Drop files here to upload</td>
+            <td>Text that appears in the drop zone when it is visible</td>
+        </tr>
+        <tr>
+            <td>formatProgress</td>
+            <td>string</td>
+            <td>{percent}% of {total_size}</td>
+            <td>Text that appears next to a file as it is uploading (if the browser supports the file API)</td>
         </tr>
     </tbody>
 </table>
+##### `failedUploadTextDisplay` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>mode</td>
+            <td>string</td>
+            <td>default</td>
+            <td>Valid values are "default" (display the text defined in <code>failUploadText</code> next to each
+            failed file), "none" (don't display any text next to a failed file), and "custom" (display error response text from the
+            server next to the failed file).</td>
+    	</tr>
+    	<tr>
+            <td>maxChars</td>
+            <td>integer</td>
+            <td>50</td>
+            <td>The maximum amount of character of text to display next to the file.  After the limit has been reached,
+            "..." will terminate the string.  This is ignored unless <code>mode</code> is "custom".</td>
+    	</tr>
+    	<tr>
+            <td>responseProperty</td>
+            <td>string</td>
+            <td>error</td>
+            <td>The property from the server response containing the error text to display next to the
+            failed file.  This is ignored unless <code>mode</code> is "custom".</td>
+    	</tr>
+    	<tr>
+            <td>enableTooltip</td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>If set to true, a tooltip will display the full contents of the error message when the mouse pointer
+            hovers over the failed file.  Note that this currently uses the title attribute of the failed file element, but there is an issue
+            to improve this (see #355 for details).</td>
+    	</tr>
+    </tbody>
+</table>
 
-
+<br/>
 ### Styling FileUploader ###
 The `template` option contains default elements with default classes that make up the uploader as a whole in the DOM.  For example,
 the first default element in `template` is a `div` with a class of `qq-uploader`.  This is the parent element of the uploader.
@@ -352,7 +441,7 @@ There is also a `fileTemplate` option which contains default elements that make 
 Finally, a `classes` option allows you to change the default class names for these elements.  Be sure the values in `classes`
 match the class names used in the corresponding template elements (where appropriate).
 
-
+<br/>
 ### Callbacks (FileUploader & FileUploaderBasic) ###
 * `onSubmit(String id, String fileName)` - called when the file is submitted to the uploader portion of the code.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
@@ -362,26 +451,23 @@ Note that this does not mean the file upload will begin at this point.  Return `
 * `onProgress(String id, String fileName, int uploadedBytes, int totalBytes)` - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
 * `onError(String id, String fileName, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
 
-
+<br/>
 ### Changing alert/messages to something more user friendly ###
-
 You may want to change the default alert implementation and messages as you see fit.  This is possible by overriding the
-`showMessage` function option, as well as the `messages` properties in FileUploaderBasic and the `extraMessages` properties
-in FileUploader.  The default `showMessage` function simply invokes `alert` with the message text.  One instance in which t
+`showMessage` function option, as well as the `messages` properties in FileUploaderBasic and FileUploader.  The default `showMessage` function simply invokes `alert` with the message text.  One instance in which t
 his is used is when the user attempts to select an invalid file for upload.  There are general message
 types with default text that can be overriden as well.
 
-
+<br/>
 ### Instance methods ###
-
+* `log(String message)` - Outputs a message to the javascript console, if possible.
 * `setParams(Object newParams)` - Set the parameters sent along with the request after initializing the uploader.  It can be nicely used in `onSubmit` callback.
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
 * `clearStoredFiles()` - Clears the internal list of stored files.  Only applicable when `autoUpload` is set to false.
 * `getInProgress()` - Returns the number of files that are either currently uploading or files waiting in line for upload.
 
-
+<br/>
 ### Internet Explorer Limitations ###
-
 IE continues to lag _far_ behind all other browsers in terms of features.  IE10 is supposed to, finally, start to compete
 with existing modern browsers.  For those of you with customers suffering with IE9 and older, here are some of the limitations
 you may want to be aware of when using Fine Uploader:
@@ -478,9 +564,28 @@ you may want to be aware of when using Fine Uploader:
 </table>
 \*Allegedly 
 
+<br/>
+### Building and using the snapshot version ###
+You can use [gradle](http://www.gradle.org/) to build the snapshot version.  Simply clone this project, and run `gradlew combineJs`
+on the command-line.  This will combine all of the javascript files into one file, placing it in the 
+"build" directory.  If you want to minified or gzipped version of the snapshot version, simply replace
+`combineJs` on the command-line with `minifyJs` or `gzipJs`, respectively.  However, it is not advisable
+to minify or gzip the snapshot build, as this makes it much more difficult to track down bugs in the javscript
+code.  Remember, a snapshot build is not yet released, so it may have some lingering bugs.  The trade-off is
+immediate access to new features without having to wait for a release.  
 
+In the future, I may integrate a CI system that creates nightly snapshot builds, but that is a pretty low-priority,
+especially since building your own snapshot version should be pretty easy.
+
+Don't forget to include the contents of the css and img directories in your project.  Currently,
+the files in the img directory must be in a directory called "img", which must be one directory up from the
+css file.  For example, if fineuploader.css is in the css directory, the img directory must be a subling of the
+css directory.  I will probably combine the css and img files into one directory in the near future, though, removing
+this requirement.  
+
+
+<br/>
 ### Troubleshooting ###
-
 If you can't get the uploader to work, please try the following steps
 before asking for help.
 
@@ -494,15 +599,13 @@ If the upload doesn't complete, saying "failed":
 It should be `{"success":true}` for completed requests. If it's not,
 then you have a problem with your server-side script.
 
-
+<br/>
 ### Issue Tracker ###
-
 Have a bug or feature request? Please [create an issue here on GitHub](https://github.com/valums/file-uploader/issues) 
 that conforms with [necolas's guidelines](https://github.com/necolas/issue-guidelines).
 
-
+<br/>
 ### Contributors ###
-
 We would love developers to contribute any improvements and bugfixes they produce.
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
 
