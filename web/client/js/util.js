@@ -2,7 +2,7 @@ var qq = qq || {};
 
 qq.isObject = function(variable) {
     "use strict";
-    return variable && typeof(variable) === "object" && variable.constructor === Object;
+    return variable !== null && variable && typeof(variable) === "object" && variable.constructor === Object;
 };
 
 qq.extend = function (first, second, extendNested) {
