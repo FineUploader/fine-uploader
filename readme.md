@@ -61,13 +61,13 @@ section for more details.**
 <br/>
 ### Features ###
 * Multiple file select, progress-bar in FF, Chrome, Safari
-* Drag-and-drop file select in FF, Chrome
+* Drag-and-drop file select in FF, Chrome, Safari (OS X)
 * Uploads are cancelable
 * No external dependencies
 * Doesn't use Flash
 * Fully working with HTTPS
 * Keyboard support in FF, Chrome, Safari
-* Tested in IE7/8, Firefox 3/3.6/4, Safari 4/5, Chrome, and Opera 10.60
+* Tested in IE7+, Firefox, Safari (OS X), and Chrome
 * Ability to upload files as soon as they are selected, or "queue" them for uploading at user's request later
 * Display specific error messages from server on upload failure (hover over failed upload item)
 
@@ -116,7 +116,7 @@ var uploader = new qq.FileUploader({
 	// pass the dom node (ex. $(selector)[0] for jQuery users)
 	element: document.getElementById('file-uploader'),
 	// path to server-side upload script
-	action: '/server/upload'
+	endpoint: '/server/upload'
 });
 ```
 
