@@ -64,7 +64,7 @@ use the snapshot version on the master branch.**
 * Doesn't use Flash
 * Fully working with HTTPS
 * Keyboard support in FF, Chrome, Safari
-* Tested in IE7/8, Firefox 3/3.6/4, Safari 4/5, Chrome, and Opera 10.60
+* Tested in IE7+ (not IE10 yet), Firefox, Safari (OS X), and Chrome.  Safari for Windows is not supported, nor is IE6 or earlier.
 * Ability to upload files as soon as they are selected, or "queue" them for uploading at user's request later
 * Display specific error messages from server on upload failure (hover over failed upload item)
 
