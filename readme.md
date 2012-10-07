@@ -1,4 +1,4 @@
-# Fine Uploader #
+# Fine Uploader 2.1-SNAPSHOT (work in progress) #
 
 Originally developed/designed by Andrew Valums.   
 Currently maintained by Ray Nicholus.
