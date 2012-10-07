@@ -520,6 +520,9 @@ that conforms with [necolas's guidelines](https://github.com/necolas/issue-guide
 We would love developers to contribute any improvements and bugfixes they produce.
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
 
+Also, please see issues tagged as ["pull request needed"](https://github.com/valums/file-uploader/issues?labels=Pull+Request+Needed&milestone=&page=1&state=open).
+I could use some help on those issues, in particular.
+
 Thanks to everybody who contributed, either by sending bug reports or donating. The project wouldn't be possible without all this generous help. Thank you!
 
 If you have found Fine Uploader useful, please consider [donating](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted) 
