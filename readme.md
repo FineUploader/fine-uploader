@@ -6,16 +6,16 @@ Currently maintained by Ray Nicholus.
 *If you have found Fine Uploader useful, please consider [donating](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted) 
 to support continued maintenance and evolution of this library.*
 
-
+<br/>
 ### Announcements ###
 _September 26, 2012_ - Work on Fine Uploader 3.0 has started.  Check out the [3.0 branch](https://github.com/valums/file-uploader/tree/3.0) 
 from time to time if you are interested in the progress.  Also, feel free to add ideas for 3.0 using the [issue tracker](https://github.com/valums/file-uploader/issues).
 
-
-
+<br/>
 ###Table of Contents###
 - [Summary](#summary)
 - [Releases/Downloads](#releasesdownloads)
+- [Upgrading from Fine Uploader 2.0](#upgrading-from-fine-uploader-20)
 - [Features](#features)
 - [License](#license)
 - [Getting started](#getting-started)
@@ -31,7 +31,7 @@ from time to time if you are interested in the progress.  Also, feel free to add
 - [Issue Tracker](#issue-tracker)
 - [Contributors](#contributors)
 
-
+<br/>
 ### Summary ###
 
 Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
@@ -50,12 +50,33 @@ Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com
 Looking for the [comment thread](http://fineuploader.com/discussions.html) from the valums.com website? It is still available, but please use the [forum](https://groups.google.com/forum/#!forum/fineuploader) instead.
 
 
+<br/>
 ### Releases/Downloads ###
-
 **You can [download released versions](https://github.com/valums/file-uploader/wiki/Releases), or, if you are more daring,
 use the snapshot version on the master branch.**  
 
 
+<br/>
+### Upgrading from Fine Uploader 2.0 ###
+You can see all bugs and features tackled in the 2.1 release [here](https://github.com/valums/file-uploader/issues?milestone=2&page=1&state=closed).
+If you are only interested in a summary, here are some of the more notable changes:
+
+<br/>
+###### Features/Enhancements ######
+* Added option to allow all valid files to upload, skipping only invalid files
+* Added gradually filling progress bar (for browsers that support XHR upload/file API)
+* The `onError` callback is now called whenever _any_ error occurs, either with the upload or file submission
+* An `error` JSON property in the response is used to determine the specific failure reason, `reason` property no longer supported
+* Ability to force all requests to use multipart encoding is now a bit more straightforward.  Added a `forceMultipart` option.
+* Added ability to determine if dropzones are hidden or not via the `hideDropzones` options
+* Added ability to hide default dropzone via the `disableDefaultDropzone` option
+* Option to display dynamic custom error text next to each failed upload.  See the `failedUploadTextDisplay` option documentation for more details.
+
+###### Bug Fixes ######
+Please see the list of issues [here](https://github.com/valums/file-uploader/issues?labels=bug&milestone=2&page=1&state=closed).
+
+
+<br/>
 ### Features ###
 * Multiple file select, progress-bar in FF, Chrome, Safari
 * Drag-and-drop file select in FF, Chrome
@@ -68,11 +89,11 @@ use the snapshot version on the master branch.**
 * Ability to upload files as soon as they are selected, or "queue" them for uploading at user's request later
 * Display specific error messages from server on upload failure (hover over failed upload item)
 
-
+<br/>
 ### License ###
 This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
 
-
+<br/>
 ### Getting started ###
 The `fileuploader.js` contains two classes that are meant to be used directly.
 If you need a complete upload widget (from demo) to quickly drop
@@ -89,8 +110,8 @@ Basic uploader is easier extendable, and doesn't limit possible customization.
 in the basic uploader also exist in the full widget.
 
 
+<br/>
 ### qq.FileUploader - Setting up full upload widget ###
-
 Include `fileuploader.js` and `fileuploader.css` into your page.
 Create container element.
 
@@ -117,7 +138,7 @@ var uploader = new qq.FileUploader({
 });
 ```
 
-
+<br/>
 ### Options of both FileUploader & FileUploaderBasic ###
 <table>
     <thead>
@@ -250,7 +271,7 @@ var uploader = new qq.FileUploader({
 </table>
 
 
-
+<br/>
 ### Options of FileUploader ###
 <table>
     <thead>
@@ -340,7 +361,7 @@ var uploader = new qq.FileUploader({
     </tbody>
 </table>
 
-
+<br/>
 ### Styling FileUploader ###
 The `template` option contains default elements with default classes that make up the uploader as a whole in the DOM.  For example,
 the first default element in `template` is a `div` with a class of `qq-uploader`.  This is the parent element of the uploader.
@@ -352,7 +373,7 @@ There is also a `fileTemplate` option which contains default elements that make 
 Finally, a `classes` option allows you to change the default class names for these elements.  Be sure the values in `classes`
 match the class names used in the corresponding template elements (where appropriate).
 
-
+<br/>
 ### Callbacks (FileUploader & FileUploaderBasic) ###
 * `onSubmit(String id, String fileName)` - called when the file is submitted to the uploader portion of the code.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
@@ -362,30 +383,26 @@ Note that this does not mean the file upload will begin at this point.  Return `
 * `onProgress(String id, String fileName, int uploadedBytes, int totalBytes)` - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
 * `onError(String id, String fileName, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
 
-
+<br/>
 ### Changing alert/messages to something more user friendly ###
-
 You may want to change the default alert implementation and messages as you see fit.  This is possible by overriding the
 `showMessage` function option, as well as the `messages` properties in FileUploaderBasic and the `extraMessages` properties
 in FileUploader.  The default `showMessage` function simply invokes `alert` with the message text.  One instance in which t
 his is used is when the user attempts to select an invalid file for upload.  There are general message
 types with default text that can be overriden as well.
 
-
+<br/>
 ### Instance methods ###
-
 * `setParams(Object newParams)` - Set the parameters sent along with the request after initializing the uploader.  It can be nicely used in `onSubmit` callback.
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
 * `clearStoredFiles()` - Clears the internal list of stored files.  Only applicable when `autoUpload` is set to false.
 * `getInProgress()` - Returns the number of files that are either currently uploading or files waiting in line for upload.
 
-
+<br/>
 ### Internet Explorer Limitations ###
-
 IE continues to lag _far_ behind all other browsers in terms of features.  IE10 is supposed to, finally, start to compete
 with existing modern browsers.  For those of you with customers suffering with IE9 and older, here are some of the limitations
 you may want to be aware of when using Fine Uploader:
-
 <table>
     <thead>
         <tr>
@@ -478,9 +495,8 @@ you may want to be aware of when using Fine Uploader:
 </table>
 \*Allegedly 
 
-
+<br/>
 ### Troubleshooting ###
-
 If you can't get the uploader to work, please try the following steps
 before asking for help.
 
@@ -494,15 +510,13 @@ If the upload doesn't complete, saying "failed":
 It should be `{"success":true}` for completed requests. If it's not,
 then you have a problem with your server-side script.
 
-
+<br/>
 ### Issue Tracker ###
-
 Have a bug or feature request? Please [create an issue here on GitHub](https://github.com/valums/file-uploader/issues) 
 that conforms with [necolas's guidelines](https://github.com/necolas/issue-guidelines).
 
-
+<br/>
 ### Contributors ###
-
 We would love developers to contribute any improvements and bugfixes they produce.
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
 
