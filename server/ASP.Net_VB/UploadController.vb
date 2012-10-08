@@ -13,6 +13,18 @@ Namespace Uploader
             Dim fileContents() As Byte = {}
             Const ChunkSize As Integer = 1024 * 1024
 
+ ' We need to hand IE a little bit differently...
+            If Request.Browser.Browser = "IE" Then
+                Dim myfiles As System.Web.HttpFileCollection = System.Web.HttpContext.Current.Request.Files
+                Dim postedFile As System.Web.HttpPostedFile = myfiles(0)
+                If Not postedFile.FileName.Equals("") Then
+                    Dim fn As String = System.IO.Path.GetFileName(postedFile.FileName)
+                    br = New BinaryReader(postedFile.InputStream)
+                    uploadFile = fn
+                End If
+            End If
+
+' Nor have the binary reader on the IE file input Stream. Back to normal...
             Do While br.BaseStream.Position < br.BaseStream.Length - 1
                 Dim b(ChunkSize - 1) As Byte
                 Dim ReadLen As Integer = br.Read(b, 0, ChunkSize)
