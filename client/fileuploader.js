@@ -1550,6 +1550,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         xhr.open(protocol, queryString, true);
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
+        xhr.setRequestHeader("Cache-Control", "no-cache");
         if (this._options.forceMultipart) {
             var formData = new FormData();
             formData.append(this._options.inputName, file);
