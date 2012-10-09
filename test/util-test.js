@@ -64,17 +64,17 @@ test("qq.insertBefore", function() {
 });
 
 test("qq.remove", function() {
-    var el = $('#qunit-fixture').append("<div id='foo'></div>")[0];
-    qq.remove(el);
+    var el = $('#qunit-fixture').append("<div id='foo'></div>");
+    qq.remove($('#foo')[0]);
 
     ok($("#foo").length === 0, "does foo still exist?");
 });
 
 test("qq.contains", function() {
-    $('#qunit').append("<div id='qqcontains'></div>");
+    $("#qunit-fixture").append("<div id='qqcontains'></div>");
 
-    ok(qq.contains($('#qunit')[0], $("#qqcontains")[0]), "qqcontains should exist under qunit");
-    equal(qq.contains($('#qunit')[0], $("body")[0]), false, "body should not exist under qunit");
+    ok(qq.contains($("#qunit-fixture")[0], $("#qqcontains")[0]), "qqcontains should exist under qunit");
+    equal(qq.contains($("#qunit-fixture")[0], $("body")[0]), false, "body should not exist under qunit");
 });
 
 test("qq.toElement", function() {
@@ -85,14 +85,14 @@ test("qq.toElement", function() {
 });
 
 test("qq.css", function() {
-    $('#qunit').append("<div id='qqcss'></div>");
+    $("#qunit-fixture").append("<div id='qqcss'></div>");
     qq.css($('#qqcss')[0], {display: 'none'});
 
-    ok($("#qqcss:visible").length === 0, "qunit-fixture should be hidden");
+    ok($("#qqcss:visible").length === 0, "qqcss should be hidden");
 });
 
 test("qq.hasClass", function(){
-    $("#qunit").append("<div id='qqhasclass' class='qqhasclass'></div>");
+    $("#qunit-fixture").append("<div id='qqhasclass' class='qqhasclass'></div>");
 
     ok(qq.hasClass($("#qqhasclass")[0], "qqhasclass"), "qqhasclass should have qqhasclass as a class");
 });
