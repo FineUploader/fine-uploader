@@ -1,8 +1,10 @@
 $(document).ready(function() {
     var uploader = new qq.FileUploader({
         element: $('#basicUploadSuccessExample')[0],
-        endpoint: "/upload/receiver",
         debug: true,
+        request: {
+            endpoint: "/upload/receiver"
+        },
         callbacks: {
             onError: function(id, fileName, reason) {
                 console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
@@ -14,9 +16,11 @@ $(document).ready(function() {
 
     var uploader2 = new qq.FileUploader({
         element: $('#manualUploadModeExample')[0],
-        endpoint: "/upload/receiver",
         autoUpload: false,
         uploadButtonText: "Select Files",
+        request: {
+            endpoint: "/upload/receiver"
+        },
         callbacks: {
             onError: function(id, fileName, reason) {
                 console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
@@ -31,13 +35,15 @@ $(document).ready(function() {
 
     var uploader3 = new qq.FileUploader({
         element: $('#basicUploadFailureExample')[0],
-        endpoint: "/upload/receiver",
         callbacks: {
             onError: function(id, fileName, reason) {
                 console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
             }
         },
-        params: {"generateError": true},
+        request: {
+            endpoint: "/upload/receiver",
+            params: {"generateError": true}
+        },
         failedUploadTextDisplay: {
             mode: 'custom',
             maxChars: 5
@@ -47,8 +53,10 @@ $(document).ready(function() {
 
     var uploader4 = new qq.FileUploader({
         element: $('#uploadWithVariousOptionsExample')[0],
-        endpoint: "/upload/receiver",
         multiple: false,
+        request: {
+            endpoint: "/upload/receiver",
+        },
         validation: {
             allowedExtensions: ['jpeg', 'jpg', 'txt'],
             sizeLimit: 50000
@@ -66,8 +74,10 @@ $(document).ready(function() {
     uploader5 = new qq.FileUploaderBasic({
         multiple: false,
         autoUpload: false,
-        endpoint: "/upload/receiver",
         button: $("#fubButton")[0],
+        request: {
+            endpoint: "/upload/receiver",
+        },
         callbacks: {
             onError: function(id, fileName, reason) {
                 console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);

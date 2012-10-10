@@ -7,16 +7,18 @@ qq.FileUploaderBasic = function(o){
     var that = this;
     this._options = {
         debug: false,
-        endpoint: '/server/upload',
-        params: {},
-        customHeaders: {},
         button: null,
         multiple: true,
         maxConnections: 3,
         disableCancelForFormUploads: false,
         autoUpload: true,
-        forceMultipart: false,
-        inputName: 'qqfile',
+        request: {
+            endpoint: '/server/upload',
+            params: {},
+            customHeaders: {},
+            forceMultipart: false,
+            inputName: 'qqfile'
+        },
         validation: {
             allowedExtensions: [],
             acceptFiles: null,		// comma separated string of mime-types for browser to display in browse dialog
@@ -70,7 +72,7 @@ qq.FileUploaderBasic.prototype = {
         if (this._options.debug && window.console) console.log('[uploader] ' + str);
     },
     setParams: function(params){
-        this._options.params = params;
+        this._options.request.params = params;
     },
     getInProgress: function(){
         return this._filesInProgress;
@@ -79,7 +81,7 @@ qq.FileUploaderBasic.prototype = {
         "use strict";
         while(this._storedFileIds.length) {
             this._filesInProgress++;
-            this._handler.upload(this._storedFileIds.shift(), this._options.params);
+            this._handler.upload(this._storedFileIds.shift(), this._options.request.params);
         }
     },
     clearStoredFiles: function(){
@@ -112,11 +114,11 @@ qq.FileUploaderBasic.prototype = {
 
         var handler = new qq[handlerClass]({
             debug: this._options.debug,
-            endpoint: this._options.endpoint,
-            forceMultipart: this._options.forceMultipart,
+            endpoint: this._options.request.endpoint,
+            forceMultipart: this._options.request.forceMultipart,
             maxConnections: this._options.maxConnections,
-            customHeaders: this._options.customHeaders,
-            inputName: this._options.inputName,
+            customHeaders: this._options.request.customHeaders,
+            inputName: this._options.request.inputName,
             demoMode: this._options.demoMode,
             onProgress: function(id, fileName, loaded, total){
                 self._onProgress(id, fileName, loaded, total);
@@ -211,7 +213,7 @@ qq.FileUploaderBasic.prototype = {
         if (this._options.callbacks.onSubmit(id, fileName) !== false){
             this._onSubmit(id, fileName);
             if (this._options.autoUpload) {
-                this._handler.upload(id, this._options.params);
+                this._handler.upload(id, this._options.request.params);
             }
             else {
                 this._storeFileForLater(id);

@@ -158,26 +158,6 @@ other default values.  This works for all options that are, themselves, objects 
             the value of this option is irrelevant.</td>
         </tr>
         <tr>
-            <td>endpoint</td>
-            <td>string (path)</td>
-            <td>/server/upload</td>
-            <td>The is the endpoint used by both the form and ajax uploader.  In the case of the form uploader, it is part of the
-            form's action attribute value along with all parameters.  In the case of the ajax uplaoder, it is makes up part of the URL
-            of the XHR request (again, along with the parameters).</td>
-        </tr>
-        <tr>
-            <td>params</td>
-            <td>object</td>
-            <td>{}</td>
-            <td>These parameters are sent with the request to the endpoint specified in the action option.</td>
-        </tr>
-        <tr>
-            <td>customHeaders</td>
-            <td>object</td>
-            <td>{}</td>
-            <td>Additional headers sent along with the XHR POST request.  Note that is option is only relevant to the ajax/XHR uploader.</td>
-        </tr>
-        <tr>
             <td>button</td>
             <td>element</td>
             <td>null</td>
@@ -210,11 +190,44 @@ other default values.  This works for all options that are, themselves, objects 
             <td>true</td>
             <td>Set to false if you want to be able to begin uploading selected/queued files later, by calling uploadStoredFiles().</td>
         </tr>
+    </tbody>
+</table>
+##### `request` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>endpoint</td>
+            <td>string (path)</td>
+            <td>/server/upload</td>
+            <td>The is the endpoint used by both the form and ajax uploader.  In the case of the form uploader, it is part of the
+            form's action attribute value along with all parameters.  In the case of the ajax uplaoder, it is makes up part of the URL
+            of the XHR request (again, along with the parameters).</td>
+        </tr>
+        <tr>
+            <td>params</td>
+            <td>object</td>
+            <td>{}</td>
+            <td>These parameters are sent with the request to the endpoint specified in the action option.</td>
+        </tr>
+        <tr>
+            <td>customHeaders</td>
+            <td>object</td>
+            <td>{}</td>
+            <td>Additional headers sent along with the XHR POST request.  Note that is option is only relevant to the ajax/XHR uploader.</td>
+        </tr>
         <tr>
             <td>forceMultipart</td>
             <td>boolean</td>
             <td>false</td>
-            <td>While form-based uploads will always be multipart requests, this forces XHR uploads to send files using 
+            <td>While form-based uploads will always be multipart requests, this forces XHR uploads to send files using
             multipart requests as well.</td>
         </tr>
         <tr>
@@ -227,6 +240,7 @@ other default values.  This works for all options that are, themselves, objects 
         </tr>
     </tbody>
 </table>
+
 ##### `validation` option properties: #####
 <table>
     <thead>
