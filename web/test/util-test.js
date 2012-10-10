@@ -96,3 +96,71 @@ test("qq.hasClass", function(){
 
     ok(qq.hasClass($("#qqhasclass")[0], "qqhasclass"), "qqhasclass should have qqhasclass as a class");
 });
+
+test("qq.addClass", function() {
+    $('#qunit-fixture').append('<div></div>');
+    var $el = $('div', '#qunit-fixture');
+    qq.addClass($el[0], "addclasstest");
+
+    ok($el.hasClass('addclasstest'), 'qq.addClass should actually add classes');
+});
+
+test("qq.removeClass", function() {
+    $('#qunit-fixture').append('<div class="foobar"></div>');
+    var $el = $('.foobar', '#qunit-fixture');
+    qq.removeClass($el[0], 'foobar');
+
+    ok(!$el.hasClass('foobar'), "qq.removeClass should be able to remove classes");
+});
+
+test("qq.setText", function() {
+    $('#qunit-fixture').append('<div></div>');
+    var $el = $('div', '#qunit-fixture');
+    qq.setText($el[0], "this is a test");
+
+    equal($el.text(), "this is a test", "qq.setText should be able to set an element's text");
+});
+
+test("qq.children", function() {
+    $('#qunit-fixture').append('<div class="child"></div>').append('<div class="child"></div>');
+
+    var children = qq.children($("#qunit-fixture")[0]);
+    equal(children.length, 2, "there should be exactly 2 children");
+    ok($(children[0]).hasClass("child") && $(children[1]).hasClass("child"), "both children should have a 'child' class");
+});
+
+test("qq.getByClass", function() {
+    $('#qunit-fixture').append('<div class="foobar"></div>');
+
+    var returnedEl = qq.getByClass(document, 'foobar');
+    equal(returnedEl.length, 1, "getByClass should only return one element in this case");
+    ok($('.foobar').is(returnedEl[0]), "getByClass should return the correct element");
+});
+
+test("qq.obj2url", function() {
+    var baseUrl = "http://mydomain.com/upload";
+    var params = {one: "one", two: "two", three: "three"};
+    var params2 = {a: "this is a test"};
+
+    var baseUrlWithParams = qq.obj2url(params, baseUrl);
+    var parsedUrlWithParams = $.url(baseUrlWithParams);
+    equal(parsedUrlWithParams.param('one'), "one", "checking first param, 1st url");
+    equal(parsedUrlWithParams.param('two'), "two", "checking second param, 1st url");
+    equal(parsedUrlWithParams.param('three'), "three", "checking third param, 1st url");
+
+    var baseUrlWithParams2 = qq.obj2url(params2, baseUrl);
+    var parsedUrlWithParams2 = $.url(baseUrlWithParams2);
+    equal(parsedUrlWithParams2.param('a'), "this is a test", "checking first param, 2nd url");
+});
+
+test("qq.DisposeSupport", 2, function() {
+    qq.DisposeSupport.addDisposer(function() {
+        ok(true, "disposer 1");
+    });
+
+    qq.DisposeSupport.addDisposer(function() {
+        ok(true, "disposer 2");
+    });
+
+    qq.DisposeSupport.dispose();
+});
