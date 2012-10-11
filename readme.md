@@ -143,7 +143,7 @@ other default values.  This works for all options that are, themselves, objects 
 
 
 <br/>
-### Options of both FileUploader & FileUploaderBasic ###
+### Options of both FineUploader & FineUploaderBasic ###
 <table>
     <thead>
         <tr>
@@ -302,7 +302,7 @@ other default values.  This works for all options that are, themselves, objects 
 </table>
 
 <br/>
-### Options of FileUploader ###
+### Options of FineUploader ###
 <table>
     <thead>
         <tr>
@@ -449,7 +449,7 @@ other default values.  This works for all options that are, themselves, objects 
 </table>
 
 <br/>
-### Styling FileUploader ###
+### Styling FineUploader ###
 The `template` option contains default elements with default classes that make up the uploader as a whole in the DOM.  For example,
 the first default element in `template` is a `div` with a class of `qq-uploader`.  This is the parent element of the uploader.
 The default drop area, button, and file list elements are also, by default, contained in this option.  You can use this option to
@@ -461,7 +461,7 @@ Finally, a `classes` option allows you to change the default class names for the
 match the class names used in the corresponding template elements (where appropriate).
 
 <br/>
-### Callbacks (FileUploader & FileUploaderBasic) ###
+### Callbacks (FineUploader & FineUploaderBasic) ###
 * `onSubmit(String id, String fileName)` - called when the file is submitted to the uploader portion of the code.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
 * `onComplete(String id, String fileName, Object responseJSON)` - called when the file upload has finished.
@@ -473,7 +473,7 @@ Note that this does not mean the file upload will begin at this point.  Return `
 <br/>
 ### Changing alert/messages to something more user friendly ###
 You may want to change the default alert implementation and messages as you see fit.  This is possible by overriding the
-`showMessage` function option, as well as the `messages` properties in FileUploaderBasic and FileUploader.  The default `showMessage` function simply invokes `alert` with the message text.  One instance in which t
+`showMessage` function option, as well as the `messages` properties in FineUploaderBasic and FineUploader.  The default `showMessage` function simply invokes `alert` with the message text.  One instance in which t
 his is used is when the user attempts to select an invalid file for upload.  There are general message
 types with default text that can be overriden as well.
 
@@ -610,8 +610,8 @@ before asking for help.
 
 If the upload doesn't complete, saying "failed":
 
-* Set the `debug` option of the FileUploader to true.
-* Open the page where you have a FileUploader.
+* Set the `debug` option of the FineUploader to true.
+* Open the page where you have a FineUploader.
 * Open developer console in your browser.
 * Try to upload the file. You should see a server response.
 
