@@ -19,12 +19,12 @@ from time to time if you are interested in the progress.  Also, feel free to add
 - [Features](#features)
 - [License](#license)
 - [Getting started](#getting-started)
-- [qq.FileUploader - Setting up full upload widget](#qqfileuploader---setting-up-full-upload-widget)
+- [qq.FineUploader - Setting up full upload widget](#qqfineuploader---setting-up-full-upload-widget)
 - [How to override options](#how-to-override-options)
-- [Options of both FileUploader & FileUploaderBasic](#options-of-both-fileuploader--fileuploaderbasic)
-- [Options of FileUploader](#options-of-fileuploader)
-- [Styling FileUploader](#styling-fileuploader)
-- [Callbacks (FileUploader & FileUploaderBasic)](#callbacks-fileuploader--fileuploaderbasic)
+- [Options of both FineUploader & FineUploaderBasic](#options-of-both-fineuploader--fineuploaderbasic)
+- [Options of FineUploader](#options-of-fineuploader)
+- [Styling FineUploader](#styling-fineuploader)
+- [Callbacks (FineUploader & FineUploaderBasic)](#callbacks-fineuploader--fineuploaderbasic)
 - [Changing alert/messages to something more user friendly](#changing-alertmessages-to-something-more-user-friendly)
 - [Instance methods](#instance-methods)
 - [Internet Explorer limitations](#internet-explorer-limitations)
@@ -43,7 +43,7 @@ This plugin uses an XMLHttpRequest (AJAX) for uploading multiple files with a pr
 FF3.6+, Safari4+, Chrome and falls back to hidden-iframe-based upload in other browsers (namely IE),
 providing good user experience everywhere.
 
-It does not use Flash, jQuery, or any external libraries.
+It does not use Flash, jQuery, or any other external libraries.
 
 Take a look at the new evolving [Demo](http://fineuploader.com) page.
 
@@ -53,7 +53,6 @@ Looking for the [comment thread](http://fineuploader.com/discussions.html) from 
 
 <br/>
 ### Downloading Fine Uploader ###
-
 **You can [download released versions](https://github.com/valums/file-uploader/wiki/Releases), or, if you are more daring,
 use the snapshot version in the 3.0 branch  Please see the [building and using the snapshot version](#building-and-using-the-snapshot-version) 
 section for more details.**  
@@ -77,30 +76,33 @@ This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2
 
 <br/>
 ### Getting started ###
-The `fileuploader.js` contains two classes that are meant to be used directly.
+The combined javascript file contains two classes that are meant to be used directly.
 If you need a complete upload widget (from demo) to quickly drop
-into your current design, use `qq.FileUploader`.
+into your current design, use `qq.FineUploader`.
+Note that a set of utility functions, used internally by Fine Uploader, are also publicly accessible.  See the utils.js
+file for an easy reference of the utility functions present in the combined javascript file.  The QUnit tests may also
+serve has helpful documentation.
 
-If you want to customize uploader, by using a different looking file list
-or change the behaviour or functionality use `qq.FileUploaderBasic`.
+If you want to customize the uploader, by using a different looking file list
+or change the behaviour or functionality use `qq.FineUploaderBasic`.
 
-The difference between them is that `qq.FileUploader` provides a list of files,
-drag-and-drop, but `qq.FileUploaderBasic` only creates button and handles validation.
+The difference between them is that `qq.FineUploader` provides a list of files,
+drag-and-drop, but `qq.FineUploaderBasic` only creates button and handles validation.
 Basic uploader is easier extendable, and doesn't limit possible customization.
 
-`qq.FileUploader` extends `qq.FileUploaderBasic`, so that all the options present
+`qq.FineUploader` extends `qq.FineUploaderBasic`, so that all the options present
 in the basic uploader also exist in the full widget.
 
 <br/>
-### qq.FileUploader - Setting up full upload widget ###
+### qq.FineUploader - Setting up full upload widget ###
 
-Include `fileuploader.js` and `fileuploader.css` into your page.
+Include the uploader javascript file and, optionally, `fineuploader.css` along with any images provided into your page.
 Create container element.
 
 ```html
-<div id="file-uploader">
+<div id="fine-uploader">
 <noscript>
-    <p>Please enable JavaScript to use file uploader.</p>
+    <p>Please enable JavaScript to use Fine Uploader.</p>
     <!-- or put a simple form for upload here -->
 </noscript>
 </div>
@@ -112,9 +114,9 @@ If you can't find the one you need, please read up on handling multipart form
 requests and XHR upload requests in your server-side language of choice.
 
 ```javascript
-var uploader = new qq.FileUploader({
+var uploader = new qq.FineUploader({
 	// pass the dom node (ex. $(selector)[0] for jQuery users)
-	element: document.getElementById('file-uploader'),
+	element: document.getElementById('fine-uploader'),
 	
 	request: {
       		// path to server-side upload script
@@ -126,10 +128,10 @@ var uploader = new qq.FileUploader({
 <br/>
 ### How to Override Options ###
 This is mostly obvious, but you should know that it is actually much easier to override
-"sub-properties" than expected.  Take the `messages` option (object) in FileUploaderBasic,
+"sub-properties" than expected.  Take the `messages` option (object) in FineUploaderBasic,
 for example.  Suppose you only want to override the `typeError` default message, but want to
 use the default values for the other messages properties.  Well, simply define a new value for the
-`typeError` property when initializing your FileUploaderBasic (or FileUploader) instance:
+`typeError` property when initializing your FineUploaderBasic (or FineUploader) instance:
 ```
 messages: {
    typeError: "This is not a valid type"

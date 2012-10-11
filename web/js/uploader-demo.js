@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    var uploader = new qq.FileUploader({
+    var uploader = new qq.FineUploader({
         element: $('#basicUploadSuccessExample')[0],
         debug: true,
         request: {
@@ -14,7 +14,7 @@ $(document).ready(function() {
 
 
 
-    var uploader2 = new qq.FileUploader({
+    var uploader2 = new qq.FineUploader({
         element: $('#manualUploadModeExample')[0],
         autoUpload: false,
         uploadButtonText: "Select Files",
@@ -33,7 +33,7 @@ $(document).ready(function() {
     });
 
 
-    var uploader3 = new qq.FileUploader({
+    var uploader3 = new qq.FineUploader({
         element: $('#basicUploadFailureExample')[0],
         callbacks: {
             onError: function(id, fileName, reason) {
@@ -51,7 +51,7 @@ $(document).ready(function() {
     });
 
 
-    var uploader4 = new qq.FileUploader({
+    var uploader4 = new qq.FineUploader({
         element: $('#uploadWithVariousOptionsExample')[0],
         multiple: false,
         request: {
@@ -71,7 +71,7 @@ $(document).ready(function() {
         }
     });
 
-    uploader5 = new qq.FileUploaderBasic({
+    uploader5 = new qq.FineUploaderBasic({
         multiple: false,
         autoUpload: false,
         button: $("#fubButton")[0],

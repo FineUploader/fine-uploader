@@ -2,11 +2,11 @@ var qq = qq || {};
 
 /**
  * Class that creates upload widget with drag-and-drop and file list
- * @inherits qq.FileUploaderBasic
+ * @inherits qq.FineUploaderBasic
  */
-qq.FileUploader = function(o){
+qq.FineUploader = function(o){
     // call parent constructor
-    qq.FileUploaderBasic.apply(this, arguments);
+    qq.FineUploaderBasic.apply(this, arguments);
 
     // additional options
     qq.extend(this._options, {
@@ -100,11 +100,11 @@ qq.FileUploader = function(o){
 };
 
 // inherit from Basic Uploader
-qq.extend(qq.FileUploader.prototype, qq.FileUploaderBasic.prototype);
+qq.extend(qq.FineUploader.prototype, qq.FineUploaderBasic.prototype);
 
-qq.extend(qq.FileUploader.prototype, {
+qq.extend(qq.FineUploader.prototype, {
     clearStoredFiles: function() {
-        qq.FileUploaderBasic.prototype.clearStoredFiles.apply(this, arguments);
+        qq.FineUploaderBasic.prototype.clearStoredFiles.apply(this, arguments);
         this._listElement.innerHTML = "";
     },
     addExtraDropzone: function(element){
@@ -119,7 +119,7 @@ qq.extend(qq.FileUploader.prototype, {
             || (qq.firefox() && !e.relatedTarget); // null e.relatedTarget for Firefox
     },
     _storeFileForLater: function(id) {
-        qq.FileUploaderBasic.prototype._storeFileForLater.apply(this, arguments);
+        qq.FineUploaderBasic.prototype._storeFileForLater.apply(this, arguments);
         var item = this._getItemByFileId(id);
         this._find(item, 'spinner').style.display = "none";
     },
@@ -202,7 +202,7 @@ qq.extend(qq.FileUploader.prototype, {
             });
         }
         this._attach(document, 'dragleave', function(e){
-            if (self._options.dragAndDrop.hideDropzones && qq.FileUploader.prototype._leaving_document_out(e)) {
+            if (self._options.dragAndDrop.hideDropzones && qq.FineUploader.prototype._leaving_document_out(e)) {
                 for (i=0; i < dropzones.length; i++) {
                     dropzones[i].style.display = 'none';
                 }
@@ -218,12 +218,12 @@ qq.extend(qq.FileUploader.prototype, {
         });
     },
     _onSubmit: function(id, fileName){
-        qq.FileUploaderBasic.prototype._onSubmit.apply(this, arguments);
+        qq.FineUploaderBasic.prototype._onSubmit.apply(this, arguments);
         this._addToList(id, fileName);
     },
     // Update the progress bar & percentage as the file is uploaded
     _onProgress: function(id, fileName, loaded, total){
-        qq.FileUploaderBasic.prototype._onProgress.apply(this, arguments);
+        qq.FineUploaderBasic.prototype._onProgress.apply(this, arguments);
 
         var item = this._getItemByFileId(id);
 
@@ -252,7 +252,7 @@ qq.extend(qq.FileUploader.prototype, {
         qq.setText(size, text);
     },
     _onComplete: function(id, fileName, result){
-        qq.FileUploaderBasic.prototype._onComplete.apply(this, arguments);
+        qq.FineUploaderBasic.prototype._onComplete.apply(this, arguments);
 
         var item = this._getItemByFileId(id);
 
@@ -279,7 +279,7 @@ qq.extend(qq.FileUploader.prototype, {
         }
     },
     _onUpload: function(id, fileName, xhr){
-        qq.FileUploaderBasic.prototype._onUpload.apply(this, arguments);
+        qq.FineUploaderBasic.prototype._onUpload.apply(this, arguments);
 
         var item = this._getItemByFileId(id);
 

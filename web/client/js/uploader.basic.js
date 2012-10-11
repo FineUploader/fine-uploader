@@ -1,9 +1,6 @@
 var qq = qq || {};
 
-/**
- * Creates upload button, validates upload, but doesn't create file list or dd.
- */
-qq.FileUploaderBasic = function(o){
+qq.FineUploaderBasic = function(o){
     var that = this;
     this._options = {
         debug: false,
@@ -67,7 +64,7 @@ qq.FileUploaderBasic = function(o){
     this._preventLeaveInProgress();
 };
 
-qq.FileUploaderBasic.prototype = {
+qq.FineUploaderBasic.prototype = {
     log: function(str){
         if (this._options.debug && window.console) console.log('[uploader] ' + str);
     },
