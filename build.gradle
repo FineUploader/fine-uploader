@@ -24,7 +24,8 @@ combineJs {
                    "${jsSrcDir}/uploader.js",
                    "${jsSrcDir}/handler.base.js",
                    "${jsSrcDir}/handler.form.js",
-                   "${jsSrcDir}/handler.xhr.js")
+                   "${jsSrcDir}/handler.xhr.js",
+                   "${jsSrcDir}/jquery-plugin.js")
 
     dest = file("$buildDir/${filename}-${version}.js")
 }
