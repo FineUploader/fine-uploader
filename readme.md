@@ -106,17 +106,20 @@ Create container element.
 </div>
 ```
 
-Initialize uploader when the DOM is ready. Change the action option.
-For example ../server/php.php for the default folder structure.
-In the server folder you will find examples for different platforms.
-If you can't find the one you need, check the readme.txt in the same folder.
+Initialize uploader when the DOM is ready. Change the endpoint option.
+In the server folder you will find some examples for different platforms.
+If you can't find the one you need, please read up on handling multipart form
+requests and XHR upload requests in your server-side language of choice.
 
 ```javascript
 var uploader = new qq.FileUploader({
 	// pass the dom node (ex. $(selector)[0] for jQuery users)
 	element: document.getElementById('file-uploader'),
-	// path to server-side upload script
-	endpoint: '/server/upload'
+	
+	request: {
+      		// path to server-side upload script
+		endpoint: '/server/upload'
+	}
 });
 ```
 
