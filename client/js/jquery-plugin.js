@@ -50,13 +50,13 @@
         $el = this;
 
         if (methods[optionsOrMethod]) {
-            return methods[ optionsOrMethod ].apply( this, Array.prototype.slice.call(arguments, 1));
+            return methods[optionsOrMethod].apply(this, Array.prototype.slice.call(arguments, 1));
         }
         else if (typeof optionsOrMethod === 'object' || ! optionsOrMethod) {
             return methods.init.apply(this, arguments);
         }
         else {
-            $.error('Method ' +  optionsOrMethod + ' does not exist on jQuery.tooltip');
+            $.error('Method ' +  optionsOrMethod + ' does not exist on jQuery.fineUploader');
         }
 
         return this;
