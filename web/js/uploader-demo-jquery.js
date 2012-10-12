@@ -12,17 +12,18 @@ $(document).ready(function() {
     }).on('error', errorHandler);
 
 
-//    $('#manualUploadModeExample').fineUploader({
-//        autoUpload: false,
-//        uploadButtonText: "Select Files",
-//        request: {
-//            endpoint: "/upload/receiver"
-//        }
-//    }).on('error', errorHandler);
+    $('#manualUploadModeExample').fineUploader({
+        autoUpload: false,
+        uploadButtonText: "Select Files",
+        request: {
+            endpoint: "/upload/receiver"
+        }
+    }).on('error', errorHandler);
 
-//    $('#triggerUpload').click(function() {
-//        uploader2.uploadStoredFiles();
-//    });
+    $('#triggerUpload').click(function() {
+        console.log($('#manualUploadModeExample').fineUploader("_createUploadHandler"));
+        $('#manualUploadModeExample').fineUploader("uploadStoredFiles");
+    });
 
 
     $('#basicUploadFailureExample').fineUploader({

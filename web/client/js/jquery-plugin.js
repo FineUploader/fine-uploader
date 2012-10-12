@@ -1,9 +1,30 @@
+//TODO allow use of FUB
 (function($) {
     "use strict";
-    var methods, uploader, $el;
+    var uploader, $el, init, addCallbacks, transformOptions, isValidCommand, delegateCommand;
 
 
-    function addCallbacks(transformedOpts) {
+    init = function init(options) {
+        var xformedOpts = transformOptions(options);
+        addCallbacks(xformedOpts);
+        uploader(new qq.FineUploader(xformedOpts));
+        return $el;
+    };
+
+    //the underlying Fine Uploader instance is stored in jQuery's data stored, associated with the element
+    // tied to this instance of the plug-in
+    uploader = function(instanceToStore) {
+        if (instanceToStore) {
+            $el.data('fineUploader', instanceToStore);
+        }
+        else {
+            return $el.data('fineUploader');
+        }
+    };
+
+    //implement all callbacks defined in Fine Uploader as functions that trigger appropriately names events and
+    // return the result of executing the bound handler back to Fine Uploader
+    addCallbacks = function(transformedOpts) {
         var callbacks = transformedOpts.callbacks = {};
 
         $.each(new qq.FineUploaderBasic()._options.callbacks, function(prop, func) {
@@ -13,9 +34,10 @@
                 return $el.triggerHandler(name, args);
             };
         });
-    }
+    };
 
-    function transformOptions(source, dest) {
+    //transform jQuery objects into HTMLElements, and pass along all other option properties
+    transformOptions = function(source, dest) {
         var xformed = dest === undefined ? { element : $el[0] } : dest;
 
         $.each(source, function(prop, val) {
@@ -34,28 +56,31 @@
         if (dest === undefined) {
             return xformed;
         }
-    }
-
-    methods = {
-        init : function(options) {
-            var xformedOpts = transformOptions(options);
-            addCallbacks(xformedOpts);
-            uploader = new qq.FineUploader(xformedOpts);
-            return $el;
-        }
     };
 
-    $.fn.fineUploader = function(optionsOrMethod) {
+    isValidCommand = function(command) {
+        return $.type(command) === "string" &&
+            !command.match(/^_/) && //enforce private methods convention
+            uploader()[command] !== undefined;
+    };
+
+    //assuming we have already verified that this is a valid command, call the associated function in the underlying
+    // Fine Uploader instance (passing along the arguments from the caller) and return the result of the call back to the caller
+    delegateCommand = function(command) {
+        return uploader()[command].apply(uploader(), Array.prototype.slice.call(arguments, 1));
+    };
+
+    $.fn.fineUploader = function(optionsOrCommand) {
         $el = this;
 
-        if (methods[optionsOrMethod]) {
-            return methods[optionsOrMethod].apply(this, Array.prototype.slice.call(arguments, 1));
+        if (uploader() && isValidCommand(optionsOrCommand)) {
+            return delegateCommand.apply(this, arguments);
         }
-        else if (typeof optionsOrMethod === 'object' || ! optionsOrMethod) {
-            return methods.init.apply(this, arguments);
+        else if (typeof optionsOrCommand === 'object' || !optionsOrCommand) {
+            return init.apply(this, arguments);
         }
         else {
-            $.error('Method ' +  optionsOrMethod + ' does not exist on jQuery.fineUploader');
+            $.error('Method ' +  optionsOrCommand + ' does not exist on jQuery.fineUploader');
         }
 
         return this;
