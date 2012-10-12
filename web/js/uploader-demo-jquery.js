@@ -21,7 +21,6 @@ $(document).ready(function() {
     }).on('error', errorHandler);
 
     $('#triggerUpload').click(function() {
-        console.log($('#manualUploadModeExample').fineUploader("_createUploadHandler"));
         $('#manualUploadModeExample').fineUploader("uploadStoredFiles");
     });
 
