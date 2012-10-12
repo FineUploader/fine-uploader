@@ -8,8 +8,9 @@ to support continued maintenance and evolution of this library.*
 
 <br/>
 ### Announcements ###
-_September 26, 2012_ - Work on Fine Uploader 3.0 has started.  Check out the [3.0 branch](https://github.com/valums/file-uploader/tree/3.0) 
-from time to time if you are interested in the progress.  Also, feel free to add ideas for 3.0 using the [issue tracker](https://github.com/valums/file-uploader/issues).
+_October 11, 2012_ - Interested in short status/issue updates?  [Follow Fine Uploader on Twitter!](https://twitter.com/fineuploader)
+Also, check out the [3.0 branch](https://github.com/valums/file-uploader/tree/3.0) from time to time if you are interested 
+in the progress.
 
 <br/>
 ###Table of Contents###
@@ -44,6 +45,8 @@ providing good user experience everywhere.
 It does not use Flash, jQuery, or any external libraries.
 
 Take a look at the new evolving [Demo](http://fineuploader.com) page.
+
+Interested in short status/issue updates?  [Follow Fine Uploader on Twitter](https://twitter.com/fineuploader)!
 
 Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com/forum/#!forum/fineuploader).
 
