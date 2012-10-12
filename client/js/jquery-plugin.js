@@ -1,4 +1,3 @@
-/*global jQuery, qq*/
 (function($) {
     "use strict";
     var methods, uploader, $el;
