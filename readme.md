@@ -58,7 +58,6 @@ use the snapshot version on the master branch.**
 You can see all bugs and features tackled in the 2.1 release [here](https://github.com/valums/file-uploader/issues?milestone=2&page=1&state=closed).
 If you are only interested in a summary, here are some of the more notable changes:
 
-<br/>
 ###### Features/Enhancements ######
 * Added option to allow all valid files to upload, skipping only invalid files
 * Added gradually filling progress bar (for browsers that support XHR upload/file API)
