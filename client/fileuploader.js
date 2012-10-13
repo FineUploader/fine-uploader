@@ -565,7 +565,7 @@ qq.FileUploaderBasic.prototype = {
 
         safeCallback = function(callback, args) {
             try {
-                return callback.apply(this, args);
+                return callback.apply(self, args);
             }
             catch (exception) {
                 self.log("Caught " + exception + " in callback: " + callback);
