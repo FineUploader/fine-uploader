@@ -1,16 +1,10 @@
-# Fine Uploader 2.1-SNAPSHOT (to be released October 13) #
+# Fine Uploader 2.1 #
 
 Originally developed/designed by Andrew Valums.   
 Currently maintained by Ray Nicholus.
 
 *If you have found Fine Uploader useful, please consider [donating](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted) 
 to support continued maintenance and evolution of this library.*
-
-<br/>
-### Announcements ###
-_October 11, 2012_ - Interested in short status/issue updates?  [Follow Fine Uploader on Twitter!](https://twitter.com/fineuploader)
-Also, check out the [3.0 branch](https://github.com/valums/file-uploader/tree/3.0) from time to time if you are interested 
-in the progress.
 
 <br/>
 ###Table of Contents###
