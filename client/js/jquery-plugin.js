@@ -1,28 +1,53 @@
-//TODO allow use of FUB
 (function($) {
     "use strict";
-    var uploader, $el, init, addCallbacks, transformOptions, isValidCommand, delegateCommand;
+    var uploader, $el, init, dataStore, pluginOption, pluginOptions, addCallbacks, transformOptions, isValidCommand,
+        delegateCommand;
 
+    pluginOptions = ['uploaderType'];
 
-    init = function init(options) {
+    init = function (options) {
         var xformedOpts = transformOptions(options);
         addCallbacks(xformedOpts);
-        uploader(new qq.FineUploader(xformedOpts));
+
+        if (pluginOption('uploaderType') === 'basic') {
+            uploader(new qq.FineUploaderBasic(xformedOpts));
+        }
+        else {
+            uploader(new qq.FineUploader(xformedOpts));
+        }
+
         return $el;
     };
 
-    //the underlying uploader instance is stored in jQuery's data stored, associated with the element
-    // tied to this instance of the plug-in
-    uploader = function(instanceToStore) {
-        if (instanceToStore) {
-            $el.data('fineUploader', instanceToStore);
+    dataStore = function(key, val) {
+        var data = $el.data('fineuploader');
+
+        if (val) {
+            if (data === undefined) {
+                data = {};
+            }
+            data[key] = val;
+            $el.data('fineuploader', data);
         }
         else {
-            return $el.data('fineUploader');
+            if (data === undefined) {
+                return null;
+            }
+            return data[key];
         }
     };
 
-    //implement all callbacks defined in uploader as functions that trigger appropriately names events and
+    //the underlying Fine Uploader instance is stored in jQuery's data stored, associated with the element
+    // tied to this instance of the plug-in
+    uploader = function(instanceToStore) {
+        return dataStore('uploader', instanceToStore);
+    };
+
+    pluginOption = function(option, optionVal) {
+        return dataStore(option, optionVal);
+    };
+
+    //implement all callbacks defined in Fine Uploader as functions that trigger appropriately names events and
     // return the result of executing the bound handler back to Fine Uploader
     addCallbacks = function(transformedOpts) {
         var callbacks = transformedOpts.callbacks = {};
@@ -41,7 +66,10 @@
         var xformed = dest === undefined ? { element : $el[0] } : dest;
 
         $.each(source, function(prop, val) {
-            if (val instanceof $) {
+            if ($.inArray(prop, pluginOptions) >= 0) {
+                pluginOption(prop, val);
+            }
+            else if (val instanceof $) {
                 xformed[prop] = val[0];
             }
             else if ($.isPlainObject(val)) {
@@ -65,7 +93,7 @@
     };
 
     //assuming we have already verified that this is a valid command, call the associated function in the underlying
-    // uploader instance (passing along the arguments from the caller) and return the result of the call back to the caller
+    // Fine Uploader instance (passing along the arguments from the caller) and return the result of the call back to the caller
     delegateCommand = function(command) {
         return uploader()[command].apply(uploader(), Array.prototype.slice.call(arguments, 1));
     };

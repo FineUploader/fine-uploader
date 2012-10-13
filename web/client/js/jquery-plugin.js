@@ -1,25 +1,50 @@
-//TODO allow use of FUB
 (function($) {
     "use strict";
-    var uploader, $el, init, addCallbacks, transformOptions, isValidCommand, delegateCommand;
+    var uploader, $el, init, dataStore, pluginOption, pluginOptions, addCallbacks, transformOptions, isValidCommand,
+        delegateCommand;
 
+    pluginOptions = ['uploaderType'];
 
-    init = function init(options) {
+    init = function (options) {
         var xformedOpts = transformOptions(options);
         addCallbacks(xformedOpts);
-        uploader(new qq.FineUploader(xformedOpts));
+
+        if (pluginOption('uploaderType') === 'basic') {
+            uploader(new qq.FineUploaderBasic(xformedOpts));
+        }
+        else {
+            uploader(new qq.FineUploader(xformedOpts));
+        }
+
         return $el;
+    };
+
+    dataStore = function(key, val) {
+        var data = $el.data('fineuploader');
+
+        if (val) {
+            if (data === undefined) {
+                data = {};
+            }
+            data[key] = val;
+            $el.data('fineuploader', data);
+        }
+        else {
+            if (data === undefined) {
+                return null;
+            }
+            return data[key];
+        }
     };
 
     //the underlying Fine Uploader instance is stored in jQuery's data stored, associated with the element
     // tied to this instance of the plug-in
     uploader = function(instanceToStore) {
-        if (instanceToStore) {
-            $el.data('fineUploader', instanceToStore);
-        }
-        else {
-            return $el.data('fineUploader');
-        }
+        return dataStore('uploader', instanceToStore);
+    };
+
+    pluginOption = function(option, optionVal) {
+        return dataStore(option, optionVal);
     };
 
     //implement all callbacks defined in Fine Uploader as functions that trigger appropriately names events and
@@ -41,7 +66,10 @@
         var xformed = dest === undefined ? { element : $el[0] } : dest;
 
         $.each(source, function(prop, val) {
-            if (val instanceof $) {
+            if ($.inArray(prop, pluginOptions) >= 0) {
+                pluginOption(prop, val);
+            }
+            else if (val instanceof $) {
                 xformed[prop] = val[0];
             }
             else if ($.isPlainObject(val)) {

@@ -1,6 +1,8 @@
 $(document).ready(function() {
     var errorHandler = function(event, id, fileName, reason) {
-        console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+        if (window.console) {
+            console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+        }
     };
 
 
@@ -52,18 +54,13 @@ $(document).ready(function() {
     }).on('error', errorHandler);
 
 
-//    uploader5 = new qq.FineUploaderBasic({
-//        multiple: false,
-//        autoUpload: false,
-//        button: $("#fubButton")[0],
-//        request: {
-//            endpoint: "/upload/receiver",
-//        },
-//        callbacks: {
-//            onError: function(id, fileName, reason) {
-//                console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
-//            }
-//        },
-//        button: $('#fubUploadButton')[0]
-//    });
+    $('#fubExample').fineUploader({
+        uploaderType: 'basic',
+        multiple: false,
+        autoUpload: false,
+        button: $("#fubUploadButton"),
+        request: {
+            endpoint: "/upload/receiver"
+        }
+    }).on('error', errorHandler);
 });
