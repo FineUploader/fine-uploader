@@ -67,6 +67,7 @@ If you are only interested in a summary, here are some of the more notable chang
 * Added ability to determine if dropzones are hidden or not via the `hideDropzones` options
 * Added ability to hide default dropzone via the `disableDefaultDropzone` option
 * Option to display dynamic custom error text next to each failed upload.  See the `failedUploadTextDisplay` option documentation for more details.
+* Tested and worked out an issue in IOS6 (using Safari).  Fine Uploader should work with IOS6 at this point.
 
 ###### Bug Fixes ######
 Please see the list of issues [here](https://github.com/valums/file-uploader/issues?labels=bug&milestone=2&page=1&state=closed).
