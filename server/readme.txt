@@ -1,3 +1,9 @@
+******** WARNING: ********
+These examples, with the exception of the Java example, were not provided by the those associated 
+with Fine Uploader.  Use the examples at your own risk.  They may or may not work correctly and 
+are NOT supported!
+***************************
+
 The server-side code should consist of two parts.
 
 1. For IE6-8, Opera, older versions of other browsers you get the file as
