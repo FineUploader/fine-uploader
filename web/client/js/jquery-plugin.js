@@ -63,7 +63,9 @@
 
     //transform jQuery objects into HTMLElements, and pass along all other option properties
     transformOptions = function(source, dest) {
-        var xformed = dest === undefined ? { element : $el[0] } : dest;
+        var xformed, arrayVals;
+
+        xformed = dest === undefined ? { element : $el[0] } : dest;
 
         $.each(source, function(prop, val) {
             if ($.inArray(prop, pluginOptions) >= 0) {
@@ -75,6 +77,18 @@
             else if ($.isPlainObject(val)) {
                 xformed[prop] = {};
                 transformOptions(val, xformed[prop]);
+            }
+            else if ($.isArray(val)) {
+                arrayVals = [];
+                $.each(val, function(idx, arrayVal) {
+                    if (arrayVal instanceof $) {
+                        arrayVals[idx] = arrayVal[0];
+                    }
+                    else {
+                        arrayVals = arrayVal;
+                    }
+                    xformed[prop] = arrayVals;
+                });
             }
             else {
                 xformed[prop] = val;
