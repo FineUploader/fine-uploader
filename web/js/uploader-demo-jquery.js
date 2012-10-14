@@ -42,7 +42,7 @@ $(document).ready(function() {
     $('#uploadWithVariousOptionsExample').fineUploader({
         multiple: false,
         request: {
-            endpoint: "/upload/receiver",
+            endpoint: "/upload/receiver"
         },
         validation: {
             allowedExtensions: ['jpeg', 'jpg', 'txt'],
