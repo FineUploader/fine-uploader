@@ -65,7 +65,17 @@
     transformOptions = function(source, dest) {
         var xformed, arrayVals;
 
-        xformed = dest === undefined ? { element : $el[0] } : dest;
+        if (dest === undefined) {
+            if (source.uploaderType !== 'basic') {
+                xformed = { element : $el[0] };
+            }
+            else {
+                xformed = {};
+            }
+        }
+        else {
+            xformed = dest;
+        }
 
         $.each(source, function(prop, val) {
             if ($.inArray(prop, pluginOptions) >= 0) {
