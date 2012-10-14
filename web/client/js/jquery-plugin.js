@@ -97,8 +97,8 @@
                     else {
                         arrayVals.push(arrayVal);
                     }
-                    xformed[prop] = arrayVals;
                 });
+                xformed[prop] = arrayVals;
             }
             else {
                 xformed[prop] = val;
