@@ -19,6 +19,7 @@ from time to time if you are interested in the progress.  Also, feel free to add
 - [Features](#features)
 - [License](#license)
 - [Getting started](#getting-started)
+- [Using the optional jQuery plug-in](#using-the-optional-jQuery-plugin)
 - [qq.FineUploader - Setting up full upload widget](#qqfineuploader---setting-up-full-upload-widget)
 - [How to override options](#how-to-override-options)
 - [Options of both FineUploader & FineUploaderBasic](#options-of-both-fineuploader--fineuploaderbasic)
@@ -93,9 +94,40 @@ Basic uploader is easier extendable, and doesn't limit possible customization.
 `qq.FineUploader` extends `qq.FineUploaderBasic`, so that all the options present
 in the basic uploader also exist in the full widget.
 
+
+<br/>
+### Using the optional jQuery plug-in ###
+A jQuery plug-in exists that wraps the native Fine Uploader code.  If you would like to reap all of the benefits that
+a jQuery plug-in offers, such as use of jQuery Events, specifying elements using the jQuery object/jQuery selectors,
+easy integration into your otherwise jQuery project: look no further!
+
+To use the jQuery plug-in, ensure you include the proper Fine Uploader js file on your page, and instantiate it like so:
+```javascript
+$('#fineUploaderElementId').fineUploader({
+    request: {
+        endpoint: '/upload/endpoint'
+    }
+});
+```
+
+The above example is the simplest possible use-case.  Note that you can use any of the options available for the native
+Fine Uploader and Fine Uploader Basic, with the following exceptions/additions/things to keep in mind:
+* There is no need to specify the `element` option.  It will be ignored if you pass it in.  The plug-in will pass the
+ `element` option for you, using the element you associated with the plug-in (the element with an id of fineUploaderElementId
+ in the above example).
+* For any option with an HTMLElement value, you can, instead, pass a jQuery object.  For example, if you specify the
+`button` option, the value can be $('#myButton').
+* If the option takes an array of HTMLElements, any item in the array that
+ is a jQuery object will be evaluated and all HTMLElements associated with that jQuery object will be added to the array when
+ it is passed to the native Fine Uploader.  For example, if specify a value for the `extraDropzones` option, and, say, your
+ value is [$('.myExtraDropzone')], and there are 3 elements in the DOM with this class, the plug-in will pass all 3 elements
+ to native Fine Uploader.
+* TODO callbacks as events
+* TODO calling public methods, the jQuery plug-in way
+* TODO extra options specific to the plug-in
+
 <br/>
 ### qq.FineUploader - Setting up full upload widget ###
-
 Include the uploader javascript file and, optionally, `fineuploader.css` along with any images provided into your page.
 Create container element.
 
