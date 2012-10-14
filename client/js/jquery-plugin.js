@@ -82,14 +82,13 @@
                 arrayVals = [];
                 $.each(val, function(idx, arrayVal) {
                     if (arrayVal instanceof $) {
-                        arrayVals[idx] = arrayVal[0];
+                        $.merge(arrayVals, arrayVal);
                     }
                     else {
-                        arrayVals = arrayVal;
+                        arrayVals.push(arrayVal);
                     }
+                    xformed[prop] = arrayVals;
                 });
-
-                xformed[prop] = arrayVals;
             }
             else {
                 xformed[prop] = val;
