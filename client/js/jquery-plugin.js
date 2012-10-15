@@ -53,10 +53,14 @@
         var callbacks = transformedOpts.callbacks = {};
 
         $.each(new qq.FineUploaderBasic()._options.callbacks, function(prop, func) {
-            var name = /^on(\w+)/.exec(prop)[1].toLowerCase();
+            var name, $callbackEl;
+
+            name = /^on(\w+)/.exec(prop)[1].toLowerCase();
+            $callbackEl = $el;
+
             callbacks[prop] = function() {
                 var args = Array.prototype.slice.call(arguments);
-                return $el.triggerHandler(name, args);
+                return $callbackEl.triggerHandler(name, args);
             };
         });
     };
