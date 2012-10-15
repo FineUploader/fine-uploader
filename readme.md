@@ -159,7 +159,7 @@ $('#fineUploaderElementId').fineUploader({
         endpoint: '/upload/endpoint'
     }
 }).on('submit', function(event, id, filename) {
-     $(this).fineUploader('setParams' {'param1': 'val1'});
+     $(this).fineUploader('setParams', {'param1': 'val1'});
   });
 ```
 
