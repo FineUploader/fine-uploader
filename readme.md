@@ -672,11 +672,7 @@ immediate access to new features without having to wait for a release.
 In the future, I may integrate a CI system that creates nightly snapshot builds, but that is a pretty low-priority,
 especially since building your own snapshot version should be pretty easy.
 
-Don't forget to include the contents of the css and img directories in your project.  Currently,
-the files in the img directory must be in a directory called "img", which must be one directory up from the
-css file.  For example, if fineuploader.css is in the css directory, the img directory must be a subling of the
-css directory.  I will probably combine the css and img files into one directory in the near future, though, removing
-this requirement.  
+Don't forget to include the css and image files in your project.
 
 
 <br/>
