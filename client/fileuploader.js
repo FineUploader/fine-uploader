@@ -5,9 +5,9 @@
  *
  * Have ideas for improving this JS for the general community?
  * Submit your changes at: https://github.com/Valums-File-Uploader/file-uploader
- * Readme at https://github.com/valums/file-uploader/blob/2.1/readme.md
+ * Readme at https://github.com/valums/file-uploader/blob/2.1.1/readme.md
  *
- * VERSION 2.1
+ * VERSION 2.1.1
  * Original version: 1.0 © 2010 Andrew Valums ( andrew(at)valums.com )
  * Current Maintainer (2.0+): © 2012, Ray Nicholus ( fineuploader(at)garstasio.com )
  *
@@ -946,7 +946,7 @@ qq.extend(qq.FileUploader.prototype, {
                 if (failureReason.length > maxChars) {
                     shortFailureReason = failureReason.substring(0, maxChars) + '...';
                 }
-                this._find(item, 'failText').innerText = shortFailureReason || failureReason;
+                qq.setText(this._find(item, 'failText'), shortFailureReason || failureReason);
 
                 if (this._options.failedUploadTextDisplay.enableTooltip) {
                     this._showTooltip(item, failureReason);

@@ -1,4 +1,4 @@
-# Fine Uploader 2.1 #
+# Fine Uploader 2.1.1 #
 
 Originally developed/designed by Andrew Valums.   
 Currently maintained by Ray Nicholus.
@@ -59,7 +59,7 @@ You can see all bugs and features tackled in the 2.1 release [here](https://gith
 If you are only interested in a summary, here are some of the more notable changes:
 
 <br/>
-###### Features/Enhancements ######
+###### Features/Enhancements (since 2.0) ######
 * Added option to allow all valid files to upload, skipping only invalid files
 * Added gradually filling progress bar (for browsers that support XHR upload/file API)
 * The `onError` callback is now called whenever _any_ error occurs, either with the upload or file submission
