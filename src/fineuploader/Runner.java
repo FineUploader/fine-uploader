@@ -28,7 +28,7 @@ public class Runner
 
 		WebAppContext context = new WebAppContext();
 		context.setContextPath("/");
-		context.setWar("web");
+        context.setResourceBase(System.getProperty("user.dir"));
 		context.setInitParameter(SessionManager.__CheckRemoteSessionEncoding, "true"); // Stops Jetty from adding 'jsessionid' URL rewriting into non-local URLs (e.g. Google OpenId redirects)
 
 		server.setHandler(context);
