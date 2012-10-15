@@ -138,10 +138,10 @@ $('#fineUploaderElementId').fineUploader({
     request: {
         endpoint: '/upload/endpoint'
     }
-}).on('error', function(id, filename, reason) {
+}).on('error', function(event, id, filename, reason) {
      //do something
   })
-  .on('complete', function(id, filename, responseJSON){
+  .on('complete', function(event, id, filename, responseJSON){
     //do something
   });
 ```
@@ -158,7 +158,7 @@ $('#fineUploaderElementId').fineUploader({
     request: {
         endpoint: '/upload/endpoint'
     }
-}).on('submit', function(id, filename) {
+}).on('submit', function(event, id, filename) {
      $(this).fineUploader('setParams' {'param1': 'val1'});
   });
 ```
