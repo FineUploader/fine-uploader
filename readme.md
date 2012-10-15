@@ -10,6 +10,7 @@ to support continued maintenance and evolution of this library.*
 ###Table of Contents###
 - [Summary](#summary)
 - [Releases/Downloads](#releasesdownloads)
+- [Known issues](#known-issues)
 - [Upgrading from Fine Uploader 2.0](#upgrading-from-fine-uploader-20)
 - [Features](#features)
 - [License](#license)
@@ -51,6 +52,14 @@ Looking for the [comment thread](http://fineuploader.com/discussions.html) from 
 ### Releases/Downloads ###
 **You can [download released versions](https://github.com/valums/file-uploader/wiki/Releases), or, if you are more daring,
 use the snapshot version on the master branch.**  
+
+
+<br/>
+### Known issues ###
+If the `mode` property of the `failedUploadTextDisplay` option is set to 'custom', the custom error message from the
+server will not appear next to the uploaded file in FireFox.  Instead, the default "Upload Failed" message will appear.
+This is fixed in 2.1.1, so please upgrade if this issue affects you.  Please visit the [releases](https://github.com/valums/file-uploader/wiki/Releases)
+page to upgrade.
 
 
 <br/>
