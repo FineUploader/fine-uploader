@@ -1,5 +1,3 @@
-var qq = qq || {};
-
 /**
  * Class for uploading files using form and iframe
  * @inherits qq.UploadHandlerAbstract

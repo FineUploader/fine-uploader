@@ -1,5 +1,3 @@
-var qq = qq || {};
-
 qq.FineUploaderBasic = function(o){
     var that = this;
     this._options = {

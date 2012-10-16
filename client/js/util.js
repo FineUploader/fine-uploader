@@ -1,5 +1,3 @@
-var qq = qq || {};
-
 qq.isObject = function(variable) {
     "use strict";
     return variable !== null && variable && typeof(variable) === "object" && variable.constructor === Object;

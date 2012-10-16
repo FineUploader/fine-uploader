@@ -1,5 +1,3 @@
-var qq = qq || {};
-
 /**
  * Class for uploading files using xhr
  * @inherits qq.UploadHandlerAbstract

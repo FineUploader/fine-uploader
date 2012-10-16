@@ -1,5 +1,3 @@
-var qq = qq || {};
-
 qq.UploadButton = function(o){
     this._options = {
         element: null,

@@ -1,5 +1,3 @@
-var qq = qq || {};
-
 /**
  * Class that creates upload widget with drag-and-drop and file list
  * @inherits qq.FineUploaderBasic

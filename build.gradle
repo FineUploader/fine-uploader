@@ -4,6 +4,17 @@ def jsSrcDir = 'client/js'
 
 apply plugin: 'js'
 
+def coreFiles = ["${jsSrcDir}/header.js",
+                 "${jsSrcDir}/util.js",
+                 "${jsSrcDir}/button.js",
+                 "${jsSrcDir}/uploader.basic.js",
+                 "${jsSrcDir}/uploader.js",
+                 "${jsSrcDir}/handler.base.js",
+                 "${jsSrcDir}/handler.form.js",
+                 "${jsSrcDir}/handler.xhr.js"]
+
+def jQueryPluginFiles = ["${jsSrcDir}/jquery-plugin.js"]
+
 buildscript {
     repositories {
         mavenCentral()
@@ -18,16 +29,13 @@ task wrapper(type: Wrapper) {
 }
 
 combineJs {
-    source = files("${jsSrcDir}/util.js",
-                   "${jsSrcDir}/button.js",
-                   "${jsSrcDir}/uploader.basic.js",
-                   "${jsSrcDir}/uploader.js",
-                   "${jsSrcDir}/handler.base.js",
-                   "${jsSrcDir}/handler.form.js",
-                   "${jsSrcDir}/handler.xhr.js",
-                   "${jsSrcDir}/jquery-plugin.js")
-
+    source = files(coreFiles)
     dest = file("$buildDir/${filename}-${version}.js")
+}
+
+task combineJsJquery(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
+    source = files(coreFiles + jQueryPluginFiles)
+    dest = file("$buildDir/jquery.${filename}-${version}.js")
 }
 
 minifyJs {
@@ -35,7 +43,17 @@ minifyJs {
     dest = file("$buildDir/${filename}-${version}.min.js")
 }
 
+task minifyJsJquery(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+    source = combineJsJquery
+    dest = file("$buildDir/jquery.${filename}-${version}.min.js")
+}
+
 gzipJs {
     source = minifyJs
     dest = file("$buildDir/${filename}-${version}.min.gzip.js")
+}
+
+task gzipJsJquery(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
+    source = minifyJsJquery
+    dest = file("$buildDir/jquery.${filename}-${version}.min.gzip.js")
 }

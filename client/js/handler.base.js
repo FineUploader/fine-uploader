@@ -1,5 +1,3 @@
-var qq = qq || {};
-
 /**
  * Class for uploading files, uploading itself is handled by child classes
  */
