@@ -152,7 +152,7 @@ upload in your `onSubmit` callback handler, simply return `false`.  This is also
 
 Also, please note that the context of your event handler, by default, is the event target.  This is, in fact, true, by
 default, for _all_ jQuery event handlers, not just event handlers associated with Fine Uploader.  Say you want to change
-the parameters sent along with a file when handling a `submit` event.  You code can be as simple as this:
+the parameters sent along with a file when handling a `submit` event.  Your code can be as simple as this:
 ```javascript
 $('#fineUploaderElementId').fineUploader({
     request: {
