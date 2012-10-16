@@ -150,7 +150,7 @@ It may be important to note that The value returned from your event/callback han
 This is only relevant for the `onSubmit` callback, at this point.  As the documentation states, if you want to cancel an
 upload in your `onSubmit` callback handler, simply return `false`.  This is also true when using the jQuery plug-in.
 
-Also, please note that the context of your event handler, by default, if the event target.  This is, in fact, true, by
+Also, please note that the context of your event handler, by default, is the event target.  This is, in fact, true, by
 default, for _all_ jQuery event handlers, not just event handlers associated with Fine Uploader.  Say you want to change
 the parameters sent along with a file when handling a `submit` event.  You code can be as simple as this:
 ```javascript
