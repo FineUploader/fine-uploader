@@ -6,14 +6,16 @@
     pluginOptions = ['uploaderType'];
 
     init = function (options) {
-        var xformedOpts = transformOptions(options);
-        addCallbacks(xformedOpts);
+        if (options) {
+            var xformedOpts = transformOptions(options);
+            addCallbacks(xformedOpts);
 
-        if (pluginOption('uploaderType') === 'basic') {
-            uploader(new qq.FineUploaderBasic(xformedOpts));
-        }
-        else {
-            uploader(new qq.FineUploader(xformedOpts));
+            if (pluginOption('uploaderType') === 'basic') {
+                uploader(new qq.FineUploaderBasic(xformedOpts));
+            }
+            else {
+                uploader(new qq.FineUploader(xformedOpts));
+            }
         }
 
         return $el;
