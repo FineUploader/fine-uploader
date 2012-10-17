@@ -1,74 +1,351 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
     <head>
-        <title>Fine Uploader</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-        <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.0/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
-        <link href="client/fileuploader.css" rel="stylesheet" type="text/css"/>
-        <link href="css/styles.css" rel="stylesheet" type="text/css"/>
-        <script src="client/fileuploader.js"></script>
-        <script src="js/uploader-demo.js"></script>
+        <meta charset="utf-8">
+        <title>Fine Uploader a.k.a Valums’ Ajax Uploader</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link href="client/fileuploader.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="css/custom.css" rel="stylesheet">
+        <link href="css/prettify.css" rel="stylesheet">
     </head>
     <body>
-        <h1>Fine Uploader Demo
-
-            <div>
-                <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-                <input type="hidden" name="cmd" value="_s-xclick">
-                <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
-                ">
-                <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-                <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
-                </form>
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="brand" href="./index.html">Fine Uploader</a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li class="active">
+                                <a href="./">Home</a>
+                            </li>
+                            <li>
+                                <a href="./#setup">Setup</a>
+                            </li>
+                            <li>
+                                <a href="./#demo">Out-of-the-box demo</a>
+                            </li>
+                            <li>
+                                <a href="./#bootstrap-demo">Bootstrapped demo</a>
+                            </li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">More demos <b class="caret" style="border-top-color: #ccc; border-bottom-color: #ccc;"></b></a>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+                                    <li><a href="./fine-uploader-demo.html">Fine Uploader</a></li>
+                                    <li><a href="./fine-uploader-basic-demo.html">Fine Uploader Basic</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <i class="icon-heart icon-white" style="margin: 0 -15px 0 15px;"></i>
+                                <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" style="display:inline-block;" target="_blank">Donate</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </h1>
-
-        <div id="examples">
-            <div class="example">
-                <h3>Simple & Automatic</h3>
-                <p>
-                    This is the Fine Uploader with only required options set.  Note that, by default, you may also drag & drop
-                    files onto the button if you are using a browser that supports the multiple attribute on input elements, and
-                    the File and FormData objects, as well as the upload function on the XHR object.  This currently rules out
-                    at least IE 9 and earlier.
-                </p>
-                <ul id="basicUploadSuccessExample" class="unstyled"></ul>
-            </div>
-            <div class="example">
-                <h3>Manually Trigger Uploads</h3>
-                <p>
-                    The default behavior of Fine Uploader is to immediately attempt to upload files as they are selected.
-                    One option allows you to simply queue all files, and then start uploading at a later time by calling
-                    <code>uploadStoredFiles()</code> on your Fine Uploader instance.
-                </p>
-                <ul id="manualUploadModeExample" class="unstyled"></ul>
-                <span id="triggerUpload" class="btn btn-primary">Upload Queued Files</span>
-            </div>
-            <div class="example">
-                <h3>See server failure messages</h3>
-                <p>
-                    If your server returns a response that includes a reason property, such as <code>{"error": "unsupported file type"}</code>
-                    you can display the error message next to the failed file.
-                </p>
-                <ul id="basicUploadFailureExample" class="unstyled"></ul>
-            </div>
-            <div class="example">
-                <h3>Various Options</h3>
-                <p>
-                    There are various options available to you when using Fine Uploader.  In this example, I've used a
-                    small subset of these options to create an uploader with custom upload button text, restricted to one
-                    file upload/selection at once (may not select multiple files), restricted to <code>jpeg</code>, <code>jpg</code>, and <code>txt</code> files,
-                    and restricted to a max file size of 50 kb.
-                </p>
-                <ul id="uploadWithVariousOptionsExample" class="unstyled"></ul>
-            </div>
-
-            <h4 class="endingRemark">Fine Uploader is currently an active project, and many improvements and adjustments are possible in the near future.  Please see the
-            <a href="https://github.com/valums/file-uploader">Github project page</a> for more details.
-            You may also examine the <a href="js/uploader-demo.js" class="decorate"><code>uploader-demo.js</code></a>
-            source file on this page.</h4>
         </div>
+
+        <div class="jumbotron masthead">
+            <div class="container">
+                <h1>Fine Uploader</h1>
+                <h2>a.k.a Valums’ Ajax File Uploader</h2>
+                <p>Ajax file upload without the hassle.</p>
+                <p>
+                    <a href="https://github.com/valums/file-uploader/zipball/master" class="btn btn-success btn-large">
+                        Download <i class="icon-download-alt icon-white" style="margin-top: 7px;"></i>
+                    </a>
+                    <a href="#demo" class="btn btn-primary btn-large">
+                        Demo <i class="icon-chevron-down icon-white" style="margin-top: 7px;"></i>
+                    </a>
+                </p>
+                <ul class="masthead-links">
+                    <li>
+                        <a href="http://github.com/valums/file-uploader/" target="_blank">GitHub project</a>
+                    </li>
+                    <li>Version 2.1</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="bs-docs-social">
+            <div class="container">
+                <ul class="bs-docs-social-buttons">
+                    <li>
+                        <iframe class="github-btn" src="http://ghbtns.com/github-btn.html?user=valums&repo=file-uploader&type=watch&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
+                    </li>
+                    <li>
+                        <iframe class="github-btn" src="http://ghbtns.com/github-btn.html?user=valums&repo=file-uploader&type=fork&count=true" allowtransparency="true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
+                    </li>
+                    <li>
+                        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="margin: 0;">
+                            <input type="hidden" name="cmd" value="_s-xclick">
+                            <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----">
+                            <input type="image" src="img/donate-heart.png" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" style="margin-top: -13px;">
+                            <img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
+                        </form>
+                    </li>
+                    <li class="follow-btn">
+                        <a href="http://twitter.com/fineuploader" class="twitter-follow-button" data-show-count="false">Follow @fineuploader</a>
+                    </li>
+                    <li class="tweet-btn">
+                        <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://github.com/valums/file-uploader/" data-count="horizontal" data-via="fineuploader" data-related="@fineuploader:Valum’s Fine Uploader">Tweet</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="marketing">
+                <h1>Introducing Fine Uploader</h1>
+                <p class="marketing-byline">Free your code with this standalone Javascript script</p>
+                <div class="row-fluid">
+                    <div class="span3">
+                        <h2>Welcome</h2>
+                        <p>This project attempts to achieve a user-friendly file-uploading experience over the web. It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.</p>
+                    </div>
+
+                    <div class="span3">
+                        <h2>Browser support</h2>
+                        <p>Tested in IE7+ (not IE10 yet), Firefox, Safari (OS X), and Chrome. Safari for Windows is not supported, nor is IE6 or earlier. It does not use Flash, jQuery, or any external libraries.</p>
+                    </div>
+
+                    <div class="span3">
+                        <h2>How it works</h2>
+                        <p>Uses an XMLHttpRequest (AJAX) for uploading multiple files with a progress-bar in FF3.6+, Safari4+, Chrome, and falls back to hidden-iframe-based upload in other browsers (namely IE), providing good user experience everywhere.</p>
+                    </div>
+
+                    <div class="span3">
+                        <h2>Server support</h2>
+                        <p>You can use any server technology. We have already seen implementations with:</p>
+                        <p>ASP.NET <i class="icon-star"></i> ColdFusion <i class="icon-star"></i> Java <i class="icon-star"></i> Node.js <i class="icon-star"></i> Perl <i class="icon-star"></i> PHP <i class="icon-star"></i> Python</p>
+                    </div>
+                </div>
+
+                <hr class="soften" id="setup">
+
+                <h1>Setup</h1>
+                <p class="marketing-byline">You need only to include a CSS file and a JavaScript file, and handle the uploads on the server side according to the technology you are using. There are absolutely no other dependencies.</p>
+                <div class="row-fluid">
+                    <div class="span4" style="text-align: left;">
+                        <p>You can quickly set up an HTML page in order to use Fine Uploader:</p>
+                        <ol>
+                            <li>Download and unpack the <a href="https://github.com/valums/file-uploader/zipball/master">latest version of Fine Uploader</a>;</li>
+                            <li>Use one of the provided server scripts, or write down your own;</li>
+                            <li>Set up a basic markup to begin with;</li>
+                            <li>Have fun!</li>
+                        </ol>
+                        <p>You can use the following basic markup:</p>
+                    </div>
+
+                    <div class="span8">
+                        <pre class="prettyprint linenums">&lt;!DOCTYPE html>
+&lt;html>
+  &lt;head>
+    &lt;meta charset="utf-8">
+    &lt;title>Fine Uploader Demo&lt;/title>
+    &lt;link href="client/fileuploader.css" rel="stylesheet">
+  &lt;/head>
+  &lt;body>
+    &lt;div id="fine-uploader">&lt;/div>
+    &lt;script src="client/fileuploader.js">&lt;/script>
+    &lt;script>
+      function createUploader() {
+        var uploader = new qq.FileUploader({
+          element: document.getElementById('fine-uploader'),
+          // Use the relevant server script url here
+          action: 'yourServerScript'
+        });
+      }
+    
+      window.onload = createUploader;
+    &lt/script>
+    &lt;/body>
+&lt;/html></pre>
+                    </div>
+                </div>
+
+                <hr class="soften" id="demo">
+
+                <h1>Out-of-the-box demo</h1>
+                <p class="marketing-byline">Here we use default settings and default styles. Below you can see the <a href="#bootstrap-demo">bootstrapped demo</a>.</p>
+                <div class="row-fluid">
+                    <div class="span4">
+                        <div id="fine-uploader"></div>
+                    </div>
+
+                    <div class="span8">
+                        <pre class="prettyprint linenums">&lt;div id="fine-uploader">&lt;/div>
+
+&lt;script>
+  function createUploader() {
+    var uploader = new qq.FileUploader({
+      element: document.getElementById('fine-uploader'),
+      action: 'do-nothing.htm'
+    });
+  }
+  
+  window.onload = createUploader;
+&lt/script></pre>
+                    </div>
+                </div>
+
+                <hr class="soften" id="bootstrap-demo">
+
+                <h1>Bootstrapped Demo</h1>
+                <p class="marketing-byline">Default settings, but we include support for Twitter Bootstrap. You can also see <a href="#more">more demos</a> below.</p>
+                <div class="row-fluid">
+                    <div class="span4">
+                        <div id="bootstrapped-fine-uploader"></div>
+                    </div>
+
+                    <div class="span8">
+                        <pre class="prettyprint linenums">&lt;div id="bootstrapped-fine-uploader">&lt;/div>
+
+&lt;script>
+  function createUploader() {
+    var uploader = new qq.FileUploader({
+      element: document.getElementById('bootstrapped-fine-uploader'),
+      action: 'do-nothing.htm',
+      uploadButtonText: '&lt;i class="icon-upload icon-white">&lt;/i> Test me now and upload a file',
+      template: '&lt;div class="qq-uploader span12">' +
+                  '&lt;pre class="qq-upload-drop-area span12">&lt;span>{dragText}&lt;/span>&lt;/pre>' +
+                  '&lt;div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}&lt;/div>' +
+                  '&lt;ul class="qq-upload-list" style="margin-top: 10px; text-align: center;">&lt;/ul>' +
+                '&lt;/div>',
+      classes: {
+        button: 'qq-upload-button',
+        drop: 'qq-upload-drop-area',
+        dropActive: 'qq-upload-drop-area-active',
+        dropDisabled: 'qq-upload-drop-area-disabled',
+        list: 'qq-upload-list',
+        progressBar: 'qq-progress-bar',
+        file: 'qq-upload-file',
+        spinner: 'qq-upload-spinner',
+        finished: 'qq-upload-finished',
+        size: 'qq-upload-size',
+        cancel: 'qq-upload-cancel',
+        failText: 'qq-upload-failed-text',
+        success: 'alert alert-success',
+        fail: 'alert alert-error',
+        successIcon: null,
+        failIcon: null
+      }
+    });
+  }
+  
+  window.onload = createUploader;
+&lt/script></pre>
+                    </div>
+                </div>
+
+                <hr class="soften" id="more">
+
+                <h1>More demos</h1>
+                <p class="marketing-byline">Includes more features, and also shows how to customize Fine Uploader Basic.</p>
+                <div class="row-fluid">
+                    <div class="span12">
+                        <a href="./fine-uploader-demo.html" class="btn btn-success btn-large">
+                            Fine Uploader
+                            <br><span class="legend">The all-in-one drag-and-drop uploader</span>
+                        </a>
+                        <a href="./fine-uploader-basic-demo.html" class="btn btn-primary btn-large">
+                            Fine Uploader Basic
+                            <br><span class="legend">Only the basic form uploader. You're in control!</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>        
+
+        <footer class="footer">
+            <div class="container">
+                <p>Developed by <a href="http://github.com/valums/" target="_blank">valums</a>.</p>
+                <p>Maintained by <a href="http://github.com/rnicholus/" target="_blank">rnicholus</a>.</p>
+                <p>Code open sourced under <a href="http://opensource.org/licenses/MIT" target="_blank">MIT license</a>, <a href="http://www.gnu.org/licenses/gpl-2.0.txt" target="_blank">GNU GPL 2</a> or later and <a href="http://www.gnu.org/licenses/lgpl-2.0.txt" target="_blank">GNU LGPL 2</a> or later.</p>
+                <p>Icons from <a href="http://glyphicons.com" target="_blank">Glyphicons Free</a>, licensed under <a href="http://creativecommons.org/licenses/by/3.0/" target="_blank">CC BY 3.0</a>.</p>
+                <p>Webpage designed by <a href="http://github.com/tellibus" target="_blank">tellibus</a>.</p>
+                <p>Powered by <a href="http://github.com/valums/file-uploader/" target="_blank">Fine Uploader</a>, <a href="http://twitter.github.com/bootstrap/" target="_blank">Bootstrap</a>, <a href="http://code.google.com/p/google-code-prettify/" target="_blank">Prettify</a>, and <a href="http://jquery.com/" target="_blank">jQuery</a>.</p>
+                <ul class="footer-links">
+                    <li>
+                        <a href="http://groups.google.com/forum/#!forum/fineuploader" target="_blank">Fine Uploader on Google Groups</a>
+                    </li>
+                    <li>
+                        <a href="http://github.com/valums/file-uploader/issues/new" target="_blank">Submit issues</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/valums/file-uploader/blob/master/readme.md" target="_blank">Readme</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/valums/file-uploader/wiki/Releases" target="_blank">Releases</a>
+                    </li>
+                </ul>
+            </div>
+        </footer>
+
+        <script src="client/fileuploader.js"></script>
+        <script>
+            function createUploader() {
+                var uploader = new qq.FileUploader({
+                    element: document.getElementById('fine-uploader'),
+                    action: 'client/do-nothing.htm',
+                    debug: true,
+                    demoMode: true
+                });
+
+                var btuploader = new qq.FileUploader({
+                    element: document.getElementById('bootstrapped-fine-uploader'),
+                    action: 'client/do-nothing.htm',
+                    debug: true,
+                    demoMode: true,
+                    uploadButtonText: '<i class="icon-upload icon-white"></i> Test me now and upload a file',
+                    template:   '<div class="qq-uploader span12">' +
+                                    '<pre class="qq-upload-drop-area span12"><span>{dragText}</span></pre>' +
+                                    '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
+                                    '<ul class="qq-upload-list" style="margin-top: 10px; text-align: center;"></ul>' +
+                                '</div>',
+                    classes: {
+                        // used to get elements from templates
+                        button: 'qq-upload-button',
+                        drop: 'qq-upload-drop-area',
+                        dropActive: 'qq-upload-drop-area-active',
+                        dropDisabled: 'qq-upload-drop-area-disabled',
+                        list: 'qq-upload-list',
+                        progressBar: 'qq-progress-bar',
+                        file: 'qq-upload-file',
+                        spinner: 'qq-upload-spinner',
+                        finished: 'qq-upload-finished',
+                        size: 'qq-upload-size',
+                        cancel: 'qq-upload-cancel',
+                        failText: 'qq-upload-failed-text',
+            
+                        // added to list item <li> when upload completes
+                        // used in css to hide progress spinner
+                        success: 'alert alert-success',
+                        fail: 'alert alert-error',
+            
+                        successIcon: null,
+                        failIcon: null
+                    }
+                });
+            }
+
+            window.onload = createUploader;
+        </script>
+        <script src="http://platform.twitter.com/widgets.js"></script>
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
+        <script src="js/prettify.js"></script>
+        <script>
+            window.prettyPrint && prettyPrint();
+            $('.dropdown-toggle').dropdown();
+        </script>
     </body>
 </html>
-

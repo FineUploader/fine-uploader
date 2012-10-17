@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>More demos - Fine Uploader a.k.a Valums’ Ajax Uploader</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link href="client/fileuploader.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="css/custom.css" rel="stylesheet">
+        <link href="css/prettify.css" rel="stylesheet">
+    </head>
+    <body data-spy="scroll" data-target="#demoList">
+        <div id="menu" class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target="#menu .nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="brand" href="./index.html">Fine Uploader</a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li>
+                                <a href="./">Home</a>
+                            </li>
+                            <li>
+                                <a href="./#setup">Setup</a>
+                            </li>
+                            <li>
+                                <a href="./#demo">Out-of-the-box demo</a>
+                            </li>
+                            <li>
+                                <a href="./#bootstrap-demo">Bootstrapped demo</a>
+                            </li>
+                            <li class="active dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">More demos <b class="caret" style="border-top-color: #ccc; border-bottom-color: #ccc;"></b></a>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+                                    <li class="active"><a href="./fine-uploader-demo.html">Fine Uploader</a></li>
+                                    <li><a href="./fine-uploader-basic-demo.html">Fine Uploader Basic</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <i class="icon-heart icon-white" style="margin: 0 -15px 0 15px;"></i>
+                                <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted" style="display:inline-block;" target="_blank">Donate</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="jumbotron" class="jumbotron subhead">
+            <div class="container">
+                <h1>More demos</h1>
+                <p>Want more than basic stuff? See here!</p>
+            </div>
+        </div>
+
+        <div id="demoList" class="navbar" style="width: 100%; margin-bottom: 0; left: 0; z-index: 100;">
+            <div class="navbar-inner">
+                <div class="container">
+                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target="#demoList .nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="brand" href="#">More demos</a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li><a href="#demo1">Manual Trigger</a></li>
+                            <li><a href="#demo2">Server Failure</a></li>
+                            <li><a href="#demo3">Various Options</a></li>
+                            <li><a href="#demo4">Image Thumbnails</a></li>
+                            <li><a href="#demo5">File Number Limit</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="row span12">
+                <section id="demo1">
+                    <h1>Manually Trigger Uploads</h1>
+                    <p class="lead">The default behavior of Fine Uploader is to immediately attempt to upload files as they are selected. One option allows you to simply queue all files, and then start uploading at a later time by calling <code>uploadStoredFiles()</code> on your Fine Uploader instance.</p>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <div id="manual-fine-uploader"></div>
+                            <div id="triggerUpload" class="btn btn-primary" style="margin-top: 10px;">
+                                <i class="icon-upload icon-white"></i> Upload now
+                            </div>
+                        </div>
+    
+                        <div class="span8">
+                            <pre class="prettyprint linenums">&lt;div id="manual-fine-uploader">&lt;/div>
+&lt;div id="triggerUpload" class="btn btn-primary" style="margin-top: 10px;">
+  &lt;i class="icon-upload icon-white">&lt;/i> Upload now
+&lt;/div>
+
+&lt;script>
+  $(document).ready(function() {
+    var manualuploader = new qq.FileUploader({
+      element: document.getElementById('manual-fine-uploader'),
+      action: 'do-nothing.htm',
+      autoUpload: false,
+      debug: true,
+      uploadButtonText: '&lt;i class="icon-plus icon-white">&lt;/i> Select Files'
+    });
+
+    $('#triggerUpload').click(function() {
+      manualuploader.uploadStoredFiles();
+    });
+  }
+&lt/script></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="demo2">
+                    <h1>See Server Failure Messages</h1>
+                    <p class="lead">If your server returns a response that includes a reason property, such as <code>{"error": "unsupported file type"}</code> you can display the error message next to the failed file.</p>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <div id="failed-fine-uploader"></div>
+                        </div>
+    
+                        <div class="span8">
+                            <pre class="prettyprint linenums">&lt;div id="failed-fine-uploader">&lt;/div>
+
+&lt;script>
+  $(document).ready(function() {
+    var faileduploader = new qq.FileUploader({
+      element: document.getElementById('failed-fine-uploader'),
+      action: 'failure.html',
+      debug: true,
+      failedUploadTextDisplay: {
+        mode: 'custom',
+        maxChars: 40,
+        responseProperty: 'error',
+        enableTooltip: true
+      }
+    });
+  }
+&lt/script></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="demo3">
+                    <h1>Various Options</h1>
+                    <p class="lead">There are various options available to you when using Fine Uploader. In this demo, we've used a small subset of these options to create an uploader with custom upload button text, restricted to one file upload/selection at once (may not select multiple files), restricted to <code>jpeg</code>, <code>jpg</code>, and <code>txt</code> files, restricted to a maximum file size of 50 kB, and with a custom error display handler instead of the default alert box.</p>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <div id="restricted-fine-uploader"></div>
+                        </div>
+    
+                        <div class="span8">
+                            <pre class="prettyprint linenums">&lt;div id="restricted-fine-uploader">&lt;/div>
+
+&lt;script>
+  $(document).ready(function() {
+    var restricteduploader = new qq.FileUploader({
+      // If we're using jQuery, there's another way of selecting the DOM node
+      element: $('#restricted-fine-uploader')[0],
+      action: 'do-nothing.htm',
+      debug: true,
+      multiple: false,
+      allowedExtensions: ['jpeg', 'jpg', 'txt'],
+      sizeLimit: 51200, // 50 kB = 50 * 1024 bytes
+      uploadButtonText: 'Click or Drop',
+      showMessage: function(message) {
+        // Using Bootstrap's classes and jQuery selector and DOM manipulation
+        $('#restricted-fine-uploader').append('&lt;div class="alert alert-error">' + message + '&lt;/div>');
+      }
+    });
+  }
+&lt/script></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="demo4">
+                    <h1>Display Image Thumbnails</h1>
+                    <p class="lead">In this demo, we've used the onComplete callback to display thumbnails of the uploaded images. The uploader is also restricted in size (50 kB), in concurrent donwloads (only one at once), and in allowed extensions (<code>jpeg</code>, <code>jpg</code>, <code>gif</code>, and <code>png</code>).</p>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <div id="thumbnail-fine-uploader"></div>
+                        </div>
+    
+                        <div class="span8">
+                            <pre class="prettyprint linenums">&lt;div id="thumbnail-fine-uploader">&lt;/div>
+
+&lt;script>
+  $(document).ready(function() {
+    var thumbnailuploader = new qq.FileUploader({
+      element: $('#thumbnail-fine-uploader')[0],
+      action: 'do-nothing.htm',
+      debug: true,
+      multiple: false,
+      allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
+      sizeLimit: 51200,
+      onComplete: function(id, fileName, responseJSON) {
+        if (responseJSON.success) {
+          $('#thumbnail-fine-uploader').append('&lt;img src="img/success.jpg" alt="' + fileName + '">');
+        }
+      }
+    });
+  }
+&lt/script></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="demo5">
+                    <h1>Limit Number of Uploaded Files</h1>
+                    <p class="lead">In this demo, we've used both the onSubmit and the onComplete callbacks to handle a file counter. The uploader is also restricted in size (50 kB), , and in allowed extensions (<code>jpeg</code>, <code>jpg</code>, <code>gif</code>, and <code>png</code>).</p>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <p>If you're yet to process the uploads (to store in a database for instance), it's quite easy to customize it even more in order to provide handles to delete a given uploaded file. In fact, it wouldn't hard delete the file on the server, just delete the link in the DOM…</p>
+                            <div id="filelimit-fine-uploader"></div>
+                        </div>
+    
+                        <div class="span8">
+                            <pre class="prettyprint linenums">&lt;div id="filelimit-fine-uploader">&lt;/div>
+
+&lt;script>
+  var fileCount = 0;
+  var addedFiles = 0;
+  var fileLimit = 3;
+
+  $(document).ready(function() {
+    var filelimituploader = new qq.FileUploader({
+      element: $('#filelimit-fine-uploader')[0],
+      action: 'do-nothing.htm',
+      debug: true,
+      allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
+      sizeLimit: 51200,
+      onSubmit: function(id, fileName) {
+        fileCount ++;
+        if(fileCount > fileLimit) {
+          $('#filelimit-fine-uploader .qq-upload-button').hide();
+          $('#filelimit-fine-uploader .qq-upload-drop-area').hide();
+          return false;
+        }
+      },
+      onCancel: function(id, fileName) {
+        fileCount --;
+        if(fileCount <= fileLimit) {
+          $('#filelimit-fine-uploader .qq-upload-button').show();
+        }
+      },
+      onComplete: function(id, fileName, responseJSON) {
+        if (responseJSON.success) {
+          addedFiles ++;
+          if(addedFiles >= fileLimit) {
+            $('#filelimit-fine-uploader .qq-upload-button').hide();
+            $('#filelimit-fine-uploader .qq-upload-drop-area').hide();
+          }
+        }
+      }
+    });
+  }
+&lt/script></pre>
+                        </div>
+                    </div>
+                </section>
+            </div>        
+        </div>        
+
+        <footer class="footer">
+            <div class="container">
+                <p>Developed by <a href="http://github.com/valums/" target="_blank">valums</a>.</p>
+                <p>Maintained by <a href="http://github.com/rnicholus/" target="_blank">rnicholus</a>.</p>
+                <p>Code open sourced under <a href="http://opensource.org/licenses/MIT" target="_blank">MIT license</a>, <a href="http://www.gnu.org/licenses/gpl-2.0.txt" target="_blank">GNU GPL 2</a> or later and <a href="http://www.gnu.org/licenses/lgpl-2.0.txt" target="_blank">GNU LGPL 2</a> or later.</p>
+                <p>Icons from <a href="http://glyphicons.com" target="_blank">Glyphicons Free</a>, licensed under <a href="http://creativecommons.org/licenses/by/3.0/" target="_blank">CC BY 3.0</a>.</p>
+                <p>Webpage designed by <a href="http://github.com/tellibus" target="_blank">tellibus</a>.</p>
+                <p>Powered by <a href="http://github.com/valums/file-uploader/" target="_blank">Fine Uploader</a>, <a href="http://twitter.github.com/bootstrap/" target="_blank">Bootstrap</a>, <a href="http://code.google.com/p/google-code-prettify/" target="_blank">Prettify</a>, and <a href="http://jquery.com/" target="_blank">jQuery</a>.</p>
+                <ul class="footer-links">
+                    <li>
+                        <a href="http://groups.google.com/forum/#!forum/fineuploader" target="_blank">Fine Uploader on Google Groups</a>
+                    </li>
+                    <li>
+                        <a href="http://github.com/valums/file-uploader/issues/new" target="_blank">Submit issues</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/valums/file-uploader/blob/master/readme.md" target="_blank">Readme</a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/valums/file-uploader/wiki/Releases" target="_blank">Releases</a>
+                    </li>
+                </ul>
+            </div>
+        </footer>
+
+        <script src="client/fileuploader.js"></script>
+        <script>
+            var manualuploader;
+            var fileCount = 0;
+            var addedFiles = 0;
+            var fileLimit = 3;
+
+            function createUploader() {
+                manualuploader = new qq.FileUploader({
+                    element: document.getElementById('manual-fine-uploader'),
+                    action: 'client/do-nothing.htm',
+                    autoUpload: false,
+                    debug: true,
+                    demoMode: true,
+                    uploadButtonText: '<i class="icon-plus icon-white"></i> Select Files'
+                });
+
+                var faileduploader = new qq.FileUploader({
+                    element: document.getElementById('failed-fine-uploader'),
+                    action: 'failure.html',
+                    debug: true,
+                    demoMode: true,
+                    failedUploadTextDisplay: {
+                        mode: 'custom',
+                        maxChars: 40,
+                        responseProperty: 'error',
+                        enableTooltip: true
+                    }
+                });
+
+                var restricteduploader = new qq.FileUploader({
+                    // If we're using jQuery, there's another way of selecting the DOM node
+                    element: $('#restricted-fine-uploader')[0],
+                    action: 'client/do-nothing.htm',
+                    debug: true,
+                    demoMode: true,
+                    multiple: false,
+                    allowedExtensions: ['jpeg', 'jpg', 'txt'],
+                    sizeLimit: 51200, // 50 kB = 50 * 1024 bytes
+                    uploadButtonText: 'Click or Drop',
+                    showMessage: function(message) {
+                        // Using Bootstrap's classes and jQuery selector and DOM manipulation
+                        $('#restricted-fine-uploader').append('<div class="alert alert-error">' + message + '</div>');
+                    }
+                });
+
+                var thumbnailuploader = new qq.FileUploader({
+                    element: $('#thumbnail-fine-uploader')[0],
+                    action: 'client/do-nothing.htm',
+                    debug: true,
+                    demoMode: true,
+                    multiple: false,
+                    allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
+                    sizeLimit: 51200,
+                    onComplete: function(id, fileName, responseJSON) {
+                        if (responseJSON.success) {
+                            $('#thumbnail-fine-uploader').append('<img src="img/success.jpg" alt="' + fileName + '">');
+                        }
+                    }
+                });
+
+                var filelimituploader = new qq.FileUploader({
+                    element: $('#filelimit-fine-uploader')[0],
+                    action: 'client/do-nothing.htm',
+                    debug: true,
+                    demoMode: true,
+                    allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
+                    sizeLimit: 51200,
+                    onSubmit: function(id, fileName) {
+                        fileCount ++;
+                        if(fileCount > fileLimit) {
+                            $('#filelimit-fine-uploader .qq-upload-button').hide();
+                            $('#filelimit-fine-uploader .qq-upload-drop-area').hide();
+                            return false;
+                        }
+                    },
+                    onCancel: function(id, fileName) {
+                        fileCount --;
+                        if(fileCount <= fileLimit) {
+                            $('#filelimit-fine-uploader .qq-upload-button').show();
+                        }
+                    },
+                    onComplete: function(id, fileName, responseJSON) {
+                        if (responseJSON.success) {
+                            addedFiles ++;
+                            if(addedFiles >= fileLimit) {
+                                $('#filelimit-fine-uploader .qq-upload-button').hide();
+                                $('#filelimit-fine-uploader .qq-upload-drop-area').hide();
+                            }
+                        }
+                    }
+                });
+            }
+
+            window.onload = createUploader;
+        </script>
+        <script src="http://platform.twitter.com/widgets.js"></script>
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
+        <script src="js/prettify.js"></script>
+        <script>
+            window.prettyPrint && prettyPrint();
+            $('.dropdown-toggle').dropdown();
+
+            $(document).ready(function() {
+                $('#triggerUpload').click(function() {
+                    manualuploader.uploadStoredFiles();
+                });
+
+                /* Inspiration from:
+                   -----------------
+                   http://www.mybloggerlab.com/2012/03/make-your-old-site-navigation-bar.html */
+                var offset, aboveHeight;
+                var $menu = $('#menu');
+                var $jumbotron = $('#jumbotron');
+                var $demoList = $('#demoList');
+
+                function offsetSubMenu() {
+                    if ($menu.css('position') == 'fixed') {
+                        offset = $menu.outerHeight();
+                        aboveHeight = $jumbotron.outerHeight() - 10;
+                    } else {
+                        offset = 0;
+                        aboveHeight = $menu.outerHeight() + $jumbotron.outerHeight();
+                    }
+
+                    if ($(window).scrollTop() > aboveHeight){
+                        $demoList.css({"position": "fixed", "top": offset + "px"});
+                    } else {
+                        $demoList.css({"position": "relative", "top": "0"});
+                    }
+                }
+
+                offsetSubMenu();
+
+                $(window).resize(function() {
+                    offsetSubMenu();
+                });
+
+                $(window).scroll(function() {
+                    offsetSubMenu();
+                });
+            });
+        </script>
+    </body>
+</html>
