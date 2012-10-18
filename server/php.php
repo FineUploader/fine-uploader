@@ -96,12 +96,21 @@ class qqFileUploader {
         $this->checkServerSettings();       
 
         if (isset($_GET['qqfile'])) {
-            $this->file = new qqUploadedFileXhr();
+            $this->file = $this->getUploadFileXhrHandler();
         } elseif (isset($_FILES['qqfile'])) {
-            $this->file = new qqUploadedFileForm();
+            $this->file = $this->getUploadFileFormHandler();
         } else {
             $this->file = false; 
         }
+    }
+    
+    /* Provide ability for sub-classes determine file handlers */
+    protected function getUploadFileXhrHandler() {
+    	return new qqUploadedFileXhr();
+    }
+    
+    protected function getUploadFileFormHandler() {
+    	return new qqUploadedFileForm();
     }
     
 	public function getUploadName(){
