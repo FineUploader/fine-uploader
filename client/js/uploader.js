@@ -334,6 +334,10 @@ qq.extend(qq.FineUploader.prototype, {
                 qq.preventDefault(e);
 
                 var item = target.parentNode;
+                while(item.qqFileId == undefined) {
+                    item = target = target.parentNode;
+                }
+
                 self._handler.cancel(item.qqFileId);
                 qq.remove(item);
             }
