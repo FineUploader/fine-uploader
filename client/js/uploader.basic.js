@@ -44,9 +44,9 @@ qq.FineUploaderBasic = function(o){
             alert(message);
         },
         retry: {
-            enableAuto: true,
+            enableAuto: true, //TODO default to false
             maxAuto: 3,
-            delay: 2000
+            delay: 5000
         }
     };
 
