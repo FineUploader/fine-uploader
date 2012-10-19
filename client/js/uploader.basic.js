@@ -28,7 +28,8 @@ qq.FineUploaderBasic = function(o){
             onCancel: function(id, fileName){},
             onUpload: function(id, fileName, xhr){},
             onProgress: function(id, fileName, loaded, total){},
-            onError: function(id, fileName, reason) {}
+            onError: function(id, fileName, reason) {},
+            onAutoRetry: function(id, fileName, attemptNumber) {}
         },
         // messages
         messages: {
@@ -41,6 +42,11 @@ qq.FineUploaderBasic = function(o){
         },
         showMessage: function(message){
             alert(message);
+        },
+        retry: {
+            enableAuto: true,
+            maxAuto: 3,
+            delay: 2000
         }
     };
 
@@ -52,6 +58,9 @@ qq.FineUploaderBasic = function(o){
     this._filesInProgress = 0;
 
     this._storedFileIds = [];
+
+    this._autoRetries = [];
+    this._retryTimeouts = [];
 
     this._handler = this._createUploadHandler();
 
@@ -131,6 +140,21 @@ qq.FineUploaderBasic.prototype = {
             onUpload: function(id, fileName, xhr){
                 self._onUpload(id, fileName, xhr);
                 self._options.callbacks.onUpload(id, fileName, xhr);
+            },
+            onAutoRetry: function(id, fileName, responseJSON) {
+                var shouldRetry = false;
+
+                if (self._shouldAutoRetry(id, fileName, responseJSON)) {
+                    shouldRetry = self._options.callbacks.onAutoRetry(id, fileName, responseJSON);
+                    if (shouldRetry !== false) {
+                        self._onBeforeAutoRetry(id);
+                        self._retryTimeouts[id] = setTimeout(function() {
+                            self._onAutoRetry(id, fileName, responseJSON)
+                        }, self._options.retry.delay);
+                    }
+                }
+
+                return shouldRetry !== false;
             }
         });
 
@@ -165,6 +189,8 @@ qq.FineUploaderBasic.prototype = {
         }
     },
     _onCancel: function(id, fileName){
+        clearTimeout(this._retryTimeouts[id]);
+
         var storedFileIndex = qq.indexOf(this._storedFileIds, id);
         if (this._options.autoUpload || storedFileIndex < 0) {
             this._filesInProgress--;
@@ -184,6 +210,24 @@ qq.FineUploaderBasic.prototype = {
             }
         }
         this._button.reset();
+    },
+    _onBeforeAutoRetry: function(id) {
+    },
+    _onAutoRetry: function(id, fileName, responseJSON) {
+        this.log("Retrying " + fileName + "...");
+        this._autoRetries[id]++;
+        this._handler.retry(id);
+    },
+    _shouldAutoRetry: function(id, fileName, responseJSON) {
+        if (this._options.retry.enableAuto) {
+            if (this._autoRetries[id] === undefined) {
+                this._autoRetries[id] = 0;
+            }
+
+            return this._autoRetries[id] < this._options.retry.maxAuto
+        }
+
+        return false;
     },
     _uploadFileList: function(files){
         if (files.length > 0) {
