@@ -249,7 +249,7 @@ qq.extend(qq.FineUploader.prototype, {
 
         qq.setText(size, text);
     },
-    _onComplete: function(id, fileName, result){
+    _onComplete: function(id, fileName, result, xhr){
         qq.FineUploaderBasic.prototype._onComplete.apply(this, arguments);
 
         var item = this._getItemByFileId(id);

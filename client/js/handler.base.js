@@ -9,10 +9,10 @@ qq.UploadHandlerAbstract = function(o){
         // maximum number of concurrent uploads
         maxConnections: 999,
         onProgress: function(id, fileName, loaded, total){},
-        onComplete: function(id, fileName, response){},
+        onComplete: function(id, fileName, response, xhr){},
         onCancel: function(id, fileName){},
         onUpload: function(id, fileName, xhr){},
-        onAutoRetry: function(id, fileName, response){}
+        onAutoRetry: function(id, fileName, response, xhr){}
 
     };
     qq.extend(this._options, o);
