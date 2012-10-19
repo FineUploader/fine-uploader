@@ -11,7 +11,9 @@ qq.UploadHandlerAbstract = function(o){
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, response){},
         onCancel: function(id, fileName){},
-        onUpload: function(id, fileName, xhr){}
+        onUpload: function(id, fileName, xhr){},
+        onAutoRetry: function(id, fileName, response){}
+
     };
     qq.extend(this._options, o);
 
@@ -42,6 +44,9 @@ qq.UploadHandlerAbstract.prototype = {
         if (len <= this._options.maxConnections){
             this._upload(id, this._params[id]);
         }
+    },
+    retry: function(id) {
+        this._upload(id, this._params[id]);
     },
     /**
      * Cancels file upload by id

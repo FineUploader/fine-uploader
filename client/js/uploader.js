@@ -290,6 +290,13 @@ qq.extend(qq.FineUploader.prototype, {
             spinnerEl.style.display = "inline-block";
         }
     },
+    _onBeforeAutoRetry: function(id) {
+        qq.FineUploaderBasic.prototype._onBeforeAutoRetry.apply(this, arguments);
+
+        var item = this._getItemByFileId(id);
+        var cancelLink = this._find(item, 'cancel');
+        cancelLink.style.display = 'inline';
+    },
     _addToList: function(id, fileName){
         var item = qq.toElement(this._options.fileTemplate);
         if (this._options.disableCancelForFormUploads && !qq.UploadHandlerXhr.isSupported()) {
