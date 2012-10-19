@@ -44,9 +44,9 @@ qq.FineUploaderBasic = function(o){
             alert(message);
         },
         retry: {
-            enableAuto: true, //TODO default to false
+            enableAuto: false,
             maxAuto: 3,
-            delay: 5000
+            delay: 5
         }
     };
 
@@ -128,29 +128,29 @@ qq.FineUploaderBasic.prototype = {
                 self._onProgress(id, fileName, loaded, total);
                 self._options.callbacks.onProgress(id, fileName, loaded, total);
             },
-            onComplete: function(id, fileName, result){
-                self._onComplete(id, fileName, result);
+            onComplete: function(id, fileName, result, xhr){
+                self._onComplete(id, fileName, result, xhr);
                 self._options.callbacks.onComplete(id, fileName, result);
             },
             onCancel: function(id, fileName){
                 self._onCancel(id, fileName);
                 self._options.callbacks.onCancel(id, fileName);
             },
-            onError: self._options.callbacks.onError,
             onUpload: function(id, fileName, xhr){
                 self._onUpload(id, fileName, xhr);
                 self._options.callbacks.onUpload(id, fileName, xhr);
             },
-            onAutoRetry: function(id, fileName, responseJSON) {
+            onAutoRetry: function(id, fileName, responseJSON, xhr) {
                 var shouldRetry = false;
 
                 if (self._shouldAutoRetry(id, fileName, responseJSON)) {
                     shouldRetry = self._options.callbacks.onAutoRetry(id, fileName, responseJSON);
                     if (shouldRetry !== false) {
-                        self._onBeforeAutoRetry(id);
+                        self._maybeParseAndSendUploadError(id, fileName, responseJSON, xhr);
+                        self._onBeforeAutoRetry(id, fileName);
                         self._retryTimeouts[id] = setTimeout(function() {
                             self._onAutoRetry(id, fileName, responseJSON)
-                        }, self._options.retry.delay);
+                        }, self._options.retry.delay * 1000);
                     }
                 }
 
@@ -180,13 +180,9 @@ qq.FineUploaderBasic.prototype = {
     },
     _onProgress: function(id, fileName, loaded, total){
     },
-    _onComplete: function(id, fileName, result){
+    _onComplete: function(id, fileName, result, xhr){
         this._filesInProgress--;
-
-        if (!result.success){
-            var errorReason = result.error ? result.error : "Upload failure reason unknown";
-            this._options.callbacks.onError(id, fileName, errorReason);
-        }
+        this._maybeParseAndSendUploadError(id, fileName, result, xhr);
     },
     _onCancel: function(id, fileName){
         clearTimeout(this._retryTimeouts[id]);
@@ -211,7 +207,8 @@ qq.FineUploaderBasic.prototype = {
         }
         this._button.reset();
     },
-    _onBeforeAutoRetry: function(id) {
+    _onBeforeAutoRetry: function(id, fileName) {
+        this.log("Waiting " + this._options.retry.delay + " seconds before retrying " + fileName + "...");
     },
     _onAutoRetry: function(id, fileName, responseJSON) {
         this.log("Retrying " + fileName + "...");
@@ -228,6 +225,18 @@ qq.FineUploaderBasic.prototype = {
         }
 
         return false;
+    },
+    _maybeParseAndSendUploadError: function(id, fileName, response, xhr) {
+        //assuming no one will actually set the response code to something other than 200 and still set 'success' to true
+        if (!response.success){
+            if (xhr && xhr.status !== 200 && !response.error) {
+                this._options.callbacks.onError(id, fileName, "XHR returned response code " + xhr.status);
+            }
+            else {
+                var errorReason = response.error ? response.error : "Upload failure reason unknown";
+                this._options.callbacks.onError(id, fileName, errorReason);
+            }
+        }
     },
     _uploadFileList: function(files){
         if (files.length > 0) {

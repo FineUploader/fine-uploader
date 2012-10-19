@@ -132,21 +132,13 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
             response = {};
         }
 
-        if (xhr.status !== 200){
-            this._options.onError(id, name, "XHR returned response code " + xhr.status);
-            if (this._options.onAutoRetry(id, name, response)) {
+        if (xhr.status !== 200 || !response.success){
+            if (this._options.onAutoRetry(id, name, response, xhr)) {
                 return;
             }
         }
 
-        if (!response.success) {
-            //TODO we need to call onError here, or never call it anywhere on retry
-            if (this._options.onAutoRetry(id, name, response)) {
-                return;
-            }
-        }
-
-        this._options.onComplete(id, name, response);
+        this._options.onComplete(id, name, response, xhr);
 
         this._xhrs[id] = null;
         this._dequeue(id);

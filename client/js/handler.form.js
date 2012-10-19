@@ -67,7 +67,6 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             var response = self._getIframeContentJSON(iframe);
 
             if (!response.success) {
-                //TODO we need to call onError here, or never call it anywhere on retry
                 if (self._options.onAutoRetry(id, fileName, response)) {
                     return;
                 }
