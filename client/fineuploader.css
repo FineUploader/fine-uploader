@@ -103,6 +103,10 @@
 .qq-upload-fail .qq-upload-failed-text {
     display: inline;
 }
+.qq-upload-retry .qq-upload-failed-text {
+    display: inline;
+    color: #D60000;
+}
 .qq-upload-list li.qq-upload-success {
     background-color: #5DA30C;
     color: #FFFFFF;

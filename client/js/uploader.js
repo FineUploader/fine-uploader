@@ -51,6 +51,7 @@ qq.FineUploader = function(o){
             finished: 'qq-upload-finished',
             size: 'qq-upload-size',
             cancel: 'qq-upload-cancel',
+            retry: 'qq-upload-retry',
             failText: 'qq-upload-failed-text',
 
             // added to list item <li> when upload completes
@@ -69,6 +70,10 @@ qq.FineUploader = function(o){
         },
         messages: {
             tooManyFilesError: "You may only drop one file"
+        },
+        retry: {
+            showAutoRetryNote: true,
+            autoRetryNote: "Retrying {retryNum}/{maxAuto}..."
         }
     }, true);
 
@@ -254,6 +259,7 @@ qq.extend(qq.FineUploader.prototype, {
 
         var item = this._getItemByFileId(id);
 
+        qq.removeClass(item, this._classes.retry);
         qq.remove(this._find(item, 'progressBar'));
 
         if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
@@ -291,11 +297,31 @@ qq.extend(qq.FineUploader.prototype, {
         }
     },
     _onBeforeAutoRetry: function(id) {
+        var item, progressBar, cancelLink, failTextEl, retryNumForDisplay, maxAuto, retryNote;
+
         qq.FineUploaderBasic.prototype._onBeforeAutoRetry.apply(this, arguments);
 
-        var item = this._getItemByFileId(id);
-        var cancelLink = this._find(item, 'cancel');
+        item = this._getItemByFileId(id);
+        progressBar = this._find(item, 'progressBar');
+        cancelLink = this._find(item, 'cancel');
+
         cancelLink.style.display = 'inline';
+        progressBar.style.width = 0;
+        progressBar.style.display = 'none';
+
+        if (this._options.retry.showAutoRetryNote) {
+            failTextEl = this._find(item, 'failText');
+            retryNumForDisplay = this._autoRetries[id] + 1;
+            maxAuto = this._options.retry.maxAuto;
+
+            retryNote = this._options.retry.autoRetryNote.replace(/\{retryNum\}/g, retryNumForDisplay);
+            retryNote = retryNote.replace(/\{maxAuto\}/g, maxAuto);
+
+            qq.setText(failTextEl, retryNote);
+            if (retryNumForDisplay === 1) {
+                qq.addClass(item, this._classes.retry);
+            }
+        }
     },
     _addToList: function(id, fileName){
         var item = qq.toElement(this._options.fileTemplate);
@@ -382,7 +408,7 @@ qq.extend(qq.FineUploader.prototype, {
             }
         }
         else if (mode === 'none') {
-            qq.remove(this._find(item, 'failText'));
+            this._find(item, 'failText').style.display = 'none';
         }
         else if (mode !== 'default') {
             this.log("failedUploadTextDisplay.mode value of '" + mode + "' is not valid");
