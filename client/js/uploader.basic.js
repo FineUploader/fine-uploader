@@ -141,20 +141,20 @@ qq.FineUploaderBasic.prototype = {
                 self._options.callbacks.onUpload(id, fileName, xhr);
             },
             onAutoRetry: function(id, fileName, responseJSON, xhr) {
-                var shouldRetry = false;
-
                 if (self._shouldAutoRetry(id, fileName, responseJSON)) {
-                    shouldRetry = self._options.callbacks.onAutoRetry(id, fileName, responseJSON);
-                    if (shouldRetry !== false) {
-                        self._maybeParseAndSendUploadError(id, fileName, responseJSON, xhr);
-                        self._onBeforeAutoRetry(id, fileName);
-                        self._retryTimeouts[id] = setTimeout(function() {
-                            self._onAutoRetry(id, fileName, responseJSON)
-                        }, self._options.retry.delay * 1000);
-                    }
-                }
+                    self._options.callbacks.onAutoRetry(id, fileName, responseJSON);
+                    self._maybeParseAndSendUploadError(id, fileName, responseJSON, xhr);
+                    self._onBeforeAutoRetry(id, fileName);
 
-                return shouldRetry !== false;
+                    self._retryTimeouts[id] = setTimeout(function() {
+                        self._onAutoRetry(id, fileName, responseJSON)
+                    }, self._options.retry.delay * 1000);
+
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
         });
 
