@@ -1,4 +1,4 @@
-/**
+﻿/**
  * http://github.com/Valums-File-Uploader/file-uploader
  *
  * Multiple file upload component with progress-bar, drag-and-drop.
@@ -877,7 +877,8 @@ qq.extend(qq.FileUploader.prototype, {
         }
     },
     _addToList: function(id, fileName){
-        var item = qq.toElement(this._options.fileTemplate);
+        var template = this._options.fileTemplate.replace(/\{fileId\}/g, id);
+	var item = qq.toElement(template);
         if (this._options.disableCancelForFormUploads && !qq.UploadHandlerXhr.isSupported()) {
             var cancelLink = this._find(item, 'cancel');
             qq.remove(cancelLink);
