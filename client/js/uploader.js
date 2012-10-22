@@ -260,12 +260,12 @@ qq.extend(qq.FineUploader.prototype, {
         var item = this._getItemByFileId(id);
 
         qq.removeClass(item, this._classes.retry);
-        qq.remove(this._find(item, 'progressBar'));
+        this._find(item, 'progressBar').style.display = 'none';
 
         if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
-            qq.remove(this._find(item, 'cancel'));
+            this._find(item, 'cancel').style.display = 'none';
         }
-        qq.remove(this._find(item, 'spinner'));
+        this._find(item, 'spinner').style.display = 'none';
 
         if (result.success){
             qq.addClass(item, this._classes.success);
@@ -322,6 +322,15 @@ qq.extend(qq.FineUploader.prototype, {
                 qq.addClass(item, this._classes.retry);
             }
         }
+    },
+     //return false if we should not attempt the requested retry
+    _onBeforeManualRetry: function(id) {
+        if (qq.FineUploaderBasic.prototype._onBeforeManualRetry.apply(this, arguments)) {
+            var item = this._getItemByFileId(id);
+            qq.removeClass(item, this._classes.fail);
+            return true;
+        }
+        return false;
     },
     _addToList: function(id, fileName){
         var item = qq.toElement(this._options.fileTemplate);

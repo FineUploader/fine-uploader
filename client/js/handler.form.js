@@ -29,6 +29,9 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         // get input value and remove path to normalize
         return this._inputs[id].value.replace(/.*(\/|\\)/, "");
     },
+    isValid: function(id) {
+        return this._inputs[id] !== undefined;
+    },
     _cancel: function(id){
         this._options.onCancel(id, this.getName(id));
 
@@ -74,7 +77,6 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             self._options.onComplete(id, fileName, response);
             self._dequeue(id);
 
-            delete self._inputs[id];
             // timeout added to fix busy state in FF3.6
             setTimeout(function(){
                 self._detach_load_events[id]();

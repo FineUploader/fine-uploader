@@ -55,6 +55,9 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
     getLoaded: function(id){
         return this._loaded[id] || 0;
     },
+    isValid: function(id) {
+        return this._files[id] !== undefined;
+    },
     /**
      * Sends the file identified by id and additional query params to the server
      * @param {Object} params name-value string pairs
