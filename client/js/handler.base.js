@@ -100,5 +100,9 @@ qq.UploadHandlerAbstract.prototype = {
             var nextId = this._queue[max-1];
             this._upload(nextId, this._params[nextId]);
         }
-    }
+    },
+    /**
+     * Determine if the file exists.
+     */
+    isValid: function(id) {}
 };

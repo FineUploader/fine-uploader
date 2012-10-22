@@ -91,6 +91,15 @@ qq.FineUploaderBasic.prototype = {
     clearStoredFiles: function(){
         this._storedFileIds = [];
     },
+    retry: function(id) {
+        if (this._onBeforeManualRetry(id)) {
+            this._handler.retry(id);
+            return true;
+        }
+        else {
+            return false;
+        }
+    },
     _createUploadButton: function(element){
         var self = this;
 
@@ -225,6 +234,19 @@ qq.FineUploaderBasic.prototype = {
         }
 
         return false;
+    },
+    //return false if we should not attempt the requested retry
+    _onBeforeManualRetry: function(id) {
+        if (this._handler.isValid(id)) {
+            var fileName = this._handler.getName(id);
+            this.log("Retrying upload for '" + fileName + "' (id: " + id + ")...");
+            this._filesInProgress++;
+            return true;
+        }
+        else {
+            this.log("'" + id + "' is not a valid file ID");
+            return false;
+        }
     },
     _maybeParseAndSendUploadError: function(id, fileName, response, xhr) {
         //assuming no one will actually set the response code to something other than 200 and still set 'success' to true
