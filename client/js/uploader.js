@@ -18,6 +18,7 @@ qq.FineUploader = function(o){
         text: {
             uploadButton: 'Upload a file',
             cancelButton: 'Cancel',
+            retryButton: 'Retry',
             failUpload: 'Upload failed',
             dragZone: 'Drop files here to upload',
             formatProgress: "{percent}% of {total_size}"
@@ -36,6 +37,7 @@ qq.FineUploader = function(o){
             '<span class="qq-upload-file"></span>' +
             '<span class="qq-upload-size"></span>' +
             '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
+            '<a class="qq-upload-retry" href="#">{retryButtonText}</a>' +
             '<span class="qq-upload-failed-text">{failUploadtext}</span>' +
             '</li>',
         classes: {
@@ -49,6 +51,8 @@ qq.FineUploader = function(o){
             file: 'qq-upload-file',
             spinner: 'qq-upload-spinner',
             finished: 'qq-upload-finished',
+            retrying: 'qq-upload-retrying',
+            retryable: 'qq-upload-retryable',
             size: 'qq-upload-size',
             cancel: 'qq-upload-cancel',
             retry: 'qq-upload-retry',
@@ -73,7 +77,8 @@ qq.FineUploader = function(o){
         },
         retry: {
             showAutoRetryNote: true,
-            autoRetryNote: "Retrying {retryNum}/{maxAuto}..."
+            autoRetryNote: "Retrying {retryNum}/{maxAuto}...",
+            showRetryButton: false
         }
     }, true);
 
@@ -86,6 +91,7 @@ qq.FineUploader = function(o){
     this._options.template     = this._options.template.replace(/\{dragZoneText\}/g, this._options.text.dragZone);
     this._options.template     = this._options.template.replace(/\{uploadButtonText\}/g, this._options.text.uploadButton);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.text.cancelButton);
+    this._options.fileTemplate = this._options.fileTemplate.replace(/\{retryButtonText\}/g, this._options.text.retryButton);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{failUploadtext\}/g, this._options.text.failUpload);
 
     this._element = this._options.element;
@@ -98,7 +104,7 @@ qq.FineUploader = function(o){
         this._button = this._createUploadButton(this._find(this._element, 'button'));
     }
 
-    this._bindCancelEvent();
+    this._bindCancelAndRetryEvents();
     this._setupDragDrop();
 };
 
@@ -259,7 +265,7 @@ qq.extend(qq.FineUploader.prototype, {
 
         var item = this._getItemByFileId(id);
 
-        qq.removeClass(item, this._classes.retry);
+        qq.removeClass(item, this._classes.retrying);
         this._find(item, 'progressBar').style.display = 'none';
 
         if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
@@ -278,6 +284,9 @@ qq.extend(qq.FineUploader.prototype, {
             if (this._classes.failIcon) {
                 this._find(item, 'finished').style.display = "inline-block";
                 qq.addClass(item, this._classes.failIcon)
+            }
+            if (this._options.retry.showRetryButton) {
+                qq.addClass(item, this._classes.retryable);
             }
             this._controlFailureTextDisplay(item, result);
         }
@@ -319,7 +328,7 @@ qq.extend(qq.FineUploader.prototype, {
 
             qq.setText(failTextEl, retryNote);
             if (retryNumForDisplay === 1) {
-                qq.addClass(item, this._classes.retry);
+                qq.addClass(item, this._classes.retrying);
             }
         }
     },
@@ -327,6 +336,7 @@ qq.extend(qq.FineUploader.prototype, {
     _onBeforeManualRetry: function(id) {
         if (qq.FineUploaderBasic.prototype._onBeforeManualRetry.apply(this, arguments)) {
             var item = this._getItemByFileId(id);
+            this._find(item, 'progressBar').style.width = 0;
             qq.removeClass(item, this._classes.fail);
             return true;
         }
@@ -362,9 +372,9 @@ qq.extend(qq.FineUploader.prototype, {
         }
     },
     /**
-     * delegate click event for cancel link
+     * delegate click event for cancel & retry links
      **/
-    _bindCancelEvent: function(){
+    _bindCancelAndRetryEvents: function(){
         var self = this,
             list = this._listElement;
 
@@ -372,7 +382,7 @@ qq.extend(qq.FineUploader.prototype, {
             e = e || window.event;
             var target = e.target || e.srcElement;
 
-            if (qq.hasClass(target, self._classes.cancel)){
+            if (qq.hasClass(target, self._classes.cancel) || qq.hasClass(target, self._classes.retry)){
                 qq.preventDefault(e);
 
                 var item = target.parentNode;
@@ -380,8 +390,14 @@ qq.extend(qq.FineUploader.prototype, {
                     item = target = target.parentNode;
                 }
 
-                self._handler.cancel(item.qqFileId);
-                qq.remove(item);
+                if (qq.hasClass(target, self._classes.cancel)) {
+                    self._handler.cancel(item.qqFileId);
+                    qq.remove(item);
+                }
+                else {
+                    qq.removeClass(item, self._classes.retryable);
+                    self.retry(item.qqFileId);
+                }
             }
         });
     },
