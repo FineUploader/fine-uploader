@@ -252,9 +252,13 @@ qq.obj2url = function(obj, temp, prefixDone){
         uristrings.push(encodeURIComponent(temp) + '=' + encodeURIComponent(obj));
     }
 
-    return uristrings.join(prefix)
-        .replace(/^&/, '')
-        .replace(/%20/g, '+');
+    if (temp) {
+        return uristrings.join(prefix);
+    } else {
+        return uristrings.join(prefix)
+                         .replace(/^&/, '')
+                         .replace(/%20/g, '+');                      
+    }
 };
 
 //
