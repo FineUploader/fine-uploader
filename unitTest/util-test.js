@@ -139,6 +139,7 @@ test("qq.getByClass", function() {
 
 test("qq.obj2url", function() {
     var baseUrl = "http://mydomain.com/upload";
+    var urlWithEncodedPath = "http://mydomain.com/upload%20me"
     var params = {one: "one", two: "two", three: "three"};
     var params2 = {a: "this is a test"};
 
@@ -151,6 +152,9 @@ test("qq.obj2url", function() {
     var baseUrlWithParams2 = qq.obj2url(params2, baseUrl);
     var parsedUrlWithParams2 = $.url(baseUrlWithParams2);
     equal(parsedUrlWithParams2.param('a'), "this is a test", "checking first param, 2nd url");
+
+    var urlWithEncodedPathResult = qq.obj2url(params, urlWithEncodedPath);
+    ok(urlWithEncodedPathResult.match("^" + urlWithEncodedPath), "ensure encoded paths are left alone");
 });
 
 test("qq.DisposeSupport", 2, function() {
