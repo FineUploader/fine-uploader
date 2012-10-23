@@ -300,10 +300,7 @@ qq.extend(qq.FineUploader.prototype, {
             this._find(item, 'progressBar').style.display = "block";
         }
 
-        var spinnerEl = this._find(item, 'spinner');
-        if (spinnerEl.style.display == "none") {
-            spinnerEl.style.display = "inline-block";
-        }
+        this._showSpinner(item);
     },
     _onBeforeAutoRetry: function(id) {
         var item, progressBar, cancelLink, failTextEl, retryNumForDisplay, maxAuto, retryNote;
@@ -312,9 +309,8 @@ qq.extend(qq.FineUploader.prototype, {
 
         item = this._getItemByFileId(id);
         progressBar = this._find(item, 'progressBar');
-        cancelLink = this._find(item, 'cancel');
 
-        cancelLink.style.display = 'inline';
+        this._showCancelLink(item);
         progressBar.style.width = 0;
         progressBar.style.display = 'none';
 
@@ -338,6 +334,8 @@ qq.extend(qq.FineUploader.prototype, {
             var item = this._getItemByFileId(id);
             this._find(item, 'progressBar').style.width = 0;
             qq.removeClass(item, this._classes.fail);
+            this._showSpinner(item);
+            this._showCancelLink(item);
             return true;
         }
         return false;
@@ -442,6 +440,14 @@ qq.extend(qq.FineUploader.prototype, {
     //TODO turn this into a real tooltip, with click trigger (so it is usable on mobile devices).  See case #355 for details.
     _showTooltip: function(item, text) {
         item.title = text;
+    },
+    _showSpinner: function(item) {
+        var spinnerEl = this._find(item, 'spinner');
+        spinnerEl.style.display = "inline-block";
+    },
+    _showCancelLink: function(item) {
+        var cancelLink = this._find(item, 'cancel');
+        cancelLink.style.display = 'inline';
     }
 });
 

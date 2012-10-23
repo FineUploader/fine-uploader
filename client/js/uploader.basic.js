@@ -151,8 +151,8 @@ qq.FineUploaderBasic.prototype = {
             },
             onAutoRetry: function(id, fileName, responseJSON, xhr) {
                 if (self._shouldAutoRetry(id, fileName, responseJSON)) {
-                    self._options.callbacks.onAutoRetry(id, fileName, responseJSON);
                     self._maybeParseAndSendUploadError(id, fileName, responseJSON, xhr);
+                    self._options.callbacks.onAutoRetry(id, fileName, self._autoRetries[id] + 1);
                     self._onBeforeAutoRetry(id, fileName);
 
                     self._retryTimeouts[id] = setTimeout(function() {

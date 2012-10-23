@@ -46,7 +46,13 @@ qq.UploadHandlerAbstract.prototype = {
         }
     },
     retry: function(id) {
-        this._upload(id, this._params[id]);
+        var i = qq.indexOf(this._queue, id);
+        if (i >= 0) {
+            this._upload(id, this._params[id]);
+        }
+        else {
+            this.upload(id, this._params[id]);
+        }
     },
     /**
      * Cancels file upload by id
