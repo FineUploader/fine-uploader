@@ -317,7 +317,7 @@ qq.extend(qq.FineUploader.prototype, {
         if (this._options.retry.showAutoRetryNote) {
             failTextEl = this._find(item, 'failText');
             retryNumForDisplay = this._autoRetries[id] + 1;
-            maxAuto = this._options.retry.maxAuto;
+            maxAuto = this._options.retry.maxAutoAttempts;
 
             retryNote = this._options.retry.autoRetryNote.replace(/\{retryNum\}/g, retryNumForDisplay);
             retryNote = retryNote.replace(/\{maxAuto\}/g, maxAuto);

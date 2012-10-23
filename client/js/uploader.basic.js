@@ -45,7 +45,7 @@ qq.FineUploaderBasic = function(o){
         },
         retry: {
             enableAuto: false,
-            maxAuto: 3,
+            maxAutoAttempts: 3,
             delay: 5
         }
     };
@@ -230,7 +230,7 @@ qq.FineUploaderBasic.prototype = {
                 this._autoRetries[id] = 0;
             }
 
-            return this._autoRetries[id] < this._options.retry.maxAuto
+            return this._autoRetries[id] < this._options.retry.maxAutoAttempts
         }
 
         return false;
