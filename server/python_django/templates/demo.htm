@@ -24,13 +24,10 @@
             var uploader = new qq.FileUploader({
                 element: document.getElementById('file-uploader-demo1'),
                 action: 'upload/',
-                debug: true,
-                /*showMessage : function(data){
+                debug: true/*,
+                showMessage : function(data){
                     console.log(data);
                 },*/
-                onComplete: function(id, fileName, responseJSON){
-                    
-                }
             });
         }
         // in your app create uploader as soon as the DOM is ready
