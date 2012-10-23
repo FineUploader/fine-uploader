@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls.defaults import patterns, url
 from file_uploader import settings
 
 # Uncomment the next two lines to enable the admin:
@@ -15,7 +15,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
-    url(r'^media/(?P<path>.*)$', "django.views.static.serve",{'document_root': settings.MEDIA_ROOT,'show_indexes': True}), # on debugging only
-    url(r'^$', 'file_uploader.view.index'),
-    url(r'^upload/$', 'file_uploader.view.upload'),
+    url(r'^media/(?P<path>.*)$', "django.views.static.serve", {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),  # on debugging only
+    url(r'^$', 'file_uploader.views.index'),
+    url(r'^upload/$', 'file_uploader.views.upload'),
 )
