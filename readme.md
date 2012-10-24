@@ -644,7 +644,10 @@ types with default text that can be overriden as well.
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
 * `clearStoredFiles()` - Clears the internal list of stored files.  Only applicable when `autoUpload` is set to false.
 * `getInProgress()` - Returns the number of files that are either currently uploading or files waiting in line for upload.
-* `retry(String fileId)` - Orders the uploader to make another attempt at uploading a specific file.  A NO-OP if the server prohibits retries on a failed file via the <code>preventRetryResponseProperty</code>.
+* `retry(String fileId)` - Orders the uploader to make another attempt at uploading a specific file.  A NO-OP if the server
+prohibits retries on a failed file via the <code>preventRetryResponseProperty</code>.  Note that this operation does
+respect the <code>maxConnections</code> value, so if all connections are accounted for, the retry attempt will be queued
+until a connection opens up.
 
 <br/>
 ### Internet Explorer Limitations ###
