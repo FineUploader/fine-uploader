@@ -69,6 +69,13 @@ qq.extend(qq.UploadHandlerForm.prototype, {
 
             var response = self._getIframeContentJSON(iframe);
 
+            // timeout added to fix busy state in FF3.6
+            setTimeout(function(){
+                self._detach_load_events[id]();
+                delete self._detach_load_events[id];
+                qq.remove(iframe);
+            }, 1);
+
             if (!response.success) {
                 if (self._options.onAutoRetry(id, fileName, response)) {
                     return;
@@ -76,13 +83,6 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             }
             self._options.onComplete(id, fileName, response);
             self._dequeue(id);
-
-            // timeout added to fix busy state in FF3.6
-            setTimeout(function(){
-                self._detach_load_events[id]();
-                delete self._detach_load_events[id];
-                qq.remove(iframe);
-            }, 1);
         });
 
         form.submit();

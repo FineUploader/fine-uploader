@@ -448,8 +448,10 @@ qq.extend(qq.FineUploader.prototype, {
         spinnerEl.style.display = "inline-block";
     },
     _showCancelLink: function(item) {
-        var cancelLink = this._find(item, 'cancel');
-        cancelLink.style.display = 'inline';
+		if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
+        	var cancelLink = this._find(item, 'cancel');
+        	cancelLink.style.display = 'inline';
+		}
     }
 });
 
