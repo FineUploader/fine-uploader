@@ -57,7 +57,8 @@
         $.each(new qq.FineUploaderBasic()._options.callbacks, function(prop, func) {
             var name, $callbackEl;
 
-            name = /^on(\w+)/.exec(prop)[1].toLowerCase();
+            name = /^on(\w+)/.exec(prop)[1];
+            name = name.substring(0, 1).toLowerCase() + name.substring(1);
             $callbackEl = $el;
 
             callbacks[prop] = function() {

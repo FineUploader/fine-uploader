@@ -78,7 +78,7 @@ qq.FineUploader = function(o){
         retry: {
             showAutoRetryNote: true,
             autoRetryNote: "Retrying {retryNum}/{maxAuto}...",
-            showRetryButton: false
+            showButton: false
         }
     }, true);
 
@@ -285,7 +285,7 @@ qq.extend(qq.FineUploader.prototype, {
                 this._find(item, 'finished').style.display = "inline-block";
                 qq.addClass(item, this._classes.failIcon)
             }
-            if (this._options.retry.showRetryButton) {
+            if (this._options.retry.showButton && !this._preventRetries[id]) {
                 qq.addClass(item, this._classes.retryable);
             }
             this._controlFailureTextDisplay(item, result);

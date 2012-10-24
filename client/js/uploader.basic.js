@@ -16,7 +16,6 @@ qq.FineUploaderBasic = function(o){
         },
         validation: {
             allowedExtensions: [],
-            acceptFiles: null,		// comma separated string of mime-types for browser to display in browse dialog
             sizeLimit: 0,
             minSizeLimit: 0,
             stopOnFirstInvalidFile: true
@@ -46,7 +45,8 @@ qq.FineUploaderBasic = function(o){
         retry: {
             enableAuto: false,
             maxAutoAttempts: 3,
-            delay: 5
+            delay: 5,
+            preventRetryResponseProperty: 'preventRetry'
         }
     };
 
@@ -61,6 +61,7 @@ qq.FineUploaderBasic = function(o){
 
     this._autoRetries = [];
     this._retryTimeouts = [];
+    this._preventRetries = [];
 
     this._handler = this._createUploadHandler();
 
@@ -150,6 +151,8 @@ qq.FineUploaderBasic.prototype = {
                 self._options.callbacks.onUpload(id, fileName, xhr);
             },
             onAutoRetry: function(id, fileName, responseJSON, xhr) {
+                self._preventRetries[id] = responseJSON[self._options.retry.preventRetryResponseProperty];
+
                 if (self._shouldAutoRetry(id, fileName, responseJSON)) {
                     self._maybeParseAndSendUploadError(id, fileName, responseJSON, xhr);
                     self._options.callbacks.onAutoRetry(id, fileName, self._autoRetries[id] + 1);
@@ -225,7 +228,7 @@ qq.FineUploaderBasic.prototype = {
         this._handler.retry(id);
     },
     _shouldAutoRetry: function(id, fileName, responseJSON) {
-        if (this._options.retry.enableAuto) {
+        if (!this._preventRetries[id] && this._options.retry.enableAuto) {
             if (this._autoRetries[id] === undefined) {
                 this._autoRetries[id] = 0;
             }
@@ -237,7 +240,11 @@ qq.FineUploaderBasic.prototype = {
     },
     //return false if we should not attempt the requested retry
     _onBeforeManualRetry: function(id) {
-        if (this._handler.isValid(id)) {
+        if (this._preventRetries[id]) {
+            this.log("Retries are forbidden for id " + id);
+            return false;
+        }
+        else if (this._handler.isValid(id)) {
             var fileName = this._handler.getName(id);
             this.log("Retrying upload for '" + fileName + "' (id: " + id + ")...");
             this._filesInProgress++;
