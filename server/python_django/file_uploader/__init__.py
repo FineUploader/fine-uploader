@@ -4,14 +4,15 @@
 @website: http://ferdinandsilva.com
 """
 import os
+from django.conf import settings
 from django.utils import simplejson as json
 
 
 class qqFileUploader(object):
 
-    def __init__(self, allowedExtensions=None, sizeLimit=1024):
+    def __init__(self, allowedExtensions=None, sizeLimit=None):
         self.allowedExtensions = allowedExtensions or []
-        self.sizeLimit = sizeLimit
+        self.sizeLimit = sizeLimit or settings.FILE_UPLOAD_MAX_MEMORY_SIZE
 
     def handleUpload(self, request, uploadDirectory):
         #read file info from stream
