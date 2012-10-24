@@ -40,4 +40,4 @@ class qqFileUploader(object):
 
     def _getExtensionFromFileName(self, fileName):
         filename, extension = os.path.splitext(fileName)
-        return extension
+        return extension.lower()
