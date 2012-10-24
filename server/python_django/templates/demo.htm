@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link href="media/style_and_scripts/fileuploader.css" rel="stylesheet" type="text/css">	
+    <link href="{{ STATIC_URL }}fileuploader.css" rel="stylesheet" type="text/css">	
     <style>
         body {font-size:13px; font-family:arial, sans-serif; width:700px; margin:100px auto;}
     </style>
@@ -18,7 +18,7 @@
             <!-- or put a simple form for upload here -->
         </noscript>
     </div>
-    <script src="{{ MEDIA_URL }}style_and_scripts/fileuploader.js" type="text/javascript"></script>
+    <script src="{{ STATIC_URL }}fileuploader.js" type="text/javascript"></script>
     <script type="text/javascript">
         function createUploader(){
             var uploader = new qq.FileUploader({
