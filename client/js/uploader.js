@@ -415,20 +415,22 @@ qq.extend(qq.FineUploader.prototype, {
         responseProperty = this._options.failedUploadTextDisplay.responseProperty;
 
         if (mode === 'custom') {
-            var failureReason = response[responseProperty];
+            failureReason = response[responseProperty];
             if (failureReason) {
                 if (failureReason.length > maxChars) {
                     shortFailureReason = failureReason.substring(0, maxChars) + '...';
                 }
-                qq.setText(this._find(item, 'failText'), shortFailureReason || failureReason);
-
-                if (this._options.failedUploadTextDisplay.enableTooltip) {
-                    this._showTooltip(item, failureReason);
-                }
             }
             else {
+				failureReason = this._options.text.failUpload;
                 this.log("'" + responseProperty + "' is not a valid property on the server response.");
             }
+
+			qq.setText(this._find(item, 'failText'), shortFailureReason || failureReason);
+
+   			if (this._options.failedUploadTextDisplay.enableTooltip) {
+       			this._showTooltip(item, failureReason);
+			}
         }
         else if (mode === 'none') {
             this._find(item, 'failText').style.display = 'none';

@@ -88,6 +88,9 @@
     display: none;
     color: #000000;
 }
+.qq-upload-cancel {
+	color: #000000;
+}
 .qq-upload-retryable .qq-upload-retry {
     display: inline;
 }
