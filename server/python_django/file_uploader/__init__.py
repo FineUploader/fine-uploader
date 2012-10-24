@@ -21,13 +21,15 @@ class qqFileUploader(object):
         #get file name
         fileName = uploaded.im_self.META["HTTP_X_FILE_NAME"]
         #check first for allowed file extensions
+        #read the file content, if it is not read when the request is multi part then the client get an error
+        fileContent = uploaded(fileSize)
         if self._getExtensionFromFileName(fileName) in self.allowedExtensions or ".*" in self.allowedExtensions:
             #check file size
             if fileSize <= self.sizeLimit:
                 #upload file
                 #write file
                 file = open(os.path.join(uploadDirectory, fileName), "wb+")
-                file.write(request.read(fileSize))
+                file.write(fileContent)
                 file.close()
                 return json.dumps({"success": True})
             else:
