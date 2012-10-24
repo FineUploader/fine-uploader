@@ -70,6 +70,8 @@ section for more details.**
 * Tested in IE7+, Firefox, Safari (OS X), and Chrome
 * Ability to upload files as soon as they are selected, or "queue" them for uploading at user's request later
 * Display specific error messages from server on upload failure (hover over failed upload item)
+* Ability to auto-retry failed uploads
+* Option to allow users to manually retry a failed upload
 
 <br/>
 ### License ###
@@ -377,6 +379,49 @@ other default values.  This works for all options that are, themselves, objects 
     </tbody>
 </table>
 
+##### `retry` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>enableAuto</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>If set to <code>true</code>, any error or non-200 response will prompt the uploader to automatically
+            attempt to upload the file again.</td>
+        </tr>
+        <tr>
+            <td>maxAutoAttempts</td>
+            <td>number</td>
+            <td>3</td>
+            <td>The maximum number of times the uploader will attempt to retry a failed upload.  Ignored if <code>enableAuto</code>
+            is <code>false</code>.</td>
+        </tr>
+        <tr>
+            <td>autoAttemptDelay</td>
+            <td>number</td>
+            <td>5</td>
+            <td>The number of seconds the uploader will wait in between automatic retry attempts.  Ignored if <code>enableAuto</code>
+            is <code>false</code>.</td>
+        </tr>
+        <tr>
+            <td>preventRetryResponseProperty</td>
+            <td>string</td>
+            <td>preventRetry</td>
+            <td>If this property is present in the server response and contains a value of <code>true</code>, the uploader
+            will not allow any further retries of this file (manual or automatic).</td>
+        </tr>
+    </tbody>
+</table>
+
+
 <br/>
 ### Options of FineUploader ###
 <table>
@@ -524,6 +569,44 @@ other default values.  This works for all options that are, themselves, objects 
     </tbody>
 </table>
 
+##### `retry` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>showAutoRetryNote</td>
+            <td>boolean</td>
+            <td>true</td>
+            <td>If set to <code>true</code>, a status message will appear next to the file during automatic retry attempts.</td>
+        </tr>
+        <tr>
+            <td>autoRetryNote</td>
+            <td>string</td>
+            <td>Retrying {retryNum}/{maxAuto}...</td>
+            <td>The text of the note that will optionally appear next to the file during automatic retry attempts.  Ignored
+            if <code>showAutoRetryNote</code> is <code>false</code>.</td>
+        </tr>
+        <tr>
+            <td>showRetryButton</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>If <code>true</code>, a button/link will appear next to a failed file after all retry attempts have been
+            exhausted, assuming the server has not prohibited further retry attempts via the <code>preventRetryResponseProperty</code>.
+            This button/link will allow the user to manually order the uploader to make another attempt at uploading the
+            failed file.  Note that this operation does respect the <code>maxConnections</code> value, so if all connections
+            are accounted for, the retry attempt will be queued until a connection opens up.</td>
+        </tr>
+    </tbody>
+</table>
+
+
 <br/>
 ### Styling FineUploader ###
 The `template` option contains default elements with default classes that make up the uploader as a whole in the DOM.  For example,
@@ -545,6 +628,7 @@ Note that this does not mean the file upload will begin at this point.  Return `
 * `onUpload(String id, String fileName)` - called just before the file upload begins
 * `onProgress(String id, String fileName, int uploadedBytes, int totalBytes)` - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
 * `onError(String id, String fileName, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
+* `onAutoRetry(String id, String fileName, String attemptNumber)` - called before each automatic retry attempt for a failed file.
 
 <br/>
 ### Changing alert/messages to something more user friendly ###
@@ -560,6 +644,7 @@ types with default text that can be overriden as well.
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
 * `clearStoredFiles()` - Clears the internal list of stored files.  Only applicable when `autoUpload` is set to false.
 * `getInProgress()` - Returns the number of files that are either currently uploading or files waiting in line for upload.
+* `retry(String fileId)` - Orders the uploader to make another attempt at uploading a specific file.  A NO-OP if the server prohibits retries on a failed file via the <code>preventRetryResponseProperty</code>.
 
 <br/>
 ### Internet Explorer Limitations ###
