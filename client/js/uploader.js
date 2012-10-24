@@ -18,6 +18,7 @@ qq.FineUploader = function(o){
         text: {
             uploadButton: 'Upload a file',
             cancelButton: 'Cancel',
+            retryButton: 'Retry',
             failUpload: 'Upload failed',
             dragZone: 'Drop files here to upload',
             formatProgress: "{percent}% of {total_size}"
@@ -36,6 +37,7 @@ qq.FineUploader = function(o){
             '<span class="qq-upload-file"></span>' +
             '<span class="qq-upload-size"></span>' +
             '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
+            '<a class="qq-upload-retry" href="#">{retryButtonText}</a>' +
             '<span class="qq-upload-failed-text">{failUploadtext}</span>' +
             '</li>',
         classes: {
@@ -49,8 +51,11 @@ qq.FineUploader = function(o){
             file: 'qq-upload-file',
             spinner: 'qq-upload-spinner',
             finished: 'qq-upload-finished',
+            retrying: 'qq-upload-retrying',
+            retryable: 'qq-upload-retryable',
             size: 'qq-upload-size',
             cancel: 'qq-upload-cancel',
+            retry: 'qq-upload-retry',
             failText: 'qq-upload-failed-text',
 
             // added to list item <li> when upload completes
@@ -69,6 +74,11 @@ qq.FineUploader = function(o){
         },
         messages: {
             tooManyFilesError: "You may only drop one file"
+        },
+        retry: {
+            showAutoRetryNote: true,
+            autoRetryNote: "Retrying {retryNum}/{maxAuto}...",
+            showButton: false
         }
     }, true);
 
@@ -81,6 +91,7 @@ qq.FineUploader = function(o){
     this._options.template     = this._options.template.replace(/\{dragZoneText\}/g, this._options.text.dragZone);
     this._options.template     = this._options.template.replace(/\{uploadButtonText\}/g, this._options.text.uploadButton);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.text.cancelButton);
+    this._options.fileTemplate = this._options.fileTemplate.replace(/\{retryButtonText\}/g, this._options.text.retryButton);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{failUploadtext\}/g, this._options.text.failUpload);
 
     this._element = this._options.element;
@@ -93,7 +104,7 @@ qq.FineUploader = function(o){
         this._button = this._createUploadButton(this._find(this._element, 'button'));
     }
 
-    this._bindCancelEvent();
+    this._bindCancelAndRetryEvents();
     this._setupDragDrop();
 };
 
@@ -249,17 +260,18 @@ qq.extend(qq.FineUploader.prototype, {
 
         qq.setText(size, text);
     },
-    _onComplete: function(id, fileName, result){
+    _onComplete: function(id, fileName, result, xhr){
         qq.FineUploaderBasic.prototype._onComplete.apply(this, arguments);
 
         var item = this._getItemByFileId(id);
 
-        qq.remove(this._find(item, 'progressBar'));
+        qq.removeClass(item, this._classes.retrying);
+        this._find(item, 'progressBar').style.display = 'none';
 
         if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
-            qq.remove(this._find(item, 'cancel'));
+            this._find(item, 'cancel').style.display = 'none';
         }
-        qq.remove(this._find(item, 'spinner'));
+        this._find(item, 'spinner').style.display = 'none';
 
         if (result.success){
             qq.addClass(item, this._classes.success);
@@ -273,6 +285,9 @@ qq.extend(qq.FineUploader.prototype, {
                 this._find(item, 'finished').style.display = "inline-block";
                 qq.addClass(item, this._classes.failIcon)
             }
+            if (this._options.retry.showButton && !this._preventRetries[id]) {
+                qq.addClass(item, this._classes.retryable);
+            }
             this._controlFailureTextDisplay(item, result);
         }
     },
@@ -285,10 +300,45 @@ qq.extend(qq.FineUploader.prototype, {
             this._find(item, 'progressBar').style.display = "block";
         }
 
-        var spinnerEl = this._find(item, 'spinner');
-        if (spinnerEl.style.display == "none") {
-            spinnerEl.style.display = "inline-block";
+        this._showSpinner(item);
+    },
+    _onBeforeAutoRetry: function(id) {
+        var item, progressBar, cancelLink, failTextEl, retryNumForDisplay, maxAuto, retryNote;
+
+        qq.FineUploaderBasic.prototype._onBeforeAutoRetry.apply(this, arguments);
+
+        item = this._getItemByFileId(id);
+        progressBar = this._find(item, 'progressBar');
+
+        this._showCancelLink(item);
+        progressBar.style.width = 0;
+        progressBar.style.display = 'none';
+
+        if (this._options.retry.showAutoRetryNote) {
+            failTextEl = this._find(item, 'failText');
+            retryNumForDisplay = this._autoRetries[id] + 1;
+            maxAuto = this._options.retry.maxAutoAttempts;
+
+            retryNote = this._options.retry.autoRetryNote.replace(/\{retryNum\}/g, retryNumForDisplay);
+            retryNote = retryNote.replace(/\{maxAuto\}/g, maxAuto);
+
+            qq.setText(failTextEl, retryNote);
+            if (retryNumForDisplay === 1) {
+                qq.addClass(item, this._classes.retrying);
+            }
         }
+    },
+     //return false if we should not attempt the requested retry
+    _onBeforeManualRetry: function(id) {
+        if (qq.FineUploaderBasic.prototype._onBeforeManualRetry.apply(this, arguments)) {
+            var item = this._getItemByFileId(id);
+            this._find(item, 'progressBar').style.width = 0;
+            qq.removeClass(item, this._classes.fail);
+            this._showSpinner(item);
+            this._showCancelLink(item);
+            return true;
+        }
+        return false;
     },
     _addToList: function(id, fileName){
         var item = qq.toElement(this._options.fileTemplate);
@@ -320,9 +370,9 @@ qq.extend(qq.FineUploader.prototype, {
         }
     },
     /**
-     * delegate click event for cancel link
+     * delegate click event for cancel & retry links
      **/
-    _bindCancelEvent: function(){
+    _bindCancelAndRetryEvents: function(){
         var self = this,
             list = this._listElement;
 
@@ -330,7 +380,7 @@ qq.extend(qq.FineUploader.prototype, {
             e = e || window.event;
             var target = e.target || e.srcElement;
 
-            if (qq.hasClass(target, self._classes.cancel)){
+            if (qq.hasClass(target, self._classes.cancel) || qq.hasClass(target, self._classes.retry)){
                 qq.preventDefault(e);
 
                 var item = target.parentNode;
@@ -338,8 +388,14 @@ qq.extend(qq.FineUploader.prototype, {
                     item = target = target.parentNode;
                 }
 
-                self._handler.cancel(item.qqFileId);
-                qq.remove(item);
+                if (qq.hasClass(target, self._classes.cancel)) {
+                    self._handler.cancel(item.qqFileId);
+                    qq.remove(item);
+                }
+                else {
+                    qq.removeClass(item, self._classes.retryable);
+                    self.retry(item.qqFileId);
+                }
             }
         });
     },
@@ -375,7 +431,7 @@ qq.extend(qq.FineUploader.prototype, {
             }
         }
         else if (mode === 'none') {
-            qq.remove(this._find(item, 'failText'));
+            this._find(item, 'failText').style.display = 'none';
         }
         else if (mode !== 'default') {
             this.log("failedUploadTextDisplay.mode value of '" + mode + "' is not valid");
@@ -384,6 +440,14 @@ qq.extend(qq.FineUploader.prototype, {
     //TODO turn this into a real tooltip, with click trigger (so it is usable on mobile devices).  See case #355 for details.
     _showTooltip: function(item, text) {
         item.title = text;
+    },
+    _showSpinner: function(item) {
+        var spinnerEl = this._find(item, 'spinner');
+        spinnerEl.style.display = "inline-block";
+    },
+    _showCancelLink: function(item) {
+        var cancelLink = this._find(item, 'cancel');
+        cancelLink.style.display = 'inline';
     }
 });
 

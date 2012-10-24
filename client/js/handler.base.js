@@ -9,9 +9,11 @@ qq.UploadHandlerAbstract = function(o){
         // maximum number of concurrent uploads
         maxConnections: 999,
         onProgress: function(id, fileName, loaded, total){},
-        onComplete: function(id, fileName, response){},
+        onComplete: function(id, fileName, response, xhr){},
         onCancel: function(id, fileName){},
-        onUpload: function(id, fileName, xhr){}
+        onUpload: function(id, fileName, xhr){},
+        onAutoRetry: function(id, fileName, response, xhr){}
+
     };
     qq.extend(this._options, o);
 
@@ -41,6 +43,15 @@ qq.UploadHandlerAbstract.prototype = {
         // if too many active uploads, wait...
         if (len <= this._options.maxConnections){
             this._upload(id, this._params[id]);
+        }
+    },
+    retry: function(id) {
+        var i = qq.indexOf(this._queue, id);
+        if (i >= 0) {
+            this._upload(id, this._params[id]);
+        }
+        else {
+            this.upload(id, this._params[id]);
         }
     },
     /**
@@ -95,5 +106,9 @@ qq.UploadHandlerAbstract.prototype = {
             var nextId = this._queue[max-1];
             this._upload(nextId, this._params[nextId]);
         }
-    }
+    },
+    /**
+     * Determine if the file exists.
+     */
+    isValid: function(id) {}
 };

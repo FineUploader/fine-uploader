@@ -55,6 +55,9 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
     getLoaded: function(id){
         return this._loaded[id] || 0;
     },
+    isValid: function(id) {
+        return this._files[id] !== undefined;
+    },
     /**
      * Sends the file identified by id and additional query params to the server
      * @param {Object} params name-value string pairs
@@ -131,10 +134,14 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         } catch(err){
             response = {};
         }
-        if (xhr.status !== 200){
-            this._options.onError(id, name, "XHR returned response code " + xhr.status);
+
+        if (xhr.status !== 200 || !response.success){
+            if (this._options.onAutoRetry(id, name, response, xhr)) {
+                return;
+            }
         }
-        this._options.onComplete(id, name, response);
+
+        this._options.onComplete(id, name, response, xhr);
 
         this._xhrs[id] = null;
         this._dequeue(id);
