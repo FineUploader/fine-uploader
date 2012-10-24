@@ -4,6 +4,7 @@
 @website: http://ferdinandsilva.com
 """
 import os
+from django.utils import simplejson as json
 
 
 class qqFileUploader(object):
@@ -28,11 +29,11 @@ class qqFileUploader(object):
                 file = open(os.path.join(uploadDirectory, fileName), "wb+")
                 file.write(request.read(fileSize))
                 file.close()
-                return "{success: true}"
+                return json.dumps({"success": True})
             else:
-                return '{"error": "File is too large."}'
+                return json.dumps({"error": "File is too large."})
         else:
-            return '{"error": "File has an invalid extension."}'
+            return json.dumps({"error": "File has an invalid extension."})
 
     def _getExtensionFromFileName(self, fileName):
         filename, extension = os.path.splitext(fileName)
