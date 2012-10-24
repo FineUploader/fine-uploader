@@ -594,7 +594,7 @@ other default values.  This works for all options that are, themselves, objects 
             if <code>showAutoRetryNote</code> is <code>false</code>.</td>
         </tr>
         <tr>
-            <td>showRetryButton</td>
+            <td>showButton</td>
             <td>boolean</td>
             <td>false</td>
             <td>If <code>true</code>, a button/link will appear next to a failed file after all retry attempts have been
