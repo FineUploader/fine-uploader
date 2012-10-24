@@ -45,7 +45,7 @@ qq.FineUploaderBasic = function(o){
         retry: {
             enableAuto: false,
             maxAutoAttempts: 3,
-            delay: 5,
+            autoAttemptDelay: 5,
             preventRetryResponseProperty: 'preventRetry'
         }
     };
@@ -160,7 +160,7 @@ qq.FineUploaderBasic.prototype = {
 
                     self._retryTimeouts[id] = setTimeout(function() {
                         self._onAutoRetry(id, fileName, responseJSON)
-                    }, self._options.retry.delay * 1000);
+                    }, self._options.retry.autoAttemptDelay * 1000);
 
                     return true;
                 }
@@ -220,7 +220,7 @@ qq.FineUploaderBasic.prototype = {
         this._button.reset();
     },
     _onBeforeAutoRetry: function(id, fileName) {
-        this.log("Waiting " + this._options.retry.delay + " seconds before retrying " + fileName + "...");
+        this.log("Waiting " + this._options.retry.autoAttemptDelay + " seconds before retrying " + fileName + "...");
     },
     _onAutoRetry: function(id, fileName, responseJSON) {
         this.log("Retrying " + fileName + "...");
