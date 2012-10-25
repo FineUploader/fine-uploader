@@ -63,7 +63,8 @@ section for more details.**
 * Multiple file select, progress-bar in FF, Chrome, Safari
 * Drag-and-drop file select in FF, Chrome, Safari (OS X)
 * Uploads are cancelable
-* No external dependencies
+* No external dependencies **at all** if using FineUploader or FineUploaderBasic.  If using the optional jQuery wrapper, jQuery is of course required.
+* FineUploaderBasic only requires the associated Fine Uploader javascript file.  All Fine Uploader css and image files can be omitted.
 * Doesn't use Flash
 * Fully working with HTTPS
 * Keyboard support in FF, Chrome, Safari
@@ -175,7 +176,7 @@ Please see the above code fragment, where we call the `setParams` instance funct
 <br/>
 ### qq.FineUploader - Setting up full upload widget ###
 Include the uploader javascript file and, optionally, `fineuploader.css` along with any images provided into your page.
-Create container element.
+Create container element.  If you are only making use of FineUploaderBasic, you can omit the css and image(s) file(s).
 
 ```html
 <div id="fine-uploader">
@@ -764,7 +765,7 @@ immediate access to new features without having to wait for a release.
 In the future, I may integrate a CI system that creates nightly snapshot builds, but that is a pretty low-priority,
 especially since building your own snapshot version should be pretty easy.
 
-Don't forget to include the css and image files in your project.
+Don't forget to include the css and image files in your project if you are using FineUploader.
 
 
 <br/>
