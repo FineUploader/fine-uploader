@@ -2,7 +2,7 @@
 ## 3.0 is the next release!  Big featues planned!  (date TBD) ##
 
 Actively developed by Ray Nicholus.
-Create by by Andrew Valums.
+Created by by Andrew Valums.
 
 
 <br/>
