@@ -1,6 +1,6 @@
-# Fine Uploader 3.0-SNAPSHOT (work in progress) #
+# Fine Uploader 3.0-SNAPSHOT (work in progress) # 
 
-Actively developed by Ray Nicholus.
+Actively developed by Ray Nicholus.     
 Created by by Andrew Valums.
 
 
