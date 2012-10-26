@@ -6,6 +6,7 @@ Created by by Andrew Valums.
 
 <br/>
 ### Quick Links ###
+* [Upgrading from 2.1.2](#upgrading-from-2.1.2)
 * [Download](https://github.com/valums/file-uploader/wiki/Releases)
 * [Support](https://groups.google.com/forum/#!forum/fineuploader)
 * [@fineuploader](https://twitter.com/fineuploader)
@@ -84,6 +85,11 @@ Basic uploader is easier extendable, and doesn't limit possible customization.
 
 `qq.FineUploader` extends `qq.FineUploaderBasic`, so that all the options present
 in the basic uploader also exist in the full widget.
+
+
+<br/>
+### Upgrading From 2.1.2 ###
+TODO
 
 
 <br/>
