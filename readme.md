@@ -1,15 +1,17 @@
 # Fine Uploader 3.0-SNAPSHOT (work in progress) #
 
-Originally developed/designed by Andrew Valums.   
-Currently maintained by Ray Nicholus.
+Actively developed by Ray Nicholus.
+Created by by Andrew Valums.
 
-*If you have found Fine Uploader useful, please consider [donating](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted) 
-to support continued maintenance and evolution of this library.*
 
 <br/>
-### Announcements ###
-_September 26, 2012_ - Work on Fine Uploader 3.0 has started.  Check out the [3.0 branch](https://github.com/valums/file-uploader/tree/3.0) 
-from time to time if you are interested in the progress.  Also, feel free to add ideas for 3.0 using the [issue tracker](https://github.com/valums/file-uploader/issues).
+### Quick Links ###
+* [Download](https://github.com/valums/file-uploader/wiki/Releases)
+* [Support](https://groups.google.com/forum/#!forum/fineuploader)
+* [3.0](https://github.com/valums/file-uploader/tree/3.0)
+* [@fineuploader](https://twitter.com/fineuploader)
+* [Homepage](http://fineuploader.com)
+* [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
 
 <br/>
@@ -45,12 +47,6 @@ FF3.6+, Safari4+, Chrome and falls back to hidden-iframe-based upload in other b
 providing good user experience everywhere.
 
 It does not use Flash, jQuery, or any other external libraries.
-
-Take a look at the new evolving [Demo](http://fineuploader.com) page.
-
-Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com/forum/#!forum/fineuploader).
-
-Looking for the [comment thread](http://fineuploader.com/discussions.html) from the valums.com website? It is still available, but please use the [forum](https://groups.google.com/forum/#!forum/fineuploader) instead.
 
 <br/>
 ### Downloading Fine Uploader ###
