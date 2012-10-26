@@ -6,7 +6,7 @@ Created by by Andrew Valums.
 
 <br/>
 ### Quick Links ###
-* [Upgrading from 2.1.2](#upgrading-from-2.1.2)
+* [Upgrading from 2.1.2](#upgrading-from-212)
 * [Download](https://github.com/valums/file-uploader/wiki/Releases)
 * [Support](https://groups.google.com/forum/#!forum/fineuploader)
 * [@fineuploader](https://twitter.com/fineuploader)
