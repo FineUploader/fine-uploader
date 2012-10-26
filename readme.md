@@ -17,7 +17,6 @@ Created by by Andrew Valums.
 <br/>
 ###Table of Contents###
 - [Summary](#summary)
-- [Downloading Fine Uploader](#downloading-fine-uploader)
 - [Features](#features)
 - [License](#license)
 - [Getting started](#getting-started)
@@ -47,12 +46,6 @@ FF3.6+, Safari4+, Chrome and falls back to hidden-iframe-based upload in other b
 providing good user experience everywhere.
 
 It does not use Flash, jQuery, or any other external libraries.
-
-<br/>
-### Downloading Fine Uploader ###
-**You can [download released versions](https://github.com/valums/file-uploader/wiki/Releases), or, if you are more daring,
-use the snapshot version in the 3.0 branch  Please see the [building and using the snapshot version](#building-and-using-the-snapshot-version) 
-section for more details.**  
 
 <br/>
 ### Features ###
