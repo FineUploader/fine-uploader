@@ -1,7 +1,7 @@
 # Fine Uploader 2.1.2 (Released October 25) #
 ## 3.0 is the next release!  Big featues planned!  (date TBD) ##
 
-Actively developed by Ray Nicholus.
+Actively developed by Ray Nicholus.   
 Created by by Andrew Valums.
 
 
