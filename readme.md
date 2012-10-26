@@ -1,24 +1,23 @@
 # Fine Uploader 2.1.2 (Released October 25) #
 ## 3.0 is the next release!  Big featues planned!  (date TBD) ##
 
-Actively developed by Ray Nicholus.
-Create by by Andrew Valums.
+Actively developed by Ray Nicholus.   
+Created by by Andrew Valums.
 
 
 <br/>
 ### Quick Links ###
-[Download](https://github.com/valums/file-uploader/wiki/Releases)
-[Support](https://groups.google.com/forum/#!forum/fineuploader)
-[3.0](https://github.com/valums/file-uploader/tree/3.0)
-[@fineuploader](https://twitter.com/fineuploader)
-[Homepage](http://fineuploader.com)
-[Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
+* [Download](https://github.com/valums/file-uploader/wiki/Releases)   
+* [Support](https://groups.google.com/forum/#!forum/fineuploader)      
+* [3.0](https://github.com/valums/file-uploader/tree/3.0)     
+* [@fineuploader](https://twitter.com/fineuploader)     
+* [Homepage](http://fineuploader.com)     
+* [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
 
 <br/>
 ###Table of Contents###
 - [Summary](#summary)
-- [Releases/Downloads](#releasesdownloads)
 - [Upgrading from Fine Uploader 2.0](#upgrading-from-fine-uploader-20)
 - [Features](#features)
 - [License](#license)
@@ -54,7 +53,6 @@ You can see all bugs and features tackled in the 2.1 release [here](https://gith
 the 2.1.1 release [here](https://github.com/valums/file-uploader/issues?milestone=8&state=closed), and the 2.1.2 release [here](https://github.com/valums/file-uploader/issues?milestone=4&state=closed).
 If you are only interested in a summary, here are some of the more notable changes:
 
-<br/>
 ###### Features/Enhancements ######
 * Added option to allow all valid files to upload, skipping only invalid files
 * Added gradually filling progress bar (for browsers that support XHR upload/file API)
