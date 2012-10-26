@@ -8,7 +8,6 @@ Created by by Andrew Valums.
 ### Quick Links ###
 * [Download](https://github.com/valums/file-uploader/wiki/Releases)
 * [Support](https://groups.google.com/forum/#!forum/fineuploader)
-* [3.0](https://github.com/valums/file-uploader/tree/3.0)
 * [@fineuploader](https://twitter.com/fineuploader)
 * [Homepage](http://fineuploader.com)
 * [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
