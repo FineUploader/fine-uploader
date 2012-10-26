@@ -18,7 +18,6 @@ Created by by Andrew Valums.
 <br/>
 ###Table of Contents###
 - [Summary](#summary)
-- [Releases/Downloads](#releasesdownloads)
 - [Upgrading from Fine Uploader 2.0](#upgrading-from-fine-uploader-20)
 - [Features](#features)
 - [License](#license)
