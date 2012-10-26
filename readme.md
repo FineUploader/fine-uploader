@@ -1,16 +1,19 @@
-# Fine Uploader 2.2-SNAPSHOT (planned release date of October 27) #
+# Fine Uploader 2.1.2 (Released October 25) #
+## 3.0 is the next release!  Big featues planned!  (date TBD) ##
 
-Originally developed/designed by Andrew Valums.   
-Currently maintained by Ray Nicholus.
+Actively developed by Ray Nicholus.
+Create by by Andrew Valums.
 
-*If you have found Fine Uploader useful, please consider [donating](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted) 
-to support continued maintenance and evolution of this library.*
 
 <br/>
-### Announcements ###
-_October 11, 2012_ - Interested in short status/issue updates?  [Follow Fine Uploader on Twitter!](https://twitter.com/fineuploader)
-Also, check out the [3.0 branch](https://github.com/valums/file-uploader/tree/3.0) from time to time if you are interested 
-in the progress.
+### Quick Links ###
+[Download](https://github.com/valums/file-uploader/wiki/Releases)
+[Support](https://groups.google.com/forum/#!forum/fineuploader)
+[3.0](https://github.com/valums/file-uploader/tree/3.0)
+[@fineuploader](https://twitter.com/fineuploader)
+[Homepage](http://fineuploader.com)
+[Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
+
 
 <br/>
 ###Table of Contents###
@@ -44,24 +47,11 @@ providing good user experience everywhere.
 
 It does not use Flash, jQuery, or any external libraries.
 
-Take a look at the new evolving [Demo](http://fineuploader.com) page.
-
-Interested in short status/issue updates?  [Follow Fine Uploader on Twitter](https://twitter.com/fineuploader)!
-
-Questions?  Comments?  Problems?  Post in the [forums](https://groups.google.com/forum/#!forum/fineuploader).
-
-Looking for the [comment thread](http://fineuploader.com/discussions.html) from the valums.com website? It is still available, but please use the [forum](https://groups.google.com/forum/#!forum/fineuploader) instead.
-
-
-<br/>
-### Releases/Downloads ###
-**You can [download released versions](https://github.com/valums/file-uploader/wiki/Releases), or, if you are more daring,
-use the snapshot version on the master branch.**  
-
 
 <br/>
 ### Upgrading from Fine Uploader 2.0 ###
-You can see all bugs and features tackled in the 2.1 release [here](https://github.com/valums/file-uploader/issues?milestone=2&page=1&state=closed).
+You can see all bugs and features tackled in the 2.1 release [here](https://github.com/valums/file-uploader/issues?milestone=2&page=1&state=closed),
+the 2.1.1 release [here](https://github.com/valums/file-uploader/issues?milestone=8&state=closed), and the 2.1.2 release [here](https://github.com/valums/file-uploader/issues?milestone=4&state=closed).
 If you are only interested in a summary, here are some of the more notable changes:
 
 <br/>
@@ -74,9 +64,10 @@ If you are only interested in a summary, here are some of the more notable chang
 * Added ability to determine if dropzones are hidden or not via the `hideDropzones` options
 * Added ability to hide default dropzone via the `disableDefaultDropzone` option
 * Option to display dynamic custom error text next to each failed upload.  See the `failedUploadTextDisplay` option documentation for more details.
+* New homepage, thanks to [Tellibus](http://tellibus.com/)!
 
 ###### Bug Fixes ######
-Please see the list of issues [here](https://github.com/valums/file-uploader/issues?labels=bug&milestone=2&page=1&state=closed).
+Please see the list of issues above, filtering by "bug".
 
 
 <br/>
