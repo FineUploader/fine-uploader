@@ -1,4 +1,10 @@
 $(document).ready(function() {
+    var errorHandler = function(event, id, fileName, reason) {
+        if (window.console) {
+            console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+        }
+    };
+
     var uploader = new qq.FineUploader({
         element: $('#basicUploadSuccessExample')[0],
         debug: true,
@@ -6,9 +12,7 @@ $(document).ready(function() {
             endpoint: "/upload/receiver"
         },
         callbacks: {
-            onError: function(id, fileName, reason) {
-                console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
-            }
+            onError: errorHandler
         }
     });
 
@@ -22,9 +26,7 @@ $(document).ready(function() {
             endpoint: "/upload/receiver"
         },
         callbacks: {
-            onError: function(id, fileName, reason) {
-                console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
-            }
+            onError: errorHandler
         }
     });
 
@@ -36,9 +38,7 @@ $(document).ready(function() {
     var uploader3 = new qq.FineUploader({
         element: $('#basicUploadFailureExample')[0],
         callbacks: {
-            onError: function(id, fileName, reason) {
-                console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
-            }
+            onError: errorHandler
         },
         request: {
             endpoint: "/upload/receiver",
@@ -65,9 +65,7 @@ $(document).ready(function() {
             uploadButton: "Click Or Drop"
         },
         callbacks: {
-            onError: function(id, fileName, reason) {
-                console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
-            }
+            onError: errorHandler
         }
     });
 
@@ -79,9 +77,7 @@ $(document).ready(function() {
             endpoint: "/upload/receiver",
         },
         callbacks: {
-            onError: function(id, fileName, reason) {
-                console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
-            }
+            onError: errorHandler
         },
         button: $('#fubUploadButton')[0]
     });

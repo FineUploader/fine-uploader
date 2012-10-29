@@ -21,7 +21,8 @@ qq.FineUploader = function(o){
             retryButton: 'Retry',
             failUpload: 'Upload failed',
             dragZone: 'Drop files here to upload',
-            formatProgress: "{percent}% of {total_size}"
+            formatProgress: "{percent}% of {total_size}",
+            waitingForResponse: "Processing..."
         },
         template: '<div class="qq-uploader">' +
             ((!this._options.dragAndDrop || !this._options.dragAndDrop.disableDefaultDropzone) ? '<div class="qq-upload-drop-area"><span>{dragZoneText}</span></div>' : '') +
@@ -38,7 +39,7 @@ qq.FineUploader = function(o){
             '<span class="qq-upload-size"></span>' +
             '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
             '<a class="qq-upload-retry" href="#">{retryButtonText}</a>' +
-            '<span class="qq-upload-failed-text">{failUploadtext}</span>' +
+            '<span class="qq-upload-status-text">{statusText}</span>' +
             '</li>',
         classes: {
             // used to get elements from templates
@@ -56,7 +57,7 @@ qq.FineUploader = function(o){
             size: 'qq-upload-size',
             cancel: 'qq-upload-cancel',
             retry: 'qq-upload-retry',
-            failText: 'qq-upload-failed-text',
+            statusText: 'qq-upload-status-text',
 
             // added to list item <li> when upload completes
             // used in css to hide progress spinner
@@ -92,7 +93,7 @@ qq.FineUploader = function(o){
     this._options.template     = this._options.template.replace(/\{uploadButtonText\}/g, this._options.text.uploadButton);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.text.cancelButton);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{retryButtonText\}/g, this._options.text.retryButton);
-    this._options.fileTemplate = this._options.fileTemplate.replace(/\{failUploadtext\}/g, this._options.text.failUpload);
+    this._options.fileTemplate = this._options.fileTemplate.replace(/\{statusText\}/g, "");
 
     this._element = this._options.element;
     this._element.innerHTML = this._options.template;
@@ -130,13 +131,13 @@ qq.extend(qq.FineUploader.prototype, {
     _storeFileForLater: function(id) {
         qq.FineUploaderBasic.prototype._storeFileForLater.apply(this, arguments);
         var item = this._getItemByFileId(id);
-        this._find(item, 'spinner').style.display = "none";
+        qq(this._find(item, 'spinner')).hide();
     },
     /**
      * Gets one of the elements listed in this._options.classes
      **/
     _find: function(parent, type){
-        var element = qq.getByClass(parent, this._options.classes[type])[0];
+        var element = qq(parent).getByClass(this._options.classes[type])[0];
         if (!element){
             throw new Error('element not found ' + type);
         }
@@ -153,21 +154,21 @@ qq.extend(qq.FineUploader.prototype, {
         var dz = new qq.UploadDropZone({
             element: dropArea,
             onEnter: function(e){
-                qq.addClass(dropArea, self._classes.dropActive);
+                qq(dropArea).addClass(self._classes.dropActive);
                 e.stopPropagation();
             },
             onLeave: function(e){
                 //e.stopPropagation();
             },
             onLeaveNotDescendants: function(e){
-                qq.removeClass(dropArea, self._classes.dropActive);
+                qq(dropArea).removeClass(self._classes.dropActive);
             },
             onDrop: function(e){
                 if (self._options.dragAndDrop.hideDropzones) {
-                    dropArea.style.display = 'none';
+                    qq(dropArea).hide();
                 }
 
-                qq.removeClass(dropArea, self._classes.dropActive);
+                qq(dropArea).removeClass(self._classes.dropActive);
                 if (e.dataTransfer.files.length > 1 && !self._options.multiple) {
                     self._error('tooManyFilesError', "");
                 }
@@ -180,7 +181,7 @@ qq.extend(qq.FineUploader.prototype, {
         this.addDisposer(function() { dz.dispose(); });
 
         if (this._options.dragAndDrop.hideDropzones) {
-            dropArea.style.display = 'none';
+            qq(dropArea).hide();
         }
     },
     _setupDragDrop: function(){
@@ -203,7 +204,7 @@ qq.extend(qq.FineUploader.prototype, {
         // Any volunteers to enable & test this for IE10?
         if (!this._options.dragAndDrop.disableDefaultDropzone && !qq.ie()) {
             this._attach(document, 'dragenter', function(e){
-                if (qq.hasClass(dropArea, self._classes.dropDisabled)) return;
+                if (qq(dropArea).hasClass(self._classes.dropDisabled)) return;
 
                 dropArea.style.display = 'block';
                 for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'block'; }
@@ -213,14 +214,14 @@ qq.extend(qq.FineUploader.prototype, {
         this._attach(document, 'dragleave', function(e){
             if (self._options.dragAndDrop.hideDropzones && qq.FineUploader.prototype._leaving_document_out(e)) {
                 for (i=0; i < dropzones.length; i++) {
-                    dropzones[i].style.display = 'none';
+                    qq(dropzones[i]).hide();
                 }
             }
         });
-        qq.attach(document, 'drop', function(e){
+        qq(document).attach('drop', function(e){
             if (self._options.dragAndDrop.hideDropzones) {
                 for (i=0; i < dropzones.length; i++) {
-                    dropzones[i].style.display = 'none';
+                    qq(dropzones[i]).hide();
                 }
             }
             e.preventDefault();
@@ -238,7 +239,10 @@ qq.extend(qq.FineUploader.prototype, {
 
         if (loaded === total) {
             var cancelLink = this._find(item, 'cancel');
-            cancelLink.style.display = 'none';
+            qq(cancelLink).hide();
+
+            qq(this._find(item, 'progressBar')).hide();
+            qq(this._find(item, 'statusText')).setText(this._options.text.waitingForResponse);
         }
 
         var size = this._find(item, 'size');
@@ -258,35 +262,37 @@ qq.extend(qq.FineUploader.prototype, {
         // Update progress bar <span> tag
         this._find(item, 'progressBar').style.width = percent + '%';
 
-        qq.setText(size, text);
+        qq(size).setText(text);
     },
     _onComplete: function(id, fileName, result, xhr){
         qq.FineUploaderBasic.prototype._onComplete.apply(this, arguments);
 
         var item = this._getItemByFileId(id);
 
-        qq.removeClass(item, this._classes.retrying);
-        this._find(item, 'progressBar').style.display = 'none';
+        qq(this._find(item, 'statusText')).clearText();
+
+        qq(item).removeClass(this._classes.retrying);
+        qq(this._find(item, 'progressBar')).hide();
 
         if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
-            this._find(item, 'cancel').style.display = 'none';
+            qq(this._find(item, 'cancel')).hide();
         }
-        this._find(item, 'spinner').style.display = 'none';
+        qq(this._find(item, 'spinner')).hide();
 
         if (result.success){
-            qq.addClass(item, this._classes.success);
+            qq(item).addClass(this._classes.success);
             if (this._classes.successIcon) {
                 this._find(item, 'finished').style.display = "inline-block";
-                qq.addClass(item, this._classes.successIcon)
+                qq(item).addClass(this._classes.successIcon);
             }
         } else {
-            qq.addClass(item, this._classes.fail);
+            qq(item).addClass(this._classes.fail);
             if (this._classes.failIcon) {
                 this._find(item, 'finished').style.display = "inline-block";
-                qq.addClass(item, this._classes.failIcon)
+                qq(item).addClass(this._classes.failIcon);
             }
             if (this._options.retry.showButton && !this._preventRetries[id]) {
-                qq.addClass(item, this._classes.retryable);
+                qq(item).addClass(this._classes.retryable);
             }
             this._controlFailureTextDisplay(item, result);
         }
@@ -312,19 +318,19 @@ qq.extend(qq.FineUploader.prototype, {
 
         this._showCancelLink(item);
         progressBar.style.width = 0;
-        progressBar.style.display = 'none';
+        qq(progressBar).hide();
 
         if (this._options.retry.showAutoRetryNote) {
-            failTextEl = this._find(item, 'failText');
+            failTextEl = this._find(item, 'statusText');
             retryNumForDisplay = this._autoRetries[id] + 1;
             maxAuto = this._options.retry.maxAutoAttempts;
 
             retryNote = this._options.retry.autoRetryNote.replace(/\{retryNum\}/g, retryNumForDisplay);
             retryNote = retryNote.replace(/\{maxAuto\}/g, maxAuto);
 
-            qq.setText(failTextEl, retryNote);
+            qq(failTextEl).setText(retryNote);
             if (retryNumForDisplay === 1) {
-                qq.addClass(item, this._classes.retrying);
+                qq(item).addClass(this._classes.retrying);
             }
         }
     },
@@ -333,7 +339,7 @@ qq.extend(qq.FineUploader.prototype, {
         if (qq.FineUploaderBasic.prototype._onBeforeManualRetry.apply(this, arguments)) {
             var item = this._getItemByFileId(id);
             this._find(item, 'progressBar').style.width = 0;
-            qq.removeClass(item, this._classes.fail);
+            qq(item).removeClass(this._classes.fail);
             this._showSpinner(item);
             this._showCancelLink(item);
             return true;
@@ -344,14 +350,14 @@ qq.extend(qq.FineUploader.prototype, {
         var item = qq.toElement(this._options.fileTemplate);
         if (this._options.disableCancelForFormUploads && !qq.UploadHandlerXhr.isSupported()) {
             var cancelLink = this._find(item, 'cancel');
-            qq.remove(cancelLink);
+            qq(cancelLink).remove();
         }
 
         item.qqFileId = id;
 
         var fileElement = this._find(item, 'file');
-        qq.setText(fileElement, this._formatFileName(fileName));
-        this._find(item, 'size').style.display = 'none';
+        qq(fileElement).setText(this._formatFileName(fileName));
+        qq(this._find(item, 'size')).hide();
         if (!this._options.multiple) this._clearList();
         this._listElement.appendChild(item);
     },
@@ -380,7 +386,7 @@ qq.extend(qq.FineUploader.prototype, {
             e = e || window.event;
             var target = e.target || e.srcElement;
 
-            if (qq.hasClass(target, self._classes.cancel) || qq.hasClass(target, self._classes.retry)){
+            if (qq(target).hasClass(self._classes.cancel) || qq(target).hasClass(self._classes.retry)){
                 qq.preventDefault(e);
 
                 var item = target.parentNode;
@@ -388,12 +394,12 @@ qq.extend(qq.FineUploader.prototype, {
                     item = target = target.parentNode;
                 }
 
-                if (qq.hasClass(target, self._classes.cancel)) {
+                if (qq(target).hasClass(self._classes.cancel)) {
                     self._handler.cancel(item.qqFileId);
-                    qq.remove(item);
+                    qq(item).remove();
                 }
                 else {
-                    qq.removeClass(item, self._classes.retryable);
+                    qq(item).removeClass(self._classes.retryable);
                     self.retry(item.qqFileId);
                 }
             }
@@ -426,16 +432,16 @@ qq.extend(qq.FineUploader.prototype, {
                 this.log("'" + responseProperty + "' is not a valid property on the server response.");
             }
 
-			qq.setText(this._find(item, 'failText'), shortFailureReason || failureReason);
+			qq(this._find(item, 'statusText')).setText(shortFailureReason || failureReason);
 
    			if (this._options.failedUploadTextDisplay.enableTooltip) {
        			this._showTooltip(item, failureReason);
 			}
         }
-        else if (mode === 'none') {
-            this._find(item, 'failText').style.display = 'none';
+        else if (mode === 'default') {
+            qq(this._find(item, 'statusText')).setText(this._options.text.failUpload);
         }
-        else if (mode !== 'default') {
+        else if (mode !== 'none') {
             this.log("failedUploadTextDisplay.mode value of '" + mode + "' is not valid");
         }
     },
@@ -483,11 +489,11 @@ qq.UploadDropZone.prototype = {
 
             // for these cases we need to catch onDrop to reset dropArea
             if (this._dragover_should_be_canceled){
-                qq.attach(document, 'dragover', function(e){
+                qq(document).attach('dragover', function(e){
                     e.preventDefault();
                 });
             } else {
-                qq.attach(document, 'dragover', function(e){
+                qq(document).attach('dragover', function(e){
                     if (e.dataTransfer){
                         e.dataTransfer.dropEffect = 'none';
                         e.preventDefault();
@@ -528,7 +534,7 @@ qq.UploadDropZone.prototype = {
 
             var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
             // do not fire when moving a mouse over a descendant
-            if (qq.contains(this, relatedTarget)) return;
+            if (qq(this).contains(relatedTarget)) return;
 
             self._options.onLeaveNotDescendants(e);
         });

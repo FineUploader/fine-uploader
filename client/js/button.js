@@ -17,7 +17,7 @@ qq.UploadButton = function(o){
     this._element = this._options.element;
 
     // make button suitable container for input
-    qq.css(this._element, {
+    qq(this._element).css({
         position: 'relative',
         overflow: 'hidden',
         // Make sure browse button is in the right side
@@ -36,10 +36,10 @@ qq.UploadButton.prototype = {
     /* cleans/recreates the file input */
     reset: function(){
         if (this._input.parentNode){
-            qq.remove(this._input);
+            qq(this._input).remove();
         }
 
-        qq.removeClass(this._element, this._options.focusClass);
+        qq(this._element).removeClass(this._options.focusClass);
         this._input = this._createInput();
     },
     _createInput: function(){
@@ -54,7 +54,7 @@ qq.UploadButton.prototype = {
         input.setAttribute("type", "file");
         input.setAttribute("name", this._options.name);
 
-        qq.css(input, {
+        qq(input).css({
             position: 'absolute',
             // in Opera only 'browse' button
             // is clickable and it is located at
@@ -78,16 +78,16 @@ qq.UploadButton.prototype = {
         });
 
         this._attach(input, 'mouseover', function(){
-            qq.addClass(self._element, self._options.hoverClass);
+            qq(self._element).addClass(self._options.hoverClass);
         });
         this._attach(input, 'mouseout', function(){
-            qq.removeClass(self._element, self._options.hoverClass);
+            qq(self._element).removeClass(self._options.hoverClass);
         });
         this._attach(input, 'focus', function(){
-            qq.addClass(self._element, self._options.focusClass);
+            qq(self._element).addClass(self._options.focusClass);
         });
         this._attach(input, 'blur', function(){
-            qq.removeClass(self._element, self._options.focusClass);
+            qq(self._element).removeClass(self._options.focusClass);
         });
 
         // IE and Opera, unfortunately have 2 tab stops on file input

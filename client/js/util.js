@@ -1,3 +1,135 @@
+var qq = function(element) {
+    "use strict";
+
+    return {
+        hide: function() {
+            element.style.display = 'none';
+            return this;
+        },
+
+        /** Returns the function which detaches attached event */
+        attach: function(type, fn) {
+            if (element.addEventListener){
+                element.addEventListener(type, fn, false);
+            } else if (element.attachEvent){
+                element.attachEvent('on' + type, fn);
+            }
+            return function() {
+                qq(element).detach(type, fn);
+            };
+        },
+
+        detach: function(type, fn) {
+            if (element.removeEventListener){
+                element.removeEventListener(type, fn, false);
+            } else if (element.attachEvent){
+                element.detachEvent('on' + type, fn);
+            }
+            return this;
+        },
+
+        contains: function(descendant) {
+            // compareposition returns false in this case
+            if (element == descendant) {
+                return true;
+            }
+
+            if (element.contains){
+                return element.contains(descendant);
+            } else {
+                return !!(descendant.compareDocumentPosition(element) & 8);
+            }
+        },
+
+        /**
+         * Insert this element before elementB.
+         */
+        insertBefore: function(elementB) {
+            elementB.parentNode.insertBefore(element, elementB);
+            return this;
+        },
+
+        remove: function() {
+            element.parentNode.removeChild(element);
+            return this;
+        },
+
+        /**
+         * Sets styles for an element.
+         * Fixes opacity in IE6-8.
+         */
+        css: function(styles) {
+            if (styles.opacity != null){
+                if (typeof element.style.opacity != 'string' && typeof(element.filters) != 'undefined'){
+                    styles.filter = 'alpha(opacity=' + Math.round(100 * styles.opacity) + ')';
+                }
+            }
+            qq.extend(element.style, styles);
+
+            return this;
+        },
+
+        hasClass: function(name) {
+            var re = new RegExp('(^| )' + name + '( |$)');
+            return re.test(element.className);
+        },
+
+        addClass: function(name) {
+            if (!qq(element).hasClass(name)){
+                element.className += ' ' + name;
+            }
+            return this;
+        },
+
+        removeClass: function(name) {
+            var re = new RegExp('(^| )' + name + '( |$)');
+            element.className = element.className.replace(re, ' ').replace(/^\s+|\s+$/g, "");
+            return this;
+        },
+
+        getByClass: function(className) {
+            if (element.querySelectorAll){
+                return element.querySelectorAll('.' + className);
+            }
+
+            var result = [];
+            var candidates = element.getElementsByTagName("*");
+            var len = candidates.length;
+
+            for (var i = 0; i < len; i++){
+                if (qq(candidates[i]).hasClass(className)){
+                    result.push(candidates[i]);
+                }
+            }
+            return result;
+        },
+
+        children: function() {
+            var children = [],
+                child = element.firstChild;
+
+            while (child){
+                if (child.nodeType == 1){
+                    children.push(child);
+                }
+                child = child.nextSibling;
+            }
+
+            return children;
+        },
+
+        setText: function(text) {
+            element.innerText = text;
+            element.textContent = text;
+            return this;
+        },
+
+        clearText: function() {
+            return qq(element).setText("");
+        }
+    };
+};
+
 qq.isObject = function(variable) {
     "use strict";
     return variable !== null && variable && typeof(variable) === "object" && variable.constructor === Object;
@@ -58,54 +190,11 @@ qq.windows  = function(){ return navigator.platform == "Win32"; }
 //
 // Events
 
-/** Returns the function which detaches attached event */
-qq.attach = function(element, type, fn){
-    if (element.addEventListener){
-        element.addEventListener(type, fn, false);
-    } else if (element.attachEvent){
-        element.attachEvent('on' + type, fn);
-    }
-    return function() {
-        qq.detach(element, type, fn)
-    }
-};
-qq.detach = function(element, type, fn){
-    if (element.removeEventListener){
-        element.removeEventListener(type, fn, false);
-    } else if (element.attachEvent){
-        element.detachEvent('on' + type, fn);
-    }
-};
-
 qq.preventDefault = function(e){
     if (e.preventDefault){
         e.preventDefault();
     } else{
         e.returnValue = false;
-    }
-};
-
-//
-// Node manipulations
-
-/**
- * Insert node a before node b.
- */
-qq.insertBefore = function(a, b){
-    b.parentNode.insertBefore(a, b);
-};
-qq.remove = function(element){
-    element.parentNode.removeChild(element);
-};
-
-qq.contains = function(parent, descendant){
-    // compareposition returns false in this case
-    if (parent == descendant) return true;
-
-    if (parent.contains){
-        return parent.contains(descendant);
-    } else {
-        return !!(descendant.compareDocumentPosition(parent) & 8);
     }
 };
 
@@ -122,73 +211,6 @@ qq.toElement = (function(){
         return element;
     };
 })();
-
-//
-// Node properties and attributes
-
-/**
- * Sets styles for an element.
- * Fixes opacity in IE6-8.
- */
-qq.css = function(element, styles){
-    if (styles.opacity != null){
-        if (typeof element.style.opacity != 'string' && typeof(element.filters) != 'undefined'){
-            styles.filter = 'alpha(opacity=' + Math.round(100 * styles.opacity) + ')';
-        }
-    }
-    qq.extend(element.style, styles);
-};
-qq.hasClass = function(element, name){
-    var re = new RegExp('(^| )' + name + '( |$)');
-    return re.test(element.className);
-};
-qq.addClass = function(element, name){
-    if (!qq.hasClass(element, name)){
-        element.className += ' ' + name;
-    }
-};
-qq.removeClass = function(element, name){
-    var re = new RegExp('(^| )' + name + '( |$)');
-    element.className = element.className.replace(re, ' ').replace(/^\s+|\s+$/g, "");
-};
-qq.setText = function(element, text){
-    element.innerText = text;
-    element.textContent = text;
-};
-
-//
-// Selecting elements
-
-qq.children = function(element){
-    var children = [],
-        child = element.firstChild;
-
-    while (child){
-        if (child.nodeType == 1){
-            children.push(child);
-        }
-        child = child.nextSibling;
-    }
-
-    return children;
-};
-
-qq.getByClass = function(element, className){
-    if (element.querySelectorAll){
-        return element.querySelectorAll('.' + className);
-    }
-
-    var result = [];
-    var candidates = element.getElementsByTagName("*");
-    var len = candidates.length;
-
-    for (var i = 0; i < len; i++){
-        if (qq.hasClass(candidates[i], className)){
-            result.push(candidates[i]);
-        }
-    }
-    return result;
-};
 
 /**
  * obj2url() takes a json-object as argument and generates
@@ -274,6 +296,6 @@ qq.DisposeSupport = {
 
     /** Attach event handler and register de-attacher as a disposer */
     _attach: function() {
-        this.addDisposer(qq.attach.apply(this, arguments));
+        this.addDisposer(qq(arguments[0]).attach.apply(this, Array.prototype.slice.call(arguments, 1)));
     }
 };

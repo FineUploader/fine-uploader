@@ -20,7 +20,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
 
         // remove file input from DOM
         if (fileInput.parentNode){
-            qq.remove(fileInput);
+            qq(fileInput).remove();
         }
 
         return id;
@@ -45,7 +45,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             // trigger ie6 prompt on https
             iframe.setAttribute('src', 'javascript:false;');
 
-            qq.remove(iframe);
+            qq(iframe).remove();
         }
     },
     _upload: function(id, params){
@@ -73,7 +73,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             setTimeout(function(){
                 self._detach_load_events[id]();
                 delete self._detach_load_events[id];
-                qq.remove(iframe);
+                qq(iframe).remove();
             }, 1);
 
             if (!response.success) {
@@ -86,12 +86,12 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         });
 
         form.submit();
-        qq.remove(form);
+        qq(form).remove();
 
         return id;
     },
     _attachLoadEvent: function(iframe, callback){
-        this._detach_load_events[iframe.id] = qq.attach(iframe, 'load', function(){
+        this._detach_load_events[iframe.id] = qq(iframe).attach('load', function(){
             // when we remove iframe from dom
             // the request stops, but in IE load
             // event fires

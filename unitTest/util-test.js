@@ -45,8 +45,8 @@ test("qq.getUniqueId", function() {
     ok(id2 !== id3, "lame uniqueness test 3");
 });
 
-test("qq.attach", 1, function() {
-    var detacher = qq.attach($('#qunit-fixture')[0], "click", function() {
+test("qq().attach", 1, function() {
+    var detacher = qq($('#qunit-fixture')[0]).attach("click", function() {
         ok(true, "click handler");
     });
 
@@ -55,26 +55,26 @@ test("qq.attach", 1, function() {
     $('#qunit-fixture').click();
 });
 
-test("qq.insertBefore", function() {
-    var a = $('#qunit-fixture').append("<div id='foo'></div>")[0];
-    var b = $("<div id='bar'></div>")[0];
-    qq.insertBefore(b, a);
+test("qq().insertBefore", function() {
+    var b = $('#qunit-fixture').append("<div id='foo'></div>")[0];
+    var a = $("<div id='bar'></div>")[0];
+    qq(a).insertBefore(b);
 
-    ok($(a).prev().is(b), "does b come before a?");
+    ok($(b).prev().is(a), "does a come before b?");
 });
 
-test("qq.remove", function() {
+test("qq().remove", function() {
     var el = $('#qunit-fixture').append("<div id='foo'></div>");
-    qq.remove($('#foo')[0]);
+    qq($('#foo')[0]).remove();
 
     ok($("#foo").length === 0, "does foo still exist?");
 });
 
-test("qq.contains", function() {
+test("qq().contains", function() {
     $("#qunit-fixture").append("<div id='qqcontains'></div>");
 
-    ok(qq.contains($("#qunit-fixture")[0], $("#qqcontains")[0]), "qqcontains should exist under qunit");
-    equal(qq.contains($("#qunit-fixture")[0], $("body")[0]), false, "body should not exist under qunit");
+    ok(qq($("#qunit-fixture")[0]).contains($("#qqcontains")[0]), "qqcontains should exist under qunit");
+    equal(qq($("#qunit-fixture")[0]).contains($("body")[0]), false, "body should not exist under qunit");
 });
 
 test("qq.toElement", function() {
@@ -84,55 +84,55 @@ test("qq.toElement", function() {
     ok($(el).is('div'), "element should be a div");
 });
 
-test("qq.css", function() {
+test("qq().css", function() {
     $("#qunit-fixture").append("<div id='qqcss'></div>");
-    qq.css($('#qqcss')[0], {display: 'none'});
+    qq($('#qqcss')[0]).css({display: 'none'});
 
     ok($("#qqcss:visible").length === 0, "qqcss should be hidden");
 });
 
-test("qq.hasClass", function(){
+test("qq().hasClass", function(){
     $("#qunit-fixture").append("<div id='qqhasclass' class='qqhasclass'></div>");
 
-    ok(qq.hasClass($("#qqhasclass")[0], "qqhasclass"), "qqhasclass should have qqhasclass as a class");
+    ok(qq($("#qqhasclass")[0]).hasClass("qqhasclass"), "qqhasclass should have qqhasclass as a class");
 });
 
-test("qq.addClass", function() {
+test("qq().addClass", function() {
     $('#qunit-fixture').append('<div></div>');
     var $el = $('div', '#qunit-fixture');
-    qq.addClass($el[0], "addclasstest");
+    qq($el[0]).addClass("addclasstest");
 
     ok($el.hasClass('addclasstest'), 'qq.addClass should actually add classes');
 });
 
-test("qq.removeClass", function() {
+test("qq().removeClass", function() {
     $('#qunit-fixture').append('<div class="foobar"></div>');
     var $el = $('.foobar', '#qunit-fixture');
-    qq.removeClass($el[0], 'foobar');
+    qq($el[0]).removeClass('foobar');
 
     ok(!$el.hasClass('foobar'), "qq.removeClass should be able to remove classes");
 });
 
-test("qq.setText", function() {
+test("qq().setText", function() {
     $('#qunit-fixture').append('<div></div>');
     var $el = $('div', '#qunit-fixture');
-    qq.setText($el[0], "this is a test");
+    qq($el[0]).setText("this is a test");
 
     equal($el.text(), "this is a test", "qq.setText should be able to set an element's text");
 });
 
-test("qq.children", function() {
+test("qq().children", function() {
     $('#qunit-fixture').append('<div class="child"></div>').append('<div class="child"></div>');
 
-    var children = qq.children($("#qunit-fixture")[0]);
+    var children = qq($("#qunit-fixture")[0]).children();
     equal(children.length, 2, "there should be exactly 2 children");
     ok($(children[0]).hasClass("child") && $(children[1]).hasClass("child"), "both children should have a 'child' class");
 });
 
-test("qq.getByClass", function() {
+test("qq().getByClass", function() {
     $('#qunit-fixture').append('<div class="foobar"></div>');
 
-    var returnedEl = qq.getByClass(document, 'foobar');
+    var returnedEl = qq(document).getByClass('foobar');
     equal(returnedEl.length, 1, "getByClass should only return one element in this case");
     ok($('.foobar').is(returnedEl[0]), "getByClass should return the correct element");
 });
@@ -167,4 +167,10 @@ test("qq.DisposeSupport", 2, function() {
     });
 
     qq.DisposeSupport.dispose();
+});
+
+test("qq().hide()", function() {
+    ok($('#qunit-fixture').is(':visible'), "ensure fixture is initially visible");
+    qq($('#qunit-fixture')[0]).hide();
+    ok($('#qunit-fixture').is(':hidden'), "ensure fixture has been hidden by qq.hide");
 });
