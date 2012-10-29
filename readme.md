@@ -90,7 +90,7 @@ in the basic uploader also exist in the full widget.
 ### Upgrading From 2.1.2 ###
 3.0 introduces some big new features and, as a result, some minor breaking changes as well.  Some of the big new features:
 * [optional jQuery plug-in](#using-the-optional-jquery-plug-in)
-* [only override sub-options you want to change]](#how-to-override-options)
+* [only override sub-options you want to change](#how-to-override-options)
 * auto and manual retry of failed uploads
 
 Some minor breaking changes were also made.  Here are some of the changes:
