@@ -37,7 +37,6 @@ Created by by Andrew Valums.
 
 <br/>
 ### Summary ###
-
 Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
 It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
 
@@ -89,8 +88,24 @@ in the basic uploader also exist in the full widget.
 
 <br/>
 ### Upgrading From 2.1.2 ###
-TODO
+3.0 introduces some big new features and, as a result, some minor breaking changes as well.  Some of the big new features:
+* [optional jQuery plug-in](#using-the-optional-jquery-plug-in)
+* [only override sub-options you want to change]](#how-to-override-options)
+* auto and manual retry of failed uploads
 
+Some minor breaking changes were also made.  Here are some of the changes:
+* All mentions of "FileUploader" in the code were changes to the new name: FineUploader.  This includes qq.FileUploader
+(now qq.FineUploader) and qq.FileUploaderBasic (now qq.FineUploaderBasic), for starters.  Note that the combined js and css file names
+have changed as well.  The js and css files that appear in the released zip will contain version numbers in the filename.
+* Options have been "categorized" where appropriate.  For example, all drag-and-drop related options are now sub-options
+under the `dragAndDrop` option, text options are now sub-options under the new `text` option.  There are several other new
+"categories"/options with sub-options.  Please see the options section of this readme for details.
+* The `action` option has been renamed `endpoint`.  Notice that it is now a sub-option under the new `request` option as well.
+* More logging was added (still only appearing if `debug` is set to true).
+* The giant uploader javascript file was split up into smaller files where appropriate.  This is simply to make development/maintenance
+easier.  Releases will always contain all js in a single file.  The source branches though, will contain the split-up files.  Note
+that you can always combine files in a snapshot branch if you want via [gradle](#building-and-using-the-snapshot-version).  Once I setup
+a CI system, I may start adding snapshot builds to the downloads section.
 
 <br/>
 ### Using the optional jQuery plug-in ###
