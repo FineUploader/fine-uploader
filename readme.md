@@ -1,4 +1,4 @@
-# Fine Uploader 3.0-SNAPSHOT #
+# Fine Uploader 3.0-SNAPSHOT (Planned release November 19) #
 
 Actively developed by Ray Nicholus.     
 Created by by Andrew Valums.
