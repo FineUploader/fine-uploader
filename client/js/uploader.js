@@ -124,13 +124,23 @@ qq.extend(qq.FineUploader.prototype, {
         var dzs = this._options.dragAndDrop.extraDropzones;
         for(var i in dzs) if (dzs[i] === element) return this._options.dragAndDrop.extraDropzones.splice(i,1);
     },
+    getItemByFileId: function(id){
+        var item = this._listElement.firstChild;
+
+        // there can't be txt nodes in dynamically created list
+        // and we can  use nextSibling
+        while (item){
+            if (item.qqFileId == id) return item;
+            item = item.nextSibling;
+        }
+    },
     _leaving_document_out: function(e){
         return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
             || (qq.firefox() && !e.relatedTarget); // null e.relatedTarget for Firefox
     },
     _storeFileForLater: function(id) {
         qq.FineUploaderBasic.prototype._storeFileForLater.apply(this, arguments);
-        var item = this._getItemByFileId(id);
+        var item = this.getItemByFileId(id);
         qq(this._find(item, 'spinner')).hide();
     },
     /**
@@ -235,7 +245,7 @@ qq.extend(qq.FineUploader.prototype, {
     _onProgress: function(id, fileName, loaded, total){
         qq.FineUploaderBasic.prototype._onProgress.apply(this, arguments);
 
-        var item = this._getItemByFileId(id);
+        var item = this.getItemByFileId(id);
 
         if (loaded === total) {
             var cancelLink = this._find(item, 'cancel');
@@ -267,7 +277,7 @@ qq.extend(qq.FineUploader.prototype, {
     _onComplete: function(id, fileName, result, xhr){
         qq.FineUploaderBasic.prototype._onComplete.apply(this, arguments);
 
-        var item = this._getItemByFileId(id);
+        var item = this.getItemByFileId(id);
 
         qq(this._find(item, 'statusText')).clearText();
 
@@ -300,7 +310,7 @@ qq.extend(qq.FineUploader.prototype, {
     _onUpload: function(id, fileName, xhr){
         qq.FineUploaderBasic.prototype._onUpload.apply(this, arguments);
 
-        var item = this._getItemByFileId(id);
+        var item = this.getItemByFileId(id);
 
         if (qq.UploadHandlerXhr.isSupported()) {
             this._find(item, 'progressBar').style.display = "block";
@@ -313,7 +323,7 @@ qq.extend(qq.FineUploader.prototype, {
 
         qq.FineUploaderBasic.prototype._onBeforeAutoRetry.apply(this, arguments);
 
-        item = this._getItemByFileId(id);
+        item = this.getItemByFileId(id);
         progressBar = this._find(item, 'progressBar');
 
         this._showCancelLink(item);
@@ -337,7 +347,7 @@ qq.extend(qq.FineUploader.prototype, {
      //return false if we should not attempt the requested retry
     _onBeforeManualRetry: function(id) {
         if (qq.FineUploaderBasic.prototype._onBeforeManualRetry.apply(this, arguments)) {
-            var item = this._getItemByFileId(id);
+            var item = this.getItemByFileId(id);
             this._find(item, 'progressBar').style.width = 0;
             qq(item).removeClass(this._classes.fail);
             this._showSpinner(item);
@@ -364,16 +374,6 @@ qq.extend(qq.FineUploader.prototype, {
     _clearList: function(){
         this._listElement.innerHTML = '';
         this.clearStoredFiles();
-    },
-    _getItemByFileId: function(id){
-        var item = this._listElement.firstChild;
-
-        // there can't be txt nodes in dynamically created list
-        // and we can  use nextSibling
-        while (item){
-            if (item.qqFileId == id) return item;
-            item = item.nextSibling;
-        }
     },
     /**
      * delegate click event for cancel & retry links

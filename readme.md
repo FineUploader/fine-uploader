@@ -660,6 +660,7 @@ prohibits retries on a failed file via the <code>preventRetryResponseProperty</c
 respect the <code>maxConnections</code> value, so if all connections are accounted for, the retry attempt will be queued
 until a connection opens up.
 * `cancel(String fileId)` - Cancels a queued or currently uploading file.
+* `getItemByFileId(String fileId)` - Returns the HTMLElement associated with the passed file ID.
 
 
 <br/>
