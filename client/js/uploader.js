@@ -395,7 +395,7 @@ qq.extend(qq.FineUploader.prototype, {
                 }
 
                 if (qq(target).hasClass(self._classes.cancel)) {
-                    self._handler.cancel(item.qqFileId);
+                    self.cancel(item.qqFileId);
                     qq(item).remove();
                 }
                 else {

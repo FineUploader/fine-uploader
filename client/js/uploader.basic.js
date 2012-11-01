@@ -101,6 +101,9 @@ qq.FineUploaderBasic.prototype = {
             return false;
         }
     },
+    cancel: function(fileId) {
+        this._handler.cancel(fileId);
+    },
     _createUploadButton: function(element){
         var self = this;
 

@@ -659,6 +659,7 @@ types with default text that can be overriden as well.
 prohibits retries on a failed file via the <code>preventRetryResponseProperty</code>.  Note that this operation does
 respect the <code>maxConnections</code> value, so if all connections are accounted for, the retry attempt will be queued
 until a connection opens up.
+* `cancel(String fileId)` - Cancels a queued or currently uploading file.
 
 
 <br/>
