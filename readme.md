@@ -381,10 +381,10 @@ other default values.  This works for all options that are, themselves, objects 
             <td>true</td>
             <td>If true, when submitting multiple files, once a file is determined to be invalid, the upload process 
             will terminate.  If false, all valid files will be uploaded.  Note: One downside to a false value can be
-            seen if the default <code>showMessage</code> implementation is not overriden.  In this case, an alert 
-            dialog will appear for each invalid file in the batch, and the upload process will not continue until 
-            the dialog is dismissed.  If this is bothersome, simply override <code>showMessage</code> with a 
-            desirable implementation.  3.0 will likely have a <code>showMessage</code> default implementation that 
+            seen when using FineUploader if the default <code>showMessage</code> implementation is not overriden.  In this
+            case, an alert  dialog will appear for each invalid file in the batch, and the upload process will not continue
+            until the dialog is dismissed.  If this is bothersome, simply override <code>showMessage</code> with a
+            desirable implementation.  A later version may have a <code>showMessage</code> default implementation that
             does not use the <code>alert</code> function.</td>
         </tr>
     </tbody>
@@ -644,9 +644,9 @@ Note that this does not mean the file upload will begin at this point.  Return `
 <br/>
 ### Changing alert/messages to something more user friendly ###
 You may want to change the default alert implementation and messages as you see fit.  This is possible by overriding the
-`showMessage` function option, as well as the `messages` properties in FineUploaderBasic and FineUploader.  The default `showMessage` function simply invokes `alert` with the message text.  One instance in which t
-his is used is when the user attempts to select an invalid file for upload.  There are general message
-types with default text that can be overriden as well.
+`showMessage` function option, as well as the `messages` properties in FineUploader.  The default `showMessage` function
+simply invokes `alert` with the message text.  One instance in which this is used is when the user attempts to select
+an invalid file for upload.  There are general message types with default text that can be overriden as well.
 
 <br/>
 ### Instance methods ###

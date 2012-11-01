@@ -80,6 +80,9 @@ qq.FineUploader = function(o){
             showAutoRetryNote: true,
             autoRetryNote: "Retrying {retryNum}/{maxAuto}...",
             showButton: false
+        },
+        showMessage: function(message){
+            alert(message);
         }
     }, true);
 
@@ -458,6 +461,10 @@ qq.extend(qq.FineUploader.prototype, {
         	var cancelLink = this._find(item, 'cancel');
         	cancelLink.style.display = 'inline';
 		}
+    },
+    _error: function(code, fileName){
+        var message = qq.FineUploaderBasic.prototype._error.apply(this, arguments);
+        this._options.showMessage(message);
     }
 });
 

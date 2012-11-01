@@ -39,9 +39,6 @@ qq.FineUploaderBasic = function(o){
             noFilesError: "No files to upload.",
             onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
         },
-        showMessage: function(message){
-            alert(message);
-        },
         retry: {
             enableAuto: false,
             maxAutoAttempts: 3,
@@ -347,7 +344,8 @@ qq.FineUploaderBasic.prototype = {
         r('{minSizeLimit}', this._formatSize(this._options.validation.minSizeLimit));
 
         this._options.callbacks.onError(null, fileName, message);
-        this._options.showMessage(message);
+
+        return message;
     },
     _formatFileName: function(name){
         if (name.length > 33){
