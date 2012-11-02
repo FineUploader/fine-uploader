@@ -32,6 +32,11 @@ qq.extend(qq.UploadHandlerForm.prototype, {
     isValid: function(id) {
         return this._inputs[id] !== undefined;
     },
+    reset: function() {
+        qq.UploadHandlerAbstract.prototype.reset.apply(this, arguments);
+        this._inputs = {};
+        this._detach_load_events = {};
+    },
     _cancel: function(id){
         this._options.onCancel(id, this.getName(id));
 

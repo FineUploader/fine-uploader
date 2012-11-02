@@ -85,6 +85,10 @@ qq.UploadHandlerAbstract.prototype = {
     getQueue: function(){
         return this._queue;
     },
+    reset: function() {
+        this._queue = [];
+        this._params = [];
+    },
     /**
      * Actual upload method
      */

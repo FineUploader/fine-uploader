@@ -101,6 +101,16 @@ qq.FineUploaderBasic.prototype = {
     cancel: function(fileId) {
         this._handler.cancel(fileId);
     },
+    reset: function() {
+        this.log("Resetting uploader...");
+        this._handler.reset();
+        this._filesInProgress = 0;
+        this._storedFileIds = [];
+        this._autoRetries = [];
+        this._retryTimeouts = [];
+        this._preventRetries = [];
+        this._button.reset();
+    },
     _createUploadButton: function(element){
         var self = this;
 

@@ -137,6 +137,16 @@ qq.extend(qq.FineUploader.prototype, {
             item = item.nextSibling;
         }
     },
+    reset: function() {
+        qq.FineUploaderBasic.prototype.reset.apply(this, arguments);
+        this._element.innerHTML = this._options.template;
+        this._listElement = this._options.listElement || this._find(this._element, 'list');
+        if (!this._options.button) {
+            this._button = this._createUploadButton(this._find(this._element, 'button'));
+        }
+        this._bindCancelAndRetryEvents();
+        this._setupDragDrop();
+    },
     _leaving_document_out: function(e){
         return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
             || (qq.firefox() && !e.relatedTarget); // null e.relatedTarget for Firefox

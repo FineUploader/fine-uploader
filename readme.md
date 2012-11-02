@@ -661,7 +661,10 @@ respect the <code>maxConnections</code> value, so if all connections are account
 until a connection opens up.
 * `cancel(String fileId)` - Cancels a queued or currently uploading file.
 * `getItemByFileId(String fileId)` - Returns the HTMLElement associated with the passed file ID.
-
+* `reset()` - While this function is most useful for FineUploader, it is also available in FineUploaderBasic.  In FineUploader,
+calling this function will reset all UI elements to the state they exsited in immediately after initialization.  In FineUploaderBasic,
+this resets all internal variables to the state they existed in immediately after initialization.  If you are using FineUploaderBasic,
+it is up to you to "reset" any of your UI elements.
 
 <br/>
 ### qQuery ###
