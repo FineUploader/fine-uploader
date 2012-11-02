@@ -126,6 +126,10 @@ class qqFileUploader {
         $this->sizeLimit = $sizeLimit;
         
         $this->checkServerSettings();       
+        
+        if(!array_key_exists('CONTENT_TYPE', $_SERVER)) {
+            throw new Exception('Getting content type is not supported');
+        }
 
         if (strpos(strtolower($_SERVER['CONTENT_TYPE']), 'multipart/') === 0) {
             $this->file = new qqUploadedFileForm();
