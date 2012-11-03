@@ -55,7 +55,7 @@ $(document).ready(function() {
         element: $('#uploadWithVariousOptionsExample')[0],
         multiple: false,
         request: {
-            endpoint: "/upload/receiver",
+            endpoint: "/upload/receiver"
         },
         validation: {
             allowedExtensions: ['jpeg', 'jpg', 'txt'],
@@ -74,7 +74,7 @@ $(document).ready(function() {
         autoUpload: false,
         button: $("#fubButton")[0],
         request: {
-            endpoint: "/upload/receiver",
+            endpoint: "/upload/receiver"
         },
         callbacks: {
             onError: errorHandler
