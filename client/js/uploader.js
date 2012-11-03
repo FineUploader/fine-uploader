@@ -258,33 +258,34 @@ qq.extend(qq.FineUploader.prototype, {
     _onProgress: function(id, fileName, loaded, total){
         qq.FineUploaderBasic.prototype._onProgress.apply(this, arguments);
 
-        var item = this.getItemByFileId(id);
+        var item, progressBar, text, percent, cancelLink, size;
+
+        item = this.getItemByFileId(id);
+        progressBar = this._find(item, 'progressBar');
+        percent = Math.round(loaded / total * 100);
 
         if (loaded === total) {
-            var cancelLink = this._find(item, 'cancel');
+            cancelLink = this._find(item, 'cancel');
             qq(cancelLink).hide();
 
-            qq(this._find(item, 'progressBar')).hide();
+            qq(progressBar).hide();
             qq(this._find(item, 'statusText')).setText(this._options.text.waitingForResponse);
-        }
 
-        var size = this._find(item, 'size');
-        size.style.display = 'inline';
-
-        var text;
-        var percent = Math.round(loaded / total * 100);
-
-        if (loaded != total) {
-            // If still uploading, display percentage
-            text = this._formatProgress(loaded, total);
-        } else {
-            // If complete, just display final size
+            // If last byte was sent, just display final size
             text = this._formatSize(total);
         }
+        else {
+            // If still uploading, display percentage
+            text = this._formatProgress(loaded, total);
 
-        // Update progress bar <span> tag
-        this._find(item, 'progressBar').style.width = percent + '%';
+            qq(progressBar).css({display: 'block'});
+        }
 
+        // Update progress bar element
+        qq(progressBar).css({width: percent + '%'});
+
+        size = this._find(item, 'size');
+        qq(size).css({display: 'inline'});
         qq(size).setText(text);
     },
     _onComplete: function(id, fileName, result, xhr){
@@ -324,11 +325,6 @@ qq.extend(qq.FineUploader.prototype, {
         qq.FineUploaderBasic.prototype._onUpload.apply(this, arguments);
 
         var item = this.getItemByFileId(id);
-
-        if (qq.UploadHandlerXhr.isSupported()) {
-            this._find(item, 'progressBar').style.display = "block";
-        }
-
         this._showSpinner(item);
     },
     _onBeforeAutoRetry: function(id) {
