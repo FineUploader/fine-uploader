@@ -1594,7 +1594,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
                 response = eval("(" + xhr.responseText + ")");
             }
         } catch(err){
-            response = {};
+            response = xhr.responseText;//NOT JSON response from the server, give original response to complete handler.
         }
         if (xhr.status !== 200){
             this._options.onError(id, name, "XHR returned response code " + xhr.status);
