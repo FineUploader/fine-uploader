@@ -343,6 +343,10 @@ qq.FileUploaderBasic.prototype = {
         return this._filesInProgress;
     },
     uploadStoredFiles: function(){
+        if(this._storedFileIds.length == 0) {
+          alert("No File Chosen");
+          return false;
+        }
         while(this._storedFileIds.length) {
             this._filesInProgress++;
             this._handler.upload(this._storedFileIds.shift(), this._options.params);
