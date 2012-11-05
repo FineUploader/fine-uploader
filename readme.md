@@ -4,6 +4,7 @@
 Actively developed by Ray Nicholus.   
 Created by by Andrew Valums.
 
+##### Note: All pull requests must be against the 3.0 branch. #####
 
 <br/>
 ### Quick Links ###
