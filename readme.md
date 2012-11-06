@@ -57,7 +57,7 @@ It does not use Flash, jQuery, or any other external libraries.
 * Doesn't use Flash
 * Fully working with HTTPS
 * Keyboard support in FF, Chrome, Safari
-* Tested in IE7+, Firefox, Safari (OS X), and Chrome
+* Tested in IE7+, Firefox, Safari (OS X), and Chrome.  IE10 is now also supported!
 * Ability to upload files as soon as they are selected, or "queue" them for uploading at user's request later
 * Display specific error messages from server on upload failure (hover over failed upload item)
 * Ability to auto-retry failed uploads
@@ -724,7 +724,7 @@ you may want to be aware of when using Fine Uploader:
         <tr>
             <th>Limitation</th>
             <th>Why?</th>
-            <th>*Supported/Fixed in IE10?</th>
+            <th>Supported/Fixed in IE10?</th>
         </tr>
     </thead>
     <tbody>
@@ -762,7 +762,7 @@ you may want to be aware of when using Fine Uploader:
         <tr>
             <td>Can't select multiple files in the file selection dialog</td>
             <td>The &lt;input&gt; element does not support the <code>multiple</code> attribute</td>
-            <td>Early versions still lacked this support, but I've read that the final version does support this attribute</td>
+            <td>Yes</td>
         </tr>
         <tr>
             <td>Only mulipart form request may be used to send files, via form submission</td>
@@ -787,13 +787,13 @@ you may want to be aware of when using Fine Uploader:
             <td>Can't use a &lt;button&gt; as the element when setting the <code>button</code> option.</td>
             <td>The button receives the click event, instead of the child &lt;input&gt; element that ultimately triggers the
             file dialog</td>
-            <td>Not sure</td>
+            <td>No</td>
         </tr>
         <tr>
             <td>Any response content-type other than "text/plain" causes issues when trying to parse the JSON response</td>
             <td>IE does strange things with the response when the content-type is, for example, "application/json" or
             "text/html".  The latter is only a problem if you return HTML in your JSON response.</td>
-            <td>Not sure</td>
+            <td>Yes</td>
         </tr>
         <tr>
             <td>Can't determine response code</td>
@@ -801,15 +801,9 @@ you may want to be aware of when using Fine Uploader:
             include it.  This is really a side-effect of using a form submission to upload files.</td>
             <td>Yes</td>
         </tr>
-        <tr>
-            <td>Can't trigger the file selection dialog via javascript</td>
-            <td>IE strictly forbids this.  It will allow you to launch the dialog, but will throw a security exception once
-            the form is also submitted via javascript.</td>
-            <td>Not sure</td>
-        </tr>
     </tbody>
 </table>
-\*Allegedly 
+
 
 <br/>
 ### Building and using the snapshot version ###

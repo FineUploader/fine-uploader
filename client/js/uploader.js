@@ -224,8 +224,7 @@ qq.extend(qq.FineUploader.prototype, {
         }
 
         // IE <= 9 does not support the File API used for drag+drop uploads
-        // Any volunteers to enable & test this for IE10?
-        if (!this._options.dragAndDrop.disableDefaultDropzone && !qq.ie()) {
+        if (!this._options.dragAndDrop.disableDefaultDropzone && (!qq.ie() || qq.ie10())) {
             this._attach(document, 'dragenter', function(e){
                 if (qq(dropArea).hasClass(self._classes.dropDisabled)) return;
 
@@ -562,8 +561,7 @@ qq.UploadDropZone.prototype = {
     _isValidFileDrag: function(e){
         // e.dataTransfer currently causing IE errors
         // IE9 does NOT support file API, so drag-and-drop is not possible
-        // IE10 should work, but currently has not been tested - any volunteers?
-        if (qq.ie()) return false;
+        if (qq.ie() && !qq.ie10()) return false;
 
         var dt = e.dataTransfer,
         // do not check dt.types.contains in webkit, because it crashes safari 4
@@ -571,8 +569,7 @@ qq.UploadDropZone.prototype = {
 
         // dt.effectAllowed is none in Safari 5
         // dt.types.contains check is for firefox
-        return dt && dt.effectAllowed != 'none' &&
-            (dt.files || (!isSafari && dt.types.contains && dt.types.contains('Files')));
-
+        var effectTest = qq.ie10() ? true : dt.effectAllowed != 'none';
+        return dt && effectTest && (dt.files || (!isSafari && dt.types.contains && dt.types.contains('Files')));
     }
 };

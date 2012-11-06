@@ -182,6 +182,7 @@ qq.getUniqueId = (function(){
 // Browsers and platforms detection
 
 qq.ie       = function(){ return navigator.userAgent.indexOf('MSIE') != -1; }
+qq.ie10     = function(){ return navigator.userAgent.indexOf('MSIE 10') != -1; }
 qq.safari   = function(){ return navigator.vendor != undefined && navigator.vendor.indexOf("Apple") != -1; }
 qq.chrome   = function(){ return navigator.vendor != undefined && navigator.vendor.indexOf('Google') != -1; }
 qq.firefox  = function(){ return (navigator.userAgent.indexOf('Mozilla') != -1 && navigator.vendor != undefined && navigator.vendor == ''); }
