@@ -707,7 +707,7 @@ The following element-related functions are available on the `qq(...)` function.
 * `qq.preventDefault(Event)` - A function used to prevent the user agent's default action.  To be used inside an event handler.
 * `qq.toElement()` - Creates and returns a new DIV element.
 * `qq.ie()` - Returns true if the current user agent is any version of Internet Explorer.
-* `qq.ie()` - Returns true if the current user agent is Internet Explorer 10.
+* `qq.ie10()` - Returns true if the current user agent is Internet Explorer 10.
 * `qq.safari()` - Returns true if the current user agent is Safari.
 * `qq.chrome()` - Returns true if the current user agent is Chrome.
 * `qq.firefox()` - Returns true if the current user agent is Firefox.
