@@ -814,12 +814,12 @@ you may want to be aware of when using Fine Uploader:
 ### Building and using the snapshot version ###
 You can use [gradle](http://www.gradle.org/) to build the snapshot version.  Simply clone this project, and run `gradlew combineJs`
 on the command-line.  This will combine all of the javascript files into one file, placing it in the 
-"build" directory.  If you want to minified or gzipped version of the snapshot version, simply replace
+"build" directory.  If you want the minified or gzipped version of the snapshot version, simply replace
 `combineJs` on the command-line with `minifyJs` or `gzipJs`, respectively.
 
 If you would like the jQuery plug-in, simply add "jQuery" to the end of any of these tasks.  For example, to obtain the
 non-minified jQuery plug-in or the minified jQuery plug-in, run `gradlew combineJsJquery` or `gradlew minifyJsJquery`
-respectively.  This will build the Fine Uploader javascript file with the plug-in and eveything else you need.
+respectively.  This will build the Fine Uploader javascript file with the plug-in and everything else you need.
 
 Remember, a snapshot build is not yet released, so it may have some lingering bugs.  The trade-off is
 immediate access to new features without having to wait for a release.  
