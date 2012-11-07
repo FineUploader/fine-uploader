@@ -706,7 +706,7 @@ The following element-related functions are available on the `qq(...)` function.
 * `qq.indexOf(Array array, String item, Number startingIndex)` - Same as [indexOf from Javascript 1.6](https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/indexOf), but implemented for browsers that don't support this native function, such as IE8 and earlier.
 * `qq.preventDefault(Event)` - A function used to prevent the user agent's default action.  To be used inside an event handler.
 * `qq.toElement()` - Creates and returns a new DIV element.
-* 'qq.log(String logMessage, (optional) String logLevel)` - Log a message to the console.  No-op if console logging is not supported
+* `qq.log(String logMessage, (optional) String logLevel)` - Log a message to the console.  No-op if console logging is not supported
 by the user agent.  Will delegate to the user agent's logging function that corresponds to the passed logging level, if
 it exists.  If a comparable function does not exist, but console logging is supported, the log event will be delegated
 to `console.log` and the log level will be included in the message.
