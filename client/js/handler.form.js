@@ -90,13 +90,17 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             self._dequeue(id);
         });
 
+        this.log('Sending upload request for ' + id);
         form.submit();
         qq(form).remove();
 
         return id;
     },
     _attachLoadEvent: function(iframe, callback){
+        var self = this;
         this._detach_load_events[iframe.id] = qq(iframe).attach('load', function(){
+            self.log('Received response for ' + iframe.id);
+
             // when we remove iframe from dom
             // the request stops, but in IE load
             // event fires
@@ -118,6 +122,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             }
             catch (error) {
                 //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
+                self.log('Error when attempting to access iframe during handling of upload response (' + error + ")", 'error');
             }
 
             callback();
@@ -141,7 +146,8 @@ qq.extend(qq.UploadHandlerForm.prototype, {
                 innerHTML = doc.body.firstChild.firstChild.nodeValue;
             }
             response = eval("(" + innerHTML + ")");
-        } catch(err){
+        } catch(error){
+            self.log('Error when attempting to parse form upload response (' + error + ")", 'error');
             response = {success: false};
         }
 

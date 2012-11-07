@@ -8,6 +8,7 @@ qq.UploadHandlerAbstract = function(o){
         endpoint: '/upload.php',
         // maximum number of concurrent uploads
         maxConnections: 999,
+        log: function(str, level) {},
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, response, xhr){},
         onCancel: function(id, fileName){},
@@ -20,11 +21,10 @@ qq.UploadHandlerAbstract = function(o){
     this._queue = [];
     // params for files in queue
     this._params = [];
+
+    this.log = this._options.log;
 };
 qq.UploadHandlerAbstract.prototype = {
-    log: function(str){
-        if (this._options.debug && window.console) console.log('[uploader] ' + str);
-    },
     /**
      * Adds file or file input to the queue
      * @returns id
@@ -58,6 +58,7 @@ qq.UploadHandlerAbstract.prototype = {
      * Cancels file upload by id
      */
     cancel: function(id){
+        this.log('Cancelling ' + id);
         this._cancel(id);
         this._dequeue(id);
     },
@@ -86,6 +87,7 @@ qq.UploadHandlerAbstract.prototype = {
         return this._queue;
     },
     reset: function() {
+        this.log('Resetting upload handler');
         this._queue = [];
         this._params = [];
     },

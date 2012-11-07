@@ -115,6 +115,8 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         for (key in this._options.customHeaders){
             xhr.setRequestHeader(key, this._options.customHeaders[key]);
         };
+
+        this.log('Sending upload request for ' + id);
         xhr.send(file);
     },
     _onComplete: function(id, xhr){
@@ -128,7 +130,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
 
         this._options.onProgress(id, name, size, size);
 
-        this.log("xhr - server response received");
+        this.log("xhr - server response received for " + id);
         this.log("responseText = " + xhr.responseText);
 
         try {
@@ -137,7 +139,8 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
             } else {
                 response = eval("(" + xhr.responseText + ")");
             }
-        } catch(err){
+        } catch(error){
+            this.log('Error when attempting to parse xhr response text (' + error + ')', 'error');
             response = {};
         }
 

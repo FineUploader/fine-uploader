@@ -130,6 +130,23 @@ var qq = function(element) {
     };
 };
 
+qq.log = function(message, level) {
+    if (window.console) {
+        if (!level || level === 'info') {
+            window.console.log(message);
+        }
+        else
+        {
+            if (window.console[level]) {
+                window.console[level](message);
+            }
+            else {
+                window.console.log('<' + level + '> ' + message);
+            }
+        }
+    }
+};
+
 qq.isObject = function(variable) {
     "use strict";
     return variable !== null && variable && typeof(variable) === "object" && variable.constructor === Object;

@@ -70,8 +70,14 @@ qq.FineUploaderBasic = function(o){
 };
 
 qq.FineUploaderBasic.prototype = {
-    log: function(str){
-        if (this._options.debug && window.console) console.log('[uploader] ' + str);
+    log: function(str, level) {
+        if (this._options.debug && (!level || level === 'info')) {
+            qq.log('[FineUploader] ' + str);
+        }
+        else if (level && level !== 'info') {
+            qq.log('[FineUploader] ' + str, level);
+
+        }
     },
     setParams: function(params){
         this._options.request.params = params;
@@ -144,6 +150,7 @@ qq.FineUploaderBasic.prototype = {
             customHeaders: this._options.request.customHeaders,
             inputName: this._options.request.inputName,
             demoMode: this._options.demoMode,
+            log: this.log,
             onProgress: function(id, fileName, loaded, total){
                 self._onProgress(id, fileName, loaded, total);
                 self._options.callbacks.onProgress(id, fileName, loaded, total);
@@ -251,7 +258,7 @@ qq.FineUploaderBasic.prototype = {
     //return false if we should not attempt the requested retry
     _onBeforeManualRetry: function(id) {
         if (this._preventRetries[id]) {
-            this.log("Retries are forbidden for id " + id);
+            this.log("Retries are forbidden for id " + id, 'warn');
             return false;
         }
         else if (this._handler.isValid(id)) {
@@ -261,7 +268,7 @@ qq.FineUploaderBasic.prototype = {
             return true;
         }
         else {
-            this.log("'" + id + "' is not a valid file ID");
+            this.log("'" + id + "' is not a valid file ID", 'error');
             return false;
         }
     },
@@ -396,7 +403,7 @@ qq.FineUploaderBasic.prototype = {
                 return callback.apply(self, args);
             }
             catch (exception) {
-                self.log("Caught " + exception + " in callback: " + callback);
+                self.log("Caught " + exception + " in callback: " + callback, 'error');
             }
         }
 

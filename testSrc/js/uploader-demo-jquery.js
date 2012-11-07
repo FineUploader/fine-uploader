@@ -1,8 +1,6 @@
 $(document).ready(function() {
     var errorHandler = function(event, id, fileName, reason) {
-        if (window.console) {
-            console.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
-        }
+        qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
     };
 
 

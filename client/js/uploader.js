@@ -437,7 +437,7 @@ qq.extend(qq.FineUploader.prototype, {
             }
             else {
 				failureReason = this._options.text.failUpload;
-                this.log("'" + responseProperty + "' is not a valid property on the server response.");
+                this.log("'" + responseProperty + "' is not a valid property on the server response.", 'warn');
             }
 
 			qq(this._find(item, 'statusText')).setText(shortFailureReason || failureReason);
@@ -450,7 +450,7 @@ qq.extend(qq.FineUploader.prototype, {
             qq(this._find(item, 'statusText')).setText(this._options.text.failUpload);
         }
         else if (mode !== 'none') {
-            this.log("failedUploadTextDisplay.mode value of '" + mode + "' is not valid");
+            this.log("failedUploadTextDisplay.mode value of '" + mode + "' is not valid", 'warn');
         }
     },
     //TODO turn this into a real tooltip, with click trigger (so it is usable on mobile devices).  See case #355 for details.
