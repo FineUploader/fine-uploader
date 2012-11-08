@@ -14,8 +14,8 @@ import java.io.*;
 
 public class UploadReceiver extends HttpServlet
 {
-    private static File UPLOAD_DIR = new File("uploads");
-    private static File TEMP_DIR = new File("uploadsTemp");
+    private static File UPLOAD_DIR = new File("test/uploads");
+    private static File TEMP_DIR = new File("test/uploadsTemp");
 
     private static String CONTENT_TYPE = "text/plain";
     private static String CONTENT_LENGTH = "Content-Length";

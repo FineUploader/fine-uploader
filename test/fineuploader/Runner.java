@@ -20,11 +20,9 @@ public class Runner
 
 		Connector connector = new SelectChannelConnector();
 
-        String appPackage = System.getProperty("tapestry.app-package");
-
         connector.setPort(8080);
 
-		server.setConnectors(new Connector[]{connector/*, sslConnector*/});
+		server.setConnectors(new Connector[]{connector});
 
 		WebAppContext context = new WebAppContext();
 		context.setContextPath("/");
