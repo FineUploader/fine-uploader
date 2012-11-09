@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Fine Uploader with Optional jQuery Wrapper demo</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Fine Uploader with Optional jQuery Wrapper demo">
+        <meta name="author" content="A. Bennouna, tellibus">
+        <link href="client/fineuploader.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="css/custom.css" rel="stylesheet">
+        <link href="css/prettify.css" rel="stylesheet">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    </head>
+    <body data-spy="scroll" data-target="#demoList">
+        <div id="navbar"></div>
+
+        <div id="jumbotron" class="jumbotron subhead">
+            <div class="container">
+                <h1>More demos</h1>
+                <p>Want more than basic stuff? See here!</p>
+            </div>
+        </div>
+
+        <div id="demoList" class="navbar" style="width: 100%; margin-bottom: 0; left: 0; z-index: 100;">
+            <div class="navbar-inner">
+                <div class="container">
+                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target="#demoList .nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="brand" href="#">More demos</a>
+                    <div class="nav-collapse collapse">
+                        <ul class="nav">
+                            <li><a href="#demo1">Manual Trigger</a></li>
+                            <li><a href="#demo2">Server Failure</a></li>
+                            <li><a href="#demo3">Various Options</a></li>
+                            <li><a href="#demo4">Image Thumbnails</a></li>
+                            <li><a href="#demo5">File Number Limit</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div class="row span12">
+                <section id="demo1">
+                    <h1>Manually Trigger Uploads</h1>
+                    <p class="lead">The default behavior of Fine Uploader is to immediately attempt to upload files as they are selected. One option allows you to simply queue all files, and then start uploading at a later time by calling <code>uploadStoredFiles()</code> on your Fine Uploader instance.</p>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <p>Since we need to catch click events on an HTML element, we will be using jQuery to handle events and selectors for the sake of simplicity.</p>
+                            <p>You can obviously take it further with the <a href="./fine-uploader-with-jquery-wrapper-demo.html">optional jQuery wrapper demos</a>.</p>
+                            <div id="manual-fine-uploader"></div>
+                            <div id="triggerUpload" class="btn btn-primary" style="margin-top: 10px;">
+                                <i class="icon-upload icon-white"></i> Upload now
+                            </div>
+                        </div>
+    
+                        <div class="span8">
+                            <pre class="prettyprint linenums">&lt;div id="manual-fine-uploader">&lt;/div>
+&lt;div id="triggerUpload" class="btn btn-primary" style="margin-top: 10px;">
+  &lt;i class="icon-upload icon-white">&lt;/i> Upload now
+&lt;/div>
+
+&lt;script src="http://code.jquery.com/jquery-latest.js">&lt;/script>
+&lt;script src="client/fineuploader.js">&lt;/script>
+&lt;script src="client/js/jquery-plugin.js">&lt;/script>
+&lt;script>
+  $(document).ready(function() {
+    var manualuploader = $('#manual-fine-uploader').fineUploader({
+      request: {
+        endpoint: 'server/handleUploads',
+      },
+      autoUpload: false,
+      text: {
+        uploadButton: '&lt;i class="icon-plus icon-white">&lt;/i> Select Files',
+      },
+      debug: true
+    });
+
+    $('#triggerUpload').click(function() {
+      manualuploader.fineUploader('uploadStoredFiles');
+    });
+  });
+&lt;/script></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="demo2">
+                    <h1>See Server Failure Messages</h1>
+                    <p class="lead">If your server returns a response that includes a reason property, such as <code>{"error": "unsupported file type"}</code> you can display the error message next to the failed file.</p>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <div id="failed-fine-uploader"></div>
+                        </div>
+    
+                        <div class="span8">
+                            <pre class="prettyprint linenums">&lt;div id="failed-fine-uploader">&lt;/div>
+
+&lt;script src="http://code.jquery.com/jquery-latest.js">&lt;/script>
+&lt;script src="client/fineuploader.js">&lt;/script>
+&lt;script src="client/js/jquery-plugin.js">&lt;/script>
+&lt;script>
+  $(document).ready(function() {
+    $('#failed-fine-uploader').fineUploader({
+      request: {
+        endpoint: 'server/handleUploads',
+      },
+      failedUploadTextDisplay: {
+        mode: 'custom',
+        maxChars: 40,
+        responseProperty: 'error',
+        enableTooltip: true,
+      },
+      debug: true
+    });
+  });
+&lt;/script></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="demo3">
+                    <h1>Various Options</h1>
+                    <p class="lead">There are various options available to you when using Fine Uploader. In this demo, we've used a small subset of these options. To see all available options and their usage, please refer to <a href="http://github.com/valums/file-uploader/">Fine Uploader documentation</a> on the Github repository.</p>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <p>We are implementing the following options in this demo:</p>
+                            <ul>
+                                <li>custom upload button text,</li>
+                                <li>restriction to one file upload/selection at once (may not select multiple files),</li>
+                                <li>restriction to <code>jpeg</code>, <code>jpg</code>, and <code>txt</code> files,</li>
+                                <li>restriction to a maximum file size of 50 kB,</li>
+                                <li>custom error display handler instead of the default alert box.</li>
+                            </ul>
+                            <div id="restricted-fine-uploader"></div>
+                        </div>
+    
+                        <div class="span8">
+                            <pre class="prettyprint linenums">&lt;div id="restricted-fine-uploader">&lt;/div>
+
+&lt;script src="http://code.jquery.com/jquery-latest.js">&lt;/script>
+&lt;script src="client/fineuploader.js">&lt;/script>
+&lt;script src="client/js/jquery-plugin.js">&lt;/script>
+&lt;script>
+  $(document).ready(function() {
+    $('#restricted-fine-uploader').fineUploader({
+      request: {
+        endpoint: 'server/success.html',
+      },
+      multiple: false,
+      validation: {
+        allowedExtensions: ['jpeg', 'jpg', 'txt'],
+        sizeLimit: 51200, // 50 kB = 50 * 1024 bytes
+      },
+      text: {
+        uploadButton: 'Click or Drop',
+      },
+      showMessage: function(message) {
+        // Using Bootstrap's classes
+        $('#restricted-fine-uploader').append('&lt;div class="alert alert-error">' + message + '&lt;/div>');
+      },
+      debug: true
+    });
+  });
+&lt;/script></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="demo4">
+                    <h1>Display Image Thumbnails</h1>
+                    <p class="lead">In this demo, we've used the onComplete callback to display thumbnails of the uploaded images after they have been uploaded to the server.</p>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <p>Since the demos do not actually upload your files, the thumbnail is fake. We hope you like it though :)</p>
+                            <p>This uploader is also restricted in</p>
+                            <ul>
+                                <li>size (50 kB)</li>
+                                <li>in concurrent downloads (only one at once),</li>
+                                <li>in allowed extensions (<code>jpeg</code>, <code>jpg</code>, <code>gif</code>, and <code>png</code>)</li>
+                            </ul>
+                            <div id="thumbnail-fine-uploader"></div>
+                        </div>
+    
+                        <div class="span8">
+                            <pre class="prettyprint linenums">&lt;div id="thumbnail-fine-uploader">&lt;/div>
+
+&lt;script src="http://code.jquery.com/jquery-latest.js">&lt;/script>
+&lt;script src="client/fineuploader.js">&lt;/script>
+&lt;script src="client/js/jquery-plugin.js">&lt;/script>
+&lt;script>
+  $(document).ready(function() {
+    $('#thumbnail-fine-uploader').fineUploader({
+      request: {
+        endpoint: 'server/success.html',
+      },
+      multiple: false,
+      validation: {
+        allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
+        sizeLimit: 51200, // 50 kB = 50 * 1024 bytes
+      },
+      text: {
+        uploadButton: 'Click or Drop',
+      },
+      debug: true
+    }).on('complete', function(event, id, fileName, responseJSON) {
+      if (responseJSON.success) {
+        $(this).append('&lt;img src="img/success.jpg" alt="' + fileName + '">');
+      }
+    });
+  });
+&lt;/script></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="demo5">
+                    <h1>Limit Number of Uploaded Files</h1>
+                    <p class="lead">In this demo, we are using both the onSubmit and the onComplete callbacks to handle a file counter.</p>
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <p>This uploader is also restricted in</p>
+                            <ul>
+                                <li>size (50 kB)</li>
+                                <li>in allowed extensions (<code>jpeg</code>, <code>jpg</code>, <code>gif</code>, and <code>png</code>)</li>
+                            </ul>
+                            <p>If you're yet to process the uploads (to store in a database for instance), it's quite easy to customize it even more in order to provide handles to delete a given uploaded file. In fact, it wouldn't hard delete the file on the server, just delete the link in the DOM.</p>
+                            <div id="filelimit-fine-uploader"></div>
+                        </div>
+    
+                        <div class="span8">
+                            <pre class="prettyprint linenums">&lt;div id="filelimit-fine-uploader">&lt;/div>
+
+&lt;script src="http://code.jquery.com/jquery-latest.js">&lt;/script>
+&lt;script src="client/fineuploader.js">&lt;/script>
+&lt;script src="client/js/jquery-plugin.js">&lt;/script>
+&lt;script>
+  var fileCount = 0;
+  var addedFiles = 0;
+  var fileLimit = 3;
+
+  $(document).ready(function() {
+    $('#filelimit-fine-uploader').fineUploader({
+      request: {
+        endpoint: 'server/success.html',
+      },
+      validation: {
+        allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
+        sizeLimit: 51200, // 50 kB = 50 * 1024 bytes
+      },
+      debug: true
+    }).on('submit', function(event, id, fileName) {
+      fileCount ++;
+      if(fileCount > fileLimit) {
+        $('#filelimit-fine-uploader .qq-upload-button').hide();
+        $('#filelimit-fine-uploader .qq-upload-drop-area').hide();
+        return false;
+      }
+    }).on('cancel', function(event, id, fileName) {
+      fileCount --;
+      if(fileCount <= fileLimit) {
+        $('#filelimit-fine-uploader .qq-upload-button').show();
+      }
+    }).on('complete', function(event, id, fileName, responseJSON) {
+      if (responseJSON.success) {
+        addedFiles ++;
+        if(addedFiles >= fileLimit) {
+          $('#filelimit-fine-uploader .qq-upload-button').hide();
+          $('#filelimit-fine-uploader .qq-upload-drop-area').hide();
+        }
+      }
+    });
+  });
+&lt;/script></pre>
+                        </div>
+                    </div>
+                </section>
+            </div>        
+        </div>        
+
+        <div id="footer"></div>
+
+        <script src="http://platform.twitter.com/widgets.js"></script>
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
+        <script src="js/prettify.js"></script>
+        <script>
+            $.get('./navbar.html', function(data) {
+                $('#navbar').html(data);
+                $('#navbar').find('li.dropdown').addClass('active')
+                                                .find('li').eq(1).addClass('active');
+
+                window.prettyPrint && prettyPrint();
+                $('.dropdown-toggle').dropdown();
+
+                $(document).ready(function() {
+                    /* Inspiration from:
+                       -----------------
+                       http://www.mybloggerlab.com/2012/03/make-your-old-site-navigation-bar.html */
+                    var offset, aboveHeight;
+                    var $menu = $('#menu');
+                    var $jumbotron = $('#jumbotron');
+                    var $demoList = $('#demoList');
+
+                    function offsetSubMenu() {
+                        if ($menu.css('position') == 'fixed') {
+                            offset = $menu.outerHeight();
+                            aboveHeight = $jumbotron.outerHeight() - 10;
+                        } else {
+                            offset = 0;
+                            aboveHeight = $menu.outerHeight() + $jumbotron.outerHeight();
+                        }
+
+                        if ($(window).scrollTop() > aboveHeight){
+                            $demoList.css({"position": "fixed", "top": offset + "px"});
+                        } else {
+                            $demoList.css({"position": "relative", "top": "0"});
+                        }
+                    }
+
+                    offsetSubMenu();
+
+                    $(window).resize(function() {
+                        offsetSubMenu();
+                    });
+
+                    $(window).scroll(function() {
+                        offsetSubMenu();
+                    });
+                });
+            });
+
+        </script>
+        <script src="client/fineuploader.js"></script>
+        <script src="client/js/jquery-plugin.js"></script>
+        <script>
+            $(document).ready(function () {
+                var manualuploader = $('#manual-fine-uploader').fineUploader({
+                    request: {
+                        endpoint: 'server/success.html',
+                    },
+                    autoUpload: false,
+                    text: {
+                        uploadButton: '<i class="icon-plus icon-white"></i> Select Files',
+                    },
+                    debug: true,
+                    demoMode: true // Undocumented -> Only for the gh-pages demo website
+                });
+
+                $('#triggerUpload').click(function() {
+                    manualuploader.fineUploader('uploadStoredFiles');
+                });
+
+                $('#failed-fine-uploader').fineUploader({
+                    request: {
+                        endpoint: 'server/failure.html',
+                    },
+                    failedUploadTextDisplay: {
+                        mode: 'custom',
+                        maxChars: 40,
+                        responseProperty: 'error',
+                        enableTooltip: true,
+                    },
+                    debug: true,
+                    demoMode: true // Undocumented -> Only for the gh-pages demo website
+                });
+
+                $('#restricted-fine-uploader').fineUploader({
+                    request: {
+                        endpoint: 'server/success.html',
+                    },
+                    multiple: false,
+                    validation: {
+                        allowedExtensions: ['jpeg', 'jpg', 'txt'],
+                        sizeLimit: 51200, // 50 kB = 50 * 1024 bytes
+                    },
+                    text: {
+                        uploadButton: 'Click or Drop',
+                    },
+                    showMessage: function(message) {
+                        // Using Bootstrap's classes and jQuery selector and DOM manipulation
+                        $('#restricted-fine-uploader').append('<div class="alert alert-error">' + message + '</div>');
+                    },
+                    debug: true,
+                    demoMode: true // Undocumented -> Only for the gh-pages demo website
+                });
+
+                $('#thumbnail-fine-uploader').fineUploader({
+                    request: {
+                        endpoint: 'server/success.html',
+                    },
+                    multiple: false,
+                    validation: {
+                        allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
+                        sizeLimit: 51200, // 50 kB = 50 * 1024 bytes
+                    },
+                    text: {
+                        uploadButton: 'Click or Drop',
+                    },
+                    debug: true,
+                    demoMode: true // Undocumented -> Only for the gh-pages demo website
+                }).on('complete', function(event, id, fileName, responseJSON) {
+                    if (responseJSON.success) {
+                        $(this).append('<img src="img/success.jpg" alt="' + fileName + '">');
+                    }
+                });
+
+                var fileCount = 0;
+                var addedFiles = 0;
+                var fileLimit = 3;
+
+                $('#filelimit-fine-uploader').fineUploader({
+                    request: {
+                        endpoint: 'server/success.html',
+                    },
+                    validation: {
+                        allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
+                        sizeLimit: 51200, // 50 kB = 50 * 1024 bytes
+                    },
+                    debug: true,
+                    demoMode: true // Undocumented -> Only for the gh-pages demo website
+                }).on('submit', function(event, id, fileName) {
+                    fileCount ++;
+                    if(fileCount > fileLimit) {
+                        $('#filelimit-fine-uploader .qq-upload-button').hide();
+                        $('#filelimit-fine-uploader .qq-upload-drop-area').hide();
+                        return false;
+                    }
+                }).on('cancel', function(event, id, fileName) {
+                    fileCount --;
+                    if(fileCount <= fileLimit) {
+                        $('#filelimit-fine-uploader .qq-upload-button').show();
+                    }
+                }).on('complete', function(event, id, fileName, responseJSON) {
+                    if (responseJSON.success) {
+                        addedFiles ++;
+                        if(addedFiles >= fileLimit) {
+                            $('#filelimit-fine-uploader .qq-upload-button').hide();
+                            $('#filelimit-fine-uploader .qq-upload-drop-area').hide();
+                        }
+                    }
+                });
+            });
+        </script>
+        <script>
+            $.get('./footer.html', function(data) { $('#footer').html(data); });
+        </script>
+    </body>
+</html>

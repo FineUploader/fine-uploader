@@ -2,22 +2,23 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Fine Uploader a.k.a valums file-uploader</title>
+        <title>Fine Uploader (3.0) a.k.a valums file-uploader</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
-        <meta name="author" content="">
-        <link href="client/fileuploader.css" rel="stylesheet">
+        <meta name="description" content="Fine Uploader (3.0) a.k.a valums file-uploader">
+        <meta name="author" content="A. Bennouna, tellibus">
+        <link href="client/fineuploader.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap.min.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link href="css/custom.css" rel="stylesheet">
         <link href="css/prettify.css" rel="stylesheet">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     </head>
     <body>
         <div id="navbar"></div>
 
         <div class="jumbotron masthead">
             <div class="container">
-                <h1>Fine Uploader</h1>
+                <h1>Fine Uploader 3.0<img src="img/starburst.png" alt="Fine Uploader 3.0 now with optional jQuery wrapper" width="105" height="105" style="vertical-align: super; margin: 10px 0 -15px -25px"></h1>
                 <h2>a.k.a valums file-uploader</h2>
                 <p>File uploading <b>without</b> the hassle.</p>
                 <p>
@@ -25,14 +26,14 @@
                         Download <i class="icon-download-alt icon-white" style="margin-top: 7px;"></i>
                     </a>
                     <a href="#demo" class="btn btn-primary btn-large">
-                        Demo <i class="icon-chevron-down icon-white" style="margin-top: 7px;"></i>
+                        Demos <i class="icon-chevron-down icon-white" style="margin-top: 7px;"></i>
                     </a>
                 </p>
                 <ul class="masthead-links">
                     <li>
                         <a href="http://github.com/valums/file-uploader/" target="_blank">GitHub project</a>
                     </li>
-                    <li>Version 2.1.2</li>
+                    <li>Version 3.0</li>
                 </ul>
             </div>
         </div>
@@ -113,33 +114,42 @@
   &lt;head>
     &lt;meta charset="utf-8">
     &lt;title>Fine Uploader Demo&lt;/title>
-    &lt;link href="client/fileuploader.css" rel="stylesheet">
+    &lt;link href="client/fineuploader.css" rel="stylesheet">
   &lt;/head>
   &lt;body>
     &lt;div id="fine-uploader">&lt;/div>
-    &lt;script src="client/fileuploader.js">&lt;/script>
+
+    &lt;script src="client/fineuploader.js">&lt;/script>
     &lt;script>
       function createUploader() {
-        var uploader = new qq.FileUploader({
+        var uploader = new qq.FineUploader({
+          // Pass the HTML element here
           element: document.getElementById('fine-uploader'),
+          // or, if using jQuery
+          // element: $('#fine-uploader')[0],
           // Use the relevant server script url here
-          action: 'yourServerScript'
+          // if it's different from the default “/server/upload”
+          request: {
+            endpoint: 'server/handleUploads'
+          },
         });
       }
     
       window.onload = createUploader;
     &lt/script>
-    &lt;/body>
+  &lt;/body>
 &lt;/html></pre>
                     </div>
                 </div>
 
                 <hr class="soften" id="demo">
 
-                <h1>Out-of-the-box demo</h1>
-                <p class="marketing-byline">Here we use default settings and default styles. Below you can see the <a href="#bootstrap-demo">bootstrapped demo</a>.</p>
+                <h1>Minimal Out-of-the-Box Demo</h1>
+                <p class="marketing-byline">Here we use default settings and default styles. Below you can see the <a href="#bootstrap-demo">bootstrapped demo</a> and <a href="#jquery-wrapper-demo">jQuery wrapper demo</a>.</p>
                 <div class="row-fluid">
-                    <div class="span4">
+                    <div class="span4" style="text-align: left;">
+                        <p>You can have a minimal setup without using neither jQuery nor Twitter Boostrap. You simply use the <a href="#setup">minimal HTML markup</a> above. The relevant HTML tag and Javascript code for this demo are extracted on the right.</p>
+                        <p>Here for the demo purposes, we active the debug mode (which defaults to false). You can see the logs in real time in your browser’s JavaScript console.</p>
                         <div id="fine-uploader"></div>
                     </div>
 
@@ -148,63 +158,130 @@
 
 &lt;script>
   function createUploader() {
-    var uploader = new qq.FileUploader({
+    var uploader = new qq.FineUploader({
       element: document.getElementById('fine-uploader'),
-      action: 'do-nothing.htm'
+      request: {
+        endpoint: 'server/handleUploads',
+      },
+      debug: true
     });
   }
   
   window.onload = createUploader;
-&lt/script></pre>
+&lt;/script></pre>
                     </div>
                 </div>
 
                 <hr class="soften" id="bootstrap-demo">
 
-                <h1>Bootstrapped Demo</h1>
-                <p class="marketing-byline">Default settings, but we include support for Twitter Bootstrap. You can also see <a href="#more">more demos</a> below.</p>
+                <h1>Bootstrapped Minimal Demo</h1>
+                <p class="marketing-byline">Default settings, but we include support for Twitter Bootstrap. You can also see the <a href="#jquery-wrapper-demo">jQuery wrapper demo</a>, and <a href="#more">even more demos</a> below.</p>
                 <div class="row-fluid">
-                    <div class="span4">
+                    <div class="span4" style="text-align: left;">
+                        <p>In order to style your uploader’s look, you can customize the template classes as you like.</p>
+                        <p>We use here both Fine Uploader and Twitter Bootstrap’s CSS and add some styling reset.</p>
                         <div id="bootstrapped-fine-uploader"></div>
                     </div>
 
                     <div class="span8">
-                        <pre class="prettyprint linenums">&lt;div id="bootstrapped-fine-uploader">&lt;/div>
-
-&lt;script>
-  function createUploader() {
-    var uploader = new qq.FileUploader({
-      element: document.getElementById('bootstrapped-fine-uploader'),
-      action: 'do-nothing.htm',
-      uploadButtonText: '&lt;i class="icon-upload icon-white">&lt;/i> Test me now and upload a file',
-      template: '&lt;div class="qq-uploader span12">' +
-                  '&lt;pre class="qq-upload-drop-area span12">&lt;span>{dragText}&lt;/span>&lt;/pre>' +
-                  '&lt;div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}&lt;/div>' +
-                  '&lt;ul class="qq-upload-list" style="margin-top: 10px; text-align: center;">&lt;/ul>' +
-                '&lt;/div>',
-      classes: {
-        button: 'qq-upload-button',
-        drop: 'qq-upload-drop-area',
-        dropActive: 'qq-upload-drop-area-active',
-        dropDisabled: 'qq-upload-drop-area-disabled',
-        list: 'qq-upload-list',
-        progressBar: 'qq-progress-bar',
-        file: 'qq-upload-file',
-        spinner: 'qq-upload-spinner',
-        finished: 'qq-upload-finished',
-        size: 'qq-upload-size',
-        cancel: 'qq-upload-cancel',
-        failText: 'qq-upload-failed-text',
-        success: 'alert alert-success',
-        fail: 'alert alert-error',
-        successIcon: null,
-        failIcon: null
+                        <pre class="prettyprint linenums">&lt;!DOCTYPE html>
+&lt;html>
+  &lt;head>
+    &lt;meta charset="utf-8">
+    &lt;title>Fine Uploader - Boostrapped Minimal Demo&lt;/title>
+    &lt;link href="client/fineuploader.css" rel="stylesheet">
+    &lt;link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap.min.css" rel="stylesheet">
+    &lt;style>
+      /* Fine Uploader
+      -------------------------------------------------- */
+      .qq-upload-list {
+        text-align: left;
       }
-    });
-  }
-  
-  window.onload = createUploader;
-&lt/script></pre>
+
+      /* For the bootstrapped demos */
+      li.alert-success {
+        background-color: #DFF0D8;
+      }
+
+      li.alert-error {
+        background-color: #F2DEDE;
+      }
+
+      .alert-error .qq-upload-failed-text {
+        display: inline;
+      }
+    &lt;/style>
+  &lt;/head>
+  &lt;body>
+    &lt;div id="bootstrapped-fine-uploader">&lt;/div>
+
+    &lt;script src="client/fineuploader.js">&lt;/script>
+    &lt;script>
+      function createUploader() {
+        var uploader = new qq.FineUploader({
+          element: document.getElementById('bootstrapped-fine-uploader'),
+          request: {
+            endpoint: 'server/handleUploads',
+          },
+          text: {
+            uploadButton: '&lt;i class="icon-upload icon-white">&lt;/i> Test me now and upload a file',
+          },
+          template: '&lt;div class="qq-uploader span12">' +
+                      '&lt;pre class="qq-upload-drop-area span12">&lt;span>{dragZoneText}&lt;/span>&lt;/pre>' +
+                      '&lt;div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}&lt;/div>' +
+                      '&lt;ul class="qq-upload-list" style="margin-top: 10px; text-align: center;">&lt;/ul>' +
+                    '&lt;/div>',
+          classes: {
+            success: 'alert alert-success',
+            fail: 'alert alert-error',
+          },
+          debug: true
+        });
+      }
+        
+      window.onload = createUploader;
+    &lt/script>
+  &lt;/body>
+&lt;/html></pre>
+                    </div>
+                </div>
+
+                <hr class="soften" id="jquery-wrapper-demo">
+
+                <h1>jQuery Wrapper Minimal Demo</h1>
+                <p class="marketing-byline">Here we use default settings and default styles, this time with Fine Uploader’s jQuery optional wrapper plugin. Above you can see the <a href="#bootstrap-demo">bootstrapped demo</a>.</p>
+                <div class="row-fluid">
+                    <div class="span4" style="text-align: left;">
+                        <p>In addition to the <a href="#demo">minimal out-of-the-box demo</a>, we include here Fine Uploader’s jQuery wrapper.</p>
+                        <div id="jquery-wrapped-fine-uploader"></div>
+                    </div>
+
+                    <div class="span8">
+                        <pre class="prettyprint linenums">&lt;!DOCTYPE html>
+&lt;html>
+  &lt;head>
+    &lt;meta charset="utf-8">
+    &lt;title>Fine Uploader - jQuery Wrapper Minimal Demo&lt;/title>
+    &lt;link href="client/fineuploader.css" rel="stylesheet">
+  &lt;/head>
+  &lt;body>
+    &lt;div id="jquery-wrapped-fine-uploader">&lt;/div>
+
+    &lt;script src="http://code.jquery.com/jquery-latest.js">&lt;/script>
+    &lt;script src="client/fineuploader.js">&lt;/script>
+    &lt;script src="client/js/jquery-plugin.js">&lt;/script>
+    &lt;script>
+      $(document).ready(function () {
+        $('#jquery-wrapped-fine-uploader').fineUploader({
+          request: {
+            endpoint: 'server/handleUploads',
+          },
+          debug: true
+        });
+      });
+    &lt/script>
+  &lt;/body>
+&lt;/html></pre>
                     </div>
                 </div>
 
@@ -214,14 +291,10 @@
                 <p class="marketing-byline">Includes more features, and also shows how to customize Fine Uploader Basic.</p>
                 <div class="row-fluid">
                     <div class="span12">
-                        <a href="./fine-uploader-demo.html" class="btn btn-success btn-large">
-                            Fine Uploader
-                            <br><span class="legend">The all-in-one drag-and-drop uploader</span>
-                        </a>
-                        <a href="./fine-uploader-basic-demo.html" class="btn btn-primary btn-large">
-                            Fine Uploader Basic
-                            <br><span class="legend">Only the basic form uploader. You're in control!</span>
-                        </a>
+                        <p>Head over one of the following pages to see how to customize further Fine Uploader.</p>
+                        <a href="./fine-uploader-demo.html" class="btn btn-large tip" title="The all-in-one drag-and-drop uploader">Fine Uploader<span class="legend"><br>The all-in-one drag-and-drop uploader</span></a>
+                        <a href="./fine-uploader-with-jquery-wrapper-demo.html" class="btn btn-large tip" title="Leveraging the optional jQuery Wrapper">jQuery Optional Wrapper<span class="legend"><br>Leveraging the optional jQuery Wrapper</span></a>
+                        <a href="./fine-uploader-basic-demo.html" class="btn btn-large tip" title="Only the basic form uploader. You're in control!">Fine Uploader Basic<span class="legend"><br>Only the basic form uploader. You're in control!</span></a>
                     </div>
                 </div>
             </div>
@@ -229,50 +302,37 @@
 
         <div id="footer"></div>
 
-        <script src="client/fileuploader.js"></script>
+        <script src="client/fineuploader.js"></script>
         <script>
             function createUploader() {
-                var uploader = new qq.FileUploader({
+                var uploader = new qq.FineUploader({
                     element: document.getElementById('fine-uploader'),
-                    action: 'client/do-nothing.htm',
+                    request: {
+                        endpoint: 'server/success.html',
+                    },
                     debug: true,
-                    demoMode: true
+                    demoMode: true // Undocumented -> Only for the gh-pages demo website
                 });
 
-                var btuploader = new qq.FileUploader({
+                var btuploader = new qq.FineUploader({
                     element: document.getElementById('bootstrapped-fine-uploader'),
-                    action: 'client/do-nothing.htm',
-                    debug: true,
-                    demoMode: true,
-                    uploadButtonText: '<i class="icon-upload icon-white"></i> Test me now and upload a file',
+                    request: {
+                        endpoint: 'server/success.html',
+                    },
+                    text: {
+                        uploadButton: '<i class="icon-upload icon-white"></i> Test me now and upload a file',
+                    },
                     template:   '<div class="qq-uploader span12">' +
-                                    '<pre class="qq-upload-drop-area span12"><span>{dragText}</span></pre>' +
+                                    '<pre class="qq-upload-drop-area span12"><span>{dragZoneText}</span></pre>' +
                                     '<div class="qq-upload-button btn btn-success" style="width: auto;">{uploadButtonText}</div>' +
                                     '<ul class="qq-upload-list" style="margin-top: 10px; text-align: center;"></ul>' +
                                 '</div>',
                     classes: {
-                        // used to get elements from templates
-                        button: 'qq-upload-button',
-                        drop: 'qq-upload-drop-area',
-                        dropActive: 'qq-upload-drop-area-active',
-                        dropDisabled: 'qq-upload-drop-area-disabled',
-                        list: 'qq-upload-list',
-                        progressBar: 'qq-progress-bar',
-                        file: 'qq-upload-file',
-                        spinner: 'qq-upload-spinner',
-                        finished: 'qq-upload-finished',
-                        size: 'qq-upload-size',
-                        cancel: 'qq-upload-cancel',
-                        failText: 'qq-upload-failed-text',
-            
-                        // added to list item <li> when upload completes
-                        // used in css to hide progress spinner
                         success: 'alert alert-success',
                         fail: 'alert alert-error',
-            
-                        successIcon: null,
-                        failIcon: null
-                    }
+                    },
+                    debug: true,
+                    demoMode: true // Undocumented -> Only for the gh-pages demo website
                 });
             }
 
@@ -282,11 +342,39 @@
         <script src="http://code.jquery.com/jquery-latest.js"></script>
         <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
         <script src="js/prettify.js"></script>
+        <script src="js/jquery.tipsy.min.js"></script>
+        <script src="client/js/jquery-plugin.js"></script>
         <script>
             window.prettyPrint && prettyPrint();
             $('.dropdown-toggle').dropdown();
-            $.get('/navbar.html', function(data) { $('#navbar').html(data); });
-            $.get('/footer.html', function(data) { $('#footer').html(data); });
+            $.get('./navbar.html', function(data) {
+                $('#navbar').html(data);
+                if (window.location.hash == '') {
+                    $('#navbar').find('li').eq(0).addClass('active');                    
+                } else {
+                    $('#navbar').find('a[href$="' + window.location.hash + '"]').parent().addClass('active');
+                }
+            });
+            $.get('./footer.html', function(data) { $('#footer').html(data); });
+
+            $(document).ready(function () {
+                $(document).on('click', '#navbar a', function() {
+                    if ($(this).attr('href').indexOf('./#') == 0) {
+                        $('#navbar li').removeClass('active');
+                        $(this).parent().addClass('active');
+                    }
+                });
+
+                $('a.tip').tipsy();
+
+                $('#jquery-wrapped-fine-uploader').fineUploader({
+                    request: {
+                        endpoint: 'server/success.html',
+                    },
+                    debug: true,
+                    demoMode: true // Undocumented -> Only for the gh-pages demo website
+                });
+            });
         </script>
     </body>
 </html>

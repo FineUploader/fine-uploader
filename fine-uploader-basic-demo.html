@@ -4,13 +4,14 @@
         <meta charset="utf-8">
         <title>Fine Uploader Basic demo</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="">
-        <meta name="author" content="">
-        <link href="client/fileuploader.css" rel="stylesheet">
+        <meta name="description" content="Fine Uploader Basic Demo">
+        <meta name="author" content="A. Bennouna, tellibus">
+        <link href="client/fineuploader.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap.min.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link href="css/custom.css" rel="stylesheet">
         <link href="css/prettify.css" rel="stylesheet">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">            
     </head>
     <body data-spy="scroll" data-target="#demoList">
         <div id="navbar"></div>
@@ -44,56 +45,62 @@
     $fub = $('#fine-uploader-basic');
     $messages = $('#messages');
 
-    var uploader = new qq.FileUploaderBasic({
+    var uploader = new qq.FineUploaderBasic({
       button: $fub[0],
-      action: 'do-nothing.htm',
-      debug: true,
-      allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
-      sizeLimit: 204800, // 200 kB = 200 * 1024 bytes
-      onSubmit: function(id, fileName) {
-        $messages.append('&lt;div id="file-' + id + '" class="alert" style="margin: 20px 0 0">&lt;/div>');
+      request: {
+        endpoint: 'server/handleUploads',
       },
-      onUpload: function(id, fileName) {
-        $('#file-' + id).addClass('alert-info')
-                        .html('&lt;img src="client/loading.gif" alt="Initializing. Please hold."> ' +
-                              'Initializing ' +
-                              '“' + fileName + '”');
+      validation: {
+        allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
+        sizeLimit: 204800, // 200 kB = 200 * 1024 bytes
       },
-      onProgress: function(id, fileName, loaded, total) {
-        if (loaded < total) {
-          progress = Math.round(loaded / total * 100) + '% of ' + Math.round(total / 1024) + ' kB';
-          $('#file-' + id).removeClass('alert-info')
-                          .html('&lt;img src="client/loading.gif" alt="In progress. Please hold."> ' +
-                                'Uploading ' +
-                                '“' + fileName + '” ' +
-                                progress);
-        } else {
+      callbacks: {
+        onSubmit: function(id, fileName) {
+          $messages.append('&lt;div id="file-' + id + '" class="alert" style="margin: 20px 0 0">&lt;/div>');
+        },
+        onUpload: function(id, fileName) {
           $('#file-' + id).addClass('alert-info')
-                          .html('&lt;img src="client/loading.gif" alt="Saving. Please hold."> ' +
-                                'Saving ' +
+                          .html('&lt;img src="client/loading.gif" alt="Initializing. Please hold."> ' +
+                                'Initializing ' +
                                 '“' + fileName + '”');
-        }
+        },
+        onProgress: function(id, fileName, loaded, total) {
+          if (loaded < total) {
+            progress = Math.round(loaded / total * 100) + '% of ' + Math.round(total / 1024) + ' kB';
+            $('#file-' + id).removeClass('alert-info')
+                            .html('&lt;img src="client/loading.gif" alt="In progress. Please hold."> ' +
+                                  'Uploading ' +
+                                  '“' + fileName + '” ' +
+                                  progress);
+          } else {
+            $('#file-' + id).addClass('alert-info')
+                            .html('&lt;img src="client/loading.gif" alt="Saving. Please hold."> ' +
+                                  'Saving ' +
+                                  '“' + fileName + '”');
+          }
+        },
+        onComplete: function(id, fileName, responseJSON) {
+          if (responseJSON.success) {
+            $('#file-' + id).removeClass('alert-info')
+                            .addClass('alert-success')
+                            .html('&lt;i class="icon-ok">&lt;/i> ' +
+                                  'Successfully saved ' +
+                                  '“' + fileName + '”' +
+                                  '&lt;br>&lt;img src="img/success.jpg" alt="' + fileName + '">');
+          } else {
+            $('#file-' + id).removeClass('alert-info')
+                            .addClass('alert-error')
+                            .html('&lt;i class="icon-exclamation-sign">&lt;/i> ' +
+                                  'Error with ' +
+                                  '“' + fileName + '”: ' +
+                                  responseJSON.error);
+          }
+        },
       },
-      onComplete: function(id, fileName, responseJSON) {
-        if (responseJSON.success) {
-          $('#file-' + id).removeClass('alert-info')
-                          .addClass('alert-success')
-                          .html('&lt;i class="icon-ok">&lt;/i> ' +
-                                'Successfully saved ' +
-                                '“' + fileName + '”' +
-                                '&lt;br>&lt;img src="img/success.jpg" alt="' + fileName + '">');
-        } else {
-          $('#file-' + id).removeClass('alert-info')
-                          .addClass('alert-error')
-                          .html('&lt;i class="icon-exclamation-sign">&lt;/i> ' +
-                                'Error with ' +
-                                '“' + fileName + '”: ' +
-                                responseJSON.error);
-        }
-      }
+      debug: true
     });
-  }
-&lt/script></pre>
+  });
+&lt;/script></pre>
                         </div>
                     </div>
                 </section>
@@ -103,61 +110,67 @@
         <div id="footer"></div>
 
         <script src="http://code.jquery.com/jquery-latest.js"></script>
-        <script src="client/fileuploader.js"></script>
+        <script src="client/fineuploader.js"></script>
         <script>
             $(document).ready(function() {
                 $fub = $('#fine-uploader-basic');
                 $messages = $('#messages');
 
-                var uploader = new qq.FileUploaderBasic({
+                var uploader = new qq.FineUploaderBasic({
                     button: $fub[0],
-                    action: 'client/do-nothing.htm',
-                    debug: true,
-                    demoMode: true,
-                    allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
-                    sizeLimit: 204800, // 200 kB = 200 * 1024 bytes
-                    onSubmit: function(id, fileName) {
-                        $messages.append('<div id="file-' + id + '" class="alert" style="margin: 20px 0 0"></div>');
+                    request: {
+                        endpoint: 'server/success.html',
                     },
-                    onUpload: function(id, fileName) {
-                        $('#file-' + id).addClass('alert-info')
-                                        .html('<img src="client/loading.gif" alt="Initializing. Please hold."> ' +
-                                              'Initializing ' +
-                                              '“' + fileName + '”');
+                    validation: {
+                        allowedExtensions: ['jpeg', 'jpg', 'gif', 'png'],
+                        sizeLimit: 204800, // 200 kB = 200 * 1024 bytes
                     },
-                    onProgress: function(id, fileName, loaded, total) {
-                        if (loaded < total) {
-                            progress = Math.round(loaded / total * 100) + '% of ' + Math.round(total / 1024) + ' kB';
-                            $('#file-' + id).removeClass('alert-info')
-                                            .html('<img src="client/loading.gif" alt="In progress. Please hold."> ' +
-                                                  'Uploading ' +
-                                                  '“' + fileName + '” ' +
-                                                  progress /*+
-                                                  ' <span class="btn btn-warning"><i class="icon-remove"></i></span>'*/);
-                        } else {
+                    callbacks: {
+                        onSubmit: function(id, fileName) {
+                            $messages.append('<div id="file-' + id + '" class="alert" style="margin: 20px 0 0"></div>');
+                        },
+                        onUpload: function(id, fileName) {
                             $('#file-' + id).addClass('alert-info')
-                                            .html('<img src="client/loading.gif" alt="Saving. Please hold."> ' +
-                                                  'Saving ' +
+                                            .html('<img src="client/loading.gif" alt="Initializing. Please hold."> ' +
+                                                  'Initializing ' +
                                                   '“' + fileName + '”');
-                        }
+                        },
+                        onProgress: function(id, fileName, loaded, total) {
+                            if (loaded < total) {
+                                progress = Math.round(loaded / total * 100) + '% of ' + Math.round(total / 1024) + ' kB';
+                                $('#file-' + id).removeClass('alert-info')
+                                                .html('<img src="client/loading.gif" alt="In progress. Please hold."> ' +
+                                                      'Uploading ' +
+                                                      '“' + fileName + '” ' +
+                                                      progress /*+
+                                                      ' <span class="btn btn-warning"><i class="icon-remove"></i></span>'*/);
+                            } else {
+                                $('#file-' + id).addClass('alert-info')
+                                                .html('<img src="client/loading.gif" alt="Saving. Please hold."> ' +
+                                                      'Saving ' +
+                                                      '“' + fileName + '”');
+                            }
+                        },
+                        onComplete: function(id, fileName, responseJSON) {
+                            if (responseJSON.success) {
+                                $('#file-' + id).removeClass('alert-info')
+                                                .addClass('alert-success')
+                                                .html('<i class="icon-ok"></i> ' +
+                                                      'Successfully saved ' +
+                                                      '“' + fileName + '”' +
+                                                      '<br><img src="img/success.jpg" alt="' + fileName + '">');
+                            } else {
+                                $('#file-' + id).removeClass('alert-info')
+                                                .addClass('alert-error')
+                                                .html('<i class="icon-exclamation-sign"></i> ' +
+                                                      'Error with ' +
+                                                      '“' + fileName + '”: ' +
+                                                      responseJSON.error);
+                            }
+                        },
                     },
-                    onComplete: function(id, fileName, responseJSON) {
-                        if (responseJSON.success) {
-                            $('#file-' + id).removeClass('alert-info')
-                                            .addClass('alert-success')
-                                            .html('<i class="icon-ok"></i> ' +
-                                                  'Successfully saved ' +
-                                                  '“' + fileName + '”' +
-                                                  '<br><img src="img/success.jpg" alt="' + fileName + '">');
-                        } else {
-                            $('#file-' + id).removeClass('alert-info')
-                                            .addClass('alert-error')
-                                            .html('<i class="icon-exclamation-sign"></i> ' +
-                                                  'Error with ' +
-                                                  '“' + fileName + '”: ' +
-                                                  responseJSON.error);
-                        }
-                    }
+                    debug: true,
+                    demoMode: true // Undocumented -> Only for the gh-pages demo website
                 });
             });
         </script>
@@ -168,8 +181,12 @@
             window.prettyPrint && prettyPrint();
             $('.dropdown-toggle').dropdown();
 
-            $.get('/navbar.html', function(data) { $('#navbar').html(data); });
-            $.get('/footer.html', function(data) { $('#footer').html(data); });
+            $.get('./navbar.html', function(data) {
+                $('#navbar').html(data);
+                $('#navbar').find('li.dropdown').addClass('active')
+                                                .find('li').eq(2).addClass('active');
+            });
+            $.get('./footer.html', function(data) { $('#footer').html(data); });
         </script>
     </body>
 </html>
