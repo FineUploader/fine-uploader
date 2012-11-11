@@ -62,6 +62,7 @@ It does not use Flash, jQuery, or any other external libraries.
 * Display specific error messages from server on upload failure (hover over failed upload item)
 * Ability to auto-retry failed uploads
 * Option to allow users to manually retry a failed upload
+* Create your own file validator
 
 <br/>
 ### License ###
