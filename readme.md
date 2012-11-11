@@ -160,8 +160,9 @@ $('#fineUploaderElementId').fineUploader({
 ```
 
 It may be important to note that The value returned from your event/callback handler may be examined by the uploader.
-This is only relevant for the `onSubmit` callback, at this point.  As the documentation states, if you want to cancel an
-upload in your `onSubmit` callback handler, simply return `false`.  This is also true when using the jQuery plug-in.
+This is only relevant for the `onSubmit` and `onValidate` callbacks, at this point.  As the documentation states, if you
+want to cancel an upload in your `onSubmit` or `onValidate` callback handlers, simply return `false`.  This is also true
+when using the jQuery plug-in.
 
 Also, please note that the context of your event handler, by default, is the event target.  This is, in fact, true, by
 default, for _all_ jQuery event handlers, not just event handlers associated with Fine Uploader.  Say you want to change
@@ -640,6 +641,12 @@ Note that this does not mean the file upload will begin at this point.  Return `
 * `onProgress(String id, String fileName, int uploadedBytes, int totalBytes)` - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
 * `onError(String id, String fileName, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
 * `onAutoRetry(String id, String fileName, String attemptNumber)` - called before each automatic retry attempt for a failed file.
+* `onValidate((Object or Array) fileData, boolean isBatch)` - This is called with an array of `FileData` objects (representing all files dropped or selected)
+if more than one file has been dropped or selected at once.  In this case, the `isBatch` value is `true`.  To prevent any files in this batch from being
+uploaded, simply return false.  If your handler does not return false, this callback will also occur for each file submitted.  In that case, one `FileData`
+object will be passed, and `isBatch` will be false.  If you want to only prevent specific files from being uploaded, you can return false here
+when appropriate.  Note that a `FileData` object has two properties: `name` (the file name) and `size` (the file size).  The `size`
+property will be undefined if the user agent does not support the File API.
 
 <br/>
 ### Changing alert/messages to something more user friendly ###

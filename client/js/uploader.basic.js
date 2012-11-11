@@ -21,16 +21,15 @@ qq.FineUploaderBasic = function(o){
             stopOnFirstInvalidFile: true
         },
         callbacks: {
-            // return false to cancel submit
-            onSubmit: function(id, fileName){},
+            onSubmit: function(id, fileName){}, // return false to cancel submit
             onComplete: function(id, fileName, responseJSON){},
             onCancel: function(id, fileName){},
             onUpload: function(id, fileName, xhr){},
             onProgress: function(id, fileName, loaded, total){},
             onError: function(id, fileName, reason) {},
-            onAutoRetry: function(id, fileName, attemptNumber) {}
+            onAutoRetry: function(id, fileName, attemptNumber) {},
+            onValidate: function(fileData, isBatch) {} // return false to prevent upload
         },
-        // messages
         messages: {
             typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
             sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
@@ -285,19 +284,28 @@ qq.FineUploaderBasic.prototype = {
         }
     },
     _uploadFileList: function(files){
-        if (files.length > 0) {
-            for (var i=0; i<files.length; i++){
-                if (this._validateFile(files[i])){
-                    this._uploadFile(files[i]);
-                } else {
-                    if (this._options.validation.stopOnFirstInvalidFile){
-                        return;
+        var validationDescriptors, index, batchInvalid;
+
+        validationDescriptors = this._getValidationDescriptors(files);
+        if (validationDescriptors.length > 1) {
+            batchInvalid = this._options.callbacks.onValidate(validationDescriptors, true) === false;
+        }
+
+        if (!batchInvalid) {
+            if (files.length > 0) {
+                for (index = 0; index < files.length; index++){
+                    if (this._validateFile(files[index])){
+                        this._uploadFile(files[index]);
+                    } else {
+                        if (this._options.validation.stopOnFirstInvalidFile){
+                            return;
+                        }
                     }
                 }
             }
-        }
-        else {
-            this._error('noFilesError', "");
+            else {
+                this._error('noFilesError', "");
+            }
         }
     },
     _uploadFile: function(fileContainer){
@@ -318,31 +326,32 @@ qq.FineUploaderBasic.prototype = {
         this._storedFileIds.push(id);
     },
     _validateFile: function(file){
-        var name, size;
+        var validationDescriptor, name, size;
 
-        if (file.value){
-            // it is a file input
-            // get input value and remove path to normalize
-            name = file.value.replace(/.*(\/|\\)/, "");
-        } else {
-            // fix missing properties in Safari 4 and firefox 11.0a2
-            name = (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
-            size = (file.fileSize !== null && file.fileSize !== undefined) ? file.fileSize : file.size;
+        validationDescriptor = this._getValidationDescriptor(file);
+        name = validationDescriptor.name;
+        size = validationDescriptor.size;
+
+        if (this._options.callbacks.onValidate(validationDescriptor, false) === false) {
+            return false;
         }
 
-        if (! this._isAllowedExtension(name)){
+        if (!this._isAllowedExtension(name)){
             this._error('typeError', name);
             return false;
 
-        } else if (size === 0){
+        }
+        else if (size === 0){
             this._error('emptyError', name);
             return false;
 
-        } else if (size && this._options.validation.sizeLimit && size > this._options.validation.sizeLimit){
+        }
+        else if (size && this._options.validation.sizeLimit && size > this._options.validation.sizeLimit){
             this._error('sizeError', name);
             return false;
 
-        } else if (size && size < this._options.validation.minSizeLimit){
+        }
+        else if (size && size < this._options.validation.minSizeLimit){
             this._error('minSizeError', name);
             return false;
         }
@@ -417,5 +426,54 @@ qq.FineUploaderBasic.prototype = {
                 }());
             }
         }
+    },
+    _parseFileName: function(file) {
+        var name;
+
+        if (file.value){
+            // it is a file input
+            // get input value and remove path to normalize
+            name = file.value.replace(/.*(\/|\\)/, "");
+        } else {
+            // fix missing properties in Safari 4 and firefox 11.0a2
+            name = (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
+        }
+
+        return name;
+    },
+    _parseFileSize: function(file) {
+        var size;
+
+        if (!file.value){
+            // fix missing properties in Safari 4 and firefox 11.0a2
+            size = (file.fileSize !== null && file.fileSize !== undefined) ? file.fileSize : file.size;
+        }
+
+        return size;
+    },
+    _getValidationDescriptor: function(file) {
+        var name, size, fileDescriptor;
+
+        fileDescriptor = {};
+        name = this._parseFileName(file);
+        size = this._parseFileSize(file);
+
+        fileDescriptor.name = name;
+        if (size) {
+            fileDescriptor.size = size;
+        }
+
+        return fileDescriptor;
+    },
+    _getValidationDescriptors: function(files) {
+        var index, fileDescriptors;
+
+        fileDescriptors = [];
+
+        for (index = 0; index < files.length; index++) {
+            fileDescriptors.push(files[index]);
+        }
+
+        return fileDescriptors;
     }
 };
