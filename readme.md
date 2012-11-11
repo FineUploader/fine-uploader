@@ -645,8 +645,9 @@ Note that this does not mean the file upload will begin at this point.  Return `
 if more than one file has been dropped or selected at once.  In this case, the `isBatch` value is `true`.  To prevent any files in this batch from being
 uploaded, simply return false.  If your handler does not return false, this callback will also occur for each file submitted.  In that case, one `FileData`
 object will be passed, and `isBatch` will be false.  If you want to only prevent specific files from being uploaded, you can return false here
-when appropriate.  Note that a `FileData` object has two properties: `name` (the file name) and `size` (the file size).  The `size`
-property will be undefined if the user agent does not support the File API.
+when appropriate.  These calls always occur before the default Fine Uploader validators execute.  Note that a `FileData` object has
+two properties: `name` (the file name) and `size` (the file size).  The `size` property will be undefined if the user
+agent does not support the File API.
 
 <br/>
 ### Changing alert/messages to something more user friendly ###
