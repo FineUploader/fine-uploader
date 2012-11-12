@@ -54,15 +54,15 @@ It does not use Flash, jQuery, or any other external libraries.
 
 <br/>
 ### Features ###
-* Multiple file select, progress-bar in FF, Chrome, Safari
-* Drag-and-drop file select in FF, Chrome, Safari (OS X)
+* Multiple file select, progress-bar in FF, Chrome, Opera, and Safari
+* Drag-and-drop file select in FF, Chrome, Opera, and Safari (OS X)
 * Uploads are cancelable
 * No external dependencies **at all** if using FineUploader or FineUploaderBasic.  If using the optional jQuery wrapper, jQuery is of course required.
 * FineUploaderBasic only requires the associated Fine Uploader javascript file.  All Fine Uploader css and image files can be omitted.
 * Doesn't use Flash
 * Fully working with HTTPS
 * Keyboard support in FF, Chrome, Safari
-* Tested in IE7+, Firefox, Safari (OS X), and Chrome.  IE10 is now also supported!
+* Tested in IE7+, Firefox, Safari (OS X), Opera, and Chrome.  IE10 is now also supported!
 * Ability to upload files as soon as they are selected, or "queue" them for uploading at user's request later
 * Display specific error messages from server on upload failure (hover over failed upload item)
 * Ability to auto-retry failed uploads
