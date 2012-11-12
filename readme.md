@@ -3,6 +3,11 @@
 Actively developed by Ray Nicholus.     
 Created by by Andrew Valums.
 
+</br>
+## Please Read ##
+3.0 brings some breaking changes. Your 2.x or earlier client-side code WILL require adjustments.  Please have a look
+at the [upgrading](#upgrading-from-212) section AND the options documentation before requesting support.
+
 
 <br/>
 ### Quick Links ###
@@ -102,8 +107,16 @@ have changed as well.  The js and css files that appear in the released zip will
 * Options have been "categorized" where appropriate.  For example, all drag-and-drop related options are now sub-options
 under the `dragAndDrop` option, text options are now sub-options under the new `text` option.  There are several other new
 "categories"/options with sub-options.  Please see the options section of this readme for details.
-* The `action` option has been renamed `endpoint`.  Notice that it is now a sub-option under the new `request` option as well.
-* More logging was added (still only appearing if `debug` is set to true).
+* The `action` option has been renamed `endpoint`.  Notice that it is now a property under the new `request` object option as well.
+* `params`, `customHeaders`, `forceMultipart`, and `inputName` are now properties under the new `request` option.
+* All validation-related options have been moved under the new `validation` option.
+* All callbacks have been moved under the `callbacks` option.
+* `extraDropzones`, `hideDropzones`, and `disableDefaultDropzone` options were moved under the new `dragAndDrop` option.
+* `extraMessages` is now `messages` (in FineUploader).  It extends FineUploaderBasic's `messages` option.  The `formatProgress` property
+has been moved under the `text` option.
+* All options ending in "text" have been moved under the new `text` option.  In each of these cases, the "text" suffix has been removed
+  from the option.  Also, the `dragText` option has been moved under `dragAndDrop` as well and has been renamed `dragZone`.
+* More logging was added.  Warning and error messages will always appear, but lower-level log messages will still only appear if `debug` is set to true.
 * The giant uploader javascript file was split up into smaller files where appropriate.  This is simply to make development/maintenance
 easier.  Releases will always contain all js in a single file.  The source branches though, will contain the split-up files.  Note
 that you can always combine files in a snapshot branch if you want via [gradle](#building-and-using-the-snapshot-version).  Once I setup
