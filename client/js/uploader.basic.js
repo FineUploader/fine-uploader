@@ -28,7 +28,7 @@ qq.FineUploaderBasic = function(o){
             onProgress: function(id, fileName, loaded, total){},
             onError: function(id, fileName, reason) {},
             onAutoRetry: function(id, fileName, attemptNumber) {},
-            onValidate: function(fileData, isBatch) {} // return false to prevent upload
+            onValidate: function(fileData) {} // return false to prevent upload
         },
         messages: {
             typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
@@ -288,7 +288,7 @@ qq.FineUploaderBasic.prototype = {
 
         validationDescriptors = this._getValidationDescriptors(files);
         if (validationDescriptors.length > 1) {
-            batchInvalid = this._options.callbacks.onValidate(validationDescriptors, true) === false;
+            batchInvalid = this._options.callbacks.onValidate(validationDescriptors) === false;
         }
 
         if (!batchInvalid) {
@@ -332,7 +332,7 @@ qq.FineUploaderBasic.prototype = {
         name = validationDescriptor.name;
         size = validationDescriptor.size;
 
-        if (this._options.callbacks.onValidate(validationDescriptor, false) === false) {
+        if (this._options.callbacks.onValidate([validationDescriptor]) === false) {
             return false;
         }
 
@@ -416,15 +416,13 @@ qq.FineUploaderBasic.prototype = {
             }
         }
 
-        for (var prop in this._options) {
-            if (/^on[A-Z]/.test(prop)) {
-                (function() {
-                    var oldCallback = self._options[prop];
-                    self._options[prop] = function() {
-                        return safeCallback(oldCallback, arguments);
-                    }
-                }());
-            }
+        for (var prop in this._options.callbacks) {
+			(function() {
+				var oldCallback = self._options.callbacks[prop];
+				self._options.callbacks[prop] = function() {
+					return safeCallback(oldCallback, arguments);
+				}
+			}());
         }
     },
     _parseFileName: function(file) {
