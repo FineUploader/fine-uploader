@@ -173,7 +173,7 @@ $('#fineUploaderElementId').fineUploader({
 ```
 
 It may be important to note that The value returned from your event/callback handler may be examined by the uploader.
-This is only relevant for the `onSubmit` and `onValidate` callbacks, at this point.  As the documentation states, if you
+This is relevant for the `onSubmit`, `onValidate` and `onManualRetry` callbacks, at this point.  As the documentation states, if you
 want to cancel an upload in your `onSubmit` or `onValidate` callback handlers, simply return `false`.  This is also true
 when using the jQuery plug-in.
 
@@ -654,6 +654,7 @@ Note that this does not mean the file upload will begin at this point.  Return `
 * `onProgress(String id, String fileName, int uploadedBytes, int totalBytes)` - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
 * `onError(String id, String fileName, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
 * `onAutoRetry(String id, String fileName, String attemptNumber)` - called before each automatic retry attempt for a failed file.
+* `onManualRetry(String id, String fileName)` - called before each manual retry attempt.  Return false to prevent this and all future retry attempts on this file.
 * `onValidate(Array fileData, boolean isBatch)` - If more than one file has been selected or dropped, this callback is invoked
 with FileData objects for each of the dropped/selected files.  This allows you to prevent the entire batch from being uploaded
 if desired.  To prevent any files in this batch from being uploaded, simply return false.  If your handler does not return

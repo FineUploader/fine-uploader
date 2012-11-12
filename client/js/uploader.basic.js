@@ -28,6 +28,7 @@ qq.FineUploaderBasic = function(o){
             onProgress: function(id, fileName, loaded, total){},
             onError: function(id, fileName, reason) {},
             onAutoRetry: function(id, fileName, attemptNumber) {},
+            onManualRetry: function(id, fileName) {},
             onValidate: function(fileData) {} // return false to prevent upload
         },
         messages: {
@@ -262,6 +263,11 @@ qq.FineUploaderBasic.prototype = {
         }
         else if (this._handler.isValid(id)) {
             var fileName = this._handler.getName(id);
+
+            if (this._options.callbacks.onManualRetry(id, fileName) === false) {
+                return false;
+            }
+
             this.log("Retrying upload for '" + fileName + "' (id: " + id + ")...");
             this._filesInProgress++;
             return true;
