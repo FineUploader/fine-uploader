@@ -61,7 +61,7 @@ It does not use Flash, jQuery, or any other external libraries.
 * FineUploaderBasic only requires the associated Fine Uploader javascript file.  All Fine Uploader css and image files can be omitted.
 * Doesn't use Flash
 * Fully working with HTTPS
-* Tested in IE7+, Firefox, Safari (OS X), Opera, and Chrome.  IE10 is now also supported!
+* Tested in IE7+, Firefox, Safari (OS X), Opera, Chrome, IOS6, and various versions of Android.  IE10 is now also supported!
 * Ability to upload files as soon as they are selected, or "queue" them for uploading at user's request later
 * Display specific error messages from server on upload failure (hover over failed upload item)
 * Ability to auto-retry failed uploads
