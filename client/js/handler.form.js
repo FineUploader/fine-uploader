@@ -142,12 +142,12 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             this.log("converting iframe's innerHTML to JSON");
             this.log("innerHTML = " + innerHTML);
             //plain text response may be wrapped in <pre> tag
-            if (innerHTML.slice(0, 5).toLowerCase() == '<pre>' && innerHTML.slice(-6).toLowerCase() == '</pre>') {
+            if (innerHTML && innerHTML.match(/^<pre/i)) {
                 innerHTML = doc.body.firstChild.firstChild.nodeValue;
             }
             response = eval("(" + innerHTML + ")");
         } catch(error){
-            self.log('Error when attempting to parse form upload response (' + error + ")", 'error');
+            this.log('Error when attempting to parse form upload response (' + error + ")", 'error');
             response = {success: false};
         }
 
