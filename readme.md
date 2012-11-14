@@ -871,7 +871,7 @@ then you have a problem with your server-side script.
 <br/>
 ### Issue Tracker ###
 Have a bug or feature request? Please [create an issue here on GitHub](https://github.com/valums/file-uploader/issues) 
-that conforms with [necolas's guidelines](https://github.com/necolas/issue-guidelines).
+that conforms with [necolas's guidelines](https://github.com/necolas/issue-guidelines/blob/master/README.md).
 
 <br/>
 ### Contributors ###
