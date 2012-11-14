@@ -98,6 +98,14 @@ in the basic uploader also exist in the full widget.
 * [optional jQuery plug-in](#using-the-optional-jquery-plug-in)
 * [only override sub-options you want to change](#how-to-override-options)
 * auto and manual retry of failed uploads
+* you may now "contribute" you own custom file validators
+* IE10 and Android are now officially supported
+* Improved logging
+* Instance function that allow you to lookup a file list item element given a file ID
+* Instance function that allows you to dispose/reset the uploader
+* Instance function that allows you to cancel an upload
+* "Processing" indicator that appears when the last byte has been sent but a response from the server is pending
+* Fixed issue in IE7 that caused button text to be invisible
 
 Some minor breaking changes were also made.  Here are some of the changes:
 * All mentions of "FileUploader" in the code were changes to the new name: FineUploader.  This includes qq.FileUploader
