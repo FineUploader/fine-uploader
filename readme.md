@@ -25,6 +25,7 @@ at the [upgrading](#upgrading-from-212) section AND the options documentation be
 - [Features](#features)
 - [License](#license)
 - [Getting started](#getting-started)
+- [Server-side requirements](https://github.com/valums/file-uploader/blob/3.0/server/readme.md)
 - [Using the optional jQuery plug-in](#using-the-optional-jquery-plug-in)
 - [qq.FineUploader - Setting up full upload widget](#qqfineuploader---setting-up-full-upload-widget)
 - [How to override options](#how-to-override-options)
@@ -40,7 +41,6 @@ at the [upgrading](#upgrading-from-212) section AND the options documentation be
 - [Troubleshooting](#troubleshooting)
 - [Issue Tracker](#issue-tracker)
 - [Contributors](#contributors)
-- Examples - see the server directory
 
 <br/>
 ### Summary ###
