@@ -413,12 +413,12 @@ qq.FineUploaderBasic.prototype = {
 
         self = this;
 
-        safeCallback = function(callback, args) {
+        safeCallback = function(name, callback, args) {
             try {
                 return callback.apply(self, args);
             }
             catch (exception) {
-                self.log("Caught " + exception + " in callback: " + callback, 'error');
+                self.log("Caught exception in '" + name + "' callback - " + exception, 'error');
             }
         }
 
@@ -426,7 +426,7 @@ qq.FineUploaderBasic.prototype = {
 			(function() {
 				var oldCallback = self._options.callbacks[prop];
 				self._options.callbacks[prop] = function() {
-					return safeCallback(oldCallback, arguments);
+					return safeCallback(prop, oldCallback, arguments);
 				}
 			}());
         }
