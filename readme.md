@@ -40,6 +40,7 @@ at the [upgrading](#upgrading-from-212) section AND the options documentation be
 - [Troubleshooting](#troubleshooting)
 - [Issue Tracker](#issue-tracker)
 - [Contributors](#contributors)
+- Examples - see the server directory
 
 <br/>
 ### Summary ###
