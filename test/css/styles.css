@@ -1,0 +1,53 @@
+BODY {
+    /* IE10 Consumer Preview */
+    background-image: -ms-radial-gradient(center top, ellipse farthest-side, #FFFFFF 0%, #1AB6EF 100%);
+
+    /* Mozilla Firefox */
+    background-image: -moz-radial-gradient(center top, ellipse farthest-side, #FFFFFF 0%, #1AB6EF 100%);
+
+    /* Opera */
+    background-image: -o-radial-gradient(center top, ellipse farthest-side, #FFFFFF 0%, #1AB6EF 100%);
+
+    /* Webkit (Safari/Chrome 10) */
+    background-image: -webkit-gradient(radial, center top, 0, center top, 425, color-stop(0, #FFFFFF), color-stop(1, #1AB6EF));
+
+    /* Webkit (Chrome 11+) */
+    background-image: -webkit-radial-gradient(center top, ellipse farthest-side, #FFFFFF 0%, #1AB6EF 100%);
+
+    /* W3C Markup, IE10 Release Preview */
+    background-image: radial-gradient(ellipse farthest-side at center top, #FFFFFF 0%, #1AB6EF 100%);
+}
+
+H1 {
+    text-align: center;
+}
+
+#examples {
+    padding-left: 10px;
+}
+
+.endingRemark {
+    margin-top: 30px;
+}
+
+DIV.example {
+    margin-top: 50px;
+}
+
+DIV.example ul {
+    width: 500px;
+}
+
+A {
+    color: green;
+}
+
+A.decorate {
+    text-decoration: underline;
+}
+
+#disqus_thread {
+    margin: 10px;
+    padding: 20px;
+    background: #fff;
+}
