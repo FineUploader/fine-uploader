@@ -285,12 +285,12 @@ qq.obj2url = function(obj, temp, prefixDone){
     }
 
     if (temp) {
-            return uristrings.join(prefix);
-        } else {
-            return uristrings.join(prefix)
-                             .replace(/^&/, '')
-                             .replace(/%20/g, '+');
-        }
+        return uristrings.join(prefix);
+    } else {
+        return uristrings.join(prefix)
+            .replace(/^&/, '')
+            .replace(/%20/g, '+');
+    }
 };
 
 /**

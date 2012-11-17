@@ -352,7 +352,7 @@ qq.extend(qq.FineUploader.prototype, {
             }
         }
     },
-     //return false if we should not attempt the requested retry
+    //return false if we should not attempt the requested retry
     _onBeforeManualRetry: function(id) {
         if (qq.FineUploaderBasic.prototype._onBeforeManualRetry.apply(this, arguments)) {
             var item = this.getItemByFileId(id);
@@ -436,15 +436,15 @@ qq.extend(qq.FineUploader.prototype, {
                 }
             }
             else {
-				failureReason = this._options.text.failUpload;
+                failureReason = this._options.text.failUpload;
                 this.log("'" + responseProperty + "' is not a valid property on the server response.", 'warn');
             }
 
-			qq(this._find(item, 'statusText')).setText(shortFailureReason || failureReason);
+            qq(this._find(item, 'statusText')).setText(shortFailureReason || failureReason);
 
-   			if (this._options.failedUploadTextDisplay.enableTooltip) {
-       			this._showTooltip(item, failureReason);
-			}
+            if (this._options.failedUploadTextDisplay.enableTooltip) {
+                this._showTooltip(item, failureReason);
+            }
         }
         else if (mode === 'default') {
             qq(this._find(item, 'statusText')).setText(this._options.text.failUpload);
@@ -462,10 +462,10 @@ qq.extend(qq.FineUploader.prototype, {
         spinnerEl.style.display = "inline-block";
     },
     _showCancelLink: function(item) {
-		if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
-        	var cancelLink = this._find(item, 'cancel');
-        	cancelLink.style.display = 'inline';
-		}
+        if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
+            var cancelLink = this._find(item, 'cancel');
+            cancelLink.style.display = 'inline';
+        }
     },
     _error: function(code, fileName){
         var message = qq.FineUploaderBasic.prototype._error.apply(this, arguments);

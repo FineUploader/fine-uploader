@@ -423,12 +423,12 @@ qq.FineUploaderBasic.prototype = {
         }
 
         for (var prop in this._options.callbacks) {
-			(function() {
-				var oldCallback = self._options.callbacks[prop];
-				self._options.callbacks[prop] = function() {
-					return safeCallback(prop, oldCallback, arguments);
-				}
-			}());
+            (function() {
+                var oldCallback = self._options.callbacks[prop];
+                self._options.callbacks[prop] = function() {
+                    return safeCallback(prop, oldCallback, arguments);
+                }
+            }());
         }
     },
     _parseFileName: function(file) {
