@@ -1,4 +1,4 @@
-# Fine Uploader 3.0 (Released November 16) #
+# Fine Uploader 3.1-SNAPSHOT (Release Date TBD) #
 
 Actively developed by Ray Nicholus.     
 Created by by Andrew Valums.
@@ -884,7 +884,7 @@ that conforms with [necolas's guidelines](https://github.com/necolas/issue-guide
 
 <br/>
 ### Contributors ###
-We would love developers to contribute any improvements and bugfixes they produce.
+We would love developers to contribute any improvements and bugfixes they produce.  Note that any pull requests MUST be against an "IP" branch!
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
 
 Thanks to everybody who contributed, either by sending bug reports or donating. The project wouldn't be possible without all this generous help. Thank you!
