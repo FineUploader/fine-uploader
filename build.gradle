@@ -47,13 +47,3 @@ task minifyJsJquery(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
     source = combineJsJquery
     dest = file("$buildDir/jquery.${filename}-${version}.min.js")
 }
-
-gzipJs {
-    source = minifyJs
-    dest = file("$buildDir/${filename}-${version}.min.gzip.js")
-}
-
-task gzipJsJquery(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
-    source = minifyJsJquery
-    dest = file("$buildDir/jquery.${filename}-${version}.min.gzip.js")
-}
