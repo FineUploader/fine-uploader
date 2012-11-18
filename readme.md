@@ -18,12 +18,12 @@ at the [upgrading](#upgrading-from-212) section AND the options documentation be
 * [Homepage](http://fineuploader.com)
 * [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
-
 <br/>
 ###Table of Contents###
 - [Summary](#summary)
 - [Features](#features)
 - [License](#license)
+- [Known Issues](#known-issues)
 - [Getting started](#getting-started)
 - [Server-side requirements](https://github.com/valums/file-uploader/blob/master/server/readme.md)
 - [Using the optional jQuery plug-in](#using-the-optional-jquery-plug-in)
@@ -75,6 +75,10 @@ It does not use Flash, jQuery, or any other external libraries.
 <br/>
 ### License ###
 This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
+
+<br/>
+### Known Issues ###
+* [#474](https://github.com/valums/file-uploader/issues/474) - Sometimes the wrong callback name is reported in a caught callback error message.  Planned to be fixed in 3.1.
 
 <br/>
 ### Getting started ###
