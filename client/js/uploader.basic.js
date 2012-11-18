@@ -424,9 +424,11 @@ qq.FineUploaderBasic.prototype = {
 
         for (var prop in this._options.callbacks) {
             (function() {
-                var oldCallback = self._options.callbacks[prop];
-                self._options.callbacks[prop] = function() {
-                    return safeCallback(prop, oldCallback, arguments);
+                var callbackName, callbackFunc;
+                callbackName = prop;
+                callbackFunc = self._options.callbacks[callbackName];
+                self._options.callbacks[callbackName] = function() {
+                    return safeCallback(callbackName, callbackFunc, arguments);
                 }
             }());
         }
