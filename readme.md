@@ -667,7 +667,7 @@ Note that this does not mean the file upload will begin at this point.  Return `
 * `onError(String id, String fileName, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
 * `onAutoRetry(String id, String fileName, String attemptNumber)` - called before each automatic retry attempt for a failed file.
 * `onManualRetry(String id, String fileName)` - called before each manual retry attempt.  Return false to prevent this and all future retry attempts on this file.
-* `onValidate(Array fileData, boolean isBatch)` - If more than one file has been selected or dropped, this callback is invoked
+* `onValidate(Array fileData)` - If more than one file has been selected or dropped, this callback is invoked
 with FileData objects for each of the dropped/selected files.  This allows you to prevent the entire batch from being uploaded
 if desired.  To prevent any files in this batch from being uploaded, simply return false.  If your handler does not return
 false, this callback will also be invoked once for each individual file submitted.  In that case, the array will contain
