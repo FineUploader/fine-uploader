@@ -1,5 +1,7 @@
 # Fine Uploader 3.0 (Released November 16) #
+### 3.1 is planned for Dec. 17 ###
 
+<br/>
 Actively developed by Ray Nicholus.     
 Created by by Andrew Valums.
 
