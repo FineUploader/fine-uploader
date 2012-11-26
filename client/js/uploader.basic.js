@@ -44,6 +44,10 @@ qq.FineUploaderBasic = function(o){
             maxAutoAttempts: 3,
             autoAttemptDelay: 5,
             preventRetryResponseProperty: 'preventRetry'
+        },
+        classes: {
+            buttonHover: 'qq-upload-button-hover',
+            buttonFocus: 'qq-upload-button-focus'
         }
     };
 
@@ -126,7 +130,9 @@ qq.FineUploaderBasic.prototype = {
             acceptFiles: this._options.validation.acceptFiles,
             onChange: function(input){
                 self._onInputChange(input);
-            }
+            },
+            hoverClass: this._options.classes.buttonHover,
+            focusClass: this._options.classes.buttonFocus
         });
 
         this.addDisposer(function() { button.dispose(); });
