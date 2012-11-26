@@ -80,8 +80,9 @@ It does not use Flash, jQuery, or any other external libraries.
 This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
 
 <br/>
-### Known Issues ###
+### Known Issues & Limitations ###
 * [#474](https://github.com/valums/file-uploader/issues/474) - Sometimes the wrong callback name is reported in a caught callback error message.  Planned to be fixed in 3.1.
+* [#492](https://github.com/valums/file-uploader/issues/492) - Cannot create multiple uploader instances when using the jQuery wrapper with one selector.  Planned to be fixed in 3.1.
 
 <br/>
 ### Getting started ###
