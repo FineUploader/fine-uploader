@@ -14,7 +14,8 @@ qq.DragAndDrop = function(o) {
         },
         callbacks: {
             dropProcessing: function(isProcessing, files) {},
-            error: function(code, filename) {}
+            error: function(code, filename) {},
+            log: function(message, level) {}
         }
     };
 
@@ -22,7 +23,7 @@ qq.DragAndDrop = function(o) {
 
     function maybeUploadDroppedFiles() {
         if (droppedEntriesCount === droppedEntriesParsedCount && !dirPending) {
-            qq.log('Grabbed ' + droppedFiles.length + " files after tree traversal.");
+            options.callbacks.log('Grabbed ' + droppedFiles.length + " files after tree traversal.");
             dz.dropDisabled(false);
             options.callbacks.dropProcessing(false, droppedFiles);
         }

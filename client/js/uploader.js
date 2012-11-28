@@ -188,6 +188,9 @@ qq.extend(qq.FineUploader.prototype, {
                 },
                 error: function(code, filename) {
                     self._error(code, filename);
+                },
+                log: function(message, level) {
+                    self.log(message, level);
                 }
             }
         });
