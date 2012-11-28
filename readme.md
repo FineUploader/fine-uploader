@@ -71,6 +71,7 @@ It does not use Flash, jQuery, or any other external libraries.
 * Create your own file validator and/or use some default validators include with Fine Uploader
 * Receive callback at various stages of the upload process
 * Send any parameters server-side along with each file.
+* Upload directories via drag and drop (Chrome 21+).
 * Any many more!
 
 <br/>
