@@ -10,7 +10,6 @@
 }
 .qq-upload-button {
     display: block;
-    /*or inline-block*/
     width: 105px;
     padding: 7px 0;
     text-align: center;
@@ -76,6 +75,16 @@
     background: url("loading.gif");
     width: 15px;
     height: 15px;
+    vertical-align: text-bottom;
+}
+.qq-drop-processing {
+    display: none;
+}
+.qq-drop-processing-spinner {
+    display: inline-block;
+    background: url("processing.gif");
+    width: 24px;
+    height: 24px;
     vertical-align: text-bottom;
 }
 .qq-upload-finished {

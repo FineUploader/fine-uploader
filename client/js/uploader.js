@@ -21,12 +21,14 @@ qq.FineUploader = function(o){
             retryButton: 'Retry',
             failUpload: 'Upload failed',
             dragZone: 'Drop files here to upload',
+            dropProcessing: 'Processing dropped files...',
             formatProgress: "{percent}% of {total_size}",
             waitingForResponse: "Processing..."
         },
         template: '<div class="qq-uploader">' +
             ((!this._options.dragAndDrop || !this._options.dragAndDrop.disableDefaultDropzone) ? '<div class="qq-upload-drop-area"><span>{dragZoneText}</span></div>' : '') +
             (!this._options.button ? '<div class="qq-upload-button"><div>{uploadButtonText}</div></div>' : '') +
+            '<span class="qq-drop-processing"><span>{dropProcessingText}</span><span class="qq-drop-processing-spinner"></span></span>' +
             (!this._options.listElement ? '<ul class="qq-upload-list"></ul>' : '') +
             '</div>',
 
@@ -42,7 +44,6 @@ qq.FineUploader = function(o){
             '<span class="qq-upload-status-text">{statusText}</span>' +
             '</li>',
         classes: {
-            // used to get elements from templates
             button: 'qq-upload-button',
             drop: 'qq-upload-drop-area',
             dropActive: 'qq-upload-drop-area-active',
@@ -59,13 +60,14 @@ qq.FineUploader = function(o){
             retry: 'qq-upload-retry',
             statusText: 'qq-upload-status-text',
 
-            // added to list item <li> when upload completes
-            // used in css to hide progress spinner
             success: 'qq-upload-success',
             fail: 'qq-upload-fail',
 
             successIcon: null,
-            failIcon: null
+            failIcon: null,
+
+            dropProcessing: 'qq-drop-processing',
+            dropProcessingSpinner: 'qq-drop-processing-spinner'
         },
         failedUploadTextDisplay: {
             mode: 'default', //default, custom, or none
@@ -94,6 +96,7 @@ qq.FineUploader = function(o){
     // same for the Cancel button and Fail message text
     this._options.template     = this._options.template.replace(/\{dragZoneText\}/g, this._options.text.dragZone);
     this._options.template     = this._options.template.replace(/\{uploadButtonText\}/g, this._options.text.uploadButton);
+    this._options.template     = this._options.template.replace(/\{dropProcessingText\}/g, this._options.text.dropProcessing);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.text.cancelButton);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{retryButtonText\}/g, this._options.text.retryButton);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{statusText\}/g, "");
@@ -109,7 +112,8 @@ qq.FineUploader = function(o){
     }
 
     this._bindCancelAndRetryEvents();
-    this._setupDragDrop();
+
+    this._dnd = this._setupDragAndDrop();
 };
 
 // inherit from Basic Uploader
@@ -121,11 +125,10 @@ qq.extend(qq.FineUploader.prototype, {
         this._listElement.innerHTML = "";
     },
     addExtraDropzone: function(element){
-        this._setupExtraDropzone(element);
+        this._dnd.setupExtraDropzone(element);
     },
     removeExtraDropzone: function(element){
-        var dzs = this._options.dragAndDrop.extraDropzones;
-        for(var i in dzs) if (dzs[i] === element) return this._options.dragAndDrop.extraDropzones.splice(i,1);
+        return this._dnd.removeExtraDropzone(element);
     },
     getItemByFileId: function(id){
         var item = this._listElement.firstChild;
@@ -145,7 +148,53 @@ qq.extend(qq.FineUploader.prototype, {
             this._button = this._createUploadButton(this._find(this._element, 'button'));
         }
         this._bindCancelAndRetryEvents();
-        this._setupDragDrop();
+        this._dnd = this._setupDragAndDrop();
+    },
+    _setupDragAndDrop: function() {
+        var dnd, preventSelectFiles, self = this, dropProcessingEl = this._find(this._element, 'dropProcessing');
+
+        preventSelectFiles = function(event) {
+            event.preventDefault();
+        };
+
+        if (!this._options.dragAndDrop.disableDefaultDropzone) {
+            defaultDropAreaEl = this._find(this._options.element, 'drop');
+        }
+
+        dnd = new qq.DragAndDrop({
+            dropArea: defaultDropAreaEl,
+            extraDropzones: this._options.dragAndDrop.extraDropzones,
+            hideDropzones: this._options.dragAndDrop.hideDropzones,
+            multiple: this._options.multiple,
+            classes: {
+                dropActive: this._options.classes.dropActive
+            },
+            callbacks: {
+                dropProcessing: function(isProcessing, files) {
+                    var input = self._button.getInput();
+
+                    if (isProcessing) {
+                        qq(dropProcessingEl).css({display: 'block'});
+                        qq(input).attach('click', preventSelectFiles);
+                    }
+                    else {
+                        qq(dropProcessingEl).hide();
+                        qq(input).detach('click', preventSelectFiles);
+                    }
+
+                    if (files) {
+                        self._uploadFileList(files);
+                    }
+                },
+                error: function(code, filename) {
+                    self._error(code, filename);
+                }
+            }
+        });
+
+        dnd.setup();
+
+        return dnd;
     },
     _leaving_document_out: function(e){
         return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
@@ -166,88 +215,6 @@ qq.extend(qq.FineUploader.prototype, {
         }
 
         return element;
-    },
-    _setupExtraDropzone: function(element){
-        this._options.dragAndDrop.extraDropzones.push(element);
-        this._setupDropzone(element);
-    },
-    _setupDropzone: function(dropArea){
-        var self = this;
-
-        var dz = new qq.UploadDropZone({
-            element: dropArea,
-            onEnter: function(e){
-                qq(dropArea).addClass(self._classes.dropActive);
-                e.stopPropagation();
-            },
-            onLeave: function(e){
-                //e.stopPropagation();
-            },
-            onLeaveNotDescendants: function(e){
-                qq(dropArea).removeClass(self._classes.dropActive);
-            },
-            onDrop: function(e){
-                if (self._options.dragAndDrop.hideDropzones) {
-                    qq(dropArea).hide();
-                }
-
-                qq(dropArea).removeClass(self._classes.dropActive);
-                if (e.dataTransfer.files.length > 1 && !self._options.multiple) {
-                    self._error('tooManyFilesError', "");
-                }
-                else {
-                    self._uploadFileList(e.dataTransfer.files);
-                }
-            }
-        });
-
-        this.addDisposer(function() { dz.dispose(); });
-
-        if (this._options.dragAndDrop.hideDropzones) {
-            qq(dropArea).hide();
-        }
-    },
-    _setupDragDrop: function(){
-        var self, dropArea;
-
-        self = this;
-
-        if (!this._options.dragAndDrop.disableDefaultDropzone) {
-            dropArea = this._find(this._element, 'drop');
-            this._options.dragAndDrop.extraDropzones.push(dropArea);
-        }
-
-        var dropzones = this._options.dragAndDrop.extraDropzones;
-        var i;
-        for (i=0; i < dropzones.length; i++){
-            this._setupDropzone(dropzones[i]);
-        }
-
-        // IE <= 9 does not support the File API used for drag+drop uploads
-        if (!this._options.dragAndDrop.disableDefaultDropzone && (!qq.ie() || qq.ie10())) {
-            this._attach(document, 'dragenter', function(e){
-                if (qq(dropArea).hasClass(self._classes.dropDisabled)) return;
-
-                dropArea.style.display = 'block';
-                for (i=0; i < dropzones.length; i++){ dropzones[i].style.display = 'block'; }
-
-            });
-        }
-        this._attach(document, 'dragleave', function(e){
-            if (self._options.dragAndDrop.hideDropzones && qq.FineUploader.prototype._leaving_document_out(e)) {
-                for (i=0; i < dropzones.length; i++) {
-                    qq(dropzones[i]).hide();
-                }
-            }
-        });
-        qq(document).attach('drop', function(e){
-            if (self._options.dragAndDrop.hideDropzones) {
-                for (i=0; i < dropzones.length; i++) {
-                    qq(dropzones[i]).hide();
-                }
-            }
-            e.preventDefault();
-        });
     },
     _onSubmit: function(id, fileName){
         qq.FineUploaderBasic.prototype._onSubmit.apply(this, arguments);
@@ -472,104 +439,3 @@ qq.extend(qq.FineUploader.prototype, {
         this._options.showMessage(message);
     }
 });
-
-qq.UploadDropZone = function(o){
-    this._options = {
-        element: null,
-        onEnter: function(e){},
-        onLeave: function(e){},
-        // is not fired when leaving element by hovering descendants
-        onLeaveNotDescendants: function(e){},
-        onDrop: function(e){}
-    };
-    qq.extend(this._options, o);
-    qq.extend(this, qq.DisposeSupport);
-
-    this._element = this._options.element;
-
-    this._disableDropOutside();
-    this._attachEvents();
-};
-
-qq.UploadDropZone.prototype = {
-    _dragover_should_be_canceled: function(){
-        return qq.safari() || (qq.firefox() && qq.windows());
-    },
-    _disableDropOutside: function(e){
-        // run only once for all instances
-        if (!qq.UploadDropZone.dropOutsideDisabled ){
-
-            // for these cases we need to catch onDrop to reset dropArea
-            if (this._dragover_should_be_canceled){
-                qq(document).attach('dragover', function(e){
-                    e.preventDefault();
-                });
-            } else {
-                qq(document).attach('dragover', function(e){
-                    if (e.dataTransfer){
-                        e.dataTransfer.dropEffect = 'none';
-                        e.preventDefault();
-                    }
-                });
-            }
-
-            qq.UploadDropZone.dropOutsideDisabled = true;
-        }
-    },
-    _attachEvents: function(){
-        var self = this;
-
-        self._attach(self._element, 'dragover', function(e){
-            if (!self._isValidFileDrag(e)) return;
-
-            var effect = qq.ie() ? null : e.dataTransfer.effectAllowed;
-            if (effect == 'move' || effect == 'linkMove'){
-                e.dataTransfer.dropEffect = 'move'; // for FF (only move allowed)
-            } else {
-                e.dataTransfer.dropEffect = 'copy'; // for Chrome
-            }
-
-            e.stopPropagation();
-            e.preventDefault();
-        });
-
-        self._attach(self._element, 'dragenter', function(e){
-            if (!self._isValidFileDrag(e)) return;
-
-            self._options.onEnter(e);
-        });
-
-        self._attach(self._element, 'dragleave', function(e){
-            if (!self._isValidFileDrag(e)) return;
-
-            self._options.onLeave(e);
-
-            var relatedTarget = document.elementFromPoint(e.clientX, e.clientY);
-            // do not fire when moving a mouse over a descendant
-            if (qq(this).contains(relatedTarget)) return;
-
-            self._options.onLeaveNotDescendants(e);
-        });
-
-        self._attach(self._element, 'drop', function(e){
-            if (!self._isValidFileDrag(e)) return;
-
-            e.preventDefault();
-            self._options.onDrop(e);
-        });
-    },
-    _isValidFileDrag: function(e){
-        // e.dataTransfer currently causing IE errors
-        // IE9 does NOT support file API, so drag-and-drop is not possible
-        if (qq.ie() && !qq.ie10()) return false;
-
-        var dt = e.dataTransfer,
-        // do not check dt.types.contains in webkit, because it crashes safari 4
-            isSafari = qq.safari();
-
-        // dt.effectAllowed is none in Safari 5
-        // dt.types.contains check is for firefox
-        var effectTest = qq.ie10() ? true : dt.effectAllowed != 'none';
-        return dt && effectTest && (dt.files || (!isSafari && dt.types.contains && dt.types.contains('Files')));
-    }
-};
