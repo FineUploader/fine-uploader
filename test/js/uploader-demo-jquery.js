@@ -2,25 +2,6 @@ $(document).ready(function() {
     var errorHandler = function(event, id, fileName, reason) {
         qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
     };
-    var validateHandler = function(event, fileData, isBatch) {
-        if (isBatch) {
-            qq.log("Handling batch validate call...");
-            for (var i in fileData) {
-                qq.log("name: " + fileData[i].name + ", size: " + fileData[i].size);
-                if (fileData[i].name.indexOf('a') >= 0) {
-                    return false;
-                }
-            }
-            qq.log("...finished handling batch validate call");
-        }
-        else {
-            qq.log("Single file validate call - name: " + fileData.name + ", size: " + fileData.size);
-            if (fileData.name.indexOf('a') >= 0) {
-                return false;
-            }
-        }
-    };
-
 
     $('#basicUploadSuccessExample').fineUploader({
         debug: true,
@@ -28,8 +9,7 @@ $(document).ready(function() {
             endpoint: "/upload/receiver"
         }
     })
-        .on('error', errorHandler)
-        .on("validate", validateHandler);
+        .on('error', errorHandler);
 
 
     $('#manualUploadModeExample').fineUploader({
