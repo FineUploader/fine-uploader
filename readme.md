@@ -701,6 +701,9 @@ until a connection opens up.
 calling this function will reset all UI elements to the state they exsited in immediately after initialization.  In FineUploaderBasic,
 this resets all internal variables to the state they existed in immediately after initialization.  If you are using FineUploaderBasic,
 it is up to you to "reset" any of your UI elements.
+* `addExtraDropzone(HTMLElement element)` - Use this to mark an element as a drop zone on an already-instantiated FineUploader.
+* `removeExtraDropzone(HTMLElement element)` - Use this to un-mark an extra element as a drop zone on an already-instantiated FineUploader.  An "extra"
+   drop zone is one specified in the `extraDropzones` option, or one set via the `addExtraDropzone` function.
 
 <br/>
 ### qQuery ###
