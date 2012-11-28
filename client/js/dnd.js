@@ -2,7 +2,7 @@
 qq.DragAndDrop = function(o) {
     "use strict";
 
-    var options, dz, droppedFiles, dirPending, droppedEntriesCount = 0, droppedEntriesParsedCount = 0, disposeSupport = qq.DisposeSupport;
+    var options, dz, dirPending, droppedFiles = [], droppedEntriesCount = 0, droppedEntriesParsedCount = 0, disposeSupport = qq.DisposeSupport;
 
      options = {
         dropArea: null,
@@ -25,7 +25,6 @@ qq.DragAndDrop = function(o) {
             qq.log('Grabbed ' + droppedFiles.length + " files after tree traversal.");
             dz.dropDisabled(false);
             options.callbacks.dropProcessing(false, droppedFiles);
-            droppedFiles = [];
         }
     }
     function addDroppedFile(file) {
@@ -70,10 +69,12 @@ qq.DragAndDrop = function(o) {
             options.callbacks.error('tooManyFilesError', "");
         }
         else {
+            droppedFiles = [];
+            droppedEntriesCount = 0;
+            droppedEntriesParsedCount = 0;
             items = dataTransfer.items;
-            if (items && items[0].webkitGetAsEntry) {
-                droppedFiles = [];
 
+            if (items && items[0].webkitGetAsEntry) {
                 for (i = 0; i < items.length; i+=1) {
                     item = items[i].webkitGetAsEntry();
                     if (item) {
