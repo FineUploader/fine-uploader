@@ -2,7 +2,7 @@
 qq.DragAndDrop = function(o) {
     "use strict";
 
-    var options, dz, droppedFileEntries, droppedFiles, dirPending, numFilesDropped = 0, disposeSupport = qq.DisposeSupport;
+    var options, dz, droppedFiles, dirPending, droppedEntriesCount = 0, droppedEntriesParsedCount = 0, disposeSupport = qq.DisposeSupport;
 
      options = {
         dropArea: null,
@@ -21,8 +21,8 @@ qq.DragAndDrop = function(o) {
     qq.extend(options, o);
 
     function maybeUploadDroppedFiles() {
-        if (droppedFiles.length === droppedFileEntries.length && !dirPending) {
-            qq.log('Grabbed ' + droppedFileEntries.length + " files after tree traversal.");
+        if (droppedEntriesCount === droppedEntriesParsedCount && !dirPending) {
+            qq.log('Grabbed ' + droppedFiles.length + " files after tree traversal.");
             dz.dropDisabled(false);
             options.callbacks.dropProcessing(false, droppedFiles);
             droppedFiles = [];
@@ -30,15 +30,16 @@ qq.DragAndDrop = function(o) {
     }
     function addDroppedFile(file) {
         droppedFiles.push(file);
+        droppedEntriesParsedCount+=1;
         maybeUploadDroppedFiles();
     }
 
     function traverseFileTree(entry) {
         var dirReader, i;
 
+        droppedEntriesCount+=1;
+
         if (entry.isFile) {
-            numFilesDropped+=1;
-            droppedFileEntries.push(entry);
             entry.file(function(file) {
                 addDroppedFile(file);
             });
@@ -47,6 +48,7 @@ qq.DragAndDrop = function(o) {
             dirPending = true;
             dirReader = entry.createReader();
             dirReader.readEntries(function(entries) {
+                droppedEntriesParsedCount+=1;
                 for (i = 0; i < entries.length; i+=1) {
                     traverseFileTree(entries[i]);
                 }
@@ -70,7 +72,6 @@ qq.DragAndDrop = function(o) {
         else {
             items = dataTransfer.items;
             if (items && items[0].webkitGetAsEntry) {
-                droppedFileEntries = [];
                 droppedFiles = [];
 
                 for (i = 0; i < items.length; i+=1) {
