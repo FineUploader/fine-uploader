@@ -1,4 +1,4 @@
-/*globals qq, document, setTimeout*/
+/*globals qq, document*/
 qq.DragAndDrop = function(o) {
     "use strict";
 
