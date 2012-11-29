@@ -81,7 +81,6 @@ qq.DragAndDrop = function(o) {
                 for (i = 0; i < items.length; i+=1) {
                     entry = items[i].webkitGetAsEntry();
                     if (entry) {
-
                         //due to a bug in Chrome's File System API impl - #149735
                         if (entry.isFile) {
                             droppedFiles.push(items[i].getAsFile());
@@ -89,6 +88,7 @@ qq.DragAndDrop = function(o) {
                                 maybeUploadDroppedFiles();
                             }
                         }
+
                         else {
                             traverseFileTree(entry);
                         }
