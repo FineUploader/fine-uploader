@@ -3,10 +3,27 @@ $(document).ready(function() {
         qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
     };
 
+    var testval = "résumé";
+
     $('#basicUploadSuccessExample').fineUploader({
         debug: true,
         request: {
-            endpoint: "/upload/receiver"
+            endpoint: "/upload/receiver",
+            paramsInRequestBody: true,
+            params: {
+                test: 'one',
+                blah: 'foo',
+                bar: {
+                    one: '1',
+                    two: '2',
+                    three: {
+                        foo: 'bar'
+                    }
+                },
+                hmm: function() {
+                    return testval;
+                }
+            }
         }
     })
         .on('error', errorHandler);
