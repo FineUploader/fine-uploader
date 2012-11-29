@@ -1,4 +1,4 @@
-/*globals qq, document*/
+/*globals qq, document, setTimeout*/
 qq.DragAndDrop = function(o) {
     "use strict";
 
@@ -52,16 +52,18 @@ qq.DragAndDrop = function(o) {
                 for (i = 0; i < entries.length; i+=1) {
                     traverseFileTree(entries[i]);
                 }
+
+                dirPending = false;
+
                 if (!entries.length) {
                     maybeUploadDroppedFiles();
                 }
-                dirPending = false;
             });
         }
     }
 
     function handleDataTransfer(dataTransfer) {
-        var i, items, item;
+        var i, items, entry;
 
         options.callbacks.dropProcessing(true);
         dz.dropDisabled(true);
@@ -77,9 +79,19 @@ qq.DragAndDrop = function(o) {
 
             if (items && items[0].webkitGetAsEntry) {
                 for (i = 0; i < items.length; i+=1) {
-                    item = items[i].webkitGetAsEntry();
-                    if (item) {
-                        traverseFileTree(item);
+                    entry = items[i].webkitGetAsEntry();
+                    if (entry) {
+
+                        //due to a bug in Chrome's File System API impl - #149735
+                        if (entry.isFile) {
+                            droppedFiles.push(items[i].getAsFile());
+                            if (i === items.length-1) {
+                                maybeUploadDroppedFiles();
+                            }
+                        }
+                        else {
+                            traverseFileTree(entry);
+                        }
                     }
                 }
             }
