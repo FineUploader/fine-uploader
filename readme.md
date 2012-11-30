@@ -72,6 +72,7 @@ It does not use Flash, jQuery, or any other external libraries.
 * Receive callback at various stages of the upload process
 * Send any parameters server-side along with each file.
 * Upload directories via drag and drop (Chrome 21+).
+* [Include parameters in the query string OR the request body.](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
 * Any many more!
 
 <br/>
@@ -337,7 +338,18 @@ other default values.  This works for all options that are, themselves, objects 
             <td>params</td>
             <td>object</td>
             <td>{}</td>
-            <td>These parameters are sent with the request to the endpoint specified in the action option.</td>
+            <td>These parameters are sent with the request to the endpoint specified in the action option.  An individual parameter value
+            may be a number, string, another object, or a function that returns a number or string.  See the [associated blog post](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
+            for more details.</td>
+        </tr>
+        <tr>
+            <td>paramsInRequestBody</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>Set this to <code>true</code> if you want all parameters to be sent in the request body.  Note that setting this option
+            to <code>true</code> will force all requests to be multipart encoded.  If the value is <code>false</code> all params will be
+            included in the query string.   See the [associated blog post](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
+            for more details.</td>
         </tr>
         <tr>
             <td>customHeaders</td>
@@ -688,7 +700,9 @@ an invalid file for upload.  There are general message types with default text t
 <br/>
 ### Instance methods ###
 * `log(String message)` - Outputs a message to the javascript console, if possible.
-* `setParams(Object newParams)` - Set the parameters sent along with the request after initializing the uploader.  It can be nicely used in `onSubmit` callback.
+* `setParams(Object newParams)` - Set the parameters sent along with the request after initializing the uploader.
+It can be nicely used in `onSubmit` callback.  See the [associated blog post](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
+covering Fine Uploader params for more details.
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
 * `clearStoredFiles()` - Clears the internal list of stored files.  Only applicable when `autoUpload` is set to false.
 * `getInProgress()` - Returns the number of files that are either currently uploading or files waiting in line for upload.

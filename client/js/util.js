@@ -152,6 +152,11 @@ qq.isObject = function(variable) {
     return variable !== null && variable && typeof(variable) === "object" && variable.constructor === Object;
 };
 
+qq.isFunction = function(variable) {
+    "use strict";
+    return typeof(variable) === "function";
+}
+
 qq.extend = function (first, second, extendNested) {
     "use strict";
     var prop;
@@ -291,6 +296,52 @@ qq.obj2url = function(obj, temp, prefixDone){
             .replace(/^&/, '')
             .replace(/%20/g, '+');
     }
+};
+
+qq.obj2FormData = function(obj, formData, arrayKeyName) {
+    var key, val;
+
+    if (!formData) {
+        formData = new FormData();
+    }
+
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            val = obj[key],
+            key = arrayKeyName ? arrayKeyName + '[' + key + ']' : key;
+
+            if (qq.isObject(val)) {
+                qq.obj2FormData(val, formData, key);
+            }
+            else if (qq.isFunction(val)) {
+                formData.append(encodeURIComponent(key), encodeURIComponent(val()));
+            }
+            else {
+                formData.append(encodeURIComponent(key), encodeURIComponent(val));
+            }
+        }
+    }
+
+    return formData;
+};
+
+qq.obj2Inputs = function(obj, form) {
+    var input;
+
+    if (!form) {
+        form = document.createElement('form');
+    }
+
+    qq.obj2FormData(obj, {
+        append: function(key, val) {
+            input = document.createElement('input');
+            input.setAttribute('name', key);
+            input.setAttribute('value', val);
+            form.appendChild(input);
+        }
+    });
+
+    return form;
 };
 
 /**

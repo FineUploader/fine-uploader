@@ -6,6 +6,7 @@ qq.UploadHandlerAbstract = function(o){
     this._options = {
         debug: false,
         endpoint: '/upload.php',
+        paramsInRequestBody: false,
         // maximum number of concurrent uploads
         maxConnections: 999,
         log: function(str, level) {},
