@@ -3,7 +3,7 @@ $(document).ready(function() {
         qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
     };
 
-    var testval = "résumé";
+    var fileNum = 0;
 
     $('#basicUploadSuccessExample').fineUploader({
         debug: true,
@@ -20,8 +20,9 @@ $(document).ready(function() {
                         foo: 'bar'
                     }
                 },
-                hmm: function() {
-                    return testval;
+                fileNum: function() {
+                    fileNum+=1;
+                    return fileNum;
                 }
             }
         }

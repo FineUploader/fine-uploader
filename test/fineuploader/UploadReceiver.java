@@ -52,7 +52,7 @@ public class UploadReceiver extends HttpServlet
                 {
                     String decodedKey = URLDecoder.decode(paramEntry.getKey(), "UTF-8");
                     String decodedVal = URLDecoder.decode(paramEntry.getValue(), "UTF-8");
-                    System.out.println("Key: " + decodedKey + ", Val: " + decodedVal);
+                    System.out.println("For File: " + requestParser.getFilename() +  "Key: " + decodedKey + ", Val: " + decodedVal);
                 }
                 doWriteTempFileForPostRequest(requestParser);
                 writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null);
