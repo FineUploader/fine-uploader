@@ -339,7 +339,7 @@ other default values.  This works for all options that are, themselves, objects 
             <td>object</td>
             <td>{}</td>
             <td>These parameters are sent with the request to the endpoint specified in the action option.  An individual parameter value
-            may be a number, string, another object, or a function that returns a number or string.  See the [associated blog post](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
+            may be a number, string, another object, or a function that returns a number or string.  See the <a href="http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html">associated blog post</a>
             for more details.</td>
         </tr>
         <tr>
@@ -348,7 +348,7 @@ other default values.  This works for all options that are, themselves, objects 
             <td>false</td>
             <td>Set this to <code>true</code> if you want all parameters to be sent in the request body.  Note that setting this option
             to <code>true</code> will force all requests to be multipart encoded.  If the value is <code>false</code> all params will be
-            included in the query string.   See the [associated blog post](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
+            included in the query string.   See the <a href="http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html">associated blog post</a>
             for more details.</td>
         </tr>
         <tr>
