@@ -243,6 +243,9 @@ var uploader = new qq.FineUploader({
 });
 ```
 
+Please note that if your jQuery selector represents multiple uploaders, the return value of the issued
+command will be an array containing the return values from all associated uploaders.
+
 <br/>
 ### How to Override Options ###
 This is mostly obvious, but you should know that it is actually much easier to override

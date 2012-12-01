@@ -1,3 +1,4 @@
+/*globals jQuery, qq*/
 (function($) {
     "use strict";
     var uploader, $el, init, dataStore, pluginOption, pluginOptions, addCallbacks, transformVariables, isValidCommand,
@@ -134,16 +135,29 @@
     };
 
     $.fn.fineUploader = function(optionsOrCommand) {
-        $el = this;
+        var self = this, selfArgs = arguments, retVals = [];
 
-        if (uploader() && isValidCommand(optionsOrCommand)) {
-            return delegateCommand.apply(this, arguments);
-        }
-        else if (typeof optionsOrCommand === 'object' || !optionsOrCommand) {
-            return init.apply(this, arguments);
-        }
-        else {
-            $.error('Method ' +  optionsOrCommand + ' does not exist on jQuery.fineUploader');
+        this.each(function(index, el) {
+            $el = $(el);
+
+            if (uploader() && isValidCommand(optionsOrCommand)) {
+                if (self.length === 1) {
+                    return delegateCommand.apply(self, selfArgs);
+                }
+                else {
+                    retVals.push(delegateCommand.apply(self, selfArgs));
+                }
+            }
+            else if (typeof optionsOrCommand === 'object' || !optionsOrCommand) {
+                init.apply(self, selfArgs);
+            }
+            else {
+                $.error('Method ' +  optionsOrCommand + ' does not exist on jQuery.fineUploader');
+            }
+        });
+
+        if (retVals.length) {
+            return retVals;
         }
 
         return this;
