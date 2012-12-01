@@ -141,11 +141,10 @@
             $el = $(el);
 
             if (uploader() && isValidCommand(optionsOrCommand)) {
+                retVals.push(delegateCommand.apply(self, selfArgs));
+
                 if (self.length === 1) {
-                    return delegateCommand.apply(self, selfArgs);
-                }
-                else {
-                    retVals.push(delegateCommand.apply(self, selfArgs));
+                    return false;
                 }
             }
             else if (typeof optionsOrCommand === 'object' || !optionsOrCommand) {
@@ -156,7 +155,10 @@
             }
         });
 
-        if (retVals.length) {
+        if (retVals.length === 1) {
+            return retVals[0];
+        }
+        else if (retVals.length > 1) {
             return retVals;
         }
 
