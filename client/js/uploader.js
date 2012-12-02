@@ -148,6 +148,7 @@ qq.extend(qq.FineUploader.prototype, {
             this._button = this._createUploadButton(this._find(this._element, 'button'));
         }
         this._bindCancelAndRetryEvents();
+        this._dnd.dispose();
         this._dnd = this._setupDragAndDrop();
     },
     _setupDragAndDrop: function() {
@@ -360,7 +361,7 @@ qq.extend(qq.FineUploader.prototype, {
         var self = this,
             list = this._listElement;
 
-        this._attach(list, 'click', function(e){
+        this._disposeSupport.attach(list, 'click', function(e){
             e = e || window.event;
             var target = e.target || e.srcElement;
 

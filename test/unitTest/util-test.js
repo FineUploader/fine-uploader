@@ -227,15 +227,16 @@ test("qq.obj2Inputs", function() {
 });
 
 test("qq.DisposeSupport", 2, function() {
-    qq.DisposeSupport.addDisposer(function() {
+    var disposer = new qq.DisposeSupport();
+    disposer.addDisposer(function() {
         ok(true, "disposer 1");
     });
 
-    qq.DisposeSupport.addDisposer(function() {
+    disposer.addDisposer(function() {
         ok(true, "disposer 2");
     });
 
-    qq.DisposeSupport.dispose();
+    disposer.dispose();
 });
 
 test("qq().hide()", function() {

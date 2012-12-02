@@ -2,7 +2,11 @@
 qq.DragAndDrop = function(o) {
     "use strict";
 
-    var options, dz, dirPending, droppedFiles = [], droppedEntriesCount = 0, droppedEntriesParsedCount = 0, disposeSupport = qq.DisposeSupport;
+    var options, dz, dirPending,
+        droppedFiles = [],
+        droppedEntriesCount = 0,
+        droppedEntriesParsedCount = 0,
+        disposeSupport = new qq.DisposeSupport();
 
      options = {
         dropArea: null,
@@ -144,7 +148,7 @@ qq.DragAndDrop = function(o) {
 
         // IE <= 9 does not support the File API used for drag+drop uploads
         if (options.dropArea && (!qq.ie() || qq.ie10())) {
-            disposeSupport._attach(document, 'dragenter', function(e) {
+            disposeSupport.attach(document, 'dragenter', function(e) {
                 if (!dz.dropDisabled()) {
                     if (qq(options.dropArea).hasClass(options.classes.dropDisabled)) {
                         return;
@@ -157,14 +161,14 @@ qq.DragAndDrop = function(o) {
                 }
             });
         }
-        disposeSupport._attach(document, 'dragleave', function(e){
+        disposeSupport.attach(document, 'dragleave', function(e){
             if (options.hideDropzones && qq.FineUploader.prototype._leaving_document_out(e)) {
                 for (i=0; i < dropzones.length; i+=1) {
                     qq(dropzones[i]).hide();
                 }
             }
         });
-        qq(document).attach('drop', function(e){
+        disposeSupport.attach(document, 'drop', function(e){
             if (options.hideDropzones) {
                 for (i=0; i < dropzones.length; i+=1) {
                     qq(dropzones[i]).hide();
@@ -191,6 +195,11 @@ qq.DragAndDrop = function(o) {
                     return dzs.splice(i, 1);
                 }
             }
+        },
+
+        dispose: function() {
+            disposeSupport.dispose();
+            dz.dispose();
         }
     };
 };
@@ -199,7 +208,7 @@ qq.DragAndDrop = function(o) {
 qq.UploadDropZone = function(o){
     "use strict";
 
-    var options, element, preventDrop, dropOutsideDisabled, disposeSupport = qq.DisposeSupport;
+    var options, element, preventDrop, dropOutsideDisabled, disposeSupport = new qq.DisposeSupport();
 
     options = {
         element: null,
@@ -223,11 +232,11 @@ qq.UploadDropZone = function(o){
 
             // for these cases we need to catch onDrop to reset dropArea
             if (dragover_should_be_canceled){
-                qq(document).attach('dragover', function(e){
+               disposeSupport.attach(document, 'dragover', function(e){
                     e.preventDefault();
                 });
             } else {
-                qq(document).attach('dragover', function(e){
+                disposeSupport.attach(document, 'dragover', function(e){
                     if (e.dataTransfer){
                         e.dataTransfer.dropEffect = 'none';
                         e.preventDefault();
@@ -264,7 +273,7 @@ qq.UploadDropZone = function(o){
     }
 
     function attachEvents(){
-        disposeSupport._attach(element, 'dragover', function(e){
+        disposeSupport.attach(element, 'dragover', function(e){
             if (!isValidFileDrag(e)) {
                 return;
             }
@@ -280,7 +289,7 @@ qq.UploadDropZone = function(o){
             e.preventDefault();
         });
 
-        disposeSupport._attach(element, 'dragenter', function(e){
+        disposeSupport.attach(element, 'dragenter', function(e){
             if (!isOrSetDropDisabled()) {
                 if (!isValidFileDrag(e)) {
                     return;
@@ -289,7 +298,7 @@ qq.UploadDropZone = function(o){
             }
         });
 
-        disposeSupport._attach(element, 'dragleave', function(e){
+        disposeSupport.attach(element, 'dragleave', function(e){
             if (!isValidFileDrag(e)) {
                 return;
             }
@@ -305,7 +314,7 @@ qq.UploadDropZone = function(o){
             options.onLeaveNotDescendants(e);
         });
 
-        disposeSupport._attach(element, 'drop', function(e){
+        disposeSupport.attach(element, 'drop', function(e){
             if (!isOrSetDropDisabled()) {
                 if (!isValidFileDrag(e)) {
                     return;

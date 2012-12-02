@@ -54,7 +54,7 @@ qq.FineUploaderBasic = function(o){
 
     qq.extend(this._options, o, true);
     this._wrapCallbacks();
-    qq.extend(this, qq.DisposeSupport);
+    this._disposeSupport =  new qq.DisposeSupport();
 
     // number of files being uploaded
     this._filesInProgress = 0;
@@ -136,7 +136,7 @@ qq.FineUploaderBasic.prototype = {
             focusClass: this._options.classes.buttonFocus
         });
 
-        this.addDisposer(function() { button.dispose(); });
+        this._disposeSupport.addDisposer(function() { button.dispose(); });
         return button;
     },
     _createUploadHandler: function(){
@@ -200,7 +200,7 @@ qq.FineUploaderBasic.prototype = {
     _preventLeaveInProgress: function(){
         var self = this;
 
-        this._attach(window, 'beforeunload', function(e){
+        this._disposeSupport.attach(window, 'beforeunload', function(e){
             if (!self._filesInProgress){return;}
 
             var e = e || window.event;
