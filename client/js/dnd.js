@@ -135,6 +135,19 @@ qq.DragAndDrop = function(o) {
         }
     }
 
+    function isFileDrag(dragEvent) {
+        var fileDrag;
+
+        qq.each(dragEvent.dataTransfer.types, function(key, val) {
+            if (val === 'Files') {
+                fileDrag = true;
+                return false;
+            }
+        });
+
+        return fileDrag;
+    }
+
     function setupDragDrop(){
         if (options.dropArea) {
             options.extraDropzones.push(options.dropArea);
@@ -149,7 +162,7 @@ qq.DragAndDrop = function(o) {
         // IE <= 9 does not support the File API used for drag+drop uploads
         if (options.dropArea && (!qq.ie() || qq.ie10())) {
             disposeSupport.attach(document, 'dragenter', function(e) {
-                if (!dz.dropDisabled()) {
+                if (!dz.dropDisabled() && isFileDrag(e)) {
                     if (qq(options.dropArea).hasClass(options.classes.dropDisabled)) {
                         return;
                     }
