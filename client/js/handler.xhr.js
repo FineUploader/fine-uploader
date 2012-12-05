@@ -99,7 +99,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         params = params || {};
 
         //build query string
-        if (!this._options.paramsInRequestBody) {
+        if (!this._options.paramsInBody) {
             params[this._options.inputName] = name;
             url = qq.obj2url(params, this._options.endpoint);
         }
@@ -108,10 +108,10 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         xhr.setRequestHeader("Cache-Control", "no-cache");
-        if (this._options.forceMultipart || this._options.paramsInRequestBody) {
+        if (this._options.forceMultipart || this._options.paramsInBody) {
             formData = new FormData();
 
-            if (this._options.paramsInRequestBody) {
+            if (this._options.paramsInBody) {
                 qq.obj2FormData(params, formData);
             }
 

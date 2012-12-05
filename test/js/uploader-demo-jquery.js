@@ -9,7 +9,7 @@ $(document).ready(function() {
         debug: true,
         request: {
             endpoint: "/upload/receiver",
-            paramsInRequestBody: true,
+            paramsInBody: true,
             params: {
                 test: 'one',
                 blah: 'foo',

@@ -10,7 +10,7 @@ qq.FineUploaderBasic = function(o){
         request: {
             endpoint: '/server/upload',
             params: {},
-            paramsInRequestBody: false,
+            paramsInBody: false,
             customHeaders: {},
             forceMultipart: false,
             inputName: 'qqfile'
@@ -158,7 +158,7 @@ qq.FineUploaderBasic.prototype = {
             inputName: this._options.request.inputName,
             demoMode: this._options.demoMode,
             log: this.log,
-            paramsInRequestBody: this._options.request.paramsInRequestBody,
+            paramsInBody: this._options.request.paramsInBody,
             onProgress: function(id, fileName, loaded, total){
                 self._onProgress(id, fileName, loaded, total);
                 self._options.callbacks.onProgress(id, fileName, loaded, total);

@@ -8,6 +8,8 @@ the request, but the parameters will be available in the query string only.
 For user agents that do support the File API, Fine Uploader will send an XHR POST request.  The file will be streamed, and
 the filename, along with all parameters, will be available in the query string.
 
+Note that you can force all params to appear in the request body only by setting the `paramsInBody` property of the `request` option.
+
 <br/>
 ## Response ##
 Your server should return a [valid JSON](http://jsonlint.com/) response.  The content-type must be "text/plain".

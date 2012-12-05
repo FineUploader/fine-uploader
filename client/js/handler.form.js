@@ -185,7 +185,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             form = qq.toElement('<form method="' + protocol + '" enctype="multipart/form-data"></form>'),
             url = this._options.endpoint;
 
-        if (!this._options.paramsInRequestBody) {
+        if (!this._options.paramsInBody) {
             url = qq.obj2url(params, this._options.endpoint);
         }
         else {

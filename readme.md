@@ -346,7 +346,7 @@ other default values.  This works for all options that are, themselves, objects 
             for more details.</td>
         </tr>
         <tr>
-            <td>paramsInRequestBody</td>
+            <td>paramsInBody</td>
             <td>boolean</td>
             <td>false</td>
             <td>Set this to <code>true</code> if you want all parameters to be sent in the request body.  Note that setting this option
