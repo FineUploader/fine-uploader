@@ -184,7 +184,7 @@ qq.extend(qq.FineUploader.prototype, {
                     }
 
                     if (files) {
-                        self._uploadFileList(files);
+                        self.addFiles(files);
                     }
                 },
                 error: function(code, filename) {

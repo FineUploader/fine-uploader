@@ -16,6 +16,21 @@ test("qq.isFunction", function() {
     equal(qq.isFunction({}), false, "an object is not a function");
 });
 
+test("qq.isFileOrInput", function() {
+    $('#qunit-fixture').append("<div id='foo'></div>");
+    $('#qunit-fixture').append("<input id='bar'/>");
+    $('#qunit-fixture').append("<input id='bar2' type='file'/>");
+
+    var el = $('#foo')[0],
+        el2 = $('#bar')[0],
+        el3 = $('#bar2')[0];
+
+    ok(!qq.isFileOrInput(el), "div is not an input");
+    ok(!qq.isFileOrInput(el2), "must be a file input");
+    ok(qq.isFileOrInput(el3), "this is a file input");
+
+});
+
 test("qq.extend", function() {
     var o1 = {one: "one", two: "two", three: "three", four: {a: "a", b: "b"}};
 
@@ -61,7 +76,8 @@ test("qq().attach", 1, function() {
 });
 
 test("qq().insertBefore", function() {
-    var b = $('#qunit-fixture').append("<div id='foo'></div>")[0];
+    $('#qunit-fixture').append("<div id='foo'></div>");
+    var b = $('#foo')[0];
     var a = $("<div id='bar'></div>")[0];
     qq(a).insertBefore(b);
 

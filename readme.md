@@ -73,6 +73,7 @@ It does not use Flash, jQuery, or any other external libraries.
 * Send any parameters server-side along with each file.
 * Upload directories via drag and drop (Chrome 21+).
 * [Include parameters in the query string OR the request body.](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
+* Submit files to be uploaded via the API.
 * Any many more!
 
 <br/>
@@ -684,14 +685,13 @@ Note that this does not mean the file upload will begin at this point.  Return `
 * `onError(String id, String fileName, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
 * `onAutoRetry(String id, String fileName, String attemptNumber)` - called before each automatic retry attempt for a failed file.
 * `onManualRetry(String id, String fileName)` - called before each manual retry attempt.  Return false to prevent this and all future retry attempts on this file.
-* `onValidate(Array fileData)` - If more than one file has been selected or dropped, this callback is invoked
-with FileData objects for each of the dropped/selected files.  This allows you to prevent the entire batch from being uploaded
-if desired.  To prevent any files in this batch from being uploaded, simply return false.  If your handler does not return
-false, this callback will also be invoked once for each individual file submitted.  In that case, the array will contain
-only one `FileData` object for each call.  If you want to only prevent specific files from  being uploaded, you can return
-false here when appropriate.  This callback is always invoked before the default Fine Uploader validators execute.  Note
-that a `FileData` object has two properties: `name` (the file name) and `size` (the file size).  The `size` property will
-be undefined if the user agent does not support the File API.
+* `onValidate(Array fileData)` - This callback is invoked with FileData objects for each of the dropped/selected files.
+This allows you to prevent the entire batch from being uploaded if desired.  To prevent any files in this batch from being
+uploaded, simply return false.  If your handler does not return false, this callback will also be invoked once for each
+individual file submitted.  In that case, the array will contain only one `FileData` object for each call.  If you want
+to only prevent specific files from  being uploaded, you can return false here when appropriate.  This callback is always
+invoked before the default Fine Uploader validators execute.  Note that a `FileData` object has two properties: `name`
+(the file name) and `size` (the file size).  The `size` property will be undefined if the user agent does not support the File API.
 
 <br/>
 ### Changing alert/messages to something more user friendly ###
@@ -722,6 +722,10 @@ it is up to you to "reset" any of your UI elements.
 * `addExtraDropzone(HTMLElement element)` - Use this to mark an element as a drop zone on an already-instantiated FineUploader.
 * `removeExtraDropzone(HTMLElement element)` - Use this to un-mark an extra element as a drop zone on an already-instantiated FineUploader.  An "extra"
    drop zone is one specified in the `extraDropzones` option, or one set via the `addExtraDropzone` function.
+* `addFiles(filesOrInputs)` - Use this if you would like to submit files to the uploader.  This may be useful if you have
+a method of gathering files that does not include Fine Uploader's input button or the drag & drop support built into FineUploader.
+This function accepts the following types: `File`, `input` element, or a collection of any of these types, provided the
+collection object contains an (integer) index property for each contained item.
 
 <br/>
 ### qQuery ###

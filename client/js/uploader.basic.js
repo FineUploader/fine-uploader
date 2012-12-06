@@ -122,6 +122,31 @@ qq.FineUploaderBasic.prototype = {
         this._preventRetries = [];
         this._button.reset();
     },
+    addFiles: function(filesOrInputs) {
+        var self = this,
+            verifiedFilesOrInputs = [],
+            index, fileOrInput;
+
+        if (filesOrInputs) {
+            if (!window.FileList || !filesOrInputs instanceof FileList) {
+                filesOrInputs = [].concat(filesOrInputs);
+            }
+
+            for (index = 0; index < filesOrInputs.length; index+=1) {
+                fileOrInput = filesOrInputs[index];
+
+                if (qq.isFileOrInput(fileOrInput)) {
+                    verifiedFilesOrInputs.push(fileOrInput);
+                }
+                else {
+                    self.log(fileOrInput + ' is not a File or INPUT element!  Ignoring!', 'warn');
+                }
+            }
+
+            this.log('Processing ' + verifiedFilesOrInputs.length + ' files or inputs...');
+            this._uploadFileList(verifiedFilesOrInputs);
+        }
+    },
     _createUploadButton: function(element){
         var self = this;
 
@@ -236,10 +261,10 @@ qq.FineUploaderBasic.prototype = {
     },
     _onInputChange: function(input){
         if (this._handler instanceof qq.UploadHandlerXhr){
-            this._uploadFileList(input.files);
+            this.addFiles(input.files);
         } else {
             if (this._validateFile(input)){
-                this._uploadFile(input);
+                this.addFiles(input);
             }
         }
         this._button.reset();
@@ -301,9 +326,7 @@ qq.FineUploaderBasic.prototype = {
         var validationDescriptors, index, batchInvalid;
 
         validationDescriptors = this._getValidationDescriptors(files);
-        if (validationDescriptors.length > 1) {
-            batchInvalid = this._options.callbacks.onValidate(validationDescriptors) === false;
-        }
+        batchInvalid = this._options.callbacks.onValidate(validationDescriptors) === false;
 
         if (!batchInvalid) {
             if (files.length > 0) {

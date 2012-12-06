@@ -1,4 +1,4 @@
-/*globals window, navigator, document, FormData*/
+/*globals window, navigator, document, FormData, File, HTMLInputElement*/
 var qq = function(element) {
     "use strict";
 
@@ -162,6 +162,29 @@ qq.isFunction = function(variable) {
     return typeof(variable) === "function";
 };
 
+qq.isFileOrInput = function(maybeFileOrInput) {
+    "use strict";
+    if (window.File && maybeFileOrInput instanceof File) {
+        return true;
+    }
+    else if (window.HTMLInputElement) {
+        if (maybeFileOrInput instanceof HTMLInputElement) {
+            if (maybeFileOrInput.type && maybeFileOrInput.type.toLowerCase() === 'file') {
+                return true;
+            }
+        }
+    }
+    else if (maybeFileOrInput.tagName) {
+        if (maybeFileOrInput.tagName.toLowerCase() === 'input') {
+            if (maybeFileOrInput.type && maybeFileOrInput.type.toLowerCase() === 'file') {
+                return true;
+            }
+        }
+    }
+
+    return false;
+};
+
 qq.extend = function (first, second, extendNested) {
     "use strict";
     qq.each(second, function(prop, val) {
@@ -274,7 +297,7 @@ qq.each = function(obj, callback) {
     var key, retVal;
     if (obj) {
         for (key in obj) {
-            if (obj.hasOwnProperty(key)) {
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
                 retVal = callback(key, obj[key]);
                 if (retVal === false) {
                     break;
