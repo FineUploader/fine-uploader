@@ -1,4 +1,4 @@
-/*globals window, navigator, document, FormData, File, HTMLInputElement. qq:true*/
+/*globals window, navigator, document, FormData, File, HTMLInputElement*/
 var qq = function(element) {
     "use strict";
 
