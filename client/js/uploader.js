@@ -140,6 +140,11 @@ qq.extend(qq.FineUploader.prototype, {
             item = item.nextSibling;
         }
     },
+    cancel: function(fileId) {
+        qq.FineUploaderBasic.prototype.cancel.apply(this, arguments);
+        var item = this.getItemByFileId(fileId);
+        qq(item).remove();
+    },
     reset: function() {
         qq.FineUploaderBasic.prototype.reset.apply(this, arguments);
         this._element.innerHTML = this._options.template;
@@ -375,7 +380,6 @@ qq.extend(qq.FineUploader.prototype, {
 
                 if (qq(target).hasClass(self._classes.cancel)) {
                     self.cancel(item.qqFileId);
-                    qq(item).remove();
                 }
                 else {
                     qq(item).removeClass(self._classes.retryable);
