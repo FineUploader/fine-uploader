@@ -65,6 +65,8 @@ qq.FineUploaderBasic = function(o){
     this._retryTimeouts = [];
     this._preventRetries = [];
 
+    this._paramsStore = this._createParamsStore();
+
     this._handler = this._createUploadHandler();
 
     if (this._options.button){
@@ -84,8 +86,13 @@ qq.FineUploaderBasic.prototype = {
 
         }
     },
-    setParams: function(params){
-        this._options.request.params = params;
+    setParams: function(params, fileId){
+        if (fileId === undefined) {
+            this._options.request.params = params;
+        }
+        else {
+            this._paramsStore.setParams(params, fileId);
+        }
     },
     getInProgress: function(){
         return this._filesInProgress;
@@ -94,7 +101,7 @@ qq.FineUploaderBasic.prototype = {
         "use strict";
         while(this._storedFileIds.length) {
             this._filesInProgress++;
-            this._handler.upload(this._storedFileIds.shift(), this._options.request.params);
+            this._handler.upload(this._storedFileIds.shift());
         }
     },
     clearStoredFiles: function(){
@@ -121,6 +128,7 @@ qq.FineUploaderBasic.prototype = {
         this._retryTimeouts = [];
         this._preventRetries = [];
         this._button.reset();
+        this._paramsStore.reset();
     },
     addFiles: function(filesOrInputs) {
         var self = this,
@@ -184,6 +192,7 @@ qq.FineUploaderBasic.prototype = {
             demoMode: this._options.demoMode,
             log: this.log,
             paramsInBody: this._options.request.paramsInBody,
+            paramsStore: this._paramsStore,
             onProgress: function(id, fileName, loaded, total){
                 self._onProgress(id, fileName, loaded, total);
                 self._options.callbacks.onProgress(id, fileName, loaded, total);
@@ -352,7 +361,7 @@ qq.FineUploaderBasic.prototype = {
         if (this._options.callbacks.onSubmit(id, fileName) !== false){
             this._onSubmit(id, fileName);
             if (this._options.autoUpload) {
-                this._handler.upload(id, this._options.request.params);
+                this._handler.upload(id);
             }
             else {
                 this._storeFileForLater(id);
@@ -512,5 +521,38 @@ qq.FineUploaderBasic.prototype = {
         }
 
         return fileDescriptors;
+    },
+    _createParamsStore: function() {
+        var paramsStore = {},
+            self = this;
+
+        return {
+            setParams: function(params, fileId) {
+                var paramsCopy = {};
+                qq.extend(paramsCopy, params);
+                paramsStore[fileId] = paramsCopy;
+            },
+
+            getParams: function(fileId) {
+                var paramsCopy = {};
+
+                if (fileId !== undefined && paramsStore[fileId]) {
+                    qq.extend(paramsCopy, paramsStore[fileId]);
+                }
+                else {
+                    qq.extend(paramsCopy, self._options.request.params);
+                }
+
+                return paramsCopy;
+            },
+
+            remove: function(fileId) {
+                return delete paramsStore[fileId];
+            },
+
+            reset: function() {
+                paramsStore = {};
+            }
+        }
     }
 };

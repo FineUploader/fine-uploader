@@ -65,17 +65,16 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         this._loaded = [];
     },
     /**
-     * Sends the file identified by id and additional query params to the server
-     * @param {Object} params name-value string pairs
+     * Sends the file identified by id to the server
      */
-    _upload: function(id, params){
+    _upload: function(id){
         var file = this._files[id],
             name = this.getName(id),
             size = this.getSize(id),
             self = this,
             url = this._options.endpoint,
             protocol = this._options.demoMode ? "GET" : "POST",
-            xhr, formData, paramName, key;
+            xhr, formData, paramName, key, params;
 
         this._options.onUpload(id, this.getName(id), true);
 
@@ -96,7 +95,7 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
             }
         };
 
-        params = params || {};
+        params = this._options.paramsStore.getParams(id);
 
         //build query string
         if (!this._options.paramsInBody) {

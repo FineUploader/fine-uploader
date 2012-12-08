@@ -14,7 +14,7 @@ qq.extend(qq.UploadHandlerForm.prototype, qq.UploadHandlerAbstract.prototype);
 qq.extend(qq.UploadHandlerForm.prototype, {
     add: function(fileInput){
         fileInput.setAttribute('name', this._options.inputName);
-        var id = 'qq-upload-handler-iframe' + qq.getUniqueId();
+        var id = qq.getUniqueId();
 
         this._inputs[id] = fileInput;
 
@@ -53,7 +53,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             qq(iframe).remove();
         }
     },
-    _upload: function(id, params){
+    _upload: function(id){
         this._options.onUpload(id, this.getName(id), false);
         var input = this._inputs[id];
 
@@ -64,7 +64,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         var fileName = this.getName(id);
 
         var iframe = this._createIframe(id);
-        var form = this._createForm(iframe, params);
+        var form = this._createForm(iframe, this._options.paramsStore.getParams(id));
         form.appendChild(input);
 
         var self = this;
