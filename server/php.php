@@ -16,6 +16,7 @@ $uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
 $result = $uploader->handleUpload('uploads/');
 
 // to pass data through iframe you will need to encode all html tags
+header("Content-Type: text/plain");
 echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
 
 /******************************************/
