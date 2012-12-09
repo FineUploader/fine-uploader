@@ -703,9 +703,10 @@ an invalid file for upload.  There are general message types with default text t
 <br/>
 ### Instance methods ###
 * `log(String message)` - Outputs a message to the javascript console, if possible.
-* `setParams(Object newParams)` - Set the parameters sent along with the request after initializing the uploader.
-It can be nicely used in `onSubmit` callback.  See the [associated blog post](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
-covering Fine Uploader params for more details.
+* `setParams(Object newParams, [optional] Number fileId)` - Set the parameters sent along with the request after initializing the uploader.
+You can either change the parameters for a specific file, or for all files.  To do the latter, simply omit the `fileId` parameter.
+See this [blog post explaining parameters](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
+as well as [this one explaining how this function works in 3.1 and later versions](http://blog.fineuploader.com/2012/12/setparams-is-now-much-more-useful-in-31.html).
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
 * `clearStoredFiles()` - Clears the internal list of stored files.  Only applicable when `autoUpload` is set to false.
 * `getInProgress()` - Returns the number of files that are either currently uploading or files waiting in line for upload.
