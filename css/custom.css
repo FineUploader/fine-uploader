@@ -232,8 +232,17 @@ hr.soften {
     display: block;
     margin: 0 auto 30px;
 }
+
 .progressBar {
     margin-top: 35px !important;
+}
+
+.features {
+    margin-top: 35px;
+}
+.features li {
+    margin: 10px 0;
+    font-size: 16px;
 }
 
 /* Footer

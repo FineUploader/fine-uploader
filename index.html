@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <title>Fine Uploader</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Fine Uploader (3.0) a.k.a valums/file-uploader.  A dependency-free, native browser upload tool.">
+        <meta name="description" content="Fine Uploader (3.0) a.k.a valums/file-uploader. A dependency-free, native browser upload tool.">
         <meta name="author" content="A. Bennouna, tellibus">
         <link href="client/fineuploader.css" rel="stylesheet">
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/css/bootstrap.min.css" rel="stylesheet">
@@ -14,7 +14,6 @@
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
         <script src="http://code.jquery.com/jquery-latest.js"></script>
         <script src="http://platform.twitter.com/widgets.js"></script>
-        <script src="http://code.jquery.com/jquery-latest.js"></script>
         <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.1.1/js/bootstrap.min.js"></script>
         <script src="js/prettify.js"></script>
         <script src="js/jquery.tipsy.min.js"></script>
@@ -110,6 +109,50 @@
                 </div>
 
                 <img class="progressBar" src="img/progress-bar.png" alt="Fine Uploader in action" width="522" height="141"/>
+
+                <hr class="soften" id="features">
+
+                <h1>Features</h1>
+                
+                <div class="row-fluid" style="text-align: left;">
+                    <div class="span3">
+                        <ul class="features">
+                            <li>Multiple file select, progress-bar in FF, Chrome, and Safari</li>
+                            <li>Drag-and-drop file select in FF, Chrome, and Safari (OS X)</li>
+                            <li>Uploads are cancelable</li>
+                            <li>No external dependencies at all if using FineUploader or FineUploaderBasic. If using the optional jQuery wrapper, jQuery is of course required.</li>
+                        </ul>
+                    </div>
+
+                    <div class="span3">
+                        <ul class="features">
+                            <li>FineUploaderBasic only requires the associated Fine Uploader javascript file. All Fine Uploader css and image files can be omitted.</li>
+                            <li>Doesn't use Flash</li>
+                            <li>Fully working with HTTPS</li>
+                            <li>Tested in IE7+, Firefox, Safari (OS X), Chrome, IOS6, and various versions of Android. IE10 is now also supported!</li>
+                        </ul>
+                    </div>
+
+                    <div class="span3">
+                        <ul class="features">
+                            <li>Ability to upload files as soon as they are selected, or "queue" them for uploading at user's request later</li>
+                            <li>Display specific error messages from server on upload failure (hover over failed upload item)</li>
+                            <li>Ability to auto-retry failed uploads</li>
+                            <li>Option to allow users to manually retry a failed upload</li>
+                        </ul>
+                    </div>
+
+                    <div class="span3">
+                        <ul class="features">
+                            <li>Create your own file validator and/or use some default validators include with Fine Uploader</li>
+                            <li>Receive callback at various stages of the upload process</li>
+                            <li>Send any parameters server-side along with each file.</li>
+                            <li>Any many more!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <hr class="soften" id="setup">
 
                 <h1>Setup</h1>
                 <p class="marketing-byline">You need only to include a CSS file and a JavaScript file, and handle the uploads on the server side according to the technology you are using. There are absolutely no other dependencies.</p>
