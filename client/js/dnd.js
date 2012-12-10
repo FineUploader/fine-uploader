@@ -79,9 +79,10 @@ qq.DragAndDrop = function(o) {
             droppedFiles = [];
             droppedEntriesCount = 0;
             droppedEntriesParsedCount = 0;
-            items = dataTransfer.items;
 
-            if (items && items[0].webkitGetAsEntry) {
+            if (qq.isFolderDropSupported(dataTransfer)) {
+                items = dataTransfer.items;
+
                 for (i = 0; i < items.length; i+=1) {
                     entry = items[i].webkitGetAsEntry();
                     if (entry) {

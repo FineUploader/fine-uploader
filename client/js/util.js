@@ -1,4 +1,4 @@
-/*globals window, navigator, document, FormData, File, HTMLInputElement*/
+/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest*/
 var qq = function(element) {
     "use strict";
 
@@ -183,6 +183,23 @@ qq.isFileOrInput = function(maybeFileOrInput) {
     }
 
     return false;
+};
+
+qq.isXhrUploadSupported = function() {
+    "use strict";
+    var input = document.createElement('input');
+    input.type = 'file';
+
+    return (
+        input.multiple !== undefined &&
+            typeof File !== "undefined" &&
+            typeof FormData !== "undefined" &&
+            typeof (new XMLHttpRequest()).upload !== "undefined" );
+};
+
+qq.isFolderDropSupported = function(dataTransfer) {
+    "use strict";
+    return (dataTransfer.items && dataTransfer.items[0].webkitGetAsEntry);
 };
 
 qq.extend = function (first, second, extendNested) {

@@ -12,18 +12,6 @@ qq.UploadHandlerXhr = function(o){
     this._loaded = [];
 };
 
-// static method
-qq.UploadHandlerXhr.isSupported = function(){
-    var input = document.createElement('input');
-    input.type = 'file';
-
-    return (
-        'multiple' in input &&
-            typeof File != "undefined" &&
-            typeof FormData != "undefined" &&
-            typeof (new XMLHttpRequest()).upload != "undefined" );
-};
-
 // @inherits qq.UploadHandlerAbstract
 qq.extend(qq.UploadHandlerXhr.prototype, qq.UploadHandlerAbstract.prototype)
 

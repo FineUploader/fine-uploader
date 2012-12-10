@@ -779,6 +779,8 @@ to `console.log` and the log level will be included in the message.
 * `qq.chrome()` - Returns true if the current user agent is Chrome.
 * `qq.firefox()` - Returns true if the current user agent is Firefox.
 * `qq.windows()` - Returns true if the current user agent is running on the Microsoft Windows platform.
+* `qq.isXhrUploadSupported()` - Returns true if the current user agent is capable of sending files using an ajax request.
+* `qq.isFolderDropSupported()` - Returns true if the current user agent is capable of handling dropped folders.
 
 
 <br/>

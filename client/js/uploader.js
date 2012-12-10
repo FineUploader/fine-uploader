@@ -273,7 +273,7 @@ qq.extend(qq.FineUploader.prototype, {
         qq(item).removeClass(this._classes.retrying);
         qq(this._find(item, 'progressBar')).hide();
 
-        if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
+        if (!this._options.disableCancelForFormUploads || qq.isXhrUploadSupported()) {
             qq(this._find(item, 'cancel')).hide();
         }
         qq(this._find(item, 'spinner')).hide();
@@ -342,7 +342,7 @@ qq.extend(qq.FineUploader.prototype, {
     },
     _addToList: function(id, fileName){
         var item = qq.toElement(this._options.fileTemplate);
-        if (this._options.disableCancelForFormUploads && !qq.UploadHandlerXhr.isSupported()) {
+        if (this._options.disableCancelForFormUploads && !qq.isXhrUploadSupported()) {
             var cancelLink = this._find(item, 'cancel');
             qq(cancelLink).remove();
         }
@@ -437,7 +437,7 @@ qq.extend(qq.FineUploader.prototype, {
         spinnerEl.style.display = "inline-block";
     },
     _showCancelLink: function(item) {
-        if (!this._options.disableCancelForFormUploads || qq.UploadHandlerXhr.isSupported()) {
+        if (!this._options.disableCancelForFormUploads || qq.isXhrUploadSupported()) {
             var cancelLink = this._find(item, 'cancel');
             cancelLink.style.display = 'inline';
         }

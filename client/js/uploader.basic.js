@@ -160,7 +160,7 @@ qq.FineUploaderBasic.prototype = {
 
         var button = new qq.UploadButton({
             element: element,
-            multiple: this._options.multiple && qq.UploadHandlerXhr.isSupported(),
+            multiple: this._options.multiple && qq.isXhrUploadSupported(),
             acceptFiles: this._options.validation.acceptFiles,
             onChange: function(input){
                 self._onInputChange(input);
@@ -176,7 +176,7 @@ qq.FineUploaderBasic.prototype = {
         var self = this,
             handlerClass;
 
-        if(qq.UploadHandlerXhr.isSupported()){
+        if(qq.isXhrUploadSupported()){
             handlerClass = 'UploadHandlerXhr';
         } else {
             handlerClass = 'UploadHandlerForm';
