@@ -162,7 +162,7 @@ class qqFileUploader {
         
         if ($postSize < $this->sizeLimit || $uploadSize < $this->sizeLimit){
             $size = max(1, $this->sizeLimit / 1024 / 1024) . 'M';             
-            die("{'error':'increase post_max_size and upload_max_filesize to $size'}");    
+            die(json_encode(array('error'=>'increase post_max_size and upload_max_filesize to ' . $size)));    
         }        
     }
     
