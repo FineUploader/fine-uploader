@@ -3,15 +3,9 @@
 Actively developed by Ray Nicholus.     
 Created by by Andrew Valums.
 
-</br>
-## Please Read ##
-3.0 brings some breaking changes. Your 2.x or earlier client-side code WILL require adjustments.  Please have a look
-at the [upgrading](#upgrading-from-212) section AND the options documentation before requesting support.
-
 
 <br/>
 ### Quick Links ###
-* [Upgrading from 2.1.2](#upgrading-from-212)
 * [Download](https://github.com/valums/file-uploader/wiki/Releases)
 * [Support](https://groups.google.com/forum/#!forum/fineuploader)
 * [Blog](http://blog.fineuploader.com)
@@ -24,7 +18,6 @@ at the [upgrading](#upgrading-from-212) section AND the options documentation be
 ###Table of Contents###
 - [Summary](#summary)
 - [Features](#features)
-- [License](#license)
 - [Getting started](#getting-started)
 - [Server-side requirements](https://github.com/valums/file-uploader/blob/master/server/readme.md)
 - [Using the optional jQuery plug-in](#using-the-optional-jquery-plug-in)
@@ -41,6 +34,7 @@ at the [upgrading](#upgrading-from-212) section AND the options documentation be
 - [Building and using the snapshot version](#building-and-using-the-snapshot-version)
 - [Troubleshooting](#troubleshooting)
 - [Issue Tracker](#issue-tracker)
+- [License](#license)
 - [Contributors](#contributors)
 
 <br/>
@@ -77,10 +71,6 @@ It does not use Flash, jQuery, or any other external libraries.
 * Any many more!
 
 <br/>
-### License ###
-This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
-
-<br/>
 ### Getting started ###
 The combined javascript file contains two classes that are meant to be used directly.
 If you need a complete upload widget (from demo) to quickly drop
@@ -99,43 +89,6 @@ Basic uploader is easier extendable, and doesn't limit possible customization.
 `qq.FineUploader` extends `qq.FineUploaderBasic`, so that all the options present
 in the basic uploader also exist in the full widget.
 
-
-<br/>
-### Upgrading From 2.1.2 ###
-3.0 introduces some big new features and, as a result, some minor breaking changes as well.  Some of the big new features:
-* [optional jQuery plug-in](#using-the-optional-jquery-plug-in)
-* [only override sub-options you want to change](#how-to-override-options)
-* auto and manual retry of failed uploads
-* you may now "contribute" you own custom file validators
-* IE10 and Android are now officially supported
-* Improved logging
-* Instance function that allow you to lookup a file list item element given a file ID
-* Instance function that allows you to dispose/reset the uploader
-* Instance function that allows you to cancel an upload
-* "Processing" indicator that appears when the last byte has been sent but a response from the server is pending
-* Fixed issue in IE7 that caused button text to be invisible
-
-Some minor breaking changes were also made.  Here are some of the changes:
-* All mentions of "FileUploader" in the code were changes to the new name: FineUploader.  This includes qq.FileUploader
-(now qq.FineUploader) and qq.FileUploaderBasic (now qq.FineUploaderBasic), for starters.  Note that the combined js and css file names
-have changed as well.  The js and css files that appear in the released zip will contain version numbers in the filename.
-* Options have been "categorized" where appropriate.  For example, all drag-and-drop related options are now sub-options
-under the `dragAndDrop` option, text options are now sub-options under the new `text` option.  There are several other new
-"categories"/options with sub-options.  Please see the options section of this readme for details.
-* The `action` option has been renamed `endpoint`.  Notice that it is now a property under the new `request` object option as well.
-* `params`, `customHeaders`, `forceMultipart`, and `inputName` are now properties under the new `request` option.
-* All validation-related options have been moved under the new `validation` option.
-* All callbacks have been moved under the `callbacks` option.
-* `extraDropzones`, `hideDropzones`, and `disableDefaultDropzone` options were moved under the new `dragAndDrop` option.
-* `extraMessages` is now `messages` (in FineUploader).  It extends FineUploaderBasic's `messages` option.  The `formatProgress` property
-has been moved under the `text` option.
-* All options ending in "text" have been moved under the new `text` option.  In each of these cases, the "text" suffix has been removed
-  from the option.  Also, the `dragText` option has been moved under `dragAndDrop` as well and has been renamed `dragZone`.
-* More logging was added.  Warning and error messages will always appear, but lower-level log messages will still only appear if `debug` is set to true.
-* The giant uploader javascript file was split up into smaller files where appropriate.  This is simply to make development/maintenance
-easier.  Releases will always contain all js in a single file.  The source branches though, will contain the split-up files.  Note
-that you can always combine files in a snapshot branch if you want via [gradle](#building-and-using-the-snapshot-version).  Once I setup
-a CI system, I may start adding snapshot builds to the downloads section.
 
 <br/>
 ### Using the optional jQuery plug-in ###
@@ -914,6 +867,10 @@ then you have a problem with your server-side script.
 ### Issue Tracker ###
 Have a bug or feature request? Please [create an issue here on GitHub](https://github.com/valums/file-uploader/issues) 
 that conforms with [necolas's guidelines](https://github.com/necolas/issue-guidelines/blob/master/README.md).
+
+<br/>
+### License ###
+This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
 
 <br/>
 ### Contributors ###
