@@ -1,4 +1,4 @@
-# Fine Uploader 3.1-IN-PROGRESS (To Be Released Dec. 17) #
+# Fine Uploader 3.1 (Released Dec. 15) #
 
 <br/>
 Actively developed by Ray Nicholus.     
@@ -69,12 +69,6 @@ It does not use Flash, jQuery, or any other external libraries.
 * [Include parameters in the query string OR the request body.](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
 * Submit files to be uploaded via the API.
 * Any many more!
-
-<br/>
-### Known Issues ###
-* [#474](https://github.com/valums/file-uploader/issues/474) - Sometimes the wrong callback name is reported in a caught callback error message.  Planned to be fixed in 3.1.
-* [#492](https://github.com/valums/file-uploader/issues/492) - Cannot create multiple uploader instances when using the jQuery wrapper with one selector.  Planned to be fixed in 3.1.
-* [#498](https://github.com/valums/file-uploader/issues/498) - jQuery object parameters passed to function are not transformed.  Planned to be fixed in 3.1.
 
 <br/>
 ### Getting started ###
