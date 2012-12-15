@@ -1,4 +1,4 @@
-# Fine Uploader 3.1 (Released Dec. 14) #
+# Fine Uploader 3.1-IN-PROGRESS (To Be Released Dec. 17) #
 
 <br/>
 Actively developed by Ray Nicholus.     
