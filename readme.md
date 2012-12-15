@@ -71,12 +71,6 @@ It does not use Flash, jQuery, or any other external libraries.
 * Any many more!
 
 <br/>
-### Known Issues ###
-* [#474](https://github.com/valums/file-uploader/issues/474) - Sometimes the wrong callback name is reported in a caught callback error message.  Planned to be fixed in 3.1.
-* [#492](https://github.com/valums/file-uploader/issues/492) - Cannot create multiple uploader instances when using the jQuery wrapper with one selector.  Planned to be fixed in 3.1.
-* [#498](https://github.com/valums/file-uploader/issues/498) - jQuery object parameters passed to function are not transformed.  Planned to be fixed in 3.1.
-
-<br/>
 ### Getting started ###
 The combined javascript file contains two classes that are meant to be used directly.
 If you need a complete upload widget (from demo) to quickly drop

@@ -157,7 +157,9 @@ qq.extend(qq.FineUploader.prototype, {
         this._dnd = this._setupDragAndDrop();
     },
     _setupDragAndDrop: function() {
-        var dnd, preventSelectFiles, self = this, dropProcessingEl = this._find(this._element, 'dropProcessing');
+        var self = this,
+            dropProcessingEl = this._find(this._element, 'dropProcessing'),
+            dnd, preventSelectFiles, defaultDropAreaEl;
 
         preventSelectFiles = function(event) {
             event.preventDefault();
