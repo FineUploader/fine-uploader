@@ -12,7 +12,7 @@ qq.UploadButton = function(o){
     };
 
     qq.extend(this._options, o);
-    qq.extend(this, qq.DisposeSupport);
+    this._disposeSupport = new qq.DisposeSupport();
 
     this._element = this._options.element;
 
@@ -73,20 +73,20 @@ qq.UploadButton.prototype = {
         this._element.appendChild(input);
 
         var self = this;
-        this._attach(input, 'change', function(){
+        this._disposeSupport.attach(input, 'change', function(){
             self._options.onChange(input);
         });
 
-        this._attach(input, 'mouseover', function(){
+        this._disposeSupport.attach(input, 'mouseover', function(){
             qq(self._element).addClass(self._options.hoverClass);
         });
-        this._attach(input, 'mouseout', function(){
+        this._disposeSupport.attach(input, 'mouseout', function(){
             qq(self._element).removeClass(self._options.hoverClass);
         });
-        this._attach(input, 'focus', function(){
+        this._disposeSupport.attach(input, 'focus', function(){
             qq(self._element).addClass(self._options.focusClass);
         });
-        this._attach(input, 'blur', function(){
+        this._disposeSupport.attach(input, 'blur', function(){
             qq(self._element).removeClass(self._options.focusClass);
         });
 

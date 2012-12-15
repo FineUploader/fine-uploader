@@ -6,6 +6,7 @@ qq.UploadHandlerAbstract = function(o){
     this._options = {
         debug: false,
         endpoint: '/upload.php',
+        paramsInBody: false,
         // maximum number of concurrent uploads
         maxConnections: 999,
         log: function(str, level) {},
@@ -19,8 +20,6 @@ qq.UploadHandlerAbstract = function(o){
     qq.extend(this._options, o);
 
     this._queue = [];
-    // params for files in queue
-    this._params = [];
 
     this.log = this._options.log;
 };
@@ -31,27 +30,23 @@ qq.UploadHandlerAbstract.prototype = {
      **/
     add: function(file){},
     /**
-     * Sends the file identified by id and additional query params to the server
+     * Sends the file identified by id
      */
-    upload: function(id, params){
+    upload: function(id){
         var len = this._queue.push(id);
-
-        var copy = {};
-        qq.extend(copy, params);
-        this._params[id] = copy;
 
         // if too many active uploads, wait...
         if (len <= this._options.maxConnections){
-            this._upload(id, this._params[id]);
+            this._upload(id);
         }
     },
     retry: function(id) {
         var i = qq.indexOf(this._queue, id);
         if (i >= 0) {
-            this._upload(id, this._params[id]);
+            this._upload(id);
         }
         else {
-            this.upload(id, this._params[id]);
+            this.upload(id);
         }
     },
     /**
@@ -59,6 +54,7 @@ qq.UploadHandlerAbstract.prototype = {
      */
     cancel: function(id){
         this.log('Cancelling ' + id);
+        this._options.paramsStore.remove(id);
         this._cancel(id);
         this._dequeue(id);
     },
@@ -89,7 +85,6 @@ qq.UploadHandlerAbstract.prototype = {
     reset: function() {
         this.log('Resetting upload handler');
         this._queue = [];
-        this._params = [];
     },
     /**
      * Actual upload method
@@ -110,7 +105,7 @@ qq.UploadHandlerAbstract.prototype = {
 
         if (this._queue.length >= max && i < max){
             var nextId = this._queue[max-1];
-            this._upload(nextId, this._params[nextId]);
+            this._upload(nextId);
         }
     },
     /**

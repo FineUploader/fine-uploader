@@ -11,6 +11,26 @@ test("qq.isObject", function() {
     equal(qq.isObject(undefined, false, "undefined parameter"));
 });
 
+test("qq.isFunction", function() {
+    ok(qq.isFunction(function(){}), "empty simple function");
+    equal(qq.isFunction({}), false, "an object is not a function");
+});
+
+test("qq.isFileOrInput", function() {
+    $('#qunit-fixture').append("<div id='foo'></div>");
+    $('#qunit-fixture').append("<input id='bar'/>");
+    $('#qunit-fixture').append("<input id='bar2' type='file'/>");
+
+    var el = $('#foo')[0],
+        el2 = $('#bar')[0],
+        el3 = $('#bar2')[0];
+
+    ok(!qq.isFileOrInput(el), "div is not an input");
+    ok(!qq.isFileOrInput(el2), "must be a file input");
+    ok(qq.isFileOrInput(el3), "this is a file input");
+
+});
+
 test("qq.extend", function() {
     var o1 = {one: "one", two: "two", three: "three", four: {a: "a", b: "b"}};
 
@@ -56,7 +76,8 @@ test("qq().attach", 1, function() {
 });
 
 test("qq().insertBefore", function() {
-    var b = $('#qunit-fixture').append("<div id='foo'></div>")[0];
+    $('#qunit-fixture').append("<div id='foo'></div>");
+    var b = $('#foo')[0];
     var a = $("<div id='bar'></div>")[0];
     qq(a).insertBefore(b);
 
@@ -142,6 +163,8 @@ test("qq.obj2url", function() {
     var urlWithEncodedPath = "http://mydomain.com/upload%20me"
     var params = {one: "one", two: "two", three: "three"};
     var params2 = {a: "this is a test"};
+    var params3 = {a: {b: 'innerProp'}};
+    var params4 = {a: function() {return "funky"}};
 
     var baseUrlWithParams = qq.obj2url(params, baseUrl);
     var parsedUrlWithParams = $.url(baseUrlWithParams);
@@ -153,20 +176,83 @@ test("qq.obj2url", function() {
     var parsedUrlWithParams2 = $.url(baseUrlWithParams2);
     equal(parsedUrlWithParams2.param('a'), "this is a test", "checking first param, 2nd url");
 
+    var baseUrlWithParams3 = qq.obj2url(params3, baseUrl);
+    var parsedUrlWithParams3 = $.url(baseUrlWithParams3);
+    equal(parsedUrlWithParams3.param('a').b, 'innerProp', 'checking a param with an object as a value');
+
+    var baseUrlWithParams4 = qq.obj2url(params4, baseUrl);
+    var parsedUrlWithParams4 = $.url(baseUrlWithParams4);
+    equal(parsedUrlWithParams4.param('a'), 'funky', 'checking a param with a function as a value');
+
     var urlWithEncodedPathResult = qq.obj2url(params, urlWithEncodedPath);
     ok(urlWithEncodedPathResult.match("^" + urlWithEncodedPath), "ensure encoded paths are left alone");
 });
 
+test("qq.obj2FormData", function() {
+    var formData = function() {
+        var data = {};
+        return {
+            append: function(key, val) {
+                data[decodeURIComponent(key)] = decodeURIComponent(val);
+            },
+            get: function(key) {
+                return data[key];
+            },
+            clear: function() {
+                data = [];
+            }
+        };
+    }()
+
+    var params = {one: "one", two: "two", three: "three"};
+    var params2 = {a: {b: 'innerProp'}};
+    var params3 = {a: function() {return "funky"}};
+
+    equal(qq.obj2FormData(params, formData).get('one'), 'one', "simple params");
+    equal(qq.obj2FormData(params, formData).get('two'), 'two', "simple params");
+    equal(qq.obj2FormData(params, formData).get('three'), 'three', "simple params");
+
+    formData.clear();
+    equal(qq.obj2FormData(params2, formData).get('a[b]'), 'innerProp', "nested objects");
+
+    formData.clear();
+    equal(qq.obj2FormData(params3, formData).get('a'), 'funky', "function param");
+});
+
+test("qq.obj2Inputs", function() {
+    var params = {one: "one", two: "two", three: "three"};
+    var params2 = {a: {b: 'innerProp'}};
+    var params3 = {a: function() {return "funky"}};
+
+    $('#qunit-fixture').append('<form id="obj2Inputs"></form>');
+    var $form = $('#obj2Inputs');
+
+    qq.obj2Inputs(params, $form[0]);
+    equal($form.find('input[name="one"]').val(), 'one', 'simple params');
+    equal($form.find('input[name="two"]').val(), 'two', 'simple params');
+    equal($form.find('input[name="three"]').val(), 'three', 'simple params');
+
+    $form.empty();
+    qq.obj2Inputs(params2, $form[0]);
+    var inputName = encodeURIComponent('a[b]');
+    equal($form.find('input[name="' + inputName + '"]').val(), 'innerProp', "nested objects");
+
+    $form.empty();
+    qq.obj2Inputs(params3, $form[0]);
+    equal($form.find('input[name="a"]').val(), 'funky', 'function param');
+});
+
 test("qq.DisposeSupport", 2, function() {
-    qq.DisposeSupport.addDisposer(function() {
+    var disposer = new qq.DisposeSupport();
+    disposer.addDisposer(function() {
         ok(true, "disposer 1");
     });
 
-    qq.DisposeSupport.addDisposer(function() {
+    disposer.addDisposer(function() {
         ok(true, "disposer 2");
     });
 
-    qq.DisposeSupport.dispose();
+    disposer.dispose();
 });
 
 test("qq().hide()", function() {

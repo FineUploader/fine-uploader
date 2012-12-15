@@ -14,7 +14,7 @@ qq.extend(qq.UploadHandlerForm.prototype, qq.UploadHandlerAbstract.prototype);
 qq.extend(qq.UploadHandlerForm.prototype, {
     add: function(fileInput){
         fileInput.setAttribute('name', this._options.inputName);
-        var id = 'qq-upload-handler-iframe' + qq.getUniqueId();
+        var id = qq.getUniqueId();
 
         this._inputs[id] = fileInput;
 
@@ -53,7 +53,7 @@ qq.extend(qq.UploadHandlerForm.prototype, {
             qq(iframe).remove();
         }
     },
-    _upload: function(id, params){
+    _upload: function(id){
         this._options.onUpload(id, this.getName(id), false);
         var input = this._inputs[id];
 
@@ -62,10 +62,9 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         }
 
         var fileName = this.getName(id);
-        params[this._options.inputName] = fileName;
 
         var iframe = this._createIframe(id);
-        var form = this._createForm(iframe, params);
+        var form = this._createForm(iframe, this._options.paramsStore.getParams(id));
         form.appendChild(input);
 
         var self = this;
@@ -182,12 +181,18 @@ qq.extend(qq.UploadHandlerForm.prototype, {
         // form.setAttribute('method', 'post');
         // form.setAttribute('enctype', 'multipart/form-data');
         // Because in this case file won't be attached to request
-        var protocol = this._options.demoMode ? "GET" : "POST"
-        var form = qq.toElement('<form method="' + protocol + '" enctype="multipart/form-data"></form>');
+        var protocol = this._options.demoMode ? "GET" : "POST",
+            form = qq.toElement('<form method="' + protocol + '" enctype="multipart/form-data"></form>'),
+            url = this._options.endpoint;
 
-        var queryString = qq.obj2url(params, this._options.endpoint);
+        if (!this._options.paramsInBody) {
+            url = qq.obj2url(params, this._options.endpoint);
+        }
+        else {
+            qq.obj2Inputs(params, form);
+        }
 
-        form.setAttribute('action', queryString);
+        form.setAttribute('action', url);
         form.setAttribute('target', iframe.name);
         form.style.display = 'none';
         document.body.appendChild(form);

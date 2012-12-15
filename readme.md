@@ -1,19 +1,12 @@
-# Fine Uploader 3.0 (Released November 16) #
-### 3.1 is planned for Dec. 17 ###
+# Fine Uploader 3.1 (Released Dec. 14) #
 
 <br/>
 Actively developed by Ray Nicholus.     
 Created by by Andrew Valums.
 
-</br>
-## Please Read ##
-3.0 brings some breaking changes. Your 2.x or earlier client-side code WILL require adjustments.  Please have a look
-at the [upgrading](#upgrading-from-212) section AND the options documentation before requesting support.
-
 
 <br/>
 ### Quick Links ###
-* [Upgrading from 2.1.2](#upgrading-from-212)
 * [Download](https://github.com/valums/file-uploader/wiki/Releases)
 * [Support](https://groups.google.com/forum/#!forum/fineuploader)
 * [Blog](http://blog.fineuploader.com)
@@ -25,8 +18,6 @@ at the [upgrading](#upgrading-from-212) section AND the options documentation be
 ###Table of Contents###
 - [Summary](#summary)
 - [Features](#features)
-- [License](#license)
-- [Known Issues](#known-issues)
 - [Getting started](#getting-started)
 - [Server-side requirements](https://github.com/valums/file-uploader/blob/master/server/readme.md)
 - [Using the optional jQuery plug-in](#using-the-optional-jquery-plug-in)
@@ -43,6 +34,7 @@ at the [upgrading](#upgrading-from-212) section AND the options documentation be
 - [Building and using the snapshot version](#building-and-using-the-snapshot-version)
 - [Troubleshooting](#troubleshooting)
 - [Issue Tracker](#issue-tracker)
+- [License](#license)
 - [Contributors](#contributors)
 
 <br/>
@@ -73,11 +65,10 @@ It does not use Flash, jQuery, or any other external libraries.
 * Create your own file validator and/or use some default validators include with Fine Uploader
 * Receive callback at various stages of the upload process
 * Send any parameters server-side along with each file.
+* Upload directories via drag and drop (Chrome 21+).
+* [Include parameters in the query string OR the request body.](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
+* Submit files to be uploaded via the API.
 * Any many more!
-
-<br/>
-### License ###
-This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
 
 <br/>
 ### Known Issues ###
@@ -104,43 +95,6 @@ Basic uploader is easier extendable, and doesn't limit possible customization.
 `qq.FineUploader` extends `qq.FineUploaderBasic`, so that all the options present
 in the basic uploader also exist in the full widget.
 
-
-<br/>
-### Upgrading From 2.1.2 ###
-3.0 introduces some big new features and, as a result, some minor breaking changes as well.  Some of the big new features:
-* [optional jQuery plug-in](#using-the-optional-jquery-plug-in)
-* [only override sub-options you want to change](#how-to-override-options)
-* auto and manual retry of failed uploads
-* you may now "contribute" you own custom file validators
-* IE10 and Android are now officially supported
-* Improved logging
-* Instance function that allow you to lookup a file list item element given a file ID
-* Instance function that allows you to dispose/reset the uploader
-* Instance function that allows you to cancel an upload
-* "Processing" indicator that appears when the last byte has been sent but a response from the server is pending
-* Fixed issue in IE7 that caused button text to be invisible
-
-Some minor breaking changes were also made.  Here are some of the changes:
-* All mentions of "FileUploader" in the code were changes to the new name: FineUploader.  This includes qq.FileUploader
-(now qq.FineUploader) and qq.FileUploaderBasic (now qq.FineUploaderBasic), for starters.  Note that the combined js and css file names
-have changed as well.  The js and css files that appear in the released zip will contain version numbers in the filename.
-* Options have been "categorized" where appropriate.  For example, all drag-and-drop related options are now sub-options
-under the `dragAndDrop` option, text options are now sub-options under the new `text` option.  There are several other new
-"categories"/options with sub-options.  Please see the options section of this readme for details.
-* The `action` option has been renamed `endpoint`.  Notice that it is now a property under the new `request` object option as well.
-* `params`, `customHeaders`, `forceMultipart`, and `inputName` are now properties under the new `request` option.
-* All validation-related options have been moved under the new `validation` option.
-* All callbacks have been moved under the `callbacks` option.
-* `extraDropzones`, `hideDropzones`, and `disableDefaultDropzone` options were moved under the new `dragAndDrop` option.
-* `extraMessages` is now `messages` (in FineUploader).  It extends FineUploaderBasic's `messages` option.  The `formatProgress` property
-has been moved under the `text` option.
-* All options ending in "text" have been moved under the new `text` option.  In each of these cases, the "text" suffix has been removed
-  from the option.  Also, the `dragText` option has been moved under `dragAndDrop` as well and has been renamed `dragZone`.
-* More logging was added.  Warning and error messages will always appear, but lower-level log messages will still only appear if `debug` is set to true.
-* The giant uploader javascript file was split up into smaller files where appropriate.  This is simply to make development/maintenance
-easier.  Releases will always contain all js in a single file.  The source branches though, will contain the split-up files.  Note
-that you can always combine files in a snapshot branch if you want via [gradle](#building-and-using-the-snapshot-version).  Once I setup
-a CI system, I may start adding snapshot builds to the downloads section.
 
 <br/>
 ### Using the optional jQuery plug-in ###
@@ -249,6 +203,9 @@ var uploader = new qq.FineUploader({
 });
 ```
 
+Please note that if your jQuery selector represents multiple uploaders, the return value of the issued
+command will be an array containing the return values from all associated uploaders.
+
 <br/>
 ### How to Override Options ###
 This is mostly obvious, but you should know that it is actually much easier to override
@@ -344,7 +301,18 @@ other default values.  This works for all options that are, themselves, objects 
             <td>params</td>
             <td>object</td>
             <td>{}</td>
-            <td>These parameters are sent with the request to the endpoint specified in the action option.</td>
+            <td>These parameters are sent with the request to the endpoint specified in the action option.  An individual parameter value
+            may be a number, string, another object, or a function that returns a number or string.  See the <a href="http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html">associated blog post</a>
+            for more details.</td>
+        </tr>
+        <tr>
+            <td>paramsInBody</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>Set this to <code>true</code> if you want all parameters to be sent in the request body.  Note that setting this option
+            to <code>true</code> will force all requests to be multipart encoded.  If the value is <code>false</code> all params will be
+            included in the query string.   See the <a href="http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html">associated blog post</a>
+            for more details.</td>
         </tr>
         <tr>
             <td>customHeaders</td>
@@ -676,14 +644,13 @@ Note that this does not mean the file upload will begin at this point.  Return `
 * `onError(String id, String fileName, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
 * `onAutoRetry(String id, String fileName, String attemptNumber)` - called before each automatic retry attempt for a failed file.
 * `onManualRetry(String id, String fileName)` - called before each manual retry attempt.  Return false to prevent this and all future retry attempts on this file.
-* `onValidate(Array fileData)` - If more than one file has been selected or dropped, this callback is invoked
-with FileData objects for each of the dropped/selected files.  This allows you to prevent the entire batch from being uploaded
-if desired.  To prevent any files in this batch from being uploaded, simply return false.  If your handler does not return
-false, this callback will also be invoked once for each individual file submitted.  In that case, the array will contain
-only one `FileData` object for each call.  If you want to only prevent specific files from  being uploaded, you can return
-false here when appropriate.  This callback is always invoked before the default Fine Uploader validators execute.  Note
-that a `FileData` object has two properties: `name` (the file name) and `size` (the file size).  The `size` property will
-be undefined if the user agent does not support the File API.
+* `onValidate(Array fileData)` - This callback is invoked with FileData objects for each of the dropped/selected files.
+This allows you to prevent the entire batch from being uploaded if desired.  To prevent any files in this batch from being
+uploaded, simply return false.  If your handler does not return false, this callback will also be invoked once for each
+individual file submitted.  In that case, the array will contain only one `FileData` object for each call.  If you want
+to only prevent specific files from  being uploaded, you can return false here when appropriate.  This callback is always
+invoked before the default Fine Uploader validators execute.  Note that a `FileData` object has two properties: `name`
+(the file name) and `size` (the file size).  The `size` property will be undefined if the user agent does not support the File API.
 
 <br/>
 ### Changing alert/messages to something more user friendly ###
@@ -695,7 +662,10 @@ an invalid file for upload.  There are general message types with default text t
 <br/>
 ### Instance methods ###
 * `log(String message)` - Outputs a message to the javascript console, if possible.
-* `setParams(Object newParams)` - Set the parameters sent along with the request after initializing the uploader.  It can be nicely used in `onSubmit` callback.
+* `setParams(Object newParams, [optional] Number fileId)` - Set the parameters sent along with the request after initializing the uploader.
+You can either change the parameters for a specific file, or for all files.  To do the latter, simply omit the `fileId` parameter.
+See this [blog post explaining parameters](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
+as well as [this one explaining how this function works in 3.1 and later versions](http://blog.fineuploader.com/2012/12/setparams-is-now-much-more-useful-in-31.html).
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
 * `clearStoredFiles()` - Clears the internal list of stored files.  Only applicable when `autoUpload` is set to false.
 * `getInProgress()` - Returns the number of files that are either currently uploading or files waiting in line for upload.
@@ -709,6 +679,13 @@ until a connection opens up.
 calling this function will reset all UI elements to the state they exsited in immediately after initialization.  In FineUploaderBasic,
 this resets all internal variables to the state they existed in immediately after initialization.  If you are using FineUploaderBasic,
 it is up to you to "reset" any of your UI elements.
+* `addExtraDropzone(HTMLElement element)` - Use this to mark an element as a drop zone on an already-instantiated FineUploader.
+* `removeExtraDropzone(HTMLElement element)` - Use this to un-mark an extra element as a drop zone on an already-instantiated FineUploader.  An "extra"
+   drop zone is one specified in the `extraDropzones` option, or one set via the `addExtraDropzone` function.
+* `addFiles(filesOrInputs)` - Use this if you would like to submit files to the uploader.  This may be useful if you have
+a method of gathering files that does not include Fine Uploader's input button or the drag & drop support built into FineUploader.
+This function accepts the following types: `File`, `input` element, or a collection of any of these types, provided the
+collection object contains an (integer) index property for each contained item.
 
 <br/>
 ### qQuery ###
@@ -750,6 +727,7 @@ The following element-related functions are available on the `qq(...)` function.
 * `qq.indexOf(Array array, String item, Number startingIndex)` - Same as [indexOf from Javascript 1.6](https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/indexOf), but implemented for browsers that don't support this native function, such as IE8 and earlier.
 * `qq.preventDefault(Event)` - A function used to prevent the user agent's default action.  To be used inside an event handler.
 * `qq.toElement()` - Creates and returns a new DIV element.
+* `qq.each(objectOrArray, callback)` - Iterates through an object or array, passing your callback the key and value for each element in the object.  `return false;` to stop iteration.
 * `qq.log(String logMessage, (optional) String logLevel)` - Log a message to the console.  No-op if console logging is not supported
 by the user agent.  Will delegate to the user agent's logging function that corresponds to the passed logging level, if
 it exists.  If a comparable function does not exist, but console logging is supported, the log event will be delegated
@@ -760,6 +738,8 @@ to `console.log` and the log level will be included in the message.
 * `qq.chrome()` - Returns true if the current user agent is Chrome.
 * `qq.firefox()` - Returns true if the current user agent is Firefox.
 * `qq.windows()` - Returns true if the current user agent is running on the Microsoft Windows platform.
+* `qq.isXhrUploadSupported()` - Returns true if the current user agent is capable of sending files using an ajax request.
+* `qq.isFolderDropSupported()` - Returns true if the current user agent is capable of handling dropped folders.
 
 
 <br/>
@@ -893,6 +873,10 @@ then you have a problem with your server-side script.
 ### Issue Tracker ###
 Have a bug or feature request? Please [create an issue here on GitHub](https://github.com/valums/file-uploader/issues) 
 that conforms with [necolas's guidelines](https://github.com/necolas/issue-guidelines/blob/master/README.md).
+
+<br/>
+### License ###
+This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
 
 <br/>
 ### Contributors ###

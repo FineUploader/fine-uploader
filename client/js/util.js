@@ -1,3 +1,4 @@
+/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest*/
 var qq = function(element) {
     "use strict";
 
@@ -30,13 +31,14 @@ var qq = function(element) {
 
         contains: function(descendant) {
             // compareposition returns false in this case
-            if (element == descendant) {
+            if (element === descendant) {
                 return true;
             }
 
             if (element.contains){
                 return element.contains(descendant);
             } else {
+                /*jslint bitwise: true*/
                 return !!(descendant.compareDocumentPosition(element) & 8);
             }
         },
@@ -59,8 +61,8 @@ var qq = function(element) {
          * Fixes opacity in IE6-8.
          */
         css: function(styles) {
-            if (styles.opacity != null){
-                if (typeof element.style.opacity != 'string' && typeof(element.filters) != 'undefined'){
+            if (styles.opacity !== null){
+                if (typeof element.style.opacity !== 'string' && typeof(element.filters) !== 'undefined'){
                     styles.filter = 'alpha(opacity=' + Math.round(100 * styles.opacity) + ')';
                 }
             }
@@ -88,19 +90,20 @@ var qq = function(element) {
         },
 
         getByClass: function(className) {
+            var candidates,
+                result = [];
+
             if (element.querySelectorAll){
                 return element.querySelectorAll('.' + className);
             }
 
-            var result = [];
-            var candidates = element.getElementsByTagName("*");
-            var len = candidates.length;
+            candidates = element.getElementsByTagName("*");
 
-            for (var i = 0; i < len; i++){
-                if (qq(candidates[i]).hasClass(className)){
-                    result.push(candidates[i]);
+            qq.each(candidates, function(idx, val) {
+                if (qq(val).hasClass(className)){
+                    result.push(val);
                 }
-            }
+            });
             return result;
         },
 
@@ -109,7 +112,7 @@ var qq = function(element) {
                 child = element.firstChild;
 
             while (child){
-                if (child.nodeType == 1){
+                if (child.nodeType === 1){
                     children.push(child);
                 }
                 child = child.nextSibling;
@@ -131,6 +134,8 @@ var qq = function(element) {
 };
 
 qq.log = function(message, level) {
+    "use strict";
+
     if (window.console) {
         if (!level || level === 'info') {
             window.console.log(message);
@@ -152,22 +157,64 @@ qq.isObject = function(variable) {
     return variable !== null && variable && typeof(variable) === "object" && variable.constructor === Object;
 };
 
-qq.extend = function (first, second, extendNested) {
+qq.isFunction = function(variable) {
     "use strict";
-    var prop;
-    for (prop in second) {
-        if (second.hasOwnProperty(prop)) {
-            if (extendNested && qq.isObject(second[prop])) {
-                if (first[prop] === undefined) {
-                    first[prop] = {};
-                }
-                qq.extend(first[prop], second[prop], true);
-            }
-            else {
-                first[prop] = second[prop];
+    return typeof(variable) === "function";
+};
+
+qq.isFileOrInput = function(maybeFileOrInput) {
+    "use strict";
+    if (window.File && maybeFileOrInput instanceof File) {
+        return true;
+    }
+    else if (window.HTMLInputElement) {
+        if (maybeFileOrInput instanceof HTMLInputElement) {
+            if (maybeFileOrInput.type && maybeFileOrInput.type.toLowerCase() === 'file') {
+                return true;
             }
         }
     }
+    else if (maybeFileOrInput.tagName) {
+        if (maybeFileOrInput.tagName.toLowerCase() === 'input') {
+            if (maybeFileOrInput.type && maybeFileOrInput.type.toLowerCase() === 'file') {
+                return true;
+            }
+        }
+    }
+
+    return false;
+};
+
+qq.isXhrUploadSupported = function() {
+    "use strict";
+    var input = document.createElement('input');
+    input.type = 'file';
+
+    return (
+        input.multiple !== undefined &&
+            typeof File !== "undefined" &&
+            typeof FormData !== "undefined" &&
+            typeof (new XMLHttpRequest()).upload !== "undefined" );
+};
+
+qq.isFolderDropSupported = function(dataTransfer) {
+    "use strict";
+    return (dataTransfer.items && dataTransfer.items[0].webkitGetAsEntry);
+};
+
+qq.extend = function (first, second, extendNested) {
+    "use strict";
+    qq.each(second, function(prop, val) {
+        if (extendNested && qq.isObject(val)) {
+            if (first[prop] === undefined) {
+                first[prop] = {};
+            }
+            qq.extend(first[prop], val, true);
+        }
+        else {
+            first[prop] = val;
+        }
+    });
 };
 
 /**
@@ -175,15 +222,21 @@ qq.extend = function (first, second, extendNested) {
  * @param {Number} [from] The index at which to begin the search
  */
 qq.indexOf = function(arr, elt, from){
-    if (arr.indexOf) return arr.indexOf(elt, from);
+    "use strict";
+
+    if (arr.indexOf) {
+        return arr.indexOf(elt, from);
+    }
 
     from = from || 0;
     var len = arr.length;
 
-    if (from < 0) from += len;
+    if (from < 0) {
+        from += len;
+    }
 
-    for (; from < len; from++){
-        if (from in arr && arr[from] === elt){
+    for (null; from < len; from+=1){
+        if (arr.hasOwnProperty(from) && arr[from] === elt){
             return from;
         }
     }
@@ -191,24 +244,48 @@ qq.indexOf = function(arr, elt, from){
 };
 
 qq.getUniqueId = (function(){
-    var id = 0;
-    return function(){ return id++; };
-})();
+    "use strict";
+
+    var id = -1;
+    return function(){
+        id += 1;
+        return id;
+    };
+}());
 
 //
 // Browsers and platforms detection
 
-qq.ie       = function(){ return navigator.userAgent.indexOf('MSIE') != -1; }
-qq.ie10     = function(){ return navigator.userAgent.indexOf('MSIE 10') != -1; }
-qq.safari   = function(){ return navigator.vendor != undefined && navigator.vendor.indexOf("Apple") != -1; }
-qq.chrome   = function(){ return navigator.vendor != undefined && navigator.vendor.indexOf('Google') != -1; }
-qq.firefox  = function(){ return (navigator.userAgent.indexOf('Mozilla') != -1 && navigator.vendor != undefined && navigator.vendor == ''); }
-qq.windows  = function(){ return navigator.platform == "Win32"; }
+qq.ie       = function(){
+    "use strict";
+    return navigator.userAgent.indexOf('MSIE') !== -1;
+};
+qq.ie10     = function(){
+    "use strict";
+    return navigator.userAgent.indexOf('MSIE 10') !== -1;
+};
+qq.safari   = function(){
+    "use strict";
+    return navigator.vendor !== undefined && navigator.vendor.indexOf("Apple") !== -1;
+};
+qq.chrome   = function(){
+    "use strict";
+    return navigator.vendor !== undefined && navigator.vendor.indexOf('Google') !== -1;
+};
+qq.firefox  = function(){
+    "use strict";
+    return (navigator.userAgent.indexOf('Mozilla') !== -1 && navigator.vendor !== undefined && navigator.vendor === '');
+};
+qq.windows  = function(){
+    "use strict";
+    return navigator.platform === "Win32";
+};
 
 //
 // Events
 
 qq.preventDefault = function(e){
+    "use strict";
     if (e.preventDefault){
         e.preventDefault();
     } else{
@@ -221,6 +298,7 @@ qq.preventDefault = function(e){
  * Uses innerHTML to create an element
  */
 qq.toElement = (function(){
+    "use strict";
     var div = document.createElement('div');
     return function(html){
         div.innerHTML = html;
@@ -228,7 +306,23 @@ qq.toElement = (function(){
         div.removeChild(element);
         return element;
     };
-})();
+}());
+
+//key and value are passed to callback for each item in the object or array
+qq.each = function(obj, callback) {
+    "use strict";
+    var key, retVal;
+    if (obj) {
+        for (key in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                retVal = callback(key, obj[key]);
+                if (retVal === false) {
+                    break;
+                }
+            }
+        }
+    }
+};
 
 /**
  * obj2url() takes a json-object as argument and generates
@@ -247,15 +341,17 @@ qq.toElement = (function(){
  * @return String encoded querystring
  */
 qq.obj2url = function(obj, temp, prefixDone){
-    var uristrings = [],
-        prefix = '&',
-        add = function(nextObj, i){
+    "use strict";
+     var i, len,
+         uristrings = [],
+         prefix = '&',
+         add = function(nextObj, i){
             var nextTemp = temp
                 ? (/\[\]$/.test(temp)) // prevent double-encoding
                 ? temp
                 : temp+'['+i+']'
                 : i;
-            if ((nextTemp != 'undefined') && (i != 'undefined')) {
+            if ((nextTemp !== 'undefined') && (i !== 'undefined')) {
                 uristrings.push(
                     (typeof nextObj === 'object')
                         ? qq.obj2url(nextObj, nextTemp, true)
@@ -270,15 +366,17 @@ qq.obj2url = function(obj, temp, prefixDone){
         prefix = (/\?/.test(temp)) ? (/\?$/.test(temp)) ? '' : '&' : '?';
         uristrings.push(temp);
         uristrings.push(qq.obj2url(obj));
-    } else if ((Object.prototype.toString.call(obj) === '[object Array]') && (typeof obj != 'undefined') ) {
+    } else if ((Object.prototype.toString.call(obj) === '[object Array]') && (typeof obj !== 'undefined') ) {
         // we wont use a for-in-loop on an array (performance)
-        for (var i = 0, len = obj.length; i < len; ++i){
+        for (i = -1, len = obj.length; i < len; i+=1){
             add(obj[i], i);
         }
-    } else if ((typeof obj != 'undefined') && (obj !== null) && (typeof obj === "object")){
+    } else if ((typeof obj !== 'undefined') && (obj !== null) && (typeof obj === "object")){
         // for anything else but a scalar, we will use for-in-loop
-        for (var i in obj){
-            add(obj[i], i);
+        for (i in obj){
+            if (obj.hasOwnProperty(i)) {
+                add(obj[i], i);
+            }
         }
     } else {
         uristrings.push(encodeURIComponent(temp) + '=' + encodeURIComponent(obj));
@@ -293,27 +391,79 @@ qq.obj2url = function(obj, temp, prefixDone){
     }
 };
 
+qq.obj2FormData = function(obj, formData, arrayKeyName) {
+    "use strict";
+    if (!formData) {
+        formData = new FormData();
+    }
+
+    qq.each(obj, function(key, val) {
+        key = arrayKeyName ? arrayKeyName + '[' + key + ']' : key;
+
+        if (qq.isObject(val)) {
+            qq.obj2FormData(val, formData, key);
+        }
+        else if (qq.isFunction(val)) {
+            formData.append(encodeURIComponent(key), encodeURIComponent(val()));
+        }
+        else {
+            formData.append(encodeURIComponent(key), encodeURIComponent(val));
+        }
+    });
+
+    return formData;
+};
+
+qq.obj2Inputs = function(obj, form) {
+    "use strict";
+    var input;
+
+    if (!form) {
+        form = document.createElement('form');
+    }
+
+    qq.obj2FormData(obj, {
+        append: function(key, val) {
+            input = document.createElement('input');
+            input.setAttribute('name', key);
+            input.setAttribute('value', val);
+            form.appendChild(input);
+        }
+    });
+
+    return form;
+};
+
 /**
  * A generic module which supports object disposing in dispose() method.
  * */
-qq.DisposeSupport = {
-    _disposers: [],
+qq.DisposeSupport = function() {
+    "use strict";
+    var disposers = [];
 
-    /** Run all registered disposers */
-    dispose: function() {
-        var disposer;
-        while (disposer = this._disposers.shift()) {
-            disposer();
+    return {
+        /** Run all registered disposers */
+        dispose: function() {
+            var disposer;
+            do {
+                disposer = disposers.shift();
+                if (disposer) {
+                    disposer();
+                }
+            }
+            while (disposer);
+        },
+
+        /** Attach event handler and register de-attacher as a disposer */
+        attach: function() {
+            var args = arguments;
+            /*jslint undef:true*/
+            this.addDisposer(qq(args[0]).attach.apply(this, Array.prototype.slice.call(arguments, 1)));
+        },
+
+        /** Add disposer to the collection */
+        addDisposer: function(disposeFunction) {
+            disposers.push(disposeFunction);
         }
-    },
-
-    /** Add disposer to the collection */
-    addDisposer: function(disposeFunction) {
-        this._disposers.push(disposeFunction);
-    },
-
-    /** Attach event handler and register de-attacher as a disposer */
-    _attach: function() {
-        this.addDisposer(qq(arguments[0]).attach.apply(this, Array.prototype.slice.call(arguments, 1)));
-    }
+    };
 };

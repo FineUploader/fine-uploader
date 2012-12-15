@@ -2,34 +2,32 @@ $(document).ready(function() {
     var errorHandler = function(event, id, fileName, reason) {
         qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
     };
-    var validateHandler = function(event, fileData, isBatch) {
-        if (isBatch) {
-            qq.log("Handling batch validate call...");
-            for (var i in fileData) {
-                qq.log("name: " + fileData[i].name + ", size: " + fileData[i].size);
-                if (fileData[i].name.indexOf('a') >= 0) {
-                    return false;
-                }
-            }
-            qq.log("...finished handling batch validate call");
-        }
-        else {
-            qq.log("Single file validate call - name: " + fileData.name + ", size: " + fileData.size);
-            if (fileData.name.indexOf('a') >= 0) {
-                return false;
-            }
-        }
-    };
 
+    var fileNum = 0;
 
     $('#basicUploadSuccessExample').fineUploader({
         debug: true,
         request: {
-            endpoint: "/upload/receiver"
+            endpoint: "/upload/receiver",
+            paramsInBody: true,
+            params: {
+                test: 'one',
+                blah: 'foo',
+                bar: {
+                    one: '1',
+                    two: '2',
+                    three: {
+                        foo: 'bar'
+                    }
+                },
+                fileNum: function() {
+                    fileNum+=1;
+                    return fileNum;
+                }
+            }
         }
     })
-        .on('error', errorHandler)
-        .on("validate", validateHandler);
+        .on('error', errorHandler);
 
 
     $('#manualUploadModeExample').fineUploader({

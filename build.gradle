@@ -1,4 +1,4 @@
-def version = "3.0"
+def version = "3.1"
 def filename = "fineuploader"
 def jsSrcDir = 'client/js'
 
@@ -8,6 +8,7 @@ def coreFiles = ["${jsSrcDir}/header.js",
                  "${jsSrcDir}/util.js",
                  "${jsSrcDir}/button.js",
                  "${jsSrcDir}/uploader.basic.js",
+                 "${jsSrcDir}/dnd.js",
                  "${jsSrcDir}/uploader.js",
                  "${jsSrcDir}/handler.base.js",
                  "${jsSrcDir}/handler.form.js",

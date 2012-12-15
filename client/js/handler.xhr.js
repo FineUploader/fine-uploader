@@ -12,18 +12,6 @@ qq.UploadHandlerXhr = function(o){
     this._loaded = [];
 };
 
-// static method
-qq.UploadHandlerXhr.isSupported = function(){
-    var input = document.createElement('input');
-    input.type = 'file';
-
-    return (
-        'multiple' in input &&
-            typeof File != "undefined" &&
-            typeof FormData != "undefined" &&
-            typeof (new XMLHttpRequest()).upload != "undefined" );
-};
-
 // @inherits qq.UploadHandlerAbstract
 qq.extend(qq.UploadHandlerXhr.prototype, qq.UploadHandlerAbstract.prototype)
 
@@ -65,20 +53,22 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         this._loaded = [];
     },
     /**
-     * Sends the file identified by id and additional query params to the server
-     * @param {Object} params name-value string pairs
+     * Sends the file identified by id to the server
      */
-    _upload: function(id, params){
-        this._options.onUpload(id, this.getName(id), true);
-
+    _upload: function(id){
         var file = this._files[id],
             name = this.getName(id),
-            size = this.getSize(id);
+            size = this.getSize(id),
+            self = this,
+            url = this._options.endpoint,
+            protocol = this._options.demoMode ? "GET" : "POST",
+            xhr, formData, paramName, key, params;
+
+        this._options.onUpload(id, this.getName(id), true);
 
         this._loaded[id] = 0;
 
-        var xhr = this._xhrs[id] = new XMLHttpRequest();
-        var self = this;
+        xhr = this._xhrs[id] = new XMLHttpRequest();
 
         xhr.upload.onprogress = function(e){
             if (e.lengthComputable){
@@ -88,33 +78,43 @@ qq.extend(qq.UploadHandlerXhr.prototype, {
         };
 
         xhr.onreadystatechange = function(){
-            if (xhr.readyState == 4){
+            if (xhr.readyState === 4){
                 self._onComplete(id, xhr);
             }
         };
 
-        // build query string
-        params = params || {};
-        params[this._options.inputName] = name;
-        var queryString = qq.obj2url(params, this._options.endpoint);
+        params = this._options.paramsStore.getParams(id);
 
-        var protocol = this._options.demoMode ? "GET" : "POST";
-        xhr.open(protocol, queryString, true);
+        //build query string
+        if (!this._options.paramsInBody) {
+            params[this._options.inputName] = name;
+            url = qq.obj2url(params, this._options.endpoint);
+        }
+
+        xhr.open(protocol, url, true);
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("X-File-Name", encodeURIComponent(name));
         xhr.setRequestHeader("Cache-Control", "no-cache");
-        if (this._options.forceMultipart) {
-            var formData = new FormData();
+        if (this._options.forceMultipart || this._options.paramsInBody) {
+            formData = new FormData();
+
+            if (this._options.paramsInBody) {
+                qq.obj2FormData(params, formData);
+            }
+
             formData.append(this._options.inputName, file);
             file = formData;
         } else {
             xhr.setRequestHeader("Content-Type", "application/octet-stream");
             //NOTE: return mime type in xhr works on chrome 16.0.9 firefox 11.0a2
-            xhr.setRequestHeader("X-Mime-Type",file.type );
+            xhr.setRequestHeader("X-Mime-Type", file.type);
         }
+
         for (key in this._options.customHeaders){
-            xhr.setRequestHeader(key, this._options.customHeaders[key]);
-        };
+            if (this._options.customHeaders.hasOwnProperty(key)) {
+                xhr.setRequestHeader(key, this._options.customHeaders[key]);
+            }
+        }
 
         this.log('Sending upload request for ' + id);
         xhr.send(file);

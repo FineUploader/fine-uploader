@@ -10,6 +10,7 @@ qq.FineUploaderBasic = function(o){
         request: {
             endpoint: '/server/upload',
             params: {},
+            paramsInBody: false,
             customHeaders: {},
             forceMultipart: false,
             inputName: 'qqfile'
@@ -44,12 +45,16 @@ qq.FineUploaderBasic = function(o){
             maxAutoAttempts: 3,
             autoAttemptDelay: 5,
             preventRetryResponseProperty: 'preventRetry'
+        },
+        classes: {
+            buttonHover: 'qq-upload-button-hover',
+            buttonFocus: 'qq-upload-button-focus'
         }
     };
 
     qq.extend(this._options, o, true);
     this._wrapCallbacks();
-    qq.extend(this, qq.DisposeSupport);
+    this._disposeSupport =  new qq.DisposeSupport();
 
     // number of files being uploaded
     this._filesInProgress = 0;
@@ -59,6 +64,8 @@ qq.FineUploaderBasic = function(o){
     this._autoRetries = [];
     this._retryTimeouts = [];
     this._preventRetries = [];
+
+    this._paramsStore = this._createParamsStore();
 
     this._handler = this._createUploadHandler();
 
@@ -79,8 +86,13 @@ qq.FineUploaderBasic.prototype = {
 
         }
     },
-    setParams: function(params){
-        this._options.request.params = params;
+    setParams: function(params, fileId){
+        if (fileId === undefined) {
+            this._options.request.params = params;
+        }
+        else {
+            this._paramsStore.setParams(params, fileId);
+        }
     },
     getInProgress: function(){
         return this._filesInProgress;
@@ -89,7 +101,7 @@ qq.FineUploaderBasic.prototype = {
         "use strict";
         while(this._storedFileIds.length) {
             this._filesInProgress++;
-            this._handler.upload(this._storedFileIds.shift(), this._options.request.params);
+            this._handler.upload(this._storedFileIds.shift());
         }
     },
     clearStoredFiles: function(){
@@ -116,27 +128,55 @@ qq.FineUploaderBasic.prototype = {
         this._retryTimeouts = [];
         this._preventRetries = [];
         this._button.reset();
+        this._paramsStore.reset();
+    },
+    addFiles: function(filesOrInputs) {
+        var self = this,
+            verifiedFilesOrInputs = [],
+            index, fileOrInput;
+
+        if (filesOrInputs) {
+            if (!window.FileList || !filesOrInputs instanceof FileList) {
+                filesOrInputs = [].concat(filesOrInputs);
+            }
+
+            for (index = 0; index < filesOrInputs.length; index+=1) {
+                fileOrInput = filesOrInputs[index];
+
+                if (qq.isFileOrInput(fileOrInput)) {
+                    verifiedFilesOrInputs.push(fileOrInput);
+                }
+                else {
+                    self.log(fileOrInput + ' is not a File or INPUT element!  Ignoring!', 'warn');
+                }
+            }
+
+            this.log('Processing ' + verifiedFilesOrInputs.length + ' files or inputs...');
+            this._uploadFileList(verifiedFilesOrInputs);
+        }
     },
     _createUploadButton: function(element){
         var self = this;
 
         var button = new qq.UploadButton({
             element: element,
-            multiple: this._options.multiple && qq.UploadHandlerXhr.isSupported(),
+            multiple: this._options.multiple && qq.isXhrUploadSupported(),
             acceptFiles: this._options.validation.acceptFiles,
             onChange: function(input){
                 self._onInputChange(input);
-            }
+            },
+            hoverClass: this._options.classes.buttonHover,
+            focusClass: this._options.classes.buttonFocus
         });
 
-        this.addDisposer(function() { button.dispose(); });
+        this._disposeSupport.addDisposer(function() { button.dispose(); });
         return button;
     },
     _createUploadHandler: function(){
         var self = this,
             handlerClass;
 
-        if(qq.UploadHandlerXhr.isSupported()){
+        if(qq.isXhrUploadSupported()){
             handlerClass = 'UploadHandlerXhr';
         } else {
             handlerClass = 'UploadHandlerForm';
@@ -151,6 +191,8 @@ qq.FineUploaderBasic.prototype = {
             inputName: this._options.request.inputName,
             demoMode: this._options.demoMode,
             log: this.log,
+            paramsInBody: this._options.request.paramsInBody,
+            paramsStore: this._paramsStore,
             onProgress: function(id, fileName, loaded, total){
                 self._onProgress(id, fileName, loaded, total);
                 self._options.callbacks.onProgress(id, fileName, loaded, total);
@@ -192,7 +234,7 @@ qq.FineUploaderBasic.prototype = {
     _preventLeaveInProgress: function(){
         var self = this;
 
-        this._attach(window, 'beforeunload', function(e){
+        this._disposeSupport.attach(window, 'beforeunload', function(e){
             if (!self._filesInProgress){return;}
 
             var e = e || window.event;
@@ -228,10 +270,10 @@ qq.FineUploaderBasic.prototype = {
     },
     _onInputChange: function(input){
         if (this._handler instanceof qq.UploadHandlerXhr){
-            this._uploadFileList(input.files);
+            this.addFiles(input.files);
         } else {
             if (this._validateFile(input)){
-                this._uploadFile(input);
+                this.addFiles(input);
             }
         }
         this._button.reset();
@@ -293,9 +335,7 @@ qq.FineUploaderBasic.prototype = {
         var validationDescriptors, index, batchInvalid;
 
         validationDescriptors = this._getValidationDescriptors(files);
-        if (validationDescriptors.length > 1) {
-            batchInvalid = this._options.callbacks.onValidate(validationDescriptors) === false;
-        }
+        batchInvalid = this._options.callbacks.onValidate(validationDescriptors) === false;
 
         if (!batchInvalid) {
             if (files.length > 0) {
@@ -321,7 +361,7 @@ qq.FineUploaderBasic.prototype = {
         if (this._options.callbacks.onSubmit(id, fileName) !== false){
             this._onSubmit(id, fileName);
             if (this._options.autoUpload) {
-                this._handler.upload(id, this._options.request.params);
+                this._handler.upload(id);
             }
             else {
                 this._storeFileForLater(id);
@@ -424,9 +464,11 @@ qq.FineUploaderBasic.prototype = {
 
         for (var prop in this._options.callbacks) {
             (function() {
-                var oldCallback = self._options.callbacks[prop];
-                self._options.callbacks[prop] = function() {
-                    return safeCallback(prop, oldCallback, arguments);
+                var callbackName, callbackFunc;
+                callbackName = prop;
+                callbackFunc = self._options.callbacks[callbackName];
+                self._options.callbacks[callbackName] = function() {
+                    return safeCallback(callbackName, callbackFunc, arguments);
                 }
             }());
         }
@@ -479,5 +521,38 @@ qq.FineUploaderBasic.prototype = {
         }
 
         return fileDescriptors;
+    },
+    _createParamsStore: function() {
+        var paramsStore = {},
+            self = this;
+
+        return {
+            setParams: function(params, fileId) {
+                var paramsCopy = {};
+                qq.extend(paramsCopy, params);
+                paramsStore[fileId] = paramsCopy;
+            },
+
+            getParams: function(fileId) {
+                var paramsCopy = {};
+
+                if (fileId !== undefined && paramsStore[fileId]) {
+                    qq.extend(paramsCopy, paramsStore[fileId]);
+                }
+                else {
+                    qq.extend(paramsCopy, self._options.request.params);
+                }
+
+                return paramsCopy;
+            },
+
+            remove: function(fileId) {
+                return delete paramsStore[fileId];
+            },
+
+            reset: function() {
+                paramsStore = {};
+            }
+        }
     }
 };

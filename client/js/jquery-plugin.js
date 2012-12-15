@@ -1,13 +1,14 @@
+/*globals jQuery, qq*/
 (function($) {
     "use strict";
-    var uploader, $el, init, dataStore, pluginOption, pluginOptions, addCallbacks, transformOptions, isValidCommand,
+    var uploader, $el, init, dataStore, pluginOption, pluginOptions, addCallbacks, transformVariables, isValidCommand,
         delegateCommand;
 
     pluginOptions = ['uploaderType'];
 
     init = function (options) {
         if (options) {
-            var xformedOpts = transformOptions(options);
+            var xformedOpts = transformVariables(options);
             addCallbacks(xformedOpts);
 
             if (pluginOption('uploaderType') === 'basic') {
@@ -69,7 +70,7 @@
     };
 
     //transform jQuery objects into HTMLElements, and pass along all other option properties
-    transformOptions = function(source, dest) {
+    transformVariables = function(source, dest) {
         var xformed, arrayVals;
 
         if (dest === undefined) {
@@ -93,7 +94,7 @@
             }
             else if ($.isPlainObject(val)) {
                 xformed[prop] = {};
-                transformOptions(val, xformed[prop]);
+                transformVariables(val, xformed[prop]);
             }
             else if ($.isArray(val)) {
                 arrayVals = [];
@@ -126,20 +127,39 @@
     //assuming we have already verified that this is a valid command, call the associated function in the underlying
     // Fine Uploader instance (passing along the arguments from the caller) and return the result of the call back to the caller
     delegateCommand = function(command) {
-        return uploader()[command].apply(uploader(), Array.prototype.slice.call(arguments, 1));
+        var xformedArgs = [], origArgs = Array.prototype.slice.call(arguments, 1);
+
+        transformVariables(origArgs, xformedArgs);
+
+        return uploader()[command].apply(uploader(), xformedArgs);
     };
 
     $.fn.fineUploader = function(optionsOrCommand) {
-        $el = this;
+        var self = this, selfArgs = arguments, retVals = [];
 
-        if (uploader() && isValidCommand(optionsOrCommand)) {
-            return delegateCommand.apply(this, arguments);
+        this.each(function(index, el) {
+            $el = $(el);
+
+            if (uploader() && isValidCommand(optionsOrCommand)) {
+                retVals.push(delegateCommand.apply(self, selfArgs));
+
+                if (self.length === 1) {
+                    return false;
+                }
+            }
+            else if (typeof optionsOrCommand === 'object' || !optionsOrCommand) {
+                init.apply(self, selfArgs);
+            }
+            else {
+                $.error('Method ' +  optionsOrCommand + ' does not exist on jQuery.fineUploader');
+            }
+        });
+
+        if (retVals.length === 1) {
+            return retVals[0];
         }
-        else if (typeof optionsOrCommand === 'object' || !optionsOrCommand) {
-            return init.apply(this, arguments);
-        }
-        else {
-            $.error('Method ' +  optionsOrCommand + ' does not exist on jQuery.fineUploader');
+        else if (retVals.length > 1) {
+            return retVals;
         }
 
         return this;
