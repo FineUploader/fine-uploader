@@ -72,8 +72,8 @@ sourceSets {
     main {
         java { srcDirs = [] }
         groovy {
-            srcDirs = files('testSrc')
-            resources.srcDirs = files('testSrc')
+            srcDirs = files('test')
+            resources.srcDirs = files('test')
         }
     }
 }
