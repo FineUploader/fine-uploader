@@ -22,7 +22,7 @@ Created by Andrew Valums.
 - [Getting started](#getting-started)
 - [Server-side requirements](https://github.com/valums/file-uploader/blob/master/server/readme.md)
 - [Using the optional jQuery plug-in](#using-the-optional-jquery-plug-in)
-- [qq.FineUploader - Setting up full upload widget](#qqfineuploader---setting-up-full-upload-widget)
+- [Setting up the uploader without jQuery](#setting-up-the-uploader-without-jquery)
 - [How to override options](#how-to-override-options)
 - [Options of both FineUploader & FineUploaderBasic](#options-of-both-fineuploader--fineuploaderbasic)
 - [Options of FineUploader](#options-of-fineuploader)
@@ -167,10 +167,15 @@ using the jQuery plug-in.  Public/instance functions on a jQuery plug-in are mad
 Please see the above code fragment, where we call the `setParams` instance function and pass it an object.
 
 
+For more examples using the jQuery plug-in, please have a look at [fineuploader.com](http://fineuploader.com).
+
+
 <br/>
-### qq.FineUploader - Setting up full upload widget ###
-Include the uploader javascript file and, optionally, `fineuploader.css` along with any images provided into your page.
-Create container element.  If you are only making use of FineUploaderBasic, you can omit the css and image(s) file(s).
+### Setting up the uploader without jQuery ###
+Of course, Fine Uploader does NOT depend on jQuery, and you don't have to use the jQuery plug-in if you don't want to.  
+The same features are available without the jQuery plug-in.  To use Fine Uploader with "plain 'ole" javascript, 
+include the uploader javascript file and, optionally, `fineuploader.css` along with any images provided into your page.
+If you are only making use of FineUploaderBasic, you can omit the css and image(s) file(s).
 
 ```html
 <div id="fine-uploader">
@@ -198,8 +203,8 @@ var uploader = new qq.FineUploader({
 });
 ```
 
-Please note that if your jQuery selector represents multiple uploaders, the return value of the issued
-command will be an array containing the return values from all associated uploaders.
+For more examples, please have a look at [fineuploader.com](http://fineuploader.com).
+
 
 <br/>
 ### How to Override Options ###
