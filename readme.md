@@ -48,7 +48,7 @@ FF3.6+, Safari4+, Chrome and falls back to hidden-iframe-based upload in other b
 providing good user experience everywhere.
 
 It does not use Flash, jQuery, or any other external libraries.  There is an optional jQuery plug-in that can be used to
-integrate Fine Uploader into your project, but it is NOT required.  The same features are availble with or without the 
+integrate Fine Uploader into your project, but it is NOT required.  The same features are available with or without the 
 jQuery plug-in.
 
 <br/>
