@@ -2,7 +2,7 @@
 
 <br/>
 Actively developed by Ray Nicholus.     
-Created by by Andrew Valums.
+Created by Andrew Valums.
 
 
 <br/>
