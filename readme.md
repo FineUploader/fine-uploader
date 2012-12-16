@@ -47,7 +47,9 @@ This plugin uses an XMLHttpRequest (AJAX) for uploading multiple files with a pr
 FF3.6+, Safari4+, Chrome and falls back to hidden-iframe-based upload in other browsers (namely IE),
 providing good user experience everywhere.
 
-It does not use Flash, jQuery, or any other external libraries.
+It does not use Flash, jQuery, or any other external libraries.  There is an optional jQuery plug-in that can be used to
+integrate Fine Uploader into your project, but it is NOT required.  The same feratures are availble with or without the 
+jQuery plug-in.
 
 <br/>
 ### Features ###
