@@ -8,14 +8,17 @@ You can uncomment the following lines (minus the require) to use these as your d
 $allowedExtensions = array();
 // max file size in bytes
 $sizeLimit = 10 * 1024 * 1024;
+//the input name set in the javascript
+$inputName = 'qqfile'
 
 require('valums-file-uploader/server/php.php');
-$uploader = new qqFileUploader($allowedExtensions, $sizeLimit);
+$uploader = new qqFileUploader($allowedExtensions, $sizeLimit, $inputName);
 
 // Call handleUpload() with the name of the folder, relative to PHP's getcwd()
 $result = $uploader->handleUpload('uploads/');
 
 // to pass data through iframe you will need to encode all html tags
+header("Content-Type: text/plain");
 echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
 
 /******************************************/
@@ -26,6 +29,15 @@ echo htmlspecialchars(json_encode($result), ENT_NOQUOTES);
  * Handle file uploads via XMLHttpRequest
  */
 class qqUploadedFileXhr {
+    private $inputName;
+    
+    /**
+     * @param string $inputName; defaults to the javascript default: 'qqfile'
+     */
+    public function __construct($inputName = 'qqfile'){
+        $this->inputName = $inputName;
+    }
+    
     /**
      * Save the file to the specified path
      * @return boolean TRUE on success
@@ -53,7 +65,7 @@ class qqUploadedFileXhr {
      * @return string filename
      */
     public function getName() {
-        return $_GET['qqfile'];
+        return $_GET[$this->inputName];
     }
     
     /**
@@ -73,13 +85,21 @@ class qqUploadedFileXhr {
  * Handle file uploads via regular form post (uses the $_FILES array)
  */
 class qqUploadedFileForm {
-	  
+    private $inputName;
+	
+    /**
+     * @param string $inputName; defaults to the javascript default: 'qqfile'
+     */
+    public function __construct($inputName = 'qqfile'){
+        $this->inputName = $inputName;
+    }
+    
     /**
      * Save the file to the specified path
      * @return boolean TRUE on success
      */
     public function save($path) {
-        return move_uploaded_file($_FILES['qqfile']['tmp_name'], $path);
+        return move_uploaded_file($_FILES[$this->inputName]['tmp_name'], $path);
     }
     
     /**
@@ -87,7 +107,7 @@ class qqUploadedFileForm {
      * @return string filename
      */
     public function getName() {
-        return $_FILES['qqfile']['name'];
+        return $_FILES[$this->inputName]['name'];
     }
     
     /**
@@ -95,7 +115,7 @@ class qqUploadedFileForm {
      * @return integer file-size in byte
      */
     public function getSize() {
-        return $_FILES['qqfile']['size'];
+        return $_FILES[$this->inputName]['size'];
     }
 }
 
@@ -111,8 +131,9 @@ class qqFileUploader {
     /**
      * @param array $allowedExtensions; defaults to an empty array
      * @param int $sizeLimit; defaults to the server's upload_max_filesize setting
+     * @param string $inputName; defaults to the javascript default: 'qqfile'
      */
-    function __construct(array $allowedExtensions = null, $sizeLimit = null){
+    function __construct(array $allowedExtensions = null, $sizeLimit = null, $inputName = 'qqfile'){
         if($allowedExtensions===null) {
             $allowedExtensions = array();
     	}
@@ -130,9 +151,9 @@ class qqFileUploader {
         if(!isset($_SERVER['CONTENT_TYPE'])) {
             $this->file = false;	
         } else if (strpos(strtolower($_SERVER['CONTENT_TYPE']), 'multipart/') === 0) {
-            $this->file = new qqUploadedFileForm();
+            $this->file = new qqUploadedFileForm($inputName);
         } else {
-            $this->file = new qqUploadedFileXhr();
+            $this->file = new qqUploadedFileXhr($inputName);
         }
     }
     
