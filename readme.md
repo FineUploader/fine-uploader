@@ -13,6 +13,7 @@ at the [upgrading](#upgrading-from-212) section AND the options documentation be
 
 <br/>
 ### Quick Links ###
+* [Known Issues](#known-issues)
 * [Upgrading from 2.1.2](#upgrading-from-212)
 * [Download](https://github.com/valums/file-uploader/wiki/Releases)
 * [Support](https://groups.google.com/forum/#!forum/fineuploader)
