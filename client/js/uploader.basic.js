@@ -136,7 +136,7 @@ qq.FineUploaderBasic.prototype = {
             index, fileOrInput;
 
         if (filesOrInputs) {
-            if (!window.FileList || !filesOrInputs instanceof FileList) {
+            if (!window.FileList || !(filesOrInputs instanceof FileList)) {
                 filesOrInputs = [].concat(filesOrInputs);
             }
 
