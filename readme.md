@@ -1,5 +1,4 @@
 # Fine Uploader 3.1 (Released Dec. 15) #
-### 3.2 is planned for Jan. 13 ###
 
 <br/>
 Actively developed by Ray Nicholus.     
@@ -8,6 +7,7 @@ Created by Andrew Valums.
 
 <br/>
 ### Quick Links ###
+* [Known Issues](#known-issues)
 * [Download](https://github.com/valums/file-uploader/wiki/Releases)
 * [Support](https://groups.google.com/forum/#!forum/fineuploader)
 * [Blog](http://blog.fineuploader.com)
@@ -72,6 +72,10 @@ jQuery plug-in.
 * [Include parameters in the query string OR the request body.](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
 * Submit files to be uploaded via the API.
 * Any many more!
+
+</br>
+### Known Issues ###
+* [#539](https://github.com/valums/file-uploader/issues/539) - Uploads are broken in Android 2.3 and older.  Fixed in 3.1.1.
 
 <br/>
 ### Getting started ###
