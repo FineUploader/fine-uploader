@@ -1,4 +1,4 @@
-# Fine Uploader 3.1 (Released Dec. 15) #
+# Fine Uploader 3.1.1 (Released Dec. 17) #
 ### 3.2 is planned for Jan. 13 ###
 
 <br/>
