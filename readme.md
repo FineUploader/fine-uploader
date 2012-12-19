@@ -1,6 +1,8 @@
 # Fine Uploader 3.1.1 (Released Dec. 17) #
 ### 3.2 is planned for Jan. 13 ###
 
+Interested in becoming a co-maintainer for Fine Uploader?  Please read [my blog post on this topic](http://blog.fineuploader.com/2012/12/looking-for-second-fine-uploader.html).  
+
 <br/>
 Actively developed by Ray Nicholus.     
 Created by Andrew Valums.
