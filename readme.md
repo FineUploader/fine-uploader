@@ -10,7 +10,7 @@ Created by Andrew Valums.
 
 <br/>
 ### Quick Links ###
-* [Releases](https://github.com/valums/file-uploader/wiki/Releases)
+* [Downloads](https://github.com/valums/file-uploader/wiki/Releases)
 * [Support](https://groups.google.com/forum/#!forum/fineuploader)
 * [Blog](http://blog.fineuploader.com)
 * [@fineuploader](https://twitter.com/fineuploader)
