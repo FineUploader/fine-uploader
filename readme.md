@@ -1,5 +1,7 @@
 # Fine Uploader 3.2-IN-PROGRESS (Planned Release Jan. 13) #
 
+Interested in becoming a co-maintainer for Fine Uploader?  Please read [my blog post on this topic](http://blog.fineuploader.com/2012/12/looking-for-second-fine-uploader.html).  
+
 <br/>
 Actively developed by Ray Nicholus.     
 Created by Andrew Valums.
@@ -7,12 +9,11 @@ Created by Andrew Valums.
 
 <br/>
 ### Quick Links ###
-* [Download](https://github.com/valums/file-uploader/wiki/Releases)
+* [Releases](https://github.com/valums/file-uploader/wiki/Releases)
 * [Support](https://groups.google.com/forum/#!forum/fineuploader)
 * [Blog](http://blog.fineuploader.com)
 * [@fineuploader](https://twitter.com/fineuploader)
 * [Homepage](http://fineuploader.com)
-* [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
 <br/>
 ###Table of Contents###
@@ -885,6 +886,3 @@ We would love developers to contribute any improvements and bugfixes they produc
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
 
 Thanks to everybody who contributed, either by sending bug reports or donating. The project wouldn't be possible without all this generous help. Thank you!
-
-If you have found Fine Uploader useful, please consider [donating](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted) 
-to support continued maintenance and evolution of this library.
