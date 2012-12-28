@@ -99,7 +99,7 @@ public class MultipartUploadParser
 				String value = item.getString();
 				if (StringUtils.isNotBlank(key))
 				{
-					params.put(key.toLowerCase(), StringUtils.defaultString(value));
+					params.put(key, StringUtils.defaultString(value));
 				}
 			}
 			else

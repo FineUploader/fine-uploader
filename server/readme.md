@@ -9,6 +9,15 @@ For user agents that do support the File API, Fine Uploader will send an XHR POS
 the filename, along with all parameters, will be available in the query string.
 
 <br/>
+## Request Format Options ##
+* If you would like to ensure multipart encoded requests are sent, regardless of the browser, you must set the `forceMultipart`
+request option.
+* If you would like to ensure all parameters are sent in the request body (instead of the query string), you
+must set the `paramsInBody` request option (which will also force all requests to be multipart encoded as well).
+* For more information about request parameters, see the main project readme and [this blog post about setting your own custom parameters](http://blog.fineuploader.com/2012/12/setparams-is-now-much-more-useful-in-31.html)
+along with [this post about how parameters are specified in the request](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html).
+
+<br/>
 ## Response ##
 Your server should return a [valid JSON](http://jsonlint.com/) response.  The content-type must be "text/plain".
 
@@ -18,6 +27,29 @@ Your server should return a [valid JSON](http://jsonlint.com/) response.  The co
 * `{"error": "error message to display"}` if not successful, with a specific reason.
 * `{"success": false, "error": "error message to display", "preventRetry": true}` to prevent Fine Uploader from making
 any further attempts to retry uploading the file
+* `{"success": false, "error": "error message to display", "reset": true}` to fail this attempt and restart with the first chunk on the next attempt.  Only applies if chunking is enabled.
+
+<br/>
+## File Chunking/Partitioning ##
+If you have file chunking turned on, each file will be split up into chunks that are sent, in order, in separate requests.
+
+On the server-side, you must acknowledge each chunked request just as you would a non-chunked request.  If your response does
+not indicate success, Fine Uploader will declare the entire file a failure.  If you have auto and/or manual retry enabled,
+Fine Uploader will retry beginning with the last failed partition.
+
+You must temporarily store each partition server-side and then concatenate all parts (to arrive at the complete file) after
+the last part is sent.  See the `paramNames` chunking sub-option to see what specific parameters are sent by Fine Uploader
+along with each chunked request.  These parameters will be necessary to ensure you properly parse each chunked request.  You may
+order Fine Uploader to restart with the first chunk on a failed attempt by returning a `reset` property in your server response
+(with a value of `true`).  This is only applicable if `autoRetry` or `manualRetry` is enabled.
+
+You should make use of the UUID parameter, passed with reach request, that uniquely identifies each file.  This may make it easier for you
+to avoid collisions during accumulation of chunks between files with the same name.
+
+Some server-side examples have been updated to handle file chunking.
+
+For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html).
+on the topic.
 
 <br/>
 ###### WARNING ######

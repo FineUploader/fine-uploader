@@ -20,7 +20,7 @@ Created by Andrew Valums.
 - [Summary](#summary)
 - [Features](#features)
 - [Getting started](#getting-started)
-- [Server-side requirements](https://github.com/valums/file-uploader/blob/master/server/readme.md)
+- [Server-side Instructions](https://github.com/valums/file-uploader/blob/3.2-IP/server/readme.md)
 - [Using the optional jQuery plug-in](#using-the-optional-jquery-plug-in)
 - [Setting up the uploader without jQuery](#setting-up-the-uploader-without-jquery)
 - [How to override options](#how-to-override-options)
@@ -71,6 +71,7 @@ jQuery plug-in.
 * Upload directories via drag and drop (Chrome 21+).
 * [Include parameters in the query string OR the request body.](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
 * Submit files to be uploaded via the API.
+* Split up a file into multiple requests (file chunking/partitioning).
 * Any many more!
 
 <br/>
@@ -337,6 +338,13 @@ other default values.  This works for all options that are, themselves, objects 
             equal to the value of this options.  In the case of the form uploader, this is simply the value of the name attribute
             of the file's associated input element.</td>
         </tr>
+        <tr>
+            <td>uuidName</td>
+            <td>string</td>
+            <td>qquuid</td>
+            <td>The name of the parameter, sent along with each request, that uniquely identifies the associated file.  The value of
+            this parameter is a version 4 UUID.</td>
+        </tr>
     </tbody>
 </table>
 
@@ -437,6 +445,85 @@ other default values.  This works for all options that are, themselves, objects 
     </tbody>
 </table>
 
+##### `chunking` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>enabled</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>If set to <code>true</code>, each file will be split up into parts.  Each part will be sent in a separate request.
+            The size of the part is determined by the <code>partSize</code> option value.  See the server-side readme for more details.</td>
+        </tr>
+        <tr>
+            <td>partSize</td>
+            <td>number</td>
+            <td>2000000</td>
+            <td>The maximum size of each part, in bytes.</td>
+        </tr>
+    </tbody>
+</table>
+
+##### `chunking.paramNames` option properties: #####
+######
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>partIndex</td>
+            <td>string</td>
+            <td>qqpartindex</td>
+            <td>Name of the parameter passed with a chunked request that specifies the index of the associated partition.</td>
+        </tr>
+        <tr>
+            <td>partByteOffset</td>
+            <td>string</td>
+            <td>qqpartbyteoffset</td>
+            <td>Name of the parameter passed with a chunked request that specifies the starting byte of the associated chunk.</td>
+        </tr>
+        <tr>
+            <td>chunkSize</td>
+            <td>string</td>
+            <td>qqchunksize</td>
+            <td>Name of the parameter passed with a chunked request that specifies the size in bytes of the associated chunk.</td>
+        </tr>
+        <tr>
+            <td>totalFileSize</td>
+            <td>string</td>
+            <td>qqtotalfilesize</td>
+            <td>Name of the parameter passed with a chunked request that specifies the total size in bytes of the associated file.</td>
+        </tr>
+        <tr>
+            <td>totalParts</td>
+            <td>string</td>
+            <td>qqtotalparts</td>
+            <td>Name of the parameter passed with a chunked request that specifies the total number of chunks associated with the underlying file.</td>
+        </tr>
+        <tr>
+            <td>filename</td>
+            <td>string</td>
+            <td>qqfilename</td>
+            <td>Name of the parameter passed with a chunked request that specifies the name of the associated file.  This is useful for chunked
+            requests that are multipart encoded, since the filename reported by the user agent in the content-disposition header
+            will be either "blob" or an empty string.</td>
+        </tr>
+    </tbody>
+</table>
 
 <br/>
 ### Options of FineUploader ###
@@ -641,7 +728,11 @@ match the class names used in the corresponding template elements (where appropr
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
 * `onComplete(String id, String fileName, Object responseJSON)` - called when the file upload has finished.
 * `onCancel(String id, String fileName)` - called when the file upload has been cancelled.
-* `onUpload(String id, String fileName)` - called just before the file upload begins
+* `onUpload(String id, String fileName)` - called just before a file upload begins.
+* `onUploadChunk(String id, String fileName, Object chunkData)` - called just before a file chunk/partition request is sent.  The chunkData object has
+4 properties: `partIndex` (the 0-based index of the associated partition), `startByte` (the byte offset of the current chunk in terms
+of the underlying file), `endByte` (the last byte of the current chunk in terms of the underlying file), and `totalParts` (the
+total number of partitions associated with the underlying file).
 * `onProgress(String id, String fileName, int uploadedBytes, int totalBytes)` - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
 * `onError(String id, String fileName, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
 * `onAutoRetry(String id, String fileName, String attemptNumber)` - called before each automatic retry attempt for a failed file.

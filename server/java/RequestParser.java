@@ -1,4 +1,4 @@
-package java;
+package fineuploader;
 
 import org.apache.commons.fileupload.FileItem;
 
@@ -29,8 +29,6 @@ public class RequestParser
         {
             requestParser.filename = request.getParameter(FILENAME_PARAM);
         }
-
-        //grab other params here...
 
         return requestParser;
     }

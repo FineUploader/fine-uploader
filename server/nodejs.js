@@ -20,6 +20,7 @@ var express = require('express'),
     fs = require('fs'),
     util = require('util'),
     uuid = require('node-uuid'),
+    url = require('url'),
     app = express();
 
 // Settings
@@ -64,7 +65,7 @@ var uploadFile = function(req, targetdir, callback) {
 
     // Direct async xhr stream data upload, yeah baby.
     if(req.xhr) {
-        var fname = req.header('x-file-name');
+        var fname = url.parse(req.url, true).query.qqfile;
 
         // Be sure you can write to '/tmp/'
         var tmpfile = '/tmp/'+uuid.v1();

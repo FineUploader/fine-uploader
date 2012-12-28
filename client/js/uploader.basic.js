@@ -13,7 +13,8 @@ qq.FineUploaderBasic = function(o){
             paramsInBody: false,
             customHeaders: {},
             forceMultipart: false,
-            inputName: 'qqfile'
+            inputName: 'qqfile',
+            uuidName: 'qquuid'
         },
         validation: {
             allowedExtensions: [],
@@ -25,7 +26,8 @@ qq.FineUploaderBasic = function(o){
             onSubmit: function(id, fileName){}, // return false to cancel submit
             onComplete: function(id, fileName, responseJSON){},
             onCancel: function(id, fileName){},
-            onUpload: function(id, fileName, xhr){},
+            onUpload: function(id, fileName){},
+            onUploadChunk: function(id, fileName, chunkData){},
             onProgress: function(id, fileName, loaded, total){},
             onError: function(id, fileName, reason) {},
             onAutoRetry: function(id, fileName, attemptNumber) {},
@@ -49,6 +51,18 @@ qq.FineUploaderBasic = function(o){
         classes: {
             buttonHover: 'qq-upload-button-hover',
             buttonFocus: 'qq-upload-button-focus'
+        },
+        chunking: {
+            enabled: false,
+            partSize: 2000000,
+            paramNames: {
+                partIndex: 'qqpartindex',
+                partByteOffset: 'qqpartbyteoffset',
+                chunkSize: 'qqchunksize',
+                totalFileSize: 'qqtotalfilesize',
+                totalParts: 'qqtotalparts',
+                filename: 'qqfilename'
+            }
         }
     };
 
@@ -155,6 +169,9 @@ qq.FineUploaderBasic.prototype = {
             this._uploadFileList(verifiedFilesOrInputs);
         }
     },
+    getUuid: function(fileId) {
+        return this._handler.getUuid(fileId);
+    },
     _createUploadButton: function(element){
         var self = this;
 
@@ -173,26 +190,23 @@ qq.FineUploaderBasic.prototype = {
         return button;
     },
     _createUploadHandler: function(){
-        var self = this,
-            handlerClass;
+        var self = this;
 
-        if(qq.isXhrUploadSupported()){
-            handlerClass = 'UploadHandlerXhr';
-        } else {
-            handlerClass = 'UploadHandlerForm';
-        }
-
-        var handler = new qq[handlerClass]({
+        return new qq.UploadHandler({
             debug: this._options.debug,
             endpoint: this._options.request.endpoint,
             forceMultipart: this._options.request.forceMultipart,
             maxConnections: this._options.maxConnections,
             customHeaders: this._options.request.customHeaders,
             inputName: this._options.request.inputName,
+            uuidParamName: this._options.request.uuidName,
             demoMode: this._options.demoMode,
-            log: this.log,
             paramsInBody: this._options.request.paramsInBody,
             paramsStore: this._paramsStore,
+            chunking: this._options.chunking,
+            log: function(str, level) {
+                self.log(str, level);
+            },
             onProgress: function(id, fileName, loaded, total){
                 self._onProgress(id, fileName, loaded, total);
                 self._options.callbacks.onProgress(id, fileName, loaded, total);
@@ -205,9 +219,12 @@ qq.FineUploaderBasic.prototype = {
                 self._onCancel(id, fileName);
                 self._options.callbacks.onCancel(id, fileName);
             },
-            onUpload: function(id, fileName, xhr){
-                self._onUpload(id, fileName, xhr);
-                self._options.callbacks.onUpload(id, fileName, xhr);
+            onUpload: function(id, fileName){
+                self._onUpload(id, fileName);
+                self._options.callbacks.onUpload(id, fileName);
+            },
+            onUploadChunk: function(id, fileName, chunkData){
+                self._options.callbacks.onUploadChunk(id, fileName, chunkData);
             },
             onAutoRetry: function(id, fileName, responseJSON, xhr) {
                 self._preventRetries[id] = responseJSON[self._options.retry.preventRetryResponseProperty];
@@ -228,8 +245,6 @@ qq.FineUploaderBasic.prototype = {
                 }
             }
         });
-
-        return handler;
     },
     _preventLeaveInProgress: function(){
         var self = this;
@@ -266,10 +281,9 @@ qq.FineUploaderBasic.prototype = {
             this._storedFileIds.splice(storedFileIndex, 1);
         }
     },
-    _onUpload: function(id, fileName, xhr){
-    },
+    _onUpload: function(id, fileName){},
     _onInputChange: function(input){
-        if (this._handler instanceof qq.UploadHandlerXhr){
+        if (qq.isXhrUploadSupported()){
             this.addFiles(input.files);
         } else {
             if (this._validateFile(input)){

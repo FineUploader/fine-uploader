@@ -9,7 +9,7 @@ $(document).ready(function() {
         debug: true,
         request: {
             endpoint: "/upload/receiver",
-            paramsInBody: true,
+            paramsInBody: false,
             params: {
                 test: 'one',
                 blah: 'foo',
@@ -25,9 +25,19 @@ $(document).ready(function() {
                     return fileNum;
                 }
             }
+        },
+        chunking: {
+            enabled: true
+        },
+        retry: {
+            enableAuto: true,
+            showButton: true
         }
     })
-        .on('error', errorHandler);
+        .on('error', errorHandler)
+        .on('uploadChunk', function(event, id, fileName, chunkData) {
+            qq.log('onUploadChunk -  ID: ' + id + ", FILENAME: " + fileName + ", PARTINDEX: " + chunkData.partIndex + ", STARTBYTE: " + chunkData.startByte + ", ENDBYTE: " + chunkData.endByte + ", PARTCOUNT: " + chunkData.totalParts);
+        });
 
 
     $('#manualUploadModeExample').fineUploader({

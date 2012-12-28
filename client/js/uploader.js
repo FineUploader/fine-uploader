@@ -298,7 +298,7 @@ qq.extend(qq.FineUploader.prototype, {
             this._controlFailureTextDisplay(item, result);
         }
     },
-    _onUpload: function(id, fileName, xhr){
+    _onUpload: function(id, fileName){
         qq.FineUploaderBasic.prototype._onUpload.apply(this, arguments);
 
         var item = this.getItemByFileId(id);

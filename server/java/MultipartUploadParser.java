@@ -1,4 +1,4 @@
-package java;
+package fineuploader;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -99,7 +99,7 @@ public class MultipartUploadParser
 				String value = item.getString();
 				if (StringUtils.isNotBlank(key))
 				{
-					params.put(key.toLowerCase(), StringUtils.defaultString(value));
+					params.put(key, StringUtils.defaultString(value));
 				}
 			}
 			else
