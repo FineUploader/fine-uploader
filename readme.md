@@ -71,7 +71,7 @@ jQuery plug-in.
 * Upload directories via drag and drop (Chrome 21+).
 * [Include parameters in the query string OR the request body.](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
 * Submit files to be uploaded via the API.
-* Split up a file into multiple requests (file chunking/partitioning).
+* [Split up a file into multiple requests](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html) (file chunking/partitioning)].
 * Any many more!
 
 <br/>
