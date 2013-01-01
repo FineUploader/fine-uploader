@@ -17,7 +17,7 @@ qq.UploadHandler = function(o) {
         uuidParamName: 'qquuid',
         chunking: {
             enabled: false,
-            partSize: 2000000,
+            partSize: 2000000, //bytes
             paramNames: {
                 partIndex: 'qqpartindex',
                 partByteOffset: 'qqpartbyteoffset',
@@ -27,13 +27,21 @@ qq.UploadHandler = function(o) {
                 filename: 'qqfilename'
             }
         },
+        resume: {
+            enabled: false,
+            cookiesExpireIn: 7, //days
+            paramNames: {
+                resuming: "qqresume"
+            }
+        },
         log: function(str, level) {},
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, response, xhr){},
         onCancel: function(id, fileName){},
         onUpload: function(id, fileName){},
         onUploadChunk: function(id, fileName, chunkData){},
-        onAutoRetry: function(id, fileName, response, xhr){}
+        onAutoRetry: function(id, fileName, response, xhr){},
+        onResume: function(id, fileName, chunkData){}
 
     };
     qq.extend(options, o);
@@ -86,7 +94,7 @@ qq.UploadHandler = function(o) {
         retry: function(id) {
             var i = qq.indexOf(queue, id);
             if (i >= 0) {
-                return handlerImpl.upload(id);
+                return handlerImpl.upload(id, true);
             }
             else {
                 return this.upload(id);

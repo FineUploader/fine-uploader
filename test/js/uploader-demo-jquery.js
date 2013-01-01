@@ -29,14 +29,17 @@ $(document).ready(function() {
         chunking: {
             enabled: true
         },
+        resume: {
+            enabled: true
+        },
         retry: {
             enableAuto: true,
             showButton: true
         }
     })
         .on('error', errorHandler)
-        .on('uploadChunk', function(event, id, fileName, chunkData) {
-            qq.log('onUploadChunk -  ID: ' + id + ", FILENAME: " + fileName + ", PARTINDEX: " + chunkData.partIndex + ", STARTBYTE: " + chunkData.startByte + ", ENDBYTE: " + chunkData.endByte + ", PARTCOUNT: " + chunkData.totalParts);
+        .on('uploadChunk resume', function(event, id, fileName, chunkData) {
+            qq.log('on' + event.type + ' -  ID: ' + id + ", FILENAME: " + fileName + ", PARTINDEX: " + chunkData.partIndex + ", STARTBYTE: " + chunkData.startByte + ", ENDBYTE: " + chunkData.endByte + ", PARTCOUNT: " + chunkData.totalParts);
         });
 
 

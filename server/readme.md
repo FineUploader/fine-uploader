@@ -28,6 +28,7 @@ Your server should return a [valid JSON](http://jsonlint.com/) response.  The co
 * `{"success": false, "error": "error message to display", "preventRetry": true}` to prevent Fine Uploader from making
 any further attempts to retry uploading the file
 * `{"success": false, "error": "error message to display", "reset": true}` to fail this attempt and restart with the first chunk on the next attempt.  Only applies if chunking is enabled.
+Note that, if resume is also enabled, and this is the first chunk of a resume attempt, this will result in the upload starting with the first chunk immediately.
 
 <br/>
 ## File Chunking/Partitioning ##
@@ -50,6 +51,20 @@ Some server-side examples have been updated to handle file chunking.
 
 For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html).
 on the topic.
+
+<br/>
+## File Resume ##
+There isn't much you need to do, server-side, to support file resume, other than what has been discussed in the file chunking
+section above.  You can determine if a resume has been ordered by looking for a "qqresume" param with a value of true.  This
+parameter will be sent with the first request of the resume.
+
+It is important that you keep chunks around on the server until either the entire file has been uploaded
+and all chunks have been merged, or until the number of days specified in the `cookiesExpireIn` property of the resume option have
+passed.  If, for some reason, you receive a request that indicates a resume has been ordered, and one or more of the previously uploaded
+chunks is missing or invalid, you can return a valid JSON response containing a "reset" property with a value of "true".  This will
+let Fine Uploader know that it should start the file upload from the first chunk instead of the last failed chunk.
+
+For more details. please read the [blog post on the file resume feature](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html).
 
 <br/>
 ###### WARNING ######

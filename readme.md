@@ -72,6 +72,7 @@ jQuery plug-in.
 * [Include parameters in the query string OR the request body.](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
 * Submit files to be uploaded via the API.
 * [Split up a file into multiple requests](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html) (file chunking/partitioning).
+* [Resume failed/stopped uploads from previous sessions](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html)
 * Any many more!
 
 <br/>
@@ -473,7 +474,6 @@ other default values.  This works for all options that are, themselves, objects 
 </table>
 
 ##### `chunking.paramNames` option properties: #####
-######
 <table>
     <thead>
         <tr>
@@ -521,6 +521,52 @@ other default values.  This works for all options that are, themselves, objects 
             <td>Name of the parameter passed with a chunked request that specifies the name of the associated file.  This is useful for chunked
             requests that are multipart encoded, since the filename reported by the user agent in the content-disposition header
             will be either "blob" or an empty string.</td>
+        </tr>
+    </tbody>
+</table>
+
+##### `resume` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>enabled</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>If set to <code>true</code>, the ability to resume a failed/stopped chunked upload will be possible.  See the server-side readme for more details.</td>
+        </tr>
+        <tr>
+            <td>cookiesExpireIn</td>
+            <td>number</td>
+            <td>7</td>
+            <td>The number of days before a persistent resume cookie will expire.</td>
+        </tr>
+    </tbody>
+</table>
+
+##### `resume.paramNames` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>resuming</td>
+            <td>string</td>
+            <td>qqresume</td>
+            <td>Sent with the first request of the resume, with a value of true.</td>
         </tr>
     </tbody>
 </table>
@@ -737,6 +783,9 @@ total number of partitions associated with the underlying file).
 * `onError(String id, String fileName, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
 * `onAutoRetry(String id, String fileName, String attemptNumber)` - called before each automatic retry attempt for a failed file.
 * `onManualRetry(String id, String fileName)` - called before each manual retry attempt.  Return false to prevent this and all future retry attempts on this file.
+* `onResume(String id, String fileName, Object chunkData)` - Called before an attempt is made to resume a failed/stopped upload from a previous session.
+If you return false, the resume will be cancelled and the uploader will start uploading the file from the first chunk.  The `chunkData` object contains the properties as
+the `chunkData` parameter passed into the `onUploadChunk` callback.
 * `onValidate(Array fileData)` - This callback is invoked with FileData objects for each of the dropped/selected files.
 This allows you to prevent the entire batch from being uploaded if desired.  To prevent any files in this batch from being
 uploaded, simply return false.  If your handler does not return false, this callback will also be invoked once for each
@@ -835,6 +884,7 @@ to `console.log` and the log level will be included in the message.
 * `qq.isXhrUploadSupported()` - Returns true if the current user agent is capable of sending files using an ajax request.
 * `qq.isFolderDropSupported()` - Returns true if the current user agent is capable of handling dropped folders.
 * `qq.isFileChunkingSupported()` - Returns true if the current user agent is capable of sending chunked file requests.
+* `qq.areCookiesEnabled()` - Returns true if persistent cookies are permitted by the user agent.
 * `qq.getUniqueId()` - Returns a version 4 UUID.
 
 

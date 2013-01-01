@@ -5,13 +5,11 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     var options = o,
         uploadComplete = uploadCompleteCallback,
         log = logCallback,
-        files = [],
-        uuids = [],
-        xhrs = [],
-        remainingChunkIdxs = [],
-        loaded = [],
-        api,
-        chunkFiles = options.chunking.enabled && qq.isFileChunkingSupported();
+        fileState = [],
+        cookieItemDelimiter = "|",
+        chunkFiles = options.chunking.enabled && qq.isFileChunkingSupported(),
+        resumeEnabled = options.resume.enabled && chunkFiles && qq.areCookiesEnabled(),
+        api;
 
 
      function addChunkingSpecificParams(id, params, chunkData) {
@@ -33,6 +31,10 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         }
     }
 
+    function addResumeSpecificParams(params) {
+        params[options.resume.paramNames.resuming] = true;
+    }
+
      function getChunk(file, startByte, endByte) {
         if (file.slice) {
             return file.slice(startByte, endByte);
@@ -48,7 +50,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     function getChunkData(id, chunkIndex) {
         var chunkSize = options.chunking.partSize,
             fileSize = api.getSize(id),
-            file = files[id],
+            file = fileState[id].file,
             startBytes = chunkSize * chunkIndex,
             endBytes = startBytes+chunkSize >= fileSize ? fileSize : startBytes+chunkSize,
             totalChunks = getTotalChunks(id);
@@ -69,9 +71,9 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         return Math.ceil(fileSize / chunkSize);
     }
 
-    function getXhr(id) {
-        xhrs[id] = new XMLHttpRequest();
-        return xhrs[id];
+    function createXhr(id) {
+        fileState[id].xhr = new XMLHttpRequest();
+        return fileState[id].xhr;
     }
 
     function setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id) {
@@ -80,7 +82,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             url = options.endpoint,
             name = api.getName(id);
 
-        params[options.uuidParamName] = uuids[id];
+        params[options.uuidParamName] = fileState[id].uuid;
 
         //build query string
         if (!options.paramsInBody) {
@@ -106,7 +108,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             name = api.getName(id),
             forceMultipart = options.forceMultipart,
             paramsInBody = options.paramsInBody,
-            file = files[id];
+            file = fileState[id].file;
 
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("Cache-Control", "no-cache");
@@ -122,48 +124,51 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         });
     }
 
-    function completed(id, response, xhr) {
+    function handleCompletedFile(id, response, xhr) {
         var name = api.getName(id),
             size = api.getSize(id);
+
+        fileState[id].attemptingResume = false;
 
         options.onProgress(id, name, size, size);
 
         options.onComplete(id, name, response, xhr);
-        delete xhrs[id];
+        delete fileState[id].xhr;
         uploadComplete(id);
     }
 
     function uploadNextChunk(id) {
-        var chunkData = getChunkData(id, remainingChunkIdxs[id][0]),
-            xhr = getXhr(id),
+        var chunkData = getChunkData(id, fileState[id].remainingChunkIdxs[0]),
+            xhr = createXhr(id),
             size = api.getSize(id),
             name = api.getName(id),
             toSend, params;
 
-        if (loaded[id] === undefined) {
-            loaded[id] = 0;
+        if (fileState[id].loaded === undefined) {
+            fileState[id].loaded = 0;
         }
+
+        persistChunkData(id, chunkData);
 
         xhr.onreadystatechange = getReadyStateChangeHandler(id, xhr);
 
         xhr.upload.onprogress = function(e) {
             if (e.lengthComputable) {
-                if (loaded[id] < size) {
-                    var totalLoaded = e.loaded + loaded[id];
+                if (fileState[id].loaded < size) {
+                    var totalLoaded = e.loaded + fileState[id].loaded;
                     options.onProgress(id, name, totalLoaded, size);
                 }
             }
         };
 
-        options.onUploadChunk(id, name, {
-            partIndex: chunkData.part,
-            startByte: chunkData.start + 1,
-            endByte: chunkData.end,
-            totalParts: chunkData.count
-        });
+        options.onUploadChunk(id, name, getChunkDataForCallback(chunkData));
 
         params = options.paramsStore.getParams(id);
         addChunkingSpecificParams(id, params, chunkData);
+
+        if (fileState[id].attemptingResume) {
+            addResumeSpecificParams(params);
+        }
 
         toSend = setParamsAndGetEntityToSend(params, xhr, chunkData.blob, id);
         setHeaders(id, xhr);
@@ -173,73 +178,209 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     }
 
 
-     function onSuccessfullyCompletedChunk(id, response, xhr) {
-        var chunkIdx = remainingChunkIdxs[id].shift(),
-            chunk = getChunkData(id, chunkIdx);
+     function handleSuccessfullyCompletedChunk(id, response, xhr) {
+        var chunkIdx = fileState[id].remainingChunkIdxs.shift(),
+            chunkData = getChunkData(id, chunkIdx);
 
-        loaded[id] += chunk.end - chunk.start;
+        fileState[id].attemptingResume = false;
+        fileState[id].loaded += chunkData.end - chunkData.start;
 
-        if (remainingChunkIdxs[id].length > 0) {
+        if (fileState[id].remainingChunkIdxs.length > 0) {
             uploadNextChunk(id);
         }
         else {
-            completed(id, response, xhr);
+            deletePersistedChunkData(id);
+            handleCompletedFile(id, response, xhr);
+        }
+    }
+
+    function isErrorResponse(xhr, response) {
+        return xhr.status !== 200 || !response.success || response.reset;
+    }
+
+    function parseResponse(xhr) {
+        var response;
+
+        try {
+            response = qq.parseJson(xhr.responseText);
+        }
+        catch(error) {
+            log('Error when attempting to parse xhr response text (' + error + ')', 'error');
+            response = {};
+        }
+
+        return response;
+    }
+
+    function handleResetResponse(id) {
+        log('Server has ordered chunking effort to be restarted on next attempt for file ID ' + id, 'error');
+
+        if (resumeEnabled) {
+            deletePersistedChunkData(id);
+        }
+        fileState[id].remainingChunkIdxs = [];
+        delete fileState[id].loaded;
+    }
+
+    function handleResetResponseOnResumeAttempt(id) {
+        fileState[id].attemptingResume = false;
+        log("Server has declared that it cannot handle resume for file ID " + id + " - starting from the first chunk", 'error');
+        api.upload(id, true);
+    }
+
+    function handleNonResetErrorResponse(id, response, xhr) {
+        var name = api.getName(id);
+
+        if (options.onAutoRetry(id, name, response, xhr)) {
+            return;
+        }
+        else {
+            handleCompletedFile(id, response, xhr);
         }
     }
 
     function onComplete(id, xhr) {
-        /*jslint evil: true*/
-
-        var name = api.getName(id),
-            response;
+        var response;
 
         // the request was aborted/cancelled
-        if (!files[id]) {
+        if (!fileState[id]) {
             return;
         }
 
         log("xhr - server response received for " + id);
         log("responseText = " + xhr.responseText);
+        response = parseResponse(xhr);
 
-        try {
-            if (typeof JSON.parse === "function") {
-                response = JSON.parse(xhr.responseText);
-            } else {
-                response = eval("(" + xhr.responseText + ")");
-            }
-        } catch(error){
-            log('Error when attempting to parse xhr response text (' + error + ')', 'error');
-            response = {};
-        }
-
-        if (xhr.status !== 200 || !response.success || response.reset) {
+        if (isErrorResponse(xhr, response)) {
             if (response.reset) {
-                log('Server has ordered chunking effort to be restarted on next attempt for file ID ' + id, 'error');
-                remainingChunkIdxs[id] = [];
-                delete loaded[id];
+                handleResetResponse(id);
             }
 
-            if (options.onAutoRetry(id, name, response, xhr)) {
-                return;
+            if (fileState[id].attemptingResume && response.reset) {
+                handleResetResponseOnResumeAttempt(id);
             }
             else {
-                completed(id, response, xhr);
+                handleNonResetErrorResponse(id, response, xhr);
             }
         }
         else if (chunkFiles) {
-            onSuccessfullyCompletedChunk(id, response, xhr);
+            handleSuccessfullyCompletedChunk(id, response, xhr);
         }
         else {
-            completed(id, response, xhr);
+            handleCompletedFile(id, response, xhr);
         }
     }
 
-     function getReadyStateChangeHandler(id, xhr) {
+    function getChunkDataForCallback(chunkData) {
+        return {
+            partIndex: chunkData.part,
+            startByte: chunkData.start + 1,
+            endByte: chunkData.end,
+            totalParts: chunkData.count
+        };
+    }
+
+    function getReadyStateChangeHandler(id, xhr) {
         return function() {
             if (xhr.readyState === 4) {
                 onComplete(id, xhr);
             }
         };
+    }
+
+    function persistChunkData(id, chunkData) {
+        var fileUuid = api.getUuid(id),
+            cookieName = getChunkDataCookieName(id),
+            cookieValue = fileUuid + cookieItemDelimiter + chunkData.part,
+            cookieExpDays = options.resume.cookiesExpireIn;
+
+        qq.setCookie(cookieName, cookieValue, cookieExpDays);
+    }
+
+    function deletePersistedChunkData(id) {
+        var cookieName = getChunkDataCookieName(id);
+
+        qq.deleteCookie(cookieName);
+    }
+
+    function getPersistedChunkData(id) {
+        var chunkCookieValue = qq.getCookie(getChunkDataCookieName(id)),
+            delimiterIndex, uuid, partIndex;
+
+        if (chunkCookieValue) {
+            delimiterIndex = chunkCookieValue.indexOf(cookieItemDelimiter);
+            uuid = chunkCookieValue.substr(0, delimiterIndex);
+            partIndex = parseInt(chunkCookieValue.substr(delimiterIndex + 1, chunkCookieValue.length - delimiterIndex), 10);
+
+            return {
+                uuid: uuid,
+                part: partIndex
+            };
+        }
+    }
+
+    function getChunkDataCookieName(id) {
+        var filename = api.getName(id),
+            fileSize = api.getSize(id),
+            maxChunkSize = options.chunking.partSize;
+
+        return "qqfilechunk" + cookieItemDelimiter + encodeURIComponent(filename) + cookieItemDelimiter + fileSize + cookieItemDelimiter + maxChunkSize;
+    }
+
+    function handleFileChunkingUpload(id, retry) {
+        var name = api.getName(id),
+            firstChunkIndex = 0,
+            persistedChunkInfoForResume, firstChunkDataForResume, currentChunkIndex;
+
+        if (!fileState[id].remainingChunkIdxs || fileState[id].remainingChunkIdxs.length === 0) {
+            fileState[id].remainingChunkIdxs = [];
+
+            if (resumeEnabled && !retry) {
+                persistedChunkInfoForResume = getPersistedChunkData(id);
+                if (persistedChunkInfoForResume) {
+                    firstChunkDataForResume = getChunkData(id, persistedChunkInfoForResume.part);
+                    if (options.onResume(id, name, getChunkDataForCallback(firstChunkDataForResume)) !== false) {
+                        firstChunkIndex = persistedChunkInfoForResume.part;
+                        fileState[id].uuid = persistedChunkInfoForResume.uuid;
+                        fileState[id].loaded = firstChunkDataForResume.start;
+                        fileState[id].attemptingResume = true;
+                        log('Resuming ' + name + " at partition index " + firstChunkIndex);
+                    }
+                }
+            }
+
+            for (currentChunkIndex = getTotalChunks(id)-1; currentChunkIndex >= firstChunkIndex; currentChunkIndex-=1) {
+                fileState[id].remainingChunkIdxs.unshift(currentChunkIndex);
+            }
+        }
+
+        uploadNextChunk(id);
+    }
+
+    function handleStandardFileUpload(id) {
+        var file = fileState[id].file,
+            name = api.getName(id),
+            xhr, params, toSend;
+
+        fileState[id].loaded = 0;
+
+        xhr = createXhr(id);
+
+        xhr.upload.onprogress = function(e){
+            if (e.lengthComputable){
+                fileState[id].loaded = e.loaded;
+                options.onProgress(id, name, e.loaded, e.total);
+            }
+        };
+
+        xhr.onreadystatechange = getReadyStateChangeHandler(id, xhr);
+
+        params = options.paramsStore.getParams(id);
+        toSend = setParamsAndGetEntityToSend(params, xhr, file, id);
+        setHeaders(id, xhr);
+
+        log('Sending upload request for ' + id);
+        xhr.send(toSend);
     }
 
 
@@ -254,98 +395,64 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             }
 
 
-            var id = files.push(file) - 1;
-            uuids[id] = qq.getUniqueId();
+            var id = fileState.push({file: file}) - 1;
+            fileState[id].uuid = qq.getUniqueId();
 
             return id;
         },
         getName: function(id){
-            var file = files[id];
+            var file = fileState[id].file;
             // fix missing name in Safari 4
             //NOTE: fixed missing name firefox 11.0a2 file.fileName is actually undefined
             return (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
         },
         getSize: function(id){
             /*jshint eqnull: true*/
-            var file = files[id];
+            var file = fileState[id].file;
             return file.fileSize != null ? file.fileSize : file.size;
         },
         /**
          * Returns uploaded bytes for file identified by id
          */
         getLoaded: function(id){
-            return loaded[id] || 0;
+            return fileState[id].loaded || 0;
         },
         isValid: function(id) {
-            return files[id] !== undefined;
+            return fileState[id] !== undefined;
         },
         reset: function() {
-            files = [];
-            uuids = [];
-            xhrs = [];
-            loaded = [];
-            remainingChunkIdxs = [];
+            fileState = [];
         },
         getUuid: function(id) {
-            return uuids[id];
+            return fileState[id].uuid;
         },
         /**
          * Sends the file identified by id to the server
          */
-        upload: function(id){
-            var file = files[id],
-                name = this.getName(id),
-                xhr,
-                params,
-                toSend,
-                chunkIndex;
+        upload: function(id, retry){
+            var name = this.getName(id);
 
-            options.onUpload(id, this.getName(id));
+            options.onUpload(id, name);
 
             if (chunkFiles) {
-                if (!remainingChunkIdxs[id] || remainingChunkIdxs[id].length === 0) {
-                    remainingChunkIdxs[id] = [];
-                    for (chunkIndex = getTotalChunks(id) - 1; chunkIndex >= 0; chunkIndex-=1) {
-                        remainingChunkIdxs[id].unshift(chunkIndex);
-                    }
-                }
-
-                uploadNextChunk(id);
+                handleFileChunkingUpload(id, retry);
             }
             else {
-                loaded[id] = 0;
-
-                xhr = getXhr(id);
-
-                xhr.upload.onprogress = function(e){
-                    if (e.lengthComputable){
-                        loaded[id] = e.loaded;
-                        options.onProgress(id, name, e.loaded, e.total);
-                    }
-                };
-
-                xhr.onreadystatechange = getReadyStateChangeHandler(id, xhr);
-
-                params = options.paramsStore.getParams(id);
-                toSend = setParamsAndGetEntityToSend(params, xhr, file, id);
-                setHeaders(id, xhr);
-
-                log('Sending upload request for ' + id);
-                xhr.send(toSend);
+                handleStandardFileUpload(id);
             }
         },
         cancel: function(id){
             options.onCancel(id, this.getName(id));
 
-            delete files[id];
-            delete uuids[id];
-
-            if (xhrs[id]){
-                xhrs[id].abort();
-                delete xhrs[id];
+            if (fileState[id].xhr){
+                fileState[id].xhr.abort();
             }
 
-            delete remainingChunkIdxs[id];
+            if (resumeEnabled) {
+                deletePersistedChunkData(id);
+            }
+
+            delete fileState[id];
         }
     };
 

@@ -28,6 +28,7 @@ qq.FineUploaderBasic = function(o){
             onCancel: function(id, fileName){},
             onUpload: function(id, fileName){},
             onUploadChunk: function(id, fileName, chunkData){},
+            onResume: function(id, fileName, chunkData){},
             onProgress: function(id, fileName, loaded, total){},
             onError: function(id, fileName, reason) {},
             onAutoRetry: function(id, fileName, attemptNumber) {},
@@ -63,7 +64,14 @@ qq.FineUploaderBasic = function(o){
                 totalParts: 'qqtotalparts',
                 filename: 'qqfilename'
             }
-        }
+        },
+        resume: {
+            enabled: false,
+            cookiesExpireIn: 7, //days
+            paramNames: {
+                resuming: "qqresume"
+            }
+        },
     };
 
     qq.extend(this._options, o, true);
@@ -204,6 +212,7 @@ qq.FineUploaderBasic.prototype = {
             paramsInBody: this._options.request.paramsInBody,
             paramsStore: this._paramsStore,
             chunking: this._options.chunking,
+            resume: this._options.resume,
             log: function(str, level) {
                 self.log(str, level);
             },
@@ -225,6 +234,9 @@ qq.FineUploaderBasic.prototype = {
             },
             onUploadChunk: function(id, fileName, chunkData){
                 self._options.callbacks.onUploadChunk(id, fileName, chunkData);
+            },
+            onResume: function(id, fileName, chunkData) {
+                return self._options.callbacks.onResume(id, fileName, chunkData);
             },
             onAutoRetry: function(id, fileName, responseJSON, xhr) {
                 self._preventRetries[id] = responseJSON[self._options.retry.preventRetryResponseProperty];
