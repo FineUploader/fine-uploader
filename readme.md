@@ -1,4 +1,4 @@
-# Fine Uploader 3.2-IN-PROGRESS (Planned Release Jan. 13) #
+# Fine Uploader 3.2-IN-PROGRESS #
 
 Interested in becoming a co-maintainer for Fine Uploader?  Please read [my blog post on this topic](http://blog.fineuploader.com/2012/12/looking-for-second-fine-uploader.html).  
 
