@@ -152,6 +152,12 @@ qq.UploadHandler = function(o) {
          */
         isValid: function(id) {
             return handlerImpl.isValid(id);
+        },
+        getResumableFilesData: function() {
+            if (handlerImpl.getResumableFilesData) {
+                return handlerImpl.getResumableFilesData();
+            }
+            return [];
         }
     };
 };

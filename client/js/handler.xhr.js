@@ -9,6 +9,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         cookieItemDelimiter = "|",
         chunkFiles = options.chunking.enabled && qq.isFileChunkingSupported(),
         resumeEnabled = options.resume.enabled && chunkFiles && qq.areCookiesEnabled(),
+        resumeId = getResumeId(),
         api;
 
 
@@ -323,20 +324,25 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         var filename = api.getName(id),
             fileSize = api.getSize(id),
             maxChunkSize = options.chunking.partSize,
-            resumeId = options.resume.id,
             cookieName;
 
         cookieName = "qqfilechunk" + cookieItemDelimiter + encodeURIComponent(filename) + cookieItemDelimiter + fileSize + cookieItemDelimiter + maxChunkSize;
 
-        if (resumeId !== null &&
-            resumeId !== undefined &&
-            !qq.isFunction(resumeId) &&
-            !qq.isObject(resumeId)) {
-
+        if (resumeId !== undefined) {
             cookieName += cookieItemDelimiter + resumeId;
         }
 
         return cookieName;
+    }
+
+    function getResumeId() {
+        if (options.resume.id !== null &&
+            options.resume.id !== undefined &&
+            !qq.isFunction(options.resume.id) &&
+            !qq.isObject(options.resume.id)) {
+
+            return options.resume.id;
+        }
     }
 
     function handleFileChunkingUpload(id, retry) {
@@ -465,6 +471,37 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             }
 
             delete fileState[id];
+        },
+        getResumableFilesData: function() {
+            var matchingCookieNames = [],
+                resumableFilesData = [];
+
+            if (chunkFiles && resumeEnabled) {
+                if (resumeId === undefined) {
+                    matchingCookieNames = qq.getCookieNames(new RegExp("^qqfilechunk\\" + cookieItemDelimiter + ".+\\" +
+                        cookieItemDelimiter + "\\d+\\" + cookieItemDelimiter + options.chunking.partSize + "="));
+                }
+                else {
+                    matchingCookieNames = qq.getCookieNames(new RegExp("^qqfilechunk\\" + cookieItemDelimiter + ".+\\" +
+                        cookieItemDelimiter + "\\d+\\" + cookieItemDelimiter + options.chunking.partSize + "\\" +
+                        cookieItemDelimiter + resumeId + "="));
+                }
+
+                qq.each(matchingCookieNames, function(idx, cookieName) {
+                    var cookiesNameParts = cookieName.split(cookieItemDelimiter);
+                    var cookieValueParts = qq.getCookie(cookieName).split(cookieItemDelimiter);
+
+                    resumableFilesData.push({
+                        name: decodeURIComponent(cookiesNameParts[1]),
+                        size: cookiesNameParts[2],
+                        uuid: cookieValueParts[0],
+                        partIdx: cookieValueParts[1]
+                    });
+                });
+
+                return resumableFilesData;
+            }
+            return [];
         }
     };
 

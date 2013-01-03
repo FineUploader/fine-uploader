@@ -475,6 +475,23 @@ qq.getCookie = function(name) {
 	}
 };
 
+qq.getCookieNames = function(regexp) {
+    var cookies = document.cookie.split(';'),
+        cookieNames = [];
+
+    qq.each(cookies, function(idx, cookie) {
+        cookie = cookie.trim();
+
+        var equalsIdx = cookie.indexOf("=");
+
+        if (cookie.match(regexp)) {
+            cookieNames.push(cookie.substr(0, equalsIdx));
+        }
+    });
+
+    return cookieNames;
+};
+
 qq.deleteCookie = function(name) {
 	qq.setCookie(name, "", -1);
 };

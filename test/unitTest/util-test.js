@@ -260,3 +260,26 @@ test("qq().hide()", function() {
     qq($('#qunit-fixture')[0]).hide();
     ok($('#qunit-fixture').is(':hidden'), "ensure fixture has been hidden by qq.hide");
 });
+
+test("cookies", function() {
+    var cookieName1 = "qq|cookieName1",
+        cookieVal1 = "cookieVal1",
+        cookieName2 = "qq|cookieName2",
+        cookieVal2 = "cookieVal2";
+
+    qq.setCookie(cookieName1, cookieVal1, 1);
+    qq.setCookie(cookieName2, cookieVal2, 1);
+
+    equal(qq.getCookie(cookieName1), cookieVal1, "set & get simple cookie value - 1");
+    equal(qq.getCookie(cookieName2), cookieVal2, "set & get simple cookie value - 2");
+
+    var matchingCookieNames = qq.getCookieNames(/^qq\|cookieName/);
+    equal(matchingCookieNames.length, 2, "get cookie names based on regexp");
+    equal(matchingCookieNames[0], cookieName1, "getCookieName using regexp - 1");
+    equal(matchingCookieNames[1], cookieName2, "getCookieName using regexp - 2");
+
+    qq.deleteCookie(cookieName1);
+    equal(qq.getCookie(cookieName1), undefined, "delete cookie value - 1");
+    qq.deleteCookie(cookieName2);
+    equal(qq.getCookie(cookieName2), undefined, "delete cookie value - 2");
+});

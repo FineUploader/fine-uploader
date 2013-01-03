@@ -181,6 +181,9 @@ qq.FineUploaderBasic.prototype = {
     getUuid: function(fileId) {
         return this._handler.getUuid(fileId);
     },
+    getResumableFilesData: function() {
+        return this._handler.getResumableFilesData();
+    },
     _createUploadButton: function(element){
         var self = this;
 
