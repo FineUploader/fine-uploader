@@ -836,7 +836,7 @@ it is up to you to "reset" any of your UI elements.
 a method of gathering files that does not include Fine Uploader's input button or the drag & drop support built into FineUploader.
 This function accepts the following types: `File`, `input` element, or a collection of any of these types, provided the
 collection object contains an (integer) index property for each contained item.
-* `getResumableFileData()` - Returns an array of objects, each describing a file that is potentially resumable by this uploader instance.
+* `getResumableFilesData()` - Returns an array of objects, each describing a file that is potentially resumable by this uploader instance.
 If a `resume.id` property has been set, this is taken into consideration.  Each resumable file is represented by an object with the
 following properties: `name` - filename, `size` - file size, `uuid` - unique ID associated w/ the file, `partIdx` - index of the part where
 the resume will start.
