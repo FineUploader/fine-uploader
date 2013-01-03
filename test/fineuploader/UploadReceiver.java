@@ -244,7 +244,7 @@ public class UploadReceiver extends HttpServlet
         {
             if (restartChunking)
             {
-                writer.print("{\"error\": \"" + failureReason + "\", \"retry\": true}");
+                writer.print("{\"error\": \"" + failureReason + "\", \"reset\": true}");
             }
             else
             {
