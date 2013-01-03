@@ -543,6 +543,14 @@ other default values.  This works for all options that are, themselves, objects 
             <td>If set to <code>true</code>, the ability to resume a failed/stopped chunked upload will be possible.  See the server-side readme for more details.</td>
         </tr>
         <tr>
+            <td>id</td>
+            <td>number, string, or boolean</td>
+            <td>null</td>
+            <td>If this value is defined, the cookie name used to identify a file chunk will be composed of the filename, file size,
+            and max partition/chunk size.  If this value is not defined or does not fit into one of the acceptable types,
+            it will be added as an additional component of the cookie name.</td>
+        </tr>
+        <tr>
             <td>cookiesExpireIn</td>
             <td>number</td>
             <td>7</td>

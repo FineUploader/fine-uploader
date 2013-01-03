@@ -322,9 +322,21 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     function getChunkDataCookieName(id) {
         var filename = api.getName(id),
             fileSize = api.getSize(id),
-            maxChunkSize = options.chunking.partSize;
+            maxChunkSize = options.chunking.partSize,
+            resumeId = options.resume.id,
+            cookieName;
 
-        return "qqfilechunk" + cookieItemDelimiter + encodeURIComponent(filename) + cookieItemDelimiter + fileSize + cookieItemDelimiter + maxChunkSize;
+        cookieName = "qqfilechunk" + cookieItemDelimiter + encodeURIComponent(filename) + cookieItemDelimiter + fileSize + cookieItemDelimiter + maxChunkSize;
+
+        if (resumeId !== null &&
+            resumeId !== undefined &&
+            !qq.isFunction(resumeId) &&
+            !qq.isObject(resumeId)) {
+
+            cookieName += cookieItemDelimiter + resumeId;
+        }
+
+        return cookieName;
     }
 
     function handleFileChunkingUpload(id, retry) {

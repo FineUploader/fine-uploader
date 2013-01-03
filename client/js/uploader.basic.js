@@ -67,11 +67,12 @@ qq.FineUploaderBasic = function(o){
         },
         resume: {
             enabled: false,
+            id: null,
             cookiesExpireIn: 7, //days
             paramNames: {
                 resuming: "qqresume"
             }
-        },
+        }
     };
 
     qq.extend(this._options, o, true);
