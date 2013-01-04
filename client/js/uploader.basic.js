@@ -72,6 +72,12 @@ qq.FineUploaderBasic = function(o){
             paramNames: {
                 resuming: "qqresume"
             }
+        },
+        formatFileName: function(fileName) {
+            if (fileName.length > 33) {
+                fileName = fileName.slice(0, 19) + '...' + fileName.slice(-14);
+            }
+            return fileName;
         }
     };
 
@@ -440,7 +446,7 @@ qq.FineUploaderBasic.prototype = {
 
         var extensions = this._options.validation.allowedExtensions.join(', ');
 
-        r('{file}', this._formatFileName(fileName));
+        r('{file}', this._options.formatFileName(fileName));
         r('{extensions}', extensions);
         r('{sizeLimit}', this._formatSize(this._options.validation.sizeLimit));
         r('{minSizeLimit}', this._formatSize(this._options.validation.minSizeLimit));
@@ -448,12 +454,6 @@ qq.FineUploaderBasic.prototype = {
         this._options.callbacks.onError(null, fileName, message);
 
         return message;
-    },
-    _formatFileName: function(name){
-        if (name.length > 33){
-            name = name.slice(0, 19) + '...' + name.slice(-13);
-        }
-        return name;
     },
     _isAllowedExtension: function(fileName){
         var ext = (-1 !== fileName.indexOf('.'))

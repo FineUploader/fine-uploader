@@ -354,7 +354,7 @@ qq.extend(qq.FineUploader.prototype, {
         item.qqFileId = id;
 
         var fileElement = this._find(item, 'file');
-        qq(fileElement).setText(this._formatFileName(fileName));
+        qq(fileElement).setText(this._options.formatFileName(fileName));
         qq(this._find(item, 'size')).hide();
         if (!this._options.multiple) this._clearList();
         this._listElement.appendChild(item);

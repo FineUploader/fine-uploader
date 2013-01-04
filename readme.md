@@ -280,6 +280,14 @@ other default values.  This works for all options that are, themselves, objects 
             <td>true</td>
             <td>Set to false if you want to be able to begin uploading selected/queued files later, by calling uploadStoredFiles().</td>
         </tr>
+        <tr>
+            <td>formatFileName</td>
+            <td>function</td>
+            <td>(see source code)</td>
+            <td>By default, this function limits the filename displayed in the UI or error messages to 33 characters,
+            plus 3 ellipses separating the first several and the last several characters of the file name.  Override this function
+            if you want more control over the display of file names.</td>
+        </tr>
     </tbody>
 </table>
 ##### `request` option properties: #####
