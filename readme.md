@@ -4,7 +4,7 @@
 ###[Download the 3.1.1 combined & minified javascript file (along with all other required files) here](https://github.com/valums/file-uploader/wiki/Releases)###
 
 <br/>
-Actively developed by Ray Nicholus.     
+Actively developed by [Ray Nicholus](http://lnkd.in/Nkhx2C).     
 Created by Andrew Valums.
 
 
