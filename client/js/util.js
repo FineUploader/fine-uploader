@@ -242,7 +242,7 @@ qq.indexOf = function(arr, elt, from){
         from += len;
     }
 
-    for (null; from < len; from+=1){
+    for (; from < len; from+=1){
         if (arr.hasOwnProperty(from) && arr[from] === elt){
             return from;
         }
