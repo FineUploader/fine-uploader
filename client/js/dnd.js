@@ -73,6 +73,7 @@ qq.DragAndDrop = function(o) {
         dz.dropDisabled(true);
 
         if (dataTransfer.files.length > 1 && !options.multiple) {
+            options.callbacks.dropProcessing(false);
             options.callbacks.error('tooManyFilesError', "");
         }
         else {
