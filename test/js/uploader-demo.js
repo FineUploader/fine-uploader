@@ -70,13 +70,12 @@ $(document).ready(function() {
     uploader5 = new qq.FineUploaderBasic({
         multiple: false,
         autoUpload: false,
-        button: $("#fubButton")[0],
+        button: $("#fubUploadButton")[0],
         request: {
             endpoint: "/upload/receiver"
         },
         callbacks: {
             onError: errorHandler
-        },
-        button: $('#fubUploadButton')[0]
+        }
     });
 });
