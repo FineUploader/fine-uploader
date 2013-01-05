@@ -67,7 +67,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             }
             response = eval("(" + innerHTML + ")");
         } catch(error){
-            this.log('Error when attempting to parse form upload response (' + error + ")", 'error');
+            log('Error when attempting to parse form upload response (' + error + ")", 'error');
             response = {success: false};
         }
 
@@ -102,12 +102,13 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         var params = options.paramsStore.getParams(id),
             protocol = options.demoMode ? "GET" : "POST",
             form = qq.toElement('<form method="' + protocol + '" enctype="multipart/form-data"></form>'),
-            url = options.endpoint;
+            endpoint = options.endpointStore.getEndpoint(id),
+            url = endpoint;
 
         params[options.uuidParamName] = uuids[id];
 
         if (!options.paramsInBody) {
-            url = qq.obj2url(params, options.endpoint);
+            url = qq.obj2url(params, endpoint);
         }
         else {
             qq.obj2Inputs(params, form);

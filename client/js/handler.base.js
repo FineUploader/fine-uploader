@@ -11,8 +11,9 @@ qq.UploadHandler = function(o) {
     // Default options, can be overridden by the user
     options = {
         debug: false,
-        endpoint: '/upload.php',
         paramsInBody: false,
+        paramsStore: {},
+        endpointStore: {},
         maxConnections: 3, // maximum number of concurrent uploads
         uuidParamName: 'qquuid',
         chunking: {

@@ -95,6 +95,7 @@ qq.FineUploaderBasic = function(o){
     this._preventRetries = [];
 
     this._paramsStore = this._createParamsStore();
+    this._endpointStore = this._createEndpointStore();
 
     this._handler = this._createUploadHandler();
 
@@ -115,12 +116,22 @@ qq.FineUploaderBasic.prototype = {
 
         }
     },
-    setParams: function(params, fileId){
-        if (fileId === undefined) {
+    setParams: function(params, fileId) {
+        /*jshint eqeqeq: true, eqnull: true*/
+        if (fileId == null) {
             this._options.request.params = params;
         }
         else {
             this._paramsStore.setParams(params, fileId);
+        }
+    },
+    setEndpoint: function(endpoint, fileId) {
+        /*jshint eqeqeq: true, eqnull: true*/
+        if (fileId == null) {
+            this._options.request.endpoint = endpoint;
+        }
+        else {
+            this._endpointStore.setEndpoint(endpoint, fileId);
         }
     },
     getInProgress: function(){
@@ -158,6 +169,7 @@ qq.FineUploaderBasic.prototype = {
         this._preventRetries = [];
         this._button.reset();
         this._paramsStore.reset();
+        this._endpointStore.reset();
     },
     addFiles: function(filesOrInputs) {
         var self = this,
@@ -212,7 +224,6 @@ qq.FineUploaderBasic.prototype = {
 
         return new qq.UploadHandler({
             debug: this._options.debug,
-            endpoint: this._options.request.endpoint,
             forceMultipart: this._options.request.forceMultipart,
             maxConnections: this._options.maxConnections,
             customHeaders: this._options.request.customHeaders,
@@ -221,6 +232,7 @@ qq.FineUploaderBasic.prototype = {
             demoMode: this._options.demoMode,
             paramsInBody: this._options.request.paramsInBody,
             paramsStore: this._paramsStore,
+            endpointStore: this._endpointStore,
             chunking: this._options.chunking,
             resume: this._options.resume,
             log: function(str, level) {
@@ -564,9 +576,10 @@ qq.FineUploaderBasic.prototype = {
             },
 
             getParams: function(fileId) {
+                /*jshint eqeqeq: true, eqnull: true*/
                 var paramsCopy = {};
 
-                if (fileId !== undefined && paramsStore[fileId]) {
+                if (fileId != null && paramsStore[fileId]) {
                     qq.extend(paramsCopy, paramsStore[fileId]);
                 }
                 else {
@@ -583,6 +596,33 @@ qq.FineUploaderBasic.prototype = {
             reset: function() {
                 paramsStore = {};
             }
-        }
+        };
+    },
+    _createEndpointStore: function() {
+        var endpointStore = {},
+        self = this;
+
+        return {
+            setEndpoint: function(endpoint, fileId) {
+                endpointStore[fileId] = endpoint;
+            },
+
+            getEndpoint: function(fileId) {
+                /*jshint eqeqeq: true, eqnull: true*/
+                if (fileId != null && endpointStore[fileId]) {
+                    return endpointStore[fileId];
+                }
+
+                return self._options.request.endpoint;
+            },
+
+            remove: function(fileId) {
+                return delete endpointStore[fileId];
+            },
+
+            reset: function() {
+                endpointStore = {};
+            }
+        };
     }
 };

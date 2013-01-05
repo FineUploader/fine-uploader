@@ -824,6 +824,8 @@ an invalid file for upload.  There are general message types with default text t
 You can either change the parameters for a specific file, or for all files.  To do the latter, simply omit the `fileId` parameter.
 See this [blog post explaining parameters](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
 as well as [this one explaining how this function works in 3.1 and later versions](http://blog.fineuploader.com/2012/12/setparams-is-now-much-more-useful-in-31.html).
+* `setEndpoint(String endpointPath, [optional] Number fileId)` - Modify the location,  after initializing the uploader, where upload requests should be directed.
+You can either change the endpoint for a specific file, or for all files.  To do the latter, simply omit the `fileId` parameter.
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
 * `clearStoredFiles()` - Clears the internal list of stored files.  Only applicable when `autoUpload` is set to false.
 * `getInProgress()` - Returns the number of files that are either currently uploading or files waiting in line for upload.

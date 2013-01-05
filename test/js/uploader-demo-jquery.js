@@ -40,6 +40,11 @@ $(document).ready(function() {
         .on('error', errorHandler)
         .on('uploadChunk resume', function(event, id, fileName, chunkData) {
             qq.log('on' + event.type + ' -  ID: ' + id + ", FILENAME: " + fileName + ", PARTINDEX: " + chunkData.partIndex + ", STARTBYTE: " + chunkData.startByte + ", ENDBYTE: " + chunkData.endByte + ", PARTCOUNT: " + chunkData.totalParts);
+        })
+        .on("upload", function() {
+            if (fileNum++ > 0) {
+                $(this).fineUploader('setEndpoint', "/dummy/path");
+            }
         });
 
 
