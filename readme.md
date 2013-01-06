@@ -715,6 +715,12 @@ other default values.  This works for all options that are, themselves, objects 
             <td>The cancel button text (which is more of a link than a button).</td>
         </tr>
         <tr>
+            <td>retry</td>
+            <td>string</td>
+            <td>Retry</td>
+            <td>The retry (a failed upload) link text.</td>
+        </tr>
+        <tr>
             <td>failUpload</td>
             <td>string</td>
             <td>Upload failed</td>
@@ -727,10 +733,22 @@ other default values.  This works for all options that are, themselves, objects 
             <td>Text that appears in the drop zone when it is visible</td>
         </tr>
         <tr>
+            <td>dropProcessing</td>
+            <td>string</td>
+            <td>Processing dropped files...</td>
+            <td>Text that appears next to the drop processing spinner while we are waiting for the upload to finish processing dropped files or directories.</td>
+        </tr>
+        <tr>
             <td>formatProgress</td>
             <td>string</td>
             <td>{percent}% of {total_size}</td>
             <td>Text that appears next to a file as it is uploading (if the browser supports the file API)</td>
+        </tr>
+        <tr>
+            <td>waitingForResponse</td>
+            <td>string</td>
+            <td>Processing...</td>
+            <td>Text that appears next to a file after last byte has been sent (according to the UA) while we are wating for a response from the server.</td>
         </tr>
     </tbody>
 </table>
