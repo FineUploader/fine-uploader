@@ -1,6 +1,7 @@
 def version = "3.2-IP"
 def filename = "fineuploader"
-def jsSrcDir = 'client/js'
+def srcDir = 'client'
+def jsSrcDir = "$srcDir/js"
 
 apply plugin: 'js'
 
@@ -14,7 +15,13 @@ def coreFiles = ["${jsSrcDir}/header.js",
                  "${jsSrcDir}/handler.form.js",
                  "${jsSrcDir}/handler.xhr.js"]
 
+def cssFiles = ["$srcDir/fineuploader.css"]
+
+def imageFiles = ["$srcDir/loading.gif",
+                  "$srcDir/processing.gif"]
+
 def jQueryPluginFiles = ["${jsSrcDir}/jquery-plugin.js"]
+
 
 buildscript {
     repositories {
@@ -23,10 +30,6 @@ buildscript {
     dependencies {
         classpath 'com.eriwen:gradle-js-plugin:1.0.2'
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.0'
 }
 
 combineJs {
@@ -47,4 +50,36 @@ minifyJs {
 task minifyJsJquery(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
     source = combineJsJquery
     dest = file("$buildDir/jquery.${filename}-${version}.min.js")
+}
+
+task zipJquery(type: Zip) {
+    baseName "jquery.$filename-$version"
+    from files("$buildDir")
+    destinationDir file('release')
+}
+
+task zip(type: Zip) {
+    baseName "$filename-$version"
+    from files("$buildDir")
+    destinationDir file('release')
+}
+
+task copyResources(type:Copy) {
+    from cssFiles + imageFiles
+    into 'build'
+    rename { String fileName ->
+        fileName.replace('.css', "-${version}.css")
+    }
+}
+
+task clean << {
+    delete files("$buildDir")
+}
+
+task createJQueryRelease(dependsOn: ['clean', 'minifyJsJquery', 'copyResources', 'zipJquery']) {
+    outputs.upToDateWhen { false }
+}
+
+task createRelease(dependsOn: ['clean', 'minifyJs', 'copyResources', 'zip']) {
+    outputs.upToDateWhen { false }
 }

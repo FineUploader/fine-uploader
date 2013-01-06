@@ -33,7 +33,6 @@ Created by Andrew Valums.
 - [Instance methods](#instance-methods)
 - [qQuery (Utility Functions)](#qquery)
 - [Internet Explorer limitations](#internet-explorer-limitations)
-- [Building and using the in-progress version](#building-and-using-the-in-progress-version)
 - [Troubleshooting](#troubleshooting)
 - [Issue Tracker](#issue-tracker)
 - [License](#license)
@@ -1004,26 +1003,6 @@ you may want to be aware of when using Fine Uploader:
         </tr>
     </tbody>
 </table>
-
-
-<br/>
-### Building and using the in-progress version ###
-You can use [gradle](http://www.gradle.org/) to build the in-progress version.  Simply clone this project, and run `gradlew combineJs`
-on the command-line.  This will combine all of the javascript files into one file, placing it in the 
-"build" directory.  If you want the minified or gzipped version of the in-progress version, simply replace
-`combineJs` on the command-line with `minifyJs` or `gzipJs`, respectively.
-
-If you would like the jQuery plug-in, simply add "jQuery" to the end of any of these tasks.  For example, to obtain the
-non-minified jQuery plug-in or the minified jQuery plug-in, run `gradlew combineJsJquery` or `gradlew minifyJsJquery`
-respectively.  This will build the Fine Uploader javascript file with the plug-in and everything else you need.
-
-Remember, a in-progress build is not yet released, so it may have some lingering bugs.  The trade-off is
-immediate access to new features without having to wait for a release.  
-
-In the future, I may integrate a CI system that creates nightly in-progress builds, but that is a pretty low-priority,
-especially since building your own in-progress version should be pretty easy.
-
-Don't forget to include the css and image files in your project if you are using FineUploader.
 
 
 <br/>
