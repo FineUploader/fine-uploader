@@ -471,18 +471,24 @@ qq.FineUploaderBasic.prototype = {
         return message;
     },
     _isAllowedExtension: function(fileName){
-        var ext = (-1 !== fileName.indexOf('.'))
-            ? fileName.replace(/.*[.]/, '').toLowerCase()
-            : '';
-        var allowed = this._options.validation.allowedExtensions;
+        var allowed = this._options.validation.allowedExtensions,
+            valid = false;
 
-        if (!allowed.length){return true;}
-
-        for (var i=0; i<allowed.length; i++){
-            if (allowed[i].toLowerCase() == ext){ return true;}
+        if (!allowed.length) {
+            return true;
         }
 
-        return false;
+        qq.each(allowed, function(idx, allowedExt) {
+            /*jshint eqeqeq: true, eqnull: true*/
+            var extRegex = new RegExp('\\.' + allowedExt.toLowerCase() + "$");
+
+            if (fileName.match(extRegex) != null) {
+                valid = true;
+                return false;
+            }
+        });
+
+        return valid;
     },
     _formatSize: function(bytes){
         var i = -1;
