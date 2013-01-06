@@ -78,6 +78,9 @@ qq.FineUploaderBasic = function(o){
                 fileName = fileName.slice(0, 19) + '...' + fileName.slice(-14);
             }
             return fileName;
+        },
+        text: {
+            sizeSymbols: ['kB', 'MB', 'GB', 'TB', 'PB', 'EB']
         }
     };
 
@@ -488,7 +491,7 @@ qq.FineUploaderBasic.prototype = {
             i++;
         } while (bytes > 99);
 
-        return Math.max(bytes, 0.1).toFixed(1) + ['kB', 'MB', 'GB', 'TB', 'PB', 'EB'][i];
+        return Math.max(bytes, 0.1).toFixed(1) + this._options.text.sizeSymbols[i];
     },
     _wrapCallbacks: function() {
         var self, safeCallback;

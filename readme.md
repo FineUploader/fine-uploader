@@ -587,6 +587,50 @@ other default values.  This works for all options that are, themselves, objects 
     </tbody>
 </table>
 
+##### `text` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>sizeSymbols</td>
+            <td>array of strings</td>
+            <td>['kB', 'MB', 'GB', 'TB', 'PB', 'EB']</td>
+            <td>Symbols used to represent file size, in ascending order./td>
+        </tr>
+        <tr>
+            <td>cancelButton</td>
+            <td>string</td>
+            <td>cancel</td>
+            <td>The cancel button text (which is more of a link than a button).</td>
+        </tr>
+        <tr>
+            <td>failUpload</td>
+            <td>string</td>
+            <td>Upload failed</td>
+            <td>Text that appears next to a failed file item</td>
+        </tr>
+        <tr>
+            <td>dragZone</td>
+            <td>string</td>
+            <td>Drop files here to upload</td>
+            <td>Text that appears in the drop zone when it is visible</td>
+        </tr>
+        <tr>
+            <td>formatProgress</td>
+            <td>string</td>
+            <td>{percent}% of {total_size}</td>
+            <td>Text that appears next to a file as it is uploading (if the browser supports the file API)</td>
+        </tr>
+    </tbody>
+</table>
+
 <br/>
 ### Options of FineUploader ###
 <table>
