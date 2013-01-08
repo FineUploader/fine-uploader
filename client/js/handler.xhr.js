@@ -430,6 +430,11 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             var file = fileState[id].file;
             return file.fileSize != null ? file.fileSize : file.size;
         },
+        getFile: function(id) {
+            if (fileState[id]) {
+                return fileState[id].file;
+            }
+        },
         /**
          * Returns uploaded bytes for file identified by id
          */

@@ -893,6 +893,8 @@ following properties: `name` - filename, `size` - file size, `uuid` - unique ID 
 the resume will start.
 * `getSize(fileId)` - Returns the size of the file represented by the passed ID.  Undefined if the file size cannot be determined, such as
 if the user agent does not support the File API.
+* `getFile(fileId)` - Returns the `File` object associated with the passed file ID.  Undefined if the underlying file cannot be found,
+or if the user agent does not support the File API.  For more info on the `File` object, please see [the entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file).
 
 <br/>
 ### qQuery ###

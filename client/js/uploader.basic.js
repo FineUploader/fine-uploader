@@ -209,6 +209,9 @@ qq.FineUploaderBasic.prototype = {
     getSize: function(fileId) {
         return this._handler.getSize(fileId);
     },
+    getFile: function(fileId) {
+        return this._handler.getFile(fileId);
+    },
     _createUploadButton: function(element){
         var self = this;
 
