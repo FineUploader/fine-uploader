@@ -146,9 +146,8 @@ $('#fineUploaderElementId').fineUploader({
   });
 ```
 
-It may be important to note that The value returned from your event/callback handler may be examined by the uploader.
-This is relevant for the `onSubmit`, `onValidate` and `onManualRetry` callbacks, at this point.  As the documentation states, if you
-want to cancel an upload in your `onSubmit` or `onValidate` callback handlers, simply return `false`.  This is also true
+It may be important to note that the value returned from your event/callback handler may be examined by the uploader.
+As the documentation states, uploads can be prevented by returning 'false' in some of your callback handlers.  This is also true
 when using the jQuery plug-in.
 
 Also, please note that the context of your event handler, by default, is the event target.  This is, in fact, true, by
@@ -840,13 +839,17 @@ total number of partitions associated with the underlying file).
 * `onResume(String id, String fileName, Object chunkData)` - Called before an attempt is made to resume a failed/stopped upload from a previous session.
 If you return false, the resume will be cancelled and the uploader will start uploading the file from the first chunk.  The `chunkData` object contains the properties as
 the `chunkData` parameter passed into the `onUploadChunk` callback.
-* `onValidate(Array fileData)` - This callback is invoked with FileData objects for each of the dropped/selected files.
-This allows you to prevent the entire batch from being uploaded if desired.  To prevent any files in this batch from being
-uploaded, simply return false.  If your handler does not return false, this callback will also be invoked once for each
-individual file submitted.  In that case, the array will contain only one `FileData` object for each call.  If you want
-to only prevent specific files from  being uploaded, you can return false here when appropriate.  This callback is always
-invoked before the default Fine Uploader validators execute.  Note that a `FileData` object has two properties: `name`
+* `onValidate(FileData fileData)` - This callback is invoked a FileData object, representing one of the file selected for upload.  It is called once
+for each selected, dropped, or `addFiles` submitted file, provided you do not return false in your `onValidateBatch` handler, and also provided
+the `stopOnFirstInvalidFile` validation option is not set and a previous invocation of your `onValidate` callback in this batch has not returned false.
+This callback is always invoked before the default Fine Uploader validators execute.  Note that a `FileData` object has two properties: `name`
 (the file name) and `size` (the file size).  The `size` property will be undefined if the user agent does not support the File API.
+* `onValidateBatch(Array fileDataArray)` - This callback is invoked once for each batch of files selected, dropped, or submitted
+via the `addFiles` API function.  A FileData array is passed in representing all files selected or dropped at once.  This allows
+you to prevent the entire batch from being uploaded, if desired, by returning false.  If your handler does not return false,
+the `onValidate` callback will be invoked once for each individual file submitted.  This callback is always invoked before
+the default Fine Uploader validators execute.  Note that a `FileData` object has two properties: `name` (the file name) and
+`size` (the file size).  The `size` property will be undefined if the user agent does not support the File API.
 
 <br/>
 ### Changing alert/messages to something more user friendly ###

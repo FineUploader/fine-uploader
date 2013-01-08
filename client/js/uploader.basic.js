@@ -23,7 +23,7 @@ qq.FineUploaderBasic = function(o){
             stopOnFirstInvalidFile: true
         },
         callbacks: {
-            onSubmit: function(id, fileName){}, // return false to cancel submit
+            onSubmit: function(id, fileName){},
             onComplete: function(id, fileName, responseJSON){},
             onCancel: function(id, fileName){},
             onUpload: function(id, fileName){},
@@ -33,7 +33,8 @@ qq.FineUploaderBasic = function(o){
             onError: function(id, fileName, reason) {},
             onAutoRetry: function(id, fileName, attemptNumber) {},
             onManualRetry: function(id, fileName) {},
-            onValidate: function(fileData) {} // return false to prevent upload
+            onValidateBatch: function(fileData) {},
+            onValidate: function(fileData) {}
         },
         messages: {
             typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
@@ -323,9 +324,7 @@ qq.FineUploaderBasic.prototype = {
         if (qq.isXhrUploadSupported()){
             this.addFiles(input.files);
         } else {
-            if (this._validateFile(input)){
-                this.addFiles(input);
-            }
+            this.addFiles(input);
         }
         this._button.reset();
     },
@@ -386,7 +385,7 @@ qq.FineUploaderBasic.prototype = {
         var validationDescriptors, index, batchInvalid;
 
         validationDescriptors = this._getValidationDescriptors(files);
-        batchInvalid = this._options.callbacks.onValidate(validationDescriptors) === false;
+        batchInvalid = this._options.callbacks.onValidateBatch(validationDescriptors) === false;
 
         if (!batchInvalid) {
             if (files.length > 0) {
@@ -429,7 +428,7 @@ qq.FineUploaderBasic.prototype = {
         name = validationDescriptor.name;
         size = validationDescriptor.size;
 
-        if (this._options.callbacks.onValidate([validationDescriptor]) === false) {
+        if (this._options.callbacks.onValidate(validationDescriptor) === false) {
             return false;
         }
 
