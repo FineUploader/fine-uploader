@@ -563,13 +563,12 @@ qq.FineUploaderBasic.prototype = {
         return fileDescriptor;
     },
     _getValidationDescriptors: function(files) {
-        var index, fileDescriptors;
+        var self = this,
+            fileDescriptors = [];
 
-        fileDescriptors = [];
-
-        for (index = 0; index < files.length; index++) {
-            fileDescriptors.push(files[index]);
-        }
+        qq.each(files, function(idx, file) {
+            fileDescriptors.push(self._getValidationDescriptor(file));
+        });
 
         return fileDescriptors;
     },
