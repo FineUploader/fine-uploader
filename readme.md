@@ -891,6 +891,8 @@ collection object contains an (integer) index property for each contained item.
 If a `resume.id` property has been set, this is taken into consideration.  Each resumable file is represented by an object with the
 following properties: `name` - filename, `size` - file size, `uuid` - unique ID associated w/ the file, `partIdx` - index of the part where
 the resume will start.
+* `getSize(fileId)` - Returns the size of the file represented by the passed ID.  Undefined if the file size cannot be determined, such as
+if the user agent does not support the File API.
 
 <br/>
 ### qQuery ###
