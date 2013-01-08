@@ -131,7 +131,9 @@ qq.UploadHandler = function(o) {
          * Returns size of the file identified by id
          */
         getSize: function(id){
-            return handlerImpl.getSize(id);
+            if (handlerImpl.getSize) {
+                return handlerImpl.getSize(id);
+            }
         },
         /**
          * Returns id of files being uploaded or

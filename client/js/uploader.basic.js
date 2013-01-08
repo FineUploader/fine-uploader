@@ -206,6 +206,9 @@ qq.FineUploaderBasic.prototype = {
     getResumableFilesData: function() {
         return this._handler.getResumableFilesData();
     },
+    getSize: function(fileId) {
+        return this._handler.getSize(fileId);
+    },
     _createUploadButton: function(element){
         var self = this;
 
@@ -508,7 +511,7 @@ qq.FineUploaderBasic.prototype = {
                 return callback.apply(self, args);
             }
             catch (exception) {
-                self.log("Caught exception in '" + name + "' callback - " + exception, 'error');
+                self.log("Caught exception in '" + name + "' callback - " + exception.message, 'error');
             }
         }
 
