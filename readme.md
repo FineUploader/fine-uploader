@@ -319,7 +319,7 @@ other default values.  This works for all options that are, themselves, objects 
         <tr>
             <td>paramsInBody</td>
             <td>boolean</td>
-            <td>true</td>
+            <td>false</td>
             <td>Set this to <code>true</code> if you want all parameters to be sent in the request body.  Note that setting this option
             to <code>true</code> will force all requests to be multipart encoded.  If the value is <code>false</code> all params will be
             included in the query string.   See the <a href="http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html">associated blog post</a>
@@ -334,7 +334,7 @@ other default values.  This works for all options that are, themselves, objects 
         <tr>
             <td>forceMultipart</td>
             <td>boolean</td>
-            <td>true</td>
+            <td>false</td>
             <td>While form-based uploads will always be multipart requests, this forces XHR uploads to send files using
             multipart requests as well.</td>
         </tr>
