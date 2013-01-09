@@ -11,7 +11,8 @@ qq.UploadHandler = function(o) {
     // Default options, can be overridden by the user
     options = {
         debug: false,
-        paramsInBody: false,
+        forceMultipart: true,
+        paramsInBody: true,
         paramsStore: {},
         endpointStore: {},
         maxConnections: 3, // maximum number of concurrent uploads

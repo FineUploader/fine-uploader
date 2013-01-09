@@ -1,19 +1,18 @@
 # Server-Side Notes & Requirements #
 
 ## Handling the request ##
-For user agents that do not support the File API (IE9 and older, Android 2.3.x and older, and very old versions of other
-browsers), Fine Uploader will send the file in the body of a multipart encoded POST request.  The filename will be encoded in
-the request, but the parameters will be available in the query string only.
-
-For user agents that do support the File API, Fine Uploader will send an XHR POST request.  The file will be streamed, and
-the filename, along with all parameters, will be available in the query string.
+Fine Uploader will send the file in the body of a multipart encoded POST request.  The filename will be encoded in
+the request, along with the parameters.
 
 <br/>
 ## Request Format Options ##
 * If you would like to ensure multipart encoded requests are sent, regardless of the browser, you must set the `forceMultipart`
-request option.
+request option.  This is set by default as of Fine Uploader 3.2.  If this option is set to false, browsers that support the File API
+will stream the file in a POST request, while all other browsers will fall back to a multipart encoded request, created by
+a form submission in a hidden iframe for each file.
 * If you would like to ensure all parameters are sent in the request body (instead of the query string), you
 must set the `paramsInBody` request option (which will also force all requests to be multipart encoded as well).
+This is set by default, as of Fine Uploader 3.2.  If this option is set to false, all parameters will be included in the query string instead.
 * For more information about request parameters, see the main project readme and [this blog post about setting your own custom parameters](http://blog.fineuploader.com/2012/12/setparams-is-now-much-more-useful-in-31.html)
 along with [this post about how parameters are specified in the request](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html).
 
