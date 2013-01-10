@@ -1,4 +1,4 @@
-def version = "3.2-RC1"
+def version = "3.2-RC2"
 def filename = "fineuploader"
 def srcDir = 'client'
 def jsSrcDir = "$srcDir/js"
