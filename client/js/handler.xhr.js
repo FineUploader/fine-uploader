@@ -10,6 +10,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         chunkFiles = options.chunking.enabled && qq.isFileChunkingSupported(),
         resumeEnabled = options.resume.enabled && chunkFiles && qq.areCookiesEnabled(),
         resumeId = getResumeId(),
+        multipart = options.forceMultipart || options.paramsInBody,
         api;
 
 
@@ -21,13 +22,14 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         params[options.chunking.paramNames.partByteOffset] = chunkData.start;
         params[options.chunking.paramNames.chunkSize] = chunkData.end - chunkData.start;
         params[options.chunking.paramNames.totalParts] = chunkData.count;
-        params[options.chunking.paramNames.totalFileSize] = size;
+        params[options.totalFileSizeParamName] = size;
+
 
         /**
          * When a Blob is sent in a multipart request, the filename value in the content-disposition header is either "blob"
          * or an empty string.  So, we will need to include the actual file name as a param in this case.
          */
-        if (options.forceMultipart || options.paramsInBody) {
+        if (multipart) {
             params[options.chunking.paramNames.filename] = name;
         }
     }
@@ -82,9 +84,14 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             protocol = options.demoMode ? "GET" : "POST",
             endpoint = options.endpointStore.getEndpoint(id),
             url = endpoint,
-            name = api.getName(id);
+            name = api.getName(id),
+            size = api.getSize(id);
 
         params[options.uuidParamName] = fileState[id].uuid;
+
+        if (multipart) {
+            params[options.totalFileSizeParamName] = size;
+        }
 
         //build query string
         if (!options.paramsInBody) {
@@ -93,7 +100,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         }
 
         xhr.open(protocol, url, true);
-        if (options.forceMultipart || options.paramsInBody) {
+        if (multipart) {
             if (options.paramsInBody) {
                 qq.obj2FormData(params, formData);
             }
@@ -108,14 +115,12 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     function setHeaders(id, xhr) {
         var extraHeaders = options.customHeaders,
             name = api.getName(id),
-            forceMultipart = options.forceMultipart,
-            paramsInBody = options.paramsInBody,
             file = fileState[id].file;
 
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("Cache-Control", "no-cache");
 
-        if (!forceMultipart && !paramsInBody) {
+        if (!multipart) {
             xhr.setRequestHeader("Content-Type", "application/octet-stream");
             //NOTE: return mime type in xhr works on chrome 16.0.9 firefox 11.0a2
             xhr.setRequestHeader("X-Mime-Type", file.type);

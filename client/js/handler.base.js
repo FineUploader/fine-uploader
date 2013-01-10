@@ -16,6 +16,7 @@ qq.UploadHandler = function(o) {
         endpointStore: {},
         maxConnections: 3, // maximum number of concurrent uploads
         uuidParamName: 'qquuid',
+        totalFileSizeParamName: 'qqtotalfilesize',
         chunking: {
             enabled: false,
             partSize: 2000000, //bytes
@@ -23,7 +24,6 @@ qq.UploadHandler = function(o) {
                 partIndex: 'qqpartindex',
                 partByteOffset: 'qqpartbyteoffset',
                 chunkSize: 'qqchunksize',
-                totalFileSize: 'qqtotalfilesize',
                 totalParts: 'qqtotalparts',
                 filename: 'qqfilename'
             }

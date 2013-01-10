@@ -352,6 +352,13 @@ other default values.  This works for all options that are, themselves, objects 
             <td>qquuid</td>
             <td>The name of the parameter, sent along with each request, that uniquely identifies the associated file.  The value of
             this parameter is a version 4 UUID.</td>
+        <tr>
+            <td>totalFileSizeName</td>
+            <td>string</td>
+            <td>qqtotalfilesize</td>
+            <td>Name of the parameter passed with a multipart encoded request that specifies the total size in bytes of the associated file.  Note that this is only passed
+            with MPE requests that originate from the XHR uploader, since there is no way to determine file size client-side when using the form uploader.</td>
+        </tr>
         </tr>
     </tbody>
 </table>
@@ -508,12 +515,6 @@ other default values.  This works for all options that are, themselves, objects 
             <td>string</td>
             <td>qqchunksize</td>
             <td>Name of the parameter passed with a chunked request that specifies the size in bytes of the associated chunk.</td>
-        </tr>
-        <tr>
-            <td>totalFileSize</td>
-            <td>string</td>
-            <td>qqtotalfilesize</td>
-            <td>Name of the parameter passed with a chunked request that specifies the total size in bytes of the associated file.</td>
         </tr>
         <tr>
             <td>totalParts</td>
