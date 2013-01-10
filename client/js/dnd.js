@@ -74,6 +74,7 @@ qq.DragAndDrop = function(o) {
 
         if (dataTransfer.files.length > 1 && !options.multiple) {
             options.callbacks.error('tooManyFilesError', "");
+            dz.dropDisabled(false);
         }
         else {
             droppedFiles = [];
