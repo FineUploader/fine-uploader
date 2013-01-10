@@ -90,7 +90,7 @@ qq.FineUploaderBasic = function(o){
     this._disposeSupport =  new qq.DisposeSupport();
 
     // number of files being uploaded
-    this._filesInProgress = 0;
+    this._filesInProgress = [];
 
     this._storedFileIds = [];
 
@@ -139,13 +139,16 @@ qq.FineUploaderBasic.prototype = {
         }
     },
     getInProgress: function(){
-        return this._filesInProgress;
+        return this._filesInProgress.length;
     },
     uploadStoredFiles: function(){
         "use strict";
+        var idToUpload;
+
         while(this._storedFileIds.length) {
-            this._filesInProgress++;
-            this._handler.upload(this._storedFileIds.shift());
+            idToUpload = this._storedFileIds.shift();
+            this._filesInProgress.push(idToUpload);
+            this._handler.upload(idToUpload);
         }
     },
     clearStoredFiles: function(){
@@ -166,7 +169,7 @@ qq.FineUploaderBasic.prototype = {
     reset: function() {
         this.log("Resetting uploader...");
         this._handler.reset();
-        this._filesInProgress = 0;
+        this._filesInProgress = [];
         this._storedFileIds = [];
         this._autoRetries = [];
         this._retryTimeouts = [];
@@ -294,7 +297,7 @@ qq.FineUploaderBasic.prototype = {
         var self = this;
 
         this._disposeSupport.attach(window, 'beforeunload', function(e){
-            if (!self._filesInProgress){return;}
+            if (!self._filesInProgress.length){return;}
 
             var e = e || window.event;
             // for ie, ff
@@ -305,24 +308,29 @@ qq.FineUploaderBasic.prototype = {
     },
     _onSubmit: function(id, fileName){
         if (this._options.autoUpload) {
-            this._filesInProgress++;
+            this._filesInProgress.push(id);
         }
     },
     _onProgress: function(id, fileName, loaded, total){
     },
     _onComplete: function(id, fileName, result, xhr){
-        this._filesInProgress--;
+        this._removeFromFilesInProgress(id);
         this._maybeParseAndSendUploadError(id, fileName, result, xhr);
     },
     _onCancel: function(id, fileName){
+        this._removeFromFilesInProgress(id);
+
         clearTimeout(this._retryTimeouts[id]);
 
         var storedFileIndex = qq.indexOf(this._storedFileIds, id);
-        if (this._options.autoUpload || storedFileIndex < 0) {
-            this._filesInProgress--;
-        }
-        else if (!this._options.autoUpload) {
+        if (!this._options.autoUpload && storedFileIndex >= 0) {
             this._storedFileIds.splice(storedFileIndex, 1);
+        }
+    },
+    _removeFromFilesInProgress: function(id) {
+        var index = qq.indexOf(this._filesInProgress, id);
+        if (index >= 0) {
+            this._filesInProgress.splice(index, 1);
         }
     },
     _onUpload: function(id, fileName){},
@@ -367,7 +375,7 @@ qq.FineUploaderBasic.prototype = {
             }
 
             this.log("Retrying upload for '" + fileName + "' (id: " + id + ")...");
-            this._filesInProgress++;
+            this._filesInProgress.push(id);
             return true;
         }
         else {
