@@ -290,7 +290,7 @@ qq.windows  = function(){
 };
 qq.android = function(){
     "use strict";
-    return navigator.userAgent.indexOf('android') !== -1;
+    return navigator.userAgent.toLowerCase().indexOf('android') !== -1;
 };
 
 //
