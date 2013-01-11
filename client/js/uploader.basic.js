@@ -474,7 +474,7 @@ qq.FineUploaderBasic.prototype = {
         var message = this._options.messages[code];
         function r(name, replacement){ message = message.replace(name, replacement); }
 
-        var extensions = this._options.validation.allowedExtensions.join(', ');
+        var extensions = this._options.validation.allowedExtensions.join(', ').toLowerCase();
 
         r('{file}', this._options.formatFileName(fileName));
         r('{extensions}', extensions);
@@ -495,7 +495,7 @@ qq.FineUploaderBasic.prototype = {
 
         qq.each(allowed, function(idx, allowedExt) {
             /*jshint eqeqeq: true, eqnull: true*/
-            var extRegex = new RegExp('\\.' + allowedExt.toLowerCase() + "$");
+            var extRegex = new RegExp('\\.' + allowedExt + "$", 'i');
 
             if (fileName.match(extRegex) != null) {
                 valid = true;
