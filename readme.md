@@ -135,6 +135,7 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 - [Changing alert/messages to something more user friendly](#changing-alertmessages-to-something-more-user-friendly)
 - [qQuery (Public Utility Functions)](#qquery)
 - [Troubleshooting](#troubleshooting)
+- [Internet Explorer Limitations](#internet-explorer-limitations)
 - [Issue Tracker](#issue-tracker)
 - [License](#license)
 - [Contributors](#contributors)
@@ -142,7 +143,52 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 
 <br/>
 ### FAQ ###
-TODO
+*Q:* Why are you charging me to download a zip containing the combined js files, along with a minified version, the
+version-stamped css file, and all other required files?
+*A:* Fine Uploader is a lot of work.  I literally work on Fine Uploader, in my free time, 7 days a week.  I've kept up this
+schedule since August.  As a result Fine Uploader grows at a rapid pace, bugs are addressed quickly, and the support I provide
+for users is second-to-none.  Compensation provides me with an excuse to keep up the work I am doing.  The other alternative is
+a project that decays and becomes unusable or out-of-date after some time.  Starting with version 3.2, I will personally answer
+questions and feature requests posed in the forums and the issue tracker only for users who have contributed.  I will have a simple
+system that will allow you to identify yourself at checkout so I can identify these individuals.  If, for some reason, you don't want to
+pay the very modest price, you can certainly make use of the source code posted in the Github repo.  The project is, after all, open-source.
+
+*Q:* I like FineUploader mode, but I don't want to allow my users to utilize the drag & drop feature.  How can I do this?
+*A:* Set the `disableDefaultDropzone` property of the `dragAndDrop` option to `true`.
+
+*Q:* Using the jQuery plug-in in FineUploaderBasic mode, I can't seem to get my upload button to appear.
+*A:* It is important to understand that the target of your plug-in should be an existing container element for your upload
+component, *NOT* the button element.  Your button element must be specified separately via the `button` option.
+
+*Q:* Why am I seeing an "Access Denied" error in IE's javascript console?
+*A:* There are two common causes.  One cause is triggering the "select files" dialog via javascript.  IE does not permit this
+and will throw a security error when Fine Uploader attempts to submit the underlying form.  Another cause is returning a
+response code that is not 200.  The error occurs when Fine Uploader attempts to parse the response in the hidden iframe.
+See the [Internet Explorer Limitations](#internet-explorer-limitations) for more details.
+
+*Q:* Why can't I use a progress bar, drag and drop, or multiple file selection in some browsers?
+*A:* Some browsers (IE9 and older, along with Android 2.3.x and older) do not support the File API the `multiple` attribute on file input elements.
+These are all required to give you the best possible experience.
+
+*Q:* Why isn't Opera supported?
+*A:* Market share for Opera is incredibly low, and I have found annoying bugs in Opera that have taken up an unnecessary amount of my
+time in the past.  For such a small minority of users, I have decided that it is not worth my time.  There are many better options as far
+as browsers are concerned.
+
+*Q:* Why isn't Safari for Windows supported?
+*A:* There is really no reason to use Safari for Windows.   Webkit is better represented on that platform in Chrome.
+Apple doesn't appear to be interested in maintaining Safari for Windows anymore either.  Switch to Chrome.
+
+*Q:* Why isn't IOS5 supported?
+*A:* IOS5 doesn't even support a file input element.
+
+*Q:* Why isn't folder drag & drop uploading supported in any browser other than Chrome 21+?
+*A:* Chrome 21 was the first browser version to implement the HTML5 Filesystem API.  This is required to handle dropped folders.
+Currently, no other browsers support this API.
+
+*Q:* I have created a \<button\> element for my uploader button, but this doesn't seem to work in IE.  Why?
+*A:* In IE, the button element receives the click event, instead of the child input element.  Use a \<div\> or a \<span\> or an \<a\> instead.
+
 
 <br/>
 ### Using the optional jQuery plug-in ###
