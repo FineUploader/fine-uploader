@@ -8,48 +8,15 @@ Created by Andrew Valums.
 
 
 <br/>
-### Quick Links ###
+## Quick Links ##
+* [Frequently Asked Questions (FAQ)](#faq)
 * [Downloads](https://github.com/valums/file-uploader/wiki/Releases)
 * [Support](https://groups.google.com/forum/#!forum/fineuploader)
 * [Blog](http://blog.fineuploader.com)
 * [@fineuploader](https://twitter.com/fineuploader)
-* [Homepage](http://fineuploader.com)
+* [Demo](http://fineuploader.com)
 * [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
-<br/>
-###Table of Contents###
-- [Summary](#summary)
-- [Features](#features)
-- [Getting started](#getting-started)
-- [Server-side Instructions](https://github.com/valums/file-uploader/blob/3.2-IP/server/readme.md)
-- [Using the optional jQuery plug-in](#using-the-optional-jquery-plug-in)
-- [Setting up the uploader without jQuery](#setting-up-the-uploader-without-jquery)
-- [How to override options](#how-to-override-options)
-- [Options of both FineUploader & FineUploaderBasic](#options-of-both-fineuploader--fineuploaderbasic)
-- [Options of FineUploader](#options-of-fineuploader)
-- [Styling FineUploader](#styling-fineuploader)
-- [Callbacks (FineUploader & FineUploaderBasic)](#callbacks-fineuploader--fineuploaderbasic)
-- [Changing alert/messages to something more user friendly](#changing-alertmessages-to-something-more-user-friendly)
-- [Instance methods](#instance-methods)
-- [qQuery (Utility Functions)](#qquery)
-- [Internet Explorer limitations](#internet-explorer-limitations)
-- [Troubleshooting](#troubleshooting)
-- [Issue Tracker](#issue-tracker)
-- [License](#license)
-- [Contributors](#contributors)
-
-<br/>
-### Summary ###
-Welcome! This project attempts to achieve a user-friendly file-uploading experience over the web.
-It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
-
-This plugin uses an XMLHttpRequest (AJAX) for uploading multiple files with a progress-bar in
-FF3.6+, Safari4+, Chrome and falls back to hidden-iframe-based upload in other browsers (namely IE),
-providing good user experience everywhere.
-
-It does not use Flash, jQuery, or any other external libraries.  There is an optional jQuery plug-in that can be used to
-integrate Fine Uploader into your project, but it is NOT required.  The same features are available with or without the 
-jQuery plug-in.
 
 <br/>
 ### Features ###
@@ -75,25 +42,107 @@ jQuery plug-in.
 * [Resume failed/stopped uploads from previous sessions](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html)
 * Any many more!
 
+
 <br/>
-### Getting started ###
-The combined javascript file contains two classes that are meant to be used directly.
-If you need a complete upload widget (from demo) to quickly drop
-into your current design, use `qq.FineUploader`.
-Note that a set of utility functions, used internally by Fine Uploader, are also publicly accessible.  See the utils.js
-file for an easy reference of the utility functions present in the combined javascript file.  The QUnit tests may also
-serve has helpful documentation.
+## Introduction ##
+This project attempts to achieve a user-friendly file-uploading experience over the web.
+It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
 
-If you want to customize the uploader, by using a different looking file list
-or change the behaviour or functionality use `qq.FineUploaderBasic`.
+This plugin uses an XMLHttpRequest (AJAX) for uploading multiple files with a progress-bar in
+FF3.6+, Safari4+, Chrome and falls back to hidden-iframe-based upload in other browsers (namely IE),
+providing good user experience everywhere.
 
-The difference between them is that `qq.FineUploader` provides a list of files,
-drag-and-drop, but `qq.FineUploaderBasic` only creates button and handles validation.
-Basic uploader is easier extendable, and doesn't limit possible customization.
+It does not use Flash, jQuery, or any other external libraries.  There is an optional jQuery plug-in that can be used to
+integrate Fine Uploader into your project, but it is NOT required.  The same features are available with or without the
+jQuery plug-in.
 
-`qq.FineUploader` extends `qq.FineUploaderBasic`, so that all the options present
-in the basic uploader also exist in the full widget.
 
+<br/>
+## Fine Uploader Has Two Modes... ##
+You can use Fine Uploader in **FineUploader mode**, or in **FineUploaderBasic mode**.
+
+### FineUploaderBasic mode ###
+FineUploaderBasic mode is defined in the `qq.FineUploaderBasic` module in the code.  This is the base module for
+Fine Uploader, and provides all functions that do not involve UI components.  Choose this mode if you need very tight
+control over your uploader's UI.  If you choose this option, it is expected that you will provide all of your own UI, but
+Fine Uploader will do the rest.
+
+### FineUploader mode ###
+FineUploader mode is defined in the `qq.FineUploader` module in the code.  It inherits everything from FineUploaderBasic,
+plus it provides a customizable UI, including drag & drop, progress bars, status messages, a file list with color-coded status
+indicators, and other UI niceties.  Most developers will likely opt to use FineUploader.
+
+### jQuery plug-in ###
+Fine Uploader also provides an optional jQuery plug-in.  This simply wraps the native uploader code.  You can use either of
+the modes described above when using the jQuery plug-in via the `uploaderType` option.  More on the plug-in in the
+[jQuery plug-in section](#using-the-optional-jquery-plug-in).
+
+
+<br/>
+## Choose Your Path... ##
+Once you have decided how you will use Fine Uploader, click on the appropriate link below to get started.
+
+### jQuery plug-in users in FineUploader mode ###
+Start [here](#jquery-plugin-in-fineuploader-mode-users).
+
+### jQuery plug-in users in FineUploaderBasic mode ###
+Your journey begins [here](#jquery-plugin-in-fineuploaderbasic-mode-users).
+
+### FineUploader mode users ###
+Look no further, your plan of action is described [here](#fineuploader-mode-users).
+
+### FineUploaderBasic mode users ###
+I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-users).
+
+
+<br/>
+## jQuery plug-in in FineUploader mode users ##
+1. Download the latest released jQuery plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
+2. Read the [using the optional jQuery plug-in](#using-the-optional-jquery-plug-in) section.
+3. Start with step 3 in the [FineUploader mode users](#fineuploader-mode-users) section.
+
+## jQuery plug-in in FineUploaderBasic mode users ##
+1. Download the latest released jQuery plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
+2. Read about the [using the optional jQuery plug-in](#using-the-optional-jquery-plug-in) section.
+3. Be sure to specify an `uploaderType` option with a value of "basic".
+4. Start with step 3 in the [FineUploaderBasic mode users](#fineuploaderbasic-mode-users) section.
+
+## FineUploader mode users ##
+1. Download the latest released native javascript plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
+2. Read the [getting started for non-jQuery users](#getting-started-for-nonjquery-users).
+3. Read about the available [FineUploaderBasic options](#fineuploaderbasic-mode-options).
+4. Study the available [FineUploader options](#fineuploader-mode-options).
+5. Glance at this quick blurb on [overriding options](#how-to-override-options).
+6. Have a look at the available [API functions provided by FineUploaderBasic](#fineuploaderbasic-mode-api-functions).
+7. Check out the available [API functions provided by FineUploader](#fineuploader-mode-api-functions).
+8. Examine the [available callbacks](#callbacks).
+9. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/3.2-IP/server/readme.md).
+
+## FineUploaderBasic mode users ##
+1. Download the latest released native javascript plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
+2. Read the [getting started for non-jQuery users](#getting-started-for-nonjquery-users).
+3. Read about the available [FineUploaderBasic options](#fineuploaderbasic-mode-options).
+4. Glance at this quick blurb on [overriding options](#how-to-override-options).
+5. Have a look at the available [API functions provided by FineUploaderBasic](#fineuploaderbasic-mode-api-functions).
+6. Examine the [available callbacks](#callbacks).
+7. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/3.2-IP/server/readme.md).
+
+
+<br/>
+## Additional Reading ##
+- [FAQ](#faq)
+- [Styling FineUploader](#styling-fineuploader)
+- [Changing alert/messages to something more user friendly](#changing-alertmessages-to-something-more-user-friendly)
+- [qQuery (Public Utility Functions)](#qquery)
+- [Troubleshooting](#troubleshooting)
+- [Issue Tracker](#issue-tracker)
+- [License](#license)
+- [Contributors](#contributors)
+
+
+<br/>
+### FAQ ###
+TODO
 
 <br/>
 ### Using the optional jQuery plug-in ###
@@ -174,18 +223,18 @@ For more examples using the jQuery plug-in, please have a look at [fineuploader.
 
 
 <br/>
-### Setting up the uploader without jQuery ###
-Of course, Fine Uploader does NOT depend on jQuery, and you don't have to use the jQuery plug-in if you don't want to.  
-The same features are available without the jQuery plug-in.  To use Fine Uploader with "plain 'ole" javascript, 
-include the uploader javascript file and, optionally, `fineuploader.css` along with any images provided into your page.
+### Getting started for non-jQuery users ###
+Of course, Fine Uploader does NOT depend on jQuery, and you don't have to use the jQuery plug-in if you don't want to.
+The same features are available without the jQuery plug-in.  To use Fine Uploader with "plain 'ole" javascript,
+include the uploader javascript file and, optionally, the css file along with any images provided into your page.
 If you are only making use of FineUploaderBasic, you can omit the css and image(s) file(s).
 
 ```html
 <div id="fine-uploader">
-<noscript>
-    <p>Please enable JavaScript to use Fine Uploader.</p>
-    <!-- or put a simple form for upload here -->
-</noscript>
+    <noscript>
+        <p>Please enable JavaScript to use Fine Uploader.</p>
+        <!-- or put a simple form for upload here -->
+    </noscript>
 </div>
 ```
 
@@ -198,7 +247,7 @@ requests and XHR upload requests in your server-side language of choice.
 var uploader = new qq.FineUploader({
 	// pass the dom node (ex. $(selector)[0] for jQuery users)
 	element: document.getElementById('fine-uploader'),
-	
+
 	request: {
       		// path to server-side upload script
 		endpoint: '/server/upload'
@@ -225,9 +274,8 @@ Fine Uploader will know that you only want to change the `typeError` message val
 other default values.  This works for all options that are, themselves, objects with sub-options.
 
 
-
 <br/>
-### Options of both FineUploader & FineUploaderBasic ###
+### FineUploaderBasic mode options ###
 <table>
     <thead>
         <tr>
@@ -607,8 +655,9 @@ other default values.  This works for all options that are, themselves, objects 
     </tbody>
 </table>
 
+
 <br/>
-### Options of FineUploader ###
+### FineUploader mode options ###
 <table>
     <thead>
         <tr>
@@ -823,7 +872,7 @@ Finally, a `classes` option allows you to change the default class names for the
 match the class names used in the corresponding template elements (where appropriate).
 
 <br/>
-### Callbacks (FineUploader & FineUploaderBasic) ###
+### Callbacks ###
 * `onSubmit(String id, String fileName)` - called when the file is submitted to the uploader portion of the code.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
 * `onComplete(String id, String fileName, Object responseJSON)` - called when the file upload has finished.
@@ -860,7 +909,7 @@ simply invokes `alert` with the message text.  One instance in which this is use
 an invalid file for upload.  There are general message types with default text that can be overriden as well.
 
 <br/>
-### Instance methods ###
+### FineUploaderBasic mode API functions ###
 * `log(String message)` - Outputs a message to the javascript console, if possible.
 * `setParams(Object newParams, [optional] Number fileId)` - Set the parameters sent along with the request after initializing the uploader.
 You can either change the parameters for a specific file, or for all files.  To do the latter, simply omit the `fileId` parameter.
@@ -876,14 +925,10 @@ prohibits retries on a failed file via the <code>preventRetryResponseProperty</c
 respect the <code>maxConnections</code> value, so if all connections are accounted for, the retry attempt will be queued
 until a connection opens up.
 * `cancel(String fileId)` - Cancels a queued or currently uploading file.
-* `getItemByFileId(String fileId)` - Returns the HTMLElement associated with the passed file ID.
 * `reset()` - While this function is most useful for FineUploader, it is also available in FineUploaderBasic.  In FineUploader,
 calling this function will reset all UI elements to the state they exsited in immediately after initialization.  In FineUploaderBasic,
 this resets all internal variables to the state they existed in immediately after initialization.  If you are using FineUploaderBasic,
 it is up to you to "reset" any of your UI elements.
-* `addExtraDropzone(HTMLElement element)` - Use this to mark an element as a drop zone on an already-instantiated FineUploader.
-* `removeExtraDropzone(HTMLElement element)` - Use this to un-mark an extra element as a drop zone on an already-instantiated FineUploader.  An "extra"
-   drop zone is one specified in the `extraDropzones` option, or one set via the `addExtraDropzone` function.
 * `addFiles(filesOrInputs)` - Use this if you would like to submit files to the uploader.  This may be useful if you have
 a method of gathering files that does not include Fine Uploader's input button or the drag & drop support built into FineUploader.
 This function accepts the following types: `File`, `input` element, or a collection of any of these types, provided the
@@ -896,6 +941,15 @@ the resume will start.
 if the user agent does not support the File API.
 * `getFile(fileId)` - Returns the `File` object associated with the passed file ID.  Undefined if the underlying file cannot be found,
 or if the user agent does not support the File API.  For more info on the `File` object, please see [the entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file).
+
+
+<br/>
+### FineUploader mode API functions ###
+* `getItemByFileId(String fileId)` - Returns the HTMLElement associated with the passed file ID.
+* `addExtraDropzone(HTMLElement element)` - Use this to mark an element as a drop zone on an already-instantiated FineUploader.
+* `removeExtraDropzone(HTMLElement element)` - Use this to un-mark an extra element as a drop zone on an already-instantiated FineUploader.  An "extra"
+   drop zone is one specified in the `extraDropzones` option, or one set via the `addExtraDropzone` function.
+
 
 <br/>
 ### qQuery ###
