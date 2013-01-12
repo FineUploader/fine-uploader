@@ -19,7 +19,7 @@ Created by Andrew Valums.
 
 
 <br/>
-### Features ###
+## Features ##
 * Multiple file select, progress-bar in FF, Chrome, and Safari
 * Drag-and-drop file select in FF, Chrome, and Safari (OS X)
 * Uploads are cancelable
@@ -82,49 +82,49 @@ the modes described above when using the jQuery plug-in via the `uploaderType` o
 ## Choose Your Path... ##
 Once you have decided how you will use Fine Uploader, click on the appropriate link below to get started.
 
-### jQuery plug-in users in FineUploader mode ###
-Start [here](#jquery-plugin-in-fineuploader-mode-users).
+### jQuery plug-in in FineUploader mode users ###
+Start [here](#jquery-plug-in-in-fineuploader-mode-users).
 
-### jQuery plug-in users in FineUploaderBasic mode ###
-Your journey begins [here](#jquery-plugin-in-fineuploaderbasic-mode-users).
+### jQuery plug-in in FineUploaderBasic modeusers  ###
+Your journey begins [here](jquery-plug-in-in-fineuploaderbasic-mode-users).
 
 ### FineUploader mode users ###
-Look no further, your plan of action is described [here](#fineuploader-mode-users).
+Look no further, your plan of action is described [here](#fineuploader-mode-users-1).
 
 ### FineUploaderBasic mode users ###
-I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-users).
+I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-users-1).
 
 
 <br/>
 ## jQuery plug-in in FineUploader mode users ##
 1. Download the latest released jQuery plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
 2. Read the [using the optional jQuery plug-in](#using-the-optional-jquery-plug-in) section.
-3. Start with step 3 in the [FineUploader mode users](#fineuploader-mode-users) section.
+3. Start with step 3 in the [FineUploader mode users](#fineuploader-mode-users-1) section.
 
 ## jQuery plug-in in FineUploaderBasic mode users ##
 1. Download the latest released jQuery plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
 2. Read about the [using the optional jQuery plug-in](#using-the-optional-jquery-plug-in) section.
 3. Be sure to specify an `uploaderType` option with a value of "basic".
-4. Start with step 3 in the [FineUploaderBasic mode users](#fineuploaderbasic-mode-users) section.
+4. Start with step 3 in the [FineUploaderBasic mode users](#fineuploaderbasic-mode-users-1) section.
 
 ## FineUploader mode users ##
 1. Download the latest released native javascript plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
-2. Read the [getting started for non-jQuery users](#getting-started-for-nonjquery-users).
-3. Read about the available [FineUploaderBasic options](#fineuploaderbasic-mode-options).
-4. Study the available [FineUploader options](#fineuploader-mode-options).
+2. Read the [getting started for non-jQuery users](#getting-started-for-non-jquery-users).
+3. Read about the available [FineUploaderBasic mode options](#fineuploaderbasic-mode-options).
+4. Study the available [FineUploader mode options](#fineuploader-mode-options).
 5. Glance at this quick blurb on [overriding options](#how-to-override-options).
-6. Have a look at the available [API functions provided by FineUploaderBasic](#fineuploaderbasic-mode-api-functions).
-7. Check out the available [API functions provided by FineUploader](#fineuploader-mode-api-functions).
-8. Examine the [available callbacks](#callbacks).
+6. Have a look at the available [API functions in FineUploaderBasic mode](#fineuploaderbasic-mode-api-functions).
+7. Check out the available [API functions in FineUploader mode](#fineuploader-mode-api-functions).
+8. Examine the [available callbacks](#callbacks-1).
 9. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/3.2-IP/server/readme.md).
 
 ## FineUploaderBasic mode users ##
 1. Download the latest released native javascript plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
-2. Read the [getting started for non-jQuery users](#getting-started-for-nonjquery-users).
-3. Read about the available [FineUploaderBasic options](#fineuploaderbasic-mode-options).
+2. Read the [getting started for non-jQuery users](#getting-started-for-non-jquery-users).
+3. Read about the available [FineUploaderBasic mode options](#fineuploaderbasic-mode-options).
 4. Glance at this quick blurb on [overriding options](#how-to-override-options).
-5. Have a look at the available [API functions provided by FineUploaderBasic](#fineuploaderbasic-mode-api-functions).
-6. Examine the [available callbacks](#callbacks).
+5. Have a look at the available [API functions in FineUploaderBasic mode](#fineuploaderbasic-mode-api-functions).
+6. Examine the [available callbacks](#callbacks-1).
 7. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/3.2-IP/server/readme.md).
 
 
