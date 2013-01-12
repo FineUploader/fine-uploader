@@ -115,6 +115,7 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 7. Check out the available [API functions in FineUploader mode](#fineuploader-mode-api-functions).
 8. Examine the [available callbacks](#callbacks-1).
 9. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/3.2-IP/server/readme.md).
+10. Some additional sections that may be of interested are outlined [here](#additional-reading).
 
 ## FineUploaderBasic mode users ##
 1. Download the latest released native javascript plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
@@ -124,6 +125,7 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 5. Have a look at the available [API functions in FineUploaderBasic mode](#fineuploaderbasic-mode-api-functions).
 6. Examine the [available callbacks](#callbacks-1).
 7. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/3.2-IP/server/readme.md).
+8. Some additional sections that may be of interested are outlined [here](#additional-reading).
 
 
 <br/>
