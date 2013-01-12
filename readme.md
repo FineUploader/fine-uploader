@@ -82,11 +82,11 @@ the modes described above when using the jQuery plug-in via the `uploaderType` o
 ## Choose Your Path... ##
 Once you have decided how you will use Fine Uploader, click on the appropriate link below to get started.
 
-### jQuery plug-in in FineUploader mode users ###
-Start [here](#jquery-plug-in-in-fineuploader-mode-users).
+### jQuery plug-in for FineUploader mode users ###
+Start [here](#jquery-plug-in-for-fineuploader-mode-users-1).
 
-### jQuery plug-in in FineUploaderBasic modeusers  ###
-Your journey begins [here](jquery-plug-in-in-fineuploaderbasic-mode-users).
+### jQuery plug-in for FineUploaderBasic modeusers  ###
+Your journey begins [here](jquery-plug-in-for-fineuploaderbasic-mode-users).
 
 ### FineUploader mode users ###
 Look no further, your plan of action is described [here](#fineuploader-mode-users-1).
@@ -96,12 +96,12 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 
 
 <br/>
-## jQuery plug-in in FineUploader mode users ##
+## jQuery plug-in for FineUploader mode users ##
 1. Download the latest released jQuery plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
 2. Read the [using the optional jQuery plug-in](#using-the-optional-jquery-plug-in) section.
 3. Start with step 3 in the [FineUploader mode users](#fineuploader-mode-users-1) section.
 
-## jQuery plug-in in FineUploaderBasic mode users ##
+## jQuery plug-in for FineUploaderBasic mode users ##
 1. Download the latest released jQuery plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
 2. Read about the [using the optional jQuery plug-in](#using-the-optional-jquery-plug-in) section.
 3. Be sure to specify an `uploaderType` option with a value of "basic".
