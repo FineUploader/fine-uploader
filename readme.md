@@ -86,7 +86,7 @@ Once you have decided how you will use Fine Uploader, click on the appropriate l
 Start [here](#jquery-plug-in-for-fineuploader-mode-users-1).
 
 ### jQuery plug-in for FineUploaderBasic modeusers  ###
-Your journey begins [here](jquery-plug-in-for-fineuploaderbasic-mode-users).
+Your journey begins [here](#jquery-plug-in-for-fineuploaderbasic-mode-users).
 
 ### FineUploader mode users ###
 Look no further, your plan of action is described [here](#fineuploader-mode-users-1).
