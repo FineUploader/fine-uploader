@@ -602,7 +602,7 @@ other default values.  This works for all options that are, themselves, objects 
             <td>sizeSymbols</td>
             <td>array of strings</td>
             <td>['kB', 'MB', 'GB', 'TB', 'PB', 'EB']</td>
-            <td>Symbols used to represent file size, in ascending order./td>
+            <td>Symbols used to represent file size, in ascending order.</td>
         </tr>
     </tbody>
 </table>
