@@ -204,6 +204,8 @@ $('#fineUploaderElementId').fineUploader({
     }
 });
 ```
+**It is important to understand that the target of your plug-in should be an existing container element for your upload
+component, *NOT* the button element.  Your button element must be specified separately via the `button` option.**
 
 The above example is the simplest possible use-case.  Note that you can use any of the options available for the native
 Fine Uploader and Fine Uploader Basic, with the following exceptions & additions:
