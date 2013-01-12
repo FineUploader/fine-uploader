@@ -218,6 +218,7 @@ public class UploadReceiver extends HttpServlet
                 if (!expectedFileSize.equals(bytesWrittenToDisk))
                 {
                     log.warn("Expected file {} to be {} bytes; file on disk is {} bytes", new Object[] { out.getAbsolutePath(), expectedFileSize, 1 });
+                    out.delete();
                     throw new IOException(String.format("Unexpected file size mismatch. Actual bytes %s. Expected bytes %s.", bytesWrittenToDisk, expectedFileSize));
                 }
             }
