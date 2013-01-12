@@ -7,7 +7,7 @@ Created by Andrew Valums.
 
 <br/>
 ## Quick Links ##
-* [Frequently Asked Questions (FAQ)](#faq)
+* [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
 * [Downloads](https://github.com/valums/file-uploader/wiki/Releases)
 * [Support](https://groups.google.com/forum/#!forum/fineuploader)
 * [Blog](http://blog.fineuploader.com)
@@ -130,7 +130,7 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 
 <br/>
 ## Additional Reading ##
-- [Frequently Asked Questions (FAQ)](#faq)
+- [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
 - [Styling FineUploader](#styling-fineuploader)
 - [Changing alert/messages to something more user friendly](#changing-alertmessages-to-something-more-user-friendly)
 - [qQuery (Public Utility Functions)](#qquery)
