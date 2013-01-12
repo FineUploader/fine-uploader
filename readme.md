@@ -143,9 +143,9 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 
 <br/>
 ### FAQ ###
-*Q:* Why are you charging me to download a zip containing the combined js files, along with a minified version, the
+**Q:** Why are you charging me to download a zip containing the combined js files, along with a minified version, the
 version-stamped css file, and all other required files?      
-*A:* Fine Uploader is a lot of work.  I literally work on Fine Uploader, in my free time, 7 days a week.  I've kept up this
+**A:** Fine Uploader is a lot of work.  I literally work on Fine Uploader, in my free time, 7 days a week.  I've kept up this
 schedule since August.  As a result Fine Uploader grows at a rapid pace, bugs are addressed quickly, and the support I provide
 for users is second-to-none.  Compensation provides me with an excuse to keep up the work I am doing.  The other alternative is
 a project that decays and becomes unusable or out-of-date after some time.  Starting with version 3.2, I will personally answer
@@ -153,15 +153,15 @@ questions and feature requests posed in the forums and the issue tracker only fo
 system that will allow you to identify yourself at checkout so I can identify these individuals.  If, for some reason, you don't want to
 pay the very modest price, you can certainly make use of the source code posted in the Github repo.  The project is, after all, open-source.
 
-*Q:* I like FineUploader mode, but I don't want to allow my users to utilize the drag & drop feature.  How can I do this?      
+**Q:** I like FineUploader mode, but I don't want to allow my users to utilize the drag & drop feature.  How can I do this?      
 *A:* Set the `disableDefaultDropzone` property of the `dragAndDrop` option to `true`.
 
-*Q:* Using the jQuery plug-in in FineUploaderBasic mode, I can't seem to get my upload button to appear.      
-*A:* It is important to understand that the target of your plug-in should be an existing container element for your upload
+**Q:** Using the jQuery plug-in in FineUploaderBasic mode, I can't seem to get my upload button to appear.      
+**A:** It is important to understand that the target of your plug-in should be an existing container element for your upload
 component, *NOT* the button element.  Your button element must be specified separately via the `button` option.
 
-*Q:* Why am I seeing an "Access Denied" error in IE's javascript console?      
-*A:* There are two common causes.  One cause is triggering the "select files" dialog via javascript.  IE does not permit this
+**Q:** Why am I seeing an "Access Denied" error in IE's javascript console?      
+**A:** There are two common causes.  One cause is triggering the "select files" dialog via javascript.  IE does not permit this
 and will throw a security error when Fine Uploader attempts to submit the underlying form.  Another cause is returning a
 response code that is not 200.  The error occurs when Fine Uploader attempts to parse the response in the hidden iframe.
 See the [Internet Explorer Limitations](#internet-explorer-limitations) for more details.
