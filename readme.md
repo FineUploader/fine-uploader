@@ -130,7 +130,7 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 
 <br/>
 ## Additional Reading ##
-- [FAQ](#faq)
+- [Frequently Asked Questions (FAQ)](#faq)
 - [Styling FineUploader](#styling-fineuploader)
 - [Changing alert/messages to something more user friendly](#changing-alertmessages-to-something-more-user-friendly)
 - [qQuery (Public Utility Functions)](#qquery)
@@ -142,7 +142,7 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 
 
 <br/>
-### FAQ ###
+### Frequently Asked Questions (FAQ) ###
 **Q:** Why are you charging me to download a zip containing the combined js files, along with a minified version, the
 version-stamped css file, and all other required files?      
 **A:** Fine Uploader is a lot of work.  I literally work on Fine Uploader, in my free time, 7 days a week.  I've kept up this
