@@ -21,6 +21,7 @@ $uploader->chunksFolder = 'chunks/';
 
 // Call handleUpload() with the name of the folder, relative to PHP's getcwd()
 $result = $uploader->handleUpload('uploads/');
+$result['uploadName'] = $uploader->getUploadName();
 
 // To save the upload with a random name, specify the second parameter
 // $result = $uploader->handleUpload('uploads/', md5(mt_rand());

@@ -185,7 +185,7 @@ class qqFileUploader {
 
         while (file_exists($uploadDirectory . DIRECTORY_SEPARATOR . $unique . $ext)){
             $suffix += rand(1, 999);
-            $unique = $base.'-'.$suffix.$ext;
+            $unique = $base.'-'.$suffix;
         }
 
         $result =  $uploadDirectory . DIRECTORY_SEPARATOR . $unique . $ext;
@@ -216,7 +216,7 @@ class qqFileUploader {
         }
     }
 
-    protected function removeCdir($dir){
+    protected function removeDir($dir){
         foreach (scandir($dir) as $item){
             if ($item == "." || $item == "..")
                 continue;
