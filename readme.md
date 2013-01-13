@@ -921,6 +921,36 @@ match the class names used in the corresponding template elements (where appropr
 
 <br/>
 ### Callbacks ###
+
+Callbacks must be declared inside of `callbacks` object for non-jQuery users, like this:
+```javascript
+new qq.FineUploader({
+    ...
+    callbacks: {
+        onComplete: function(id, fileName, response) {
+            ...
+        },
+        onCancel: function(id, fileName) {
+            ...
+        },
+        ...
+    }
+}
+```
+
+For jQuery plug-in users, adhere to the following syntax:
+```javascript
+$('#myUploader').fineUploader() //you may bind event handlers as part of your initialization, or after initialization
+    .on('complete', function(event, id, fileName, response) {
+        ...
+    })
+    .on('cancel', function(event, id, fileName) {
+        ...
+    });
+```
+
+Here are all available callbacks:
+
 * `onSubmit(String id, String fileName)` - called when the file is submitted to the uploader portion of the code.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
 * `onComplete(String id, String fileName, Object responseJSON)` - called when the file upload has finished.
