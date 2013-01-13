@@ -14,7 +14,8 @@ qq.FineUploaderBasic = function(o){
             customHeaders: {},
             forceMultipart: false,
             inputName: 'qqfile',
-            uuidName: 'qquuid'
+            uuidName: 'qquuid',
+            totalFileSizeName: 'qqtotalfilesize'
         },
         validation: {
             allowedExtensions: [],
@@ -23,7 +24,7 @@ qq.FineUploaderBasic = function(o){
             stopOnFirstInvalidFile: true
         },
         callbacks: {
-            onSubmit: function(id, fileName){}, // return false to cancel submit
+            onSubmit: function(id, fileName){},
             onComplete: function(id, fileName, responseJSON){},
             onCancel: function(id, fileName){},
             onUpload: function(id, fileName){},
@@ -33,7 +34,8 @@ qq.FineUploaderBasic = function(o){
             onError: function(id, fileName, reason) {},
             onAutoRetry: function(id, fileName, attemptNumber) {},
             onManualRetry: function(id, fileName) {},
-            onValidate: function(fileData) {} // return false to prevent upload
+            onValidateBatch: function(fileData) {},
+            onValidate: function(fileData) {}
         },
         messages: {
             typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
@@ -89,7 +91,7 @@ qq.FineUploaderBasic = function(o){
     this._disposeSupport =  new qq.DisposeSupport();
 
     // number of files being uploaded
-    this._filesInProgress = 0;
+    this._filesInProgress = [];
 
     this._storedFileIds = [];
 
@@ -138,13 +140,16 @@ qq.FineUploaderBasic.prototype = {
         }
     },
     getInProgress: function(){
-        return this._filesInProgress;
+        return this._filesInProgress.length;
     },
     uploadStoredFiles: function(){
         "use strict";
+        var idToUpload;
+
         while(this._storedFileIds.length) {
-            this._filesInProgress++;
-            this._handler.upload(this._storedFileIds.shift());
+            idToUpload = this._storedFileIds.shift();
+            this._filesInProgress.push(idToUpload);
+            this._handler.upload(idToUpload);
         }
     },
     clearStoredFiles: function(){
@@ -165,7 +170,7 @@ qq.FineUploaderBasic.prototype = {
     reset: function() {
         this.log("Resetting uploader...");
         this._handler.reset();
-        this._filesInProgress = 0;
+        this._filesInProgress = [];
         this._storedFileIds = [];
         this._autoRetries = [];
         this._retryTimeouts = [];
@@ -205,6 +210,12 @@ qq.FineUploaderBasic.prototype = {
     getResumableFilesData: function() {
         return this._handler.getResumableFilesData();
     },
+    getSize: function(fileId) {
+        return this._handler.getSize(fileId);
+    },
+    getFile: function(fileId) {
+        return this._handler.getFile(fileId);
+    },
     _createUploadButton: function(element){
         var self = this;
 
@@ -232,6 +243,7 @@ qq.FineUploaderBasic.prototype = {
             customHeaders: this._options.request.customHeaders,
             inputName: this._options.request.inputName,
             uuidParamName: this._options.request.uuidName,
+            totalFileSizeParamName: this._options.request.totalFileSizeName,
             demoMode: this._options.demoMode,
             paramsInBody: this._options.request.paramsInBody,
             paramsStore: this._paramsStore,
@@ -287,7 +299,7 @@ qq.FineUploaderBasic.prototype = {
         var self = this;
 
         this._disposeSupport.attach(window, 'beforeunload', function(e){
-            if (!self._filesInProgress){return;}
+            if (!self._filesInProgress.length){return;}
 
             var e = e || window.event;
             // for ie, ff
@@ -298,24 +310,29 @@ qq.FineUploaderBasic.prototype = {
     },
     _onSubmit: function(id, fileName){
         if (this._options.autoUpload) {
-            this._filesInProgress++;
+            this._filesInProgress.push(id);
         }
     },
     _onProgress: function(id, fileName, loaded, total){
     },
     _onComplete: function(id, fileName, result, xhr){
-        this._filesInProgress--;
+        this._removeFromFilesInProgress(id);
         this._maybeParseAndSendUploadError(id, fileName, result, xhr);
     },
     _onCancel: function(id, fileName){
+        this._removeFromFilesInProgress(id);
+
         clearTimeout(this._retryTimeouts[id]);
 
         var storedFileIndex = qq.indexOf(this._storedFileIds, id);
-        if (this._options.autoUpload || storedFileIndex < 0) {
-            this._filesInProgress--;
-        }
-        else if (!this._options.autoUpload) {
+        if (!this._options.autoUpload && storedFileIndex >= 0) {
             this._storedFileIds.splice(storedFileIndex, 1);
+        }
+    },
+    _removeFromFilesInProgress: function(id) {
+        var index = qq.indexOf(this._filesInProgress, id);
+        if (index >= 0) {
+            this._filesInProgress.splice(index, 1);
         }
     },
     _onUpload: function(id, fileName){},
@@ -323,9 +340,7 @@ qq.FineUploaderBasic.prototype = {
         if (qq.isXhrUploadSupported()){
             this.addFiles(input.files);
         } else {
-            if (this._validateFile(input)){
-                this.addFiles(input);
-            }
+            this.addFiles(input);
         }
         this._button.reset();
     },
@@ -362,7 +377,7 @@ qq.FineUploaderBasic.prototype = {
             }
 
             this.log("Retrying upload for '" + fileName + "' (id: " + id + ")...");
-            this._filesInProgress++;
+            this._filesInProgress.push(id);
             return true;
         }
         else {
@@ -386,7 +401,7 @@ qq.FineUploaderBasic.prototype = {
         var validationDescriptors, index, batchInvalid;
 
         validationDescriptors = this._getValidationDescriptors(files);
-        batchInvalid = this._options.callbacks.onValidate(validationDescriptors) === false;
+        batchInvalid = this._options.callbacks.onValidateBatch(validationDescriptors) === false;
 
         if (!batchInvalid) {
             if (files.length > 0) {
@@ -429,7 +444,7 @@ qq.FineUploaderBasic.prototype = {
         name = validationDescriptor.name;
         size = validationDescriptor.size;
 
-        if (this._options.callbacks.onValidate([validationDescriptor]) === false) {
+        if (this._options.callbacks.onValidate(validationDescriptor) === false) {
             return false;
         }
 
@@ -459,7 +474,7 @@ qq.FineUploaderBasic.prototype = {
         var message = this._options.messages[code];
         function r(name, replacement){ message = message.replace(name, replacement); }
 
-        var extensions = this._options.validation.allowedExtensions.join(', ');
+        var extensions = this._options.validation.allowedExtensions.join(', ').toLowerCase();
 
         r('{file}', this._options.formatFileName(fileName));
         r('{extensions}', extensions);
@@ -480,7 +495,7 @@ qq.FineUploaderBasic.prototype = {
 
         qq.each(allowed, function(idx, allowedExt) {
             /*jshint eqeqeq: true, eqnull: true*/
-            var extRegex = new RegExp('\\.' + allowedExt.toLowerCase() + "$");
+            var extRegex = new RegExp('\\.' + allowedExt + "$", 'i');
 
             if (fileName.match(extRegex) != null) {
                 valid = true;
@@ -509,7 +524,7 @@ qq.FineUploaderBasic.prototype = {
                 return callback.apply(self, args);
             }
             catch (exception) {
-                self.log("Caught exception in '" + name + "' callback - " + exception, 'error');
+                self.log("Caught exception in '" + name + "' callback - " + exception.message, 'error');
             }
         }
 
@@ -563,13 +578,12 @@ qq.FineUploaderBasic.prototype = {
         return fileDescriptor;
     },
     _getValidationDescriptors: function(files) {
-        var index, fileDescriptors;
+        var self = this,
+            fileDescriptors = [];
 
-        fileDescriptors = [];
-
-        for (index = 0; index < files.length; index++) {
-            fileDescriptors.push(files[index]);
-        }
+        qq.each(files, function(idx, file) {
+            fileDescriptors.push(self._getValidationDescriptor(file));
+        });
 
         return fileDescriptors;
     },

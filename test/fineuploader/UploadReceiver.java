@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
@@ -46,7 +45,7 @@ public class UploadReceiver extends HttpServlet
             {
                 MultipartUploadParser multipartUploadParser = new MultipartUploadParser(req, TEMP_DIR, getServletContext());
                 requestParser = RequestParser.getInstance(req, multipartUploadParser);
-                writeFileForMultipartRequest(requestParser, multipartUploadParser);
+                writeFileForMultipartRequest(requestParser);
                 writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, false);
             }
             else
@@ -75,28 +74,21 @@ public class UploadReceiver extends HttpServlet
         String contentLengthHeader = req.getHeader(CONTENT_LENGTH);
         long expectedFileSize = Long.parseLong(contentLengthHeader);
 
-        String partNumStr = req.getParameter("qqpartindex");
-        if (partNumStr != null)
+        if (requestParser.getPartIndex() >= 0)
         {
-            int totalFileSize = Integer.parseInt(req.getParameter("qqtotalfilesize"));
-            int partNum = Integer.parseInt(partNumStr);
-            int totalParts = Integer.parseInt(req.getParameter("qqtotalparts"));
-            String uuid = req.getParameter("qquuid");
+            writeFile(req.getInputStream(), new File(UPLOAD_DIR, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null);
 
-            writeFile(req.getInputStream(), new File(UPLOAD_DIR, uuid + "_" + String.format("%05d", partNum)), null);
-
-            if (totalParts-1 == partNum)
+            if (requestParser.getTotalParts()-1 == requestParser.getPartIndex())
             {
-                File[] parts = getPartitionFiles(UPLOAD_DIR, uuid);
+                File[] parts = getPartitionFiles(UPLOAD_DIR, requestParser.getUuid());
                 File outputFile = new File(UPLOAD_DIR, requestParser.getFilename());
                 for (File part : parts)
                 {
                     mergeFiles(outputFile, part);
                 }
 
-                assertCombinedFileIsVaid(totalFileSize, outputFile, uuid);
-
-                deletePartitionFiles(UPLOAD_DIR, uuid);
+                assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
+                deletePartitionFiles(UPLOAD_DIR, requestParser.getUuid());
             }
         }
         else
@@ -106,31 +98,23 @@ public class UploadReceiver extends HttpServlet
     }
 
 
-    private void writeFileForMultipartRequest(RequestParser requestParser, MultipartUploadParser multipartUploadParser) throws Exception
+    private void writeFileForMultipartRequest(RequestParser requestParser) throws Exception
     {
-        String partNumStr = multipartUploadParser.getParams().get("qqpartindex");
-        if (partNumStr != null)
+        if (requestParser.getPartIndex() >= 0)
         {
-            int totalFileSize = Integer.parseInt(multipartUploadParser.getParams().get("qqtotalfilesize"));
-            int partNum = Integer.parseInt(partNumStr);
-            int totalParts = Integer.parseInt(multipartUploadParser.getParams().get("qqtotalparts"));
-            String uuid = multipartUploadParser.getParams().get("qquuid");
-            String originalFilename = URLDecoder.decode(multipartUploadParser.getParams().get("qqfilename"), "UTF-8");
+            writeFile(requestParser.getUploadItem().getInputStream(), new File(UPLOAD_DIR, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null);
 
-            writeFile(requestParser.getUploadItem().getInputStream(), new File(UPLOAD_DIR, uuid + "_" + String.format("%05d", partNum)), null);
-
-            if (totalParts-1 == partNum)
+            if (requestParser.getTotalParts()-1 == requestParser.getPartIndex())
             {
-                File[] parts = getPartitionFiles(UPLOAD_DIR, uuid);
-                File outputFile = new File(UPLOAD_DIR, originalFilename);
+                File[] parts = getPartitionFiles(UPLOAD_DIR, requestParser.getUuid());
+                File outputFile = new File(UPLOAD_DIR, requestParser.getOriginalFilename());
                 for (File part : parts)
                 {
                     mergeFiles(outputFile, part);
                 }
 
-                assertCombinedFileIsVaid(totalFileSize, outputFile, uuid);
-
-                deletePartitionFiles(UPLOAD_DIR, uuid);
+                assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
+                deletePartitionFiles(UPLOAD_DIR, requestParser.getUuid());
             }
         }
         else
@@ -218,6 +202,7 @@ public class UploadReceiver extends HttpServlet
                 if (!expectedFileSize.equals(bytesWrittenToDisk))
                 {
                     log.warn("Expected file {} to be {} bytes; file on disk is {} bytes", new Object[] { out.getAbsolutePath(), expectedFileSize, 1 });
+                    out.delete();
                     throw new IOException(String.format("Unexpected file size mismatch. Actual bytes %s. Expected bytes %s.", bytesWrittenToDisk, expectedFileSize));
                 }
             }

@@ -16,6 +16,7 @@ qq.UploadHandler = function(o) {
         endpointStore: {},
         maxConnections: 3, // maximum number of concurrent uploads
         uuidParamName: 'qquuid',
+        totalFileSizeParamName: 'qqtotalfilesize',
         chunking: {
             enabled: false,
             partSize: 2000000, //bytes
@@ -23,7 +24,6 @@ qq.UploadHandler = function(o) {
                 partIndex: 'qqpartindex',
                 partByteOffset: 'qqpartbyteoffset',
                 chunkSize: 'qqchunksize',
-                totalFileSize: 'qqtotalfilesize',
                 totalParts: 'qqtotalparts',
                 filename: 'qqfilename'
             }
@@ -131,7 +131,14 @@ qq.UploadHandler = function(o) {
          * Returns size of the file identified by id
          */
         getSize: function(id){
-            return handlerImpl.getSize(id);
+            if (handlerImpl.getSize) {
+                return handlerImpl.getSize(id);
+            }
+        },
+        getFile: function(id) {
+            if (handlerImpl.getFile) {
+                return handlerImpl.getFile(id);
+            }
         },
         /**
          * Returns id of files being uploaded or
