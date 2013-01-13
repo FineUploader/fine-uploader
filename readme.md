@@ -922,6 +922,17 @@ match the class names used in the corresponding template elements (where appropr
 <br/>
 ### Callbacks ###
 
+For jQuery plug-in users, adhere to the following syntax:
+```javascript
+$('#myUploader').fineUploader() //you may bind event handlers as part of your initialization, or after initialization
+    .on('complete', function(event, id, fileName, response) {
+        ...
+    })
+    .on('cancel', function(event, id, fileName) {
+        ...
+    });
+```
+
 Callbacks must be declared inside of a `callbacks` object for non-jQuery users, like this:
 ```javascript
 new qq.FineUploader({
@@ -936,17 +947,6 @@ new qq.FineUploader({
         ...
     }
 }
-```
-
-For jQuery plug-in users, adhere to the following syntax:
-```javascript
-$('#myUploader').fineUploader() //you may bind event handlers as part of your initialization, or after initialization
-    .on('complete', function(event, id, fileName, response) {
-        ...
-    })
-    .on('cancel', function(event, id, fileName) {
-        ...
-    });
 ```
 
 Here are all available callbacks:
