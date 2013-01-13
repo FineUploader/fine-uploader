@@ -11,6 +11,7 @@ qq.UploadHandler = function(o) {
     // Default options, can be overridden by the user
     options = {
         debug: false,
+        forceMultipart: true,
         paramsInBody: false,
         paramsStore: {},
         endpointStore: {},

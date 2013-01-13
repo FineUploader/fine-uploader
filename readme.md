@@ -189,6 +189,11 @@ Currently, no other browsers support this API.
 **Q:** I have created a \<button\> element for my uploader button, but this doesn't seem to work in IE.  Why?      
 **A:** In IE, the button element receives the click event, instead of the child input element.  Use a \<div\> or a \<span\> or an \<a\> instead.
 
+**Q:** Why do I only see a "Processing..." message next to a file (in FineUploader mode) in Chrome & Safari after the last byte has been sent but the server has yet to respond?    
+**A:** The implementation of the onProgress notification that tells us the status of the bytes sent to the server varies from browser to browser, unfortunately.
+Webkit browsers have elected to follow the "spirit" of the W3C spec, while Firefox, and (I beleive) IE10, obey the spec in the most strict sense.  I have discussed
+this in some detail [in the "processing" status message feature case](https://github.com/valums/file-uploader/issues/404#issuecomment-10124160).
+
 
 <br/>
 ### Using the optional jQuery plug-in ###
@@ -430,7 +435,7 @@ other default values.  This works for all options that are, themselves, objects 
         <tr>
             <td>forceMultipart</td>
             <td>boolean</td>
-            <td>false</td>
+            <td>true</td>
             <td>While form-based uploads will always be multipart requests, this forces XHR uploads to send files using
             multipart requests as well.</td>
         </tr>
