@@ -922,7 +922,7 @@ match the class names used in the corresponding template elements (where appropr
 <br/>
 ### Callbacks ###
 
-Callbacks must be declared inside of `callbacks` object for non-jQuery users, like this:
+Callbacks must be declared inside of a `callbacks` object for non-jQuery users, like this:
 ```javascript
 new qq.FineUploader({
     ...
