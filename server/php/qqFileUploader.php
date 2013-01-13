@@ -5,11 +5,12 @@ class qqFileUploader {
     public $allowedExtensions = array();
     public $sizeLimit = null;
     public $inputName = 'qqfile';
-    public $chunksFolder = 'chunks/';
+    public $chunksFolder = 'chunks';
+
+    public $chunksCleanupProbability = 0.001; // Once in 1000 requests on avg
+    public $chunksExpireIn = 604800; // One week
 
     protected $uploadName;
-    protected $chunksCleanupProbability = 0.001;
-    protected $chunksExpireIn = 604800;
 
     function __construct(){
         $this->sizeLimit = $this->toBytes(ini_get('upload_max_filesize'));
@@ -34,6 +35,7 @@ class qqFileUploader {
 
         if (is_writable($this->chunksFolder) &&
             1 == mt_rand(1, 1/$this->chunksCleanupProbability)){
+
             // Run garbage collection
             $this->cleanupChunks();
         }
@@ -46,14 +48,14 @@ class qqFileUploader {
             return array('error'=>"Server error. Increase post_max_size and upload_max_filesize to ".$size);
         }
 
-        if (!is_writable($uploadDirectory)){
-            return array('error' => "Server error. Upload directory isn't writable.");
+        if (!is_writable($uploadDirectory) || !is_executable($uploadDirectory)){
+            return array('error' => "Server error. Uploads directory isn't writable or executable.");
         }
 
         if(!isset($_SERVER['CONTENT_TYPE'])) {
             return array('error' => "No files were uploaded.");
         } else if (strpos(strtolower($_SERVER['CONTENT_TYPE']), 'multipart/') !== 0){
-            return array('error' => "Server error. Please set forceMultipart and paramsInBody to default values (true).");
+            return array('error' => "Server error. Not a multipart request. Please set forceMultipart to default value (true).");
         }
 
         // Get size and name
@@ -99,11 +101,11 @@ class qqFileUploader {
             $partIndex = (int)$_REQUEST['qqpartindex'];
             $uuid = $_REQUEST['qquuid'];
 
-            if (!is_writable($chunksFolder)){
-                return array('error' => "Server error. Chunks directory isn't writable.");
+            if (!is_writable($chunksFolder) || !is_executable($uploadDirectory)){
+                return array('error' => "Server error. Chunks directory isn't writable or executable.");
             }
 
-            $targetFolder = $this->chunksFolder.$uuid;
+            $targetFolder = $this->chunksFolder.DIRECTORY_SEPARATOR.$uuid;
 
             if (!file_exists($targetFolder)){
                 mkdir($targetFolder);
@@ -145,14 +147,17 @@ class qqFileUploader {
         } else {
 
             $target = $this->getUniqueTargetPath($uploadDirectory, $name);
-            $this->uploadName = basename($target);
 
-            if (move_uploaded_file($file['tmp_name'], $target)){
-                return array('success'=> true);
-            } else {
-                return array('error'=> 'Could not save uploaded file.' .
-                'The upload was cancelled, or server error encountered');
+            if ($target){
+                $this->uploadName = basename($target);
+
+                if (move_uploaded_file($file['tmp_name'], $target)){
+                    return array('success'=> true);
+                }
             }
+
+            return array('error'=> 'Could not save uploaded file.' .
+                'The upload was cancelled, or server error encountered');
         }
     }
 
@@ -191,7 +196,10 @@ class qqFileUploader {
         $result =  $uploadDirectory . DIRECTORY_SEPARATOR . $unique . $ext;
 
         // Create an empty target file
-        touch($result);
+        if (!touch($result)){
+            // Failed
+            $result = false;
+        }
 
         if (function_exists('sem_acquire')){
             sem_release($lock);
@@ -200,12 +208,16 @@ class qqFileUploader {
         return $result;
     }
 
+    /**
+     * Deletes all file parts in the chunks folder for files uploaded
+     * more than chunksExpireIn seconds ago
+     */
     protected function cleanupChunks(){
         foreach (scandir($this->chunksFolder) as $item){
             if ($item == "." || $item == "..")
                 continue;
 
-            $path = $this->chunksFolder.$item;
+            $path = $this->chunksFolder.DIRECTORY_SEPARATOR.$item;
 
             if (!is_dir($path))
                 continue;
@@ -216,6 +228,10 @@ class qqFileUploader {
         }
     }
 
+    /**
+     * Removes a directory and all files contained inside
+     * @param string $dir
+     */
     protected function removeDir($dir){
         foreach (scandir($dir) as $item){
             if ($item == "." || $item == "..")
