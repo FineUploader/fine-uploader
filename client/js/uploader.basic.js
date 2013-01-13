@@ -12,7 +12,7 @@ qq.FineUploaderBasic = function(o){
             params: {},
             paramsInBody: false,
             customHeaders: {},
-            forceMultipart: false,
+            forceMultipart: true,
             inputName: 'qqfile',
             uuidName: 'qquuid',
             totalFileSizeName: 'qqtotalfilesize'

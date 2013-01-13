@@ -19,7 +19,6 @@ public class UploadReceiver extends HttpServlet
     private static File TEMP_DIR = new File("test/uploadsTemp");
 
     private static String CONTENT_TYPE = "text/plain";
-    private static String CONTENT_LENGTH = "Content-Length";
     private static int RESPONSE_CODE = 200;
 
     final Logger log = LoggerFactory.getLogger(UploadReceiver.class);
@@ -50,9 +49,7 @@ public class UploadReceiver extends HttpServlet
             }
             else
             {
-                requestParser = RequestParser.getInstance(req, null);
-                writeFileForNonMultipartRequest(req, requestParser);
-                writeResponse(resp.getWriter(), null, false);
+                throw new Exception("Only multipart encoded requests are supported!");
             }
         } catch (Exception e)
         {
@@ -68,35 +65,6 @@ public class UploadReceiver extends HttpServlet
 
         }
     }
-
-    private void writeFileForNonMultipartRequest(HttpServletRequest req, RequestParser requestParser) throws Exception
-    {
-        String contentLengthHeader = req.getHeader(CONTENT_LENGTH);
-        long expectedFileSize = Long.parseLong(contentLengthHeader);
-
-        if (requestParser.getPartIndex() >= 0)
-        {
-            writeFile(req.getInputStream(), new File(UPLOAD_DIR, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null);
-
-            if (requestParser.getTotalParts()-1 == requestParser.getPartIndex())
-            {
-                File[] parts = getPartitionFiles(UPLOAD_DIR, requestParser.getUuid());
-                File outputFile = new File(UPLOAD_DIR, requestParser.getFilename());
-                for (File part : parts)
-                {
-                    mergeFiles(outputFile, part);
-                }
-
-                assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
-                deletePartitionFiles(UPLOAD_DIR, requestParser.getUuid());
-            }
-        }
-        else
-        {
-            writeFile(req.getInputStream(), new File(UPLOAD_DIR, requestParser.getFilename()), expectedFileSize);
-        }
-    }
-
 
     private void writeFileForMultipartRequest(RequestParser requestParser) throws Exception
     {

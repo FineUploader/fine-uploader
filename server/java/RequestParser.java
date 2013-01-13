@@ -3,7 +3,6 @@ package fineuploader;
 import org.apache.commons.fileupload.FileItem;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.tagext.IterationTag;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -12,7 +11,6 @@ import java.util.Map;
 
 public class RequestParser
 {
-    private static String FILENAME_PARAM = "qqfile";
     private static String PART_INDEX_PARAM = "qqpartindex";
     private static String FILE_SIZE_PARAM = "qqtotalfilesize";
     private static String TOTAL_PARTS_PARAM = "qqtotalparts";
@@ -35,25 +33,16 @@ public class RequestParser
     {
     }
 
-    //2nd param is null unless a MPFR
     static RequestParser getInstance(HttpServletRequest request, MultipartUploadParser multipartUploadParser) throws Exception
     {
         RequestParser requestParser = new RequestParser();
 
-        if (multipartUploadParser == null)
-        {
-            requestParser.filename = request.getParameter(FILENAME_PARAM);
-            parseQueryStringParams(requestParser, request);
-        }
-        else
-        {
-            requestParser.uploadItem = multipartUploadParser.getFirstFile();
-            requestParser.filename = multipartUploadParser.getFirstFile().getName();
+        requestParser.uploadItem = multipartUploadParser.getFirstFile();
+        requestParser.filename = multipartUploadParser.getFirstFile().getName();
 
-            //params could be in body or query string, depending on Fine Uploader request option properties
-            parseRequestBodyParams(requestParser, multipartUploadParser);
-            parseQueryStringParams(requestParser, request);
-        }
+        //params could be in body or query string, depending on Fine Uploader request option properties
+        parseRequestBodyParams(requestParser, multipartUploadParser);
+        parseQueryStringParams(requestParser, request);
 
         removeQqParams(requestParser.customParams);
 
@@ -65,7 +54,6 @@ public class RequestParser
         return filename;
     }
 
-    //only non-null for MPFRs
     public FileItem getUploadItem()
     {
         return uploadItem;
@@ -129,6 +117,7 @@ public class RequestParser
             requestParser.totalFileSize = Integer.parseInt(req.getParameter(FILE_SIZE_PARAM));
             requestParser.totalParts = Integer.parseInt(req.getParameter(TOTAL_PARTS_PARAM));
             requestParser.uuid = req.getParameter(UUID_PARAM);
+            requestParser.originalFilename = req.getParameter(PART_FILENAME_PARAM);
         }
 
         Enumeration<String> paramNames = req.getParameterNames();
