@@ -20,6 +20,9 @@ class qqFileUploader {
      * Get the original filename
      */
     public function getName(){
+        if (isset($_REQUEST['qqfilename']))
+            return $_REQUEST['qqfilename'];
+
         if (isset($_FILES[$this->inputName]))
             return $_FILES[$this->inputName]['name'];
     }
@@ -31,7 +34,12 @@ class qqFileUploader {
         return $this->uploadName;
     }
 
-    public function handleUpload($uploadDirectory){
+    /**
+     * Process the upload.
+     * @param string $uploadDirectory Target directory.
+     * @param string $name Overwrites the name of the file.
+     */
+    public function handleUpload($uploadDirectory, $name = null){
 
         if (is_writable($this->chunksFolder) &&
             1 == mt_rand(1, 1/$this->chunksCleanupProbability)){
@@ -62,8 +70,16 @@ class qqFileUploader {
 
         $file = $_FILES[$this->inputName];
         $size = $file['size'];
-        $name = isset($_REQUEST['qqfilename']) ? $_REQUEST['qqfilename'] : $file['name'];
 
+        if ($name === null){
+            $name = $this->getName();
+        }
+
+        // Validate name
+
+        if ($name === null || $name === ''){
+            return array('error' => 'File name empty.');
+        }
 
         // Validate file size
 
@@ -73,12 +89,6 @@ class qqFileUploader {
 
         if ($size > $this->sizeLimit){
             return array('error' => 'File is too large.');
-        }
-
-        // Validate name
-
-        if ($name === '' || $name === null){
-            return array('error' => 'File name missing.');
         }
 
         // Validate file extension
