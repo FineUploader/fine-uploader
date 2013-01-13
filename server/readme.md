@@ -64,6 +64,6 @@ For more details. please read the [blog post on the file resume feature](http://
 
 <br/>
 ###### WARNING ######
-The examples in the server directory, with the exception of the Java example, were not provided by the those associated
+The examples in the server directory, with the exception of the Java & PHP examples, were not provided by the those associated
 with Fine Uploader.  Use the examples at your own risk.  They may or may not work correctly and are NOT supported!  If
 you have a problem with one of these examples, please post in the [forum](https://groups.google.com/forum/#!forum/fineuploader).
