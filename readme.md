@@ -154,7 +154,7 @@ system that will allow you to identify yourself at checkout so I can identify th
 pay the very modest price, you can certainly make use of the source code posted in the Github repo.  The project is, after all, open-source.
 
 **Q:** I like FineUploader mode, but I don't want to allow my users to utilize the drag & drop feature.  How can I do this?      
-*A:* Set the `disableDefaultDropzone` property of the `dragAndDrop` option to `true`.
+**A:** Set the `disableDefaultDropzone` property of the `dragAndDrop` option to `true`.
 
 **Q:** Using the jQuery plug-in in FineUploaderBasic mode, I can't seem to get my upload button to appear.      
 **A:** It is important to understand that the target of your plug-in should be an existing container element for your upload
