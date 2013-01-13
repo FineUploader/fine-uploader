@@ -933,7 +933,7 @@ $('#myUploader')
     });
 ```
 
-Note that, is using the jQuery plug-in, you can also bind your callback/event handlers as part of your initialization code, since
+Note that, if using the jQuery plug-in, you can also bind your callback/event handlers as part of your initialization code, since
 the `fineUploader` plug-in returns your target element (`$('#myUploader')`, in this example).
 
 Callbacks must be declared inside of a `callbacks` object for non-jQuery users, like this:
