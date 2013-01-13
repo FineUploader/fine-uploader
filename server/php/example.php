@@ -1,8 +1,22 @@
 <?php
 
-// Example of how to use this uploader class
+// To see the PHP example in action, please do the following steps.
+//
+// 1. Open test/js/uploader-demo-jquery.js file and change the request.endpoint
+// parameter to point to this file.
+//
+//  ...
+//  request: {
+//    endpoint: "../../server/php/example.php"
+//  }
+//  ...
+//
+// 2. As a next step, make uploads and chunks folders writable.
+//
+// 3. Open test/jquery.html to see if everything is working correctly,
+// the uploaded files should be going into uploads folder.
 
-// Inlude the uploader class
+// Include the uploader class
 require_once '../../server/php/qqFileUploader.php';
 
 $uploader = new qqFileUploader();
@@ -21,10 +35,12 @@ $uploader->chunksFolder = 'chunks/';
 
 // Call handleUpload() with the name of the folder, relative to PHP's getcwd()
 $result = $uploader->handleUpload('uploads/');
-$result['uploadName'] = $uploader->getUploadName();
 
-// To save the upload with a random name, specify the second parameter
+// To save the upload with a random name, specify the second parameter.
 // $result = $uploader->handleUpload('uploads/', md5(mt_rand());
+
+// To return a name used for uploaded file you can use the following line.
+$result['uploadName'] = $uploader->getUploadName();
 
 header("Content-Type: text/plain");
 echo json_encode($result);

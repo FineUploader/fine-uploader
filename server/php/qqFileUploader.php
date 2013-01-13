@@ -60,7 +60,7 @@ class qqFileUploader {
 
         $file = $_FILES[$this->inputName];
         $size = $file['size'];
-        $name = isset($_POST['qqfilename']) ? $_POST['qqfilename'] : $file['name'];
+        $name = isset($_REQUEST['qqfilename']) ? $_REQUEST['qqfilename'] : $file['name'];
 
 
         // Validate file size
@@ -91,13 +91,13 @@ class qqFileUploader {
 
         // Save a chunk
 
-        $totalParts = isset($_POST['qqtotalparts']) ? (int)$_POST['qqtotalparts'] : 1;
+        $totalParts = isset($_REQUEST['qqtotalparts']) ? (int)$_REQUEST['qqtotalparts'] : 1;
 
         if ($totalParts > 1){
 
             $chunksFolder = $this->chunksFolder;
-            $partIndex = (int)$_POST['qqpartindex'];
-            $uuid = $_POST['qquuid'];
+            $partIndex = (int)$_REQUEST['qqpartindex'];
+            $uuid = $_REQUEST['qquuid'];
 
             if (!is_writable($chunksFolder)){
                 return array('error' => "Server error. Chunks directory isn't writable.");
