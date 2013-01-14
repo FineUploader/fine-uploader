@@ -1,5 +1,7 @@
-# Fine Uploader 3.2 #
+# Fine Uploader 3.2 (Released January 13) #
 ### 3.3 is the next planned release ###
+
+###[Download the 3.2 combined & minified javascript file (along with all other required files) here](https://github.com/valums/file-uploader/wiki/Releases)###
 
 <br/>
 Actively developed by [Ray Nicholus](http://lnkd.in/Nkhx2C).     
