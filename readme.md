@@ -1,4 +1,5 @@
-# Fine Uploader 3.2-IN-PROGRESS #
+# Fine Uploader 3.2 #
+### 3.3 is the next planned release ###
 
 <br/>
 Actively developed by [Ray Nicholus](http://lnkd.in/Nkhx2C).     
@@ -114,7 +115,7 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 6. Have a look at the available [API functions in FineUploaderBasic mode](#fineuploaderbasic-mode-api-functions).
 7. Check out the available [API functions in FineUploader mode](#fineuploader-mode-api-functions).
 8. Examine the [available callbacks](#callbacks-1).
-9. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/3.2-IP/server/readme.md).
+9. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/master/server/readme.md).
 10. Some additional sections that may be of interested are outlined [here](#additional-reading).
 
 ## FineUploaderBasic mode users ##
@@ -124,7 +125,7 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 4. Glance at this quick blurb on [overriding options](#how-to-override-options).
 5. Have a look at the available [API functions in FineUploaderBasic mode](#fineuploaderbasic-mode-api-functions).
 6. Examine the [available callbacks](#callbacks-1).
-7. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/3.2-IP/server/readme.md).
+7. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/master/server/readme.md).
 8. Some additional sections that may be of interested are outlined [here](#additional-reading).
 
 
