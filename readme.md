@@ -22,7 +22,7 @@ Created by Andrew Valums.
 - [Summary](#summary)
 - [Features](#features)
 - [Getting started](#getting-started)
-- [Server-side requirements](https://github.com/valums/file-uploader/blob/master/server/readme.md)
+- [Server-side requirements](https://github.com/valums/file-uploader/blob/3.1.1/server/readme.md)
 - [Using the optional jQuery plug-in](#using-the-optional-jquery-plug-in)
 - [Setting up the uploader without jQuery](#setting-up-the-uploader-without-jquery)
 - [How to override options](#how-to-override-options)
