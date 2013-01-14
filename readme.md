@@ -202,8 +202,8 @@ content-disposition header for this boundary contains the actual file name.  How
 client-side, we are sending a [Blob](http://www.w3.org/TR/FileAPI/#dfn-Blob) to represent a different part of the 
 [File](http://www.w3.org/TR/FileAPI/#dfn-file) in each request.  A [FormData](http://www.w3.org/TR/2010/WD-XMLHttpRequest2-20100907/#the-formdata-interface) object is used to construct these
 requests.  When a Blob is added to a FormData object, the user agent sets the content-disposition header for the associated
-multipart boundary in the request to "blob" (or, possible, sometimes an empty or random string).  As a result, we must
-pass the actual original file name in a parameter.
+multipart boundary in the request to "blob" (or sometimes an empty or random string).  As a result, we must
+pass the original file name in a parameter.
 
 
 <br/>
