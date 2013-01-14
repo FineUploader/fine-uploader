@@ -196,7 +196,7 @@ Currently, no other browsers support this API.
 Webkit browsers have elected to follow the "spirit" of the W3C spec, while Firefox, and (I beleive) IE10, obey the spec in the most strict sense.  I have discussed
 this in some detail [in the "processing" status message feature case](https://github.com/valums/file-uploader/issues/404#issuecomment-10124160).
 
-**Q:** When chunking and multipart encoded are both enabled, why must I determine the original file's name by parsing the qqfilename parameter?
+**Q:** When chunking and multipart encoded are both enabled, why must I determine the original file's name by parsing the qqfilename parameter?   
 **A:** The file data is stored in one of the multipart boundaries contained in the request payload.  Normally, the 
 content-disposition header for this boundary contains the actual file name.  However, when the file is split up into parts
 client-side, we are sending a [Blob](http://www.w3.org/TR/FileAPI/#dfn-Blob) to represent a different part of the 
