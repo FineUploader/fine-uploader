@@ -148,10 +148,9 @@ version-stamped css file, and all other required files?
 **A:** Fine Uploader is a lot of work.  I literally work on Fine Uploader, in my free time, 7 days a week.  I've kept up this
 schedule since August.  As a result Fine Uploader grows at a rapid pace, bugs are addressed quickly, and the support I provide
 for users is second-to-none.  Compensation provides me with an excuse to keep up the work I am doing.  The other alternative is
-a project that decays and becomes unusable or out-of-date after some time.  Starting with version 3.2, I will personally answer
-questions and feature requests posed in the forums and the issue tracker only for users who have contributed.  I will have a simple
-system that will allow you to identify yourself at checkout so I can identify these individuals.  If, for some reason, you don't want to
-pay the very modest price, you can certainly make use of the source code posted in the Github repo.  The project is, after all, open-source.
+a project that decays and becomes unusable or out-of-date after some time.  If, for some reason, you don't want to
+contribute to those that have worked so hard to provide you with this solution at a very modest price, you can certainly
+make use of the source code posted in the Github repo.  The project is, after all, open-source.
 
 **Q:** I like FineUploader mode, but I don't want to allow my users to utilize the drag & drop feature.  How can I do this?      
 **A:** Set the `disableDefaultDropzone` property of the `dragAndDrop` option to `true`.
