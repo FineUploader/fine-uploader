@@ -210,7 +210,7 @@ pass the original file name in a parameter.
 Chrome 21+, currently.  This is due to the fact that there is no way to reliably detect if a folder has been dropped 
 unless the user agent implements the [Filesystem API](http://www.w3.org/TR/file-system-api/). Folder dropping is only 
 supported in Chrome 21+, since this is the only browser that implements the Filesystem API.  You can parse the user 
-agent string to determine if folder dropping is supported, and then inform your users in your application's UI.  
+agent string to determine if folder dropping is supported, and then inform your users in your application's UI.
 Theoretically, you could check for the appropriate function on the [DataTransfer](http://www.w3.org/TR/2011/WD-html5-20110113/dnd.html#the-datatransfer-interface) 
 object prototype, but this would not work cross-browser, since webkit does not expose this interface, unfortunately.
 
