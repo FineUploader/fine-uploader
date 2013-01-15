@@ -155,6 +155,11 @@ a project that decays and becomes unusable or out-of-date after some time.  If, 
 contribute to those that have worked so hard to provide you with this solution at a very modest price, you can certainly
 make use of the source code posted in the Github repo.  The project is, after all, open-source.
 
+**Q**: In IE, when my server returns its response to an upload request, I see a "Save As..." dialog box on the client.  What am I doing wrong?
+**A**: Your server's response content-type MUST be "text/plain".  IE does not handle the "application/json" mime-type.  You have
+probably read advice from others that claim "text/html" is also safe.  This is not always true.  You will run into problems with a content-type
+of "text/html" if your JSON response contains HTML.
+
 **Q:** I like FineUploader mode, but I don't want to allow my users to utilize the drag & drop feature.  How can I do this?      
 **A:** Set the `disableDefaultDropzone` property of the `dragAndDrop` option to `true`.
 
