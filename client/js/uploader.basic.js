@@ -27,6 +27,7 @@ qq.FineUploaderBasic = function(o){
             onSubmit: function(id, fileName){},
             onComplete: function(id, fileName, responseJSON){},
             onCancel: function(id, fileName){},
+            onDelete: function(id, uuid){},
             onUpload: function(id, fileName){},
             onUploadChunk: function(id, fileName, chunkData){},
             onResume: function(id, fileName, chunkData){},
