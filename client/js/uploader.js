@@ -19,7 +19,6 @@ qq.FineUploader = function(o){
             uploadButton: 'Upload a file',
             cancelButton: 'Cancel',
             retryButton: 'Retry',
-            deleteButton: 'Delete',
             failUpload: 'Upload failed',
             dragZone: 'Drop files here to upload',
             dropProcessing: 'Processing dropped files...',
@@ -42,7 +41,6 @@ qq.FineUploader = function(o){
             '<span class="qq-upload-size"></span>' +
             '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
             '<a class="qq-upload-retry" href="#">{retryButtonText}</a>' +
-            '<a class="qq-upload-delete" href="#">{deleteButtonText}</a>' +
             '<span class="qq-upload-status-text">{statusText}</span>' +
             '</li>',
         classes: {
@@ -59,7 +57,6 @@ qq.FineUploader = function(o){
             retryable: 'qq-upload-retryable',
             size: 'qq-upload-size',
             cancel: 'qq-upload-cancel',
-            delete_class: 'qq-upload-delete', // IE bonks on "delete"
             retry: 'qq-upload-retry',
             statusText: 'qq-upload-status-text',
 
@@ -104,7 +101,6 @@ qq.FineUploader = function(o){
     this._options.template     = this._options.template.replace(/\{dropProcessingText\}/g, this._options.text.dropProcessing);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.text.cancelButton);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{retryButtonText\}/g, this._options.text.retryButton);
-    this._options.fileTemplate = this._options.fileTemplate.replace(/\{deleteButtonText\}/g, this._options.text.deleteButton);
     this._options.fileTemplate = this._options.fileTemplate.replace(/\{statusText\}/g, "");
 
     this._element = this._options.element;
@@ -287,7 +283,6 @@ qq.extend(qq.FineUploader.prototype, {
         qq(this._find(item, 'spinner')).hide();
 
         if (result.success){
-            this._showDeleteLink(item);
             qq(item).addClass(this._classes.success);
             if (this._classes.successIcon) {
                 this._find(item, 'finished').style.display = "inline-block";
@@ -383,7 +378,7 @@ qq.extend(qq.FineUploader.prototype, {
             e = e || window.event;
             var target = e.target || e.srcElement;
 
-            if (qq(target).hasClass(self._classes.cancel) || qq(target).hasClass(self._classes.retry) || qq(target).hasClass(self._classes.delete_class)){
+            if (qq(target).hasClass(self._classes.cancel) || qq(target).hasClass(self._classes.retry)){
                 qq.preventDefault(e);
 
                 var item = target.parentNode;
@@ -391,10 +386,7 @@ qq.extend(qq.FineUploader.prototype, {
                     item = target = target.parentNode;
                 }
 
-                if (qq(target).hasClass(self._classes.delete_class)) {
-                    self._options.callbacks.onDelete(item.qqFileId, self.getUuid(item.qqFileId));
-                    self.cancel(item.qqFileId);
-                } else if (qq(target).hasClass(self._classes.cancel)) {
+                if (qq(target).hasClass(self._classes.cancel)) {
                     self.cancel(item.qqFileId);
                 }
                 else {
@@ -456,12 +448,6 @@ qq.extend(qq.FineUploader.prototype, {
         if (!this._options.disableCancelForFormUploads || qq.isXhrUploadSupported()) {
             var cancelLink = this._find(item, 'cancel');
             cancelLink.style.display = 'inline';
-        }
-    },
-    _showDeleteLink: function(item) {
-        if (!this._options.disableCancelForFormUploads || qq.isXhrUploadSupported()) {
-            var deleteLink = this._find(item, 'delete_class');
-            deleteLink.style.display = 'inline';
         }
     },
     _error: function(code, fileName){
