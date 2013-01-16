@@ -7,3 +7,4 @@ test/uploadsTemp/
 *.ipr
 *~
 .*.sw[a-z]
+build/*
