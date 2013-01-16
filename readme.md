@@ -383,8 +383,11 @@ other default values.  This works for all options that are, themselves, objects 
             <td>multiple</td>
             <td>boolean</td>
             <td>true</td>
-            <td>Set to false puts the uploader into what is best described as 'single-file upload mode'.  See the
-            [demo](http://fineuploader.com) for an example.</td>
+            <td>In FineUploaderBasic mode, this will simply prevent you from simultaneously selecting or dropping more than one file.
+            In FineUploader mode, dropping or selecting another file will clear the upload file list.  If another file is already uploading, it will
+            be cancelled.  If you you want Fine Uploader to simply ignore subsequently dropped/selected files, simply return false
+            in your <code>onValidate</code> or <code>onSumbit</code> callback handler for any subsequent file that has been dropped.  Note that the behavior
+            described for FineUploader mode is in addition to the behavior already provided by FineUploaderBasic mode.</td>
         </tr>
         <tr>
             <td>maxConnections</td>
