@@ -8,3 +8,4 @@ test/uploadsTemp/
 *~
 .*.sw[a-z]
 build/*
+release/*
