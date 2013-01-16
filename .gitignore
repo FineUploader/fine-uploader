@@ -5,3 +5,5 @@ Thumbs.db
 test/uploads/
 test/uploadsTemp/
 *.ipr
+*~
+.*.sw[a-z]
