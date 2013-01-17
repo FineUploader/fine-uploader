@@ -356,9 +356,13 @@ qq.extend(qq.FineUploader.prototype, {
 
         var fileElement = this._find(item, 'file');
         qq(fileElement).setText(this._options.formatFileName(fileName));
+
         var size = this._find(item, 'size');
         qq(size).setText(this._formatSize(this.getSize(id)));
-        qq(this._find(item, 'size')).hide();
+        if (!qq.isXhrUploadSupported()) {
+            qq(this._find(item, 'size')).hide();
+        }
+
         if (!this._options.multiple) {
             this._handler.cancelAll();
             this._clearList();
