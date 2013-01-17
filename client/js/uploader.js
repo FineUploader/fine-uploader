@@ -59,7 +59,7 @@ qq.FineUploader = function(o){
             retryable: 'qq-upload-retryable',
             size: 'qq-upload-size',
             cancel: 'qq-upload-cancel',
-            delete_class: 'qq-upload-delete', // IE bonks on "delete"
+            deleteButton: 'qq-upload-delete',
             retry: 'qq-upload-retry',
             statusText: 'qq-upload-status-text',
 
@@ -148,8 +148,7 @@ qq.extend(qq.FineUploader.prototype, {
     },
     cancel: function(fileId) {
         qq.FineUploaderBasic.prototype.cancel.apply(this, arguments);
-        var item = this.getItemByFileId(fileId);
-        qq(item).remove();
+        this._removeFileItem(fileId);
     },
     reset: function() {
         qq.FineUploaderBasic.prototype.reset.apply(this, arguments);
@@ -161,6 +160,10 @@ qq.extend(qq.FineUploader.prototype, {
         this._bindCancelAndRetryEvents();
         this._dnd.dispose();
         this._dnd = this._setupDragAndDrop();
+    },
+    _removeFileItem: function(fileId) {
+        var item = this.getItemByFileId(fileId);
+        qq(item).remove();
     },
     _setupDragAndDrop: function() {
         var self = this,
@@ -383,7 +386,7 @@ qq.extend(qq.FineUploader.prototype, {
             e = e || window.event;
             var target = e.target || e.srcElement;
 
-            if (qq(target).hasClass(self._classes.cancel) || qq(target).hasClass(self._classes.retry) || qq(target).hasClass(self._classes.delete_class)){
+            if (qq(target).hasClass(self._classes.cancel) || qq(target).hasClass(self._classes.retry) || qq(target).hasClass(self._classes.deleteButton)){
                 qq.preventDefault(e);
 
                 var item = target.parentNode;
@@ -391,10 +394,12 @@ qq.extend(qq.FineUploader.prototype, {
                     item = target = target.parentNode;
                 }
 
-                if (qq(target).hasClass(self._classes.delete_class)) {
+                if (qq(target).hasClass(self._classes.deleteButton)) {
                     self._options.callbacks.onDelete(item.qqFileId, self.getUuid(item.qqFileId));
-                    self.cancel(item.qqFileId);
-                } else if (qq(target).hasClass(self._classes.cancel)) {
+                    //TODO move this logic to the code that handles the DELETE response, and only remove the item on success
+                    self._removeFileItem(item.qqFileId);
+                }
+                else if (qq(target).hasClass(self._classes.cancel)) {
                     self.cancel(item.qqFileId);
                 }
                 else {
@@ -444,7 +449,6 @@ qq.extend(qq.FineUploader.prototype, {
             this.log("failedUploadTextDisplay.mode value of '" + mode + "' is not valid", 'warn');
         }
     },
-    //TODO turn this into a real tooltip, with click trigger (so it is usable on mobile devices).  See case #355 for details.
     _showTooltip: function(item, text) {
         item.title = text;
     },
@@ -459,10 +463,9 @@ qq.extend(qq.FineUploader.prototype, {
         }
     },
     _showDeleteLink: function(item) {
-        if (!this._options.disableCancelForFormUploads || qq.isXhrUploadSupported()) {
-            var deleteLink = this._find(item, 'delete_class');
-            deleteLink.style.display = 'inline';
-        }
+        //TODO create an option to control visibility of this button
+        var deleteLink = this._find(item, 'deleteButton');
+        deleteLink.style.display = 'inline';
     },
     _error: function(code, fileName){
         var message = qq.FineUploaderBasic.prototype._error.apply(this, arguments);
