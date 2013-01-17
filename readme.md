@@ -10,7 +10,7 @@ Created by Andrew Valums.
 <br/>
 ## Known Issues ##
 * [#595](https://github.com/valums/file-uploader/issues/595) - `inputName` parameter is included in both the query string 
-AND the request payload of XHR requests if `forceMultipart` is true (default) and `paramsInBody` is false (default).  
+AND the request payload of XHR requests if `forceMultipart` is true (default) and `paramsInBody` is false (default).
 This will be fixed in 3.3.  This will NOT affect most users.  If it does negatively impact you, an easy workaround is to 
 set the `paramsInBody` property of the `request` option to true.  Note that in 3.3, the `paramsInBody` default value will 
 be changed to true anyway.  Please read more about this option in this readme, and in the 
