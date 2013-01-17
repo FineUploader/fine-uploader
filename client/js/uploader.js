@@ -86,9 +86,26 @@ qq.FineUploader = function(o){
             autoRetryNote: "Retrying {retryNum}/{maxAuto}...",
             showButton: false
         },
+        deleteFile: {
+            forceConfirm: false,
+            confirmMessage: "Are you sure you want to delete {filename}?"
+        },
         showMessage: function(message){
             setTimeout(function() {
                 alert(message);
+            }, 0);
+        },
+        showConfirm: function(message, okCallback, cancelCallback) {
+            setTimeout(function() {
+                var result = confirm(message);
+                if (result) {
+                    if (okCallback) {
+                        okCallback();
+                    }
+                }
+                else if (cancelCallback) {
+                    cancelCallback();
+                }
             }, 0);
         }
     }, true);
@@ -353,6 +370,24 @@ qq.extend(qq.FineUploader.prototype, {
         }
         return false;
     },
+    _onDelete: function(fileId) {
+        if (qq.FineUploaderBasic.prototype._onDelete.apply(this, arguments) !== false) {
+            if (this._options.deleteFile.forceConfirm) {
+                this._showDeleteConfirm(fileId);
+            }
+            else {
+                qq.log('TODO - send delete request');
+            }
+        }
+    },
+    _showDeleteConfirm: function(fileId) {
+        var fileName = this._handler.getName(fileId),
+            confirmMessage = this._options.deleteFile.confirmMessage.replace(/\{filename\}/g, fileName);
+
+        this._options.showConfirm(confirmMessage, function() {
+            qq.log("Confirmed!  TODO - send delete request");
+        });
+    },
     _addToList: function(id, fileName){
         var item = qq.toElement(this._options.fileTemplate);
         if (this._options.disableCancelForFormUploads && !qq.isXhrUploadSupported()) {
@@ -395,9 +430,7 @@ qq.extend(qq.FineUploader.prototype, {
                 }
 
                 if (qq(target).hasClass(self._classes.deleteButton)) {
-                    self._options.callbacks.onDelete(item.qqFileId, self.getUuid(item.qqFileId));
-                    //TODO move this logic to the code that handles the DELETE response, and only remove the item on success
-                    self._removeFileItem(item.qqFileId);
+                    self._onDelete(item.qqFileId);
                 }
                 else if (qq(target).hasClass(self._classes.cancel)) {
                     self.cancel(item.qqFileId);

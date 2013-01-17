@@ -27,7 +27,6 @@ qq.FineUploaderBasic = function(o){
             onSubmit: function(id, fileName){},
             onComplete: function(id, fileName, responseJSON){},
             onCancel: function(id, fileName){},
-            onDelete: function(id, uuid){},
             onUpload: function(id, fileName){},
             onUploadChunk: function(id, fileName, chunkData){},
             onResume: function(id, fileName, chunkData){},
@@ -36,7 +35,9 @@ qq.FineUploaderBasic = function(o){
             onAutoRetry: function(id, fileName, attemptNumber) {},
             onManualRetry: function(id, fileName) {},
             onValidateBatch: function(fileData) {},
-            onValidate: function(fileData) {}
+            onValidate: function(fileData) {},
+            onDelete: function(id){},
+            onDeleteComplete: function(id, responseJSON){}
         },
         messages: {
             typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
@@ -84,6 +85,10 @@ qq.FineUploaderBasic = function(o){
         },
         text: {
             sizeSymbols: ['kB', 'MB', 'GB', 'TB', 'PB', 'EB']
+        },
+        deleteFile : {
+            enabled: false,
+            endpoint: '/server/upload'
         }
     };
 
@@ -383,6 +388,15 @@ qq.FineUploaderBasic.prototype = {
         }
         else {
             this.log("'" + id + "' is not a valid file ID", 'error');
+            return false;
+        }
+    },
+    _onDelete: function(fileId) {
+        if (this._options.deleteFile.enabled) {
+            return this._options.callbacks.onDelete(fileId);
+        }
+        else {
+            this.log("Delete request ignored for file ID " + fileId + ", delete feature is disabled.", "warn");
             return false;
         }
     },
