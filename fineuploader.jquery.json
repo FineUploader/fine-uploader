@@ -1,0 +1,42 @@
+{
+  "name": "fineuploader",
+  "title": "Fine Uploader",
+  "description": "Multiple file upload library with support for all major browsers.  Many features such as drag & drop, auto & manual retry, file chunking, auto-resume, and more!  Does NOT use Flash or Java.  Highly configurable.  A no-dependency version is ALSO available in the downloads section.",
+  "keywords": [
+    "upload",
+    "file",
+    "chunking",
+    "file-uploader"
+  ],
+  "version": "3.2",
+  "author": {
+    "name": "Andrew Valums and Ray Nicholus"
+  },
+  "maintainers": [
+    {
+      "name": "Ray Nicholus",
+      "url": "http://lnkd.in/Nkhx2C"
+    }
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    },
+    {
+      "type": "GPL 2",
+      "url": "http://www.gnu.org/licenses/gpl-2.0.txt"
+    },
+    {
+      "type": "LGPL 2",
+      "url": "http://www.gnu.org/licenses/lgpl-2.0.txt"
+    }
+  ],
+  "bugs": "https://github.com/valums/file-uploader/issues",
+  "homepage": "http://fineuploader.com",
+  "docs": "https://github.com/valums/file-uploader/blob/master/readme.md",
+  "download": "https://github.com/valums/file-uploader/wiki/Releases",
+  "dependencies": {
+    "jquery": ">=1.5"
+  }
+}
