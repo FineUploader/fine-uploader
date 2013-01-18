@@ -88,7 +88,8 @@ qq.FineUploaderBasic = function(o){
         },
         deleteFile : {
             enabled: false,
-            endpoint: '/server/upload'
+            endpoint: '/server/upload',
+            resourceInQueryString: false
         }
     };
 
@@ -221,6 +222,9 @@ qq.FineUploaderBasic.prototype = {
     },
     getFile: function(fileId) {
         return this._handler.getFile(fileId);
+    },
+    deleteFile: function(fileId) {
+        this._onDelete(fileId);
     },
     _createUploadButton: function(element){
         var self = this;

@@ -371,21 +371,31 @@ qq.extend(qq.FineUploader.prototype, {
         return false;
     },
     _onDelete: function(fileId) {
-        if (qq.FineUploaderBasic.prototype._onDelete.apply(this, arguments) !== false) {
-            if (this._options.deleteFile.forceConfirm) {
-                this._showDeleteConfirm(fileId);
-            }
-            else {
-                qq.log('TODO - send delete request');
+        if (this._options.deleteFile.enabled) {
+            if (this._options.callbacks.onDelete(fileId) !== false) {
+                if (this._options.deleteFile.forceConfirm) {
+                    this._showDeleteConfirm(fileId);
+                }
+                else {
+                    this._sendDeleteRequest(fileId);
+                }
             }
         }
+        else {
+            this.log("Delete request ignored for file ID " + fileId + ", delete feature is disabled.", "warn");
+            return false;
+        }
+    },
+    _sendDeleteRequest: function(fileId) {
+        //TODO
     },
     _showDeleteConfirm: function(fileId) {
         var fileName = this._handler.getName(fileId),
-            confirmMessage = this._options.deleteFile.confirmMessage.replace(/\{filename\}/g, fileName);
+            confirmMessage = this._options.deleteFile.confirmMessage.replace(/\{filename\}/g, fileName),
+            self = this;
 
         this._options.showConfirm(confirmMessage, function() {
-            qq.log("Confirmed!  TODO - send delete request");
+            self._sendDeleteRequest(fileId);
         });
     },
     _addToList: function(id, fileName){

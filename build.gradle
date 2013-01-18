@@ -11,6 +11,7 @@ def coreFiles = ["${jsSrcDir}/header.js",
                  "${jsSrcDir}/uploader.basic.js",
                  "${jsSrcDir}/dnd.js",
                  "${jsSrcDir}/uploader.js",
+                 "${jsSrcDir}/ajax.requestor.js",
                  "${jsSrcDir}/handler.base.js",
                  "${jsSrcDir}/handler.form.js",
                  "${jsSrcDir}/handler.xhr.js"]
