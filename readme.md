@@ -21,6 +21,12 @@ address this in 3.3. Not a major issue, but it deserves to be addressed. Please 
 information about existing inconsistencies among browsers as far as this "Processing..." message is concerned.
 
 <br/>
+## Notice ##
+I plan on changing the default for the `paramsInBody` property of the `request` option to "true" in 3.3.  I suspect most
+developers are setting this option anyway.  Please let me know if you have any problems with this change, so we can
+discuss further.  The associated case is [#604](https://github.com/valums/file-uploader/issues/604).
+
+<br/>
 ## Quick Links ##
 * [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
 * [Downloads](https://github.com/valums/file-uploader/wiki/Releases)
