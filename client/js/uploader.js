@@ -88,7 +88,10 @@ qq.FineUploader = function(o){
         },
         deleteFile: {
             forceConfirm: false,
-            confirmMessage: "Are you sure you want to delete {filename}?"
+            confirmMessage: "Are you sure you want to delete {filename}?",
+            deletingStatusText: "Deleting...",
+            deletingFailedText: "Delete failed"
+
         },
         showMessage: function(message){
             setTimeout(function() {
@@ -99,9 +102,7 @@ qq.FineUploader = function(o){
             setTimeout(function() {
                 var result = confirm(message);
                 if (result) {
-                    if (okCallback) {
-                        okCallback();
-                    }
+                    okCallback();
                 }
                 else if (cancelCallback) {
                     cancelCallback();
@@ -370,14 +371,16 @@ qq.extend(qq.FineUploader.prototype, {
         }
         return false;
     },
-    _onDelete: function(fileId) {
+    _onSubmitDelete: function(fileId) {
+        var uuid = this.getUuid(fileId);
+
         if (this._options.deleteFile.enabled) {
-            if (this._options.callbacks.onDelete(fileId) !== false) {
+            if (this._options.callbacks.onSubmitDelete(fileId) !== false) {
                 if (this._options.deleteFile.forceConfirm) {
                     this._showDeleteConfirm(fileId);
                 }
                 else {
-                    this._sendDeleteRequest(fileId);
+                    this._deleteHandler.send(fileId, {uuid: uuid});
                 }
             }
         }
@@ -386,16 +389,14 @@ qq.extend(qq.FineUploader.prototype, {
             return false;
         }
     },
-    _sendDeleteRequest: function(fileId) {
-        //TODO
-    },
     _showDeleteConfirm: function(fileId) {
         var fileName = this._handler.getName(fileId),
             confirmMessage = this._options.deleteFile.confirmMessage.replace(/\{filename\}/g, fileName),
+            uuid = this.getUuid(fileId),
             self = this;
 
         this._options.showConfirm(confirmMessage, function() {
-            self._sendDeleteRequest(fileId);
+            self._deleteHandler.send(fileId, {uuid: uuid});
         });
     },
     _addToList: function(id, fileName){
@@ -435,12 +436,12 @@ qq.extend(qq.FineUploader.prototype, {
                 qq.preventDefault(e);
 
                 var item = target.parentNode;
-                while(item.qqFileId == undefined) {
+                while(item.qqFileId === undefined) {
                     item = target = target.parentNode;
                 }
 
                 if (qq(target).hasClass(self._classes.deleteButton)) {
-                    self._onDelete(item.qqFileId);
+                    self.deleteFile(item.qqFileId);
                 }
                 else if (qq(target).hasClass(self._classes.cancel)) {
                     self.cancel(item.qqFileId);
