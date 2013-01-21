@@ -519,14 +519,14 @@ qq.FineUploaderBasic.prototype = {
 
         self = this;
 
-        safeCallback = function(name, callback, args) {
+        safeCallback = (function(name, callback, args) {
             try {
                 return callback.apply(self, args);
             }
             catch (exception) {
                 self.log("Caught exception in '" + name + "' callback - " + exception.message, 'error');
             }
-        }
+        });
 
         for (var prop in this._options.callbacks) {
             (function() {
