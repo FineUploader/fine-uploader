@@ -58,10 +58,14 @@ qq.AjaxRequestor = function(o) {
             method = options.method,
             url = options.endpoint + "/" + requestState[id].param;
 
+        options.onSend(id);
+
         requestState[id].xhr = xhr;
         xhr.onreadystatechange = getReadyStateChangeHandler(id);
-        setHeaders(id);
+
         xhr.open(method, url, true);
+
+        setHeaders(id);
 
         log('Sending ' + method + " request for " + id);
 

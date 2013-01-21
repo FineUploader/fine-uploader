@@ -308,7 +308,7 @@ qq.extend(qq.FineUploader.prototype, {
         qq(this._find(item, 'spinner')).hide();
 
         if (result.success){
-            this._showDeleteLink(item);
+            this._showDeleteLink(id);
             qq(item).addClass(this._classes.success);
             if (this._classes.successIcon) {
                 this._find(item, 'finished').style.display = "inline-block";
@@ -329,8 +329,7 @@ qq.extend(qq.FineUploader.prototype, {
     _onUpload: function(id, fileName){
         qq.FineUploaderBasic.prototype._onUpload.apply(this, arguments);
 
-        var item = this.getItemByFileId(id);
-        this._showSpinner(item);
+        this._showSpinner(id);
     },
     _onBeforeAutoRetry: function(id) {
         var item, progressBar, cancelLink, failTextEl, retryNumForDisplay, maxAuto, retryNote;
@@ -365,7 +364,7 @@ qq.extend(qq.FineUploader.prototype, {
             this._find(item, 'progressBar').style.width = 0;
             qq(item).removeClass(this._classes.fail);
             qq(this._find(item, 'statusText')).clearText();
-            this._showSpinner(item);
+            this._showSpinner(id);
             this._showCancelLink(item);
             return true;
         }
@@ -380,7 +379,7 @@ qq.extend(qq.FineUploader.prototype, {
                     this._showDeleteConfirm(fileId);
                 }
                 else {
-                    this._deleteHandler.send(fileId, {uuid: uuid});
+                    this._sendDeleteRequest(fileId);
                 }
             }
         }
@@ -389,6 +388,33 @@ qq.extend(qq.FineUploader.prototype, {
             return false;
         }
     },
+    _onDeleteComplete: function(fileId, xhr, isError) {
+        qq.FineUploaderBasic.prototype._onDeleteComplete.apply(this, arguments);
+
+        var item = this.getItemByFileId(fileId),
+            spinnerEl = this._find(item, 'spinner'),
+            statusTextEl = this._find(item, 'statusText');
+
+        qq(spinnerEl).hide();
+
+        if (isError) {
+            qq(statusTextEl).setText(this._options.deleteFile.deletingFailedText);
+            this._showDeleteLink(fileId);
+        }
+        else {
+            this._removeFileItem(fileId);
+        }
+    },
+    _sendDeleteRequest: function(fileId) {
+        var item = this.getItemByFileId(fileId),
+            deleteLink = this._find(item, 'deleteButton'),
+            statusTextEl = this._find(item, 'statusText');
+
+        qq(deleteLink).hide();
+        this._showSpinner(fileId);
+        qq(statusTextEl).setText(this._options.deleteFile.deletingStatusText);
+        this._deleteHandler.send(fileId, this.getUuid(fileId));
+    },
     _showDeleteConfirm: function(fileId) {
         var fileName = this._handler.getName(fileId),
             confirmMessage = this._options.deleteFile.confirmMessage.replace(/\{filename\}/g, fileName),
@@ -396,7 +422,7 @@ qq.extend(qq.FineUploader.prototype, {
             self = this;
 
         this._options.showConfirm(confirmMessage, function() {
-            self._deleteHandler.send(fileId, {uuid: uuid});
+            self._sendDeleteRequest(fileId);
         });
     },
     _addToList: function(id, fileName){
@@ -496,20 +522,24 @@ qq.extend(qq.FineUploader.prototype, {
     _showTooltip: function(item, text) {
         item.title = text;
     },
-    _showSpinner: function(item) {
-        var spinnerEl = this._find(item, 'spinner');
+    _showSpinner: function(id) {
+        var item = this.getItemByFileId(id),
+            spinnerEl = this._find(item, 'spinner');
+
         spinnerEl.style.display = "inline-block";
     },
     _showCancelLink: function(item) {
         if (!this._options.disableCancelForFormUploads || qq.isXhrUploadSupported()) {
             var cancelLink = this._find(item, 'cancel');
-            cancelLink.style.display = 'inline';
+
+            qq(cancelLink).css({display: 'inline'});
         }
     },
-    _showDeleteLink: function(item) {
-        //TODO create an option to control visibility of this button
-        var deleteLink = this._find(item, 'deleteButton');
-        deleteLink.style.display = 'inline';
+    _showDeleteLink: function(fileId) {
+        var item = this.getItemByFileId(fileId),
+            deleteLink = this._find(item, 'deleteButton');
+
+        qq(deleteLink).css({display: 'inline'});
     },
     _error: function(code, fileName){
         var message = qq.FineUploaderBasic.prototype._error.apply(this, arguments);

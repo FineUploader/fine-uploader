@@ -35,6 +35,11 @@ $(document).ready(function() {
         retry: {
             enableAuto: true,
             showButton: true
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: '/upload/receiver',
+            forceConfirm: true
         }
     })
         .on('error', errorHandler)

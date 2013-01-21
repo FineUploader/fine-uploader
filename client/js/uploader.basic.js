@@ -308,7 +308,7 @@ qq.FineUploaderBasic.prototype = {
             }
         });
     },
-    _createDeleteHander: function() {
+    _createDeleteHandler: function() {
         var self = this;
 
         return new qq.AjaxRequestor({
@@ -325,7 +325,7 @@ qq.FineUploaderBasic.prototype = {
             },
             onComplete: function(id, xhr, isError) {
                 self._onDeleteComplete(id, xhr, isError);
-                self._options.onDeleteComplete(id, xhr, isError);
+                self._options.callbacks.onDeleteComplete(id, xhr, isError);
             }
 
         });
@@ -364,11 +364,16 @@ qq.FineUploaderBasic.prototype = {
             this._storedFileIds.splice(storedFileIndex, 1);
         }
     },
-    _onDelete: function(fileId) {
-        //TODO
-    },
+    _onDelete: function(fileId) {},
     _onDeleteComplete: function(fileId, xhr, isError) {
-        //TODO
+        var filename = this._handler.getName(fileId);
+
+        if (isError) {
+            this.log("Delete request for '" + filename + "' has failed.", "error");
+        }
+        else {
+            this.log("Delete request for '" + filename + "' has succeeded.");
+        }
     },
     _removeFromFilesInProgress: function(id) {
         var index = qq.indexOf(this._filesInProgress, id);

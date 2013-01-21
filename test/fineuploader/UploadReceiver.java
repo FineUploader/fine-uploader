@@ -20,7 +20,7 @@ public class UploadReceiver extends HttpServlet
 
     private static String CONTENT_TYPE = "text/plain";
     private static String CONTENT_LENGTH = "Content-Length";
-    private static int RESPONSE_CODE = 200;
+    private static int SUCCESS_RESPONSE_CODE = 200;
 
     final Logger log = LoggerFactory.getLogger(UploadReceiver.class);
 
@@ -32,6 +32,13 @@ public class UploadReceiver extends HttpServlet
     }
 
     @Override
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException
+    {
+        //TODO
+        resp.setStatus(SUCCESS_RESPONSE_CODE);
+    }
+
+    @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         RequestParser requestParser;
@@ -39,7 +46,7 @@ public class UploadReceiver extends HttpServlet
         try
         {
             resp.setContentType(CONTENT_TYPE);
-            resp.setStatus(RESPONSE_CODE);
+            resp.setStatus(SUCCESS_RESPONSE_CODE);
 
             if (ServletFileUpload.isMultipartContent(req))
             {
