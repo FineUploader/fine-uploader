@@ -91,7 +91,8 @@ qq.FineUploaderBasic = function(o){
             enabled: false,
             endpoint: '/server/upload',
             maxConnections: 3,
-            customHeaders: {}
+            customHeaders: {},
+            params: {}
         }
     };
 
@@ -109,6 +110,7 @@ qq.FineUploaderBasic = function(o){
     this._preventRetries = [];
 
     this._paramsStore = this._createParamsStore();
+    this._deleteFileParamsStore = this._createParamsStore();
     this._endpointStore = this._createEndpointStore();
 
     this._handler = this._createUploadHandler();
@@ -138,6 +140,15 @@ qq.FineUploaderBasic.prototype = {
         }
         else {
             this._paramsStore.setParams(params, fileId);
+        }
+    },
+    setDeleteFileParams: function(params, fileId) {
+        /*jshint eqeqeq: true, eqnull: true*/
+        if (fileId == null) {
+            this._options.deleteFile.params = params;
+        }
+        else {
+            this._deleteFileParamsStore.setParams(params, fileId);
         }
     },
     setEndpoint: function(endpoint, fileId) {
@@ -311,19 +322,19 @@ qq.FineUploaderBasic.prototype = {
     _createDeleteHandler: function() {
         var self = this;
 
-        return new qq.AjaxRequestor({
+        return new qq.DeleteFileAjaxRequestor({
             endpoint: this._options.deleteFile.endpoint,
-            method: 'DELETE',
             maxConnections: this._options.deleteFile.maxConnections,
             customHeaders: this._options.deleteFile.customHeaders,
+            paramsStore: this._deleteFileParamsStore,
             log: function(str, level) {
                 self.log(str, level);
             },
-            onSend: function(id) {
+            onDelete: function(id) {
                 self._onDelete(id);
                 self._options.callbacks.onDelete(id);
             },
-            onComplete: function(id, xhr, isError) {
+            onDeleteComplete: function(id, xhr, isError) {
                 self._onDeleteComplete(id, xhr, isError);
                 self._options.callbacks.onDeleteComplete(id, xhr, isError);
             }
@@ -434,7 +445,7 @@ qq.FineUploaderBasic.prototype = {
     _onSubmitDelete: function(fileId) {
         if (this._options.deleteFile.enabled) {
             if (this._options.callbacks.onSubmitDelete(fileId)) {
-                this._deleteHandler.send(fileId, this.getUuid(fileId));
+                this._deleteHandler.sendDelete(fileId, this.getUuid(fileId));
             }
         }
         else {

@@ -413,7 +413,7 @@ qq.extend(qq.FineUploader.prototype, {
         qq(deleteLink).hide();
         this._showSpinner(fileId);
         qq(statusTextEl).setText(this._options.deleteFile.deletingStatusText);
-        this._deleteHandler.send(fileId, this.getUuid(fileId));
+        this._deleteHandler.sendDelete(fileId, this.getUuid(fileId));
     },
     _showDeleteConfirm: function(fileId) {
         var fileName = this._handler.getName(fileId),

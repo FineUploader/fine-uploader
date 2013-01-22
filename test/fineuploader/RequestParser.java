@@ -147,6 +147,7 @@ public class RequestParser
             requestParser.totalFileSize = Integer.parseInt(req.getParameter(FILE_SIZE_PARAM));
             requestParser.totalParts = Integer.parseInt(req.getParameter(TOTAL_PARTS_PARAM));
             requestParser.uuid = req.getParameter(UUID_PARAM);
+            requestParser.originalFilename = req.getParameter(PART_FILENAME_PARAM);
         }
 
         Enumeration<String> paramNames = req.getParameterNames();

@@ -8,7 +8,6 @@ qq.AjaxRequestor = function(o) {
         requestState = [],
 
         options = {
-            endpoint: '/server/upload',
             method: 'POST',
             maxConnections: 3,
             customHeaders: {},
@@ -56,9 +55,14 @@ qq.AjaxRequestor = function(o) {
     function sendRequest(id) {
         var xhr = new XMLHttpRequest(),
             method = options.method,
-            url = options.endpoint + "/" + requestState[id].param;
+            params = {},
+            url = createUrl(id);
 
         options.onSend(id);
+
+        if (requestState[id].paramsStore.getParams) {
+            params = requestState[id].paramsStore.getParams(id);
+        }
 
         requestState[id].xhr = xhr;
         xhr.onreadystatechange = getReadyStateChangeHandler(id);
@@ -69,7 +73,24 @@ qq.AjaxRequestor = function(o) {
 
         log('Sending ' + method + " request for " + id);
 
-        xhr.send();
+        if (method !== 'GET' && params) {
+            xhr.send(createParamString(params));
+        }
+        else {
+            xhr.send();
+        }
+    }
+
+    function createUrl(id, params) {
+        var method = options.method,
+            endpoint = requestState[id].endpoint;
+
+        if (method === 'GET' && params) {
+            return qq.obj2url(params, endpoint);
+        }
+        else {
+            return endpoint;
+        }
     }
 
     function getReadyStateChangeHandler(id) {
@@ -108,10 +129,17 @@ qq.AjaxRequestor = function(o) {
         return false;
     }
 
+    function createParamString(parameters) {
+        //TODO
+    }
+
 
     return {
-        send: function(id, parameter) {
-            requestState[id] = {param: parameter};
+        send: function(id, endpoint, paramsStore) {
+            requestState[id] = {
+                paramsStore: paramsStore,
+                endpoint: endpoint
+            };
 
             var len = queue.push(id);
 
