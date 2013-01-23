@@ -13,7 +13,8 @@ qq.AjaxRequestor = function(o) {
             successfulResponseCodes: [200],
             log: function(str, level) {},
             onSend: function(id) {},
-            onComplete: function(id, xhr, isError) {}
+            onComplete: function(id, xhr, isError) {},
+            onCancel: function(id) {}
         };
 
     qq.extend(options, o);
@@ -121,9 +122,13 @@ qq.AjaxRequestor = function(o) {
             method = options.method;
 
         if (xhr) {
+            xhr.onreadystatechange = null;
             xhr.abort();
             dequeue(id);
+
             log('Cancelled ' + method + " for " + id);
+            options.onCancel(id);
+
             return true;
         }
 
