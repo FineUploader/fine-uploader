@@ -13,7 +13,8 @@ def coreFiles = ["${jsSrcDir}/header.js",
                  "${jsSrcDir}/uploader.js",
                  "${jsSrcDir}/handler.base.js",
                  "${jsSrcDir}/handler.form.js",
-                 "${jsSrcDir}/handler.xhr.js"]
+                 "${jsSrcDir}/handler.xhr.js",
+                 "${jsSrcDir}/footer.js"]
 
 def cssFiles = ["$srcDir/fineuploader.css"]
 

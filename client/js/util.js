@@ -554,3 +554,12 @@ qq.DisposeSupport = function() {
         }
     };
 };
+
+if (typeof exports !== 'undefined') {
+    if (typeof module !== 'undefined' && module.exports) {
+      exports = module.exports = qq;
+    }
+    exports.qq = qq;
+} else {
+    root.qq = qq;
+}

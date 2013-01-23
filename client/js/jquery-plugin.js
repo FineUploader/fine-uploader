@@ -1,5 +1,13 @@
 /*globals jQuery, qq*/
-(function($) {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function($) {
     "use strict";
     var uploader, $el, init, dataStore, pluginOption, pluginOptions, addCallbacks, transformVariables, isValidCommand,
         delegateCommand;
@@ -165,4 +173,4 @@
         return this;
     };
 
-}(jQuery));
+}));
