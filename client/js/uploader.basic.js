@@ -381,6 +381,7 @@ qq.FineUploaderBasic.prototype = {
 
         if (isError) {
             this.log("Delete request for '" + filename + "' has failed.", "error");
+            this._options.callbacks.onError(fileId, filename, "Delete request failed with response code " + xhr.status);
         }
         else {
             this.log("Delete request for '" + filename + "' has succeeded.");
