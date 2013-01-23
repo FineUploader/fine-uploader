@@ -23,7 +23,7 @@ information about existing inconsistencies among browsers as far as this "Proces
 ## Quick Links ##
 * [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
 * [Downloads](https://github.com/valums/file-uploader/wiki/Releases)
-* [Support](https://groups.google.com/forum/#!forum/fineuploader)
+* [Support](https://getsatisfaction.com/fineuploader)
 * [Blog](http://blog.fineuploader.com)
 * [@fineuploader](https://twitter.com/fineuploader)
 * [Demo](http://fineuploader.com)
