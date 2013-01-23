@@ -3,14 +3,14 @@
 qq.AjaxRequestor = function(o) {
     "use strict";
 
-    var log,
+    var log, shouldParamsBeInQueryString,
         queue = [],
         requestState = [],
-
         options = {
             method: 'POST',
             maxConnections: 3,
             customHeaders: {},
+            successfulResponseCodes: [200],
             log: function(str, level) {},
             onSend: function(id) {},
             onComplete: function(id, xhr, isError) {}
@@ -18,6 +18,7 @@ qq.AjaxRequestor = function(o) {
 
     qq.extend(options, o);
     log = options.log;
+    shouldParamsBeInQueryString = options.method === 'GET' || options.method === 'DELETE';
 
 
     /**
@@ -44,7 +45,7 @@ qq.AjaxRequestor = function(o) {
 
         dequeue(id);
 
-        if (xhr.status !== 200) {
+        if (!isResponseSuccessful(xhr.status)) {
             isError = true;
             log(method + " request for " + id + " has failed - response code " + xhr.status, "error");
         }
@@ -73,7 +74,7 @@ qq.AjaxRequestor = function(o) {
 
         log('Sending ' + method + " request for " + id);
 
-        if (method !== 'GET' && params) {
+        if (!shouldParamsBeInQueryString && params) {
             xhr.send(createParamString(params));
         }
         else {
@@ -85,7 +86,7 @@ qq.AjaxRequestor = function(o) {
         var method = options.method,
             endpoint = requestState[id].endpoint;
 
-        if (method === 'GET' && params) {
+        if (shouldParamsBeInQueryString && params) {
             return qq.obj2url(params, endpoint);
         }
         else {
@@ -131,6 +132,10 @@ qq.AjaxRequestor = function(o) {
 
     function createParamString(parameters) {
         //TODO
+    }
+
+    function isResponseSuccessful(responseCode) {
+        return qq.indexOf(options.successfulResponseCodes, responseCode) >= 0;
     }
 
 

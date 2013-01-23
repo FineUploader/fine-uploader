@@ -20,6 +20,7 @@ qq.DeleteFileAjaxRequestor = function(o) {
         method: 'DELETE',
         maxConnections: options.maxConnections,
         customHeaders: options.customHeaders,
+        successfulResponseCodes: [200, 202, 204],
         log: options.log,
         onSend: options.onDelete,
         onComplete: options.onDeleteComplete
