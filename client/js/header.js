@@ -8,3 +8,5 @@
  *
  * Licensed under MIT license, GNU GPL 2 or later, GNU LGPL 2 or later, see license.txt.
  */
+
+(function(root) {
