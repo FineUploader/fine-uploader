@@ -123,7 +123,6 @@ public class RequestParser
 
             requestParser.totalFileSize = Integer.parseInt(multipartUploadParser.getParams().get(FILE_SIZE_PARAM));
             requestParser.totalParts = Integer.parseInt(multipartUploadParser.getParams().get(TOTAL_PARTS_PARAM));
-            requestParser.uuid = multipartUploadParser.getParams().get(UUID_PARAM);
             requestParser.originalFilename = URLDecoder.decode(multipartUploadParser.getParams().get(PART_FILENAME_PARAM), "UTF-8");
         }
 
@@ -131,6 +130,12 @@ public class RequestParser
         {
             requestParser.customParams.put(URLDecoder.decode(paramEntry.getKey(), "UTF-8"), URLDecoder.decode(paramEntry.getValue(), "UTF-8"));
         }
+
+        if (requestParser.uuid == null)
+        {
+            requestParser.uuid = multipartUploadParser.getParams().get(UUID_PARAM);
+        }
+
     }
 
     private static void parseQueryStringParams(RequestParser requestParser, HttpServletRequest req)
@@ -146,7 +151,6 @@ public class RequestParser
             requestParser.partIndex = Integer.parseInt(partNumStr);
             requestParser.totalFileSize = Integer.parseInt(req.getParameter(FILE_SIZE_PARAM));
             requestParser.totalParts = Integer.parseInt(req.getParameter(TOTAL_PARTS_PARAM));
-            requestParser.uuid = req.getParameter(UUID_PARAM);
             requestParser.originalFilename = req.getParameter(PART_FILENAME_PARAM);
         }
 
@@ -155,6 +159,11 @@ public class RequestParser
         {
             String paramName = paramNames.nextElement();
             requestParser.customParams.put(paramName, req.getParameter(paramName));
+        }
+
+        if (requestParser.uuid == null)
+        {
+            requestParser.uuid = req.getParameter(UUID_PARAM);
         }
     }
 
