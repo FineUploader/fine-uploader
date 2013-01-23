@@ -75,7 +75,7 @@ qq.AjaxRequestor = function(o) {
         log('Sending ' + method + " request for " + id);
 
         if (!shouldParamsBeInQueryString && params) {
-            xhr.send(createParamString(params));
+            xhr.send(qq.obj2url(params, ""));
         }
         else {
             xhr.send();
@@ -128,10 +128,6 @@ qq.AjaxRequestor = function(o) {
         }
 
         return false;
-    }
-
-    function createParamString(parameters) {
-        //TODO
     }
 
     function isResponseSuccessful(responseCode) {
