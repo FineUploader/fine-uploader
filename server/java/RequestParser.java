@@ -3,6 +3,7 @@ package fineuploader;
 import org.apache.commons.fileupload.FileItem;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.jsp.tagext.IterationTag;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -11,14 +12,18 @@ import java.util.Map;
 
 public class RequestParser
 {
+    private static String FILENAME_PARAM = "qqfile";
     private static String PART_INDEX_PARAM = "qqpartindex";
     private static String FILE_SIZE_PARAM = "qqtotalfilesize";
     private static String TOTAL_PARTS_PARAM = "qqtotalparts";
     private static String UUID_PARAM = "qquuid";
     private static String PART_FILENAME_PARAM = "qqfilename";
 
+    private static String GENERATE_ERROR_PARAM = "generateError";
+
     private String filename;
     private FileItem uploadItem;
+    private boolean generateError;
 
     private int partIndex = -1;
     private int totalFileSize;
@@ -33,16 +38,25 @@ public class RequestParser
     {
     }
 
+    //2nd param is null unless a MPFR
     static RequestParser getInstance(HttpServletRequest request, MultipartUploadParser multipartUploadParser) throws Exception
     {
         RequestParser requestParser = new RequestParser();
 
-        requestParser.uploadItem = multipartUploadParser.getFirstFile();
-        requestParser.filename = multipartUploadParser.getFirstFile().getName();
+        if (multipartUploadParser == null)
+        {
+            requestParser.filename = request.getParameter(FILENAME_PARAM);
+            parseQueryStringParams(requestParser, request);
+        }
+        else
+        {
+            requestParser.uploadItem = multipartUploadParser.getFirstFile();
+            requestParser.filename = multipartUploadParser.getFirstFile().getName();
 
-        //params could be in body or query string, depending on Fine Uploader request option properties
-        parseRequestBodyParams(requestParser, multipartUploadParser);
-        parseQueryStringParams(requestParser, request);
+            //params could be in body or query string, depending on Fine Uploader request option properties
+            parseRequestBodyParams(requestParser, multipartUploadParser);
+            parseQueryStringParams(requestParser, request);
+        }
 
         removeQqParams(requestParser.customParams);
 
@@ -54,9 +68,15 @@ public class RequestParser
         return filename;
     }
 
+    //only non-null for MPFRs
     public FileItem getUploadItem()
     {
         return uploadItem;
+    }
+
+    public boolean generateError()
+    {
+        return generateError;
     }
 
     public int getPartIndex()
@@ -91,6 +111,11 @@ public class RequestParser
 
     private static void parseRequestBodyParams(RequestParser requestParser, MultipartUploadParser multipartUploadParser) throws Exception
     {
+        if (multipartUploadParser.getParams().get(GENERATE_ERROR_PARAM) != null)
+        {
+            requestParser.generateError = Boolean.parseBoolean(multipartUploadParser.getParams().get(GENERATE_ERROR_PARAM));
+        }
+
         String partNumStr = multipartUploadParser.getParams().get(PART_INDEX_PARAM);
         if (partNumStr != null)
         {
@@ -98,7 +123,6 @@ public class RequestParser
 
             requestParser.totalFileSize = Integer.parseInt(multipartUploadParser.getParams().get(FILE_SIZE_PARAM));
             requestParser.totalParts = Integer.parseInt(multipartUploadParser.getParams().get(TOTAL_PARTS_PARAM));
-            requestParser.uuid = multipartUploadParser.getParams().get(UUID_PARAM);
             requestParser.originalFilename = URLDecoder.decode(multipartUploadParser.getParams().get(PART_FILENAME_PARAM), "UTF-8");
         }
 
@@ -106,17 +130,27 @@ public class RequestParser
         {
             requestParser.customParams.put(URLDecoder.decode(paramEntry.getKey(), "UTF-8"), URLDecoder.decode(paramEntry.getValue(), "UTF-8"));
         }
+
+        if (requestParser.uuid == null)
+        {
+            requestParser.uuid = multipartUploadParser.getParams().get(UUID_PARAM);
+        }
+
     }
 
     private static void parseQueryStringParams(RequestParser requestParser, HttpServletRequest req)
     {
+        if (req.getParameter(GENERATE_ERROR_PARAM) != null)
+        {
+            requestParser.generateError = Boolean.parseBoolean(req.getParameter(GENERATE_ERROR_PARAM));
+        }
+
         String partNumStr = req.getParameter(PART_INDEX_PARAM);
         if (partNumStr != null)
         {
             requestParser.partIndex = Integer.parseInt(partNumStr);
             requestParser.totalFileSize = Integer.parseInt(req.getParameter(FILE_SIZE_PARAM));
             requestParser.totalParts = Integer.parseInt(req.getParameter(TOTAL_PARTS_PARAM));
-            requestParser.uuid = req.getParameter(UUID_PARAM);
             requestParser.originalFilename = req.getParameter(PART_FILENAME_PARAM);
         }
 
@@ -125,6 +159,11 @@ public class RequestParser
         {
             String paramName = paramNames.nextElement();
             requestParser.customParams.put(paramName, req.getParameter(paramName));
+        }
+
+        if (requestParser.uuid == null)
+        {
+            requestParser.uuid = req.getParameter(UUID_PARAM);
         }
     }
 

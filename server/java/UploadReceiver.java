@@ -1,6 +1,7 @@
 package fineuploader;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,11 +16,12 @@ import java.util.regex.Pattern;
 
 public class UploadReceiver extends HttpServlet
 {
-    private static File UPLOAD_DIR = new File("test/uploads");
+    private static final File UPLOAD_DIR = new File("test/uploads");
     private static File TEMP_DIR = new File("test/uploadsTemp");
 
     private static String CONTENT_TYPE = "text/plain";
-    private static int RESPONSE_CODE = 200;
+    private static String CONTENT_LENGTH = "Content-Length";
+    private static int SUCCESS_RESPONSE_CODE = 200;
 
     final Logger log = LoggerFactory.getLogger(UploadReceiver.class);
 
@@ -31,6 +33,25 @@ public class UploadReceiver extends HttpServlet
     }
 
     @Override
+    public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException
+    {
+        String uuid = req.getPathInfo().replaceAll("/", "");
+
+        FileUtils.deleteDirectory(new File(UPLOAD_DIR, uuid));
+
+        if (new File(UPLOAD_DIR, uuid).exists())
+        {
+            log.warn("couldn't find or delete " + uuid);
+        }
+        else
+        {
+            log.info("deleted " + uuid);
+        }
+
+        resp.setStatus(SUCCESS_RESPONSE_CODE);
+    }
+
+    @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         RequestParser requestParser;
@@ -38,18 +59,20 @@ public class UploadReceiver extends HttpServlet
         try
         {
             resp.setContentType(CONTENT_TYPE);
-            resp.setStatus(RESPONSE_CODE);
+            resp.setStatus(SUCCESS_RESPONSE_CODE);
 
             if (ServletFileUpload.isMultipartContent(req))
             {
                 MultipartUploadParser multipartUploadParser = new MultipartUploadParser(req, TEMP_DIR, getServletContext());
                 requestParser = RequestParser.getInstance(req, multipartUploadParser);
                 writeFileForMultipartRequest(requestParser);
-                writeResponse(resp.getWriter(), null, false);
+                writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, false);
             }
             else
             {
-                throw new Exception("Only multipart encoded requests are supported!");
+                requestParser = RequestParser.getInstance(req, null);
+                writeFileForNonMultipartRequest(req, requestParser);
+                writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, false);
             }
         } catch (Exception e)
         {
@@ -66,28 +89,63 @@ public class UploadReceiver extends HttpServlet
         }
     }
 
-    private void writeFileForMultipartRequest(RequestParser requestParser) throws Exception
+    private void writeFileForNonMultipartRequest(HttpServletRequest req, RequestParser requestParser) throws Exception
     {
+        File dir = new File(UPLOAD_DIR, requestParser.getUuid());
+        dir.mkdirs();
+
+        String contentLengthHeader = req.getHeader(CONTENT_LENGTH);
+        long expectedFileSize = Long.parseLong(contentLengthHeader);
+
         if (requestParser.getPartIndex() >= 0)
         {
-            writeFile(requestParser.getUploadItem().getInputStream(), new File(UPLOAD_DIR, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null);
+            writeFile(req.getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null);
 
             if (requestParser.getTotalParts()-1 == requestParser.getPartIndex())
             {
-                File[] parts = getPartitionFiles(UPLOAD_DIR, requestParser.getUuid());
-                File outputFile = new File(UPLOAD_DIR, requestParser.getOriginalFilename());
+                File[] parts = getPartitionFiles(dir, requestParser.getUuid());
+                File outputFile = new File(dir, requestParser.getFilename());
                 for (File part : parts)
                 {
                     mergeFiles(outputFile, part);
                 }
 
                 assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
-                deletePartitionFiles(UPLOAD_DIR, requestParser.getUuid());
+                deletePartitionFiles(dir, requestParser.getUuid());
             }
         }
         else
         {
-            writeFile(requestParser.getUploadItem().getInputStream(), new File(UPLOAD_DIR, requestParser.getFilename()), null);
+            writeFile(req.getInputStream(), new File(dir, requestParser.getFilename()), expectedFileSize);
+        }
+    }
+
+
+    private void writeFileForMultipartRequest(RequestParser requestParser) throws Exception
+    {
+        File dir = new File(UPLOAD_DIR, requestParser.getUuid());
+        dir.mkdirs();
+
+        if (requestParser.getPartIndex() >= 0)
+        {
+            writeFile(requestParser.getUploadItem().getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null);
+
+            if (requestParser.getTotalParts()-1 == requestParser.getPartIndex())
+            {
+                File[] parts = getPartitionFiles(dir, requestParser.getUuid());
+                File outputFile = new File(dir, requestParser.getOriginalFilename());
+                for (File part : parts)
+                {
+                    mergeFiles(outputFile, part);
+                }
+
+                assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
+                deletePartitionFiles(dir, requestParser.getUuid());
+            }
+        }
+        else
+        {
+            writeFile(requestParser.getUploadItem().getInputStream(), new File(dir, requestParser.getFilename()), null);
         }
     }
 
