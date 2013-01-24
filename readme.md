@@ -9,16 +9,8 @@ Created by Andrew Valums.
 
 <br/>
 ## Known Issues ##
-* [#595](https://github.com/valums/file-uploader/issues/595) - `inputName` parameter is included in both the query string 
-AND the request payload of XHR requests if `forceMultipart` is true (default) and `paramsInBody` is false (default).
-This will be fixed in 3.3.  This will NOT affect most users.  If it does negatively impact you, an easy workaround is to 
-set the `paramsInBody` property of the `request` option to true.  Note that in 3.3, the `paramsInBody` default value will 
-be changed to true anyway.  Please read more about this option in this readme, and in the 
-[server-side readme](https://github.com/valums/file-uploader/blob/master/server/readme.md).  
-* [#584](https://github.com/valums/file-uploader/issues/584) - "Processing..." status message does not appear while 
-waiting for response after sending last byte of last chunk to server. This only affects FineUploader mode. I plan to 
-address this in 3.3. Not a major issue, but it deserves to be addressed. Please see the FAQ in the readme for more 
-information about existing inconsistencies among browsers as far as this "Processing..." message is concerned.
+There are several known issues in 3.2  Please check the issue tracker for [known issues that have been fixed in the 3.3-IP branch](https://github.com/valums/file-uploader/issues?labels=bug&milestone=7&page=1&state=closed),
+and for those [known issues that are still pending a fix in 3.3-IP](https://github.com/valums/file-uploader/issues?labels=bug&milestone=7&page=1&state=open).
 
 <br/>
 ## Notice ##
