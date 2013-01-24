@@ -3,7 +3,7 @@
 ###[Download the 3.2 combined & minified javascript file (along with all other required files) here](https://github.com/valums/file-uploader/wiki/Releases)###
 
 <br/>
-Actively developed by [Ray Nicholus](http://lnkd.in/Nkhx2C).     
+Actively developed by [Ray Nicholus](http://lnkd.in/Nkhx2C).
 Created by Andrew Valums.
 
 
@@ -40,6 +40,7 @@ Created by Andrew Valums.
 * Submit files to be uploaded via the API.
 * [Split up a file into multiple requests](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html) (file chunking/partitioning).
 * [Resume failed/stopped uploads from previous sessions](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html)
+* Delete uploaded files
 * Any many more!
 
 
@@ -116,8 +117,9 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 6. Have a look at the available [API functions in FineUploaderBasic mode](#fineuploaderbasic-mode-api-functions).
 7. Check out the available [API functions in FineUploader mode](#fineuploader-mode-api-functions).
 8. Examine the [available callbacks](#callbacks-1).
-9. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/master/server/readme.md).
-10. Some additional sections that may be of interested are outlined [here](#additional-reading).
+9. You might want to read up on [this short description](#changing-dialogs-to-something-more-user-friendly) that mentions how you can override the default alert and confirm dialogs.
+10. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/master/server/readme.md).
+11. Some additional sections that may be of interested are outlined [here](#additional-reading).
 
 ## FineUploaderBasic mode users ##
 1. Download the latest released native javascript plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
@@ -146,7 +148,7 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 <br/>
 ### Frequently Asked Questions (FAQ) ###
 **Q:** Why are you charging me to download a zip containing the combined js files, along with a minified version, the
-version-stamped css file, and all other required files?      
+version-stamped css file, and all other required files?
 **A:** Fine Uploader is a lot of work.  I literally work on Fine Uploader, in my free time, 7 days a week.  I've kept up this
 schedule since August.  As a result Fine Uploader grows at a rapid pace, bugs are addressed quickly, and the support I provide
 for users is second-to-none.  Compensation provides me with an excuse to keep up the work I am doing.  The other alternative is
@@ -159,63 +161,63 @@ make use of the source code posted in the Github repo.  The project is, after al
 probably read advice from others that claim "text/html" is also safe.  This is not always true.  You will run into problems with a content-type
 of "text/html" if your JSON response contains HTML.
 
-**Q:** I like FineUploader mode, but I don't want to allow my users to utilize the drag & drop feature.  How can I do this?      
+**Q:** I like FineUploader mode, but I don't want to allow my users to utilize the drag & drop feature.  How can I do this?
 **A:** Set the `disableDefaultDropzone` property of the `dragAndDrop` option to `true`.
 
-**Q:** Using the jQuery plug-in in FineUploaderBasic mode, I can't seem to get my upload button to appear.      
+**Q:** Using the jQuery plug-in in FineUploaderBasic mode, I can't seem to get my upload button to appear.
 **A:** It is important to understand that the target of your plug-in should be an existing container element for your upload
 component, *NOT* the button element.  Your button element must be specified separately via the `button` option.
 
-**Q:** Why am I seeing an "Access Denied" error in IE's javascript console?      
+**Q:** Why am I seeing an "Access Denied" error in IE's javascript console?
 **A:** There are two common causes.  One cause is triggering the "select files" dialog via javascript.  IE does not permit this
 and will throw a security error when Fine Uploader attempts to submit the underlying form.  Another cause is returning a
 response code that is not 200.  The error occurs when Fine Uploader attempts to parse the response in the hidden iframe.
 See the [Internet Explorer Limitations](#internet-explorer-limitations) for more details.
 
-**Q:** Why can't I use a progress bar, drag and drop, multiple file selection, chunking, or auto-resume in some browsers?      
+**Q:** Why can't I use a progress bar, drag and drop, multiple file selection, chunking, or auto-resume in some browsers?
 **A:** Some browsers (IE9 and older, along with Android 2.3.x and older) do not support the File API the `multiple` attribute on file input elements.
 These are all required to give you the best possible experience.
 
-**Q:** Why isn't Opera supported?      
+**Q:** Why isn't Opera supported?
 **A:** Market share for Opera is incredibly low, and I have found annoying bugs in Opera that have taken up an unnecessary amount of my
 time in the past.  For such a small minority of users, I have decided that it is not worth my time.  There are many better options as far
 as browsers are concerned.
 
-**Q:** Why isn't Safari for Windows supported?      
+**Q:** Why isn't Safari for Windows supported?
 **A:** There is really no reason to use Safari for Windows.   Webkit is better represented on that platform in Chrome.
 Apple doesn't appear to be interested in maintaining Safari for Windows anymore either.  Switch to Chrome.
 
-**Q:** Why isn't IOS5 supported?      
+**Q:** Why isn't IOS5 supported?
 **A:** IOS5 doesn't even support a file input element.
 
-**Q:** Why isn't folder drag & drop uploading supported in any browser other than Chrome 21+?      
+**Q:** Why isn't folder drag & drop uploading supported in any browser other than Chrome 21+?
 **A:** Chrome 21 was the first browser version to implement the HTML5 Filesystem API.  This is required to handle dropped folders.
 Currently, no other browsers support this API.
 
-**Q:** I have created a \<button\> element for my uploader button, but this doesn't seem to work in IE.  Why?      
+**Q:** I have created a \<button\> element for my uploader button, but this doesn't seem to work in IE.  Why?
 **A:** In IE, the button element receives the click event, instead of the child input element.  Use a \<div\> or a \<span\> or an \<a\> instead.
 
-**Q:** Why do I only see a "Processing..." message next to a file (in FineUploader mode) in Chrome & Safari after the last byte has been sent but the server has yet to respond?    
+**Q:** Why do I only see a "Processing..." message next to a file (in FineUploader mode) in Chrome & Safari after the last byte has been sent but the server has yet to respond?
 **A:** The implementation of the onProgress notification that tells us the status of the bytes sent to the server varies from browser to browser, unfortunately.
 Webkit browsers have elected to follow the "spirit" of the W3C spec, while Firefox, and (I beleive) IE10, obey the spec in the most strict sense.  I have discussed
 this in some detail [in the "processing" status message feature case](https://github.com/valums/file-uploader/issues/404#issuecomment-10124160).
 
-**Q:** When chunking and multipart encoded are both enabled, why must I determine the original file's name by parsing the qqfilename parameter?   
-**A:** The file data is stored in one of the multipart boundaries contained in the request payload.  Normally, the 
+**Q:** When chunking and multipart encoded are both enabled, why must I determine the original file's name by parsing the qqfilename parameter?
+**A:** The file data is stored in one of the multipart boundaries contained in the request payload.  Normally, the
 content-disposition header for this boundary contains the actual file name.  However, when the file is split up into parts
-client-side, we are sending a [Blob](http://www.w3.org/TR/FileAPI/#dfn-Blob) to represent a different part of the 
+client-side, we are sending a [Blob](http://www.w3.org/TR/FileAPI/#dfn-Blob) to represent a different part of the
 [File](http://www.w3.org/TR/FileAPI/#dfn-file) in each request.  A [FormData](http://www.w3.org/TR/2010/WD-XMLHttpRequest2-20100907/#the-formdata-interface) object is used to construct these
 requests.  When a Blob is added to a FormData object, the user agent sets the content-disposition header for the associated
 multipart boundary in the request to "blob" (or sometimes an empty or random string).  As a result, we must
 pass the original file name in a parameter.
 
-**Q:** How can I prevent users from dropping folders into browsers that do not support folder uploading?    
-**A:** There is no reliable way to prevent users from dropping folders into the drop zone of any browser other than 
-Chrome 21+, currently.  This is due to the fact that there is no way to reliably detect if a folder has been dropped 
-unless the user agent implements the [Filesystem API](http://www.w3.org/TR/file-system-api/). Folder dropping is only 
-supported in Chrome 21+, since this is the only browser that implements the Filesystem API.  You can parse the user 
+**Q:** How can I prevent users from dropping folders into browsers that do not support folder uploading?
+**A:** There is no reliable way to prevent users from dropping folders into the drop zone of any browser other than
+Chrome 21+, currently.  This is due to the fact that there is no way to reliably detect if a folder has been dropped
+unless the user agent implements the [Filesystem API](http://www.w3.org/TR/file-system-api/). Folder dropping is only
+supported in Chrome 21+, since this is the only browser that implements the Filesystem API.  You can parse the user
 agent string to determine if folder dropping is supported, and then inform your users in your application's UI.
-Theoretically, you could check for the appropriate function on the [DataTransfer](http://www.w3.org/TR/2011/WD-html5-20110113/dnd.html#the-datatransfer-interface) 
+Theoretically, you could check for the appropriate function on the [DataTransfer](http://www.w3.org/TR/2011/WD-html5-20110113/dnd.html#the-datatransfer-interface)
 object prototype, but this would not work cross-browser, since webkit does not expose this interface, unfortunately.
 
 
@@ -536,7 +538,7 @@ other default values.  This works for all options that are, themselves, objects 
             <td>stopOnFirstInvalidFile</td>
             <td>boolean</td>
             <td>true</td>
-            <td>If true, when submitting multiple files, once a file is determined to be invalid, the upload process 
+            <td>If true, when submitting multiple files, once a file is determined to be invalid, the upload process
             will terminate.  If false, all valid files will be uploaded.  Note: One downside to a false value can be
             seen when using FineUploader if the default <code>showMessage</code> implementation is not overriden.  In this
             case, an alert  dialog will appear for each invalid file in the batch, and the upload process will not continue
@@ -736,6 +738,54 @@ other default values.  This works for all options that are, themselves, objects 
     </tbody>
 </table>
 
+##### `deleteFile` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>enabled</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>Set this to true if you would like to allow users to delete uploaded files.  In FineUploader mode,
+            this will also render a "delete" link next to each successfully uploaded file.</td>
+        </tr>
+        <tr>
+            <td>endpoint</td>
+            <td>string</td>
+            <td>/server/upload</td>
+            <td>This should be the endpoint to where any DELETE (file) request should be sent.  Note that this is a DELETE
+            request, and the UUID of the associated file is sent as the last part of the URI path.</td>
+        </tr>
+        <tr>
+            <td>maxConnections</td>
+            <td>integer</td>
+            <td>3</td>
+            <td>Maximum number of DELETE requests that should be in transit at once.</td>
+        </tr>
+        <tr>
+            <td>customHeaders</td>
+            <td>object</td>
+            <td>{}</td>
+            <td>Any additional headers to attach to all DELETE (file) requests.</td>
+        </tr>
+        <tr>
+            <td>params</td>
+            <td>object</td>
+            <td>{}</td>
+            <td>Any additional parameters to attach to DELETE (file) requests.  This works the exact same way as the
+            <code>params</code> property of the <code>request</code> option.  Note that all parameters are sent in the
+            query string.</td>
+        </tr>
+    </tbody>
+</table>
+
 
 <br/>
 ### FineUploader mode options ###
@@ -763,6 +813,7 @@ other default values.  This works for all options that are, themselves, objects 
         </tr>
     </tbody>
 </table>
+
 ##### `dragAndDrop` option properties: #####
 <table>
     <thead>
@@ -797,6 +848,7 @@ other default values.  This works for all options that are, themselves, objects 
         </tr>
     </tbody>
 </table>
+
 ##### `text` option properties: #####
 <table>
     <thead>
@@ -858,6 +910,7 @@ other default values.  This works for all options that are, themselves, objects 
         </tr>
     </tbody>
 </table>
+
 ##### `failedUploadTextDisplay` option properties: #####
 <table>
     <thead>
@@ -939,6 +992,46 @@ other default values.  This works for all options that are, themselves, objects 
     </tbody>
 </table>
 
+##### `deleteFile` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>forceConfirm</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>Set this to true if you want to force users to confirm their choice to delete a file.
+            This uses the <code>showConfirm</code> function, which is overridable.</td>
+        </tr>
+        <tr>
+            <td>confirmMessage</td>
+            <td>string</td>
+            <td>Are you sure you want to delete {filename}?</td>
+            <td>The message displayed in the confirm delete dialog (if enabled).  Note that the {filename} string is important,
+            as Fine Uploader replaces this with the associated file name in the confirm dialog.</td>
+        </tr>
+        <tr>
+            <td>deletingStatusText</td>
+            <td>string</td>
+            <td>Deleting...</td>
+            <td>Status message to appear next to a file that is pending deletion.  Note that a spinner, by default, will also appear.</td>
+        </tr>
+        <tr>
+            <td>deletingFailedText</td>
+            <td>string</td>
+            <td>Delete failed</td>
+            <td>Status message to appear next to a file that has failed to delete.</td>
+        </tr>
+    </tbody>
+</table>
+
 
 <br/>
 ### Styling FineUploader ###
@@ -1014,13 +1107,24 @@ you to prevent the entire batch from being uploaded, if desired, by returning fa
 the `onValidate` callback will be invoked once for each individual file submitted.  This callback is always invoked before
 the default Fine Uploader validators execute.  Note that a `FileData` object has two properties: `name` (the file name) and
 `size` (the file size).  The `size` property will be undefined if the user agent does not support the File API.
+* `onSubmitDelete(id)` - Called before a file that has been marked for deletion has been submitted to the uploader.
+You may return false from your handler if you want to ignore/stop the delete request.
+* `onDelete(id)` - Called just before a delete request is sent for the associated file.  The parameter is the file ID.
+* `onDeleteComplete(id, xhr, isError)` - Called after receiving a response from the server for a DELETE request.  The associated
+file ID, along with the request's XMLHttpRequest object and a boolean indicating whether the response succeeded or not (based on the response code)
+are sent along as parameters.
 
 <br/>
-### Changing alert/messages to something more user friendly ###
-You may want to change the default alert implementation and messages as you see fit.  This is possible by overriding the
-`showMessage` function option, as well as the `messages` properties in FineUploader.  The default `showMessage` function
-simply invokes `alert` with the message text.  One instance in which this is used is when the user attempts to select
-an invalid file for upload.  There are general message types with default text that can be overriden as well.
+### Changing dialogs to something more user friendly ###
+* `showMessage: function(message) {...}` - You may want to change the default alert dialog implementation and messages
+as you see fit.  This is possible by overriding the `showMessage` function option.  The default `showMessage` function
+simply invokes `alert` with the message text.  One instance in which this is used is when the user attempts to select an
+invalid file for upload.  There are general message types with default text that can be overriden as well.
+* `showConfirm: function(message, okCallback, cancelCallback) {...}` - This function is used to display a confirm dialog.  One
+such feature that optionally uses this is the `deleteFile` feature.  The default implementation uses `window.confirm`, but you
+may override this with something a bit nicer, if you choose.  The okCallback will be executed if the user clicks "ok" and the
+`cancelCallback` if the user clicks "cancel".  The `cancelCallback` is optional, but the `okCallback` is required.
+
 
 <br/>
 ### FineUploaderBasic mode API functions ###
@@ -1055,7 +1159,8 @@ the resume will start.
 if the user agent does not support the File API.
 * `getFile(fileId)` - Returns the `File` object associated with the passed file ID.  Undefined if the underlying file cannot be found,
 or if the user agent does not support the File API.  For more info on the `File` object, please see [the entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file).
-
+* `deleteFile(fileId)` - This allows you to programmatically order Fine Uploader to send a DELETE request for a specific file.
+Fine Uploader actually uses the API call internally when a user clicks the delete link in FineUploader mode.
 
 <br/>
 ### FineUploader mode API functions ###
