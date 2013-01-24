@@ -58,13 +58,15 @@ qq.AjaxRequestor = function(o) {
         var xhr = new XMLHttpRequest(),
             method = options.method,
             params = {},
-            url = createUrl(id);
+            url;
 
         options.onSend(id);
 
         if (requestState[id].paramsStore.getParams) {
             params = requestState[id].paramsStore.getParams(id);
         }
+
+        url = createUrl(id, params);
 
         requestState[id].xhr = xhr;
         xhr.onreadystatechange = getReadyStateChangeHandler(id);

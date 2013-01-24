@@ -109,8 +109,9 @@ qq.FineUploaderBasic = function(o){
     this._retryTimeouts = [];
     this._preventRetries = [];
 
-    this._paramsStore = this._createParamsStore();
-    this._deleteFileParamsStore = this._createParamsStore();
+    this._paramsStore = this._createParamsStore("request");
+    this._deleteFileParamsStore = this._createParamsStore("deleteFile");
+
     this._endpointStore = this._createEndpointStore();
 
     this._handler = this._createUploadHandler();
@@ -656,7 +657,7 @@ qq.FineUploaderBasic.prototype = {
 
         return fileDescriptors;
     },
-    _createParamsStore: function() {
+    _createParamsStore: function(type) {
         var paramsStore = {},
             self = this;
 
@@ -675,7 +676,7 @@ qq.FineUploaderBasic.prototype = {
                     qq.extend(paramsCopy, paramsStore[fileId]);
                 }
                 else {
-                    qq.extend(paramsCopy, self._options.request.params);
+                    qq.extend(paramsCopy, self._options[type].params);
                 }
 
                 return paramsCopy;
