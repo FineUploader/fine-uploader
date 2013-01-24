@@ -676,10 +676,7 @@ qq.FineUploaderBasic.prototype = {
                     qq.extend(paramsCopy, paramsStore[fileId]);
                 }
                 else {
-                    if(type == "request")
-                        qq.extend(paramsCopy, self._options.request.params);
-                    else
-                        qq.extend(paramsCopy, self._options.deleteFile.params);
+                    qq.extend(paramsCopy, self._options[type].params);
                 }
 
                 return paramsCopy;
