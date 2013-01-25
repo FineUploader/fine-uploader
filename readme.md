@@ -1,5 +1,4 @@
-# Fine Uploader 3.2 (Released January 13) #
-### 3.3 is the next planned release ###
+# Fine Uploader 3.3 (IN PROGRESS) #
 
 ###[Download the 3.2 combined & minified javascript file (along with all other required files) here](https://github.com/valums/file-uploader/wiki/Releases)###
 
@@ -394,8 +393,11 @@ other default values.  This works for all options that are, themselves, objects 
             <td>multiple</td>
             <td>boolean</td>
             <td>true</td>
-            <td>Set to false puts the uploader into what is best described as 'single-file upload mode'.  See the
-            [demo](http://fineuploader.com) for an example.</td>
+            <td>In FineUploaderBasic mode, this will simply prevent you from simultaneously selecting or dropping more than one file.
+            In FineUploader mode, dropping or selecting another file will clear the upload file list.  If another file is already uploading, it will
+            be cancelled.  If you you want Fine Uploader to simply ignore subsequently dropped/selected files, simply return false
+            in your <code>onValidate</code> or <code>onSumbit</code> callback handler for any subsequent file that has been dropped.  Note that the behavior
+            described for FineUploader mode is in addition to the behavior already provided by FineUploaderBasic mode.</td>
         </tr>
         <tr>
             <td>maxConnections</td>
@@ -1156,7 +1158,8 @@ you may want to be aware of when using Fine Uploader:
             <td>If the response code is not 200, and the size of the response is less than 512, or, apparently, sometimes, less
             than 256 bytes, IE replaces the response with a "friendly" error message.  If you insist on returning responses
             with a status code other than 200, you can work around this by instructing IE users to uncheck the "show friendly
-            HTTP error messages" setting.</td>
+            HTTP error messages" setting or by padding the response JSON with whitespace as described
+            [here](http://blogs.msdn.com/b/ieinternals/archive/2010/08/19/http-error-pages-in-internet-explorer.aspx).</td>
             <td>No</td>
         </tr>
         <tr>

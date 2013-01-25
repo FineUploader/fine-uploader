@@ -116,8 +116,9 @@ qq.UploadHandler = function(o) {
          * Cancels all uploads
          */
         cancelAll: function(){
+            var self = this;
             qq.each(queue, function(idx, fileId) {
-                this.cancel(fileId);
+                self.cancel(fileId);
             });
 
             queue = [];

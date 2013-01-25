@@ -357,7 +357,10 @@ qq.extend(qq.FineUploader.prototype, {
         var fileElement = this._find(item, 'file');
         qq(fileElement).setText(this._options.formatFileName(fileName));
         qq(this._find(item, 'size')).hide();
-        if (!this._options.multiple) this._clearList();
+        if (!this._options.multiple) {
+            this._handler.cancelAll();
+            this._clearList();
+        }
         this._listElement.appendChild(item);
     },
     _clearList: function(){
