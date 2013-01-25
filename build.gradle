@@ -11,6 +11,8 @@ def coreFiles = ["${jsSrcDir}/header.js",
                  "${jsSrcDir}/uploader.basic.js",
                  "${jsSrcDir}/dnd.js",
                  "${jsSrcDir}/uploader.js",
+                 "${jsSrcDir}/ajax.requester.js",
+                 "${jsSrcDir}/deletefile.ajax.requester.js",
                  "${jsSrcDir}/handler.base.js",
                  "${jsSrcDir}/handler.form.js",
                  "${jsSrcDir}/handler.xhr.js"]
@@ -28,7 +30,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.0.2'
+        classpath 'com.eriwen:gradle-js-plugin:1.3'
     }
 }
 

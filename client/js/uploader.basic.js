@@ -35,7 +35,10 @@ qq.FineUploaderBasic = function(o){
             onAutoRetry: function(id, fileName, attemptNumber) {},
             onManualRetry: function(id, fileName) {},
             onValidateBatch: function(fileData) {},
-            onValidate: function(fileData) {}
+            onValidate: function(fileData) {},
+            onSubmitDelete: function(id) {},
+            onDelete: function(id){},
+            onDeleteComplete: function(id, xhr, isError){}
         },
         messages: {
             typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
@@ -83,6 +86,13 @@ qq.FineUploaderBasic = function(o){
         },
         text: {
             sizeSymbols: ['kB', 'MB', 'GB', 'TB', 'PB', 'EB']
+        },
+        deleteFile : {
+            enabled: false,
+            endpoint: '/server/upload',
+            maxConnections: 3,
+            customHeaders: {},
+            params: {}
         }
     };
 
@@ -99,10 +109,13 @@ qq.FineUploaderBasic = function(o){
     this._retryTimeouts = [];
     this._preventRetries = [];
 
-    this._paramsStore = this._createParamsStore();
+    this._paramsStore = this._createParamsStore("request");
+    this._deleteFileParamsStore = this._createParamsStore("deleteFile");
+
     this._endpointStore = this._createEndpointStore();
 
     this._handler = this._createUploadHandler();
+    this._deleteHandler = this._createDeleteHandler();
 
     if (this._options.button){
         this._button = this._createUploadButton(this._options.button);
@@ -128,6 +141,15 @@ qq.FineUploaderBasic.prototype = {
         }
         else {
             this._paramsStore.setParams(params, fileId);
+        }
+    },
+    setDeleteFileParams: function(params, fileId) {
+        /*jshint eqeqeq: true, eqnull: true*/
+        if (fileId == null) {
+            this._options.deleteFile.params = params;
+        }
+        else {
+            this._deleteFileParamsStore.setParams(params, fileId);
         }
     },
     setEndpoint: function(endpoint, fileId) {
@@ -216,6 +238,9 @@ qq.FineUploaderBasic.prototype = {
     getFile: function(fileId) {
         return this._handler.getFile(fileId);
     },
+    deleteFile: function(fileId) {
+        this._onSubmitDelete(fileId);
+    },
     _createUploadButton: function(element){
         var self = this;
 
@@ -295,6 +320,28 @@ qq.FineUploaderBasic.prototype = {
             }
         });
     },
+    _createDeleteHandler: function() {
+        var self = this;
+
+        return new qq.DeleteFileAjaxRequestor({
+            endpoint: this._options.deleteFile.endpoint,
+            maxConnections: this._options.deleteFile.maxConnections,
+            customHeaders: this._options.deleteFile.customHeaders,
+            paramsStore: this._deleteFileParamsStore,
+            log: function(str, level) {
+                self.log(str, level);
+            },
+            onDelete: function(id) {
+                self._onDelete(id);
+                self._options.callbacks.onDelete(id);
+            },
+            onDeleteComplete: function(id, xhr, isError) {
+                self._onDeleteComplete(id, xhr, isError);
+                self._options.callbacks.onDeleteComplete(id, xhr, isError);
+            }
+
+        });
+    },
     _preventLeaveInProgress: function(){
         var self = this;
 
@@ -327,6 +374,18 @@ qq.FineUploaderBasic.prototype = {
         var storedFileIndex = qq.indexOf(this._storedFileIds, id);
         if (!this._options.autoUpload && storedFileIndex >= 0) {
             this._storedFileIds.splice(storedFileIndex, 1);
+        }
+    },
+    _onDelete: function(fileId) {},
+    _onDeleteComplete: function(fileId, xhr, isError) {
+        var filename = this._handler.getName(fileId);
+
+        if (isError) {
+            this.log("Delete request for '" + filename + "' has failed.", "error");
+            this._options.callbacks.onError(fileId, filename, "Delete request failed with response code " + xhr.status);
+        }
+        else {
+            this.log("Delete request for '" + filename + "' has succeeded.");
         }
     },
     _removeFromFilesInProgress: function(id) {
@@ -382,6 +441,17 @@ qq.FineUploaderBasic.prototype = {
         }
         else {
             this.log("'" + id + "' is not a valid file ID", 'error');
+            return false;
+        }
+    },
+    _onSubmitDelete: function(fileId) {
+        if (this._options.deleteFile.enabled) {
+            if (this._options.callbacks.onSubmitDelete(fileId)) {
+                this._deleteHandler.sendDelete(fileId, this.getUuid(fileId));
+            }
+        }
+        else {
+            this.log("Delete request ignored for file ID " + fileId + ", delete feature is disabled.", "warn");
             return false;
         }
     },
@@ -587,7 +657,7 @@ qq.FineUploaderBasic.prototype = {
 
         return fileDescriptors;
     },
-    _createParamsStore: function() {
+    _createParamsStore: function(type) {
         var paramsStore = {},
             self = this;
 
@@ -606,7 +676,7 @@ qq.FineUploaderBasic.prototype = {
                     qq.extend(paramsCopy, paramsStore[fileId]);
                 }
                 else {
-                    qq.extend(paramsCopy, self._options.request.params);
+                    qq.extend(paramsCopy, self._options[type].params);
                 }
 
                 return paramsCopy;

@@ -13,7 +13,7 @@
 
     <servlet-mapping>
         <servlet-name>UploadReceiver</servlet-name>
-        <url-pattern>/upload/receiver</url-pattern>
+        <url-pattern>/upload/receiver/*</url-pattern>
     </servlet-mapping>
 
 </web-app>
