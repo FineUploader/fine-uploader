@@ -95,7 +95,9 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
         //build query string
         if (!options.paramsInBody) {
-            params[options.inputName] = name;
+            if (!multipart) {
+                params[options.inputName] = name;
+            }
             url = qq.obj2url(params, endpoint);
         }
 
