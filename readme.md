@@ -1275,7 +1275,7 @@ you may want to be aware of when using Fine Uploader:
             than 256 bytes, IE replaces the response with a "friendly" error message.  If you insist on returning responses
             with a status code other than 200, you can work around this by instructing IE users to uncheck the "show friendly
             HTTP error messages" setting or by padding the response JSON with whitespace as described
-            [here](http://blogs.msdn.com/b/ieinternals/archive/2010/08/19/http-error-pages-in-internet-explorer.aspx).</td>
+            <a href="http://blogs.msdn.com/b/ieinternals/archive/2010/08/19/http-error-pages-in-internet-explorer.aspx">here</a>.</td>
             <td>No</td>
         </tr>
         <tr>
