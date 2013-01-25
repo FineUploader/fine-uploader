@@ -39,7 +39,8 @@ $(document).ready(function() {
         deleteFile: {
             enabled: true,
             endpoint: '/upload/receiver',
-            forceConfirm: true
+            forceConfirm: true,
+            params: {foo: "bar"}
         }
     })
         .on('error', errorHandler)

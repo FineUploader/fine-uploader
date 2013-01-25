@@ -40,7 +40,7 @@ Created by Andrew Valums.
 * Submit files to be uploaded via the API.
 * [Split up a file into multiple requests](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html) (file chunking/partitioning).
 * [Resume failed/stopped uploads from previous sessions](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html)
-* Delete uploaded files
+* [Delete uploaded files](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html)
 * Any many more!
 
 
@@ -592,6 +592,8 @@ other default values.  This works for all options that are, themselves, objects 
 </table>
 
 ##### `chunking` option properties: #####
+For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html).
+on the topic.
 <table>
     <thead>
         <tr>
@@ -619,6 +621,8 @@ other default values.  This works for all options that are, themselves, objects 
 </table>
 
 ##### `chunking.paramNames` option properties: #####
+For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html).
+on the topic.
 <table>
     <thead>
         <tr>
@@ -665,6 +669,7 @@ other default values.  This works for all options that are, themselves, objects 
 </table>
 
 ##### `resume` option properties: #####
+For more details, please read the [blog post on the file resume feature](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html).
 <table>
     <thead>
         <tr>
@@ -699,6 +704,7 @@ other default values.  This works for all options that are, themselves, objects 
 </table>
 
 ##### `resume.paramNames` option properties: #####
+For more details, please read the [blog post on the file resume feature](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html).
 <table>
     <thead>
         <tr>
@@ -739,6 +745,8 @@ other default values.  This works for all options that are, themselves, objects 
 </table>
 
 ##### `deleteFile` option properties: #####
+For more information on the Delete File feature, please read the [associated blog post](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html) and
+check out the server-side readme.
 <table>
     <thead>
         <tr>
@@ -993,6 +1001,8 @@ other default values.  This works for all options that are, themselves, objects 
 </table>
 
 ##### `deleteFile` option properties: #####
+For more information on the Delete File feature, please read the [associated blog post](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html) and
+check out the server-side readme.
 <table>
     <thead>
         <tr>
