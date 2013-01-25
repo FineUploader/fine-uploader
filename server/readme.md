@@ -24,6 +24,7 @@ Your server should return a [valid JSON](http://jsonlint.com/) response.  The co
 * `{"success": false, "error": "error message to display", "preventRetry": true}` to prevent Fine Uploader from making
 any further attempts to retry uploading the file
 * `{"success": false, "error": "error message to display", "reset": true}` to fail this attempt and restart with the first chunk on the next attempt.  Only applies if chunking is enabled.
+
 Note that, if resume is also enabled, and this is the first chunk of a resume attempt, this will result in the upload starting with the first chunk immediately.
 
 Note: You can have additional custom properties in the response, but ensure that you include the "success": true property for a successful response, or it will trigger the onError callback.
