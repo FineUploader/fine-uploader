@@ -49,5 +49,12 @@ $result = $uploader->handleUpload('uploads');
 // To return a name used for uploaded file you can use the following line.
 $result['uploadName'] = $uploader->getUploadName();
 
-header("Content-Type: text/plain");
-echo json_encode($result);
+if (stripos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false) {
+	echo '<!doctype html><html><head><script>document.domain = "'.str_replace('www.', '', $_SERVER['HTTP_HOST']).'";</script></head><body>';
+	echo json_encode($result);
+	echo '</body></html>';
+}
+else {
+	header("Content-Type: text/plain");
+	echo json_encode($result);
+}
