@@ -471,10 +471,13 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             }
         },
         cancel: function(id){
+            var xhr = fileState[id].xhr;
+
             options.onCancel(id, this.getName(id));
 
-            if (fileState[id].xhr){
-                fileState[id].xhr.abort();
+            if (xhr) {
+                xhr.onreadystatechange = null;
+                xhr.abort();
             }
 
             if (resumeEnabled) {
