@@ -81,7 +81,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
     function setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id) {
         var formData = new FormData(),
-            protocol = options.demoMode ? "GET" : "POST",
+            method = options.demoMode ? "GET" : "POST",
             endpoint = options.endpointStore.getEndpoint(id),
             url = endpoint,
             name = api.getName(id),
@@ -101,7 +101,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             url = qq.obj2url(params, endpoint);
         }
 
-        xhr.open(protocol, url, true);
+        xhr.open(method, url, true);
         if (multipart) {
             if (options.paramsInBody) {
                 qq.obj2FormData(params, formData);
