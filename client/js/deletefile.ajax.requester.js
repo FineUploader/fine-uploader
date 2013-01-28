@@ -9,6 +9,7 @@ qq.DeleteFileAjaxRequestor = function(o) {
             maxConnections: 3,
             customHeaders: {},
             paramsStore: {},
+            demoMode: false,
             log: function(str, level) {},
             onDelete: function(id) {},
             onDeleteComplete: function(id, xhr, isError) {}
@@ -21,6 +22,7 @@ qq.DeleteFileAjaxRequestor = function(o) {
         maxConnections: options.maxConnections,
         customHeaders: options.customHeaders,
         successfulResponseCodes: [200, 202, 204],
+        demoMode: options.demoMode,
         log: options.log,
         onSend: options.onDelete,
         onComplete: options.onDeleteComplete

@@ -11,6 +11,7 @@ qq.AjaxRequestor = function(o) {
             maxConnections: 3,
             customHeaders: {},
             successfulResponseCodes: [200],
+            demoMode: false,
             log: function(str, level) {},
             onSend: function(id) {},
             onComplete: function(id, xhr, isError) {},
@@ -19,7 +20,7 @@ qq.AjaxRequestor = function(o) {
 
     qq.extend(options, o);
     log = options.log;
-    shouldParamsBeInQueryString = options.method === 'GET' || options.method === 'DELETE';
+    shouldParamsBeInQueryString = getMethod() === 'GET' || getMethod() === 'DELETE';
 
 
     /**
@@ -41,7 +42,7 @@ qq.AjaxRequestor = function(o) {
 
     function onComplete(id) {
         var xhr = requestState[id].xhr,
-            method = options.method,
+            method = getMethod(),
             isError = false;
 
         dequeue(id);
@@ -56,7 +57,7 @@ qq.AjaxRequestor = function(o) {
 
     function sendRequest(id) {
         var xhr = new XMLHttpRequest(),
-            method = options.method,
+            method = getMethod(),
             params = {},
             url;
 
@@ -86,7 +87,7 @@ qq.AjaxRequestor = function(o) {
     }
 
     function createUrl(id, params) {
-        var method = options.method,
+        var method = getMethod(),
             endpoint = requestState[id].endpoint;
 
         if (shouldParamsBeInQueryString && params) {
@@ -121,7 +122,7 @@ qq.AjaxRequestor = function(o) {
 
     function cancelRequest(id) {
         var xhr = requestState[id].xhr,
-            method = options.method;
+            method = getMethod();
 
         if (xhr) {
             xhr.onreadystatechange = null;
@@ -139,6 +140,14 @@ qq.AjaxRequestor = function(o) {
 
     function isResponseSuccessful(responseCode) {
         return qq.indexOf(options.successfulResponseCodes, responseCode) >= 0;
+    }
+
+    function getMethod() {
+        if (options.demoMode) {
+            return "GET";
+        }
+
+        return options.method;
     }
 
 

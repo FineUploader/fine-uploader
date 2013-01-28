@@ -328,6 +328,7 @@ qq.FineUploaderBasic.prototype = {
             maxConnections: this._options.deleteFile.maxConnections,
             customHeaders: this._options.deleteFile.customHeaders,
             paramsStore: this._deleteFileParamsStore,
+            demoMode: this._options.demoMode,
             log: function(str, level) {
                 self.log(str, level);
             },
