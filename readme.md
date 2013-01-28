@@ -2,6 +2,8 @@
 
 ###[Download the 3.2 combined & minified javascript file (along with all other required files) here](https://github.com/valums/file-uploader/wiki/Releases)###
 
+###[Poll: Considering removal of support for IE7 in a future release.  Vote here.](http://www.polljunkie.com/9RgAKA/Poll22552.aspx)###
+
 <br/>
 Actively developed by [Ray Nicholus](http://lnkd.in/Nkhx2C).
 Created by Andrew Valums.
