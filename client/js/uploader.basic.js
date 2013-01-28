@@ -164,15 +164,6 @@ qq.FineUploaderBasic.prototype = {
     getInProgress: function(){
         return this._filesInProgress.length;
     },
-    getSuccessful: function(){
-        var i = 0, item = this._listElement.firstChild;
-        while(item){
-            if(qq(item).hasClass(this._classes.success))
-                i++;
-            item = item.nextSibling;
-        }
-        return i;
-    },
     uploadStoredFiles: function(){
         "use strict";
         var idToUpload;
