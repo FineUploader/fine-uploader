@@ -307,8 +307,11 @@ qq.extend(qq.FineUploader.prototype, {
         }
         qq(this._find(item, 'spinner')).hide();
 
-        if (result.success){
-            this._showDeleteLink(id);
+        if (result.success) {
+            if (this._options.deleteFile.enabled) {
+                this._showDeleteLink(id);
+            }
+
             qq(item).addClass(this._classes.success);
             if (this._classes.successIcon) {
                 this._find(item, 'finished').style.display = "inline-block";
