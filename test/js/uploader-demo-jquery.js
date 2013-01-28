@@ -8,7 +8,8 @@ $(document).ready(function() {
     $('#basicUploadSuccessExample').fineUploader({
         debug: true,
         request: {
-            endpoint: "/upload/receiver",
+            endpoint: "http://ray.test:8080/upload/receiver",
+            iframeCors: true,
             paramsInBody: false,
             params: {
                 test: 'one',

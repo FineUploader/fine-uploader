@@ -9,40 +9,74 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         detachLoadEvents = {},
         uploadComplete = uploadCompleteCallback,
         log = logCallback,
+        corsMessageReceiver = new qq.WindowReceiveMessage({log: log}),
+        onloadCallbacks = {},
         api;
+
+
+    function registerPostMessageCallback(id, callback) {
+        onloadCallbacks[uuids[id]] = callback;
+
+        corsMessageReceiver.receiveMessage(id, function(message) {
+            qq.log("Received the following window message: '" + message + "'");
+            var response = qq.parseJson(message),
+                uuid = response.uuid,
+                onloadCallback;
+
+            if (uuid && onloadCallbacks[uuid]) {
+                onloadCallback = onloadCallbacks[uuid];
+                delete onloadCallbacks[uuid];
+                corsMessageReceiver.stopReceivingMessages(id);
+                onloadCallback(response);
+            }
+            else {
+                if (!uuid) {
+                    qq.log("'" + message + "' does not contain a UUID - ignoring.");
+                }
+                else {
+                    qq.log("'" + message + "' does not have an associated onloadcallback registered - ignoring", "warn");
+                }
+            }
+        });
+    }
 
     function attachLoadEvent(iframe, callback) {
         /*jslint eqeq: true*/
 
-        detachLoadEvents[iframe.id] = qq(iframe).attach('load', function(){
-            log('Received response for ' + iframe.id);
+        if (options.iframeCors) {
+            registerPostMessageCallback(iframe.id, callback)
+        }
+        else {
+            detachLoadEvents[iframe.id] = qq(iframe).attach('load', function(){
+                log('Received response for ' + iframe.id);
 
-            // when we remove iframe from dom
-            // the request stops, but in IE load
-            // event fires
-            if (!iframe.parentNode){
-                return;
-            }
-
-            try {
-                // fixing Opera 10.53
-                if (iframe.contentDocument &&
-                    iframe.contentDocument.body &&
-                    iframe.contentDocument.body.innerHTML == "false"){
-                    // In Opera event is fired second time
-                    // when body.innerHTML changed from false
-                    // to server response approx. after 1 sec
-                    // when we upload file with iframe
+                // when we remove iframe from dom
+                // the request stops, but in IE load
+                // event fires
+                if (!iframe.parentNode){
                     return;
                 }
-            }
-            catch (error) {
-                //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
-                log('Error when attempting to access iframe during handling of upload response (' + error + ")", 'error');
-            }
 
-            callback();
-        });
+                try {
+                    // fixing Opera 10.53
+                    if (iframe.contentDocument &&
+                        iframe.contentDocument.body &&
+                        iframe.contentDocument.body.innerHTML == "false"){
+                        // In Opera event is fired second time
+                        // when body.innerHTML changed from false
+                        // to server response approx. after 1 sec
+                        // when we upload file with iframe
+                        return;
+                    }
+                }
+                catch (error) {
+                    //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
+                    log('Error when attempting to access iframe during handling of upload response (' + error + ")", 'error');
+                }
+
+                callback();
+            });
+        }
     }
 
     /**
@@ -85,7 +119,6 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         // iframe.setAttribute('name', id);
 
         var iframe = qq.toElement('<iframe src="javascript:false;" name="' + id + '" />');
-        // src="javascript:false;" removes ie6 prompt on https
 
         iframe.setAttribute('id', id);
 
@@ -186,17 +219,20 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
 
             form.appendChild(input);
 
-            attachLoadEvent(iframe, function(){
+            attachLoadEvent(iframe, function(responseFromMessage){
                 log('iframe loaded');
 
-                var response = getIframeContentJson(iframe);
+                var response = responseFromMessage ? responseFromMessage : getIframeContentJson(iframe);
 
-                // timeout added to fix busy state in FF3.6
-                setTimeout(function(){
+                if (detachLoadEvents[id] !== undefined) {
                     detachLoadEvents[id]();
                     delete detachLoadEvents[id];
+                }
+
+                //we can't remove an iframe if the iframe doesn't belong to the same domain
+                if (!options.iframeCors) {
                     qq(iframe).remove();
-                }, 1);
+                }
 
                 if (!response.success) {
                     if (options.onAutoRetry(id, fileName, response)) {

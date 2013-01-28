@@ -13,6 +13,7 @@ qq.FineUploaderBasic = function(o){
             paramsInBody: false,
             customHeaders: {},
             forceMultipart: true,
+            iframeCors: false,
             inputName: 'qqfile',
             uuidName: 'qquuid',
             totalFileSizeName: 'qqtotalfilesize'
@@ -269,6 +270,7 @@ qq.FineUploaderBasic.prototype = {
             inputName: this._options.request.inputName,
             uuidParamName: this._options.request.uuidName,
             totalFileSizeParamName: this._options.request.totalFileSizeName,
+            iframeCors: this._options.request.iframeCors,
             demoMode: this._options.demoMode,
             paramsInBody: this._options.request.paramsInBody,
             paramsStore: this._paramsStore,
