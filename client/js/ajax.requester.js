@@ -1,4 +1,5 @@
 /** Generic class for sending non-upload ajax requests and handling the associated responses **/
+//TODO Use XDomainRequest if expectCors = true.  Not necessary now since only DELETE requests are sent and XDR doesn't support pre-flighting.
 /*globals qq, XMLHttpRequest*/
 qq.AjaxRequestor = function(o) {
     "use strict";
@@ -12,6 +13,7 @@ qq.AjaxRequestor = function(o) {
             customHeaders: {},
             successfulResponseCodes: [200],
             demoMode: false,
+            expectCors: false,
             log: function(str, level) {},
             onSend: function(id) {},
             onComplete: function(id, xhr, isError) {},
@@ -71,13 +73,15 @@ qq.AjaxRequestor = function(o) {
 
         requestState[id].xhr = xhr;
         xhr.onreadystatechange = getReadyStateChangeHandler(id);
-
         xhr.open(method, url, true);
+
+        if (options.expectCors) {
+            xhr.withCredentials = true;
+        }
 
         setHeaders(id);
 
         log('Sending ' + method + " request for " + id);
-
         if (!shouldParamsBeInQueryString && params) {
             xhr.send(qq.obj2url(params, ""));
         }

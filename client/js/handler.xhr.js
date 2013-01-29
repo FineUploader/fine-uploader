@@ -75,8 +75,11 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     }
 
     function createXhr(id) {
-        fileState[id].xhr = new XMLHttpRequest();
-        return fileState[id].xhr;
+        var xhr = new XMLHttpRequest();
+
+        fileState[id].xhr = xhr;
+
+        return xhr;
     }
 
     function setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id) {
@@ -102,6 +105,11 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         }
 
         xhr.open(method, url, true);
+
+        if (options.expectCors) {
+            xhr.withCredentials = true;
+        }
+
         if (multipart) {
             if (options.paramsInBody) {
                 qq.obj2FormData(params, formData);

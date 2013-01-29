@@ -7,11 +7,13 @@ $(document).ready(function() {
         element: $('#basicUploadSuccessExample')[0],
         debug: true,
         request: {
-            endpoint: "http://ray.test:8080/upload/receiver",
-            iframeCors: true
+            endpoint: "http://ray.test:8080/upload/receiver"
         },
         callbacks: {
             onError: errorHandler
+        },
+        deleteFile: {
+            enabled: true
         }
     });
 

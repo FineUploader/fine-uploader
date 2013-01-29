@@ -7,9 +7,11 @@ $(document).ready(function() {
 
     $('#basicUploadSuccessExample').fineUploader({
         debug: true,
+        cors: {
+            expected: true
+        },
         request: {
             endpoint: "http://ray.test:8080/upload/receiver",
-            iframeCors: true,
             paramsInBody: false,
             params: {
                 test: 'one',

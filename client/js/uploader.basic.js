@@ -13,7 +13,6 @@ qq.FineUploaderBasic = function(o){
             paramsInBody: false,
             customHeaders: {},
             forceMultipart: true,
-            iframeCors: false,
             inputName: 'qqfile',
             uuidName: 'qquuid',
             totalFileSizeName: 'qqtotalfilesize'
@@ -94,6 +93,9 @@ qq.FineUploaderBasic = function(o){
             maxConnections: 3,
             customHeaders: {},
             params: {}
+        },
+        cors: {
+            expected: false
         }
     };
 
@@ -270,7 +272,7 @@ qq.FineUploaderBasic.prototype = {
             inputName: this._options.request.inputName,
             uuidParamName: this._options.request.uuidName,
             totalFileSizeParamName: this._options.request.totalFileSizeName,
-            iframeCors: this._options.request.iframeCors,
+            expectCors: this._options.cors.expected,
             demoMode: this._options.demoMode,
             paramsInBody: this._options.request.paramsInBody,
             paramsStore: this._paramsStore,
@@ -331,6 +333,7 @@ qq.FineUploaderBasic.prototype = {
             customHeaders: this._options.deleteFile.customHeaders,
             paramsStore: this._deleteFileParamsStore,
             demoMode: this._options.demoMode,
+            expectCors: this._options.cors.expected,
             log: function(str, level) {
                 self.log(str, level);
             },
@@ -377,6 +380,25 @@ qq.FineUploaderBasic.prototype = {
         var storedFileIndex = qq.indexOf(this._storedFileIds, id);
         if (!this._options.autoUpload && storedFileIndex >= 0) {
             this._storedFileIds.splice(storedFileIndex, 1);
+        }
+    },
+    _isDeletePossible: function() {
+        return (this._options.deleteFile.enabled &&
+            (!this._options.cors.expected ||
+                (this._options.cors.expected && window.XDomainRequest === undefined)
+                )
+            );
+    },
+    _onSubmitDelete: function(fileId) {
+        if (this._isDeletePossible()) {
+            if (this._options.callbacks.onSubmitDelete(fileId)) {
+                this._deleteHandler.sendDelete(fileId, this.getUuid(fileId));
+            }
+        }
+        else {
+            this.log("Delete request ignored for file ID " + fileId + ", delete feature is disabled or request not possible " +
+                "due to CORS on a user agent that does not support pre-flighting.", "warn");
+            return false;
         }
     },
     _onDelete: function(fileId) {},
@@ -444,17 +466,6 @@ qq.FineUploaderBasic.prototype = {
         }
         else {
             this.log("'" + id + "' is not a valid file ID", 'error');
-            return false;
-        }
-    },
-    _onSubmitDelete: function(fileId) {
-        if (this._options.deleteFile.enabled) {
-            if (this._options.callbacks.onSubmitDelete(fileId)) {
-                this._deleteHandler.sendDelete(fileId, this.getUuid(fileId));
-            }
-        }
-        else {
-            this.log("Delete request ignored for file ID " + fileId + ", delete feature is disabled.", "warn");
             return false;
         }
     },

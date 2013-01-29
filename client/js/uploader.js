@@ -308,7 +308,7 @@ qq.extend(qq.FineUploader.prototype, {
         qq(this._find(item, 'spinner')).hide();
 
         if (result.success) {
-            if (this._options.deleteFile.enabled) {
+            if (this._isDeletePossible()) {
                 this._showDeleteLink(id);
             }
 
@@ -376,7 +376,7 @@ qq.extend(qq.FineUploader.prototype, {
     _onSubmitDelete: function(fileId) {
         var uuid = this.getUuid(fileId);
 
-        if (this._options.deleteFile.enabled) {
+        if (this._isDeletePossible()) {
             if (this._options.callbacks.onSubmitDelete(fileId) !== false) {
                 if (this._options.deleteFile.forceConfirm) {
                     this._showDeleteConfirm(fileId);

@@ -10,6 +10,7 @@ qq.DeleteFileAjaxRequestor = function(o) {
             customHeaders: {},
             paramsStore: {},
             demoMode: false,
+            expectCors: false,
             log: function(str, level) {},
             onDelete: function(id) {},
             onDeleteComplete: function(id, xhr, isError) {}
