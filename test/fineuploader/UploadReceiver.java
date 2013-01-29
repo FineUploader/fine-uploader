@@ -48,6 +48,18 @@ public class UploadReceiver extends HttpServlet
         }
 
         resp.setStatus(SUCCESS_RESPONSE_CODE);
+//        resp.addHeader("Access-Control-Allow-Origin", "*");
+    }
+
+    @Override
+    public void doOptions(HttpServletRequest req, HttpServletResponse resp)
+    {
+        resp.setStatus(SUCCESS_RESPONSE_CODE);
+//        resp.addHeader("Access-Control-Allow-Origin", "http://192.168.130.118:8080");
+//        resp.addHeader("Access-Control-Allow-Credentials", "true");
+        resp.addHeader("Access-Control-Allow-Origin", "*");
+        resp.addHeader("Access-Control-Allow-Methods", "POST, DELETE");
+        resp.addHeader("Access-Control-Allow-Headers", "x-requested-with, cache-control, content-type");
     }
 
     @Override
@@ -61,6 +73,10 @@ public class UploadReceiver extends HttpServlet
         {
             resp.setContentType(isIframe ? "text/html" : "text/plain");
             resp.setStatus(SUCCESS_RESPONSE_CODE);
+
+//            resp.addHeader("Access-Control-Allow-Origin", "http://192.168.130.118:8080");
+//            resp.addHeader("Access-Control-Allow-Credentials", "true");
+//            resp.addHeader("Access-Control-Allow-Origin", "*");
 
             if (ServletFileUpload.isMultipartContent(req))
             {
@@ -86,7 +102,6 @@ public class UploadReceiver extends HttpServlet
             {
                 writeResponse(resp.getWriter(), e.getMessage(), isIframe, false, requestParser);
             }
-
         }
     }
 
@@ -250,15 +265,14 @@ public class UploadReceiver extends HttpServlet
     {
         if (failureReason == null)
         {
-            if (isIframe)
-            {
-                //TODO req.getRequestUrl return val needs to be passed to postMessage polyfill for hash url hack to work, I think
-                writer.print("{\"success\": true, \"uuid\": \"" + requestParser.getUuid() + "\"}<script src=\"http://192.168.130.118:8080/client/js/iframe.xss.response.js\"></script>");
-            }
-            else
-            {
+//            if (isIframe)
+//            {
+//                writer.print("{\"success\": true, \"uuid\": \"" + requestParser.getUuid() + "\"}<script src=\"http://192.168.130.118:8080/client/js/iframe.xss.response.js\"></script>");
+//            }
+//            else
+//            {
                 writer.print("{\"success\": true}");
-            }
+//            }
         }
         else
         {
@@ -268,14 +282,14 @@ public class UploadReceiver extends HttpServlet
             }
             else
             {
-                if (isIframe)
-                {
-                    writer.print("{\"error\": \"" + failureReason + "\", \"uuid\": \"" + requestParser.getUuid() + "\"}<script src=\"http://192.168.130.118:8080/client/js/iframe.xss.response.js\"></script>");
-                }
-                else
-                {
+//                if (isIframe)
+//                {
+//                    writer.print("{\"error\": \"" + failureReason + "\", \"uuid\": \"" + requestParser.getUuid() + "\"}<script src=\"http://192.168.130.118:8080/client/js/iframe.xss.response.js\"></script>");
+//                }
+//                else
+//                {
                     writer.print("{\"error\": \"" + failureReason + "\"}");
-                }
+//                }
             }
         }
     }
