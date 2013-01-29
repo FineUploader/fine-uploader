@@ -386,7 +386,7 @@ qq.FineUploaderBasic.prototype = {
     _isDeletePossible: function() {
         return (this._options.deleteFile.enabled &&
             (!this._options.cors.expected ||
-                (this._options.cors.expected && window.XDomainRequest === undefined)
+                (this._options.cors.expected && (qq.ie10() || !qq.ie()))
                 )
             );
     },
