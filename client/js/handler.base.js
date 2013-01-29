@@ -15,7 +15,10 @@ qq.UploadHandler = function(o) {
         paramsInBody: false,
         paramsStore: {},
         endpointStore: {},
-        expectCors: false,
+        cors: {
+            expected: false,
+            sendCredentials: false
+        },
         maxConnections: 3, // maximum number of concurrent uploads
         uuidParamName: 'qquuid',
         totalFileSizeParamName: 'qqtotalfilesize',

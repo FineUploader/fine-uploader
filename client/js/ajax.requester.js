@@ -13,7 +13,10 @@ qq.AjaxRequestor = function(o) {
             customHeaders: {},
             successfulResponseCodes: [200],
             demoMode: false,
-            expectCors: false,
+            cors: {
+                expected: false,
+                sendCredentials: false
+            },
             log: function(str, level) {},
             onSend: function(id) {},
             onComplete: function(id, xhr, isError) {},
@@ -75,7 +78,7 @@ qq.AjaxRequestor = function(o) {
         xhr.onreadystatechange = getReadyStateChangeHandler(id);
         xhr.open(method, url, true);
 
-        if (options.expectCors) {
+        if (options.cors.expected && options.cors.sendCredentials) {
             xhr.withCredentials = true;
         }
 

@@ -95,7 +95,8 @@ qq.FineUploaderBasic = function(o){
             params: {}
         },
         cors: {
-            expected: false
+            expected: false,
+            sendCredentials: false
         }
     };
 
@@ -272,7 +273,7 @@ qq.FineUploaderBasic.prototype = {
             inputName: this._options.request.inputName,
             uuidParamName: this._options.request.uuidName,
             totalFileSizeParamName: this._options.request.totalFileSizeName,
-            expectCors: this._options.cors.expected,
+            cors: this._options.cors,
             demoMode: this._options.demoMode,
             paramsInBody: this._options.request.paramsInBody,
             paramsStore: this._paramsStore,
@@ -333,7 +334,7 @@ qq.FineUploaderBasic.prototype = {
             customHeaders: this._options.deleteFile.customHeaders,
             paramsStore: this._deleteFileParamsStore,
             demoMode: this._options.demoMode,
-            expectCors: this._options.cors.expected,
+            cors: this._options.cors,
             log: function(str, level) {
                 self.log(str, level);
             },

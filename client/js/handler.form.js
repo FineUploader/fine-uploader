@@ -43,7 +43,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
     function attachLoadEvent(iframe, callback) {
         /*jslint eqeq: true*/
 
-        if (options.expectCors) {
+        if (options.cors.expected) {
             registerPostMessageCallback(iframe.id, callback)
         }
         else {
@@ -230,7 +230,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
                 }
 
                 //we can't remove an iframe if the iframe doesn't belong to the same domain
-                if (!options.expectCors) {
+                if (!options.cors.expected) {
                     qq(iframe).remove();
                 }
 

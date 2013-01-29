@@ -106,7 +106,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
         xhr.open(method, url, true);
 
-        if (options.expectCors) {
+        if (options.cors.expected && options.cors.sendCredentials) {
             xhr.withCredentials = true;
         }
 
