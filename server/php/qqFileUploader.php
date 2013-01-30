@@ -133,7 +133,7 @@ class qqFileUploader {
                 $target = fopen($target, 'w');
 
                 for ($i=0; $i<$totalParts; $i++){
-                    $chunk = fopen($targetFolder.'/'.$i, "w");
+                    $chunk = fopen($targetFolder.'/'.$i, "rb");
                     stream_copy_to_stream($chunk, $target);
                     fclose($chunk);
                 }
