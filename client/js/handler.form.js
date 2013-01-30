@@ -1,5 +1,5 @@
 /*globals qq, document, setTimeout*/
-/*jslint white: true*/
+/*globals clearTimeout*/
 qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
     "use strict";
 
@@ -7,6 +7,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         inputs = [],
         uuids = [],
         detachLoadEvents = {},
+        postMessageCallbackTimers = {},
         uploadComplete = uploadCompleteCallback,
         log = logCallback,
         corsMessageReceiver = new qq.WindowReceiveMessage({log: log}),
@@ -14,8 +15,24 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         api;
 
 
-    function registerPostMessageCallback(id, callback) {
+    function registerPostMessageCallback(iframe, callback) {
+        var id = iframe.id;
+
         onloadCallbacks[uuids[id]] = callback;
+
+        detachLoadEvents[id] = qq(iframe).attach('load', function() {
+            if (inputs[id]) {
+                log("Received iframe load event for CORS upload request (file id " + id + ")");
+
+                postMessageCallbackTimers[id] = setTimeout(function() {
+                    var errorMessage = "No valid message received from loaded iframe for file id " + id;
+                    log(errorMessage, "error");
+                    callback({
+                        error: errorMessage
+                    });
+                }, 1000);
+            }
+        });
 
         corsMessageReceiver.receiveMessage(id, function(message) {
             qq.log("Received the following window message: '" + message + "'");
@@ -24,18 +41,19 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
                 onloadCallback;
 
             if (uuid && onloadCallbacks[uuid]) {
+                clearTimeout(postMessageCallbackTimers[id]);
+                delete postMessageCallbackTimers[id];
+                detachLoadEvents[id]();
+                delete detachLoadEvents[id];
+
                 onloadCallback = onloadCallbacks[uuid];
+
                 delete onloadCallbacks[uuid];
                 corsMessageReceiver.stopReceivingMessages(id);
                 onloadCallback(response);
             }
-            else {
-                if (!uuid) {
-                    qq.log("'" + message + "' does not contain a UUID - ignoring.");
-                }
-                else {
-                    qq.log("'" + message + "' does not have an associated onloadcallback registered - ignoring", "warn");
-                }
+            else if (!uuid) {
+                qq.log("'" + message + "' does not contain a UUID - ignoring.");
             }
         });
     }
@@ -44,7 +62,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         /*jslint eqeq: true*/
 
         if (options.cors.expected) {
-            registerPostMessageCallback(iframe.id, callback)
+            registerPostMessageCallback(iframe, callback);
         }
         else {
             detachLoadEvents[iframe.id] = qq(iframe).attach('load', function(){
@@ -194,6 +212,12 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             delete inputs[id];
             delete uuids[id];
             delete detachLoadEvents[id];
+
+            if (options.cors.expected) {
+                clearTimeout(postMessageCallbackTimers[id]);
+                delete postMessageCallbackTimers[id];
+                corsMessageReceiver.stopReceivingMessages(id);
+            }
 
             var iframe = document.getElementById(id);
             if (iframe) {
