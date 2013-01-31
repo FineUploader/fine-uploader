@@ -1,4 +1,4 @@
-/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest*/
+/*globals window, define, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest*/
 var qq = function(element) {
     "use strict";
 
@@ -554,3 +554,12 @@ qq.DisposeSupport = function() {
         }
     };
 };
+
+if (typeof exports !== 'undefined') {
+    if (typeof module !== 'undefined' && module.exports) {
+      exports = module.exports = qq;
+    }
+    exports.qq = qq;
+} else {
+    root.qq = qq;
+}
