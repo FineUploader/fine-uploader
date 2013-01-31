@@ -63,14 +63,19 @@ let Fine Uploader know that it should start the file upload from the first chunk
 For more details, please read the [blog post on the file resume feature](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html).
 
 <br/>
-
-<br/>
 ## Deleting Files ##
 If you have enabled the `deleteFile` feature, you will need to handle `DELETE` requests server-side.  The UUID of the file
 to delete will be specified as the last element of the URI path.  Any parameters specified will be added to the query string.  Success
 of the request will depend solely on the response code.  Acceptable response codes that indicate success are 200, 202, and 204.
 Please see [the associated blog post](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html) for more information on this feature.
 
+<br/>
+## CORS Support ##
+As of version 3.3, CORS is supported.  For more details on how this works, limitations, and how to properly configure your server,
+please see the [blog post on CORS support](http://blog.fineuploader.com/2013/01/cors-support-in-33.html).  Also, please see the
+cors option documentation in the main readme.
+
+<br/>
 ###### WARNING ######
 The examples in the server directory, with the exception of the Java & PHP examples, were not provided by the those associated
 with Fine Uploader.  Use the examples at your own risk.  They may or may not work correctly and are NOT supported!  If

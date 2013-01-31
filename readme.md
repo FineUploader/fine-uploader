@@ -55,6 +55,7 @@ information about existing inconsistencies among browsers as far as this "Proces
 * [Split up a file into multiple requests](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html) (file chunking/partitioning).
 * [Resume failed/stopped uploads from previous sessions](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html)
 * [Delete uploaded files](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html)
+* [CORS support](http://blog.fineuploader.com/2013/01/cors-support-in-33.html)
 * Any many more!
 
 
@@ -808,6 +809,35 @@ check out the server-side readme.
     </tbody>
 </table>
 
+##### `cors` option properties: #####
+For more information on CORS support, please read the [associated blog post](http://blog.fineuploader.com/2013/01/cors-support-in-33.html) and
+check out the server-side readme.
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>expected</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>Set this to true if all requests will be cross-domain requests.  If this is set to true, all iframe-initiated requests
+            must include responses that follow the convention described in the CORS support blog post.</td>
+        </tr>
+        <tr>
+            <td>sendCredentials</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>Set this to true if you would like credentials (i.e. cookies) sent along with each CORS request.  Your response must,
+            as a result, include the appropriate headers.</td>
+        </tr>
+    </tbody>
+</table>
 
 <br/>
 ### FineUploader mode options ###
