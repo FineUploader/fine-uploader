@@ -2,11 +2,17 @@
 
 ###[Download the 3.2 combined & minified javascript file (along with all other required files) here](https://github.com/valums/file-uploader/wiki/Releases)###
 
-###[Poll: Considering removal of support for IE7 in a future release.  Vote here.](http://www.polljunkie.com/9RgAKA/Poll22552.aspx)###
+###Poll: Considering removal of support for IE7 in a future release.  [Vote here](http://www.polljunkie.com/9RgAKA/Poll22552.aspx), [Comment here](https://github.com/valums/file-uploader/issues/637).###
 
 <br/>
-Actively developed by [Ray Nicholus](http://lnkd.in/Nkhx2C).
+Actively developed by [Ray Nicholus](http://lnkd.in/Nkhx2C).     
 Created by Andrew Valums.
+
+<br/>
+## Notice ##
+I plan on changing the default for the `paramsInBody` property of the `request` option to "true" in 3.3.  I suspect most
+developers are setting this option anyway.  Please let me know if you have any problems with this change, so we can
+discuss further.  The associated case is [#604](https://github.com/valums/file-uploader/issues/604).
 
 <br/>
 ## Quick Links ##
@@ -1202,6 +1208,7 @@ if the user agent does not support the File API.
 or if the user agent does not support the File API.  For more info on the `File` object, please see [the entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file).
 * `deleteFile(fileId)` - This allows you to programmatically order Fine Uploader to send a DELETE request for a specific file.
 Fine Uploader actually uses the API call internally when a user clicks the delete link in FineUploader mode.
+* `getUuid(fileId)` - Retrieves the UUID associated with a file, given a current session file ID.
 
 <br/>
 ### FineUploader mode API functions ###
