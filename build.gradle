@@ -13,6 +13,7 @@ def coreFiles = ["${jsSrcDir}/header.js",
                  "${jsSrcDir}/uploader.js",
                  "${jsSrcDir}/ajax.requester.js",
                  "${jsSrcDir}/deletefile.ajax.requester.js",
+                 "${jsSrcDir}/window.receive.message.js",
                  "${jsSrcDir}/handler.base.js",
                  "${jsSrcDir}/handler.form.js",
                  "${jsSrcDir}/handler.xhr.js"]
@@ -21,6 +22,8 @@ def cssFiles = ["$srcDir/fineuploader.css"]
 
 def imageFiles = ["$srcDir/loading.gif",
                   "$srcDir/processing.gif"]
+
+def additionalFilesToInclude = ["${jsSrcDir}/iframe.xss.response.js"]
 
 def jQueryPluginFiles = ["${jsSrcDir}/jquery-plugin.js"]
 
@@ -67,10 +70,11 @@ task zip(type: Zip) {
 }
 
 task copyResources(type:Copy) {
-    from cssFiles + imageFiles
+    from cssFiles + imageFiles + additionalFilesToInclude
     into 'build'
     rename { String fileName ->
         fileName.replace('.css', "-${version}.css")
+        fileName.replace('.js', "-${version}.js")
     }
 }
 
