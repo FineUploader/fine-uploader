@@ -9,19 +9,6 @@ Actively developed by [Ray Nicholus](http://lnkd.in/Nkhx2C).
 Created by Andrew Valums.
 
 <br/>
-## Known Issues ##
-* [#595](https://github.com/valums/file-uploader/issues/595) - `inputName` parameter is included in both the query string 
-AND the request payload of XHR requests if `forceMultipart` is true (default) and `paramsInBody` is false (default).
-This will be fixed in 3.3.  This will NOT affect most users.  If it does negatively impact you, an easy workaround is to 
-set the `paramsInBody` property of the `request` option to true.  Note that in 3.3, the `paramsInBody` default value will 
-be changed to true anyway.  Please read more about this option in this readme, and in the 
-[server-side readme](https://github.com/valums/file-uploader/blob/master/server/readme.md).  
-* [#584](https://github.com/valums/file-uploader/issues/584) - "Processing..." status message does not appear while 
-waiting for response after sending last byte of last chunk to server. This only affects FineUploader mode. I plan to 
-address this in 3.3. Not a major issue, but it deserves to be addressed. Please see the FAQ in the readme for more 
-information about existing inconsistencies among browsers as far as this "Processing..." message is concerned.
-
-<br/>
 ## Quick Links ##
 * [Frequently Asked Questions (FAQ)](#frequently-asked-questions-faq)
 * [Downloads](https://github.com/valums/file-uploader/wiki/Releases)
@@ -132,7 +119,7 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 7. Check out the available [API functions in FineUploader mode](#fineuploader-mode-api-functions).
 8. Examine the [available callbacks](#callbacks-1).
 9. You might want to read up on [this short description](#changing-dialogs-to-something-more-user-friendly) that mentions how you can override the default alert and confirm dialogs.
-10. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/master/server/readme.md).
+10. Head on over to the [server-side readme](server/readme.md).
 11. Some additional sections that may be of interested are outlined [here](#additional-reading).
 
 ## FineUploaderBasic mode users ##
@@ -142,7 +129,7 @@ I didn't forget about you!  Read on, starting [here](#fineuploaderbasic-mode-use
 4. Glance at this quick blurb on [overriding options](#how-to-override-options).
 5. Have a look at the available [API functions in FineUploaderBasic mode](#fineuploaderbasic-mode-api-functions).
 6. Examine the [available callbacks](#callbacks-1).
-7. Head on over to the [server-side readme](https://github.com/valums/file-uploader/blob/master/server/readme.md).
+7. Head on over to the [server-side readme](server/readme.md).
 8. Some additional sections that may be of interested are outlined [here](#additional-reading).
 
 
