@@ -110,6 +110,11 @@ class qqFileUploader {
             $chunksFolder = $this->chunksFolder;
             $partIndex = (int)$_REQUEST['qqpartindex'];
             $uuid = $_REQUEST['qquuid'];
+            
+            //Check is not $uploadDirectory exist 'path', and create path recursive and permissions
+            if(!\is_dir($uploadDirectory)) {
+                \mkdir($uploadDirectory, 0777, true);
+            }
 
             if (!is_writable($chunksFolder) || !is_executable($uploadDirectory)){
                 return array('error' => "Server error. Chunks directory isn't writable or executable.");
