@@ -233,7 +233,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             var input = inputs[id],
                 fileName = api.getName(id),
                 iframe = createIframe(id),
-                form = createForm(id, iframe);
+                form;
 
             if (!input){
                 throw new Error('file with passed id was not added, or already uploaded or cancelled');
@@ -241,6 +241,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
 
             options.onUpload(id, this.getName(id));
 
+            form = createForm(id, iframe);
             form.appendChild(input);
 
             attachLoadEvent(iframe, function(responseFromMessage){
