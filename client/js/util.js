@@ -514,7 +514,7 @@ qq.areCookiesEnabled = function() {
  */
 qq.parseJson = function(json) {
     /*jshint evil: true*/
-    if (window.JSON && typeof JSON.parse === "function") {
+    if (window.JSON && qq.isFunction(JSON.parse)) {
         return JSON.parse(json);
     } else {
         return eval("(" + json + ")");

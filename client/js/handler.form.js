@@ -117,7 +117,8 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             if (innerHTML && innerHTML.match(/^<pre/i)) {
                 innerHTML = doc.body.firstChild.firstChild.nodeValue;
             }
-            response = eval("(" + innerHTML + ")");
+
+            response = qq.parseJson(innerHTML);
         } catch(error){
             log('Error when attempting to parse form upload response (' + error + ")", 'error');
             response = {success: false};
