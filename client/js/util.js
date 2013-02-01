@@ -162,6 +162,14 @@ qq.isFunction = function(variable) {
     return typeof(variable) === "function";
 };
 
+qq.trimStr = function(string) {
+    if (String.prototype.trim) {
+        return string.trim();
+    }
+
+    return string.replace(/^\s+|\s+$/g,'');
+};
+
 qq.isFileOrInput = function(maybeFileOrInput) {
     "use strict";
     if (window.File && maybeFileOrInput instanceof File) {
@@ -480,7 +488,7 @@ qq.getCookieNames = function(regexp) {
         cookieNames = [];
 
     qq.each(cookies, function(idx, cookie) {
-        cookie = cookie.trim();
+        cookie = qq.trimStr(cookie);
 
         var equalsIdx = cookie.indexOf("=");
 

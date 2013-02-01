@@ -16,6 +16,15 @@ test("qq.isFunction", function() {
     equal(qq.isFunction({}), false, "an object is not a function");
 });
 
+test("qq.trimStr", function() {
+    equal(qq.trimStr(" blah "), "blah", "trim string test 1");
+    equal(qq.trimStr("blah "), "blah", "trim string test 2");
+    equal(qq.trimStr(" blah"), "blah", "trim string test 3");
+    equal(qq.trimStr("blah"), "blah", "trim string test 4");
+    equal(qq.trimStr("bl a h"), "bl a h", "trim string test 5");
+    equal(qq.trimStr(""), "", "trim string test 6");
+});
+
 test("qq.isFileOrInput", function() {
     $('#qunit-fixture').append("<div id='foo'></div>");
     $('#qunit-fixture').append("<input id='bar'/>");
