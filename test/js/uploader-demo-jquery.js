@@ -7,34 +7,34 @@ $(document).ready(function() {
 
     $('#basicUploadSuccessExample').fineUploader({
         debug: true,
-        cors: {
-            expected: true
-        },
+//        cors: {
+//            expected: true
+//        },
         request: {
-            endpoint: "http://ray.test:8080/upload/receiver",
-            paramsInBody: false,
-            params: {
-                test: 'one',
-                blah: 'foo',
-                bar: {
-                    one: '1',
-                    two: '2',
-                    three: {
-                        foo: 'bar'
-                    }
-                },
-                fileNum: function() {
-                    fileNum+=1;
-                    return fileNum;
-                }
-            }
+            endpoint: "/upload/receiver",
+            paramsInBody: false
+//            params: {
+//                test: 'one',
+//                blah: 'foo',
+//                bar: {
+//                    one: '1',
+//                    two: '2',
+//                    three: {
+//                        foo: 'bar'
+//                    }
+//                },
+//                fileNum: function() {
+//                    fileNum+=1;
+//                    return fileNum;
+//                }
+//            }
         },
-        chunking: {
-            enabled: true
-        },
-        resume: {
-            enabled: true
-        },
+//        chunking: {
+//            enabled: true
+//        },
+//        resume: {
+//            enabled: true
+//        },
         retry: {
             enableAuto: true,
             showButton: true
@@ -49,6 +49,9 @@ $(document).ready(function() {
         .on('error', errorHandler)
         .on('uploadChunk resume', function(event, id, fileName, chunkData) {
             qq.log('on' + event.type + ' -  ID: ' + id + ", FILENAME: " + fileName + ", PARTINDEX: " + chunkData.partIndex + ", STARTBYTE: " + chunkData.startByte + ", ENDBYTE: " + chunkData.endByte + ", PARTCOUNT: " + chunkData.totalParts);
+        })
+        .on("upload", function(event, id, filename) {
+            $(this).fineUploader('setParams', {"hey": "ho"}, id);
         });
 
     $('#manualUploadModeExample').fineUploader({
