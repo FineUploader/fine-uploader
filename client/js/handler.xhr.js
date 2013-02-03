@@ -165,7 +165,9 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             fileState[id].loaded = 0;
         }
 
-        persistChunkData(id, chunkData);
+        if (resumeEnabled) {
+            persistChunkData(id, chunkData);
+        }
 
         xhr.onreadystatechange = getReadyStateChangeHandler(id, xhr);
 
@@ -206,7 +208,10 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             uploadNextChunk(id);
         }
         else {
-            deletePersistedChunkData(id);
+            if (resumeEnabled) {
+                deletePersistedChunkData(id);
+            }
+
             handleCompletedFile(id, response, xhr);
         }
     }
