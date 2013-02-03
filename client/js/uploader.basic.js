@@ -116,7 +116,8 @@ qq.FineUploaderBasic = function(o){
     this._paramsStore = this._createParamsStore("request");
     this._deleteFileParamsStore = this._createParamsStore("deleteFile");
 
-    this._endpointStore = this._createEndpointStore();
+    this._endpointStore = this._createEndpointStore("request");
+    this._deleteFileEndpointStore = this._createEndpointStore("deleteFile");
 
     this._handler = this._createUploadHandler();
     this._deleteHandler = this._createDeleteHandler();
@@ -245,6 +246,15 @@ qq.FineUploaderBasic.prototype = {
     deleteFile: function(fileId) {
         this._onSubmitDelete(fileId);
     },
+    setDeleteFileEndpoint: function(endpoint, fileId) {
+        /*jshint eqeqeq: true, eqnull: true*/
+        if (fileId == null) {
+            this._options.deleteFile.endpoint = endpoint;
+        }
+        else {
+            this._deleteFileEndpointStore.setEndpoint(endpoint, fileId);
+        }
+    },
     _createUploadButton: function(element){
         var self = this;
 
@@ -329,10 +339,10 @@ qq.FineUploaderBasic.prototype = {
         var self = this;
 
         return new qq.DeleteFileAjaxRequestor({
-            endpoint: this._options.deleteFile.endpoint,
             maxConnections: this._options.deleteFile.maxConnections,
             customHeaders: this._options.deleteFile.customHeaders,
             paramsStore: this._deleteFileParamsStore,
+            endpointStore: this._deleteFileEndpointStore,
             demoMode: this._options.demoMode,
             cors: this._options.cors,
             log: function(str, level) {
@@ -706,7 +716,7 @@ qq.FineUploaderBasic.prototype = {
             }
         };
     },
-    _createEndpointStore: function() {
+    _createEndpointStore: function(type) {
         var endpointStore = {},
         self = this;
 
@@ -721,7 +731,7 @@ qq.FineUploaderBasic.prototype = {
                     return endpointStore[fileId];
                 }
 
-                return self._options.request.endpoint;
+                return self._options[type].endpoint;
             },
 
             remove: function(fileId) {

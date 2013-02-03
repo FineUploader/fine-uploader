@@ -11,6 +11,8 @@ qq.AjaxRequestor = function(o) {
             method: 'POST',
             maxConnections: 3,
             customHeaders: {},
+            endpointStore: {},
+            paramsStore: {},
             successfulResponseCodes: [200],
             demoMode: false,
             cors: {
@@ -68,8 +70,8 @@ qq.AjaxRequestor = function(o) {
 
         options.onSend(id);
 
-        if (requestState[id].paramsStore.getParams) {
-            params = requestState[id].paramsStore.getParams(id);
+        if (options.paramsStore.getParams) {
+            params = options.paramsStore.getParams(id);
         }
 
         url = createUrl(id, params);
@@ -94,8 +96,12 @@ qq.AjaxRequestor = function(o) {
     }
 
     function createUrl(id, params) {
-        var method = getMethod(),
-            endpoint = requestState[id].endpoint;
+        var endpoint = options.endpointStore.getEndpoint(id),
+            addToPath = requestState[id].addToPath;
+
+        if (addToPath !== undefined) {
+            endpoint += "/" + addToPath;
+        }
 
         if (shouldParamsBeInQueryString && params) {
             return qq.obj2url(params, endpoint);
@@ -159,10 +165,9 @@ qq.AjaxRequestor = function(o) {
 
 
     return {
-        send: function(id, endpoint, paramsStore) {
+        send: function(id, addToPath) {
             requestState[id] = {
-                paramsStore: paramsStore,
-                endpoint: endpoint
+                addToPath: addToPath
             };
 
             var len = queue.push(id);

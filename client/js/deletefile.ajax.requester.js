@@ -5,7 +5,7 @@ qq.DeleteFileAjaxRequestor = function(o) {
 
     var requestor,
         options = {
-            endpoint: '/server/upload',
+            endpointStore: {},
             maxConnections: 3,
             customHeaders: {},
             paramsStore: {},
@@ -23,6 +23,8 @@ qq.DeleteFileAjaxRequestor = function(o) {
 
     requestor = new qq.AjaxRequestor({
         method: 'DELETE',
+        endpointStore: options.endpointStore,
+        paramsStore: options.paramsStore,
         maxConnections: options.maxConnections,
         customHeaders: options.customHeaders,
         successfulResponseCodes: [200, 202, 204],
@@ -32,16 +34,10 @@ qq.DeleteFileAjaxRequestor = function(o) {
         onComplete: options.onDeleteComplete
     });
 
-    function createEndpoint(uuid) {
-        return options.endpoint + "/" + uuid;
-    }
-
 
     return {
         sendDelete: function(id, uuid) {
-            var endpoint = createEndpoint(uuid);
-
-            requestor.send(id, endpoint, options.paramsStore);
+            requestor.send(id, uuid);
             options.log("Submitted delete file request for " + id);
         }
     };

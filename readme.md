@@ -1208,6 +1208,7 @@ if the user agent does not support the File API.
 or if the user agent does not support the File API.  For more info on the `File` object, please see [the entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file).
 * `deleteFile(fileId)` - This allows you to programmatically order Fine Uploader to send a DELETE request for a specific file.
 Fine Uploader actually uses the API call internally when a user clicks the delete link in FineUploader mode.
+* `setDeleteFileEndpoint(String endpointPath, [optional] Number fileId)` - Same as the `setEndpoint` function except this applies only to the `deleteFile` option endpoint(s).
 * `getUuid(fileId)` - Retrieves the UUID associated with a file, given a current session file ID.
 
 <br/>
