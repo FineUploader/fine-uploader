@@ -29,9 +29,9 @@ $(document).ready(function() {
 //                }
 //            }
         },
-//        chunking: {
-//            enabled: true
-//        },
+        chunking: {
+            enabled: true
+        },
 //        resume: {
 //            enabled: true
 //        },
