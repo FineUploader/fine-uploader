@@ -20,7 +20,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
         params[options.chunking.paramNames.partIndex] = chunkData.part;
         params[options.chunking.paramNames.partByteOffset] = chunkData.start;
-        params[options.chunking.paramNames.chunkSize] = chunkData.end - chunkData.start;
+        params[options.chunking.paramNames.chunkSize] = chunkData.size;
         params[options.chunking.paramNames.totalParts] = chunkData.count;
         params[options.totalFileSizeParamName] = size;
 
@@ -63,7 +63,8 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             start: startBytes,
             end: endBytes,
             count: totalChunks,
-            blob: getChunk(file, startBytes, endBytes)
+            blob: getChunk(file, startBytes, endBytes),
+            size: endBytes - startBytes
         };
     }
 
@@ -155,7 +156,8 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     }
 
     function uploadNextChunk(id) {
-        var chunkData = getChunkData(id, fileState[id].remainingChunkIdxs[0]),
+        var chunkIdx = fileState[id].remainingChunkIdxs[0],
+            chunkData = getChunkData(id, chunkIdx),
             xhr = createXhr(id),
             size = api.getSize(id),
             name = api.getName(id),
@@ -173,10 +175,10 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
         xhr.upload.onprogress = function(e) {
             if (e.lengthComputable) {
-                if (fileState[id].loaded < size) {
-                    var totalLoaded = e.loaded + fileState[id].loaded;
-                    options.onProgress(id, name, totalLoaded, size);
-                }
+                var totalLoaded = e.loaded + fileState[id].loaded,
+                    estTotalRequestsSize = calcAllRequestsSizeForChunkedUpload(id, chunkIdx, e.total);
+
+                options.onProgress(id, name, totalLoaded, estTotalRequestsSize);
             }
         };
 
@@ -196,13 +198,45 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         xhr.send(toSend);
     }
 
+    function calcAllRequestsSizeForChunkedUpload(id, chunkIdx, requestSize) {
+        var chunkData = getChunkData(id, chunkIdx),
+            blobSize = chunkData.size,
+            overhead = requestSize - blobSize,
+            fileSize = api.getSize(id),
+            chunkCount = chunkData.count,
+            initialRequestOverhead = fileState[id].initialRequestOverhead,
+            overheadDiff = overhead - initialRequestOverhead;
 
-     function handleSuccessfullyCompletedChunk(id, response, xhr) {
+        fileState[id].lastRequestOverhead = overhead;
+
+        if (chunkIdx === 0) {
+            fileState[id].lastChunkIdxProgress = 0;
+            fileState[id].initialRequestOverhead = overhead;
+            fileState[id].estTotalRequestsSize = fileSize + (chunkCount * overhead);
+        }
+        else if (fileState[id].lastChunkIdxProgress !== chunkIdx) {
+            fileState[id].lastChunkIdxProgress = chunkIdx;
+            fileState[id].estTotalRequestsSize += overheadDiff;
+        }
+
+        return fileState[id].estTotalRequestsSize;
+    }
+
+    function getLastRequestOverhead(id) {
+        if (multipart) {
+            return fileState[id].lastRequestOverhead;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    function handleSuccessfullyCompletedChunk(id, response, xhr) {
         var chunkIdx = fileState[id].remainingChunkIdxs.shift(),
             chunkData = getChunkData(id, chunkIdx);
 
         fileState[id].attemptingResume = false;
-        fileState[id].loaded += chunkData.end - chunkData.start;
+        fileState[id].loaded += chunkData.size + getLastRequestOverhead(id);
 
         if (fileState[id].remainingChunkIdxs.length > 0) {
             uploadNextChunk(id);
@@ -239,14 +273,19 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
         if (resumeEnabled) {
             deletePersistedChunkData(id);
+            fileState[id].attemptingResume = false;
         }
+
         fileState[id].remainingChunkIdxs = [];
         delete fileState[id].loaded;
+        delete fileState[id].estTotalRequestsSize;
+        delete fileState[id].initialRequestOverhead;
     }
 
     function handleResetResponseOnResumeAttempt(id) {
         fileState[id].attemptingResume = false;
         log("Server has declared that it cannot handle resume for file ID " + id + " - starting from the first chunk", 'error');
+        handleResetResponse(id);
         api.upload(id, true);
     }
 
@@ -312,8 +351,15 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
     function persistChunkData(id, chunkData) {
         var fileUuid = api.getUuid(id),
+            lastByteSent = fileState[id].loaded,
+            initialRequestOverhead = fileState[id].initialRequestOverhead,
+            estTotalRequestsSize = fileState[id].estTotalRequestsSize,
             cookieName = getChunkDataCookieName(id),
-            cookieValue = fileUuid + cookieItemDelimiter + chunkData.part,
+            cookieValue = fileUuid +
+                cookieItemDelimiter + chunkData.part +
+                cookieItemDelimiter + lastByteSent +
+                cookieItemDelimiter + initialRequestOverhead +
+                cookieItemDelimiter + estTotalRequestsSize,
             cookieExpDays = options.resume.cookiesExpireIn;
 
         qq.setCookie(cookieName, cookieValue, cookieExpDays);
@@ -327,17 +373,30 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
     function getPersistedChunkData(id) {
         var chunkCookieValue = qq.getCookie(getChunkDataCookieName(id)),
-            delimiterIndex, uuid, partIndex;
+            filename = api.getName(id),
+            sections, uuid, partIndex, lastByteSent, initialRequestOverhead, estTotalRequestsSize;
 
         if (chunkCookieValue) {
-            delimiterIndex = chunkCookieValue.indexOf(cookieItemDelimiter);
-            uuid = chunkCookieValue.substr(0, delimiterIndex);
-            partIndex = parseInt(chunkCookieValue.substr(delimiterIndex + 1, chunkCookieValue.length - delimiterIndex), 10);
+            sections = chunkCookieValue.split(cookieItemDelimiter);
 
-            return {
-                uuid: uuid,
-                part: partIndex
-            };
+            if (sections.length === 5) {
+                uuid = sections[0];
+                partIndex = parseInt(sections[1], 10);
+                lastByteSent = parseInt(sections[2], 10);
+                initialRequestOverhead = parseInt(sections[3], 10);
+                estTotalRequestsSize = parseInt(sections[4], 10);
+
+                return {
+                    uuid: uuid,
+                    part: partIndex,
+                    lastByteSent: lastByteSent,
+                    initialRequestOverhead: initialRequestOverhead,
+                    estTotalRequestsSize: estTotalRequestsSize
+                };
+            }
+            else {
+                log('Ignoring previously stored resume/chunk cookie for ' + filename + " - old cookie format", "warn");
+            }
         }
     }
 
@@ -381,7 +440,9 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
                     if (options.onResume(id, name, getChunkDataForCallback(firstChunkDataForResume)) !== false) {
                         firstChunkIndex = persistedChunkInfoForResume.part;
                         fileState[id].uuid = persistedChunkInfoForResume.uuid;
-                        fileState[id].loaded = firstChunkDataForResume.start;
+                        fileState[id].loaded = persistedChunkInfoForResume.lastByteSent;
+                        fileState[id].estTotalRequestsSize = persistedChunkInfoForResume.estTotalRequestsSize;
+                        fileState[id].initialRequestOverhead = persistedChunkInfoForResume.initialRequestOverhead;
                         fileState[id].attemptingResume = true;
                         log('Resuming ' + name + " at partition index " + firstChunkIndex);
                     }
