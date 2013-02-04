@@ -110,7 +110,7 @@ qq.UploadHandler = function(o) {
         /**
          * Cancels file upload by id
          */
-        cancel: function(id){
+        cancel: function(id) {
             log('Cancelling ' + id);
             options.paramsStore.remove(id);
             handlerImpl.cancel(id);
@@ -119,9 +119,12 @@ qq.UploadHandler = function(o) {
         /**
          * Cancels all uploads
          */
-        cancelAll: function(){
-            var self = this;
-            qq.each(queue, function(idx, fileId) {
+        cancelAll: function() {
+            var self = this,
+                queueCopy = [];
+
+            qq.extend(queueCopy, queue);
+            qq.each(queueCopy, function(idx, fileId) {
                 self.cancel(fileId);
             });
 

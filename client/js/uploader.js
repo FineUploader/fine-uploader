@@ -164,10 +164,6 @@ qq.extend(qq.FineUploader.prototype, {
             item = item.nextSibling;
         }
     },
-    cancel: function(fileId) {
-        qq.FineUploaderBasic.prototype.cancel.apply(this, arguments);
-        this._removeFileItem(fileId);
-    },
     reset: function() {
         qq.FineUploaderBasic.prototype.reset.apply(this, arguments);
         this._element.innerHTML = this._options.template;
@@ -333,6 +329,10 @@ qq.extend(qq.FineUploader.prototype, {
         qq.FineUploaderBasic.prototype._onUpload.apply(this, arguments);
 
         this._showSpinner(id);
+    },
+    _onCancel: function(id, fileName) {
+        qq.FineUploaderBasic.prototype._onCancel.apply(this, arguments);
+        this._removeFileItem(id);
     },
     _onBeforeAutoRetry: function(id) {
         var item, progressBar, cancelLink, failTextEl, retryNumForDisplay, maxAuto, retryNote;

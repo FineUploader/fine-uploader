@@ -194,6 +194,9 @@ qq.FineUploaderBasic.prototype = {
     cancel: function(fileId) {
         this._handler.cancel(fileId);
     },
+    cancelAll: function() {
+        this._handler.cancelAll();
+    },
     reset: function() {
         this.log("Resetting uploader...");
         this._handler.reset();
