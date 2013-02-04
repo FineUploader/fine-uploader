@@ -557,6 +557,62 @@ other default values.  This works for all options that are, themselves, objects 
     </tbody>
 </table>
 
+##### `messages` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>typeError</td>
+            <td>string</td>
+            <td>{file} has an invalid extension. Valid extension(s): {extensions}.</td>
+            <td>Text sent to the `onError` callback (and `showMessage` if running in FineUploader mode) if an invalid file type
+            is submitted, according to the validation settings.</td>
+    	</tr>
+        <tr>
+            <td>sizeError</td>
+            <td>string</td>
+            <td>{file} is too large, maximum file size is {sizeLimit}.</td>
+            <td>Text sent to the `onError` callback (and `showMessage` if running in FineUploader mode) if a file that is
+            too large, according to the validation settings, is submitted.</td>
+    	</tr>
+        <tr>
+            <td>minSizeError</td>
+            <td>string</td>
+            <td>{file} is too small, minimum file size is {minSizeLimit}.</td>
+            <td>Text sent to the `onError` callback (and `showMessage` if running in FineUploader mode) if a file that is
+            too small, according to the validation settings, is submitted.</td>
+    	</tr>
+        <tr>
+            <td>emptyError</td>
+            <td>string</td>
+            <td>{file} is empty, please select files again without it.</td>
+            <td>Text sent to the `onError` callback (and `showMessage` if running in FineUploader mode) if a zero-sized
+            file is submitted.</td>
+    	</tr>
+        <tr>
+            <td>noFilesError</td>
+            <td>string</td>
+            <td>No files to upload.</td>
+            <td>Text sent to the `onError` callback (and `showMessage` if running in FineUploader mode) if a an empty
+            array of files is submitted.</td>
+    	</tr>
+        <tr>
+            <td>onLeave</td>
+            <td>string</td>
+            <td>The files are being uploaded, if you leave now the upload will be cancelled.</td>
+            <td>Message display to the user (by the browser) if the user attempts to leave the page while uploads are still
+            in progress.</td>
+    	</tr>
+    </tbody>
+</table>
+
 ##### `retry` option properties: #####
 <table>
     <thead>
@@ -1000,6 +1056,26 @@ check out the server-side readme.
     </tbody>
 </table>
 
+##### `messages` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>tooManyFilesError</td>
+            <td>string</td>
+            <td>You may only drop one file</td>
+            <td>Text sent to `showMessage` and the `onError` callback when `multiple` is `false` and more the one file is dropped at once.</td>
+    	</tr>
+    </tbody>
+</table>
+
 ##### `retry` option properties: #####
 <table>
     <thead>
@@ -1085,12 +1161,63 @@ check out the server-side readme.
 The `template` option contains default elements with default classes that make up the uploader as a whole in the DOM.  For example,
 the first default element in `template` is a `div` with a class of `qq-uploader`.  This is the parent element of the uploader.
 The default drop area, button, and file list elements are also, by default, contained in this option.  You can use this option to
-add additional elements, modify default template elements, etc.
+add additional elements, modify default template elements, etc.  There is also a `fileTemplate` option which contains
+default elements that make up one file item in the file list.
 
-There is also a `fileTemplate` option which contains default elements that make up one file item in the file list.
+Here is the default `template` option:
+```html
+template: '<div class="qq-uploader">' +
+    ((!this._options.dragAndDrop || !this._options.dragAndDrop.disableDefaultDropzone) ? '<div class="qq-upload-drop-area"><span>{dragZoneText}</span></div>' : '') +
+    (!this._options.button ? '<div class="qq-upload-button"><div>{uploadButtonText}</div></div>' : '') +
+    '<span class="qq-drop-processing"><span>{dropProcessingText}</span><span class="qq-drop-processing-spinner"></span></span>' +
+    (!this._options.listElement ? '<ul class="qq-upload-list"></ul>' : '') +
+    '</div>'
+```
+
+...and the default `fileTemplate` options:
+```html
+fileTemplate: '<li>' +
+    '<div class="qq-progress-bar"></div>' +
+    '<span class="qq-upload-spinner"></span>' +
+    '<span class="qq-upload-finished"></span>' +
+    '<span class="qq-upload-file"></span>' +
+    '<span class="qq-upload-size"></span>' +
+    '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
+    '<a class="qq-upload-retry" href="#">{retryButtonText}</a>' +
+    '<a class="qq-upload-delete" href="#">{deleteButtonText}</a>' +
+    '<span class="qq-upload-status-text">{statusText}</span>' +
+    '</li>'
+```
 
 Finally, a `classes` option allows you to change the default class names for these elements.  Be sure the values in `classes`
-match the class names used in the corresponding template elements (where appropriate).
+match the class names used in the corresponding template elements (where appropriate).  The following `classes` option properties
+exist in FineUploader mode (with default values in parentheses):
+
+* `button` (qq-upload-button)
+* `drop` (qq-upload-drop-area)
+* `dropActive` (qq-upload-drop-area-active)
+* `dropDisabled` (qq-upload-drop-area-disable)
+* `list` (qq-upload-list)
+* `progressBar` (qq-progress-bar)
+* `file` (qq-upload-file)
+* `spinner` (qq-upload-spinner)
+* `finished` (qq-upload-finished)
+* `retrying` (qq-upload-retrying)
+* `retryable` (qq-upload-retryable)
+* `size` (qq-upload-size)
+* `cancel` (qq-upload-cancel)
+* `deleteButton` (qq-upload-delete)
+* `retry` (qq-upload-retry)
+* `statusText` (qq-upload-status-text)
+* `success` (qq-upload-success)
+* `fail` (qq-upload-fail)
+* `successIcon` (`null`)
+* `failIcon` (`null`)
+* `dropProcessing` (qq-drop-processing)
+* `dropProcessingSpinner` (qq-drop-processing-spinner)
+
+**Note:** If you change any of these class names _be sure_ that you also adjust the associated class name in the template.
+
 
 <br/>
 ### Callbacks ###
