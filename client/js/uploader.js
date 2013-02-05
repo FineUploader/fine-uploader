@@ -93,6 +93,9 @@ qq.FineUploader = function(o){
             deletingFailedText: "Delete failed"
 
         },
+        display: {
+            fileSizeOnSubmit: false
+        },
         showMessage: function(message){
             setTimeout(function() {
                 alert(message);
@@ -258,7 +261,7 @@ qq.extend(qq.FineUploader.prototype, {
     _onProgress: function(id, fileName, loaded, total){
         qq.FineUploaderBasic.prototype._onProgress.apply(this, arguments);
 
-        var item, progressBar, text, percent, cancelLink, size;
+        var item, progressBar, percent, cancelLink;
 
         item = this.getItemByFileId(id);
         progressBar = this._find(item, 'progressBar');
@@ -271,22 +274,18 @@ qq.extend(qq.FineUploader.prototype, {
             qq(progressBar).hide();
             qq(this._find(item, 'statusText')).setText(this._options.text.waitingForResponse);
 
-            // If last byte was sent, just display final size
-            text = this._formatSize(total);
+            // If last byte was sent, display total file size
+            this._displayFileSize(id);
         }
         else {
-            // If still uploading, display percentage
-            text = this._formatProgress(loaded, total);
+            // If still uploading, display percentage - total size is actually the total request(s) size
+            this._displayFileSize(id, loaded, total);
 
             qq(progressBar).css({display: 'block'});
         }
 
         // Update progress bar element
         qq(progressBar).css({width: percent + '%'});
-
-        size = this._find(item, 'size');
-        qq(size).css({display: 'inline'});
-        qq(size).setText(text);
     },
     _onComplete: function(id, fileName, result, xhr){
         qq.FineUploaderBasic.prototype._onComplete.apply(this, arguments);
@@ -444,11 +443,29 @@ qq.extend(qq.FineUploader.prototype, {
             this._handler.cancelAll();
             this._clearList();
         }
+
         this._listElement.appendChild(item);
+
+        if (this._options.display.fileSizeOnSubmit && qq.isXhrUploadSupported()) {
+            this._displayFileSize(id);
+        }
     },
     _clearList: function(){
         this._listElement.innerHTML = '';
         this.clearStoredFiles();
+    },
+    _displayFileSize: function(id, loadedSize, totalSize) {
+        var item = this.getItemByFileId(id),
+            size = this.getSize(id),
+            sizeForDisplay = this._formatSize(size),
+            sizeEl = this._find(item, 'size');
+
+        if (loadedSize !== undefined && totalSize !== undefined) {
+            sizeForDisplay = this._formatProgress(loadedSize, totalSize);
+        }
+
+        qq(sizeEl).css({display: 'inline'});
+        qq(sizeEl).setText(sizeForDisplay);
     },
     /**
      * delegate click event for cancel & retry links
