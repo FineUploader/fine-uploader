@@ -1155,6 +1155,27 @@ check out the server-side readme.
     </tbody>
 </table>
 
+##### `display` option properties: #####
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>fileSizeOnSubmit</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>If set to true, the file size (if available) will be displayed next to the file immediately after the file has been submitted/selected.
+            Otherwise, it will only appear once the actual upload starts.</td>
+    	</tr>
+    </tbody>
+</table>
+
 
 <br/>
 ### Styling FineUploader ###
