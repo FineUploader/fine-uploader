@@ -41,6 +41,11 @@ qq.UploadHandler = function(o) {
                 resuming: "qqresume"
             }
         },
+        blobs: {
+            paramNames: {
+                name: 'qqblobname'
+            }
+        },
         log: function(str, level) {},
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, response, xhr){},

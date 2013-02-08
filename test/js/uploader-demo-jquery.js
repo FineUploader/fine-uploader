@@ -12,7 +12,7 @@ $(document).ready(function() {
 //        },
         request: {
             endpoint: "/upload/receiver",
-            paramsInBody: false
+            paramsInBody: true
 //            params: {
 //                test: 'one',
 //                blah: 'foo',
@@ -44,6 +44,9 @@ $(document).ready(function() {
             endpoint: '/upload/receiver',
             forceConfirm: true,
             params: {foo: "bar"}
+        },
+        display: {
+            fileSizeOnSubmit: true
         }
     })
         .on('error', errorHandler)
@@ -59,6 +62,9 @@ $(document).ready(function() {
         uploadButtonText: "Select Files",
         request: {
             endpoint: "/upload/receiver"
+        },
+        display: {
+            fileSizeOnSubmit: true
         }
     }).on('error', errorHandler);
 
@@ -75,6 +81,10 @@ $(document).ready(function() {
         failedUploadTextDisplay: {
             mode: 'custom',
             maxChars: 5
+        },
+        retry: {
+            enableAuto: true,
+            showButton: true
         }
     }).on('error', errorHandler);
 
@@ -86,10 +96,14 @@ $(document).ready(function() {
         },
         validation: {
             allowedExtensions: ['jpeg', 'jpg', 'txt'],
-            sizeLimit: 50000
+            sizeLimit: 50000,
+            minSizeLimit: 2000
         },
         text: {
             uploadButton: "Click Or Drop"
+        },
+        display: {
+            fileSizeOnSubmit: true
         }
     }).on('error', errorHandler);
 

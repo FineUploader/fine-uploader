@@ -97,6 +97,12 @@ qq.FineUploaderBasic = function(o){
         cors: {
             expected: false,
             sendCredentials: false
+        },
+        blobs: {
+            defaultName: 'Misc data',
+            paramNames: {
+                name: 'qqblobname'
+            }
         }
     };
 
@@ -107,7 +113,7 @@ qq.FineUploaderBasic = function(o){
     // number of files being uploaded
     this._filesInProgress = [];
 
-    this._storedFileIds = [];
+    this._storedIds = [];
 
     this._autoRetries = [];
     this._retryTimeouts = [];
@@ -173,14 +179,14 @@ qq.FineUploaderBasic.prototype = {
         "use strict";
         var idToUpload;
 
-        while(this._storedFileIds.length) {
-            idToUpload = this._storedFileIds.shift();
+        while(this._storedIds.length) {
+            idToUpload = this._storedIds.shift();
             this._filesInProgress.push(idToUpload);
             this._handler.upload(idToUpload);
         }
     },
     clearStoredFiles: function(){
-        this._storedFileIds = [];
+        this._storedIds = [];
     },
     retry: function(id) {
         if (this._onBeforeManualRetry(id)) {
@@ -201,7 +207,7 @@ qq.FineUploaderBasic.prototype = {
         this.log("Resetting uploader...");
         this._handler.reset();
         this._filesInProgress = [];
-        this._storedFileIds = [];
+        this._storedIds = [];
         this._autoRetries = [];
         this._retryTimeouts = [];
         this._preventRetries = [];
@@ -231,7 +237,34 @@ qq.FineUploaderBasic.prototype = {
             }
 
             this.log('Processing ' + verifiedFilesOrInputs.length + ' files or inputs...');
-            this._uploadFileList(verifiedFilesOrInputs);
+            this._uploadFileOrBlobDataList(verifiedFilesOrInputs);
+        }
+    },
+    addBlobs: function(blobDataOrArray) {
+        if (blobDataOrArray) {
+            var blobDataArray = [].concat(blobDataOrArray),
+                verifiedBlobDataList = [],
+                self = this;
+
+            qq.each(blobDataArray, function(idx, blobData) {
+                if (qq.isBlob(blobData) && !qq.isFileOrInput(blobData)) {
+                    verifiedBlobDataList.push({
+                        blob: blobData,
+                        name: self._options.blobs.defaultName
+                    });
+                }
+                else if (qq.isObject(blobData) && blobData.blob && blobData.name) {
+                    verifiedBlobDataList.push(blobData);
+                }
+                else {
+                    self.log("addBlobs: entry at index " + idx + " is not a Blob or a BlobData object", "error");
+                }
+            });
+
+            this._uploadFileOrBlobDataList(verifiedBlobDataList);
+        }
+        else {
+            this.log("undefined or non-array parameter passed into addBlobs", "error");
         }
     },
     getUuid: function(fileId) {
@@ -293,6 +326,7 @@ qq.FineUploaderBasic.prototype = {
             endpointStore: this._endpointStore,
             chunking: this._options.chunking,
             resume: this._options.resume,
+            blobs: this._options.blobs,
             log: function(str, level) {
                 self.log(str, level);
             },
@@ -391,9 +425,9 @@ qq.FineUploaderBasic.prototype = {
 
         clearTimeout(this._retryTimeouts[id]);
 
-        var storedFileIndex = qq.indexOf(this._storedFileIds, id);
+        var storedFileIndex = qq.indexOf(this._storedIds, id);
         if (!this._options.autoUpload && storedFileIndex >= 0) {
-            this._storedFileIds.splice(storedFileIndex, 1);
+            this._storedIds.splice(storedFileIndex, 1);
         }
     },
     _isDeletePossible: function() {
@@ -495,17 +529,17 @@ qq.FineUploaderBasic.prototype = {
             }
         }
     },
-    _uploadFileList: function(files){
+    _uploadFileOrBlobDataList: function(fileOrBlobDataList){
         var validationDescriptors, index, batchInvalid;
 
-        validationDescriptors = this._getValidationDescriptors(files);
+        validationDescriptors = this._getValidationDescriptors(fileOrBlobDataList);
         batchInvalid = this._options.callbacks.onValidateBatch(validationDescriptors) === false;
 
         if (!batchInvalid) {
-            if (files.length > 0) {
-                for (index = 0; index < files.length; index++){
-                    if (this._validateFile(files[index])){
-                        this._uploadFile(files[index]);
+            if (fileOrBlobDataList.length > 0) {
+                for (index = 0; index < fileOrBlobDataList.length; index++){
+                    if (this._validateFileOrBlobData(fileOrBlobDataList[index])){
+                        this._upload(fileOrBlobDataList[index]);
                     } else {
                         if (this._options.validation.stopOnFirstInvalidFile){
                             return;
@@ -518,27 +552,27 @@ qq.FineUploaderBasic.prototype = {
             }
         }
     },
-    _uploadFile: function(fileContainer){
-        var id = this._handler.add(fileContainer);
-        var fileName = this._handler.getName(id);
+    _upload: function(blobOrFileContainer){
+        var id = this._handler.add(blobOrFileContainer);
+        var name = this._handler.getName(id);
 
-        if (this._options.callbacks.onSubmit(id, fileName) !== false){
-            this._onSubmit(id, fileName);
+        if (this._options.callbacks.onSubmit(id, name) !== false){
+            this._onSubmit(id, name);
             if (this._options.autoUpload) {
                 this._handler.upload(id);
             }
             else {
-                this._storeFileForLater(id);
+                this._storeForLater(id);
             }
         }
     },
-    _storeFileForLater: function(id) {
-        this._storedFileIds.push(id);
+    _storeForLater: function(id) {
+        this._storedIds.push(id);
     },
-    _validateFile: function(file){
+    _validateFileOrBlobData: function(fileOrBlobData){
         var validationDescriptor, name, size;
 
-        validationDescriptor = this._getValidationDescriptor(file);
+        validationDescriptor = this._getValidationDescriptor(fileOrBlobData);
         name = validationDescriptor.name;
         size = validationDescriptor.size;
 
@@ -546,7 +580,7 @@ qq.FineUploaderBasic.prototype = {
             return false;
         }
 
-        if (!this._isAllowedExtension(name)){
+        if (qq.isFileOrInput(fileOrBlobData) && !this._isAllowedExtension(name)){
             this._error('typeError', name);
             return false;
 
@@ -637,36 +671,46 @@ qq.FineUploaderBasic.prototype = {
             }());
         }
     },
-    _parseFileName: function(file) {
+    _parseFileOrBlobDataName: function(fileOrBlobData) {
         var name;
 
-        if (file.value){
-            // it is a file input
-            // get input value and remove path to normalize
-            name = file.value.replace(/.*(\/|\\)/, "");
-        } else {
-            // fix missing properties in Safari 4 and firefox 11.0a2
-            name = (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
+        if (qq.isFileOrInput(fileOrBlobData)) {
+            if (fileOrBlobData.value) {
+                // it is a file input
+                // get input value and remove path to normalize
+                name = fileOrBlobData.value.replace(/.*(\/|\\)/, "");
+            } else {
+                // fix missing properties in Safari 4 and firefox 11.0a2
+                name = (fileOrBlobData.fileName !== null && fileOrBlobData.fileName !== undefined) ? fileOrBlobData.fileName : fileOrBlobData.name;
+            }
+        }
+        else {
+            name = fileOrBlobData.name;
         }
 
         return name;
     },
-    _parseFileSize: function(file) {
+    _parseFileOrBlobDataSize: function(fileOrBlobData) {
         var size;
 
-        if (!file.value){
-            // fix missing properties in Safari 4 and firefox 11.0a2
-            size = (file.fileSize !== null && file.fileSize !== undefined) ? file.fileSize : file.size;
+        if (qq.isFileOrInput(fileOrBlobData)) {
+            if (!fileOrBlobData.value){
+                // fix missing properties in Safari 4 and firefox 11.0a2
+                size = (fileOrBlobData.fileSize !== null && fileOrBlobData.fileSize !== undefined) ? fileOrBlobData.fileSize : fileOrBlobData.size;
+            }
+        }
+        else {
+            size = fileOrBlobData.blob.size;
         }
 
         return size;
     },
-    _getValidationDescriptor: function(file) {
+    _getValidationDescriptor: function(fileOrBlobData) {
         var name, size, fileDescriptor;
 
         fileDescriptor = {};
-        name = this._parseFileName(file);
-        size = this._parseFileSize(file);
+        name = this._parseFileOrBlobDataName(fileOrBlobData);
+        size = this._parseFileOrBlobDataSize(fileOrBlobData);
 
         fileDescriptor.name = name;
         if (size) {

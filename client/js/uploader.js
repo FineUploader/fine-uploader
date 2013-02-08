@@ -237,8 +237,8 @@ qq.extend(qq.FineUploader.prototype, {
         return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
             || (qq.firefox() && !e.relatedTarget); // null e.relatedTarget for Firefox
     },
-    _storeFileForLater: function(id) {
-        qq.FineUploaderBasic.prototype._storeFileForLater.apply(this, arguments);
+    _storeForLater: function(id) {
+        qq.FineUploaderBasic.prototype._storeForLater.apply(this, arguments);
         var item = this.getItemByFileId(id);
         qq(this._find(item, 'spinner')).hide();
     },

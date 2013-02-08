@@ -1,4 +1,4 @@
-/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest*/
+/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest, Blob*/
 var qq = function(element) {
     "use strict";
 
@@ -172,7 +172,7 @@ qq.trimStr = function(string) {
 
 qq.isFileOrInput = function(maybeFileOrInput) {
     "use strict";
-    if (window.File && maybeFileOrInput instanceof File) {
+    if (qq.isBlob(maybeFileOrInput) && window.File && maybeFileOrInput instanceof File) {
         return true;
     }
     else if (window.HTMLInputElement) {
@@ -191,6 +191,11 @@ qq.isFileOrInput = function(maybeFileOrInput) {
     }
 
     return false;
+};
+
+qq.isBlob = function(maybeBlob) {
+    "use strict";
+    return window.Blob && maybeBlob instanceof Blob;
 };
 
 qq.isXhrUploadSupported = function() {
