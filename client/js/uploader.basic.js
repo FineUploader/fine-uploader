@@ -145,31 +145,31 @@ qq.FineUploaderBasic.prototype = {
 
         }
     },
-    setParams: function(params, fileId) {
+    setParams: function(params, id) {
         /*jshint eqeqeq: true, eqnull: true*/
-        if (fileId == null) {
+        if (id == null) {
             this._options.request.params = params;
         }
         else {
-            this._paramsStore.setParams(params, fileId);
+            this._paramsStore.setParams(params, id);
         }
     },
-    setDeleteFileParams: function(params, fileId) {
+    setDeleteFileParams: function(params, id) {
         /*jshint eqeqeq: true, eqnull: true*/
-        if (fileId == null) {
+        if (id == null) {
             this._options.deleteFile.params = params;
         }
         else {
-            this._deleteFileParamsStore.setParams(params, fileId);
+            this._deleteFileParamsStore.setParams(params, id);
         }
     },
-    setEndpoint: function(endpoint, fileId) {
+    setEndpoint: function(endpoint, id) {
         /*jshint eqeqeq: true, eqnull: true*/
-        if (fileId == null) {
+        if (id == null) {
             this._options.request.endpoint = endpoint;
         }
         else {
-            this._endpointStore.setEndpoint(endpoint, fileId);
+            this._endpointStore.setEndpoint(endpoint, id);
         }
     },
     getInProgress: function(){
@@ -197,8 +197,8 @@ qq.FineUploaderBasic.prototype = {
             return false;
         }
     },
-    cancel: function(fileId) {
-        this._handler.cancel(fileId);
+    cancel: function(id) {
+        this._handler.cancel(id);
     },
     cancelAll: function() {
         this._handler.cancelAll();
@@ -267,28 +267,28 @@ qq.FineUploaderBasic.prototype = {
             this.log("undefined or non-array parameter passed into addBlobs", "error");
         }
     },
-    getUuid: function(fileId) {
-        return this._handler.getUuid(fileId);
+    getUuid: function(id) {
+        return this._handler.getUuid(id);
     },
     getResumableFilesData: function() {
         return this._handler.getResumableFilesData();
     },
-    getSize: function(fileId) {
-        return this._handler.getSize(fileId);
+    getSize: function(id) {
+        return this._handler.getSize(id);
     },
     getFile: function(fileId) {
         return this._handler.getFile(fileId);
     },
-    deleteFile: function(fileId) {
-        this._onSubmitDelete(fileId);
+    deleteFile: function(id) {
+        this._onSubmitDelete(id);
     },
-    setDeleteFileEndpoint: function(endpoint, fileId) {
+    setDeleteFileEndpoint: function(endpoint, id) {
         /*jshint eqeqeq: true, eqnull: true*/
-        if (fileId == null) {
+        if (id == null) {
             this._options.deleteFile.endpoint = endpoint;
         }
         else {
-            this._deleteFileEndpointStore.setEndpoint(endpoint, fileId);
+            this._deleteFileEndpointStore.setEndpoint(endpoint, id);
         }
     },
     _createUploadButton: function(element){
@@ -437,14 +437,14 @@ qq.FineUploaderBasic.prototype = {
                 )
             );
     },
-    _onSubmitDelete: function(fileId) {
+    _onSubmitDelete: function(id) {
         if (this._isDeletePossible()) {
-            if (this._options.callbacks.onSubmitDelete(fileId)) {
-                this._deleteHandler.sendDelete(fileId, this.getUuid(fileId));
+            if (this._options.callbacks.onSubmitDelete(id)) {
+                this._deleteHandler.sendDelete(id, this.getUuid(id));
             }
         }
         else {
-            this.log("Delete request ignored for file ID " + fileId + ", delete feature is disabled or request not possible " +
+            this.log("Delete request ignored for ID " + id + ", delete feature is disabled or request not possible " +
                 "due to CORS on a user agent that does not support pre-flighting.", "warn");
             return false;
         }
@@ -734,18 +734,18 @@ qq.FineUploaderBasic.prototype = {
             self = this;
 
         return {
-            setParams: function(params, fileId) {
+            setParams: function(params, id) {
                 var paramsCopy = {};
                 qq.extend(paramsCopy, params);
-                paramsStore[fileId] = paramsCopy;
+                paramsStore[id] = paramsCopy;
             },
 
-            getParams: function(fileId) {
+            getParams: function(id) {
                 /*jshint eqeqeq: true, eqnull: true*/
                 var paramsCopy = {};
 
-                if (fileId != null && paramsStore[fileId]) {
-                    qq.extend(paramsCopy, paramsStore[fileId]);
+                if (id != null && paramsStore[id]) {
+                    qq.extend(paramsCopy, paramsStore[id]);
                 }
                 else {
                     qq.extend(paramsCopy, self._options[type].params);
@@ -768,14 +768,14 @@ qq.FineUploaderBasic.prototype = {
         self = this;
 
         return {
-            setEndpoint: function(endpoint, fileId) {
-                endpointStore[fileId] = endpoint;
+            setEndpoint: function(endpoint, id) {
+                endpointStore[id] = endpoint;
             },
 
-            getEndpoint: function(fileId) {
+            getEndpoint: function(id) {
                 /*jshint eqeqeq: true, eqnull: true*/
-                if (fileId != null && endpointStore[fileId]) {
-                    return endpointStore[fileId];
+                if (id != null && endpointStore[id]) {
+                    return endpointStore[id];
                 }
 
                 return self._options[type].endpoint;

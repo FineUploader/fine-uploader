@@ -1275,38 +1275,38 @@ new qq.FineUploader({
 
 Here are all available callbacks:
 
-* `onSubmit(String id, String fileName)` - called when the file is submitted to the uploader portion of the code.
+* `onSubmit(String id, String name)` - called when the file or `Blob` is submitted to the uploader portion of the code.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
-* `onComplete(String id, String fileName, Object responseJSON)` - called when the file upload has finished.
-* `onCancel(String id, String fileName)` - called when the file upload has been cancelled.
-* `onUpload(String id, String fileName)` - called just before a file upload begins.
-* `onUploadChunk(String id, String fileName, Object chunkData)` - called just before a file chunk/partition request is sent.  The chunkData object has
+* `onComplete(String id, String name, Object responseJSON)` - called when the file or `Blob` upload has finished.
+* `onCancel(String id, String name)` - called when the file or `Blob` upload has been cancelled.
+* `onUpload(String id, String name)` - called just before a file or `Blob` upload begins.
+* `onUploadChunk(String id, String name, Object chunkData)` - called just before a `File`/`Blob` chunk/partition request is sent.  The chunkData object has
 4 properties: `partIndex` (the 0-based index of the associated partition), `startByte` (the byte offset of the current chunk in terms
-of the underlying file), `endByte` (the last byte of the current chunk in terms of the underlying file), and `totalParts` (the
-total number of partitions associated with the underlying file).
-* `onProgress(String id, String fileName, int uploadedBytes, int totalBytes)` - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
-* `onError(String id, String fileName, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
-* `onAutoRetry(String id, String fileName, String attemptNumber)` - called before each automatic retry attempt for a failed file.
-* `onManualRetry(String id, String fileName)` - called before each manual retry attempt.  Return false to prevent this and all future retry attempts on this file.
+of the underlying `File`/`Blob`), `endByte` (the last byte of the current chunk in terms of the underlying `File`/`Blob`), and `totalParts` (the
+total number of partitions associated with the underlying `File`/`Blob`).
+* `onProgress(String id, String name, int uploadedBytes, int totalBytes)` - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
+* `onError(String id, String name, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
+* `onAutoRetry(String id, String name, String attemptNumber)` - called before each automatic retry attempt for a failed file or `Blob`.
+* `onManualRetry(String id, String name)` - called before each manual retry attempt.  Return false to prevent this and all future retry attempts on this file or `Blob`.
 * `onResume(String id, String fileName, Object chunkData)` - Called before an attempt is made to resume a failed/stopped upload from a previous session.
 If you return false, the resume will be cancelled and the uploader will start uploading the file from the first chunk.  The `chunkData` object contains the properties as
 the `chunkData` parameter passed into the `onUploadChunk` callback.
-* `onValidate(FileData fileData)` - This callback is invoked a FileData object, representing one of the file selected for upload.  It is called once
-for each selected, dropped, or `addFiles` submitted file, provided you do not return false in your `onValidateBatch` handler, and also provided
+* `onValidate(FileOrBlobData fileOrBlobData)` - This callback represents one of the files or `Blob`s selected for upload.  It is called once
+for each selected, dropped, or `addFiles` submitted file and for each `addBlobs` submitted `Blob`, provided you do not return false in your `onValidateBatch` handler, and also provided
 the `stopOnFirstInvalidFile` validation option is not set and a previous invocation of your `onValidate` callback in this batch has not returned false.
-This callback is always invoked before the default Fine Uploader validators execute.  Note that a `FileData` object has two properties: `name`
-(the file name) and `size` (the file size).  The `size` property will be undefined if the user agent does not support the File API.
-* `onValidateBatch(Array fileDataArray)` - This callback is invoked once for each batch of files selected, dropped, or submitted
-via the `addFiles` API function.  A FileData array is passed in representing all files selected or dropped at once.  This allows
+This callback is always invoked before the default Fine Uploader validators execute.  Note that a `FileOrBlobData` object has two properties: `name`
+and `size`.  The `size` property will be undefined if the user agent does not support the File API.
+* `onValidateBatch(Array fileOrBlobDataArray)` - This callback is invoked once for each batch of files or `Blob`s selected, dropped, or submitted
+via the `addFiles` or `addBlobs`  API functions.  A FileOrBlobData array is passed in representing all files or `Blob`s selected or dropped at once.  This allows
 you to prevent the entire batch from being uploaded, if desired, by returning false.  If your handler does not return false,
-the `onValidate` callback will be invoked once for each individual file submitted.  This callback is always invoked before
-the default Fine Uploader validators execute.  Note that a `FileData` object has two properties: `name` (the file name) and
-`size` (the file size).  The `size` property will be undefined if the user agent does not support the File API.
-* `onSubmitDelete(id)` - Called before a file that has been marked for deletion has been submitted to the uploader.
+the `onValidate` callback will be invoked once for each individual file or `Blob` submitted.  This callback is always invoked before
+the default Fine Uploader validators execute.  Note that a `FileOrBlobData` object has two properties: `name` and `size`.
+The `size` property will be undefined if the user agent does not support the File API.
+* `onSubmitDelete(id)` - Called before a file or `Blob` that has been marked for deletion has been submitted to the uploader.
 You may return false from your handler if you want to ignore/stop the delete request.
-* `onDelete(id)` - Called just before a delete request is sent for the associated file.  The parameter is the file ID.
+* `onDelete(id)` - Called just before a delete request is sent for the associated file or `Blob`.  The parameter is the ID.
 * `onDeleteComplete(id, xhr, isError)` - Called after receiving a response from the server for a DELETE request.  The associated
-file ID, along with the request's XMLHttpRequest object and a boolean indicating whether the response succeeded or not (based on the response code)
+ID, along with the request's XMLHttpRequest object and a boolean indicating whether the response succeeded or not (based on the response code)
 are sent along as parameters.
 
 <br/>
@@ -1324,21 +1324,21 @@ may override this with something a bit nicer, if you choose.  The okCallback wil
 <br/>
 ### FineUploaderBasic mode API functions ###
 * `log(String message)` - Outputs a message to the javascript console, if possible.
-* `setParams(Object newParams, [optional] Number fileId)` - Set the parameters sent along with the request after initializing the uploader.
-You can either change the parameters for a specific file, or for all files.  To do the latter, simply omit the `fileId` parameter.
+* `setParams(Object newParams, [optional] Number id)` - Set the parameters sent along with the request after initializing the uploader.
+You can either change the parameters for a specific file or `Blob`, or for all files and `Blob`s.  To do the latter, simply omit the `id` parameter.
 See this [blog post explaining parameters](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
 as well as [this one explaining how this function works in 3.1 and later versions](http://blog.fineuploader.com/2012/12/setparams-is-now-much-more-useful-in-31.html).
-* `setEndpoint(String endpointPath, [optional] Number fileId)` - Modify the location,  after initializing the uploader, where upload requests should be directed.
-You can either change the endpoint for a specific file, or for all files.  To do the latter, simply omit the `fileId` parameter.
-* `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
-* `clearStoredFiles()` - Clears the internal list of stored files.  Only applicable when `autoUpload` is set to false.
-* `getInProgress()` - Returns the number of files that are either currently uploading or files waiting in line for upload.
-* `retry(String fileId)` - Orders the uploader to make another attempt at uploading a specific file.  A NO-OP if the server
+* `setEndpoint(String endpointPath, [optional] Number id)` - Modify the location,  after initializing the uploader, where upload requests should be directed.
+You can either change the endpoint for a specific file or `Blob`, or for all files and `Blob`s.  To do the latter, simply omit the `id` parameter.
+* `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files and `Blob`s.
+* `clearStoredFiles()` - Clears the internal list of stored files and `Blob`s.  Only applicable when `autoUpload` is set to false.
+* `getInProgress()` - Returns the number of files or `Blob`s that are either currently uploading or waiting in line to be uploaded.
+* `retry(String id)` - Orders the uploader to make another attempt at uploading a specific file or `Blob`.  A NO-OP if the server
 prohibits retries on a failed file via the <code>preventRetryResponseProperty</code>.  Note that this operation does
 respect the <code>maxConnections</code> value, so if all connections are accounted for, the retry attempt will be queued
 until a connection opens up.
-* `cancel(String fileId)` - Cancels a queued or currently uploading file.
-* `cancelAll()` - Cancels all queued or currently uploading files.
+* `cancel(String id)` - Cancels a queued or currently uploading file or `Blob`.
+* `cancelAll()` - Cancels all queued or currently uploading files or `Blob`s.
 * `reset()` - While this function is most useful for FineUploader, it is also available in FineUploaderBasic.  In FineUploader,
 calling this function will reset all UI elements to the state they exsited in immediately after initialization.  In FineUploaderBasic,
 this resets all internal variables to the state they existed in immediately after initialization.  If you are using FineUploaderBasic,
@@ -1347,22 +1347,29 @@ it is up to you to "reset" any of your UI elements.
 a method of gathering files that does not include Fine Uploader's input button or the drag & drop support built into FineUploader.
 This function accepts the following types: `File`, `input` element, or a collection of any of these types, provided the
 collection object contains an (integer) index property for each contained item.
+* `addBlobs(blobDataArray)` - Allows you to submit one or more `Blob` objects to be uploaded.  This is expected to be an array
+of `BlobData` objects.  A `BlobData` object is simply defined by the following convention: an object with a `name` property
+(used to assoicate a name with the `Blob`) and a `blob` property (with a value equal to the `Blob` you would like to upload).
+Note that you may also simply pass one `Blob` or an array of `Blob` objects.  In each of these last two cases, a default name,
+defined in the `blobs` option, will be used.  Also note that your `Blob` objects must be `Blob` objects, but not `File` objects.
+In other words, `Blob` subtypes are not acceptable.  If you would like to upload `File` objects via the API, do so via the `addFiles` function.
 * `getResumableFilesData()` - Returns an array of objects, each describing a file that is potentially resumable by this uploader instance.
 If a `resume.id` property has been set, this is taken into consideration.  Each resumable file is represented by an object with the
 following properties: `name` - filename, `size` - file size, `uuid` - unique ID associated w/ the file, `partIdx` - index of the part where
 the resume will start.
-* `getSize(fileId)` - Returns the size of the file represented by the passed ID.  Undefined if the file size cannot be determined, such as
+* `getSize(id)` - Returns the size of the `File` or `Blob` represented by the passed ID.  Undefined if the file size cannot be determined, such as
 if the user agent does not support the File API.
-* `getFile(fileId)` - Returns the `File` object associated with the passed file ID.  Undefined if the underlying file cannot be found,
-or if the user agent does not support the File API.  For more info on the `File` object, please see [the entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file).
-* `deleteFile(fileId)` - This allows you to programmatically order Fine Uploader to send a DELETE request for a specific file.
+* `getFile(id)` - Returns the `File` or `Blob` object associated with the passed ID.  Undefined if the underlying `File` or `Blob` cannot be found,
+or if the user agent does not support the File API.  For more info on the `File` and `Blob` objects, please see
+[the File entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file) and [the Blob entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-Blob), respectively.
+* `deleteFile(id)` - This allows you to programmatically order Fine Uploader to send a DELETE request for a specific file or `Blob`.
 Fine Uploader actually uses the API call internally when a user clicks the delete link in FineUploader mode.
-* `setDeleteFileEndpoint(String endpointPath, [optional] Number fileId)` - Same as the `setEndpoint` function except this applies only to the `deleteFile` option endpoint(s).
-* `getUuid(fileId)` - Retrieves the UUID associated with a file, given a current session file ID.
+* `setDeleteFileEndpoint(String endpointPath, [optional] Number id)` - Same as the `setEndpoint` function except this applies only to the `deleteFile` option endpoint(s).
+* `getUuid(id)` - Retrieves the UUID associated with a file or `Blob`, given a current session file or `Blob` ID.
 
 <br/>
 ### FineUploader mode API functions ###
-* `getItemByFileId(String fileId)` - Returns the HTMLElement associated with the passed file ID.
+* `getItemByFileId(String id)` - Returns the HTMLElement associated with the passed file or `Blob` ID.
 * `addExtraDropzone(HTMLElement element)` - Use this to mark an element as a drop zone on an already-instantiated FineUploader.
 * `removeExtraDropzone(HTMLElement element)` - Use this to un-mark an extra element as a drop zone on an already-instantiated FineUploader.  An "extra"
    drop zone is one specified in the `extraDropzones` option, or one set via the `addExtraDropzone` function.

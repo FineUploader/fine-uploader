@@ -390,10 +390,10 @@ qq.extend(qq.FineUploader.prototype, {
             return false;
         }
     },
-    _onDeleteComplete: function(fileId, xhr, isError) {
+    _onDeleteComplete: function(id, xhr, isError) {
         qq.FineUploaderBasic.prototype._onDeleteComplete.apply(this, arguments);
 
-        var item = this.getItemByFileId(fileId),
+        var item = this.getItemByFileId(id),
             spinnerEl = this._find(item, 'spinner'),
             statusTextEl = this._find(item, 'statusText');
 
@@ -401,10 +401,10 @@ qq.extend(qq.FineUploader.prototype, {
 
         if (isError) {
             qq(statusTextEl).setText(this._options.deleteFile.deletingFailedText);
-            this._showDeleteLink(fileId);
+            this._showDeleteLink(id);
         }
         else {
-            this._removeFileItem(fileId);
+            this._removeFileItem(id);
         }
     },
     _sendDeleteRequest: function(fileId) {
