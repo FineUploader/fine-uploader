@@ -19,7 +19,6 @@ public class UploadReceiver extends HttpServlet
     private static final File UPLOAD_DIR = new File("test/uploads");
     private static File TEMP_DIR = new File("test/uploadsTemp");
 
-    private static String CONTENT_TYPE = "text/plain";
     private static String CONTENT_LENGTH = "Content-Length";
     private static int SUCCESS_RESPONSE_CODE = 200;
 
@@ -49,43 +48,60 @@ public class UploadReceiver extends HttpServlet
         }
 
         resp.setStatus(SUCCESS_RESPONSE_CODE);
+//        resp.addHeader("Access-Control-Allow-Origin", "*");
+    }
+
+    @Override
+    public void doOptions(HttpServletRequest req, HttpServletResponse resp)
+    {
+        resp.setStatus(SUCCESS_RESPONSE_CODE);
+//        resp.addHeader("Access-Control-Allow-Origin", "http://192.168.130.118:8080");
+//        resp.addHeader("Access-Control-Allow-Credentials", "true");
+        resp.addHeader("Access-Control-Allow-Origin", "*");
+        resp.addHeader("Access-Control-Allow-Methods", "POST, DELETE");
+        resp.addHeader("Access-Control-Allow-Headers", "x-requested-with, cache-control, content-type");
     }
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
-        RequestParser requestParser;
+        RequestParser requestParser = null;
+
+        boolean isIframe = req.getHeader("X-Requested-With") == null || !req.getHeader("X-Requested-With").equals("XMLHttpRequest");
 
         try
         {
-            resp.setContentType(CONTENT_TYPE);
+            resp.setContentType(isIframe ? "text/html" : "text/plain");
             resp.setStatus(SUCCESS_RESPONSE_CODE);
+
+//            resp.addHeader("Access-Control-Allow-Origin", "http://192.168.130.118:8080");
+//            resp.addHeader("Access-Control-Allow-Credentials", "true");
+//            resp.addHeader("Access-Control-Allow-Origin", "*");
 
             if (ServletFileUpload.isMultipartContent(req))
             {
                 MultipartUploadParser multipartUploadParser = new MultipartUploadParser(req, TEMP_DIR, getServletContext());
                 requestParser = RequestParser.getInstance(req, multipartUploadParser);
                 writeFileForMultipartRequest(requestParser);
-                writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, false);
+                writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, isIframe, false, requestParser);
             }
             else
             {
                 requestParser = RequestParser.getInstance(req, null);
                 writeFileForNonMultipartRequest(req, requestParser);
-                writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, false);
+                writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, isIframe, false, requestParser);
             }
         } catch (Exception e)
         {
             log.error("Problem handling upload request", e);
             if (e instanceof MergePartsException)
             {
-                writeResponse(resp.getWriter(), e.getMessage(), true);
+                writeResponse(resp.getWriter(), e.getMessage(), isIframe, true, requestParser);
             }
             else
             {
-                writeResponse(resp.getWriter(), e.getMessage(), false);
+                writeResponse(resp.getWriter(), e.getMessage(), isIframe, false, requestParser);
             }
-
         }
     }
 
@@ -245,11 +261,18 @@ public class UploadReceiver extends HttpServlet
         }
     }
 
-    private void writeResponse(PrintWriter writer, String failureReason, boolean restartChunking)
+    private void writeResponse(PrintWriter writer, String failureReason, boolean isIframe, boolean restartChunking, RequestParser requestParser)
     {
         if (failureReason == null)
         {
-            writer.print("{\"success\": true}");
+//            if (isIframe)
+//            {
+//                writer.print("{\"success\": true, \"uuid\": \"" + requestParser.getUuid() + "\"}<script src=\"http://192.168.130.118:8080/client/js/iframe.xss.response.js\"></script>");
+//            }
+//            else
+//            {
+                writer.print("{\"success\": true}");
+//            }
         }
         else
         {
@@ -259,7 +282,14 @@ public class UploadReceiver extends HttpServlet
             }
             else
             {
-                writer.print("{\"error\": \"" + failureReason + "\"}");
+//                if (isIframe)
+//                {
+//                    writer.print("{\"error\": \"" + failureReason + "\", \"uuid\": \"" + requestParser.getUuid() + "\"}<script src=\"http://192.168.130.118:8080/client/js/iframe.xss.response.js\"></script>");
+//                }
+//                else
+//                {
+                    writer.print("{\"error\": \"" + failureReason + "\"}");
+//                }
             }
         }
     }
