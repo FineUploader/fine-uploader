@@ -1,4 +1,4 @@
-/*globals qq, File, XMLHttpRequest, FormData*/
+/*globals qq, File, XMLHttpRequest, FormData, Blob*/
 qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     "use strict";
     
@@ -24,7 +24,6 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         params[options.chunking.paramNames.totalParts] = chunkData.count;
         params[options.totalFileSizeParamName] = size;
 
-
         /**
          * When a Blob is sent in a multipart request, the filename value in the content-disposition header is either "blob"
          * or an empty string.  So, we will need to include the actual file name as a param in this case.
@@ -38,22 +37,22 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         params[options.resume.paramNames.resuming] = true;
     }
 
-     function getChunk(file, startByte, endByte) {
-        if (file.slice) {
-            return file.slice(startByte, endByte);
+     function getChunk(fileOrBlob, startByte, endByte) {
+        if (fileOrBlob.slice) {
+            return fileOrBlob.slice(startByte, endByte);
         }
-        else if (file.mozSlice) {
-            return file.mozSlice(startByte, endByte);
+        else if (fileOrBlob.mozSlice) {
+            return fileOrBlob.mozSlice(startByte, endByte);
         }
-        else if (file.webkitSlice) {
-            return file.webkitSlice(startByte, endByte);
+        else if (fileOrBlob.webkitSlice) {
+            return fileOrBlob.webkitSlice(startByte, endByte);
         }
     }
 
     function getChunkData(id, chunkIndex) {
         var chunkSize = options.chunking.partSize,
             fileSize = api.getSize(id),
-            file = fileState[id].file,
+            fileOrBlob = fileState[id].file || fileState[id].blobData.blob,
             startBytes = chunkSize * chunkIndex,
             endBytes = startBytes+chunkSize >= fileSize ? fileSize : startBytes+chunkSize,
             totalChunks = getTotalChunks(id);
@@ -63,7 +62,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             start: startBytes,
             end: endBytes,
             count: totalChunks,
-            blob: getChunk(file, startBytes, endBytes),
+            blob: getChunk(fileOrBlob, startBytes, endBytes),
             size: endBytes - startBytes
         };
     }
@@ -89,12 +88,21 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             endpoint = options.endpointStore.getEndpoint(id),
             url = endpoint,
             name = api.getName(id),
-            size = api.getSize(id);
+            size = api.getSize(id),
+            blobData = fileState[id].blobData;
 
         params[options.uuidParamName] = fileState[id].uuid;
 
         if (multipart) {
             params[options.totalFileSizeParamName] = size;
+
+            if (blobData) {
+                /**
+                 * When a Blob is sent in a multipart request, the filename value in the content-disposition header is either "blob"
+                 * or an empty string.  So, we will need to include the actual file name as a param in this case.
+                 */
+                params[options.blobs.paramNames.name] = blobData.name;
+            }
         }
 
         //build query string
@@ -125,8 +133,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
     function setHeaders(id, xhr) {
         var extraHeaders = options.customHeaders,
-            name = api.getName(id),
-            file = fileState[id].file;
+            fileOrBlob = fileState[id].file || fileState[id].blobData.blob;
 
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("Cache-Control", "no-cache");
@@ -134,7 +141,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         if (!multipart) {
             xhr.setRequestHeader("Content-Type", "application/octet-stream");
             //NOTE: return mime type in xhr works on chrome 16.0.9 firefox 11.0a2
-            xhr.setRequestHeader("X-Mime-Type", file.type);
+            xhr.setRequestHeader("X-Mime-Type", fileOrBlob.type);
         }
 
         qq.each(extraHeaders, function(name, val) {
@@ -142,7 +149,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         });
     }
 
-    function handleCompletedFile(id, response, xhr) {
+    function handleCompletedItem(id, response, xhr) {
         var name = api.getName(id),
             size = api.getSize(id);
 
@@ -167,7 +174,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             fileState[id].loaded = 0;
         }
 
-        if (resumeEnabled) {
+        if (resumeEnabled && fileState[id].file) {
             persistChunkData(id, chunkData);
         }
 
@@ -194,7 +201,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         toSend = setParamsAndGetEntityToSend(params, xhr, chunkData.blob, id);
         setHeaders(id, xhr);
 
-        log('Sending chunked upload request for ' + id + ": bytes " + (chunkData.start+1) + "-" + chunkData.end + " of " + size);
+        log('Sending chunked upload request for item ' + id + ": bytes " + (chunkData.start+1) + "-" + chunkData.end + " of " + size);
         xhr.send(toSend);
     }
 
@@ -202,7 +209,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         var chunkData = getChunkData(id, chunkIdx),
             blobSize = chunkData.size,
             overhead = requestSize - blobSize,
-            fileSize = api.getSize(id),
+            size = api.getSize(id),
             chunkCount = chunkData.count,
             initialRequestOverhead = fileState[id].initialRequestOverhead,
             overheadDiff = overhead - initialRequestOverhead;
@@ -212,7 +219,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         if (chunkIdx === 0) {
             fileState[id].lastChunkIdxProgress = 0;
             fileState[id].initialRequestOverhead = overhead;
-            fileState[id].estTotalRequestsSize = fileSize + (chunkCount * overhead);
+            fileState[id].estTotalRequestsSize = size + (chunkCount * overhead);
         }
         else if (fileState[id].lastChunkIdxProgress !== chunkIdx) {
             fileState[id].lastChunkIdxProgress = chunkIdx;
@@ -246,7 +253,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
                 deletePersistedChunkData(id);
             }
 
-            handleCompletedFile(id, response, xhr);
+            handleCompletedItem(id, response, xhr);
         }
     }
 
@@ -269,7 +276,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     }
 
     function handleResetResponse(id) {
-        log('Server has ordered chunking effort to be restarted on next attempt for file ID ' + id, 'error');
+        log('Server has ordered chunking effort to be restarted on next attempt for item ID ' + id, 'error');
 
         if (resumeEnabled) {
             deletePersistedChunkData(id);
@@ -284,7 +291,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
     function handleResetResponseOnResumeAttempt(id) {
         fileState[id].attemptingResume = false;
-        log("Server has declared that it cannot handle resume for file ID " + id + " - starting from the first chunk", 'error');
+        log("Server has declared that it cannot handle resume for item ID " + id + " - starting from the first chunk", 'error');
         handleResetResponse(id);
         api.upload(id, true);
     }
@@ -296,7 +303,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             return;
         }
         else {
-            handleCompletedFile(id, response, xhr);
+            handleCompletedItem(id, response, xhr);
         }
     }
 
@@ -328,7 +335,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             handleSuccessfullyCompletedChunk(id, response, xhr);
         }
         else {
-            handleCompletedFile(id, response, xhr);
+            handleCompletedItem(id, response, xhr);
         }
     }
 
@@ -366,9 +373,10 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     }
 
     function deletePersistedChunkData(id) {
-        var cookieName = getChunkDataCookieName(id);
-
-        qq.deleteCookie(cookieName);
+        if (fileState[id].file) {
+            var cookieName = getChunkDataCookieName(id);
+            qq.deleteCookie(cookieName);
+        }
     }
 
     function getPersistedChunkData(id) {
@@ -433,7 +441,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         if (!fileState[id].remainingChunkIdxs || fileState[id].remainingChunkIdxs.length === 0) {
             fileState[id].remainingChunkIdxs = [];
 
-            if (resumeEnabled && !retry) {
+            if (resumeEnabled && !retry && fileState[id].file) {
                 persistedChunkInfoForResume = getPersistedChunkData(id);
                 if (persistedChunkInfoForResume) {
                     firstChunkDataForResume = getChunkData(id, persistedChunkInfoForResume.part);
@@ -458,7 +466,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     }
 
     function handleStandardFileUpload(id) {
-        var file = fileState[id].file,
+        var fileOrBlob = fileState[id].file || fileState[id].blobData.blob,
             name = api.getName(id),
             xhr, params, toSend;
 
@@ -476,7 +484,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         xhr.onreadystatechange = getReadyStateChangeHandler(id, xhr);
 
         params = options.paramsStore.getParams(id);
-        toSend = setParamsAndGetEntityToSend(params, xhr, file, id);
+        toSend = setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id);
         setHeaders(id, xhr);
 
         log('Sending upload request for ' + id);
@@ -486,34 +494,52 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
     api = {
         /**
-         * Adds file to the queue
+         * Adds File or Blob to the queue
          * Returns id to use with upload, cancel
          **/
-        add: function(file){
-            if (!(file instanceof File)){
-                throw new Error('Passed obj in not a File (in qq.UploadHandlerXhr)');
+        add: function(fileOrBlobData){
+            var id;
+
+            if (fileOrBlobData instanceof File) {
+                id = fileState.push({file: fileOrBlobData}) - 1;
+            }
+            else if (fileOrBlobData.blob instanceof Blob) {
+                id = fileState.push({blobData: fileOrBlobData}) - 1;
+            }
+            else {
+                throw new Error('Passed obj in not a File or BlobData (in qq.UploadHandlerXhr)');
             }
 
-
-            var id = fileState.push({file: file}) - 1;
             fileState[id].uuid = qq.getUniqueId();
-
             return id;
         },
         getName: function(id){
-            var file = fileState[id].file;
-            // fix missing name in Safari 4
-            //NOTE: fixed missing name firefox 11.0a2 file.fileName is actually undefined
-            return (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
+            var file = fileState[id].file,
+                blobData = fileState[id].blobData;
+
+            if (file) {
+                // fix missing name in Safari 4
+                //NOTE: fixed missing name firefox 11.0a2 file.fileName is actually undefined
+                return (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
+            }
+            else {
+                return blobData.name;
+            }
         },
         getSize: function(id){
             /*jshint eqnull: true*/
-            var file = fileState[id].file;
-            return file.fileSize != null ? file.fileSize : file.size;
+            var fileOrBlob = fileState[id].file || fileState[id].blobData.blob;
+
+            if (qq.isFileOrInput(fileOrBlob)) {
+                return fileOrBlob.fileSize != null ? fileOrBlob.fileSize : fileOrBlob.size;
+            }
+            else {
+                return fileOrBlob.size;
+            }
         },
         getFile: function(id) {
             if (fileState[id]) {
-                return fileState[id].file;
+                return fileState[id].file || fileState[id].blobData.blob;
             }
         },
         /**

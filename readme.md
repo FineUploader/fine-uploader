@@ -49,6 +49,7 @@ discuss further.  The associated case is [#604](https://github.com/valums/file-u
 * [Resume failed/stopped uploads from previous sessions](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html)
 * [Delete uploaded files](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html)
 * [CORS support](http://blog.fineuploader.com/2013/01/cors-support-in-33.html)
+* Upload anu `Blob` objects via the API.
 * Any many more!
 
 
@@ -95,7 +96,7 @@ Once you have decided how you will use Fine Uploader, click on the appropriate l
 Start [here](#jquery-plug-in-for-fineuploader-mode-users-1).
 
 ### jQuery plug-in for FineUploaderBasic mode users  ###
-Your journey begins [here](#jquery-plug-in-for-fineuploaderbasic-mode-users).
+Your journey begins [here](#jquery-plug-in-for-fineuploaderbasic-mode-users-1).
 
 ### FineUploader mode users ###
 Look no further, your plan of action is described [here](#fineuploader-mode-users-1).
@@ -275,10 +276,10 @@ $('#fineUploaderElementId').fineUploader({
     request: {
         endpoint: '/upload/endpoint'
     }
-}).on('error', function(event, id, filename, reason) {
+}).on('error', function(event, id, name, reason) {
      //do something
   })
-  .on('complete', function(event, id, filename, responseJSON){
+  .on('complete', function(event, id, name, responseJSON){
     //do something
   });
 ```
@@ -295,7 +296,7 @@ $('#fineUploaderElementId').fineUploader({
     request: {
         endpoint: '/upload/endpoint'
     }
-}).on('submit', function(event, id, filename) {
+}).on('submit', function(event, id, name) {
      $(this).fineUploader('setParams', {'param1': 'val1'});
   });
 ```
@@ -305,7 +306,6 @@ All [public API (instance) functions](#instance-methods) defined in the native j
 using the jQuery plug-in.  Public/instance functions on a jQuery plug-in are made accessible as recommended in the
 [jQuery plug-in documentation](http://docs.jquery.com/Plugins/Authoring#Plugin_Methods).  Looking for an example?
 Please see the above code fragment, where we call the `setParams` instance function and pass it an object.
-
 
 For more examples using the jQuery plug-in, please have a look at [fineuploader.com](http://fineuploader.com).
 
@@ -393,10 +393,10 @@ other default values.  This works for all options that are, themselves, objects 
             <td>multiple</td>
             <td>boolean</td>
             <td>true</td>
-            <td>In FineUploaderBasic mode, this will simply prevent you from simultaneously selecting or dropping more than one file.
-            In FineUploader mode, dropping or selecting another file will clear the upload file list.  If another file is already uploading, it will
-            be cancelled.  If you you want Fine Uploader to simply ignore subsequently dropped/selected files, simply return false
-            in your <code>onValidate</code> or <code>onSumbit</code> callback handler for any subsequent file that has been dropped.  Note that the behavior
+            <td>In FineUploaderBasic mode, this will simply prevent you from simultaneously selecting or dropping more than one file or `Blob`.
+            In FineUploader mode, dropping or selecting another file or `Blob` will clear the upload list.  If another is already uploading, it will
+            be cancelled.  If you you want Fine Uploader to simply ignore subsequently dropped/selected items, simply return false
+            in your <code>onValidate</code> or <code>onSumbit</code> callback handler for any subsequent item that has been dropped.  Note that the behavior
             described for FineUploader mode is in addition to the behavior already provided by FineUploaderBasic mode.</td>
         </tr>
         <tr>
@@ -416,15 +416,15 @@ other default values.  This works for all options that are, themselves, objects 
             <td>autoUpload</td>
             <td>boolean</td>
             <td>true</td>
-            <td>Set to false if you want to be able to begin uploading selected/queued files later, by calling uploadStoredFiles().</td>
+            <td>Set to false if you want to be able to begin uploading selected/queued items later, by calling uploadStoredFiles().</td>
         </tr>
         <tr>
             <td>formatFileName</td>
             <td>function</td>
             <td>(see source code)</td>
-            <td>By default, this function limits the filename displayed in the UI or error messages to 33 characters,
-            plus 3 ellipses separating the first several and the last several characters of the file name.  Override this function
-            if you want more control over the display of file names.</td>
+            <td>By default, this function limits the name displayed in the UI or error messages to 33 characters,
+            plus 3 ellipses separating the first several and the last several characters of the item name.  Override this function
+            if you want more control over the display of item names.</td>
         </tr>
     </tbody>
 </table>
@@ -474,14 +474,14 @@ other default values.  This works for all options that are, themselves, objects 
             <td>forceMultipart</td>
             <td>boolean</td>
             <td>true</td>
-            <td>While form-based uploads will always be multipart requests, this forces XHR uploads to send files using
+            <td>While form-based uploads will always be multipart requests, this forces XHR uploads to send files or `Blob` objects using
             multipart requests as well.</td>
         </tr>
         <tr>
             <td>inputName</td>
             <td>string</td>
             <td>qqfile</td>
-            <td>This usually only useful with the ajax uploader, which sends the name of the file as a parameter, using a key name
+            <td>This usually only useful with the ajax uploader, which sends the name of the file or `Blob` as a parameter, using a key name
             equal to the value of this options.  In the case of the form uploader, this is simply the value of the name attribute
             of the file's associated input element.</td>
         </tr>
@@ -489,14 +489,15 @@ other default values.  This works for all options that are, themselves, objects 
             <td>uuidName</td>
             <td>string</td>
             <td>qquuid</td>
-            <td>The name of the parameter, sent along with each request, that uniquely identifies the associated file.  The value of
+            <td>The name of the parameter, sent along with each request, that uniquely identifies the associated file or `Blob`.  The value of
             this parameter is a version 4 UUID.</td>
         <tr>
             <td>totalFileSizeName</td>
             <td>string</td>
             <td>qqtotalfilesize</td>
-            <td>Name of the parameter passed with a multipart encoded request that specifies the total size in bytes of the associated file.  Note that this is only passed
-            with MPE requests that originate from the XHR uploader, since there is no way to determine file size client-side when using the form uploader.</td>
+            <td>Name of the parameter passed with a multipart encoded request that specifies the total size in bytes of the associated file or `Blob`.
+            Note that this is only passed with MPE requests that originate from the XHR uploader, since there is no way to
+            determine file size client-side when using the form uploader.</td>
         </tr>
         </tr>
     </tbody>
@@ -526,7 +527,7 @@ other default values.  This works for all options that are, themselves, objects 
             <td>acceptFiles</td>
             <td>comma-separated strings</td>
             <td>null</td>
-            <td>This option is used solely by the file selection dialog.  If you'd like to restict valid file types that appear in the
+            <td>This option is used solely by the file selection dialog.  If you'd like to restrict valid file types that appear in the
             selection dialog, you can do this here by listing valid content type specifiers.  See the [documentation on the accept
             attribute of the input element](https://developer.mozilla.org/en-US/docs/HTML/Element/Input) for more information.</td>
         </tr>
@@ -534,25 +535,24 @@ other default values.  This works for all options that are, themselves, objects 
             <td>sizeLimit</td>
             <td>integer</td>
             <td>0 (no limit)</td>
-            <td>Maximum allowable size, in bytes, for a file.</td>
+            <td>Maximum allowable size, in bytes, for a file or `Blob`.</td>
         </tr>
         <tr>
             <td>minSizeLimit</td>
             <td>integer</td>
             <td>0 (no limit)</td>
-            <td>Minimum allowable size, in bytes, for a file.</td>
+            <td>Minimum allowable size, in bytes, for a file or `Blob`.</td>
         </tr>
         <tr>
             <td>stopOnFirstInvalidFile</td>
             <td>boolean</td>
             <td>true</td>
-            <td>If true, when submitting multiple files, once a file is determined to be invalid, the upload process
-            will terminate.  If false, all valid files will be uploaded.  Note: One downside to a false value can be
+            <td>If true, when submitting multiple files or `Blob` objects, once an item is determined to be invalid, the upload process
+            will terminate.  If false, all valid items will be uploaded.  Note: One downside to a false value can be
             seen when using FineUploader if the default <code>showMessage</code> implementation is not overriden.  In this
-            case, an alert  dialog will appear for each invalid file in the batch, and the upload process will not continue
+            case, an alert  dialog will appear for each invalid item in the batch, and the upload process will not continue
             until the dialog is dismissed.  If this is bothersome, simply override <code>showMessage</code> with a
-            desirable implementation.  A later version may have a <code>showMessage</code> default implementation that
-            does not use the <code>alert</code> function.</td>
+            desirable implementation.
         </tr>
     </tbody>
 </table>
@@ -579,14 +579,14 @@ other default values.  This works for all options that are, themselves, objects 
             <td>sizeError</td>
             <td>string</td>
             <td>{file} is too large, maximum file size is {sizeLimit}.</td>
-            <td>Text sent to the `onError` callback (and `showMessage` if running in FineUploader mode) if a file that is
+            <td>Text sent to the `onError` callback (and `showMessage` if running in FineUploader mode) if a file or `Blob` that is
             too large, according to the validation settings, is submitted.</td>
     	</tr>
         <tr>
             <td>minSizeError</td>
             <td>string</td>
             <td>{file} is too small, minimum file size is {minSizeLimit}.</td>
-            <td>Text sent to the `onError` callback (and `showMessage` if running in FineUploader mode) if a file that is
+            <td>Text sent to the `onError` callback (and `showMessage` if running in FineUploader mode) if a file or `Blob` that is
             too small, according to the validation settings, is submitted.</td>
     	</tr>
         <tr>
@@ -594,14 +594,14 @@ other default values.  This works for all options that are, themselves, objects 
             <td>string</td>
             <td>{file} is empty, please select files again without it.</td>
             <td>Text sent to the `onError` callback (and `showMessage` if running in FineUploader mode) if a zero-sized
-            file is submitted.</td>
+            file or `Blob` is submitted.</td>
     	</tr>
         <tr>
             <td>noFilesError</td>
             <td>string</td>
             <td>No files to upload.</td>
             <td>Text sent to the `onError` callback (and `showMessage` if running in FineUploader mode) if a an empty
-            array of files is submitted.</td>
+            array of files or `Blob` objects is submitted.</td>
     	</tr>
         <tr>
             <td>onLeave</td>
@@ -629,7 +629,7 @@ other default values.  This works for all options that are, themselves, objects 
             <td>boolean</td>
             <td>false</td>
             <td>If set to <code>true</code>, any error or non-200 response will prompt the uploader to automatically
-            attempt to upload the file again.</td>
+            attempt to upload the file or `Blob` again.</td>
         </tr>
         <tr>
             <td>maxAutoAttempts</td>
@@ -650,7 +650,7 @@ other default values.  This works for all options that are, themselves, objects 
             <td>string</td>
             <td>preventRetry</td>
             <td>If this property is present in the server response and contains a value of <code>true</code>, the uploader
-            will not allow any further retries of this file (manual or automatic).</td>
+            will not allow any further retries of this file or `Blob` (manual or automatic).</td>
         </tr>
     </tbody>
 </table>
@@ -672,7 +672,7 @@ on the topic.
             <td>enabled</td>
             <td>boolean</td>
             <td>false</td>
-            <td>If set to <code>true</code>, each file will be split up into parts.  Each part will be sent in a separate request.
+            <td>If set to <code>true</code>, each file or `Blob` will be split up into parts.  Each part will be sent in a separate request.
             The size of the part is determined by the <code>partSize</code> option value.  See the server-side readme for more details.</td>
         </tr>
         <tr>
@@ -719,13 +719,13 @@ on the topic.
             <td>totalParts</td>
             <td>string</td>
             <td>qqtotalparts</td>
-            <td>Name of the parameter passed with a chunked request that specifies the total number of chunks associated with the underlying file.</td>
+            <td>Name of the parameter passed with a chunked request that specifies the total number of chunks associated with the underlying file or `Blob`.</td>
         </tr>
         <tr>
             <td>filename</td>
             <td>string</td>
             <td>qqfilename</td>
-            <td>Name of the parameter passed with a chunked request that specifies the name of the associated file.  This is useful for chunked
+            <td>Name of the parameter passed with a chunked request that specifies the name of the associated file or `Blob`.  This is useful for chunked
             requests that are multipart encoded, since the filename reported by the user agent in the content-disposition header
             will be either "blob" or an empty string.</td>
         </tr>
@@ -826,7 +826,7 @@ check out the server-side readme.
             <td>boolean</td>
             <td>false</td>
             <td>Set this to true if you would like to allow users to delete uploaded files.  In FineUploader mode,
-            this will also render a "delete" link next to each successfully uploaded file.</td>
+            this will also render a "delete" link next to each successfully uploaded file or `Blob`.</td>
         </tr>
         <tr>
             <td>endpoint</td>
@@ -888,6 +888,49 @@ check out the server-side readme.
     </tbody>
 </table>
 
+##### `blobs` option properties: #####
+Options used when `Blob` objects are to be uploaded.
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>defaultName</td>
+            <td>string</td>
+            <td>Misc data</td>
+            <td>If you do not include a name along with the `Blob` submitted to the uploader (via a `BlobData` object) this
+            default name will be used.</td>
+        </tr>
+    </tbody>
+</table>
+
+##### `blobs.paramNames` option properties: #####
+Options used when `Blob` objects are to be uploaded.
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>name</td>
+            <td>string</td>
+            <td>qqblobname</td>
+            <td>A request parameter used to specify the associated name with any uploaded `Blob`.</td>
+        </tr>
+    </tbody>
+</table>
+
 <br/>
 ### FineUploader mode options ###
 <table>
@@ -904,13 +947,13 @@ check out the server-side readme.
             <td>element</td>
             <td>element</td>
             <td>null</td>
-            <td>Container for the default drop zone (if supported by browser) and files list.  <b>Required</b></td>
+            <td>Container for the default drop zone (if supported by browser) and files/`Blob` objects list.  <b>Required</b></td>
         </tr>
         <tr>
             <td>listElement</td>
             <td>element</td>
             <td>null</td>
-            <td>Container for the file list.  If null, the list defined in the template will be used.</td>
+            <td>Container for the file or `Blob` list.  If null, the list defined in the template will be used.</td>
         </tr>
     </tbody>
 </table>
@@ -983,7 +1026,7 @@ check out the server-side readme.
             <td>failUpload</td>
             <td>string</td>
             <td>Upload failed</td>
-            <td>Text that appears next to a failed file item</td>
+            <td>Text that appears next to a failed file or `Blob` item</td>
         </tr>
         <tr>
             <td>dragZone</td>
@@ -1001,13 +1044,13 @@ check out the server-side readme.
             <td>formatProgress</td>
             <td>string</td>
             <td>{percent}% of {total_size}</td>
-            <td>Text that appears next to a file as it is uploading (if the browser supports the file API)</td>
+            <td>Text that appears next to a file or `Blob` as it is uploading (if the browser supports the file API)</td>
         </tr>
         <tr>
             <td>waitingForResponse</td>
             <td>string</td>
             <td>Processing...</td>
-            <td>Text that appears next to a file after last byte has been sent (according to the UA) while we are wating for a response from the server.</td>
+            <td>Text that appears next to a file or `Blob` after last byte has been sent (according to the UA) while we are wating for a response from the server.</td>
         </tr>
     </tbody>
 </table>
@@ -1029,13 +1072,13 @@ check out the server-side readme.
             <td>default</td>
             <td>Valid values are "default" (display the text defined in <code>failUploadText</code> next to each
             failed file), "none" (don't display any text next to a failed file), and "custom" (display error response text from the
-            server next to the failed file).</td>
+            server next to the failed file or `Blob`).</td>
     	</tr>
     	<tr>
             <td>maxChars</td>
             <td>integer</td>
             <td>50</td>
-            <td>The maximum amount of character of text to display next to the file.  After the limit has been reached,
+            <td>The maximum amount of character of text to display next to the file or `Blob`.  After the limit has been reached,
             "..." will terminate the string.  This is ignored unless <code>mode</code> is "custom".</td>
     	</tr>
     	<tr>
@@ -1043,15 +1086,14 @@ check out the server-side readme.
             <td>string</td>
             <td>error</td>
             <td>The property from the server response containing the error text to display next to the
-            failed file.  This is ignored unless <code>mode</code> is "custom".</td>
+            failed file or `Blob`.  This is ignored unless <code>mode</code> is "custom".</td>
     	</tr>
     	<tr>
             <td>enableTooltip</td>
             <td>boolean</td>
             <td>true</td>
             <td>If set to true, a tooltip will display the full contents of the error message when the mouse pointer
-            hovers over the failed file.  Note that this currently uses the title attribute of the failed file element, but there is an issue
-            to improve this (see #355 for details).</td>
+            hovers over the failed file or `Blob`.  Note that this currently uses the title attribute of the failed item element.</td>
     	</tr>
     </tbody>
 </table>
@@ -1091,23 +1133,23 @@ check out the server-side readme.
             <td>showAutoRetryNote</td>
             <td>boolean</td>
             <td>true</td>
-            <td>If set to <code>true</code>, a status message will appear next to the file during automatic retry attempts.</td>
+            <td>If set to <code>true</code>, a status message will appear next to the file or `Blob` during automatic retry attempts.</td>
         </tr>
         <tr>
             <td>autoRetryNote</td>
             <td>string</td>
             <td>Retrying {retryNum}/{maxAuto}...</td>
-            <td>The text of the note that will optionally appear next to the file during automatic retry attempts.  Ignored
+            <td>The text of the note that will optionally appear next to the file or `Blob` during automatic retry attempts.  Ignored
             if <code>showAutoRetryNote</code> is <code>false</code>.</td>
         </tr>
         <tr>
             <td>showButton</td>
             <td>boolean</td>
             <td>false</td>
-            <td>If <code>true</code>, a button/link will appear next to a failed file after all retry attempts have been
+            <td>If <code>true</code>, a button/link will appear next to a failed file or `Blob` after all retry attempts have been
             exhausted, assuming the server has not prohibited further retry attempts via the <code>preventRetryResponseProperty</code>.
             This button/link will allow the user to manually order the uploader to make another attempt at uploading the
-            failed file.  Note that this operation does respect the <code>maxConnections</code> value, so if all connections
+            failed file or `Blob`.  Note that this operation does respect the <code>maxConnections</code> value, so if all connections
             are accounted for, the retry attempt will be queued until a connection opens up.</td>
         </tr>
     </tbody>
@@ -1170,7 +1212,7 @@ check out the server-side readme.
             <td>fileSizeOnSubmit</td>
             <td>boolean</td>
             <td>false</td>
-            <td>If set to true, the file size (if available) will be displayed next to the file immediately after the file has been submitted/selected.
+            <td>If set to true, the file or `Blob` size (if available) will be displayed next to the file immediately after the file has been submitted/selected.
             Otherwise, it will only appear once the actual upload starts.</td>
     	</tr>
     </tbody>
@@ -1246,10 +1288,10 @@ exist in FineUploader mode (with default values in parentheses):
 For jQuery plug-in users, adhere to the following syntax:
 ```javascript
 $('#myUploader')
-    .on('complete', function(event, id, fileName, response) {
+    .on('complete', function(event, id, name, response) {
         ...
     })
-    .on('cancel', function(event, id, fileName) {
+    .on('cancel', function(event, id, name) {
         ...
     });
 ```
@@ -1262,10 +1304,10 @@ Callbacks must be declared inside of a `callbacks` object for non-jQuery users, 
 new qq.FineUploader({
     ...
     callbacks: {
-        onComplete: function(id, fileName, response) {
+        onComplete: function(id, name, response) {
             ...
         },
-        onCancel: function(id, fileName) {
+        onCancel: function(id, name) {
             ...
         },
         ...
@@ -1275,38 +1317,38 @@ new qq.FineUploader({
 
 Here are all available callbacks:
 
-* `onSubmit(String id, String fileName)` - called when the file is submitted to the uploader portion of the code.
+* `onSubmit(String id, String name)` - called when the file or `Blob` is submitted to the uploader portion of the code.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
-* `onComplete(String id, String fileName, Object responseJSON)` - called when the file upload has finished.
-* `onCancel(String id, String fileName)` - called when the file upload has been cancelled.
-* `onUpload(String id, String fileName)` - called just before a file upload begins.
-* `onUploadChunk(String id, String fileName, Object chunkData)` - called just before a file chunk/partition request is sent.  The chunkData object has
+* `onComplete(String id, String name, Object responseJSON)` - called when the file or `Blob` upload has finished.
+* `onCancel(String id, String name)` - called when the file or `Blob` upload has been cancelled.
+* `onUpload(String id, String name)` - called just before a file or `Blob` upload begins.
+* `onUploadChunk(String id, String name, Object chunkData)` - called just before a `File`/`Blob` chunk/partition request is sent.  The chunkData object has
 4 properties: `partIndex` (the 0-based index of the associated partition), `startByte` (the byte offset of the current chunk in terms
-of the underlying file), `endByte` (the last byte of the current chunk in terms of the underlying file), and `totalParts` (the
-total number of partitions associated with the underlying file).
-* `onProgress(String id, String fileName, int uploadedBytes, int totalBytes)` - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
-* `onError(String id, String fileName, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
-* `onAutoRetry(String id, String fileName, String attemptNumber)` - called before each automatic retry attempt for a failed file.
-* `onManualRetry(String id, String fileName)` - called before each manual retry attempt.  Return false to prevent this and all future retry attempts on this file.
+of the underlying `File`/`Blob`), `endByte` (the last byte of the current chunk in terms of the underlying `File`/`Blob`), and `totalParts` (the
+total number of partitions associated with the underlying `File`/`Blob`).
+* `onProgress(String id, String name, int uploadedBytes, int totalBytes)` - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
+* `onError(String id, String name, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
+* `onAutoRetry(String id, String name, String attemptNumber)` - called before each automatic retry attempt for a failed file or `Blob`.
+* `onManualRetry(String id, String name)` - called before each manual retry attempt.  Return false to prevent this and all future retry attempts on this file or `Blob`.
 * `onResume(String id, String fileName, Object chunkData)` - Called before an attempt is made to resume a failed/stopped upload from a previous session.
 If you return false, the resume will be cancelled and the uploader will start uploading the file from the first chunk.  The `chunkData` object contains the properties as
 the `chunkData` parameter passed into the `onUploadChunk` callback.
-* `onValidate(FileData fileData)` - This callback is invoked a FileData object, representing one of the file selected for upload.  It is called once
-for each selected, dropped, or `addFiles` submitted file, provided you do not return false in your `onValidateBatch` handler, and also provided
+* `onValidate(FileOrBlobData fileOrBlobData)` - This callback represents one of the files or `Blob`s selected for upload.  It is called once
+for each selected, dropped, or `addFiles` submitted file and for each `addBlobs` submitted `Blob`, provided you do not return false in your `onValidateBatch` handler, and also provided
 the `stopOnFirstInvalidFile` validation option is not set and a previous invocation of your `onValidate` callback in this batch has not returned false.
-This callback is always invoked before the default Fine Uploader validators execute.  Note that a `FileData` object has two properties: `name`
-(the file name) and `size` (the file size).  The `size` property will be undefined if the user agent does not support the File API.
-* `onValidateBatch(Array fileDataArray)` - This callback is invoked once for each batch of files selected, dropped, or submitted
-via the `addFiles` API function.  A FileData array is passed in representing all files selected or dropped at once.  This allows
+This callback is always invoked before the default Fine Uploader validators execute.  Note that a `FileOrBlobData` object has two properties: `name`
+and `size`.  The `size` property will be undefined if the user agent does not support the File API.
+* `onValidateBatch(Array fileOrBlobDataArray)` - This callback is invoked once for each batch of files or `Blob`s selected, dropped, or submitted
+via the `addFiles` or `addBlobs`  API functions.  A FileOrBlobData array is passed in representing all files or `Blob`s selected or dropped at once.  This allows
 you to prevent the entire batch from being uploaded, if desired, by returning false.  If your handler does not return false,
-the `onValidate` callback will be invoked once for each individual file submitted.  This callback is always invoked before
-the default Fine Uploader validators execute.  Note that a `FileData` object has two properties: `name` (the file name) and
-`size` (the file size).  The `size` property will be undefined if the user agent does not support the File API.
-* `onSubmitDelete(id)` - Called before a file that has been marked for deletion has been submitted to the uploader.
+the `onValidate` callback will be invoked once for each individual file or `Blob` submitted.  This callback is always invoked before
+the default Fine Uploader validators execute.  Note that a `FileOrBlobData` object has two properties: `name` and `size`.
+The `size` property will be undefined if the user agent does not support the File API.
+* `onSubmitDelete(id)` - Called before a file or `Blob` that has been marked for deletion has been submitted to the uploader.
 You may return false from your handler if you want to ignore/stop the delete request.
-* `onDelete(id)` - Called just before a delete request is sent for the associated file.  The parameter is the file ID.
+* `onDelete(id)` - Called just before a delete request is sent for the associated file or `Blob`.  The parameter is the ID.
 * `onDeleteComplete(id, xhr, isError)` - Called after receiving a response from the server for a DELETE request.  The associated
-file ID, along with the request's XMLHttpRequest object and a boolean indicating whether the response succeeded or not (based on the response code)
+ID, along with the request's XMLHttpRequest object and a boolean indicating whether the response succeeded or not (based on the response code)
 are sent along as parameters.
 
 <br/>
@@ -1324,21 +1366,21 @@ may override this with something a bit nicer, if you choose.  The okCallback wil
 <br/>
 ### FineUploaderBasic mode API functions ###
 * `log(String message)` - Outputs a message to the javascript console, if possible.
-* `setParams(Object newParams, [optional] Number fileId)` - Set the parameters sent along with the request after initializing the uploader.
-You can either change the parameters for a specific file, or for all files.  To do the latter, simply omit the `fileId` parameter.
+* `setParams(Object newParams, [optional] Number id)` - Set the parameters sent along with the request after initializing the uploader.
+You can either change the parameters for a specific file or `Blob`, or for all files and `Blob`s.  To do the latter, simply omit the `id` parameter.
 See this [blog post explaining parameters](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
 as well as [this one explaining how this function works in 3.1 and later versions](http://blog.fineuploader.com/2012/12/setparams-is-now-much-more-useful-in-31.html).
-* `setEndpoint(String endpointPath, [optional] Number fileId)` - Modify the location,  after initializing the uploader, where upload requests should be directed.
-You can either change the endpoint for a specific file, or for all files.  To do the latter, simply omit the `fileId` parameter.
-* `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files.
-* `clearStoredFiles()` - Clears the internal list of stored files.  Only applicable when `autoUpload` is set to false.
-* `getInProgress()` - Returns the number of files that are either currently uploading or files waiting in line for upload.
-* `retry(String fileId)` - Orders the uploader to make another attempt at uploading a specific file.  A NO-OP if the server
+* `setEndpoint(String endpointPath, [optional] Number id)` - Modify the location,  after initializing the uploader, where upload requests should be directed.
+You can either change the endpoint for a specific file or `Blob`, or for all files and `Blob`s.  To do the latter, simply omit the `id` parameter.
+* `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files and `Blob`s.
+* `clearStoredFiles()` - Clears the internal list of stored files and `Blob`s.  Only applicable when `autoUpload` is set to false.
+* `getInProgress()` - Returns the number of files or `Blob`s that are either currently uploading or waiting in line to be uploaded.
+* `retry(String id)` - Orders the uploader to make another attempt at uploading a specific file or `Blob`.  A NO-OP if the server
 prohibits retries on a failed file via the <code>preventRetryResponseProperty</code>.  Note that this operation does
 respect the <code>maxConnections</code> value, so if all connections are accounted for, the retry attempt will be queued
 until a connection opens up.
-* `cancel(String fileId)` - Cancels a queued or currently uploading file.
-* `cancelAll()` - Cancels all queued or currently uploading files.
+* `cancel(String id)` - Cancels a queued or currently uploading file or `Blob`.
+* `cancelAll()` - Cancels all queued or currently uploading files or `Blob`s.
 * `reset()` - While this function is most useful for FineUploader, it is also available in FineUploaderBasic.  In FineUploader,
 calling this function will reset all UI elements to the state they exsited in immediately after initialization.  In FineUploaderBasic,
 this resets all internal variables to the state they existed in immediately after initialization.  If you are using FineUploaderBasic,
@@ -1347,22 +1389,29 @@ it is up to you to "reset" any of your UI elements.
 a method of gathering files that does not include Fine Uploader's input button or the drag & drop support built into FineUploader.
 This function accepts the following types: `File`, `input` element, or a collection of any of these types, provided the
 collection object contains an (integer) index property for each contained item.
+* `addBlobs(blobDataArray)` - Allows you to submit one or more `Blob` objects to be uploaded.  This is expected to be an array
+of `BlobData` objects.  A `BlobData` object is simply defined by the following convention: an object with a `name` property
+(used to assoicate a name with the `Blob`) and a `blob` property (with a value equal to the `Blob` you would like to upload).
+Note that you may also simply pass one `Blob` or an array of `Blob` objects.  In each of these last two cases, a default name,
+defined in the `blobs` option, will be used.  Also note that your `Blob` objects must be `Blob` objects, but not `File` objects.
+In other words, `Blob` subtypes are not acceptable.  If you would like to upload `File` objects via the API, do so via the `addFiles` function.
 * `getResumableFilesData()` - Returns an array of objects, each describing a file that is potentially resumable by this uploader instance.
 If a `resume.id` property has been set, this is taken into consideration.  Each resumable file is represented by an object with the
 following properties: `name` - filename, `size` - file size, `uuid` - unique ID associated w/ the file, `partIdx` - index of the part where
 the resume will start.
-* `getSize(fileId)` - Returns the size of the file represented by the passed ID.  Undefined if the file size cannot be determined, such as
+* `getSize(id)` - Returns the size of the `File` or `Blob` represented by the passed ID.  Undefined if the file size cannot be determined, such as
 if the user agent does not support the File API.
-* `getFile(fileId)` - Returns the `File` object associated with the passed file ID.  Undefined if the underlying file cannot be found,
-or if the user agent does not support the File API.  For more info on the `File` object, please see [the entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file).
-* `deleteFile(fileId)` - This allows you to programmatically order Fine Uploader to send a DELETE request for a specific file.
+* `getFile(id)` - Returns the `File` or `Blob` object associated with the passed ID.  Undefined if the underlying `File` or `Blob` cannot be found,
+or if the user agent does not support the File API.  For more info on the `File` and `Blob` objects, please see
+[the File entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file) and [the Blob entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-Blob), respectively.
+* `deleteFile(id)` - This allows you to programmatically order Fine Uploader to send a DELETE request for a specific file or `Blob`.
 Fine Uploader actually uses the API call internally when a user clicks the delete link in FineUploader mode.
-* `setDeleteFileEndpoint(String endpointPath, [optional] Number fileId)` - Same as the `setEndpoint` function except this applies only to the `deleteFile` option endpoint(s).
-* `getUuid(fileId)` - Retrieves the UUID associated with a file, given a current session file ID.
+* `setDeleteFileEndpoint(String endpointPath, [optional] Number id)` - Same as the `setEndpoint` function except this applies only to the `deleteFile` option endpoint(s).
+* `getUuid(id)` - Retrieves the UUID associated with a file or `Blob`, given a current session file or `Blob` ID.
 
 <br/>
 ### FineUploader mode API functions ###
-* `getItemByFileId(String fileId)` - Returns the HTMLElement associated with the passed file ID.
+* `getItemByFileId(String id)` - Returns the HTMLElement associated with the passed file or `Blob` ID.
 * `addExtraDropzone(HTMLElement element)` - Use this to mark an element as a drop zone on an already-instantiated FineUploader.
 * `removeExtraDropzone(HTMLElement element)` - Use this to un-mark an extra element as a drop zone on an already-instantiated FineUploader.  An "extra"
    drop zone is one specified in the `extraDropzones` option, or one set via the `addExtraDropzone` function.
