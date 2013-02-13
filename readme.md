@@ -403,7 +403,8 @@ other default values.  This works for all options that are, themselves, objects 
             <td>maxConnections</td>
             <td>integer</td>
             <td>3</td>
-            <td>Maximum allowable concurrent uploads.</td>
+            <td>Maximum allowable concurrent requests (per request-type).  For example, if the number is 3, you will be limited to
+            3 concurrent deleteFile requests and 3 concurrent upload requests, along with 3 of whatever other request types Fine Uploader supports.</td>
         </tr>
         <tr>
             <td>disableCancelForFormUploads</td>
@@ -834,12 +835,6 @@ check out the server-side readme.
             <td>/server/upload</td>
             <td>This should be the endpoint to where any DELETE (file) request should be sent.  Note that this is a DELETE
             request, and the UUID of the associated file is sent as the last part of the URI path.</td>
-        </tr>
-        <tr>
-            <td>maxConnections</td>
-            <td>integer</td>
-            <td>3</td>
-            <td>Maximum number of DELETE requests that should be in transit at once.</td>
         </tr>
         <tr>
             <td>customHeaders</td>
