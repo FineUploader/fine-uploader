@@ -68,11 +68,13 @@ qq.UploadHandler = function(o) {
             max = options.maxConnections,
             nextId;
 
-        queue.splice(i, 1);
+        if (i >= 0) {
+            queue.splice(i, 1);
 
-        if (queue.length >= max && i < max){
-            nextId = queue[max-1];
-            handlerImpl.upload(nextId);
+            if (queue.length >= max && i < max){
+                nextId = queue[max-1];
+                handlerImpl.upload(nextId);
+            }
         }
     };
 
@@ -122,7 +124,7 @@ qq.UploadHandler = function(o) {
             dequeue(id);
         },
         /**
-         * Cancels all uploads
+         * Cancels all queued or in-progress uploads
          */
         cancelAll: function() {
             var self = this,

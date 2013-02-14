@@ -200,6 +200,14 @@ qq.FineUploaderBasic.prototype = {
         this._handler.cancel(id);
     },
     cancelAll: function() {
+        var storedIdsCopy = [],
+            self = this;
+
+        qq.extend(storedIdsCopy, this._storedIds);
+        qq.each(storedIdsCopy, function(idx, storedFileId) {
+            self.cancel(storedFileId);
+        });
+
         this._handler.cancelAll();
     },
     reset: function() {
