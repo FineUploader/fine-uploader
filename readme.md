@@ -123,6 +123,8 @@ If the upload doesn't complete, saying "failed":
 It should be `{"success":true}` for completed requests. If it's not,
 then you have a problem with your server-side script.
 
+If you are having other issues, please read [the FAQ section](docs/faq.md) before posting a question or bug.
+
 
 <br/>
 ### Issue Tracker ###
