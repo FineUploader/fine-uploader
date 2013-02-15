@@ -103,7 +103,8 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             protocol = options.demoMode ? "GET" : "POST",
             form = qq.toElement('<form method="' + protocol + '" enctype="multipart/form-data"></form>'),
             endpoint = options.endpointStore.getEndpoint(id),
-            url = endpoint;
+            url = endpoint,
+            extraFields = options.customFields;
 
         params[options.uuidParamName] = uuids[id];
 
@@ -117,6 +118,15 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         form.setAttribute('action', url);
         form.setAttribute('target', iframe.name);
         form.style.display = 'none';
+
+        // Add csrf token to the form
+        qq.each(extraFields, function(name, val) {
+            var input;
+            input = document.createElement('input');
+            input.setAttribute('name', name);
+            input.setAttribute('value', val);
+            form.appendChild(input);
+        });
         document.body.appendChild(form);
 
         return form;
