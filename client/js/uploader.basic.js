@@ -10,7 +10,7 @@ qq.FineUploaderBasic = function(o){
         request: {
             endpoint: '/server/upload',
             params: {},
-            paramsInBody: false,
+            paramsInBody: true,
             customHeaders: {},
             forceMultipart: true,
             inputName: 'qqfile',
