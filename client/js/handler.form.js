@@ -15,6 +15,13 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         api;
 
 
+    function detachLoadEvent(id) {
+        if (detachLoadEvents[id] !== undefined) {
+            detachLoadEvents[id]();
+            delete detachLoadEvents[id];
+        }
+    }
+
     function registerPostMessageCallback(iframe, callback) {
         var id = iframe.id;
 
@@ -43,8 +50,8 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             if (uuid && onloadCallbacks[uuid]) {
                 clearTimeout(postMessageCallbackTimers[id]);
                 delete postMessageCallbackTimers[id];
-                detachLoadEvents[id]();
-                delete detachLoadEvents[id];
+
+                detachLoadEvent(id);
 
                 onloadCallback = onloadCallbacks[uuid];
 
@@ -250,10 +257,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
 
                 var response = responseFromMessage ? responseFromMessage : getIframeContentJson(iframe);
 
-                if (detachLoadEvents[id] !== undefined) {
-                    detachLoadEvents[id]();
-                    delete detachLoadEvents[id];
-                }
+                detachLoadEvent(id);
 
                 //we can't remove an iframe if the iframe doesn't belong to the same domain
                 if (!options.cors.expected) {
