@@ -130,10 +130,10 @@ class qqFileUploader {
                 $target = $this->getUniqueTargetPath($uploadDirectory, $name);
                 $this->uploadName = basename($target);
 
-                $target = fopen($target, 'w');
+                $target = fopen($target, 'wb');
 
                 for ($i=0; $i<$totalParts; $i++){
-                    $chunk = fopen($targetFolder.'/'.$i, "rb");
+                    $chunk = fopen($targetFolder.DIRECTORY_SEPARATOR.$i, "rb");
                     stream_copy_to_stream($chunk, $target);
                     fclose($chunk);
                 }
@@ -142,8 +142,7 @@ class qqFileUploader {
                 fclose($target);
 
                 for ($i=0; $i<$totalParts; $i++){
-                    $chunk = fopen($targetFolder.'/'.$i, "r");
-                    unlink($targetFolder.'/'.$i);
+                    unlink($targetFolder.DIRECTORY_SEPARATOR.$i);
                 }
 
                 rmdir($targetFolder);
