@@ -14,6 +14,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 public class MultipartUploadParser
@@ -89,14 +90,14 @@ public class MultipartUploadParser
 		}
 	}
 
-	private void parseFormFields(List<FileItem> items)
+	private void parseFormFields(List<FileItem> items) throws UnsupportedEncodingException
 	{
 		for (FileItem item : items)
 		{
 			if (item.isFormField())
 			{
 				String key = item.getFieldName();
-				String value = item.getString();
+				String value = item.getString("UTF-8");
 				if (StringUtils.isNotBlank(key))
 				{
 					params.put(key, StringUtils.defaultString(value));

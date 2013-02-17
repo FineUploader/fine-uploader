@@ -246,7 +246,7 @@ test("qq.obj2Inputs", function() {
 
     $form.empty();
     qq.obj2Inputs(params2, $form[0]);
-    var inputName = encodeURIComponent('a[b]');
+    var inputName = 'a[b]';
     equal($form.find('input[name="' + inputName + '"]').val(), 'innerProp', "nested objects");
 
     $form.empty();

@@ -3,8 +3,7 @@ package fineuploader;
 import org.apache.commons.fileupload.FileItem;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.tagext.IterationTag;
-import java.net.URLDecoder;
+
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -129,12 +128,12 @@ public class RequestParser
 
             requestParser.totalFileSize = Integer.parseInt(multipartUploadParser.getParams().get(FILE_SIZE_PARAM));
             requestParser.totalParts = Integer.parseInt(multipartUploadParser.getParams().get(TOTAL_PARTS_PARAM));
-            requestParser.originalFilename = URLDecoder.decode(multipartUploadParser.getParams().get(PART_FILENAME_PARAM), "UTF-8");
+            requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
         }
 
         for (Map.Entry<String, String> paramEntry : multipartUploadParser.getParams().entrySet())
         {
-            requestParser.customParams.put(URLDecoder.decode(paramEntry.getKey(), "UTF-8"), URLDecoder.decode(paramEntry.getValue(), "UTF-8"));
+            requestParser.customParams.put(paramEntry.getKey(), paramEntry.getValue());
         }
 
         if (requestParser.uuid == null)

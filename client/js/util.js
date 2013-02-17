@@ -430,10 +430,10 @@ qq.obj2FormData = function(obj, formData, arrayKeyName) {
             qq.obj2FormData(val, formData, key);
         }
         else if (qq.isFunction(val)) {
-            formData.append(encodeURIComponent(key), encodeURIComponent(val()));
+            formData.append(key, val());
         }
         else {
-            formData.append(encodeURIComponent(key), encodeURIComponent(val));
+            formData.append(key, val);
         }
     });
 
