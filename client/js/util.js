@@ -152,6 +152,11 @@ qq.log = function(message, level) {
     }
 };
 
+qq.isArray = function(variable) {
+	"use strict";
+    return variable !== null && variable && typeof(variable) === "object" && variable.constructor === Array;
+};
+
 qq.isObject = function(variable) {
     "use strict";
     return variable !== null && variable && typeof(variable) === "object" && variable.constructor === Object;
@@ -410,19 +415,32 @@ qq.obj2FormData = function(obj, formData, arrayKeyName) {
         formData = new FormData();
     }
 
-    qq.each(obj, function(key, val) {
-        key = arrayKeyName ? arrayKeyName + '[' + key + ']' : key;
-
-        if (qq.isObject(val)) {
-            qq.obj2FormData(val, formData, key);
-        }
-        else if (qq.isFunction(val)) {
-            formData.append(encodeURIComponent(key), encodeURIComponent(val()));
-        }
-        else {
-            formData.append(encodeURIComponent(key), encodeURIComponent(val));
-        }
-    });
+	if (qq.isObject(obj)) {
+		qq.each(obj, function(key, val) {
+			key = arrayKeyName ? arrayKeyName + '[' + key + ']' : key;
+			qq.obj2FormData(val, formData, key);
+		});
+	}
+	else if (arrayKeyName) {
+		var val = qq.isFunction(obj) ? obj() : obj;
+		if (qq.isArray(val)) {
+			for (var i = 0; i < val.length; i++) {
+				qq.obj2FormData(val[i], formData, arrayKeyName + '[' + i + ']');
+			}
+		}
+		else if (qq.isObject(val)) {
+			qq.obj2FormData(val, formData, arrayKeyName);
+		}
+		else {
+			if (val === null) {
+				val = '';
+			}
+			else if (typeof(val) === 'boolean') {
+				val = val ? 1: 0;
+			}
+			formData.append(arrayKeyName, val);
+		}
+	}
 
     return formData;
 };
