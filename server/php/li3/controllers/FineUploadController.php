@@ -29,7 +29,7 @@ class FineUploadController extends \lithium\action\Controller
 			$input = fopen('php://input', 'r');
 			$temp = fopen($tempfilepath, 'w');
 			$realsize = stream_copy_to_stream($input, $temp); // write stream to temp file
-			chmod($tempfilepath, 0644);
+			@chmod($tempfilepath, 0644);
 			fclose($input);
 			if ($realsize != (int)$_SERVER['CONTENT_LENGTH']) {
 				$results = array('error' => 'Could not save upload file.');
