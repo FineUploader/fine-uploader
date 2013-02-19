@@ -8,15 +8,20 @@
 
     init = function (options) {
         if (options) {
-            var xformedOpts = transformVariables(options);
-            addCallbacks(xformedOpts);
+            if (qq.isFileUploadSupported()) {
+                var xformedOpts = transformVariables(options);
+                addCallbacks(xformedOpts);
 
-            if (pluginOption('uploaderType') === 'basic') {
-                uploader(new qq.FineUploaderBasic(xformedOpts));
-            }
+                if (pluginOption('uploaderType') === 'basic') {
+                    uploader(new qq.FineUploaderBasic(xformedOpts));
+                }
+                else {
+                    uploader(new qq.FineUploader(xformedOpts));
+                }
+	    }
             else {
-                uploader(new qq.FineUploader(xformedOpts));
-            }
+                $(this).replaceWith("<div>" + options.messages.unsupportedBrowser + "</div>");
+	    }
         }
 
         return $el;

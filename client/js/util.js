@@ -170,6 +170,29 @@ qq.trimStr = function(string) {
     return string.replace(/^\s+|\s+$/g,'');
 };
 
+qq.isFileUploadSupported = function() {
+    "use strict";
+    var isSupported = true;
+    try {
+        var testFileInput = document.createElement('input');
+        testFileInput.type = 'file';
+        testFileInput.style.display = 'none';
+        document.getElementsByTagName('body')[0].appendChild(testFileInput);
+        if (testFileInput.disabled) {
+            isSupported = false;
+        }
+    }
+    catch (exception) {
+        isSupported = false;
+    }
+    finally {
+        if (testFileInput) {
+            testFileInput.parentNode.removeChild(testFileInput);
+        }
+    }
+    return isSupported;
+};
+
 qq.isFileOrInput = function(maybeFileOrInput) {
     "use strict";
     if (qq.isBlob(maybeFileOrInput) && window.File && maybeFileOrInput instanceof File) {
