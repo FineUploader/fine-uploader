@@ -42,7 +42,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         });
 
         corsMessageReceiver.receiveMessage(id, function(message) {
-            qq.log("Received the following window message: '" + message + "'");
+            log("Received the following window message: '" + message + "'");
             var response = qq.parseJson(message),
                 uuid = response.uuid,
                 onloadCallback;
@@ -60,7 +60,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
                 onloadCallback(response);
             }
             else if (!uuid) {
-                qq.log("'" + message + "' does not contain a UUID - ignoring.");
+                log("'" + message + "' does not contain a UUID - ignoring.");
             }
         });
     }
