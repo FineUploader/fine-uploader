@@ -8,7 +8,7 @@
     "chunking",
     "file-uploader"
   ],
-  "version": "3.2.0",
+  "version": "3.3.0",
   "author": {
     "name": "Andrew Valums and Ray Nicholus"
   },
@@ -34,6 +34,7 @@
   ],
   "bugs": "https://github.com/valums/file-uploader/issues",
   "homepage": "http://fineuploader.com",
+  "demo": "http://fineuploader.com",
   "docs": "https://github.com/valums/file-uploader/blob/master/readme.md",
   "download": "https://github.com/valums/file-uploader/wiki/Releases",
   "dependencies": {

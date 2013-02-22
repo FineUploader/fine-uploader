@@ -1,4 +1,4 @@
-/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest*/
+/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest, Blob*/
 var qq = function(element) {
     "use strict";
 
@@ -162,9 +162,17 @@ qq.isFunction = function(variable) {
     return typeof(variable) === "function";
 };
 
+qq.trimStr = function(string) {
+    if (String.prototype.trim) {
+        return string.trim();
+    }
+
+    return string.replace(/^\s+|\s+$/g,'');
+};
+
 qq.isFileOrInput = function(maybeFileOrInput) {
     "use strict";
-    if (window.File && maybeFileOrInput instanceof File) {
+    if (qq.isBlob(maybeFileOrInput) && window.File && maybeFileOrInput instanceof File) {
         return true;
     }
     else if (window.HTMLInputElement) {
@@ -183,6 +191,11 @@ qq.isFileOrInput = function(maybeFileOrInput) {
     }
 
     return false;
+};
+
+qq.isBlob = function(maybeBlob) {
+    "use strict";
+    return window.Blob && maybeBlob instanceof Blob;
 };
 
 qq.isXhrUploadSupported = function() {
@@ -417,10 +430,10 @@ qq.obj2FormData = function(obj, formData, arrayKeyName) {
             qq.obj2FormData(val, formData, key);
         }
         else if (qq.isFunction(val)) {
-            formData.append(encodeURIComponent(key), encodeURIComponent(val()));
+            formData.append(key, val());
         }
         else {
-            formData.append(encodeURIComponent(key), encodeURIComponent(val));
+            formData.append(key, val);
         }
     });
 
@@ -480,7 +493,7 @@ qq.getCookieNames = function(regexp) {
         cookieNames = [];
 
     qq.each(cookies, function(idx, cookie) {
-        cookie = cookie.trim();
+        cookie = qq.trimStr(cookie);
 
         var equalsIdx = cookie.indexOf("=");
 
@@ -514,7 +527,7 @@ qq.areCookiesEnabled = function() {
  */
 qq.parseJson = function(json) {
     /*jshint evil: true*/
-    if (typeof JSON.parse === "function") {
+    if (window.JSON && qq.isFunction(JSON.parse)) {
         return JSON.parse(json);
     } else {
         return eval("(" + json + ")");
