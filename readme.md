@@ -1,6 +1,6 @@
-# Fine Uploader 3.3 (IN PROGRESS) #
+# Fine Uploader 3.3 (Released February 21, 2013) #
 
-###[Download the 3.2 combined & minified javascript file (along with all other required files) here](https://github.com/valums/file-uploader/wiki/Releases)###
+###[Download the 3.3 combined & minified javascript file (along with all other required files) here](https://github.com/valums/file-uploader/wiki/Releases)###
 
 ###I'm Considering removal of support for IE7 in a future release. [Comment here](https://github.com/valums/file-uploader/issues/637).###
 
@@ -9,13 +9,6 @@
 ## Authors ##
 Actively developed by [Ray Nicholus](http://lnkd.in/Nkhx2C).     
 Created by Andrew Valums.
-
-
-<br/>
-## Notice ##
-I plan on changing the default for the `paramsInBody` property of the `request` option to "true" in 3.3.  I suspect most
-developers are setting this option anyway.  Please let me know if you have any problems with this change, so we can
-discuss further.  The associated case is [#604](https://github.com/valums/file-uploader/issues/604).
 
 
 <br/>
