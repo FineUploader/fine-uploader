@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from file_uploader import settings
 from file_uploader import qqFileUploader
+import os
 
 
 def index(request):
@@ -17,7 +18,5 @@ def index(request):
 
 @csrf_exempt
 def upload(request):
-    allowedExtension = [".jpg", ".png", ".ico", ".*"]
-    sizeLimit = 1024000
-    uploader = qqFileUploader(allowedExtension, sizeLimit)
-    return HttpResponse(uploader.handleUpload(request, settings.MEDIA_ROOT + "upload/"))
+	uploader = qqFileUploader(request, [".jpg", ".png", ".ico", ".*"], 2147483648)
+	return HttpResponse(uploader.handleUpload(os.path.join(settings.MEDIA_ROOT ,"upload/")))
