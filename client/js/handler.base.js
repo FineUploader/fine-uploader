@@ -15,6 +15,10 @@ qq.UploadHandler = function(o) {
         paramsInBody: false,
         paramsStore: {},
         endpointStore: {},
+        cors: {
+            expected: false,
+            sendCredentials: false
+        },
         maxConnections: 3, // maximum number of concurrent uploads
         uuidParamName: 'qquuid',
         totalFileSizeParamName: 'qqtotalfilesize',
@@ -35,6 +39,11 @@ qq.UploadHandler = function(o) {
             cookiesExpireIn: 7, //days
             paramNames: {
                 resuming: "qqresume"
+            }
+        },
+        blobs: {
+            paramNames: {
+                name: 'qqblobname'
             }
         },
         log: function(str, level) {},
@@ -59,11 +68,13 @@ qq.UploadHandler = function(o) {
             max = options.maxConnections,
             nextId;
 
-        queue.splice(i, 1);
+        if (i >= 0) {
+            queue.splice(i, 1);
 
-        if (queue.length >= max && i < max){
-            nextId = queue[max-1];
-            handlerImpl.upload(nextId);
+            if (queue.length >= max && i < max){
+                nextId = queue[max-1];
+                handlerImpl.upload(nextId);
+            }
         }
     };
 
@@ -106,18 +117,22 @@ qq.UploadHandler = function(o) {
         /**
          * Cancels file upload by id
          */
-        cancel: function(id){
+        cancel: function(id) {
             log('Cancelling ' + id);
             options.paramsStore.remove(id);
             handlerImpl.cancel(id);
             dequeue(id);
         },
         /**
-         * Cancels all uploads
+         * Cancels all queued or in-progress uploads
          */
-        cancelAll: function(){
-            qq.each(queue, function(idx, fileId) {
-                this.cancel(fileId);
+        cancelAll: function() {
+            var self = this,
+                queueCopy = [];
+
+            qq.extend(queueCopy, queue);
+            qq.each(queueCopy, function(idx, fileId) {
+                self.cancel(fileId);
             });
 
             queue = [];

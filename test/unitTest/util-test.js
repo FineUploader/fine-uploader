@@ -16,6 +16,15 @@ test("qq.isFunction", function() {
     equal(qq.isFunction({}), false, "an object is not a function");
 });
 
+test("qq.trimStr", function() {
+    equal(qq.trimStr(" blah "), "blah", "trim string test 1");
+    equal(qq.trimStr("blah "), "blah", "trim string test 2");
+    equal(qq.trimStr(" blah"), "blah", "trim string test 3");
+    equal(qq.trimStr("blah"), "blah", "trim string test 4");
+    equal(qq.trimStr("bl a h"), "bl a h", "trim string test 5");
+    equal(qq.trimStr(""), "", "trim string test 6");
+});
+
 test("qq.isFileOrInput", function() {
     $('#qunit-fixture').append("<div id='foo'></div>");
     $('#qunit-fixture').append("<input id='bar'/>");
@@ -160,11 +169,11 @@ test("qq().getByClass", function() {
 
 test("qq.obj2url", function() {
     var baseUrl = "http://mydomain.com/upload";
-    var urlWithEncodedPath = "http://mydomain.com/upload%20me"
+    var urlWithEncodedPath = "http://mydomain.com/upload%20me";
     var params = {one: "one", two: "two", three: "three"};
     var params2 = {a: "this is a test"};
     var params3 = {a: {b: 'innerProp'}};
-    var params4 = {a: function() {return "funky"}};
+    var params4 = {a: function() {return "funky";}};
 
     var baseUrlWithParams = qq.obj2url(params, baseUrl);
     var parsedUrlWithParams = $.url(baseUrlWithParams);
@@ -183,6 +192,9 @@ test("qq.obj2url", function() {
     var baseUrlWithParams4 = qq.obj2url(params4, baseUrl);
     var parsedUrlWithParams4 = $.url(baseUrlWithParams4);
     equal(parsedUrlWithParams4.param('a'), 'funky', 'checking a param with a function as a value');
+
+    var emptyUrlWithParams = qq.obj2url(params, "");
+    equal(emptyUrlWithParams, "one=one&two=two&three=three", 'test w/ empty url');
 
     var urlWithEncodedPathResult = qq.obj2url(params, urlWithEncodedPath);
     ok(urlWithEncodedPathResult.match("^" + urlWithEncodedPath), "ensure encoded paths are left alone");
@@ -234,7 +246,7 @@ test("qq.obj2Inputs", function() {
 
     $form.empty();
     qq.obj2Inputs(params2, $form[0]);
-    var inputName = encodeURIComponent('a[b]');
+    var inputName = 'a[b]';
     equal($form.find('input[name="' + inputName + '"]').val(), 'innerProp', "nested objects");
 
     $form.empty();

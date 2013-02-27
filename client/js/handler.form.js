@@ -1,5 +1,5 @@
 /*globals qq, document, setTimeout*/
-/*jslint white: true*/
+/*globals clearTimeout*/
 qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
     "use strict";
 
@@ -7,42 +7,101 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         inputs = [],
         uuids = [],
         detachLoadEvents = {},
+        postMessageCallbackTimers = {},
         uploadComplete = uploadCompleteCallback,
         log = logCallback,
+        corsMessageReceiver = new qq.WindowReceiveMessage({log: log}),
+        onloadCallbacks = {},
         api;
+
+
+    function detachLoadEvent(id) {
+        if (detachLoadEvents[id] !== undefined) {
+            detachLoadEvents[id]();
+            delete detachLoadEvents[id];
+        }
+    }
+
+    function registerPostMessageCallback(iframe, callback) {
+        var id = iframe.id;
+
+        onloadCallbacks[uuids[id]] = callback;
+
+        detachLoadEvents[id] = qq(iframe).attach('load', function() {
+            if (inputs[id]) {
+                log("Received iframe load event for CORS upload request (file id " + id + ")");
+
+                postMessageCallbackTimers[id] = setTimeout(function() {
+                    var errorMessage = "No valid message received from loaded iframe for file id " + id;
+                    log(errorMessage, "error");
+                    callback({
+                        error: errorMessage
+                    });
+                }, 1000);
+            }
+        });
+
+        corsMessageReceiver.receiveMessage(id, function(message) {
+            log("Received the following window message: '" + message + "'");
+            var response = qq.parseJson(message),
+                uuid = response.uuid,
+                onloadCallback;
+
+            if (uuid && onloadCallbacks[uuid]) {
+                clearTimeout(postMessageCallbackTimers[id]);
+                delete postMessageCallbackTimers[id];
+
+                detachLoadEvent(id);
+
+                onloadCallback = onloadCallbacks[uuid];
+
+                delete onloadCallbacks[uuid];
+                corsMessageReceiver.stopReceivingMessages(id);
+                onloadCallback(response);
+            }
+            else if (!uuid) {
+                log("'" + message + "' does not contain a UUID - ignoring.");
+            }
+        });
+    }
 
     function attachLoadEvent(iframe, callback) {
         /*jslint eqeq: true*/
 
-        detachLoadEvents[iframe.id] = qq(iframe).attach('load', function(){
-            log('Received response for ' + iframe.id);
+        if (options.cors.expected) {
+            registerPostMessageCallback(iframe, callback);
+        }
+        else {
+            detachLoadEvents[iframe.id] = qq(iframe).attach('load', function(){
+                log('Received response for ' + iframe.id);
 
-            // when we remove iframe from dom
-            // the request stops, but in IE load
-            // event fires
-            if (!iframe.parentNode){
-                return;
-            }
-
-            try {
-                // fixing Opera 10.53
-                if (iframe.contentDocument &&
-                    iframe.contentDocument.body &&
-                    iframe.contentDocument.body.innerHTML == "false"){
-                    // In Opera event is fired second time
-                    // when body.innerHTML changed from false
-                    // to server response approx. after 1 sec
-                    // when we upload file with iframe
+                // when we remove iframe from dom
+                // the request stops, but in IE load
+                // event fires
+                if (!iframe.parentNode){
                     return;
                 }
-            }
-            catch (error) {
-                //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
-                log('Error when attempting to access iframe during handling of upload response (' + error + ")", 'error');
-            }
 
-            callback();
-        });
+                try {
+                    // fixing Opera 10.53
+                    if (iframe.contentDocument &&
+                        iframe.contentDocument.body &&
+                        iframe.contentDocument.body.innerHTML == "false"){
+                        // In Opera event is fired second time
+                        // when body.innerHTML changed from false
+                        // to server response approx. after 1 sec
+                        // when we upload file with iframe
+                        return;
+                    }
+                }
+                catch (error) {
+                    //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
+                    log('Error when attempting to access iframe during handling of upload response (' + error + ")", 'error');
+                }
+
+                callback();
+            });
+        }
     }
 
     /**
@@ -65,7 +124,8 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             if (innerHTML && innerHTML.match(/^<pre/i)) {
                 innerHTML = doc.body.firstChild.firstChild.nodeValue;
             }
-            response = eval("(" + innerHTML + ")");
+
+            response = qq.parseJson(innerHTML);
         } catch(error){
             log('Error when attempting to parse form upload response (' + error + ")", 'error');
             response = {success: false};
@@ -85,7 +145,6 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         // iframe.setAttribute('name', id);
 
         var iframe = qq.toElement('<iframe src="javascript:false;" name="' + id + '" />');
-        // src="javascript:false;" removes ie6 prompt on https
 
         iframe.setAttribute('id', id);
 
@@ -162,6 +221,12 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             delete uuids[id];
             delete detachLoadEvents[id];
 
+            if (options.cors.expected) {
+                clearTimeout(postMessageCallbackTimers[id]);
+                delete postMessageCallbackTimers[id];
+                corsMessageReceiver.stopReceivingMessages(id);
+            }
+
             var iframe = document.getElementById(id);
             if (iframe) {
                 // to cancel request set src to something else
@@ -176,7 +241,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             var input = inputs[id],
                 fileName = api.getName(id),
                 iframe = createIframe(id),
-                form = createForm(id, iframe);
+                form;
 
             if (!input){
                 throw new Error('file with passed id was not added, or already uploaded or cancelled');
@@ -184,19 +249,20 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
 
             options.onUpload(id, this.getName(id));
 
+            form = createForm(id, iframe);
             form.appendChild(input);
 
-            attachLoadEvent(iframe, function(){
+            attachLoadEvent(iframe, function(responseFromMessage){
                 log('iframe loaded');
 
-                var response = getIframeContentJson(iframe);
+                var response = responseFromMessage ? responseFromMessage : getIframeContentJson(iframe);
 
-                // timeout added to fix busy state in FF3.6
-                setTimeout(function(){
-                    detachLoadEvents[id]();
-                    delete detachLoadEvents[id];
+                detachLoadEvent(id);
+
+                //we can't remove an iframe if the iframe doesn't belong to the same domain
+                if (!options.cors.expected) {
                     qq(iframe).remove();
-                }, 1);
+                }
 
                 if (!response.success) {
                     if (options.onAutoRetry(id, fileName, response)) {
