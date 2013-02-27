@@ -58,6 +58,6 @@ to `console.log` and the log level will be included in the message.
 * `qq.getUniqueId()` - Returns a version 4 UUID.
 * `qq.getCookie(String name)` - Returns the value of the cookie associated with the passed name.
 * `qq.setCookie(String name, String value, number daysTillExpiration)` - Sets or updates a cookie.
-* `qq.deleteCookie(String name) - Deletes a cookie with the passed name.
+* `qq.deleteCookie(String name)` - Deletes a cookie with the passed name.
 
 
