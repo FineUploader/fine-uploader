@@ -4,7 +4,12 @@
 By default Fine Uploader will send the file in the body of a multipart encoded POST request.  The filename will be encoded in
 the request, but the parameters will be available in the query string only.  Note that, if chunking is enabled, the filename in the
 content-disposition header of the file boundary will have a value of "blob" so you will need to parse the value of the "qqfilename"
-parameter in this case to determine the name of the associated file.
+parameter in this case to determine the name of the associated file.  
+
+Note that each request contains a UUID parameter.  By default, the name of this parameter is `qquuid`, but this is configurable
+in the [`request` option section](../docs/options-fineuploaderbasic.md#request-option-properties).  This parameter value 
+should be used to uniquelyidentify the file, and the associationbetween this UUID and the file should be maintained 
+sever-side if you want to handle DELETE requests, the resume feature, or chunking.  
 
 <br/>
 ## Request Format Options ##
