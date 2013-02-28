@@ -102,6 +102,9 @@ qq.FineUploaderBasic = function(o){
             paramNames: {
                 name: 'qqblobname'
             }
+        },
+        paste: {
+            targetElement: null
         }
     };
 
@@ -129,6 +132,10 @@ qq.FineUploaderBasic = function(o){
 
     if (this._options.button){
         this._button = this._createUploadButton(this._options.button);
+    }
+
+    if (this._options.paste.targetElement) {
+        this._pasteHandler = this._createPasteHandler();
     }
 
     this._preventLeaveInProgress();
@@ -221,6 +228,7 @@ qq.FineUploaderBasic.prototype = {
         this._button.reset();
         this._paramsStore.reset();
         this._endpointStore.reset();
+        this._pasteHandler.reset();
     },
     addFiles: function(filesBlobDataOrInputs) {
         var self = this,
@@ -401,6 +409,21 @@ qq.FineUploaderBasic.prototype = {
                 self._options.callbacks.onDeleteComplete(id, xhr, isError);
             }
 
+        });
+    },
+    _createPasteHandler: function() {
+        var self = this;
+
+        return new qq.PasteSupport({
+            targetElement: this._options.paste.targetElement,
+            callbacks: {
+                log: function(str, level) {
+                    self.log(str, level);
+                },
+                pasteReceived: function(blob) {
+                    self.addBlobs(blob);
+                }
+            }
         });
     },
     _preventLeaveInProgress: function(){

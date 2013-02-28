@@ -47,6 +47,9 @@ $(document).ready(function() {
         },
         display: {
             fileSizeOnSubmit: true
+        },
+        paste: {
+            targetElement: $(document)
         }
     })
         .on('error', errorHandler)
