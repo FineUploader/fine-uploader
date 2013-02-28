@@ -7,9 +7,9 @@ content-disposition header of the file boundary will have a value of "blob" so y
 parameter in this case to determine the name of the associated file.  
 
 Note that each request contains a UUID parameter.  By default, the name of this parameter is `qquuid`, but this is configurable
-in the [`request` option section](../docs/options-fineuploaderbasic.md).  This parameter value should be used to uniquely 
-identify the file, and the associationbetween this UUID and the file should be maintained sever-side if you want to handle 
-DELETE requests, the resume feature, or chunking.  
+in the [`request` option section](../docs/options-fineuploaderbasic.md#request-option-properties).  This parameter value 
+should be used to uniquelyidentify the file, and the associationbetween this UUID and the file should be maintained 
+sever-side if you want to handle DELETE requests, the resume feature, or chunking.  
 
 <br/>
 ## Request Format Options ##
