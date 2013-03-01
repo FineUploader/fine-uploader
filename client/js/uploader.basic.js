@@ -38,7 +38,10 @@ qq.FineUploaderBasic = function(o){
             onValidate: function(fileOrBlobData) {},
             onSubmitDelete: function(id) {},
             onDelete: function(id){},
-            onDeleteComplete: function(id, xhr, isError){}
+            onDeleteComplete: function(id, xhr, isError){},
+            onPasteReceived: function(blob) {
+                return new qq.Promise().success();
+            }
         },
         messages: {
             typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
@@ -104,8 +107,7 @@ qq.FineUploaderBasic = function(o){
             }
         },
         paste: {
-            targetElement: null,
-            pasteReceivedCallback: null
+            targetElement: null
         }
     };
 
@@ -422,17 +424,12 @@ qq.FineUploaderBasic.prototype = {
                     self.log(str, level);
                 },
                 pasteReceived: function(blob) {
-                    var pasteReceivedCallback = self._options.paste.pasteReceivedCallback;
-                    if (pasteReceivedCallback) {
-                        pasteReceivedCallback.then(function(successData) {
-                            self._handlePasteSuccess(blob, successData);
-                        }, function(failureData) {
-                            self.log("Ignoring pasted image per paste received callback.  Reason = '" + failureData + "'");
-                        });
-                    }
-                    else {
-                        self._handlePasteSuccess(blob);
-                    }
+                    var pasteReceivedCallback = self._options.callbacks.onPasteReceived;
+                    pasteReceivedCallback(blob).then(function(successData) {
+                        self._handlePasteSuccess(blob, successData);
+                    }, function(failureData) {
+                        self.log("Ignoring pasted image per paste received callback.  Reason = '" + failureData + "'");
+                    });
                 }
             }
         });
@@ -715,7 +712,7 @@ qq.FineUploaderBasic.prototype = {
             catch (exception) {
                 self.log("Caught exception in '" + name + "' callback - " + exception.message, 'error');
             }
-        }
+        };
 
         for (var prop in this._options.callbacks) {
             (function() {
@@ -724,7 +721,7 @@ qq.FineUploaderBasic.prototype = {
                 callbackFunc = self._options.callbacks[callbackName];
                 self._options.callbacks[callbackName] = function() {
                     return safeCallback(callbackName, callbackFunc, arguments);
-                }
+                };
             }());
         }
     },
