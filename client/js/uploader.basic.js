@@ -98,13 +98,14 @@ qq.FineUploaderBasic = function(o){
             sendCredentials: false
         },
         blobs: {
-            defaultName: 'Misc data',
+            defaultName: 'misc_data',
             paramNames: {
                 name: 'qqblobname'
             }
         },
         paste: {
-            targetElement: null
+            targetElement: null,
+            pasteReceivedCallback: null
         }
     };
 
@@ -421,9 +422,35 @@ qq.FineUploaderBasic.prototype = {
                     self.log(str, level);
                 },
                 pasteReceived: function(blob) {
-                    self.addBlobs(blob);
+                    var pasteReceivedCallback = self._options.paste.pasteReceivedCallback;
+                    if (pasteReceivedCallback) {
+                        pasteReceivedCallback.then(function(successData) {
+                            self._handlePasteSuccess(blob, successData);
+                        }, function(failureData) {
+                            self.log("Ignoring pasted image per paste received callback.  Reason = '" + failureData + "'");
+                        });
+                    }
+                    else {
+                        self._handlePasteSuccess(blob);
+                    }
                 }
             }
+        });
+    },
+    _handlePasteSuccess: function(blob, extSuppliedName) {
+        var extension = blob.type.split("/")[1],
+            name = extSuppliedName;
+
+        /*jshint eqeqeq: true, eqnull: true*/
+        if (name == null) {
+            name = this._options.blobs.defaultName;
+        }
+
+        name += '.' + extension;
+
+        this.addBlobs({
+            name: name,
+            blob: blob
         });
     },
     _preventLeaveInProgress: function(){
