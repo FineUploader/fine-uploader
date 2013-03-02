@@ -18,5 +18,12 @@ def index(request):
 
 @csrf_exempt
 def upload(request):
-	uploader = qqFileUploader(request, [".jpg", ".png", ".ico", ".*"], 2147483648)
-	return HttpResponse(uploader.handleUpload(os.path.join(settings.MEDIA_ROOT ,"upload/")))
+	uploader = qqFileUploader(request, os.path.join(settings.MEDIA_ROOT ,"upload/"), [".jpg", ".png", ".ico", ".*", ".avi"], 2147483648)
+	return HttpResponse(uploader.handleUpload())
+
+@csrf_exempt
+def upload_delete(request, need_to_delete):
+
+	qqFileUploader.deleteFile(need_to_delete)
+
+	return HttpResponse("ok")
