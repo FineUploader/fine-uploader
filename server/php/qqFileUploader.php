@@ -56,8 +56,15 @@ class qqFileUploader {
             return array('error'=>"Server error. Increase post_max_size and upload_max_filesize to ".$size);
         }
 
-        if (!is_writable($uploadDirectory) || !is_executable($uploadDirectory)){
-            return array('error' => "Server error. Uploads directory isn't writable or executable.");
+		// is_writable() is not reliable on Windows (http://www.php.net/manual/en/function.is-executable.php#111146)
+		// The following tests if the current OS is Windows and if so, merely checks if the folder is writable;
+		// otherwise, it checks additionally for executable status (like before).
+		
+		$isWin = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
+		$folderInaccessible = ($isWin) ? !is_writable($uploadDirectory) : ( !is_writable($uploadDirectory) || !is_executable($uploadDirectory) );
+
+        if ($folderInaccessible){
+            return array('error' => "Server error. Uploads directory isn't writable" . (!$isWin) ? " or executable." : ".");
         }
 
         if(!isset($_SERVER['CONTENT_TYPE'])) {
