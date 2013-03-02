@@ -107,7 +107,8 @@ qq.FineUploaderBasic = function(o){
             }
         },
         paste: {
-            targetElement: null
+            targetElement: null,
+            defaultName: 'pasted_image'
         }
     };
 
@@ -440,7 +441,7 @@ qq.FineUploaderBasic.prototype = {
 
         /*jshint eqeqeq: true, eqnull: true*/
         if (name == null) {
-            name = this._options.blobs.defaultName;
+            name = this._options.paste.defaultName;
         }
 
         name += '.' + extension;

@@ -27,6 +27,8 @@ qq.Promise = function() {
             if (successCallback) {
                 successCallback(val);
             }
+
+            return this;
         },
 
         failure: function(val) {
@@ -36,6 +38,8 @@ qq.Promise = function() {
             if (failureCallback) {
                 failureCallback(val);
             }
+
+            return this;
         }
     };
 };

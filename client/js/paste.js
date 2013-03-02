@@ -19,7 +19,7 @@ qq.PasteSupport = function(o) {
 
             if (clipboardData) {
                 item = clipboardData.items[0];
-                if (item.type.indexOf("image") >= 0) {
+                if (item.type.indexOf("image/") === 0) {
                     blob = item.getAsFile();
                     options.callbacks.pasteReceived(blob);
                 }

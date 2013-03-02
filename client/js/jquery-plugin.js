@@ -63,8 +63,15 @@
             $callbackEl = $el;
 
             callbacks[prop] = function() {
-                var args = Array.prototype.slice.call(arguments);
-                return $callbackEl.triggerHandler(name, args);
+                var origFunc = func,
+                    args = Array.prototype.slice.call(arguments),
+                    jqueryHandlerResult = $callbackEl.triggerHandler(name, args);
+
+                if (jqueryHandlerResult === undefined) {
+                    return origFunc();
+                }
+
+                return jqueryHandlerResult;
             };
         });
     };
