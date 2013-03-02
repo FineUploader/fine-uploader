@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Python Django Sample</title>
+    <link href="/static/fineuploader.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="myUploader"></div>
+ 
+    <!--
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+  -->
+    <script src="/static/js/header.js"></script>
+    <script src="/static/js/util.js"></script>
+    <script src="/static/js/button.js"></script>
+    <script src="/static/js/ajax.requester.js"></script>
+    <script src="/static/js/deletefile.ajax.requester.js"></script>
+    <script src="/static/js/handler.base.js"></script>
+    <script src="/static/js/window.receive.message.js"></script>
+    <script src="/static/js/handler.form.js"></script>
+    <script src="/static/js/handler.xhr.js"></script>
+    <script src="/static/js/uploader.basic.js"></script>
+    <script src="/static/js/dnd.js"></script>
+    <script src="/static/js/uploader.js"></script>
+    <!--
+    <script src="/static/js/jquery-plugin.js"></script>
+  -->
+    <script>
+
+
+    var uploader = new qq.FineUploader({
+       element: document.getElementById('myUploader'),
+       request: {
+          endpoint: '{% url upload %}',
+       },
+       retry: {
+          enableAuto: true
+       },
+       chunking: {
+          enabled: true
+       },
+        deleteFile: {
+          endpoint: '{% url upload %}',
+           enabled: true,
+           forceConfirm: true
+       },
+       callbacks: {
+       
+          onError: function(id, name, reason) {
+            alert(reason);
+          }
+
+       }
+    });
+
+    </script>
+  </body>
+</html>
