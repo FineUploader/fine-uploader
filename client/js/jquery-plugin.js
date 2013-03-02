@@ -53,9 +53,10 @@
     //implement all callbacks defined in Fine Uploader as functions that trigger appropriately names events and
     // return the result of executing the bound handler back to Fine Uploader
     addCallbacks = function(transformedOpts) {
-        var callbacks = transformedOpts.callbacks = {};
+        var callbacks = transformedOpts.callbacks = {},
+            uploaderInst = new qq.FineUploaderBasic();
 
-        $.each(new qq.FineUploaderBasic()._options.callbacks, function(prop, func) {
+        $.each(uploaderInst._options.callbacks, function(prop, func) {
             var name, $callbackEl;
 
             name = /^on(\w+)/.exec(prop)[1];
@@ -67,7 +68,8 @@
                     args = Array.prototype.slice.call(arguments),
                     jqueryHandlerResult = $callbackEl.triggerHandler(name, args);
 
-                if (jqueryHandlerResult === undefined) {
+                if (jqueryHandlerResult === undefined &&
+                        $.inArray(prop, uploaderInst.getPromissoryCallbackNames()) >= 0) {
                     return origFunc();
                 }
 

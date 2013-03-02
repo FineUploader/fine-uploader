@@ -310,6 +310,9 @@ qq.FineUploaderBasic.prototype = {
             this._deleteFileEndpointStore.setEndpoint(endpoint, id);
         }
     },
+    getPromissoryCallbackNames: function() {
+        return ["onPasteReceived"];
+    },
     _createUploadButton: function(element){
         var self = this;
 
