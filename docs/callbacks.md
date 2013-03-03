@@ -35,7 +35,9 @@ new qq.FineUploader({
 
 * `onSubmit(String id, String name)` - called when the file or `Blob` is submitted to the uploader portion of the code.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
-* `onComplete(String id, String name, Object responseJSON)` - called when the file or `Blob` upload has finished.
+* `onComplete(String id, String name, Object responseJSON)` - called when the file or `Blob` upload has finished. 
+A successful upload will always have a `success` property in the `responseJSON` object with a value of `true`.  The
+`responseJSON` parameter will also contain any other elements of the JSON response returned by the server.
 * `onCancel(String id, String name)` - called when the file or `Blob` upload has been cancelled.
 * `onUpload(String id, String name)` - called just before a file or `Blob` upload begins.
 * `onUploadChunk(String id, String name, Object chunkData)` - called just before a `File`/`Blob` chunk/partition request is sent.  The chunkData object has

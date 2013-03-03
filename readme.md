@@ -35,7 +35,7 @@ Created by Andrew Valums.
 * [Resume failed/stopped uploads from previous sessions](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html)
 * [Delete uploaded files](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html)
 * [CORS support](http://blog.fineuploader.com/2013/01/cors-support-in-33.html)
-* Upload anu `Blob` objects via the API.
+* Upload any `Blob` objects via the API.
 * Any many more!
 
 
