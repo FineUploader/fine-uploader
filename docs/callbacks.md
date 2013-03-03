@@ -66,5 +66,13 @@ You may return false from your handler if you want to ignore/stop the delete req
 * `onDeleteComplete(id, xhr, isError)` - Called after receiving a response from the server for a DELETE request.  The associated
 ID, along with the request's XMLHttpRequest object and a boolean indicating whether the response succeeded or not (based on the response code)
 are sent along as parameters.
+* `onPasteReceived(blob)` - Called when a pasted image has been received (before uploading the image).  The pasted image is
+represented as a `Blob`.  **This is a promissory callback**, meaning your callback handler must return a [promise](promise.md).
+The value of the success parameter must be the name to associate with the pasted image.  If no name is entered by the user,
+this must be considered a `failure` and it is wise to include a string explaining the failure in your `failure` callback.
+Note that the `namePromptMessage` in FineUploader mode, if set to true, will effectively wipe out any custom implementation of this
+callback.  The two are not meant to be used together.  This callback is meant to provide an alternative means to provide a name
+for a pasted image (such as via an ajax call).  If FineUploaderBasic mode is in use and you want to display your own user prompt
+for the name, you may also do so by overriding the default implementation of this callback.
 
 

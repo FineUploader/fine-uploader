@@ -286,3 +286,35 @@ check out the server-side readme.
     	</tr>
     </tbody>
 </table>
+
+### `paste` option properties: ###
+Currently, only pasting images (from the web) is supported, and only in Chrome.  See the [FineUploaderBasic mode options](options-fineuploaderbasic.md)
+for additional `paste` options.
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>promptForName</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>If set to true, the <code>showPrompt</code> function will be called in an attempt to ask the user to provide a name
+            for the associated pasted image.  See the styling documentation for more details on overriding <code>showPrompt</code>.</td>
+    	</tr>
+        <tr>
+            <td>namePromptMessage</td>
+            <td>string</td>
+            <td>Please name this image</td>
+            <td>Text that will appear in the <code>showPrompt</code> dialog, asking the user to name the pasted image.
+            Note that an appropriate extension will always been appended to the name supplied by the user automatically.
+            If you override the <code>onPasteReceived</code> callback AND set this option to true, your <code>onPasteReceived</code>
+            callback will be ignored.</td>
+    	</tr>
+    </tbody>
+</table>
