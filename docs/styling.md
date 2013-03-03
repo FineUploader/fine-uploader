@@ -70,7 +70,7 @@ invalid file for upload.  There are general message types with default text that
 such feature that optionally uses this is the `deleteFile` feature.  The default implementation uses `window.confirm`, but you
 may override this with something a bit nicer, if you choose.  The okCallback will be executed if the user clicks "ok" and the
 `cancelCallback` if the user clicks "cancel".  The `cancelCallback` is optional, but the `okCallback` is required.
-* `showPrompt: function(message, defaultValue) {...}` - This function is used to prompt the user for a value.  Note that this
-is a promissory callback, meaning it requires a [`qq.Promise`](promise.md) to be returned.  The `qq.Promise` documentation
+* `showPrompt: function(message, defaultValue) {...}` - This function is used to prompt the user for a value.  Note that **this
+is a promissory callback**, meaning it requires a [`qq.Promise`](promise.md) to be returned.  The `qq.Promise` documentation
 includes a simple example that overrides this default implementation using bootbox.  The default implementation here simply
 uses `window.prompt`.
