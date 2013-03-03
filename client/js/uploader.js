@@ -117,7 +117,18 @@ qq.FineUploader = function(o){
             }, 0);
         },
         showPrompt: function(message, defaultValue) {
-            return window.prompt(message, defaultValue);
+            var promise = new qq.Promise(),
+                retVal = window.prompt(message, defaultValue);
+
+            /*jshint eqeqeq: true, eqnull: true*/
+            if (retVal != null && qq.trimStr(retVal).length > 0) {
+                promise.success(retVal);
+            }
+            else {
+                promise.failure("Undefined or invalid user-supplied value.");
+            }
+
+            return promise;
         }
     }, true);
 
@@ -577,18 +588,11 @@ qq.extend(qq.FineUploader.prototype, {
     _setupPastePrompt: function() {
         var self = this;
 
-        this._options.callbacks.onPasteReceived = function(blob) {
-            var result = new qq.Promise(),
-                message = self._options.paste.namePromptMessage,
-                defaultVal = self._options.paste.defaultName,
-                name = self._options.showPrompt(message, defaultVal);
+        this._options.callbacks.onPasteReceived = function() {
+            var message = self._options.paste.namePromptMessage,
+                defaultVal = self._options.paste.defaultName;
 
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (name != null && qq.trimStr(name).length > 0) {
-                return result.success(name);
-            }
-
-            return result.failure("Undefined or invalid user-supplied name.");
+            return self._options.showPrompt(message, defaultVal);
         };
     }
 });
