@@ -12,17 +12,22 @@ qq.PasteSupport = function(o) {
         }
     };
 
+    function isImage(item) {
+        return item.type &&
+            item.type.indexOf("image/") === 0;
+    }
+
     function registerPasteHandler() {
         qq(options.targetElement).attach("paste", function(event) {
-            var blob, item,
-                clipboardData = event.clipboardData;
+            var clipboardData = event.clipboardData;
 
             if (clipboardData) {
-                item = clipboardData.items[0];
-                if (item.type.indexOf("image/") === 0) {
-                    blob = item.getAsFile();
-                    options.callbacks.pasteReceived(blob);
-                }
+                qq.each(clipboardData.items, function(idx, item) {
+                    if (isImage(item)) {
+                        var blob = item.getAsFile();
+                        options.callbacks.pasteReceived(blob);
+                    }
+                });
             }
         });
     }
