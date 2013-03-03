@@ -428,12 +428,19 @@ qq.FineUploaderBasic.prototype = {
                     self.log(str, level);
                 },
                 pasteReceived: function(blob) {
-                    var pasteReceivedCallback = self._options.callbacks.onPasteReceived;
-                    pasteReceivedCallback(blob).then(function(successData) {
-                        self._handlePasteSuccess(blob, successData);
-                    }, function(failureData) {
-                        self.log("Ignoring pasted image per paste received callback.  Reason = '" + failureData + "'");
-                    });
+                    var pasteReceivedCallback = self._options.callbacks.onPasteReceived,
+                        promise = pasteReceivedCallback(blob);
+
+                    if (promise.then) {
+                        promise.then(function(successData) {
+                            self._handlePasteSuccess(blob, successData);
+                        }, function(failureData) {
+                            self.log("Ignoring pasted image per paste received callback.  Reason = '" + failureData + "'");
+                        });
+                    }
+                    else {
+                        self.log("Promise contract not fulfilled in pasteReceived callback handler!  Ignoring pasted item.", "error");
+                    }
                 }
             }
         });
