@@ -118,7 +118,7 @@ class qqFileUploader {
             $partIndex = (int)$_REQUEST['qqpartindex'];
             $uuid = $_REQUEST['qquuid'];
 
-            if (!is_writable($chunksFolder) || !is_executable($uploadDirectory)){
+            if (!is_writable($chunksFolder) && !is_executable($uploadDirectory)){
                 return array('error' => "Server error. Chunks directory isn't writable or executable.");
             }
 
