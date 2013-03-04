@@ -561,3 +561,32 @@ Options used when `Blob` objects are to be uploaded.
     </tbody>
 </table>
 
+### `paste` option properties: ###
+Currently, only pasting images (from the web) is supported, and only in Chrome.
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>targetElement</td>
+            <td>element</td>
+            <td><code>null</code></td>
+            <td>To enable this feature, set this to a non-null value (an element) that will receive pasted images.  Typically,
+            this would be some visible box, also containing the file list, where the user has been instructed to paste web
+            images.  In some applications, this may simply be the entire <code>document</code>, though.</td>
+    	</tr>
+        <tr>
+            <td>defaultName</td>
+            <td>string</td>
+            <td>pasted_image</td>
+            <td>If no name is supplied via the `onPasteReceived` or other means, this will be the name associated with
+            pasted images.  Note that an appropriate extension will always been appended to this name automatically.</td>
+    	</tr>
+    </tbody>
+</table>

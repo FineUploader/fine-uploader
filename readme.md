@@ -36,6 +36,7 @@ Created by Andrew Valums.
 * [Delete uploaded files](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html)
 * [CORS support](http://blog.fineuploader.com/2013/01/cors-support-in-33.html)
 * Upload any `Blob` objects via the API.
+* Paste to upload an image copied from any other web page (Chrome)
 * Any many more!
 
 

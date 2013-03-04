@@ -38,7 +38,10 @@ qq.FineUploaderBasic = function(o){
             onValidate: function(fileOrBlobData) {},
             onSubmitDelete: function(id) {},
             onDelete: function(id){},
-            onDeleteComplete: function(id, xhr, isError){}
+            onDeleteComplete: function(id, xhr, isError){},
+            onPasteReceived: function(blob) {
+                return new qq.Promise().success();
+            }
         },
         messages: {
             typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
@@ -98,10 +101,14 @@ qq.FineUploaderBasic = function(o){
             sendCredentials: false
         },
         blobs: {
-            defaultName: 'Misc data',
+            defaultName: 'misc_data',
             paramNames: {
                 name: 'qqblobname'
             }
+        },
+        paste: {
+            targetElement: null,
+            defaultName: 'pasted_image'
         }
     };
 
@@ -129,6 +136,10 @@ qq.FineUploaderBasic = function(o){
 
     if (this._options.button){
         this._button = this._createUploadButton(this._options.button);
+    }
+
+    if (this._options.paste.targetElement) {
+        this._pasteHandler = this._createPasteHandler();
     }
 
     this._preventLeaveInProgress();
@@ -221,6 +232,7 @@ qq.FineUploaderBasic.prototype = {
         this._button.reset();
         this._paramsStore.reset();
         this._endpointStore.reset();
+        this._pasteHandler.reset();
     },
     addFiles: function(filesBlobDataOrInputs) {
         var self = this,
@@ -297,6 +309,9 @@ qq.FineUploaderBasic.prototype = {
         else {
             this._deleteFileEndpointStore.setEndpoint(endpoint, id);
         }
+    },
+    getPromissoryCallbackNames: function() {
+        return ["onPasteReceived"];
     },
     _createUploadButton: function(element){
         var self = this;
@@ -401,6 +416,49 @@ qq.FineUploaderBasic.prototype = {
                 self._options.callbacks.onDeleteComplete(id, xhr, isError);
             }
 
+        });
+    },
+    _createPasteHandler: function() {
+        var self = this;
+
+        return new qq.PasteSupport({
+            targetElement: this._options.paste.targetElement,
+            callbacks: {
+                log: function(str, level) {
+                    self.log(str, level);
+                },
+                pasteReceived: function(blob) {
+                    var pasteReceivedCallback = self._options.callbacks.onPasteReceived,
+                        promise = pasteReceivedCallback(blob);
+
+                    if (promise.then) {
+                        promise.then(function(successData) {
+                            self._handlePasteSuccess(blob, successData);
+                        }, function(failureData) {
+                            self.log("Ignoring pasted image per paste received callback.  Reason = '" + failureData + "'");
+                        });
+                    }
+                    else {
+                        self.log("Promise contract not fulfilled in pasteReceived callback handler!  Ignoring pasted item.", "error");
+                    }
+                }
+            }
+        });
+    },
+    _handlePasteSuccess: function(blob, extSuppliedName) {
+        var extension = blob.type.split("/")[1],
+            name = extSuppliedName;
+
+        /*jshint eqeqeq: true, eqnull: true*/
+        if (name == null) {
+            name = this._options.paste.defaultName;
+        }
+
+        name += '.' + extension;
+
+        this.addBlobs({
+            name: name,
+            blob: blob
         });
     },
     _preventLeaveInProgress: function(){
@@ -665,7 +723,7 @@ qq.FineUploaderBasic.prototype = {
             catch (exception) {
                 self.log("Caught exception in '" + name + "' callback - " + exception.message, 'error');
             }
-        }
+        };
 
         for (var prop in this._options.callbacks) {
             (function() {
@@ -674,7 +732,7 @@ qq.FineUploaderBasic.prototype = {
                 callbackFunc = self._options.callbacks[callbackName];
                 self._options.callbacks[callbackName] = function() {
                     return safeCallback(callbackName, callbackFunc, arguments);
-                }
+                };
             }());
         }
     },

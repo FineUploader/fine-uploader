@@ -7,7 +7,9 @@ apply plugin: 'js'
 
 def coreFiles = ["${jsSrcDir}/header.js",
                  "${jsSrcDir}/util.js",
+                 "${jsSrcDir}/promise.js",
                  "${jsSrcDir}/button.js",
+                 "${jsSrcDir}/paste.js",
                  "${jsSrcDir}/uploader.basic.js",
                  "${jsSrcDir}/dnd.js",
                  "${jsSrcDir}/uploader.js",

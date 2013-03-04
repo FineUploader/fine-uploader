@@ -96,14 +96,18 @@ qq.FineUploader = function(o){
         display: {
             fileSizeOnSubmit: false
         },
+        paste: {
+            promptForName: false,
+            namePromptMessage: "Please name this image"
+        },
         showMessage: function(message){
             setTimeout(function() {
-                alert(message);
+                window.alert(message);
             }, 0);
         },
         showConfirm: function(message, okCallback, cancelCallback) {
             setTimeout(function() {
-                var result = confirm(message);
+                var result = window.confirm(message);
                 if (result) {
                     okCallback();
                 }
@@ -111,6 +115,20 @@ qq.FineUploader = function(o){
                     cancelCallback();
                 }
             }, 0);
+        },
+        showPrompt: function(message, defaultValue) {
+            var promise = new qq.Promise(),
+                retVal = window.prompt(message, defaultValue);
+
+            /*jshint eqeqeq: true, eqnull: true*/
+            if (retVal != null && qq.trimStr(retVal).length > 0) {
+                promise.success(retVal);
+            }
+            else {
+                promise.failure("Undefined or invalid user-supplied value.");
+            }
+
+            return promise;
         }
     }, true);
 
@@ -141,6 +159,10 @@ qq.FineUploader = function(o){
     this._bindCancelAndRetryEvents();
 
     this._dnd = this._setupDragAndDrop();
+
+    if (this._options.paste.targetElement && this._options.paste.promptForName) {
+        this._setupPastePrompt();
+    }
 };
 
 // inherit from Basic Uploader
@@ -562,5 +584,15 @@ qq.extend(qq.FineUploader.prototype, {
     _error: function(code, name){
         var message = qq.FineUploaderBasic.prototype._error.apply(this, arguments);
         this._options.showMessage(message);
+    },
+    _setupPastePrompt: function() {
+        var self = this;
+
+        this._options.callbacks.onPasteReceived = function() {
+            var message = self._options.paste.namePromptMessage,
+                defaultVal = self._options.paste.defaultName;
+
+            return self._options.showPrompt(message, defaultVal);
+        };
     }
 });

@@ -47,6 +47,9 @@ $(document).ready(function() {
         },
         display: {
             fileSizeOnSubmit: true
+        },
+        paste: {
+            targetElement: $(document)
         }
     })
         .on('error', errorHandler)
@@ -56,6 +59,10 @@ $(document).ready(function() {
         .on("upload", function(event, id, filename) {
             $(this).fineUploader('setParams', {"hey": "ho"}, id);
         });
+//        on("pasteReceived", function(event, blob) {
+//            qq.log(blob);
+//            return new qq.Promise().success();
+//        });
 
     $('#manualUploadModeExample').fineUploader({
         autoUpload: false,
