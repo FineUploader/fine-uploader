@@ -31,7 +31,7 @@ qq.FineUploaderBasic = function(o){
             onUploadChunk: function(id, name, chunkData){},
             onResume: function(id, fileName, chunkData){},
             onProgress: function(id, name, loaded, total){},
-            onError: function(id, name, reason) {},
+            onError: function(id, name, reason, maybeXhr) {},
             onAutoRetry: function(id, name, attemptNumber) {},
             onManualRetry: function(id, name) {},
             onValidateBatch: function(fileOrBlobData) {},
@@ -520,7 +520,7 @@ qq.FineUploaderBasic.prototype = {
 
         if (isError) {
             this.log("Delete request for '" + name + "' has failed.", "error");
-            this._options.callbacks.onError(id, name, "Delete request failed with response code " + xhr.status);
+            this._options.callbacks.onError(id, name, "Delete request failed with response code " + xhr.status, xhr);
         }
         else {
             this.log("Delete request for '" + name + "' has succeeded.");
@@ -586,11 +586,11 @@ qq.FineUploaderBasic.prototype = {
         //assuming no one will actually set the response code to something other than 200 and still set 'success' to true
         if (!response.success){
             if (xhr && xhr.status !== 200 && !response.error) {
-                this._options.callbacks.onError(id, name, "XHR returned response code " + xhr.status);
+                this._options.callbacks.onError(id, name, "XHR returned response code " + xhr.status, xhr);
             }
             else {
                 var errorReason = response.error ? response.error : "Upload failure reason unknown";
-                this._options.callbacks.onError(id, name, errorReason);
+                this._options.callbacks.onError(id, name, errorReason, xhr);
             }
         }
     },

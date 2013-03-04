@@ -45,7 +45,8 @@ A successful upload will always have a `success` property in the `responseJSON` 
 of the underlying `File`/`Blob`), `endByte` (the last byte of the current chunk in terms of the underlying `File`/`Blob`), and `totalParts` (the
 total number of partitions associated with the underlying `File`/`Blob`).
 * `onProgress(String id, String name, int uploadedBytes, int totalBytes)` - called during the upload, as it progresses.  Only used by the XHR/ajax uploader.
-* `onError(String id, String name, String errorReason)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
+* `onError(String id, String name, String errorReason, XMLHttpRequest xhr)` - called whenever an exceptional condition occurs (during an upload, file selection, etc).
+Note that the last parameter, xhr, will only be included if the error is related to a request initiated by XMLHttpRequest.
 * `onAutoRetry(String id, String name, String attemptNumber)` - called before each automatic retry attempt for a failed file or `Blob`.
 * `onManualRetry(String id, String name)` - called before each manual retry attempt.  Return false to prevent this and all future retry attempts on this file or `Blob`.
 * `onResume(String id, String fileName, Object chunkData)` - Called before an attempt is made to resume a failed/stopped upload from a previous session.
