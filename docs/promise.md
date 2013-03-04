@@ -43,8 +43,8 @@ name supplied by the user.
     <thead>
         <tr>
             <th>Name</th>
-            <th>Parameters</th>
-            <th>Return Value</th>
+            <th>Takes</th>
+            <th>Returns</th>
             <th>Note</th>
         </tr>
     </thead>
