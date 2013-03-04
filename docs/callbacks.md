@@ -68,9 +68,9 @@ ID, along with the request's XMLHttpRequest object and a boolean indicating whet
 are sent along as parameters.
 * `onPasteReceived(blob)` - Called when a pasted image has been received (before uploading the image).  The pasted image is
 represented as a `Blob`.  **This is a promissory callback**, meaning your callback handler must return a [promise](promise.md).
-The value of the success parameter must be the name to associate with the pasted image.  If no name is entered by the user,
-this must be considered a `failure` and it is wise to include a string explaining the failure in your `failure` callback.
-Note that the `namePromptMessage` in FineUploader mode, if set to true, will effectively wipe out any custom implementation of this
+The value of the success parameter must be the name to associate with the pasted image.  If the associated attempt is marked
+a `failure` it is wise to include a string explaining the failure in your `failure` callback.
+Note that the `promptForName` in FineUploader mode, if set to true, will effectively wipe out any custom implementation of this
 callback.  The two are not meant to be used together.  This callback is meant to provide an alternative means to provide a name
 for a pasted image (such as via an ajax call).  If FineUploaderBasic mode is in use and you want to display your own user prompt
 for the name, you may also do so by overriding the default implementation of this callback.
