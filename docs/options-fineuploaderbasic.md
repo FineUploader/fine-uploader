@@ -390,9 +390,10 @@ For more details, please read the [blog post on the file resume feature](http://
             <td>id</td>
             <td>number, string, or boolean</td>
             <td>null</td>
-            <td>If this value is defined, the cookie name used to identify a file chunk will be composed of the filename, file size,
-            and max partition/chunk size.  If this value is not defined or does not fit into one of the acceptable types,
-            it will be added as an additional component of the cookie name.</td>
+            <td>If this value is not defined or if the value does not fit into one of the acceptable types, the cookie 
+            name used to identify a file chunk will be composed of the filename, file size, and max partition/chunk size.  
+            If this value IS defined and DOES fit into one of the acceptable types, it will be added as an additional 
+            component of the cookie name.</td>
         </tr>
         <tr>
             <td>cookiesExpireIn</td>
