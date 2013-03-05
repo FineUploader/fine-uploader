@@ -243,7 +243,7 @@ qq.extend(qq.FineUploader.prototype, {
                     }
                 },
                 error: function(code, filename) {
-                    self._error(code, filename);
+                    self._itemError(code, filename);
                 },
                 log: function(message, level) {
                     self.log(message, level);
@@ -383,8 +383,9 @@ qq.extend(qq.FineUploader.prototype, {
     },
     //return false if we should not attempt the requested retry
     _onBeforeManualRetry: function(id) {
+        var item = this.getItemByFileId(id);
+
         if (qq.FineUploaderBasic.prototype._onBeforeManualRetry.apply(this, arguments)) {
-            var item = this.getItemByFileId(id);
             this._find(item, 'progressBar').style.width = 0;
             qq(item).removeClass(this._classes.fail);
             qq(this._find(item, 'statusText')).clearText();
@@ -392,7 +393,10 @@ qq.extend(qq.FineUploader.prototype, {
             this._showCancelLink(item);
             return true;
         }
-        return false;
+        else {
+            qq(item).addClass(this._classes.retryable);
+            return false;
+        }
     },
     _onSubmitDelete: function(id) {
         if (this._isDeletePossible()) {
@@ -581,8 +585,12 @@ qq.extend(qq.FineUploader.prototype, {
 
         qq(deleteLink).css({display: 'inline'});
     },
-    _error: function(code, name){
-        var message = qq.FineUploaderBasic.prototype._error.apply(this, arguments);
+    _itemError: function(code, name){
+        var message = qq.FineUploaderBasic.prototype._itemError.apply(this, arguments);
+        this._options.showMessage(message);
+    },
+    _batchError: function(message) {
+        qq.FineUploaderBasic.prototype._batchError.apply(this, arguments);
         this._options.showMessage(message);
     },
     _setupPastePrompt: function() {

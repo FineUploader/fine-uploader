@@ -180,6 +180,15 @@
             <td>Minimum allowable size, in bytes, for a file or `Blob`.</td>
         </tr>
         <tr>
+            <td>itemLimit</td>
+            <td>integer</td>
+            <td>0 (no limit)</td>
+            <td>Maximum number of files or blobs that can be potentially uploaded in this session.  Any file or blob will be rejected
+            after this limit is reached, unless an uploaded file is deleted or an in progress file fails or is cancelled.  Any
+            failed file that is retried after the limit is reached will also be rejected.  If a batch of files is submitted, the entire
+            batch will be rejected if allowing all files would exceed the limit.</td>
+        </tr>
+        <tr>
             <td>stopOnFirstInvalidFile</td>
             <td>boolean</td>
             <td>true</td>
