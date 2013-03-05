@@ -183,8 +183,8 @@
             <td>stopOnFirstInvalidFile</td>
             <td>boolean</td>
             <td>true</td>
-            <td>If true, when submitting multiple files or `Blob` objects, once an item is determined to be invalid, the upload process
-            will terminate.  If false, all valid items will be uploaded.  Note: One downside to a false value can be
+            <td>If true, when submitting multiple files or `Blob` objects, once an item is determined to be invalid, no further 
+            files in the batch will be processed.  If false, all valid items in the batch will be processed.  Note: One downside to a false value can be
             seen when using FineUploader if the default <code>showMessage</code> implementation is not overriden.  In this
             case, an alert  dialog will appear for each invalid item in the batch, and the upload process will not continue
             until the dialog is dismissed.  If this is bothersome, simply override <code>showMessage</code> with a
