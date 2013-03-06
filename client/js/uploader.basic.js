@@ -462,7 +462,7 @@ qq.FineUploaderBasic.prototype = {
 
         if (isError) {
             this.log("Delete request for '" + name + "' has failed.", "error");
-            this._options.callbacks.onError(id, name, "Delete request failed with response code " + xhr.status);
+            this._options.callbacks.onError(id, name, "Delete request failed with response code " + xhr.status, xhr );
         }
         else {
             this.log("Delete request for '" + name + "' has succeeded.");
