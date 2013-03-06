@@ -49,7 +49,8 @@ qq.FineUploaderBasic = function(o){
             minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
             emptyError: "{file} is empty, please select files again without it.",
             noFilesError: "No files to upload.",
-            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
+            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled.",
+            unsupportedBrowser: "You are using an unsupported browser, file upload is not possible."
         },
         retry: {
             enableAuto: false,
