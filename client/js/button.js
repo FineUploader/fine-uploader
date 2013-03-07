@@ -1,58 +1,34 @@
-qq.UploadButton = function(o){
-    this._options = {
-        element: null,
-        // if set to true adds multiple attribute to file input
-        multiple: false,
-        acceptFiles: null,
-        // name attribute of file input
-        name: 'file',
-        onChange: function(input){},
-        hoverClass: 'qq-upload-button-hover',
-        focusClass: 'qq-upload-button-focus'
-    };
+/*globals qq*/
+qq.UploadButton = function(o) {
+    "use strict";
 
-    qq.extend(this._options, o);
-    this._disposeSupport = new qq.DisposeSupport();
+    var input,
+        disposeSupport = new qq.DisposeSupport(),
+        options = {
+            element: null,
+            // if set to true adds multiple attribute to file input
+            multiple: false,
+            acceptFiles: null,
+            // name attribute of file input
+            name: 'file',
+            onChange: function(input) {},
+            hoverClass: 'qq-upload-button-hover',
+            focusClass: 'qq-upload-button-focus'
+        };
 
-    this._element = this._options.element;
-
-    // make button suitable container for input
-    qq(this._element).css({
-        position: 'relative',
-        overflow: 'hidden',
-        // Make sure browse button is in the right side
-        // in Internet Explorer
-        direction: 'ltr'
-    });
-
-    this._input = this._createInput();
-};
-
-qq.UploadButton.prototype = {
-    /* returns file input element */
-    getInput: function(){
-        return this._input;
-    },
-    /* cleans/recreates the file input */
-    reset: function(){
-        if (this._input.parentNode){
-            qq(this._input).remove();
-        }
-
-        qq(this._element).removeClass(this._options.focusClass);
-        this._input = this._createInput();
-    },
-    _createInput: function(){
+    function createInput() {
         var input = document.createElement("input");
 
-        if (this._options.multiple){
+        if (options.multiple){
             input.setAttribute("multiple", "multiple");
         }
 
-        if (this._options.acceptFiles) input.setAttribute("accept", this._options.acceptFiles);
+        if (options.acceptFiles) {
+            input.setAttribute("accept", options.acceptFiles);
+        }
 
         input.setAttribute("type", "file");
-        input.setAttribute("name", this._options.name);
+        input.setAttribute("name", options.name);
 
         qq(input).css({
             position: 'absolute',
@@ -70,24 +46,23 @@ qq.UploadButton.prototype = {
             opacity: 0
         });
 
-        this._element.appendChild(input);
+        options.element.appendChild(input);
 
-        var self = this;
-        this._disposeSupport.attach(input, 'change', function(){
-            self._options.onChange(input);
+        disposeSupport.attach(input, 'change', function(){
+            options.onChange(input);
         });
 
-        this._disposeSupport.attach(input, 'mouseover', function(){
-            qq(self._element).addClass(self._options.hoverClass);
+        disposeSupport.attach(input, 'mouseover', function(){
+            qq(options.element).addClass(options.hoverClass);
         });
-        this._disposeSupport.attach(input, 'mouseout', function(){
-            qq(self._element).removeClass(self._options.hoverClass);
+        disposeSupport.attach(input, 'mouseout', function(){
+            qq(options.element).removeClass(options.hoverClass);
         });
-        this._disposeSupport.attach(input, 'focus', function(){
-            qq(self._element).addClass(self._options.focusClass);
+        disposeSupport.attach(input, 'focus', function(){
+            qq(options.element).addClass(options.focusClass);
         });
-        this._disposeSupport.attach(input, 'blur', function(){
-            qq(self._element).removeClass(self._options.focusClass);
+        disposeSupport.attach(input, 'blur', function(){
+            qq(options.element).removeClass(options.focusClass);
         });
 
         // IE and Opera, unfortunately have 2 tab stops on file input
@@ -99,4 +74,33 @@ qq.UploadButton.prototype = {
 
         return input;
     }
+
+
+    qq.extend(options, o);
+
+    // make button suitable container for input
+    qq(options.element).css({
+        position: 'relative',
+        overflow: 'hidden',
+        // Make sure browse button is in the right side
+        // in Internet Explorer
+        direction: 'ltr'
+    });
+
+    input = createInput();
+
+    return {
+        getInput: function(){
+            return input;
+        },
+
+        reset: function(){
+            if (input.parentNode){
+                qq(input).remove();
+            }
+
+            qq(options.element).removeClass(options.focusClass);
+            input = createInput();
+        }
+    };
 };
