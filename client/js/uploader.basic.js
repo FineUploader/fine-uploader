@@ -1,152 +1,149 @@
-qq.FineUploaderBasic = function(o, internalContainer, apiContainer) {
-    "use strict";
-
-    var options = {
-            debug: false,
-            button: null,
-            multiple: true,
-            maxConnections: 3,
-            disableCancelForFormUploads: false,
-            autoUpload: true,
-            request: {
-                endpoint: '/server/upload',
-                params: {},
-                paramsInBody: true,
-                customHeaders: {},
-                forceMultipart: true,
-                inputName: 'qqfile',
-                uuidName: 'qquuid',
-                totalFileSizeName: 'qqtotalfilesize'
-            },
-            validation: {
-                allowedExtensions: [],
-                sizeLimit: 0,
-                minSizeLimit: 0,
-                itemLimit: 0,
-                stopOnFirstInvalidFile: true
-            },
-            callbacks: {
-                onSubmit: function(id, name){},
-                onComplete: function(id, name, responseJSON){},
-                onCancel: function(id, name){},
-                onUpload: function(id, name){},
-                onUploadChunk: function(id, name, chunkData){},
-                onResume: function(id, fileName, chunkData){},
-                onProgress: function(id, name, loaded, total){},
-                onError: function(id, name, reason, maybeXhr) {},
-                onAutoRetry: function(id, name, attemptNumber) {},
-                onManualRetry: function(id, name) {},
-                onValidateBatch: function(fileOrBlobData) {},
-                onValidate: function(fileOrBlobData) {},
-                onSubmitDelete: function(id) {},
-                onDelete: function(id){},
-                onDeleteComplete: function(id, xhr, isError){},
-                onPasteReceived: function(blob) {
-                    return new qq.Promise().success();
-                }
-            },
-            messages: {
-                typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
-                sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
-                minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
-                emptyError: "{file} is empty, please select files again without it.",
-                noFilesError: "No files to upload.",
-                tooManyItemsError: "Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.",
-                retryFailTooManyItems: "Retry failed - you have reached your file limit.",
-                onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
-            },
-            retry: {
-                enableAuto: false,
-                maxAutoAttempts: 3,
-                autoAttemptDelay: 5,
-                preventRetryResponseProperty: 'preventRetry'
-            },
-            classes: {
-                buttonHover: 'qq-upload-button-hover',
-                buttonFocus: 'qq-upload-button-focus'
-            },
-            chunking: {
-                enabled: false,
-                partSize: 2000000,
-                paramNames: {
-                    partIndex: 'qqpartindex',
-                    partByteOffset: 'qqpartbyteoffset',
-                    chunkSize: 'qqchunksize',
-                    totalFileSize: 'qqtotalfilesize',
-                    totalParts: 'qqtotalparts',
-                    filename: 'qqfilename'
-                }
-            },
-            resume: {
-                enabled: false,
-                id: null,
-                cookiesExpireIn: 7, //days
-                paramNames: {
-                    resuming: "qqresume"
-                }
-            },
-            formatFileName: function(fileOrBlobName) {
-                if (fileOrBlobName.length > 33) {
-                    fileOrBlobName = fileOrBlobName.slice(0, 19) + '...' + fileOrBlobName.slice(-14);
-                }
-                return fileOrBlobName;
-            },
-            text: {
-                sizeSymbols: ['kB', 'MB', 'GB', 'TB', 'PB', 'EB']
-            },
-            deleteFile : {
-                enabled: false,
-                endpoint: '/server/upload',
-                customHeaders: {},
-                params: {}
-            },
-            cors: {
-                expected: false,
-                sendCredentials: false
-            },
-            blobs: {
-                defaultName: 'misc_data',
-                paramNames: {
-                    name: 'qqblobname'
-                }
-            },
-            paste: {
-                targetElement: null,
-                defaultName: 'pasted_image'
+qq.FineUploaderBasic = function(o){
+    var that = this;
+    this._options = {
+        debug: false,
+        button: null,
+        multiple: true,
+        maxConnections: 3,
+        disableCancelForFormUploads: false,
+        autoUpload: true,
+        request: {
+            endpoint: '/server/upload',
+            params: {},
+            paramsInBody: true,
+            customHeaders: {},
+            forceMultipart: true,
+            inputName: 'qqfile',
+            uuidName: 'qquuid',
+            totalFileSizeName: 'qqtotalfilesize'
+        },
+        validation: {
+            allowedExtensions: [],
+            sizeLimit: 0,
+            minSizeLimit: 0,
+            itemLimit: 0,
+            stopOnFirstInvalidFile: true
+        },
+        callbacks: {
+            onSubmit: function(id, name){},
+            onComplete: function(id, name, responseJSON){},
+            onCancel: function(id, name){},
+            onUpload: function(id, name){},
+            onUploadChunk: function(id, name, chunkData){},
+            onResume: function(id, fileName, chunkData){},
+            onProgress: function(id, name, loaded, total){},
+            onError: function(id, name, reason, maybeXhr) {},
+            onAutoRetry: function(id, name, attemptNumber) {},
+            onManualRetry: function(id, name) {},
+            onValidateBatch: function(fileOrBlobData) {},
+            onValidate: function(fileOrBlobData) {},
+            onSubmitDelete: function(id) {},
+            onDelete: function(id){},
+            onDeleteComplete: function(id, xhr, isError){},
+            onPasteReceived: function(blob) {
+                return new qq.Promise().success();
             }
         },
-        disposeSupport =  new qq.DisposeSupport(),
-        internal = {
-            filesInProgress: [],
-            storedIds: [],
-            autoRetries: [],
-            retryTimeouts: [],
-            preventRetries: [],
-            netFilesUploadedOrQueued: 0,
-            paramsStore: createParamsStore("request"),
-            deleteFileParamsStore: createParamsStore("deleteFile"),
-            endpointStore: createEndpointStore("request"),
-            deleteFileEndpointStore: createEndpointStore("deleteFile"),
-            handler: createUploadHandler(),
-            deleteHandler: createDeleteHandler()
+        messages: {
+            typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
+            sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
+            minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
+            emptyError: "{file} is empty, please select files again without it.",
+            noFilesError: "No files to upload.",
+            tooManyItemsError: "Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.",
+            retryFailTooManyItems: "Retry failed - you have reached your file limit.",
+            onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
         },
-        api = {
+        retry: {
+            enableAuto: false,
+            maxAutoAttempts: 3,
+            autoAttemptDelay: 5,
+            preventRetryResponseProperty: 'preventRetry'
+        },
+        classes: {
+            buttonHover: 'qq-upload-button-hover',
+            buttonFocus: 'qq-upload-button-focus'
+        },
+        chunking: {
+            enabled: false,
+            partSize: 2000000,
+            paramNames: {
+                partIndex: 'qqpartindex',
+                partByteOffset: 'qqpartbyteoffset',
+                chunkSize: 'qqchunksize',
+                totalFileSize: 'qqtotalfilesize',
+                totalParts: 'qqtotalparts',
+                filename: 'qqfilename'
+            }
+        },
+        resume: {
+            enabled: false,
+            id: null,
+            cookiesExpireIn: 7, //days
+            paramNames: {
+                resuming: "qqresume"
+            }
+        },
+        formatFileName: function(fileOrBlobName) {
+            if (fileOrBlobName.length > 33) {
+                fileOrBlobName = fileOrBlobName.slice(0, 19) + '...' + fileOrBlobName.slice(-14);
+            }
+            return fileOrBlobName;
+        },
+        text: {
+            sizeSymbols: ['kB', 'MB', 'GB', 'TB', 'PB', 'EB']
+        },
+        deleteFile : {
+            enabled: false,
+            endpoint: '/server/upload',
+            customHeaders: {},
+            params: {}
+        },
+        cors: {
+            expected: false,
+            sendCredentials: false
+        },
+        blobs: {
+            defaultName: 'misc_data',
+            paramNames: {
+                name: 'qqblobname'
+            }
+        },
+        paste: {
+            targetElement: null,
+            defaultName: 'pasted_image'
+        }
+    };
 
-        };
+    qq.extend(this._options, o, true);
+    this._wrapCallbacks();
+    this._disposeSupport =  new qq.DisposeSupport();
 
-    qq.extend(options, o, true);
+    this._filesInProgress = [];
+    this._storedIds = [];
+    this._autoRetries = [];
+    this._retryTimeouts = [];
+    this._preventRetries = [];
+    this._netFilesUploadedOrQueued = 0;
 
-    internal.wrapCallbacks();
+    this._paramsStore = this._createParamsStore("request");
+    this._deleteFileParamsStore = this._createParamsStore("deleteFile");
 
-    if (options.button){
-        internal.button = internal.createUploadButton(options.button);
+    this._endpointStore = this._createEndpointStore("request");
+    this._deleteFileEndpointStore = this._createEndpointStore("deleteFile");
+
+    this._handler = this._createUploadHandler();
+    this._deleteHandler = this._createDeleteHandler();
+
+    if (this._options.button){
+        this._button = this._createUploadButton(this._options.button);
     }
 
-    if (options.paste.targetElement) {
-        internal.pasteHandler = internal.createPasteHandler();
+    if (this._options.paste.targetElement) {
+        this._pasteHandler = this._createPasteHandler();
     }
 
-    internal.preventLeaveInProgress();
+    this._preventLeaveInProgress();
 };
 
 qq.FineUploaderBasic.prototype = {
