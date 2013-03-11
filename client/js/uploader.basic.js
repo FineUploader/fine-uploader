@@ -708,14 +708,27 @@ qq.FineUploaderBasic.prototype = {
 
         return true;
     },
-    _itemError: function(code, name){
-        var message = this._options.messages[code];
+    _itemError: function(code, name) {
+        var message = this._options.messages[code],
+            allowedExtensions = [],
+            extensionsForMessage;
+
         function r(name, replacement){ message = message.replace(name, replacement); }
 
-        var extensions = this._options.validation.allowedExtensions.join(', ').toLowerCase();
+        qq.each(this._options.validation.allowedExtensions, function(idx, allowedExtension) {
+                /**
+                 * If an argument is not a string, ignore it.  Added when a possible issue with MooTools hijacking the
+                 * `allowedExtensions` array was discovered.  See case #735 in the issue tracker for more details.
+                 */
+                if (qq.isString(allowedExtension)) {
+                    allowedExtensions.push(allowedExtension);
+                }
+        });
+
+        extensionsForMessage = allowedExtensions.join(', ').toLowerCase();
 
         r('{file}', this._options.formatFileName(name));
-        r('{extensions}', extensions);
+        r('{extensions}', extensionsForMessage);
         r('{sizeLimit}', this._formatSize(this._options.validation.sizeLimit));
         r('{minSizeLimit}', this._formatSize(this._options.validation.minSizeLimit));
 
@@ -735,12 +748,18 @@ qq.FineUploaderBasic.prototype = {
         }
 
         qq.each(allowed, function(idx, allowedExt) {
-            /*jshint eqeqeq: true, eqnull: true*/
-            var extRegex = new RegExp('\\.' + allowedExt + "$", 'i');
+            /**
+             * If an argument is not a string, ignore it.  Added when a possible issue with MooTools hijacking the
+             * `allowedExtensions` array was discovered.  See case #735 in the issue tracker for more details.
+             */
+            if (qq.isString(allowedExt)) {
+                /*jshint eqeqeq: true, eqnull: true*/
+                var extRegex = new RegExp('\\.' + allowedExt + "$", 'i');
 
-            if (fileName.match(extRegex) != null) {
-                valid = true;
-                return false;
+                if (fileName.match(extRegex) != null) {
+                    valid = true;
+                    return false;
+                }
             }
         });
 
