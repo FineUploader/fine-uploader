@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Fine Uploader Demo</title>
+<link href="css/fineuploader-{VERSION}.css" rel="stylesheet">
+</head>
+<body>
+<div id="fine-uploader"></div>
+<script src="js/fineuploader-{VERSION}.js"></script>
+<script>
+function createUploader() {
+var uploader = new qq.FineUploader({
+element: document.getElementById('fine-uploader'),
+request: {
+endpoint: 'upload'
+},
+chunking: {
+enabled: true
+},
+resume: {
+enabled: true
+}
+});
+}
+window.onload = createUploader;
+</script>
+</body>
+</html>
