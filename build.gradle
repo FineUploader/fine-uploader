@@ -1,4 +1,4 @@
-def version = "3.3.0"
+def version = "3.4.0-IP"
 def filename = "fineuploader"
 def srcDir = 'client'
 def jsSrcDir = "$srcDir/js"
@@ -7,7 +7,9 @@ apply plugin: 'js'
 
 def coreFiles = ["${jsSrcDir}/header.js",
                  "${jsSrcDir}/util.js",
+                 "${jsSrcDir}/promise.js",
                  "${jsSrcDir}/button.js",
+                 "${jsSrcDir}/paste.js",
                  "${jsSrcDir}/uploader.basic.js",
                  "${jsSrcDir}/dnd.js",
                  "${jsSrcDir}/uploader.js",

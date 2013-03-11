@@ -21,6 +21,7 @@ qq.FineUploaderBasic = function(o){
             allowedExtensions: [],
             sizeLimit: 0,
             minSizeLimit: 0,
+            itemLimit: 0,
             stopOnFirstInvalidFile: true
         },
         callbacks: {
@@ -31,14 +32,17 @@ qq.FineUploaderBasic = function(o){
             onUploadChunk: function(id, name, chunkData){},
             onResume: function(id, fileName, chunkData){},
             onProgress: function(id, name, loaded, total){},
-            onError: function(id, name, reason) {},
+            onError: function(id, name, reason, maybeXhr) {},
             onAutoRetry: function(id, name, attemptNumber) {},
             onManualRetry: function(id, name) {},
             onValidateBatch: function(fileOrBlobData) {},
             onValidate: function(fileOrBlobData) {},
             onSubmitDelete: function(id) {},
             onDelete: function(id){},
-            onDeleteComplete: function(id, xhr, isError){}
+            onDeleteComplete: function(id, xhr, isError){},
+            onPasteReceived: function(blob) {
+                return new qq.Promise().success();
+            }
         },
         messages: {
             typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
@@ -46,6 +50,8 @@ qq.FineUploaderBasic = function(o){
             minSizeError: "{file} is too small, minimum file size is {minSizeLimit}.",
             emptyError: "{file} is empty, please select files again without it.",
             noFilesError: "No files to upload.",
+            tooManyItemsError: "Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.",
+            retryFailTooManyItems: "Retry failed - you have reached your file limit.",
             onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
         },
         retry: {
@@ -98,10 +104,14 @@ qq.FineUploaderBasic = function(o){
             sendCredentials: false
         },
         blobs: {
-            defaultName: 'Misc data',
+            defaultName: 'misc_data',
             paramNames: {
                 name: 'qqblobname'
             }
+        },
+        paste: {
+            targetElement: null,
+            defaultName: 'pasted_image'
         }
     };
 
@@ -109,14 +119,12 @@ qq.FineUploaderBasic = function(o){
     this._wrapCallbacks();
     this._disposeSupport =  new qq.DisposeSupport();
 
-    // number of files being uploaded
     this._filesInProgress = [];
-
     this._storedIds = [];
-
     this._autoRetries = [];
     this._retryTimeouts = [];
     this._preventRetries = [];
+    this._netFilesUploadedOrQueued = 0;
 
     this._paramsStore = this._createParamsStore("request");
     this._deleteFileParamsStore = this._createParamsStore("deleteFile");
@@ -129,6 +137,10 @@ qq.FineUploaderBasic = function(o){
 
     if (this._options.button){
         this._button = this._createUploadButton(this._options.button);
+    }
+
+    if (this._options.paste.targetElement) {
+        this._pasteHandler = this._createPasteHandler();
     }
 
     this._preventLeaveInProgress();
@@ -189,6 +201,7 @@ qq.FineUploaderBasic.prototype = {
     },
     retry: function(id) {
         if (this._onBeforeManualRetry(id)) {
+            this._netFilesUploadedOrQueued++;
             this._handler.retry(id);
             return true;
         }
@@ -221,6 +234,8 @@ qq.FineUploaderBasic.prototype = {
         this._button.reset();
         this._paramsStore.reset();
         this._endpointStore.reset();
+        this._pasteHandler.reset();
+        this._netFilesUploadedOrQueued = 0;
     },
     addFiles: function(filesBlobDataOrInputs) {
         var self = this,
@@ -297,6 +312,9 @@ qq.FineUploaderBasic.prototype = {
         else {
             this._deleteFileEndpointStore.setEndpoint(endpoint, id);
         }
+    },
+    getPromissoryCallbackNames: function() {
+        return ["onPasteReceived"];
     },
     _createUploadButton: function(element){
         var self = this;
@@ -403,6 +421,49 @@ qq.FineUploaderBasic.prototype = {
 
         });
     },
+    _createPasteHandler: function() {
+        var self = this;
+
+        return new qq.PasteSupport({
+            targetElement: this._options.paste.targetElement,
+            callbacks: {
+                log: function(str, level) {
+                    self.log(str, level);
+                },
+                pasteReceived: function(blob) {
+                    var pasteReceivedCallback = self._options.callbacks.onPasteReceived,
+                        promise = pasteReceivedCallback(blob);
+
+                    if (promise.then) {
+                        promise.then(function(successData) {
+                            self._handlePasteSuccess(blob, successData);
+                        }, function(failureData) {
+                            self.log("Ignoring pasted image per paste received callback.  Reason = '" + failureData + "'");
+                        });
+                    }
+                    else {
+                        self.log("Promise contract not fulfilled in pasteReceived callback handler!  Ignoring pasted item.", "error");
+                    }
+                }
+            }
+        });
+    },
+    _handlePasteSuccess: function(blob, extSuppliedName) {
+        var extension = blob.type.split("/")[1],
+            name = extSuppliedName;
+
+        /*jshint eqeqeq: true, eqnull: true*/
+        if (name == null) {
+            name = this._options.paste.defaultName;
+        }
+
+        name += '.' + extension;
+
+        this.addBlobs({
+            name: name,
+            blob: blob
+        });
+    },
     _preventLeaveInProgress: function(){
         var self = this;
 
@@ -416,18 +477,26 @@ qq.FineUploaderBasic.prototype = {
             return self._options.messages.onLeave;
         });
     },
-    _onSubmit: function(id, name){
+    _onSubmit: function(id, name) {
+        this._netFilesUploadedOrQueued++;
+
         if (this._options.autoUpload) {
             this._filesInProgress.push(id);
         }
     },
     _onProgress: function(id, name, loaded, total){
     },
-    _onComplete: function(id, name, result, xhr){
+    _onComplete: function(id, name, result, xhr) {
+        if (!result.success) {
+            this._netFilesUploadedOrQueued--;
+        }
+
         this._removeFromFilesInProgress(id);
         this._maybeParseAndSendUploadError(id, name, result, xhr);
     },
     _onCancel: function(id, name){
+        this._netFilesUploadedOrQueued--;
+
         this._removeFromFilesInProgress(id);
 
         clearTimeout(this._retryTimeouts[id]);
@@ -462,9 +531,10 @@ qq.FineUploaderBasic.prototype = {
 
         if (isError) {
             this.log("Delete request for '" + name + "' has failed.", "error");
-            this._options.callbacks.onError(id, name, "Delete request failed with response code " + xhr.status);
+            this._options.callbacks.onError(id, name, "Delete request failed with response code " + xhr.status, xhr);
         }
         else {
+            this._netFilesUploadedOrQueued--;
             this.log("Delete request for '" + name + "' has succeeded.");
         }
     },
@@ -497,13 +567,15 @@ qq.FineUploaderBasic.prototype = {
                 this._autoRetries[id] = 0;
             }
 
-            return this._autoRetries[id] < this._options.retry.maxAutoAttempts
+            return this._autoRetries[id] < this._options.retry.maxAutoAttempts;
         }
 
         return false;
     },
     //return false if we should not attempt the requested retry
     _onBeforeManualRetry: function(id) {
+        var itemLimit = this._options.validation.itemLimit;
+
         if (this._preventRetries[id]) {
             this.log("Retries are forbidden for id " + id, 'warn');
             return false;
@@ -512,6 +584,11 @@ qq.FineUploaderBasic.prototype = {
             var fileName = this._handler.getName(id);
 
             if (this._options.callbacks.onManualRetry(id, fileName) === false) {
+                return false;
+            }
+
+            if (itemLimit > 0 && this._netFilesUploadedOrQueued+1 > itemLimit) {
+                this._itemError("retryFailTooManyItems", "");
                 return false;
             }
 
@@ -528,21 +605,20 @@ qq.FineUploaderBasic.prototype = {
         //assuming no one will actually set the response code to something other than 200 and still set 'success' to true
         if (!response.success){
             if (xhr && xhr.status !== 200 && !response.error) {
-                this._options.callbacks.onError(id, name, "XHR returned response code " + xhr.status);
+                this._options.callbacks.onError(id, name, "XHR returned response code " + xhr.status, xhr);
             }
             else {
                 var errorReason = response.error ? response.error : "Upload failure reason unknown";
-                this._options.callbacks.onError(id, name, errorReason);
+                this._options.callbacks.onError(id, name, errorReason, xhr);
             }
         }
     },
     _uploadFileOrBlobDataList: function(fileOrBlobDataList){
-        var validationDescriptors, index, batchInvalid;
+        var index,
+            validationDescriptors = this._getValidationDescriptors(fileOrBlobDataList),
+            batchValid = this._isBatchValid(validationDescriptors);
 
-        validationDescriptors = this._getValidationDescriptors(fileOrBlobDataList);
-        batchInvalid = this._options.callbacks.onValidateBatch(validationDescriptors) === false;
-
-        if (!batchInvalid) {
+        if (batchValid) {
             if (fileOrBlobDataList.length > 0) {
                 for (index = 0; index < fileOrBlobDataList.length; index++){
                     if (this._validateFileOrBlobData(fileOrBlobDataList[index])){
@@ -555,7 +631,7 @@ qq.FineUploaderBasic.prototype = {
                 }
             }
             else {
-                this._error('noFilesError', "");
+                this._itemError("noFilesError", "");
             }
         }
     },
@@ -576,6 +652,29 @@ qq.FineUploaderBasic.prototype = {
     _storeForLater: function(id) {
         this._storedIds.push(id);
     },
+    _isBatchValid: function(validationDescriptors) {
+        //first, defer the check to the callback (ask the integrator)
+        var errorMessage,
+            itemLimit = this._options.validation.itemLimit,
+            proposedNetFilesUploadedOrQueued = this._netFilesUploadedOrQueued + validationDescriptors.length,
+            batchValid = this._options.callbacks.onValidateBatch(validationDescriptors) !== false;
+
+        //if the callback hasn't rejected the batch, run some internal tests on the batch next
+        if (batchValid) {
+            if (itemLimit === 0 || proposedNetFilesUploadedOrQueued <= itemLimit) {
+                batchValid = true;
+            }
+            else {
+                batchValid = false;
+                errorMessage = this._options.messages.tooManyItemsError
+                    .replace(/\{netItems\}/g, proposedNetFilesUploadedOrQueued)
+                    .replace(/\{itemLimit\}/g, itemLimit);
+                this._batchError(errorMessage);
+            }
+        }
+
+        return batchValid;
+    },
     _validateFileOrBlobData: function(fileOrBlobData){
         var validationDescriptor, name, size;
 
@@ -588,41 +687,57 @@ qq.FineUploaderBasic.prototype = {
         }
 
         if (qq.isFileOrInput(fileOrBlobData) && !this._isAllowedExtension(name)){
-            this._error('typeError', name);
+            this._itemError('typeError', name);
             return false;
 
         }
         else if (size === 0){
-            this._error('emptyError', name);
+            this._itemError('emptyError', name);
             return false;
 
         }
         else if (size && this._options.validation.sizeLimit && size > this._options.validation.sizeLimit){
-            this._error('sizeError', name);
+            this._itemError('sizeError', name);
             return false;
 
         }
         else if (size && size < this._options.validation.minSizeLimit){
-            this._error('minSizeError', name);
+            this._itemError('minSizeError', name);
             return false;
         }
 
         return true;
     },
-    _error: function(code, name){
-        var message = this._options.messages[code];
+    _itemError: function(code, name) {
+        var message = this._options.messages[code],
+            allowedExtensions = [],
+            extensionsForMessage;
+
         function r(name, replacement){ message = message.replace(name, replacement); }
 
-        var extensions = this._options.validation.allowedExtensions.join(', ').toLowerCase();
+        qq.each(this._options.validation.allowedExtensions, function(idx, allowedExtension) {
+                /**
+                 * If an argument is not a string, ignore it.  Added when a possible issue with MooTools hijacking the
+                 * `allowedExtensions` array was discovered.  See case #735 in the issue tracker for more details.
+                 */
+                if (qq.isString(allowedExtension)) {
+                    allowedExtensions.push(allowedExtension);
+                }
+        });
+
+        extensionsForMessage = allowedExtensions.join(', ').toLowerCase();
 
         r('{file}', this._options.formatFileName(name));
-        r('{extensions}', extensions);
+        r('{extensions}', extensionsForMessage);
         r('{sizeLimit}', this._formatSize(this._options.validation.sizeLimit));
         r('{minSizeLimit}', this._formatSize(this._options.validation.minSizeLimit));
 
         this._options.callbacks.onError(null, name, message);
 
         return message;
+    },
+    _batchError: function(message) {
+        this._options.callbacks.onError(null, null, message);
     },
     _isAllowedExtension: function(fileName){
         var allowed = this._options.validation.allowedExtensions,
@@ -633,12 +748,18 @@ qq.FineUploaderBasic.prototype = {
         }
 
         qq.each(allowed, function(idx, allowedExt) {
-            /*jshint eqeqeq: true, eqnull: true*/
-            var extRegex = new RegExp('\\.' + allowedExt + "$", 'i');
+            /**
+             * If an argument is not a string, ignore it.  Added when a possible issue with MooTools hijacking the
+             * `allowedExtensions` array was discovered.  See case #735 in the issue tracker for more details.
+             */
+            if (qq.isString(allowedExt)) {
+                /*jshint eqeqeq: true, eqnull: true*/
+                var extRegex = new RegExp('\\.' + allowedExt + "$", 'i');
 
-            if (fileName.match(extRegex) != null) {
-                valid = true;
-                return false;
+                if (fileName.match(extRegex) != null) {
+                    valid = true;
+                    return false;
+                }
             }
         });
 
@@ -665,7 +786,7 @@ qq.FineUploaderBasic.prototype = {
             catch (exception) {
                 self.log("Caught exception in '" + name + "' callback - " + exception.message, 'error');
             }
-        }
+        };
 
         for (var prop in this._options.callbacks) {
             (function() {
@@ -674,7 +795,7 @@ qq.FineUploaderBasic.prototype = {
                 callbackFunc = self._options.callbacks[callbackName];
                 self._options.callbacks[callbackName] = function() {
                     return safeCallback(callbackName, callbackFunc, arguments);
-                }
+                };
             }());
         }
     },

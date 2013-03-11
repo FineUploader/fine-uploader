@@ -34,6 +34,7 @@ The following element-related functions are available on the `qq(...)` function.
 ### The following utility functions are also available in the `qq` namespace as: ###
 * `qq.isObject(somevar)` - Returns true if the parameter is a "simple" object, such as `{foo: "bar"}` or `new Object()`.
 * `qq.isFunction(maybeFunc)` - Returns true if the parameter is a function.
+* `qq.isString(maybeString)` - Returns true if the parameter is a String literal OR a String created using the `String` constructor (`new String('somestring')`).
 * `qq.trimStr(string)` - Polyfill for `String.prototype.trim()`, since some browsers, such as IE8 and earlier, do not support this function.
 * `qq.extend(Object firstObj, Object secondObj, Boolean extendNested)` - Copies the properties of secondObj to firstObj.  If extendNested is true, sub-properties of secondObj are copied over as well.
 * `qq.indexOf(Array array, String item, Number startingIndex)` - Same as [indexOf from Javascript 1.6](https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Array/indexOf), but implemented for browsers that don't support this native function, such as IE8 and earlier.

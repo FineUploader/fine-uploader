@@ -96,14 +96,18 @@ qq.FineUploader = function(o){
         display: {
             fileSizeOnSubmit: false
         },
+        paste: {
+            promptForName: false,
+            namePromptMessage: "Please name this image"
+        },
         showMessage: function(message){
             setTimeout(function() {
-                alert(message);
+                window.alert(message);
             }, 0);
         },
         showConfirm: function(message, okCallback, cancelCallback) {
             setTimeout(function() {
-                var result = confirm(message);
+                var result = window.confirm(message);
                 if (result) {
                     okCallback();
                 }
@@ -111,6 +115,20 @@ qq.FineUploader = function(o){
                     cancelCallback();
                 }
             }, 0);
+        },
+        showPrompt: function(message, defaultValue) {
+            var promise = new qq.Promise(),
+                retVal = window.prompt(message, defaultValue);
+
+            /*jshint eqeqeq: true, eqnull: true*/
+            if (retVal != null && qq.trimStr(retVal).length > 0) {
+                promise.success(retVal);
+            }
+            else {
+                promise.failure("Undefined or invalid user-supplied value.");
+            }
+
+            return promise;
         }
     }, true);
 
@@ -141,6 +159,10 @@ qq.FineUploader = function(o){
     this._bindCancelAndRetryEvents();
 
     this._dnd = this._setupDragAndDrop();
+
+    if (this._options.paste.targetElement && this._options.paste.promptForName) {
+        this._setupPastePrompt();
+    }
 };
 
 // inherit from Basic Uploader
@@ -221,7 +243,7 @@ qq.extend(qq.FineUploader.prototype, {
                     }
                 },
                 error: function(code, filename) {
-                    self._error(code, filename);
+                    self._itemError(code, filename);
                 },
                 log: function(message, level) {
                     self.log(message, level);
@@ -361,8 +383,9 @@ qq.extend(qq.FineUploader.prototype, {
     },
     //return false if we should not attempt the requested retry
     _onBeforeManualRetry: function(id) {
+        var item = this.getItemByFileId(id);
+
         if (qq.FineUploaderBasic.prototype._onBeforeManualRetry.apply(this, arguments)) {
-            var item = this.getItemByFileId(id);
             this._find(item, 'progressBar').style.width = 0;
             qq(item).removeClass(this._classes.fail);
             qq(this._find(item, 'statusText')).clearText();
@@ -370,7 +393,10 @@ qq.extend(qq.FineUploader.prototype, {
             this._showCancelLink(item);
             return true;
         }
-        return false;
+        else {
+            qq(item).addClass(this._classes.retryable);
+            return false;
+        }
     },
     _onSubmitDelete: function(id) {
         if (this._isDeletePossible()) {
@@ -559,8 +585,22 @@ qq.extend(qq.FineUploader.prototype, {
 
         qq(deleteLink).css({display: 'inline'});
     },
-    _error: function(code, name){
-        var message = qq.FineUploaderBasic.prototype._error.apply(this, arguments);
+    _itemError: function(code, name){
+        var message = qq.FineUploaderBasic.prototype._itemError.apply(this, arguments);
         this._options.showMessage(message);
+    },
+    _batchError: function(message) {
+        qq.FineUploaderBasic.prototype._batchError.apply(this, arguments);
+        this._options.showMessage(message);
+    },
+    _setupPastePrompt: function() {
+        var self = this;
+
+        this._options.callbacks.onPasteReceived = function() {
+            var message = self._options.paste.namePromptMessage,
+                defaultVal = self._options.paste.defaultName;
+
+            return self._options.showPrompt(message, defaultVal);
+        };
     }
 });

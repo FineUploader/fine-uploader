@@ -162,6 +162,11 @@ qq.isFunction = function(variable) {
     return typeof(variable) === "function";
 };
 
+qq.isString = function(maybeString) {
+    "use strict";
+    return Object.prototype.toString.call(maybeString) === '[object String]';
+};
+
 qq.trimStr = function(string) {
     if (String.prototype.trim) {
         return string.trim();
