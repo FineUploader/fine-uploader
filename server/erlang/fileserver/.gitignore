@@ -1,0 +1,11 @@
+.eunit
+deps
+*.o
+*.beam
+*.plt
+ebin
+priv/log
+doc
+priv/www/static/js
+priv/www/static/css
+priv/www/static/img

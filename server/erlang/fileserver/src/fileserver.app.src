@@ -1,0 +1,18 @@
+%%-*- mode: erlang -*-
+{application, fileserver,
+ [
+  {description, "fileserver"},
+  {vsn, "1"},
+  {modules, []},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  inets,
+                  crypto,
+                  mochiweb,
+                  webmachine
+                 ]},
+  {mod, { fileserver_app, []}},
+  {env, []}
+ ]}.
