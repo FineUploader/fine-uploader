@@ -26,6 +26,7 @@ qq.FineUploaderBasic = function(o){
         },
         callbacks: {
             onSubmit: function(id, name){},
+            onSubmitted: function(id, name){},
             onComplete: function(id, name, responseJSON){},
             onCancel: function(id, name){},
             onUpload: function(id, name){},
@@ -639,8 +640,10 @@ qq.FineUploaderBasic.prototype = {
         var id = this._handler.add(blobOrFileContainer);
         var name = this._handler.getName(id);
 
-        if (this._options.callbacks.onSubmit(id, name) !== false){
+        if (this._options.callbacks.onSubmit(id, name) !== false) {
             this._onSubmit(id, name);
+            this._options.callbacks.onSubmitted(id, name);
+
             if (this._options.autoUpload) {
                 this._handler.upload(id);
             }

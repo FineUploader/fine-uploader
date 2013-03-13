@@ -33,9 +33,14 @@ new qq.FineUploader({
 <br/>
 ### List of callbacks ###
 
-* `onSubmit(String id, String name)` - called when the file or `Blob` is submitted to the uploader portion of the code.
+* `onSubmit(String id, String name)` - called when the file or `Blob` is a candidate for uploading.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
-* `onComplete(String id, String name, Object responseJSON)` - called when the file or `Blob` upload has finished. 
+* `onSubmitted(String id, String name)` - called when the file or `Blob` has been successfully submitted to the uploader.  The
+file will be uploaded immediately if there is at least one free connection available (see `maxConnections` option) and the `autoUpload`
+option is set to true (the default).  This callback is invoked after the `onSubmit` callback has returned without a "false" return value.
+In FineUploader mode, it is safe to assume that the associated element(s) in the UI representing the associated file have already been added
+to the DOM immediately before this callback is invoked.
+* `onComplete(String id, String name, Object responseJSON)` - called when the file or `Blob` upload has finished.
 A successful upload will always have a `success` property in the `responseJSON` object with a value of `true`.  The
 `responseJSON` parameter will also contain any other elements of the JSON response returned by the server.
 * `onCancel(String id, String name)` - called when the file or `Blob` upload has been cancelled.
