@@ -60,8 +60,8 @@ class qqFileUploader {
 		// The following tests if the current OS is Windows and if so, merely checks if the folder is writable;
 		// otherwise, it checks additionally for executable status (like before).
 		
-		$isWin = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
-		$folderInaccessible = ($isWin) ? !is_writable($uploadDirectory) : ( !is_writable($uploadDirectory) || !is_executable($uploadDirectory) );
+        $isWin = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
+        $folderInaccessible = ($isWin) ? !is_writable($uploadDirectory) : ( !is_writable($uploadDirectory) && !is_executable($uploadDirectory) );
 
         if ($folderInaccessible){
             return array('error' => "Server error. Uploads directory isn't writable" . (!$isWin) ? " or executable." : ".");
