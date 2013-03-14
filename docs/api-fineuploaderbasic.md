@@ -35,6 +35,7 @@ following properties: `name` - filename, `size` - file size, `uuid` - unique ID 
 the resume will start.
 * `getSize(id)` - Returns the size of the `File` or `Blob` represented by the passed ID.  Undefined if the file size cannot be determined, such as
 if the user agent does not support the File API.
+* `getName(id)` - Returns the name of the file or `Blob` represented by the passed ID.
 * `getFile(id)` - Returns the `File` or `Blob` object associated with the passed ID.  Undefined if the underlying `File` or `Blob` cannot be found,
 or if the user agent does not support the File API.  For more info on the `File` and `Blob` objects, please see
 [the File entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file) and [the Blob entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-Blob), respectively.

@@ -299,6 +299,9 @@ qq.FineUploaderBasic.prototype = {
     getSize: function(id) {
         return this._handler.getSize(id);
     },
+    getName: function(id) {
+        return this._handler.getName(id);
+    },
     getFile: function(fileOrBlobId) {
         return this._handler.getFile(fileOrBlobId);
     },
