@@ -519,7 +519,7 @@ qq.FineUploaderBasic.prototype = {
     },
     _onSubmitDelete: function(id) {
         if (this._isDeletePossible()) {
-            if (this._options.callbacks.onSubmitDelete(id)) {
+            if (this._options.callbacks.onSubmitDelete(id) !== false) {
                 this._deleteHandler.sendDelete(id, this.getUuid(id));
             }
         }
