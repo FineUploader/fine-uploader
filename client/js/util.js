@@ -152,6 +152,11 @@ qq.log = function(message, level) {
     }
 };
 
+qq.isArray = function(variable) {
+	"use strict";
+    return variable !== null && variable && typeof(variable) === "object" && variable.constructor === Array;
+};
+
 qq.isObject = function(variable) {
     "use strict";
     return variable !== null && variable && typeof(variable) === "object" && variable.constructor === Object;
@@ -358,7 +363,7 @@ qq.each = function(obj, callback) {
  * obj2url() takes a json-object as argument and generates
  * a querystring. pretty much like jQuery.param()
  *
- * how to use:
+ *  how to use:
  *
  *    `qq.obj2url({a:'b',c:'d'},'http://any.url/upload?otherParam=value');`
  *
@@ -366,81 +371,68 @@ qq.each = function(obj, callback) {
  *
  *    `http://any.url/upload?otherParam=value&a=b&c=d`
  *
- * @param  Object JSON-Object
- * @param  String current querystring-part
- * @return String encoded querystring
+ * @param {Object} obj JSON-Object
+ * @param {String} prefix current querystring-part
+ * @return {String} encoded querystring
  */
-qq.obj2url = function(obj, temp, prefixDone){
-    "use strict";
-    /*jshint laxbreak: true*/
-     var i, len,
-         uristrings = [],
-         prefix = '&',
-         add = function(nextObj, i){
-            var nextTemp = temp
-                ? (/\[\]$/.test(temp)) // prevent double-encoding
-                ? temp
-                : temp+'['+i+']'
-                : i;
-            if ((nextTemp !== 'undefined') && (i !== 'undefined')) {
-                uristrings.push(
-                    (typeof nextObj === 'object')
-                        ? qq.obj2url(nextObj, nextTemp, true)
-                        : (Object.prototype.toString.call(nextObj) === '[object Function]')
-                        ? encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj())
-                        : encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj)
-                );
-            }
-        };
+qq.obj2url = function(obj, prefix) {
+	"use strict";
+	var params = [],
+		add = {
+			append: function(key, value) {
+				params.push(encodeURIComponent(key) + '=' + encodeURIComponent(value))
+			}
+		};
+	qq.obj2FormData(obj, add);
 
-    if (!prefixDone && temp) {
-        prefix = (/\?/.test(temp)) ? (/\?$/.test(temp)) ? '' : '&' : '?';
-        uristrings.push(temp);
-        uristrings.push(qq.obj2url(obj));
-    } else if ((Object.prototype.toString.call(obj) === '[object Array]') && (typeof obj !== 'undefined') ) {
-        // we wont use a for-in-loop on an array (performance)
-        for (i = -1, len = obj.length; i < len; i+=1){
-            add(obj[i], i);
-        }
-    } else if ((typeof obj !== 'undefined') && (obj !== null) && (typeof obj === "object")){
-        // for anything else but a scalar, we will use for-in-loop
-        for (i in obj){
-            if (obj.hasOwnProperty(i)) {
-                add(obj[i], i);
-            }
-        }
-    } else {
-        uristrings.push(encodeURIComponent(temp) + '=' + encodeURIComponent(obj));
-    }
-
-    if (temp) {
-        return uristrings.join(prefix);
-    } else {
-        return uristrings.join(prefix)
-            .replace(/^&/, '')
-            .replace(/%20/g, '+');
-    }
+	if (params.length) {
+		prefix = prefix ? prefix + '' : '';
+		prefix += (prefix ? ((/\?/.test(prefix)) ? (/\?$/.test(prefix)) ? '' : '&' : '?') : '');
+		prefix += params.join('&');
+	}
+	return prefix;
 };
 
+/**
+ *
+ * @param {object} obj
+ * @param {object} formData
+ * @param {String} arrayKeyName
+ * @return {Object}
+ */
 qq.obj2FormData = function(obj, formData, arrayKeyName) {
     "use strict";
     if (!formData) {
         formData = new FormData();
     }
 
-    qq.each(obj, function(key, val) {
-        key = arrayKeyName ? arrayKeyName + '[' + key + ']' : key;
-
-        if (qq.isObject(val)) {
-            qq.obj2FormData(val, formData, key);
-        }
-        else if (qq.isFunction(val)) {
-            formData.append(key, val());
-        }
-        else {
-            formData.append(key, val);
-        }
-    });
+	if (qq.isObject(obj)) {
+		qq.each(obj, function(key, val) {
+			key = arrayKeyName ? arrayKeyName + '[' + key + ']' : key;
+			qq.obj2FormData(val, formData, key);
+		});
+	}
+	else if (arrayKeyName) {
+		var val = qq.isFunction(obj) ? obj() : obj;
+		if (qq.isArray(val)) {
+			for (var i = 0; i < val.length; i++) {
+				qq.obj2FormData(val[i], formData, arrayKeyName + '[' + i + ']');
+			}
+		}
+		else if (qq.isObject(val)) {
+			qq.obj2FormData(val, formData, arrayKeyName);
+		}
+		else {
+			if (val === null) {
+				val = '';
+			}
+			else if (typeof(val) === 'boolean') {
+				val = val ? 1: 0;
+			}
+			if (typeof(val) !== "undefined") // Ignore undefined values
+				formData.append(arrayKeyName, val);
+		}
+	}
 
     return formData;
 };
