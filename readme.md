@@ -2,6 +2,7 @@
 
 ###[Download the 3.3.1 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 
+###[Read my blob post](http://blog.fineuploader.com/2013/03/fine-uploader-has-new-home.html) regarding the recent ownership and licensing changes to Fine Uploader###
 
 <br/>
 ## Features ##
