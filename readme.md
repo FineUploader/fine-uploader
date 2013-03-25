@@ -1,8 +1,8 @@
 # Fine Uploader 3.3 (Released February 21, 2013) #
 
-###[Download the 3.3 combined & minified javascript file (along with all other required files) here](https://github.com/valums/file-uploader/wiki/Releases)###
+###[Download the 3.3 combined & minified javascript file (along with all other required files) here](https://github.com/Widen/fine-uploader/wiki/Releases)###
 
-###I'm Considering removal of support for IE7 in a future release. [Comment here](https://github.com/valums/file-uploader/issues/637).###
+###I'm Considering removal of support for IE7 in a future release. [Comment here](https://github.com/Widen/fine-uploader/issues/637).###
 
 
 <br/>
@@ -93,12 +93,11 @@ I didn't forget about you!  Read on, starting [here](docs/path-fineuploaderbasic
 
 <br/>
 ## Important Fine Uploader Links ##
-* [Downloads](https://github.com/valums/file-uploader/wiki/Releases)
+* [Downloads](https://github.com/Widen/fine-uploader/wiki/Releases)
 * [Support](http://fineuploader.com/support.html)
 * [Blog](http://blog.fineuploader.com)
 * [@fineuploader](https://twitter.com/fineuploader)
 * [Demo](http://fineuploader.com)
-* [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
 
 <br/>
@@ -121,7 +120,7 @@ If you are having other issues, please read [the FAQ section](docs/faq.md) befor
 
 <br/>
 ### Issue Tracker ###
-Have a bug or feature request? Please [create an issue here on GitHub](https://github.com/valums/file-uploader/issues) 
+Have a bug or feature request? Please [create an issue here on GitHub](https://github.com/Widen/fine-uploader/issues) 
 that conforms with [necolas's guidelines](https://github.com/necolas/issue-guidelines/blob/master/README.md).
 
 
