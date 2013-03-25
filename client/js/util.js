@@ -62,7 +62,8 @@ var qq = function(element) {
          */
         css: function(styles) {
             if (styles.opacity !== null){
-                if (typeof element.style.opacity !== 'string' && typeof(element.filters) !== 'undefined'){
+                var typeofFilters = typeof(element.filters);
+                if (typeof element.style.opacity !== 'string' && typeofFilters !== 'undefined'){
                     styles.filter = 'alpha(opacity=' + Math.round(100 * styles.opacity) + ')';
                 }
             }
