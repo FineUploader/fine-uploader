@@ -1,6 +1,6 @@
 # Fine Uploader 3.3.1 (Released March 25, 2013) #
 
-###[Download the 3.3.1 combined & minified javascript file (along with all other required files) here](https://github.com/Widen/fine-uploader/wiki/Releases)###
+###[Download the 3.3.1 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 
 ###I'm Considering removal of support for IE7 in a future release. [Comment here](https://github.com/Widen/fine-uploader/issues/637).###
 
@@ -87,7 +87,7 @@ I didn't forget about you!  Read on, starting [here](docs/path-fineuploaderbasic
 
 <br/>
 ## Important Fine Uploader Links ##
-* [Downloads](https://github.com/Widen/fine-uploader/wiki/Releases)
+* [Downloads](http://fineuploader.com/downloads.html)
 * [Support](http://fineuploader.com/support.html)
 * [Blog](http://blog.fineuploader.com)
 * [@fineuploader](https://twitter.com/fineuploader)
