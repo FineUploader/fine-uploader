@@ -10,14 +10,9 @@
   ],
   "version": "3.3.0",
   "author": {
-    "name": "Andrew Valums and Ray Nicholus"
+    "name": "Widen Enterprises",
+    "url": "http://widen.com"
   },
-  "maintainers": [
-    {
-      "name": "Ray Nicholus",
-      "url": "http://lnkd.in/Nkhx2C"
-    }
-  ],
   "licenses": [
     {
       "type": "MIT",
@@ -32,11 +27,11 @@
       "url": "http://www.gnu.org/licenses/lgpl-2.0.txt"
     }
   ],
-  "bugs": "https://github.com/valums/file-uploader/issues",
+  "bugs": "https://github.com/Widen/fine-uploader/issues",
   "homepage": "http://fineuploader.com",
   "demo": "http://fineuploader.com",
-  "docs": "https://github.com/valums/file-uploader/blob/master/readme.md",
-  "download": "https://github.com/valums/file-uploader/wiki/Releases",
+  "docs": "https://github.com/Widen/fine-uploader/blob/master/readme.md",
+  "download": "https://github.com/Widen/fine-uploader/wiki/Releases",
   "dependencies": {
     "jquery": ">=1.5"
   }
