@@ -118,7 +118,8 @@ that conforms with [necolas's guidelines](https://github.com/necolas/issue-guide
 
 <br/>
 ### License ###
-This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
+This plugin is open sourced under GNU GPL v3 or you may purchase a Widen Commerical license to release you from the terms of
+GPL v3.  Please see the [downloads page](http://fineuploader.com/downloads.html) for details.
 
 
 <br/>
