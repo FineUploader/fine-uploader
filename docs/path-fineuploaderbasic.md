@@ -5,5 +5,5 @@
 4. Glance at this quick blurb on [overriding options](options-overriding.md).
 5. Have a look at the available [API functions in FineUploaderBasic mode](api-fineuploaderbasic.md).
 6. Examine the [available callbacks](callbacks.md).
-7. Head on over to the [server-side readme](../server/readme.md).
+7. Head on over to the [server-side readme](https://github.com/Widen/fine-uploader-server/blob/master/readme.md).
 

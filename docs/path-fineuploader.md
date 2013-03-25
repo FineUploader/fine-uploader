@@ -8,5 +8,5 @@
 7. Check out the available [API functions in FineUploader mode](api-fineuploader.md).
 8. Examine the [available callbacks](callbacks.md).
 9. You might want to read up on [this short description](styling.md) that mentions how you can override the default alert and confirm dialogs as well as adjust styling of Fine Uploader.
-10. Head on over to the [server-side readme](../server/readme.md).
+10. Head on over to the [server-side readme](https://github.com/Widen/fine-uploader-server/blob/master/readme.md).
 
