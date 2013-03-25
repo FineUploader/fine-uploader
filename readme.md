@@ -2,8 +2,6 @@
 
 ###[Download the 3.3.1 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 
-###I'm Considering removal of support for IE7 in a future release. [Comment here](https://github.com/Widen/fine-uploader/issues/637).###
-
 
 <br/>
 ## Features ##
