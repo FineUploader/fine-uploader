@@ -52,7 +52,7 @@ Currently, no other browsers support this API.
 **Q:** Why do I only see a "Processing..." message next to a file (in FineUploader mode) in Chrome & Safari after the last byte has been sent but the server has yet to respond?    
 **A:** The implementation of the onProgress notification that tells us the status of the bytes sent to the server varies from browser to browser, unfortunately.
 Webkit browsers have elected to follow the "spirit" of the W3C spec, while Firefox, and (I beleive) IE10, obey the spec in the most strict sense.  I have discussed
-this in some detail [in the "processing" status message feature case](https://github.com/valums/file-uploader/issues/404#issuecomment-10124160).
+this in some detail [in the "processing" status message feature case](https://github.com/Widen/fine-uploader/issues/404#issuecomment-10124160).
 
 **Q:** When chunking and multipart encoded are both enabled, why must I determine the original file's name by parsing the qqfilename parameter?    
 **A:** The file data is stored in one of the multipart boundaries contained in the request payload.  Normally, the

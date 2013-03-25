@@ -14,8 +14,8 @@
 %% See the License for the specific language governing permissions and
 %% limitations under the License.
 
-%% @doc Webmachine resource file for use with file-uploader
-%% @reference See <a href="https://github.com/valums/file-uploader">file-uploader</a>
+%% @doc Webmachine resource file for use with Fine Uploader
+%% @reference See <a href="https://github.com/Widen/fine-uploader">file-uploader</a>
 %% and <a href="https://github.com/basho/webmachine">webmachine</a>
 %% for more information.
 

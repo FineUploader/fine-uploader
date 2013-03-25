@@ -1,8 +1,8 @@
 <!--- Code provided by Pegasus Web Productions LLC - www.pegweb.com --->
-<!--- get stuck use the forums http://github.com/valums/file-uploader --->
-<!--- Tested with Adobe CF Enterprise 9.x and Valum's AJAX uploader 2.0 --->
+<!--- get stuck use the forums http://github.com/Widen/fine-uploader --->
+<!--- Tested with Adobe CF Enterprise 9.x and Fine Uploader --->
 
-<cfcomponent hint="I do your uploads from the valum AJAX uploader">
+<cfcomponent hint="I do your uploads from Fine Uploader">
 	
     <!--- function for single file submission uploads where XHR is not supported ex: IE --->
     <cffunction name="Upload" access="remote" output="false" returntype="any" returnformat="JSON">

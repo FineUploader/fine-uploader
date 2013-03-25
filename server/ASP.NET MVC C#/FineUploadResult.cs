@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 namespace FineUploader
 {
     /// <remarks>
-    /// Docs at https://github.com/valums/file-uploader/blob/master/server/readme.md
+    /// Docs at https://github.com/Widen/fine-uploader/blob/master/server/readme.md
     /// </remarks>
     public class FineUploaderResult : ActionResult
     {

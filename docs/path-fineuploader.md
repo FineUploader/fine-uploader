@@ -1,5 +1,5 @@
 ## FineUploader mode users ##
-1. Download the latest released native javascript plug-in from the [Downloads](https://github.com/valums/file-uploader/wiki/Releases) section.
+1. Download the latest released native javascript plug-in from the [Downloads](http://fineuploader.com/downloads.html) section.
 2. Read the [getting started for non-jQuery users](native-getting-started.md).
 3. Read about the available [FineUploaderBasic mode options](options-fineuploaderbasic.md).
 4. Study the available [FineUploader mode options](options-fineuploader.md).
