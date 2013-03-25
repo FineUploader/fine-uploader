@@ -20,7 +20,7 @@
 // 4. If the upload failed for any reason, please open the JavaScript console,
 // if this does not help please read the excellent documentation we have for you.
 //
-// https://github.com/valums/file-uploader/blob/master/readme.md
+// https://github.com/Widen/fine-uploader/blob/master/readme.md
 //
 
 // Include the uploader class

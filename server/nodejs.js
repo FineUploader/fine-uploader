@@ -1,5 +1,5 @@
 /**
- * Node.JS server sample file for the cool ajax file uploader by Valums (http://valums.com/ajax-upload/).
+ * Node.JS server sample file.
  *
  * You have to install additional modules with:
  * npm install express
