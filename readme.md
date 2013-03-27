@@ -1,15 +1,8 @@
 # Fine Uploader 3.4 (IN PROGRESS) #
 
-###[Download the 3.3 combined & minified javascript file (along with all other required files) here](https://github.com/valums/file-uploader/wiki/Releases)###
+###[Download the 3.3.1 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 
-###I'm Considering removal of support for IE7 in a future release. [Comment here](https://github.com/valums/file-uploader/issues/637).###
-
-
-<br/>
-## Authors ##
-Actively developed by [Ray Nicholus](http://lnkd.in/Nkhx2C).     
-Created by Andrew Valums.
-
+###[Read my blog post](http://blog.fineuploader.com/2013/03/fine-uploader-has-new-home.html) regarding the recent ownership and licensing changes to Fine Uploader###
 
 <br/>
 ## Features ##
@@ -36,7 +29,6 @@ Created by Andrew Valums.
 * [Delete uploaded files](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html)
 * [CORS support](http://blog.fineuploader.com/2013/01/cors-support-in-33.html)
 * Upload any `Blob` objects via the API.
-* Paste to upload an image copied from any other web page (Chrome)
 * Any many more!
 
 
@@ -94,12 +86,11 @@ I didn't forget about you!  Read on, starting [here](docs/path-fineuploaderbasic
 
 <br/>
 ## Important Fine Uploader Links ##
-* [Downloads](https://github.com/valums/file-uploader/wiki/Releases)
+* [Downloads](http://fineuploader.com/downloads.html)
 * [Support](http://fineuploader.com/support.html)
 * [Blog](http://blog.fineuploader.com)
 * [@fineuploader](https://twitter.com/fineuploader)
 * [Demo](http://fineuploader.com)
-* [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6ZMVZSC4DBRVN&lc=US&item_name=Fine%20Uploader&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
 
 
 <br/>
@@ -122,13 +113,14 @@ If you are having other issues, please read [the FAQ section](docs/faq.md) befor
 
 <br/>
 ### Issue Tracker ###
-Have a bug or feature request? Please [create an issue here on GitHub](https://github.com/valums/file-uploader/issues) 
+Have a bug or feature request? Please [create an issue here on GitHub](https://github.com/Widen/fine-uploader/issues) 
 that conforms with [necolas's guidelines](https://github.com/necolas/issue-guidelines/blob/master/README.md).
 
 
 <br/>
 ### License ###
-This plugin is open sourced under MIT license, GNU GPL 2 or later and GNU LGPL 2 or later. Please see the license.txt file for details.
+This plugin is open sourced under GNU GPL v3 or you may purchase a Widen Commerical license to release you from the terms of
+GPL v3.  Please see the [downloads page](http://fineuploader.com/downloads.html) for details.
 
 
 <br/>
