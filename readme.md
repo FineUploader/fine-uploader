@@ -86,7 +86,7 @@ I didn't forget about you!  Read on, starting [here](docs/path-fineuploaderbasic
 
 <br/>
 ## Important Fine Uploader Links ##
-* [Downloads](https://github.com/Widen/fine-uploader/wiki/Releases)
+* [Downloads](http://fineuploader.com/downloads.html)
 * [Support](http://fineuploader.com/support.html)
 * [Blog](http://blog.fineuploader.com)
 * [@fineuploader](https://twitter.com/fineuploader)
