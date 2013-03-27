@@ -206,7 +206,6 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             return inputs[id] !== undefined;
         },
         reset: function() {
-            qq.UploadHandler.prototype.reset.apply(this, arguments);
             inputs = [];
             uuids = [];
             detachLoadEvents = {};
