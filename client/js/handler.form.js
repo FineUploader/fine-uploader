@@ -199,8 +199,13 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         getName: function(id) {
             /*jslint regexp: true*/
 
-            // get input value and remove path to normalize
-            return inputs[id].value.replace(/.*(\/|\\)/, "");
+            if (api.isValid(id)) {
+                // get input value and remove path to normalize
+                return inputs[id].value.replace(/.*(\/|\\)/, "");
+            }
+            else {
+                log(id + " is not a valid item ID.", "error");
+            }
         },
         isValid: function(id) {
             return inputs[id] !== undefined;

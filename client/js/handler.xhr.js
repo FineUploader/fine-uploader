@@ -514,16 +514,21 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             return id;
         },
         getName: function(id){
-            var file = fileState[id].file,
-                blobData = fileState[id].blobData;
+            if (api.isValid(id)) {
+                var file = fileState[id].file,
+                    blobData = fileState[id].blobData;
 
-            if (file) {
-                // fix missing name in Safari 4
-                //NOTE: fixed missing name firefox 11.0a2 file.fileName is actually undefined
-                return (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
+                if (file) {
+                    // fix missing name in Safari 4
+                    //NOTE: fixed missing name firefox 11.0a2 file.fileName is actually undefined
+                    return (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
+                }
+                else {
+                    return blobData.name;
+                }
             }
             else {
-                return blobData.name;
+                log(id + " is not a valid item ID.", "error");
             }
         },
         getSize: function(id){
