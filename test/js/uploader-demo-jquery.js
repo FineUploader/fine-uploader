@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    var errorHandler = function(event, id, fileName, reason) {
+    var errorHandler = function(event, id, fileName, reason, xhr) {
         qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
     };
 
@@ -32,9 +32,9 @@ $(document).ready(function() {
         chunking: {
             enabled: true
         },
-//        resume: {
-//            enabled: true
-//        },
+        resume: {
+            enabled: true
+        },
         retry: {
             enableAuto: true,
             showButton: true
@@ -83,7 +83,7 @@ $(document).ready(function() {
     $('#basicUploadFailureExample').fineUploader({
         request: {
             endpoint: "/upload/receiver",
-            params: {"generateError": true}
+            params: {"generateError": "true"}
         },
         failedUploadTextDisplay: {
             mode: 'custom',
