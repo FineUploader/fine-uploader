@@ -25,6 +25,7 @@ qq.FineUploaderBasic = function(o){
             stopOnFirstInvalidFile: true
         },
         callbacks: {
+            onBeforeStart: function(fileList, startLoading){startLoading(fileList);},
             onSubmit: function(id, name){},
             onSubmitted: function(id, name){},
             onComplete: function(id, name, responseJSON){},
@@ -258,9 +259,39 @@ qq.FineUploaderBasic.prototype = {
                     self.log(fileOrInput + ' is not a File or INPUT element!  Ignoring!', 'warn');
                 }
             }
+			/*  onBeforeStart provides a hook for any preflight processing/checking of files.
+                If the default implementation,
+            
+                onBeforeStart(fileList, startLoading){startLoading(fileList);}
 
-            this.log('Processing ' + verifiedFilesOrInputs.length + ' files or inputs...');
-            this._uploadFileOrBlobDataList(verifiedFilesOrInputs);
+                is overridden, the supplied implementation must call the
+                anonymous function passed as the 2nd argument below in order to start uploading.
+               
+                i.e. onBeforeStart(fileList, startLoading){
+            
+                        // ... process or edit fileList array of files in some way,
+                        // e.g. detect conflict, display to user, etc., then finally
+            
+                        // upload all files...
+                        startLoading(fileList);
+            
+                        // or upload some of the files...
+                        startLoading(editedFileList);
+            
+                        // or cancel entire upload...
+                        startLoading([]);
+                    }
+               
+            */
+            this._options.callbacks.onBeforeStart(verifiedFilesOrInputs, function(returnedList){   
+                if(Object.prototype.toString.call(returnedList) === '[object Array]' && returnedList.length > 0){
+                    self.log('Processing ' + returnedList.length + ' files or inputs...');
+                    self._uploadFileOrBlobDataList(returnedList);
+                }
+                else{
+                    self.log('Upload of ' + verifiedFilesOrInputs.length + ' files or inputs cancelled','warn');
+                }        
+            });   
         }
     },
     addBlobs: function(blobDataOrArray) {
