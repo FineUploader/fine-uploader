@@ -235,8 +235,11 @@ qq.FineUploaderBasic.prototype = {
         this._button.reset();
         this._paramsStore.reset();
         this._endpointStore.reset();
-        this._pasteHandler.reset();
         this._netFilesUploadedOrQueued = 0;
+
+        if (this._pasteHandler) {
+            this._pasteHandler.reset();
+        }
     },
     addFiles: function(filesBlobDataOrInputs) {
         var self = this,
