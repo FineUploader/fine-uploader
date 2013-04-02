@@ -1,13 +1,4 @@
 ## Frequently Asked Questions (FAQ) ##
-**Q:** Why are you charging me to download a zip containing the combined js files, along with a minified version, the
-version-stamped css file, and all other required files?     
-**A:** Fine Uploader is a lot of work.  I literally work on Fine Uploader, in my free time, 7 days a week.  I've kept up this
-schedule since August.  As a result Fine Uploader grows at a rapid pace, bugs are addressed quickly, and the support I provide
-for users is second-to-none.  Compensation provides me with an excuse to keep up the work I am doing.  The other alternative is
-a project that decays and becomes unusable or out-of-date after some time.  If, for some reason, you don't want to
-contribute to those that have worked so hard to provide you with this solution at a very modest price, you can certainly
-make use of the source code posted in the Github repo.  The project is, after all, open-source.
-
 **Q**: In IE, when my server returns its response to an upload request, I see a "Save As..." dialog box on the client.  What am I doing wrong?    
 **A**: Your server's response content-type MUST be "text/plain".  IE does not handle the "application/json" mime-type.  You have
 probably read advice from others that claim "text/html" is also safe.  This is not always true.  You will run into problems with a content-type
