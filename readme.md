@@ -1,8 +1,8 @@
 # Fine Uploader 3.5 (IN PROGRESS) #
 
-###[Download the 3.4 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
+###[Download the 3.4.1 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 
-###[3.4 change summary](http://blog.fineuploader.com/2013/03/fine-uploader-34.html)###
+###[3.4.1 change summary](http://blog.fineuploader.com/2013/03/fine-uploader-34.html)###
 
 <br/>
 ## Features ##
