@@ -9,17 +9,22 @@ qq.DragAndDrop = function(o) {
         disposeSupport = new qq.DisposeSupport();
 
      options = {
-        dropArea: null,
-        extraDropzones: [],
-        hideDropzones: true,
-        multiple: true,
+        defaultDropAreaEl: null,
+        additionalDropzoneEls: [],
+        hideDropzonesBeforeEnter: true,
+        allowMultipleItems: true,
         classes: {
             dropActive: null
         },
         callbacks: {
-            dropProcessing: function(isProcessing, files) {},
-            error: function(code, filename) {},
-            log: function(message, level) {}
+            processingDroppedFiles: function() {},
+            processingDroppedFilesComplete: function(files) {},
+            error: function(code, filename) {
+                qq.log(message, "error");
+            },
+            log: function(message, level) {
+                qq.log(message, level);
+            }
         }
     };
 
@@ -29,7 +34,7 @@ qq.DragAndDrop = function(o) {
         if (droppedEntriesCount === droppedEntriesParsedCount && !dirPending) {
             options.callbacks.log('Grabbed ' + droppedFiles.length + " files after tree traversal.");
             dz.dropDisabled(false);
-            options.callbacks.dropProcessing(false, droppedFiles);
+            options.callbacks.processingDroppedFilesComplete(droppedFiles);
         }
     }
     function addDroppedFile(file) {
@@ -69,11 +74,11 @@ qq.DragAndDrop = function(o) {
     function handleDataTransfer(dataTransfer) {
         var i, items, entry;
 
-        options.callbacks.dropProcessing(true);
+        options.callbacks.processingDroppedFiles();
         dz.dropDisabled(true);
 
-        if (dataTransfer.files.length > 1 && !options.multiple) {
-            options.callbacks.dropProcessing(false);
+        if (dataTransfer.files.length > 1 && !options.allowMultipleItems) {
+            options.callbacks.processingDroppedFilesComplete([]);
             options.callbacks.error('tooManyFilesError', "");
             dz.dropDisabled(false);
         }
@@ -103,7 +108,7 @@ qq.DragAndDrop = function(o) {
                 }
             }
             else {
-                options.callbacks.dropProcessing(false, dataTransfer.files);
+                options.callbacks.processingDroppedFilesComplete(dataTransfer.files);
                 dz.dropDisabled(false);
             }
         }
@@ -120,7 +125,7 @@ qq.DragAndDrop = function(o) {
                 qq(dropArea).removeClass(options.classes.dropActive);
             },
             onDrop: function(e){
-                if (options.hideDropzones) {
+                if (options.hideDropzonesBeforeEnter) {
                     qq(dropArea).hide();
                 }
                 qq(dropArea).removeClass(options.classes.dropActive);
@@ -133,7 +138,7 @@ qq.DragAndDrop = function(o) {
             dz.dispose();
         });
 
-        if (options.hideDropzones) {
+        if (options.hideDropzonesBeforeEnter) {
             qq(dropArea).hide();
         }
     }
@@ -152,25 +157,25 @@ qq.DragAndDrop = function(o) {
     }
 
     function setupDragDrop(){
-        if (options.dropArea) {
-            options.extraDropzones.push(options.dropArea);
+        if (options.defaultDropAreaEl) {
+            options.additionalDropzoneEls.push(options.defaultDropAreaEl);
         }
 
-        var i, dropzones = options.extraDropzones;
+        var i, dropzones = options.additionalDropzoneEls;
 
         for (i=0; i < dropzones.length; i+=1){
             setupDropzone(dropzones[i]);
         }
 
         // IE <= 9 does not support the File API used for drag+drop uploads
-        if (options.dropArea && (!qq.ie() || qq.ie10())) {
+        if (options.defaultDropAreaEl && (!qq.ie() || qq.ie10())) {
             disposeSupport.attach(document, 'dragenter', function(e) {
                 if (!dz.dropDisabled() && isFileDrag(e)) {
-                    if (qq(options.dropArea).hasClass(options.classes.dropDisabled)) {
+                    if (qq(options.defaultDropAreaEl).hasClass(options.classes.dropDisabled)) {
                         return;
                     }
 
-                    options.dropArea.style.display = 'block';
+                    options.defaultDropAreaEl.style.display = 'block';
                     for (i=0; i < dropzones.length; i+=1) {
                         dropzones[i].style.display = 'block';
                     }
@@ -178,14 +183,14 @@ qq.DragAndDrop = function(o) {
             });
         }
         disposeSupport.attach(document, 'dragleave', function(e){
-            if (options.hideDropzones && qq.FineUploader.prototype._leaving_document_out(e)) {
+            if (options.hideDropzonesBeforeEnter && qq.FineUploader.prototype._leaving_document_out(e)) {
                 for (i=0; i < dropzones.length; i+=1) {
                     qq(dropzones[i]).hide();
                 }
             }
         });
         disposeSupport.attach(document, 'drop', function(e){
-            if (options.hideDropzones) {
+            if (options.hideDropzonesBeforeEnter) {
                 for (i=0; i < dropzones.length; i+=1) {
                     qq(dropzones[i]).hide();
                 }
@@ -195,17 +200,17 @@ qq.DragAndDrop = function(o) {
     }
 
     return {
-        setup: function() {
+        init: function() {
             setupDragDrop();
         },
 
         setupExtraDropzone: function(element) {
-            options.extraDropzones.push(element);
+            options.additionalDropzoneEls.push(element);
             setupDropzone(element);
         },
 
         removeExtraDropzone: function(element) {
-            var i, dzs = options.extraDropzones;
+            var i, dzs = options.additionalDropzoneEls;
             for(i in dzs) {
                 if (dzs[i] === element) {
                     return dzs.splice(i, 1);

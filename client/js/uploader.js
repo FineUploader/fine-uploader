@@ -218,25 +218,25 @@ qq.extend(qq.FineUploader.prototype, {
         }
 
         dnd = new qq.DragAndDrop({
-            dropArea: defaultDropAreaEl,
-            extraDropzones: this._options.dragAndDrop.extraDropzones,
-            hideDropzones: this._options.dragAndDrop.hideDropzones,
-            multiple: this._options.multiple,
+            defaultDropAreaEl: defaultDropAreaEl,
+            additionalDropzoneEls: this._options.dragAndDrop.extraDropzones,
+            hideDropzonesBeforeEnter: this._options.dragAndDrop.hideDropzones,
+            allowMultipleItems: this._options.multiple,
             classes: {
                 dropActive: this._options.classes.dropActive
             },
             callbacks: {
-                dropProcessing: function(isProcessing, files) {
+                processingDroppedFiles: function() {
                     var input = self._button.getInput();
 
-                    if (isProcessing) {
-                        qq(dropProcessingEl).css({display: 'block'});
-                        qq(input).attach('click', preventSelectFiles);
-                    }
-                    else {
-                        qq(dropProcessingEl).hide();
-                        qq(input).detach('click', preventSelectFiles);
-                    }
+                    qq(dropProcessingEl).css({display: 'block'});
+                    qq(input).attach('click', preventSelectFiles);
+                },
+                processingDroppedFilesComplete: function(files) {
+                    var input = self._button.getInput();
+
+                    qq(dropProcessingEl).hide();
+                    qq(input).detach('click', preventSelectFiles);
 
                     if (files) {
                         self.addFiles(files);
@@ -251,7 +251,7 @@ qq.extend(qq.FineUploader.prototype, {
             }
         });
 
-        dnd.setup();
+        dnd.init();
 
         return dnd;
     },
