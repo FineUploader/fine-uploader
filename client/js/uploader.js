@@ -49,7 +49,6 @@ qq.FineUploader = function(o){
             button: 'qq-upload-button',
             drop: 'qq-upload-drop-area',
             dropActive: 'qq-upload-drop-area-active',
-            dropDisabled: 'qq-upload-drop-area-disabled',
             list: 'qq-upload-list',
             progressBar: 'qq-progress-bar',
             file: 'qq-upload-file',
@@ -218,9 +217,8 @@ qq.extend(qq.FineUploader.prototype, {
         }
 
         dnd = new qq.DragAndDrop({
-            defaultDropAreaEl: defaultDropAreaEl,
-            additionalDropzoneEls: this._options.dragAndDrop.extraDropzones,
-            hideDropzonesBeforeEnter: this._options.dragAndDrop.hideDropzones,
+            dropZoneElements: this._options.dragAndDrop.extraDropzones.concat(defaultDropAreaEl),
+            hideDropZonesBeforeEnter: this._options.dragAndDrop.hideDropzones,
             allowMultipleItems: this._options.multiple,
             classes: {
                 dropActive: this._options.classes.dropActive

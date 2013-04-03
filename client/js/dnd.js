@@ -9,9 +9,8 @@ qq.DragAndDrop = function(o) {
         disposeSupport = new qq.DisposeSupport();
 
      options = {
-        defaultDropAreaEl: null,
-        additionalDropzoneEls: [],
-        hideDropzonesBeforeEnter: true,
+        dropZoneElements: [],
+        hideDropZonesBeforeEnter: false,
         allowMultipleItems: true,
         classes: {
             dropActive: null
@@ -125,7 +124,7 @@ qq.DragAndDrop = function(o) {
                 qq(dropArea).removeClass(options.classes.dropActive);
             },
             onDrop: function(e){
-                if (options.hideDropzonesBeforeEnter) {
+                if (options.hideDropZonesBeforeEnter) {
                     qq(dropArea).hide();
                 }
                 qq(dropArea).removeClass(options.classes.dropActive);
@@ -138,7 +137,7 @@ qq.DragAndDrop = function(o) {
             dz.dispose();
         });
 
-        if (options.hideDropzonesBeforeEnter) {
+        if (options.hideDropZonesBeforeEnter) {
             qq(dropArea).hide();
         }
     }
@@ -157,43 +156,34 @@ qq.DragAndDrop = function(o) {
     }
 
     function setupDragDrop(){
-        if (options.defaultDropAreaEl) {
-            options.additionalDropzoneEls.push(options.defaultDropAreaEl);
-        }
+        var dropZones = options.dropZoneElements;
 
-        var i, dropzones = options.additionalDropzoneEls;
-
-        for (i=0; i < dropzones.length; i+=1){
-            setupDropzone(dropzones[i]);
-        }
+        qq.each(dropZones, function(idx, dropZone) {
+           setupDropzone(dropZone);
+        })
 
         // IE <= 9 does not support the File API used for drag+drop uploads
-        if (options.defaultDropAreaEl && (!qq.ie() || qq.ie10())) {
+        if (dropZones.length && (!qq.ie() || qq.ie10())) {
             disposeSupport.attach(document, 'dragenter', function(e) {
                 if (!dz.dropDisabled() && isFileDrag(e)) {
-                    if (qq(options.defaultDropAreaEl).hasClass(options.classes.dropDisabled)) {
-                        return;
-                    }
-
-                    options.defaultDropAreaEl.style.display = 'block';
-                    for (i=0; i < dropzones.length; i+=1) {
-                        dropzones[i].style.display = 'block';
-                    }
+                    qq.each(dropZones, function(idx, dropZone) {
+                        qq(dropZone).css({display: 'block'});
+                    });
                 }
             });
         }
         disposeSupport.attach(document, 'dragleave', function(e){
-            if (options.hideDropzonesBeforeEnter && qq.FineUploader.prototype._leaving_document_out(e)) {
-                for (i=0; i < dropzones.length; i+=1) {
-                    qq(dropzones[i]).hide();
-                }
+            if (options.hideDropZonesBeforeEnter && qq.FineUploader.prototype._leaving_document_out(e)) {
+                qq.each(dropZones, function(idx, dropZone) {
+                    qq(dropZone).hide();
+                });
             }
         });
         disposeSupport.attach(document, 'drop', function(e){
-            if (options.hideDropzonesBeforeEnter) {
-                for (i=0; i < dropzones.length; i+=1) {
-                    qq(dropzones[i]).hide();
-                }
+            if (options.hideDropZonesBeforeEnter) {
+                qq.each(dropZones, function(idx, dropZone) {
+                    qq(dropZone).hide();
+                });
             }
             e.preventDefault();
         });
@@ -205,7 +195,7 @@ qq.DragAndDrop = function(o) {
         },
 
         setupExtraDropzone: function(element) {
-            options.additionalDropzoneEls.push(element);
+            options.dropZoneElements.push(element);
             setupDropzone(element);
         },
 
