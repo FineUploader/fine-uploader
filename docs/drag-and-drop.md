@@ -112,6 +112,16 @@ var dragAndDropModule = new qq.DragAndDrop({
             <td>Invoked when the module has finished processing the set of dropped files.  The parameter passed to this
             callback represents all files parsed by the module from the associated drop event.</td>
         </tr>
+        <tr>
+            <td>error</td>
+            <td>errorCode, errorMessage</td>
+            <td>Invoked when processing the drop fails for some reason.</td>
+        </tr>
+        <tr>
+            <td>log</td>
+            <td>message, logLevel</td>
+            <td>Invoked when a message is logged.</td>
+        </tr>
     </tbody>
 </table>
 
