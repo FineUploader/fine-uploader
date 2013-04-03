@@ -9,7 +9,7 @@ Fine Uploader already has code to handle this in FineUploader mode.  Fine Upload
 a standalone module, so it can be easily integrated into your FineUploaderBasic mode app (or even any non-Fine Uploader app).
 This document will explain how to utilize this module.
 
-
+<br/>
 ### Example ###
 
 ```javascript
@@ -25,18 +25,19 @@ var dragAndDropModule = new qq.DragAndDrop({
           processingDroppedFilesComplete: function(files) {
             //TODO: hide spinner/processing graphic
 
-            fineUploaderInstance.addFiles(files); //this submits the dropped files to Fine Uploader
+            fineUploaderBasicInstance.addFiles(files); //this submits the dropped files to Fine Uploader
           }
         }
       }),
 
-  fineUploaderInstance = new qq.FineUploaderBasic({
+  fineUploaderBasicInstance = new qq.FineUploaderBasic({
     request: {
         endpoint: "server/uploadHandler"
     }
   });
 ```
 
+<br/>
 ### Options ###
 <table>
     <thead>
