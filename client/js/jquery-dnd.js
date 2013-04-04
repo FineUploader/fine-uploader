@@ -5,12 +5,14 @@
         $el;
 
     function init (options) {
-        if (options) {
-            options.dropZoneElements = [$el];
-            var xformedOpts = transformVariables(options);
-            addCallbacks(xformedOpts);
-            dnd(new qq.DragAndDrop(xformedOpts));
+        if (!options) {
+            options = {};
         }
+
+        options.dropZoneElements = [$el];
+        var xformedOpts = transformVariables(options);
+        addCallbacks(xformedOpts);
+        dnd(new qq.DragAndDrop(xformedOpts));
 
         return $el;
     };
