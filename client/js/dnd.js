@@ -188,8 +188,10 @@ qq.DragAndDrop = function(o) {
             setupDropzone(element);
         },
 
-        removeExtraDropzone: function(element) {
-            var i, dzs = options.additionalDropzoneEls;
+        removeDropzone: function(element) {
+            var i,
+                dzs = options.dropZoneElements;
+
             for(i in dzs) {
                 if (dzs[i] === element) {
                     return dzs.splice(i, 1);

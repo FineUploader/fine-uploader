@@ -125,4 +125,33 @@ var dragAndDropModule = new qq.DragAndDrop({
 </table>
 
 
+<br/>
+### API ###
+<table>
+    <thead>
+        <tr>
+            <th>Function Name</th>
+            <th>arguments</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>setupExtraDropzone</td>
+            <td>element</td>
+            <td>Call this to add an additional drop zone to the DnD instance.  Not available if using the jQuery plug-in wrapper.</td>
+        </tr>
+        <tr>
+            <td>removeDropzone</td>
+            <td>element</td>
+            <td>Call this to remove a drop zone from the DnD instance.  Not available if using the jQuery plug-in wrapper.</td>
+        </tr>
+        <tr>
+            <td>dispose</td>
+            <td>none</td>
+            <td>Tears down all drop zones associated with the dnd instance.</td>
+        </tr>
+    </tbody>
+</table>
+
 

@@ -176,7 +176,7 @@ qq.extend(qq.FineUploader.prototype, {
         this._dnd.setupExtraDropzone(element);
     },
     removeExtraDropzone: function(element){
-        return this._dnd.removeExtraDropzone(element);
+        return this._dnd.removeDropzone(element);
     },
     getItemByFileId: function(id){
         var item = this._listElement.firstChild;

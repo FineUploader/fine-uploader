@@ -99,6 +99,7 @@
 
     function isValidCommand(command) {
         return $.type(command) === "string" &&
+            command === "dispose" &&
             dnd()[command] !== undefined;
     };
 
