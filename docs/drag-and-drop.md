@@ -9,8 +9,8 @@ a standalone module, so it can be easily integrated into your FineUploaderBasic 
 This document will explain how to utilize this module.
 
 <br/>
-### Example ###
-
+### Non-jQuery Example ###
+If you are not utilizing jQuery, you can use the plain javascript DnD module.  Here is a simple example:
 ```javascript
 var dragAndDropModule = new qq.DragAndDrop({
         dropZoneElements: [document.getElementById('myDropZone')],
@@ -34,6 +34,21 @@ var dragAndDropModule = new qq.DragAndDrop({
         endpoint: "server/uploadHandler"
     }
   });
+```
+
+<br/>
+### jQuery Plug-in Wrapper Notes & Example ###
+For jQuery users, a jQuery-wrapped DnD module is also available in the combined and minified Fine Uplpoader javascript file.
+This jQuery wrapper follows the same conventions as the jQuery plug-in that wraps the uploader library.  To read more
+about these conventions, please see the [Using jQuery plug-in](using-jquery-plugin.md) readme document.
+
+There are a couple things to be aware of when using the DnD standalone module via the jQuery plug-in wrapper:
+* The only API method available is `dispose`.  This restriction is in place since the other API functions don't really make sense in the context of a jQuery plug-in.
+* The target of your plug-in instance takes the place of the `dropZoneElements` option.  Do not pass a `dropZoneElements` option, it will be ignored.
+
+Here's a simple example:
+```javascript
+//TODO
 ```
 
 <br/>
