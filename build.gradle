@@ -27,7 +27,8 @@ def imageFiles = ["$srcDir/loading.gif",
 
 def additionalFilesToInclude = ["${jsSrcDir}/iframe.xss.response.js"]
 
-def jQueryPluginFiles = ["${jsSrcDir}/jquery-plugin.js"]
+def jQueryPluginFiles = ["${jsSrcDir}/jquery-plugin.js",
+                         "${jsSrcDir}/jquery-dnd.js"]
 
 
 buildscript {

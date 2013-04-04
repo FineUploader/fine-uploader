@@ -15,19 +15,12 @@ qq.DragAndDrop = function(o) {
         classes: {
             dropActive: null
         },
-        callbacks: {
-            processingDroppedFiles: function() {},
-            processingDroppedFilesComplete: function(files) {},
-            error: function(code, filename) {
-                qq.log(message, "error");
-            },
-            log: function(message, level) {
-                qq.log(message, level);
-            }
-        }
+        callbacks: new qq.DragAndDrop.callbacks()
     };
 
     qq.extend(options, o);
+
+    setupDragDrop();
 
     function maybeUploadDroppedFiles() {
         if (droppedEntriesCount === droppedEntriesParsedCount && !dirPending) {
@@ -190,10 +183,6 @@ qq.DragAndDrop = function(o) {
     }
 
     return {
-        init: function() {
-            setupDragDrop();
-        },
-
         setupExtraDropzone: function(element) {
             options.dropZoneElements.push(element);
             setupDropzone(element);
@@ -215,6 +204,18 @@ qq.DragAndDrop = function(o) {
     };
 };
 
+qq.DragAndDrop.callbacks = function() {
+    return {
+        processingDroppedFiles: function() {},
+        processingDroppedFilesComplete: function(files) {},
+        error: function(code, filename) {
+            qq.log("Drag & drop error code '" + code + "' on filename '" + filename + "'.", "error");
+        },
+        log: function(message, level) {
+            qq.log(message, level);
+        }
+    }
+}
 
 qq.UploadDropZone = function(o){
     "use strict";

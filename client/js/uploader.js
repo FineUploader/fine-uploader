@@ -206,7 +206,7 @@ qq.extend(qq.FineUploader.prototype, {
     _setupDragAndDrop: function() {
         var self = this,
             dropProcessingEl = this._find(this._element, 'dropProcessing'),
-            dnd, preventSelectFiles, defaultDropAreaEl;
+            preventSelectFiles, defaultDropAreaEl;
 
         preventSelectFiles = function(event) {
             event.preventDefault();
@@ -216,7 +216,7 @@ qq.extend(qq.FineUploader.prototype, {
             defaultDropAreaEl = this._find(this._options.element, 'drop');
         }
 
-        dnd = new qq.DragAndDrop({
+        return new qq.DragAndDrop({
             dropZoneElements: this._options.dragAndDrop.extraDropzones.concat(defaultDropAreaEl),
             hideDropZonesBeforeEnter: this._options.dragAndDrop.hideDropzones,
             allowMultipleItems: this._options.multiple,
@@ -248,10 +248,6 @@ qq.extend(qq.FineUploader.prototype, {
                 }
             }
         });
-
-        dnd.init();
-
-        return dnd;
     },
     _leaving_document_out: function(e){
         return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
