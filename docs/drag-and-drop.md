@@ -145,12 +145,12 @@ $('#fineUploaderBasicContainer').fineUploader({
             callback represents all files parsed by the module from the associated drop event.</td>
         </tr>
         <tr>
-            <td>error</td>
+            <td>dropError</td>
             <td>errorCode, errorMessage</td>
             <td>Invoked when processing the drop fails for some reason.</td>
         </tr>
         <tr>
-            <td>log</td>
+            <td>dropLog</td>
             <td>message, logLevel</td>
             <td>Invoked when a message is logged.</td>
         </tr>

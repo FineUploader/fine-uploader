@@ -24,7 +24,7 @@ qq.DragAndDrop = function(o) {
 
     function maybeUploadDroppedFiles() {
         if (droppedEntriesCount === droppedEntriesParsedCount && !dirPending) {
-            options.callbacks.log('Grabbed ' + droppedFiles.length + " files after tree traversal.");
+            options.callbacks.dropLog('Grabbed ' + droppedFiles.length + " files after tree traversal.");
             dz.dropDisabled(false);
             options.callbacks.processingDroppedFilesComplete(droppedFiles);
         }
@@ -71,7 +71,7 @@ qq.DragAndDrop = function(o) {
 
         if (dataTransfer.files.length > 1 && !options.allowMultipleItems) {
             options.callbacks.processingDroppedFilesComplete([]);
-            options.callbacks.error('tooManyFilesError', "");
+            options.callbacks.dropError('tooManyFilesError', "");
             dz.dropDisabled(false);
         }
         else {
@@ -210,10 +210,10 @@ qq.DragAndDrop.callbacks = function() {
     return {
         processingDroppedFiles: function() {},
         processingDroppedFilesComplete: function(files) {},
-        error: function(code, filename) {
+        dropError: function(code, filename) {
             qq.log("Drag & drop error code '" + code + "' on filename '" + filename + "'.", "error");
         },
-        log: function(message, level) {
+        dropLog: function(message, level) {
             qq.log(message, level);
         }
     }

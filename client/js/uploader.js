@@ -240,10 +240,10 @@ qq.extend(qq.FineUploader.prototype, {
                         self.addFiles(files);
                     }
                 },
-                error: function(code, filename) {
+                dropError: function(code, filename) {
                     self._itemError(code, filename);
                 },
-                log: function(message, level) {
+                dropLog: function(message, level) {
                     self.log(message, level);
                 }
             }
