@@ -46,9 +46,27 @@ There are a couple things to be aware of when using the DnD standalone module vi
 * The only API method available is `dispose`.  This restriction is in place since the other API functions don't really make sense in the context of a jQuery plug-in.
 * The target of your plug-in instance takes the place of the `dropZoneElements` option.  Do not pass a `dropZoneElements` option, it will be ignored.
 
-Here's a simple example:
+Here is the above example rewritten using the jQuery plug-in wrappers:
 ```javascript
-//TODO
+$('#myDropZone').fineUploaderDnd({
+    classes: {
+        dropActive: "cssClassToAddToDropZoneOnEnter"
+    }
+})
+    .on('processingDroppedFiles', function(event) {
+        //TODO: display some sort of a "processing" or spinner graphic
+    })
+    .on('processingDroppedFilesComplete', function(event, files) {
+        //TODO: hide spinner/processing graphic
+
+        $('#fineUploaderBasicContainer').fineUploader('addFiles', files); //this submits the dropped files to Fine Uploader
+    });
+
+$('#fineUploaderBasicContainer').fineUploader({
+    request: {
+        endpoint: "server/uploadHandler"
+    }
+});
 ```
 
 <br/>
