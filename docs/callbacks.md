@@ -40,9 +40,10 @@ file will be uploaded immediately if there is at least one free connection avail
 option is set to true (the default).  This callback is invoked after the `onSubmit` callback has returned without a "false" return value.
 In FineUploader mode, it is safe to assume that the associated element(s) in the UI representing the associated file have already been added
 to the DOM immediately before this callback is invoked.
-* `onComplete(String id, String name, Object responseJSON)` - called when the file or `Blob` upload has finished.
+* `onComplete(String id, String name, Object responseJSON, XMLHttpRequest xhr)` - called when the file or `Blob` upload has finished.
 A successful upload will always have a `success` property in the `responseJSON` object with a value of `true`.  The
-`responseJSON` parameter will also contain any other elements of the JSON response returned by the server.
+`responseJSON` parameter will also contain any other elements of the JSON response returned by the server.  Note that
+the last parameter, xhr, will only be included if the upload is related to a request initiated by XMLHttpRequest.
 * `onCancel(String id, String name)` - called when the file or `Blob` upload has been cancelled.
 * `onUpload(String id, String name)` - called just before a file or `Blob` upload begins.
 * `onUploadChunk(String id, String name, Object chunkData)` - called just before a `File`/`Blob` chunk/partition request is sent.  The chunkData object has

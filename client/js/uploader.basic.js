@@ -27,7 +27,7 @@ qq.FineUploaderBasic = function(o){
         callbacks: {
             onSubmit: function(id, name){},
             onSubmitted: function(id, name){},
-            onComplete: function(id, name, responseJSON){},
+            onComplete: function(id, name, responseJSON, maybeXhr){},
             onCancel: function(id, name){},
             onUpload: function(id, name){},
             onUploadChunk: function(id, name, chunkData){},
@@ -368,7 +368,7 @@ qq.FineUploaderBasic.prototype = {
             },
             onComplete: function(id, name, result, xhr){
                 self._onComplete(id, name, result, xhr);
-                self._options.callbacks.onComplete(id, name, result);
+                self._options.callbacks.onComplete(id, name, result, xhr);
             },
             onCancel: function(id, name){
                 self._onCancel(id, name);
