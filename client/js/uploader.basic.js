@@ -41,9 +41,7 @@ qq.FineUploaderBasic = function(o){
             onSubmitDelete: function(id) {},
             onDelete: function(id){},
             onDeleteComplete: function(id, xhr, isError){},
-            onPasteReceived: function(blob) {
-                return new qq.Promise().success();
-            }
+            onPasteReceived: function(blob) {}
         },
         messages: {
             typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
@@ -321,9 +319,6 @@ qq.FineUploaderBasic.prototype = {
             this._deleteFileEndpointStore.setEndpoint(endpoint, id);
         }
     },
-    getPromissoryCallbackNames: function() {
-        return ["onPasteReceived"];
-    },
     _createUploadButton: function(element){
         var self = this;
 
@@ -439,10 +434,10 @@ qq.FineUploaderBasic.prototype = {
                     self.log(str, level);
                 },
                 pasteReceived: function(blob) {
-                    var pasteReceivedCallback = self._options.callbacks.onPasteReceived,
-                        promise = pasteReceivedCallback(blob);
+                    var callback = self._options.callbacks.onPasteReceived,
+                        promise = callback(blob);
 
-                    if (promise.then) {
+                    if (promise && promise.then) {
                         promise.then(function(successData) {
                             self._handlePasteSuccess(blob, successData);
                         }, function(failureData) {
@@ -450,7 +445,7 @@ qq.FineUploaderBasic.prototype = {
                         });
                     }
                     else {
-                        self.log("Promise contract not fulfilled in pasteReceived callback handler!  Ignoring pasted item.", "error");
+                        self._handlePasteSuccess(blob);
                     }
                 }
             }

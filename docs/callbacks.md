@@ -76,8 +76,8 @@ You may return false from your handler if you want to ignore/stop the delete req
 ID, along with the request's XMLHttpRequest object and a boolean indicating whether the response succeeded or not (based on the response code)
 are sent along as parameters.
 * `onPasteReceived(blob)` - Called when a pasted image has been received (before uploading the image).  The pasted image is
-represented as a `Blob`.  **This is a promissory callback**, meaning your callback handler must return a [promise](promise.md).
-The value of the success parameter must be the name to associate with the pasted image.  If the associated attempt is marked
+represented as a `Blob`.  You _may_ return a [`qq.Promise`](promise.md) in your callback handler.  If you do return a `qq.Promise`,
+the value of the success parameter must be the name to associate with the pasted image.  If the associated attempt is marked
 a `failure` it is wise to include a string explaining the failure in your `failure` callback.
 Note that the `promptForName` in FineUploader mode, if set to true, will effectively wipe out any custom implementation of this
 callback.  The two are not meant to be used together.  This callback is meant to provide an alternative means to provide a name
