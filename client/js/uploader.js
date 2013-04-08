@@ -206,18 +206,19 @@ qq.extend(qq.FineUploader.prototype, {
     _setupDragAndDrop: function() {
         var self = this,
             dropProcessingEl = this._find(this._element, 'dropProcessing'),
-            preventSelectFiles, defaultDropAreaEl;
+            dropZoneElements = this._options.dragAndDrop.extraDropzones,
+            preventSelectFiles;
 
         preventSelectFiles = function(event) {
             event.preventDefault();
         };
 
         if (!this._options.dragAndDrop.disableDefaultDropzone) {
-            defaultDropAreaEl = this._find(this._options.element, 'drop');
+            dropZoneElements.concat(this._find(this._options.element, 'drop'));
         }
 
         return new qq.DragAndDrop({
-            dropZoneElements: this._options.dragAndDrop.extraDropzones.concat(defaultDropAreaEl),
+            dropZoneElements: dropZoneElements,
             hideDropZonesBeforeEnter: this._options.dragAndDrop.hideDropzones,
             allowMultipleItems: this._options.multiple,
             classes: {
