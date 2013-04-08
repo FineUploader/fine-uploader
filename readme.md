@@ -4,7 +4,7 @@
 
 ###[3.4.1 change summary](http://blog.fineuploader.com/2013/03/fine-uploader-34.html)###
 
-###Leave your thoughts on the ["upload directly from a camera" case](https://github.com/Widen/fine-uploader/issues/389) ###
+###Leave your thoughts on the ["upload directly from a camera" case](https://github.com/Widen/fine-uploader/issues/389#issuecomment-15937234) ###
 
 <br/>
 ## Features ##
