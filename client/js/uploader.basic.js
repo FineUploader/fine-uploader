@@ -92,6 +92,7 @@ qq.FineUploaderBasic = function(o){
             return fileOrBlobName;
         },
         text: {
+            defaultResponseError: "Upload failure reason unknown",
             sizeSymbols: ['kB', 'MB', 'GB', 'TB', 'PB', 'EB']
         },
         deleteFile : {
@@ -615,7 +616,7 @@ qq.FineUploaderBasic.prototype = {
                 this._options.callbacks.onError(id, name, "XHR returned response code " + xhr.status, xhr);
             }
             else {
-                var errorReason = response.error ? response.error : "Upload failure reason unknown";
+                var errorReason = response.error ? response.error : this._options.text.defaultResponseError;
                 this._options.callbacks.onError(id, name, errorReason, xhr);
             }
         }
