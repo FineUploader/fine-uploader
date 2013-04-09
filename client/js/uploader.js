@@ -214,7 +214,7 @@ qq.extend(qq.FineUploader.prototype, {
         };
 
         if (!this._options.dragAndDrop.disableDefaultDropzone) {
-            dropZoneElements.concat(this._find(this._options.element, 'drop'));
+            dropZoneElements.push(this._find(this._options.element, 'drop'));
         }
 
         return new qq.DragAndDrop({
