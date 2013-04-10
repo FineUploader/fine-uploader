@@ -16,7 +16,7 @@ qq.DragAndDrop = function(o) {
         callbacks: new qq.DragAndDrop.callbacks()
     };
 
-    qq.extend(options, o);
+    qq.extend(options, o, true);
 
     setupDragDrop();
 
