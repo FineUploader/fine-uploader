@@ -2,10 +2,8 @@
 qq.DragAndDrop = function(o) {
     "use strict";
 
-    var options, dz, dirPending,
+    var options, dz,
         droppedFiles = [],
-        droppedEntriesCount = 0,
-        droppedEntriesParsedCount = 0,
         disposeSupport = new qq.DisposeSupport();
 
      options = {
@@ -22,59 +20,57 @@ qq.DragAndDrop = function(o) {
 
     setupDragDrop();
 
-    function maybeUploadDroppedFiles() {
-        if (droppedEntriesCount === droppedEntriesParsedCount && !dirPending) {
-            options.callbacks.dropLog('Grabbed ' + droppedFiles.length + " files after tree traversal.");
-            dz.dropDisabled(false);
-            options.callbacks.processingDroppedFilesComplete(droppedFiles);
-        }
-    }
-    function addDroppedFile(file) {
-        droppedFiles.push(file);
-        droppedEntriesParsedCount+=1;
-        maybeUploadDroppedFiles();
+    function uploadDroppedFiles() {
+        options.callbacks.dropLog('Grabbed ' + droppedFiles.length + " files after tree traversal.");
+        dz.dropDisabled(false);
+        options.callbacks.processingDroppedFilesComplete(droppedFiles);
     }
 
     function traverseFileTree(entry) {
-        var dirReader, i;
-
-        droppedEntriesCount+=1;
+        var dirReader, i,
+            parseEntryPromise = new qq.Promise();
 
         if (entry.isFile) {
             entry.file(function(file) {
-                addDroppedFile(file);
+                droppedFiles.push(file);
+                parseEntryPromise.success();
             },
             function(fileError) {
                 options.callbacks.dropLog("Problem parsing '" + entry.fullPath + "'.  FileError code " + fileError.code + ".", "error");
-                droppedEntriesParsedCount+=1;
-                maybeUploadDroppedFiles();
+                parseEntryPromise.failure();
             });
         }
         else if (entry.isDirectory) {
-            dirPending = true;
             dirReader = entry.createReader();
             dirReader.readEntries(function(entries) {
-                droppedEntriesParsedCount+=1;
+                var entriesLeft = entries.length;
+
                 for (i = 0; i < entries.length; i+=1) {
-                    traverseFileTree(entries[i]);
+                    traverseFileTree(entries[i]).done(function() {
+                        entriesLeft-=1;
+
+                        if (entriesLeft === 0) {
+                            parseEntryPromise.success();
+                        }
+                    });
                 }
 
-                dirPending = false;
-
                 if (!entries.length) {
-                    maybeUploadDroppedFiles();
+                    parseEntryPromise.success();
                 }
             }, function(fileError) {
                 options.callbacks.dropLog("Problem parsing '" + entry.fullPath + "'.  FileError code " + fileError.code + ".", "error");
-                dirPending = false;
-                droppedEntriesParsedCount+=1;
-                maybeUploadDroppedFiles();
+                parseEntryPromise.failure();
             });
         }
+
+        return parseEntryPromise;
     }
 
     function handleDataTransfer(dataTransfer) {
-        var i, items, entry;
+        var i, items, entry,
+            pendingFolderPromises = [],
+            handleDataTransferPromise = new qq.Promise();
 
         options.callbacks.processingDroppedFiles();
         dz.dropDisabled(true);
@@ -83,11 +79,10 @@ qq.DragAndDrop = function(o) {
             options.callbacks.processingDroppedFilesComplete([]);
             options.callbacks.dropError('tooManyFilesError', "");
             dz.dropDisabled(false);
+            handleDataTransferPromise.failure();
         }
         else {
             droppedFiles = [];
-            droppedEntriesCount = 0;
-            droppedEntriesParsedCount = 0;
 
             if (qq.isFolderDropSupported(dataTransfer)) {
                 items = dataTransfer.items;
@@ -98,13 +93,15 @@ qq.DragAndDrop = function(o) {
                         //due to a bug in Chrome's File System API impl - #149735
                         if (entry.isFile) {
                             droppedFiles.push(items[i].getAsFile());
-                            if (i === items.length-1) {
-                                maybeUploadDroppedFiles();
-                            }
                         }
 
                         else {
-                            traverseFileTree(entry);
+                            pendingFolderPromises.push(traverseFileTree(entry).done(function() {
+                                pendingFolderPromises.pop();
+                                if (pendingFolderPromises.length === 0) {
+                                    handleDataTransferPromise.success();
+                                }
+                            }));
                         }
                     }
                 }
@@ -113,7 +110,13 @@ qq.DragAndDrop = function(o) {
                 options.callbacks.processingDroppedFilesComplete(dataTransfer.files);
                 dz.dropDisabled(false);
             }
+
+            if (pendingFolderPromises.length === 0) {
+                handleDataTransferPromise.success();
+            }
         }
+
+        return handleDataTransferPromise;
     }
 
     function setupDropzone(dropArea){
@@ -132,7 +135,9 @@ qq.DragAndDrop = function(o) {
                 }
                 qq(dropArea).removeClass(options.classes.dropActive);
 
-                handleDataTransfer(e.dataTransfer);
+                handleDataTransfer(e.dataTransfer).done(function() {
+                    uploadDroppedFiles();
+                });
             }
         });
 
