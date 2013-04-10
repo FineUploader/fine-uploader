@@ -43,6 +43,11 @@ qq.DragAndDrop = function(o) {
         if (entry.isFile) {
             entry.file(function(file) {
                 addDroppedFile(file);
+            },
+            function(fileError) {
+                options.callbacks.dropLog("Problem parsing '" + entry.fullPath + "'.  FileError code " + fileError.code + ".", "error");
+                droppedEntriesParsedCount+=1;
+                maybeUploadDroppedFiles();
             });
         }
         else if (entry.isDirectory) {
@@ -59,6 +64,11 @@ qq.DragAndDrop = function(o) {
                 if (!entries.length) {
                     maybeUploadDroppedFiles();
                 }
+            }, function(fileError) {
+                options.callbacks.dropLog("Problem parsing '" + entry.fullPath + "'.  FileError code " + fileError.code + ".", "error");
+                dirPending = false;
+                droppedEntriesParsedCount+=1;
+                maybeUploadDroppedFiles();
             });
         }
     }
@@ -210,8 +220,8 @@ qq.DragAndDrop.callbacks = function() {
     return {
         processingDroppedFiles: function() {},
         processingDroppedFilesComplete: function(files) {},
-        dropError: function(code, filename) {
-            qq.log("Drag & drop error code '" + code + "' on filename '" + filename + "'.", "error");
+        dropError: function(code, errorSpecifics) {
+            qq.log("Drag & drop error code '" + code + " with these specifics: '" + errorSpecifics + "'", "error");
         },
         dropLog: function(message, level) {
             qq.log(message, level);

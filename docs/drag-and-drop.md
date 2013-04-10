@@ -146,7 +146,7 @@ $('#fineUploaderBasicContainer').fineUploader({
         </tr>
         <tr>
             <td>dropError</td>
-            <td>errorCode, errorMessage</td>
+            <td>errorCode, errorRelatedData</td>
             <td>Invoked when processing the drop fails for some reason.</td>
         </tr>
         <tr>

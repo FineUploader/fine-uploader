@@ -713,10 +713,12 @@ qq.FineUploaderBasic.prototype = {
 
         return true;
     },
-    _itemError: function(code, name) {
+    _itemError: function(code, nameOrNames) {
         var message = this._options.messages[code],
             allowedExtensions = [],
-            extensionsForMessage;
+            names = [].concat(nameOrNames),
+            name = names[0],
+            extensionsForMessage, placeholderMatch;
 
         function r(name, replacement){ message = message.replace(name, replacement); }
 
@@ -736,6 +738,13 @@ qq.FineUploaderBasic.prototype = {
         r('{extensions}', extensionsForMessage);
         r('{sizeLimit}', this._formatSize(this._options.validation.sizeLimit));
         r('{minSizeLimit}', this._formatSize(this._options.validation.minSizeLimit));
+
+        placeholderMatch = message.match(/(\{\w+\})/g);
+        if (placeholderMatch !== null) {
+            qq.each(placeholderMatch, function(idx, placeholder) {
+                r(placeholder, names[idx]);
+            });
+        }
 
         this._options.callbacks.onError(null, name, message);
 

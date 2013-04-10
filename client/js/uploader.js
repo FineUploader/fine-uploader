@@ -241,8 +241,8 @@ qq.extend(qq.FineUploader.prototype, {
                         self.addFiles(files);
                     }
                 },
-                dropError: function(code, filename) {
-                    self._itemError(code, filename);
+                dropError: function(code, errorData) {
+                    self._itemError(code, errorData);
                 },
                 dropLog: function(message, level) {
                     self.log(message, level);
