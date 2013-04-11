@@ -55,9 +55,8 @@ public class UploadReceiver extends HttpServlet
     public void doOptions(HttpServletRequest req, HttpServletResponse resp)
     {
         resp.setStatus(SUCCESS_RESPONSE_CODE);
-//        resp.addHeader("Access-Control-Allow-Origin", "http://192.168.130.118:8080");
+        resp.addHeader("Access-Control-Allow-Origin", "http://192.168.130.118:8080");
 //        resp.addHeader("Access-Control-Allow-Credentials", "true");
-        resp.addHeader("Access-Control-Allow-Origin", "*");
         resp.addHeader("Access-Control-Allow-Methods", "POST, DELETE");
         resp.addHeader("Access-Control-Allow-Headers", "x-requested-with, cache-control, content-type");
     }
@@ -208,25 +207,30 @@ public class UploadReceiver extends HttpServlet
         }
     }
 
-    private File mergeFiles(File outputFile, File partFile) throws Exception
-   	{
-   		FileOutputStream fos;
-   		FileInputStream fis;
-   		byte[] fileBytes;
-   		int bytesRead = 0;
-   		fos = new FileOutputStream(outputFile, true);
-   		fis = new FileInputStream(partFile);
-   		fileBytes = new byte[(int) partFile.length()];
-   		bytesRead = fis.read(fileBytes, 0,(int)  partFile.length());
-   		assert(bytesRead == fileBytes.length);
-   		assert(bytesRead == (int) partFile.length());
-   		fos.write(fileBytes);
-   		fos.flush();
-   		fis.close();
-   		fos.close();
+    private File mergeFiles(File outputFile, File partFile) throws IOException
+    {
+        FileOutputStream fos = new FileOutputStream(outputFile, true);
 
-   		return outputFile;
-   	}
+        try
+        {
+            FileInputStream fis = new FileInputStream(partFile);
+
+            try
+            {
+                IOUtils.copy(fis, fos);
+            }
+            finally
+            {
+                IOUtils.closeQuietly(fis);
+            }
+        }
+        finally
+        {
+            IOUtils.closeQuietly(fos);
+        }
+
+        return outputFile;
+    }
 
     private File writeFile(InputStream in, File out, Long expectedFileSize) throws IOException
     {
@@ -288,6 +292,7 @@ public class UploadReceiver extends HttpServlet
 //                }
 //                else
 //                {
+
                     writer.print("{\"error\": \"" + failureReason + "\"}");
 //                }
             }
