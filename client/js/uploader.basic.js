@@ -124,7 +124,9 @@ qq.FineUploaderBasic = function(o){
     this._autoRetries = [];
     this._retryTimeouts = [];
     this._preventRetries = [];
-    this._netFilesUploadedOrQueued = 0;
+
+    this._netUploadedOrQueued = 0;
+    this._netUploaded = 0;
 
     this._paramsStore = this._createParamsStore("request");
     this._deleteFileParamsStore = this._createParamsStore("deleteFile");
@@ -183,8 +185,11 @@ qq.FineUploaderBasic.prototype = {
             this._endpointStore.setEndpoint(endpoint, id);
         }
     },
-    getInProgress: function(){
+    getInProgress: function() {
         return this._filesInProgress.length;
+    },
+    getNetUploads: function() {
+        return this._netUploaded;
     },
     uploadStoredFiles: function(){
         "use strict";
@@ -201,7 +206,7 @@ qq.FineUploaderBasic.prototype = {
     },
     retry: function(id) {
         if (this._onBeforeManualRetry(id)) {
-            this._netFilesUploadedOrQueued++;
+            this._netUploadedOrQueued++;
             this._handler.retry(id);
             return true;
         }
@@ -234,7 +239,8 @@ qq.FineUploaderBasic.prototype = {
         this._button.reset();
         this._paramsStore.reset();
         this._endpointStore.reset();
-        this._netFilesUploadedOrQueued = 0;
+        this._netUploadedOrQueued = 0;
+        this._netUploaded = 0;
 
         if (this._pasteHandler) {
             this._pasteHandler.reset();
@@ -481,7 +487,7 @@ qq.FineUploaderBasic.prototype = {
         });
     },
     _onSubmit: function(id, name) {
-        this._netFilesUploadedOrQueued++;
+        this._netUploadedOrQueued++;
 
         if (this._options.autoUpload) {
             this._filesInProgress.push(id);
@@ -491,14 +497,17 @@ qq.FineUploaderBasic.prototype = {
     },
     _onComplete: function(id, name, result, xhr) {
         if (!result.success) {
-            this._netFilesUploadedOrQueued--;
+            this._netUploadedOrQueued--;
+        }
+        else {
+            this._netUploaded++;
         }
 
         this._removeFromFilesInProgress(id);
         this._maybeParseAndSendUploadError(id, name, result, xhr);
     },
     _onCancel: function(id, name){
-        this._netFilesUploadedOrQueued--;
+        this._netUploadedOrQueued--;
 
         this._removeFromFilesInProgress(id);
 
@@ -537,7 +546,8 @@ qq.FineUploaderBasic.prototype = {
             this._options.callbacks.onError(id, name, "Delete request failed with response code " + xhr.status, xhr);
         }
         else {
-            this._netFilesUploadedOrQueued--;
+            this._netUploadedOrQueued--;
+            this._netUploaded--;
             this.log("Delete request for '" + name + "' has succeeded.");
         }
     },
@@ -590,7 +600,7 @@ qq.FineUploaderBasic.prototype = {
                 return false;
             }
 
-            if (itemLimit > 0 && this._netFilesUploadedOrQueued+1 > itemLimit) {
+            if (itemLimit > 0 && this._netUploadedOrQueued+1 > itemLimit) {
                 this._itemError("retryFailTooManyItems", "");
                 return false;
             }
@@ -661,7 +671,7 @@ qq.FineUploaderBasic.prototype = {
         //first, defer the check to the callback (ask the integrator)
         var errorMessage,
             itemLimit = this._options.validation.itemLimit,
-            proposedNetFilesUploadedOrQueued = this._netFilesUploadedOrQueued + validationDescriptors.length,
+            proposedNetFilesUploadedOrQueued = this._netUploadedOrQueued + validationDescriptors.length,
             batchValid = this._options.callbacks.onValidateBatch(validationDescriptors) !== false;
 
         //if the callback hasn't rejected the batch, run some internal tests on the batch next

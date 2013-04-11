@@ -9,6 +9,7 @@ You can either change the endpoint for a specific file or `Blob`, or for all fil
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files and `Blob`s.
 * `clearStoredFiles()` - Clears the internal list of stored files and `Blob`s.  Only applicable when `autoUpload` is set to false.
 * `getInProgress()` - Returns the number of files or `Blob`s that are either currently uploading or waiting in line to be uploaded.
+* `getNetUploads()` - Returns the number of files or `Blob`s that have both been successfully uploaded and have NOT been deleted.
 * `retry(String id)` - Orders the uploader to make another attempt at uploading a specific file or `Blob`.  A NO-OP if the server
 prohibits retries on a failed file via the <code>preventRetryResponseProperty</code>.  Note that this operation does
 respect the <code>maxConnections</code> value, so if all connections are accounted for, the retry attempt will be queued
