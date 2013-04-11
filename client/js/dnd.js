@@ -20,10 +20,10 @@ qq.DragAndDrop = function(o) {
 
     setupDragDrop();
 
-    function uploadDroppedFiles() {
-        options.callbacks.dropLog('Grabbed ' + droppedFiles.length + " files after tree traversal.");
+    function uploadDroppedFiles(files) {
+        options.callbacks.dropLog('Grabbed ' + files.length + " dropped files.");
         dz.dropDisabled(false);
-        options.callbacks.processingDroppedFilesComplete(droppedFiles);
+        options.callbacks.processingDroppedFilesComplete(files);
     }
 
     function traverseFileTree(entry) {
@@ -107,8 +107,7 @@ qq.DragAndDrop = function(o) {
                 }
             }
             else {
-                options.callbacks.processingDroppedFilesComplete(dataTransfer.files);
-                dz.dropDisabled(false);
+                droppedFiles = dataTransfer.files;
             }
 
             if (pendingFolderPromises.length === 0) {
@@ -136,7 +135,7 @@ qq.DragAndDrop = function(o) {
                 qq(dropArea).removeClass(options.classes.dropActive);
 
                 handleDataTransfer(e.dataTransfer).done(function() {
-                    uploadDroppedFiles();
+                    uploadDroppedFiles(droppedFiles);
                 });
             }
         });
