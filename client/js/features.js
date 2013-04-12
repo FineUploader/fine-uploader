@@ -2,10 +2,11 @@ qq(window).attach("load", function() {
     "use strict";
 
     qq.supportedFeatures = (function() {
-        var supportsFileInputElement,
-            supportsAjaxFileUploading,
-            supportsFolderDrop,
-            supportsChunking;
+        var supportsUploading = false,
+            supportsAjaxFileUploading = false,
+            supportsFolderDrop = false,
+            supportsChunking = false,
+            supportsResume = false;
 
 
         function testSupportsFileInputElement() {
@@ -40,19 +41,20 @@ qq(window).attach("load", function() {
                 navigator.userAgent.match(/Chrome\/[2][1-9]|Chrome\/[3-9][0-9]/) !== undefined;
         }
 
-        supportsFileInputElement = testSupportsFileInputElement();
-        supportsAjaxFileUploading = qq.isXhrUploadSupported();
-        supportsFolderDrop = isChrome21OrHigher();
-        supportsChunking = qq.isFileChunkingSupported();
+        supportsUploading = testSupportsFileInputElement();
+        supportsAjaxFileUploading = supportsUploading && qq.isXhrUploadSupported();
+        supportsFolderDrop = supportsAjaxFileUploading && isChrome21OrHigher();
+        supportsChunking = supportsAjaxFileUploading && qq.isFileChunkingSupported();
+        supportsResume = supportsAjaxFileUploading && supportsChunking && qq.areCookiesEnabled();
 
 
         return {
-            uploading: supportsFileInputElement || supportsAjaxFileUploading,
+            uploading: supportsUploading,
             ajaxUploading: supportsAjaxFileUploading,
             fileDrop: supportsAjaxFileUploading, //NOTE: will also return true for touch-only devices.  It's not currently possible to accurately test for touch-only devices
-            folderDrop: supportsAjaxFileUploading && supportsFolderDrop,
-            chunking: supportsAjaxFileUploading && supportsChunking,
-            resume: supportsAjaxFileUploading && supportsChunking && qq.areCookiesEnabled()
+            folderDrop: supportsFolderDrop,
+            chunking: supportsChunking,
+            resume: supportsResume
         }
 
     }());
