@@ -1,8 +1,7 @@
 ## Feature Detection Module ##
 
 Fine Uploader, since version 3.5, provides a set of flags that can be used to determine which features are supported in
-the current browser.  These flags are set during initialization of the uploader (after the `window` "onLoad" event has been
-handled by the `qq.supportedFeatures` module).
+the current browser.  These flags are set during initialization of the uploader.
 
 <br/>
 Reading the feature flags in the feature detection module is easy.  Each flag has a boolean value.  Simply call
