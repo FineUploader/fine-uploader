@@ -135,7 +135,10 @@ qq.FineUploader = function(o){
     // overwrite options with user supplied
     qq.extend(this._options, o, true);
 
-    if (qq.supportedFeatures.uploading) {
+    if (!qq.supportedFeatures.uploading || (this._options.cors.expected && !qq.supportedFeatures.uploadCors)) {
+        this._options.element.innerHTML = "<div>" + this._options.messages.unsupportedBrowser + "</div>"
+    }
+    else {
         this._wrapCallbacks();
 
         // overwrite the upload button text if any
@@ -165,9 +168,6 @@ qq.FineUploader = function(o){
         if (this._options.paste.targetElement && this._options.paste.promptForName) {
             this._setupPastePrompt();
         }
-    }
-    else {
-        this._options.element.innerHTML = "<div>" + this._options.messages.unsupportedBrowser + "</div>"
     }
 };
 
@@ -321,7 +321,7 @@ qq.extend(qq.FineUploader.prototype, {
         qq(item).removeClass(this._classes.retrying);
         qq(this._find(item, 'progressBar')).hide();
 
-        if (!this._options.disableCancelForFormUploads || qq.isXhrUploadSupported()) {
+        if (!this._options.disableCancelForFormUploads || qq.supportedFeatures.ajaxUploading) {
             qq(this._find(item, 'cancel')).hide();
         }
         qq(this._find(item, 'spinner')).hide();
@@ -455,7 +455,7 @@ qq.extend(qq.FineUploader.prototype, {
     },
     _addToList: function(id, name){
         var item = qq.toElement(this._options.fileTemplate);
-        if (this._options.disableCancelForFormUploads && !qq.isXhrUploadSupported()) {
+        if (this._options.disableCancelForFormUploads && !qq.supportedFeatures.ajaxUploading) {
             var cancelLink = this._find(item, 'cancel');
             qq(cancelLink).remove();
         }
@@ -472,7 +472,7 @@ qq.extend(qq.FineUploader.prototype, {
 
         this._listElement.appendChild(item);
 
-        if (this._options.display.fileSizeOnSubmit && qq.isXhrUploadSupported()) {
+        if (this._options.display.fileSizeOnSubmit && qq.supportedFeatures.ajaxUploading) {
             this._displayFileSize(id);
         }
     },
@@ -575,7 +575,7 @@ qq.extend(qq.FineUploader.prototype, {
         spinnerEl.style.display = "inline-block";
     },
     _showCancelLink: function(item) {
-        if (!this._options.disableCancelForFormUploads || qq.isXhrUploadSupported()) {
+        if (!this._options.disableCancelForFormUploads || qq.supportedFeatures.ajaxUploading) {
             var cancelLink = this._find(item, 'cancel');
 
             qq(cancelLink).css({display: 'inline'});

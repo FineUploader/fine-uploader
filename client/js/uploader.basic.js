@@ -330,7 +330,7 @@ qq.FineUploaderBasic.prototype = {
 
         var button = new qq.UploadButton({
             element: element,
-            multiple: this._options.multiple && qq.isXhrUploadSupported(),
+            multiple: this._options.multiple && qq.supportedFeatures.ajaxUploading,
             acceptFiles: this._options.validation.acceptFiles,
             onChange: function(input){
                 self._onInputChange(input);
@@ -520,10 +520,7 @@ qq.FineUploaderBasic.prototype = {
     },
     _isDeletePossible: function() {
         return (this._options.deleteFile.enabled &&
-            (!this._options.cors.expected ||
-                (this._options.cors.expected && (qq.ie10() || !qq.ie()))
-                )
-            );
+            (!this._options.cors.expected || qq.supportedFeatures.deleteFileCors));
     },
     _onSubmitDelete: function(id) {
         if (this._isDeletePossible()) {
@@ -559,7 +556,7 @@ qq.FineUploaderBasic.prototype = {
     },
     _onUpload: function(id, name){},
     _onInputChange: function(input){
-        if (qq.isXhrUploadSupported()){
+        if (qq.supportedFeatures.ajaxUploading){
             this.addFiles(input.files);
         } else {
             this.addFiles(input);

@@ -78,7 +78,7 @@ qq.UploadHandler = function(o) {
         }
     };
 
-    if (qq.isXhrUploadSupported()) {
+    if (qq.supportedFeatures.ajaxUploading) {
         handlerImpl = new qq.UploadHandlerXhr(options, dequeue, log);
     }
     else {
