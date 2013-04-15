@@ -137,6 +137,7 @@ Thanks to everybody who contributed, either by sending bug reports or donating. 
 <br/>
 ## Additional Reading ##
 * [Frequently Asked Questions (FAQ)](docs/faq.md)
+* [Supported Feature Detection module](docs/feature-detection.md)
 * [Styling FineUploader](docs/styling.md)
 * [Changing alert/messages to something more user friendly](docs/styling.md#changing-dialogs-to-something-more-user-friendly)
 * [qQuery (Public Utility Functions)](docs/qquery.md)
