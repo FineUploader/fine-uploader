@@ -82,7 +82,7 @@ $('#fineUploaderBasicContainer').fineUploader({
     </thead>
     <tbody>
         <tr>
-            <td>dropZoneElemenets</td>
+            <td>dropZoneElements</td>
             <td>array of HTML elements</td>
             <td>[]</td>
             <td>Use this option to specify all container elements that should be treated as drop zones by the module.</td>
