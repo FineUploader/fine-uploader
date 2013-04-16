@@ -78,7 +78,8 @@ qq.FineUploader = function(o){
             enableTooltip: true
         },
         messages: {
-            tooManyFilesError: "You may only drop one file"
+            tooManyFilesError: "You may only drop one file",
+            unsupportedBrowser: "Unrecoverable error - this browser does not permit file uploading of any kind."
         },
         retry: {
             showAutoRetryNote: true,
@@ -133,34 +134,40 @@ qq.FineUploader = function(o){
 
     // overwrite options with user supplied
     qq.extend(this._options, o, true);
-    this._wrapCallbacks();
 
-    // overwrite the upload button text if any
-    // same for the Cancel button and Fail message text
-    this._options.template     = this._options.template.replace(/\{dragZoneText\}/g, this._options.text.dragZone);
-    this._options.template     = this._options.template.replace(/\{uploadButtonText\}/g, this._options.text.uploadButton);
-    this._options.template     = this._options.template.replace(/\{dropProcessingText\}/g, this._options.text.dropProcessing);
-    this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.text.cancelButton);
-    this._options.fileTemplate = this._options.fileTemplate.replace(/\{retryButtonText\}/g, this._options.text.retryButton);
-    this._options.fileTemplate = this._options.fileTemplate.replace(/\{deleteButtonText\}/g, this._options.text.deleteButton);
-    this._options.fileTemplate = this._options.fileTemplate.replace(/\{statusText\}/g, "");
-
-    this._element = this._options.element;
-    this._element.innerHTML = this._options.template;
-    this._listElement = this._options.listElement || this._find(this._element, 'list');
-
-    this._classes = this._options.classes;
-
-    if (!this._button) {
-        this._button = this._createUploadButton(this._find(this._element, 'button'));
+    if (!qq.supportedFeatures.uploading || (this._options.cors.expected && !qq.supportedFeatures.uploadCors)) {
+        this._options.element.innerHTML = "<div>" + this._options.messages.unsupportedBrowser + "</div>"
     }
+    else {
+        this._wrapCallbacks();
 
-    this._bindCancelAndRetryEvents();
+        // overwrite the upload button text if any
+        // same for the Cancel button and Fail message text
+        this._options.template     = this._options.template.replace(/\{dragZoneText\}/g, this._options.text.dragZone);
+        this._options.template     = this._options.template.replace(/\{uploadButtonText\}/g, this._options.text.uploadButton);
+        this._options.template     = this._options.template.replace(/\{dropProcessingText\}/g, this._options.text.dropProcessing);
+        this._options.fileTemplate = this._options.fileTemplate.replace(/\{cancelButtonText\}/g, this._options.text.cancelButton);
+        this._options.fileTemplate = this._options.fileTemplate.replace(/\{retryButtonText\}/g, this._options.text.retryButton);
+        this._options.fileTemplate = this._options.fileTemplate.replace(/\{deleteButtonText\}/g, this._options.text.deleteButton);
+        this._options.fileTemplate = this._options.fileTemplate.replace(/\{statusText\}/g, "");
 
-    this._dnd = this._setupDragAndDrop();
+        this._element = this._options.element;
+        this._element.innerHTML = this._options.template;
+        this._listElement = this._options.listElement || this._find(this._element, 'list');
 
-    if (this._options.paste.targetElement && this._options.paste.promptForName) {
-        this._setupPastePrompt();
+        this._classes = this._options.classes;
+
+        if (!this._button) {
+            this._button = this._createUploadButton(this._find(this._element, 'button'));
+        }
+
+        this._bindCancelAndRetryEvents();
+
+        this._dnd = this._setupDragAndDrop();
+
+        if (this._options.paste.targetElement && this._options.paste.promptForName) {
+            this._setupPastePrompt();
+        }
     }
 };
 
@@ -314,7 +321,7 @@ qq.extend(qq.FineUploader.prototype, {
         qq(item).removeClass(this._classes.retrying);
         qq(this._find(item, 'progressBar')).hide();
 
-        if (!this._options.disableCancelForFormUploads || qq.isXhrUploadSupported()) {
+        if (!this._options.disableCancelForFormUploads || qq.supportedFeatures.ajaxUploading) {
             qq(this._find(item, 'cancel')).hide();
         }
         qq(this._find(item, 'spinner')).hide();
@@ -448,7 +455,7 @@ qq.extend(qq.FineUploader.prototype, {
     },
     _addToList: function(id, name){
         var item = qq.toElement(this._options.fileTemplate);
-        if (this._options.disableCancelForFormUploads && !qq.isXhrUploadSupported()) {
+        if (this._options.disableCancelForFormUploads && !qq.supportedFeatures.ajaxUploading) {
             var cancelLink = this._find(item, 'cancel');
             qq(cancelLink).remove();
         }
@@ -465,7 +472,7 @@ qq.extend(qq.FineUploader.prototype, {
 
         this._listElement.appendChild(item);
 
-        if (this._options.display.fileSizeOnSubmit && qq.isXhrUploadSupported()) {
+        if (this._options.display.fileSizeOnSubmit && qq.supportedFeatures.ajaxUploading) {
             this._displayFileSize(id);
         }
     },
@@ -568,7 +575,7 @@ qq.extend(qq.FineUploader.prototype, {
         spinnerEl.style.display = "inline-block";
     },
     _showCancelLink: function(item) {
-        if (!this._options.disableCancelForFormUploads || qq.isXhrUploadSupported()) {
+        if (!this._options.disableCancelForFormUploads || qq.supportedFeatures.ajaxUploading) {
             var cancelLink = this._find(item, 'cancel');
 
             qq(cancelLink).css({display: 'inline'});
