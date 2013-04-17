@@ -246,7 +246,7 @@ qq.FineUploaderBasic.prototype = {
             this._pasteHandler.reset();
         }
     },
-    addFiles: function(filesDataOrInputs) {
+    addFiles: function(filesDataOrInputs, params, endpoint) {
         var self = this,
             verifiedFilesOrInputs = [],
             index, fileOrInput;
@@ -268,10 +268,10 @@ qq.FineUploaderBasic.prototype = {
             }
 
             this.log('Processing ' + verifiedFilesOrInputs.length + ' files or inputs...');
-            this._uploadFileOrBlobDataList(verifiedFilesOrInputs);
+            this._uploadFileOrBlobDataList(verifiedFilesOrInputs, params, endpoint);
         }
     },
-    addBlobs: function(blobDataOrArray) {
+    addBlobs: function(blobDataOrArray, params, endpoint) {
         if (blobDataOrArray) {
             var blobDataArray = [].concat(blobDataOrArray),
                 verifiedBlobDataList = [],
@@ -292,7 +292,7 @@ qq.FineUploaderBasic.prototype = {
                 }
             });
 
-            this._uploadFileOrBlobDataList(verifiedBlobDataList);
+            this._uploadFileOrBlobDataList(verifiedBlobDataList, params, endpoint);
         }
         else {
             this.log("undefined or non-array parameter passed into addBlobs", "error");
@@ -623,7 +623,7 @@ qq.FineUploaderBasic.prototype = {
             }
         }
     },
-    _uploadFileOrBlobDataList: function(fileOrBlobDataList){
+    _uploadFileOrBlobDataList: function(fileOrBlobDataList, params, endpoint) {
         var index,
             validationDescriptors = this._getValidationDescriptors(fileOrBlobDataList),
             batchValid = this._isBatchValid(validationDescriptors);
@@ -632,7 +632,7 @@ qq.FineUploaderBasic.prototype = {
             if (fileOrBlobDataList.length > 0) {
                 for (index = 0; index < fileOrBlobDataList.length; index++){
                     if (this._validateFileOrBlobData(fileOrBlobDataList[index])){
-                        this._upload(fileOrBlobDataList[index]);
+                        this._upload(fileOrBlobDataList[index], params, endpoint);
                     } else {
                         if (this._options.validation.stopOnFirstInvalidFile){
                             return;
@@ -645,9 +645,17 @@ qq.FineUploaderBasic.prototype = {
             }
         }
     },
-    _upload: function(blobOrFileContainer){
+    _upload: function(blobOrFileContainer, params, endpoint) {
         var id = this._handler.add(blobOrFileContainer);
         var name = this._handler.getName(id);
+
+        if (params) {
+            this.setParams(params, id);
+        }
+
+        if (endpoint) {
+            this.setEndpoint(endpoint, id);
+        }
 
         if (this._options.callbacks.onSubmit(id, name) !== false) {
             this._onSubmit(id, name);
