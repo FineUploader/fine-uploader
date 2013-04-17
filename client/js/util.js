@@ -177,7 +177,7 @@ qq.trimStr = function(string) {
 
 qq.isFileOrInput = function(maybeFileOrInput) {
     "use strict";
-    if (qq.isBlob(maybeFileOrInput) && window.File && maybeFileOrInput instanceof File) {
+    if (window.File && maybeFileOrInput instanceof File) {
         return true;
     }
     else if (window.HTMLInputElement) {
@@ -200,7 +200,7 @@ qq.isFileOrInput = function(maybeFileOrInput) {
 
 qq.isBlob = function(maybeBlob) {
     "use strict";
-    return window.Blob && maybeBlob instanceof Blob;
+    return window.Blob && Object.prototype.toString.call(maybeBlob) === '[object Blob]';
 };
 
 qq.isXhrUploadSupported = function() {

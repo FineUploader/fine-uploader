@@ -246,18 +246,18 @@ qq.FineUploaderBasic.prototype = {
             this._pasteHandler.reset();
         }
     },
-    addFiles: function(filesBlobDataOrInputs) {
+    addFiles: function(filesDataOrInputs) {
         var self = this,
             verifiedFilesOrInputs = [],
             index, fileOrInput;
 
-        if (filesBlobDataOrInputs) {
-            if (!window.FileList || !(filesBlobDataOrInputs instanceof FileList)) {
-                filesBlobDataOrInputs = [].concat(filesBlobDataOrInputs);
+        if (filesDataOrInputs) {
+            if (!window.FileList || !(filesDataOrInputs instanceof FileList)) {
+                filesDataOrInputs = [].concat(filesDataOrInputs);
             }
 
-            for (index = 0; index < filesBlobDataOrInputs.length; index+=1) {
-                fileOrInput = filesBlobDataOrInputs[index];
+            for (index = 0; index < filesDataOrInputs.length; index+=1) {
+                fileOrInput = filesDataOrInputs[index];
 
                 if (qq.isFileOrInput(fileOrInput)) {
                     verifiedFilesOrInputs.push(fileOrInput);
