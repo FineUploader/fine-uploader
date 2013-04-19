@@ -3,10 +3,6 @@
  *
  * Licensed under GNU GPL v3, see license.txt.
  */
-.qq-uploader {
-    position: relative;
-    width: 100%;
-}
 .qq-upload-button {
     display: block;
     width: 105px;
