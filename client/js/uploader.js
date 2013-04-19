@@ -509,7 +509,7 @@ qq.extend(qq.FineUploader.prototype, {
 
                 var item = target.parentNode;
                 while(item.qqFileId === undefined) {
-                    item = target = target.parentNode;
+                    item = item.parentNode;
                 }
 
                 if (qq(target).hasClass(self._classes.deleteButton)) {
