@@ -870,7 +870,7 @@ qq.FineUploaderBasic.prototype = {
         size = this._parseFileOrBlobDataSize(fileOrBlobData);
 
         fileDescriptor.name = name;
-        if (size) {
+        if (size !== undefined) {
             fileDescriptor.size = size;
         }
 
