@@ -1,4 +1,4 @@
-# Fine Uploader 3.5 (IN PROGRESS) #
+# Fine Uploader 3.5 (RELEASE CANDIDATE 1 - Release Pending) #
 
 ###[Download the 3.4.1 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 
