@@ -18,7 +18,7 @@ If you believe you have discovered a bug, please include the following informati
 ## Pull Requests ##
 When opening up a new pull request, please be sure (and note) that you have at least tested your changes in a browser that
 supports the File API (Chrome, Firefox, Safari, IE10) as well as a browser that does not support the File API (IE9 or older).
-Also, please note that all pull requests should be against a branch that ends in "-IP", and not master.
+Also, please note that all pull requests should be against a branch that ends in "-IP", and NOT master.
 
 
 Thank you!
