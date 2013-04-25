@@ -2,7 +2,7 @@
 
 ###[Download the 3.5 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 
-###[3.5 change summary](http://blog.fineuploader.com/2013/03/fine-uploader-34.html)###
+###[3.5 change summary](http://blog.fineuploader.com/2013/04/fine-uploader-35.html)###
 
 ###Leave your thoughts on the ["upload directly from a camera" case](https://github.com/Widen/fine-uploader/issues/389#issuecomment-15937234) ###
 
