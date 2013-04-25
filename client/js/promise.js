@@ -3,7 +3,7 @@ qq.Promise = function() {
     "use strict";
 
     var successValue, failureValue,
-        successCallback, failureCallback,
+        successCallback, failureCallback, doneCallback,
         state = 0;
 
     return {
@@ -18,6 +18,19 @@ qq.Promise = function() {
             else if (onSuccess) {
                 onSuccess(successValue);
             }
+
+            return this;
+        },
+
+        done: function(callback) {
+            if (state === 0) {
+                doneCallback = callback;
+            }
+            else {
+                callback();
+            }
+
+            return this;
         },
 
         success: function(val) {
@@ -26,6 +39,10 @@ qq.Promise = function() {
 
             if (successCallback) {
                 successCallback(val);
+            }
+
+            if(doneCallback) {
+                doneCallback();
             }
 
             return this;
@@ -37,6 +54,10 @@ qq.Promise = function() {
 
             if (failureCallback) {
                 failureCallback(val);
+            }
+
+            if(doneCallback) {
+                doneCallback();
             }
 
             return this;

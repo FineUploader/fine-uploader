@@ -66,6 +66,7 @@ $(document).ready(function() {
 
     $('#manualUploadModeExample').fineUploader({
         autoUpload: false,
+        debug: true,
         uploadButtonText: "Select Files",
         request: {
             endpoint: "/upload/receiver"
@@ -85,6 +86,7 @@ $(document).ready(function() {
             endpoint: "/upload/receiver",
             params: {"generateError": "true"}
         },
+        debug: true,
         failedUploadTextDisplay: {
             mode: 'custom',
             maxChars: 5
@@ -101,6 +103,7 @@ $(document).ready(function() {
         request: {
             endpoint: "/upload/receiver"
         },
+        debug: true,
         validation: {
             allowedExtensions: ['jpeg', 'jpg', 'txt'],
             sizeLimit: 50000,
@@ -118,6 +121,7 @@ $(document).ready(function() {
     $('#fubExample').fineUploader({
         uploaderType: 'basic',
         multiple: false,
+        debug: true,
         autoUpload: false,
         button: $("#fubUploadButton"),
         request: {

@@ -59,6 +59,13 @@ name supplied by the user.
             call has executed.</td>
         </tr>
         <tr>
+            <td>done</td>
+            <td>(function)callback</td>
+            <td>promise instance</td>
+            <td>Call this on a promise instance to register your callbacks for success OR failure.  This callback will be
+            invoked when the promise is fulfilled, regardless of the result.</td>
+        </tr>
+        <tr>
             <td>success</td>
             <td>result</td>
             <td>promise instance</td>

@@ -9,6 +9,7 @@ You can either change the endpoint for a specific file or `Blob`, or for all fil
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files and `Blob`s.
 * `clearStoredFiles()` - Clears the internal list of stored files and `Blob`s.  Only applicable when `autoUpload` is set to false.
 * `getInProgress()` - Returns the number of files or `Blob`s that are either currently uploading or waiting in line to be uploaded.
+* `getNetUploads()` - Returns the number of files or `Blob`s that have both been successfully uploaded and have NOT been deleted.
 * `retry(String id)` - Orders the uploader to make another attempt at uploading a specific file or `Blob`.  A NO-OP if the server
 prohibits retries on a failed file via the <code>preventRetryResponseProperty</code>.  Note that this operation does
 respect the <code>maxConnections</code> value, so if all connections are accounted for, the retry attempt will be queued
@@ -19,16 +20,19 @@ until a connection opens up.
 calling this function will reset all UI elements to the state they exsited in immediately after initialization.  In FineUploaderBasic,
 this resets all internal variables to the state they existed in immediately after initialization.  If you are using FineUploaderBasic,
 it is up to you to "reset" any of your UI elements.
-* `addFiles(filesOrInputs)` - Use this if you would like to submit files to the uploader.  This may be useful if you have
-a method of gathering files that does not include Fine Uploader's input button or the drag & drop support built into FineUploader.
-This function accepts the following types: `File`, `input` element, or a collection of any of these types, provided the
-collection object contains an (integer) index property for each contained item.
-* `addBlobs(blobDataArray)` - Allows you to submit one or more `Blob` objects to be uploaded.  This is expected to be an array
-of `BlobData` objects.  A `BlobData` object is simply defined by the following convention: an object with a `name` property
-(used to assoicate a name with the `Blob`) and a `blob` property (with a value equal to the `Blob` you would like to upload).
-Note that you may also simply pass one `Blob` or an array of `Blob` objects.  In each of these last two cases, a default name,
-defined in the `blobs` option, will be used.  Also note that your `Blob` objects must be `Blob` objects, but not `File` objects.
-In other words, `Blob` subtypes are not acceptable.  If you would like to upload `File` objects via the API, do so via the `addFiles` function.
+* `addFiles(filesOrInputs, (optional) params, (optional) endpoint)` - Use this if you would like to submit files to the uploader.
+This may be useful if you have a method of gathering files that does not include Fine Uploader's input button or the drag & drop
+support built into FineUploader.  This function accepts the following types: `File`, `input` element, or a collection of
+any of these types, provided the collection object contains an (integer) index property for each contained item.  Note
+that you can also pass parameters and/or an endpoint to associate with the passed file(s) or input(s).
+* `addBlobs(blobDataArray, (optional) params, (optional) endpoint)` - Allows you to submit one or more `Blob` objects to
+be uploaded.  This is expected to be an array of `BlobData` objects.  A `BlobData` object is simply defined by the
+following convention: an object with a `name` property (used to assoicate a name with the `Blob`) and a `blob` property
+(with a value equal to the `Blob` you would like to upload).  Note that you may also simply pass one `Blob` or an array
+of `Blob` objects.  In each of these last two cases, a default name, defined in the `blobs` option, will be used.  Also
+note that your `Blob` objects must be `Blob` objects, but not `File` objects.  In other words, `Blob` subtypes are not
+acceptable.  If you would like to upload `File` objects via the API, do so via the `addFiles` function.  Note that you
+can also pass parameters and/or an endpoint to associate with the passed `Blob` object(s).
 * `getResumableFilesData()` - Returns an array of objects, each describing a file that is potentially resumable by this uploader instance.
 If a `resume.id` property has been set, this is taken into consideration.  Each resumable file is represented by an object with the
 following properties: `name` - filename, `size` - file size, `uuid` - unique ID associated w/ the file, `partIdx` - index of the part where

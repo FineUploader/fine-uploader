@@ -2,85 +2,87 @@
 qq.DragAndDrop = function(o) {
     "use strict";
 
-    var options, dz, dirPending,
+    var options, dz,
         droppedFiles = [],
-        droppedEntriesCount = 0,
-        droppedEntriesParsedCount = 0,
         disposeSupport = new qq.DisposeSupport();
 
      options = {
-        dropArea: null,
-        extraDropzones: [],
-        hideDropzones: true,
-        multiple: true,
+        dropZoneElements: [],
+        hideDropZonesBeforeEnter: false,
+        allowMultipleItems: true,
         classes: {
             dropActive: null
         },
-        callbacks: {
-            dropProcessing: function(isProcessing, files) {},
-            error: function(code, filename) {},
-            log: function(message, level) {}
-        }
+        callbacks: new qq.DragAndDrop.callbacks()
     };
 
-    qq.extend(options, o);
+    qq.extend(options, o, true);
 
-    function maybeUploadDroppedFiles() {
-        if (droppedEntriesCount === droppedEntriesParsedCount && !dirPending) {
-            options.callbacks.log('Grabbed ' + droppedFiles.length + " files after tree traversal.");
-            dz.dropDisabled(false);
-            options.callbacks.dropProcessing(false, droppedFiles);
-        }
-    }
-    function addDroppedFile(file) {
-        droppedFiles.push(file);
-        droppedEntriesParsedCount+=1;
-        maybeUploadDroppedFiles();
+    setupDragDrop();
+
+    function uploadDroppedFiles(files) {
+        options.callbacks.dropLog('Grabbed ' + files.length + " dropped files.");
+        dz.dropDisabled(false);
+        options.callbacks.processingDroppedFilesComplete(files);
     }
 
     function traverseFileTree(entry) {
-        var dirReader, i;
-
-        droppedEntriesCount+=1;
+        var dirReader, i,
+            parseEntryPromise = new qq.Promise();
 
         if (entry.isFile) {
             entry.file(function(file) {
-                addDroppedFile(file);
+                droppedFiles.push(file);
+                parseEntryPromise.success();
+            },
+            function(fileError) {
+                options.callbacks.dropLog("Problem parsing '" + entry.fullPath + "'.  FileError code " + fileError.code + ".", "error");
+                parseEntryPromise.failure();
             });
         }
         else if (entry.isDirectory) {
-            dirPending = true;
             dirReader = entry.createReader();
             dirReader.readEntries(function(entries) {
-                droppedEntriesParsedCount+=1;
-                for (i = 0; i < entries.length; i+=1) {
-                    traverseFileTree(entries[i]);
-                }
+                var entriesLeft = entries.length;
 
-                dirPending = false;
+                for (i = 0; i < entries.length; i+=1) {
+                    traverseFileTree(entries[i]).done(function() {
+                        entriesLeft-=1;
+
+                        if (entriesLeft === 0) {
+                            parseEntryPromise.success();
+                        }
+                    });
+                }
 
                 if (!entries.length) {
-                    maybeUploadDroppedFiles();
+                    parseEntryPromise.success();
                 }
+            }, function(fileError) {
+                options.callbacks.dropLog("Problem parsing '" + entry.fullPath + "'.  FileError code " + fileError.code + ".", "error");
+                parseEntryPromise.failure();
             });
         }
+
+        return parseEntryPromise;
     }
 
     function handleDataTransfer(dataTransfer) {
-        var i, items, entry;
+        var i, items, entry,
+            pendingFolderPromises = [],
+            handleDataTransferPromise = new qq.Promise();
 
-        options.callbacks.dropProcessing(true);
+        options.callbacks.processingDroppedFiles();
         dz.dropDisabled(true);
 
-        if (dataTransfer.files.length > 1 && !options.multiple) {
-            options.callbacks.dropProcessing(false);
-            options.callbacks.error('tooManyFilesError', "");
+        if (dataTransfer.files.length > 1 && !options.allowMultipleItems) {
+            options.callbacks.processingDroppedFilesComplete([]);
+            options.callbacks.dropError('tooManyFilesError', "");
             dz.dropDisabled(false);
+            handleDataTransferPromise.failure();
         }
         else {
             droppedFiles = [];
-            droppedEntriesCount = 0;
-            droppedEntriesParsedCount = 0;
 
             if (qq.isFolderDropSupported(dataTransfer)) {
                 items = dataTransfer.items;
@@ -91,22 +93,29 @@ qq.DragAndDrop = function(o) {
                         //due to a bug in Chrome's File System API impl - #149735
                         if (entry.isFile) {
                             droppedFiles.push(items[i].getAsFile());
-                            if (i === items.length-1) {
-                                maybeUploadDroppedFiles();
-                            }
                         }
 
                         else {
-                            traverseFileTree(entry);
+                            pendingFolderPromises.push(traverseFileTree(entry).done(function() {
+                                pendingFolderPromises.pop();
+                                if (pendingFolderPromises.length === 0) {
+                                    handleDataTransferPromise.success();
+                                }
+                            }));
                         }
                     }
                 }
             }
             else {
-                options.callbacks.dropProcessing(false, dataTransfer.files);
-                dz.dropDisabled(false);
+                droppedFiles = dataTransfer.files;
+            }
+
+            if (pendingFolderPromises.length === 0) {
+                handleDataTransferPromise.success();
             }
         }
+
+        return handleDataTransferPromise;
     }
 
     function setupDropzone(dropArea){
@@ -120,12 +129,14 @@ qq.DragAndDrop = function(o) {
                 qq(dropArea).removeClass(options.classes.dropActive);
             },
             onDrop: function(e){
-                if (options.hideDropzones) {
+                if (options.hideDropZonesBeforeEnter) {
                     qq(dropArea).hide();
                 }
                 qq(dropArea).removeClass(options.classes.dropActive);
 
-                handleDataTransfer(e.dataTransfer);
+                handleDataTransfer(e.dataTransfer).done(function() {
+                    uploadDroppedFiles(droppedFiles);
+                });
             }
         });
 
@@ -133,7 +144,7 @@ qq.DragAndDrop = function(o) {
             dz.dispose();
         });
 
-        if (options.hideDropzones) {
+        if (options.hideDropZonesBeforeEnter) {
             qq(dropArea).hide();
         }
     }
@@ -152,60 +163,49 @@ qq.DragAndDrop = function(o) {
     }
 
     function setupDragDrop(){
-        if (options.dropArea) {
-            options.extraDropzones.push(options.dropArea);
-        }
+        var dropZones = options.dropZoneElements;
 
-        var i, dropzones = options.extraDropzones;
-
-        for (i=0; i < dropzones.length; i+=1){
-            setupDropzone(dropzones[i]);
-        }
+        qq.each(dropZones, function(idx, dropZone) {
+           setupDropzone(dropZone);
+        })
 
         // IE <= 9 does not support the File API used for drag+drop uploads
-        if (options.dropArea && (!qq.ie() || qq.ie10())) {
+        if (dropZones.length && (!qq.ie() || qq.ie10())) {
             disposeSupport.attach(document, 'dragenter', function(e) {
                 if (!dz.dropDisabled() && isFileDrag(e)) {
-                    if (qq(options.dropArea).hasClass(options.classes.dropDisabled)) {
-                        return;
-                    }
-
-                    options.dropArea.style.display = 'block';
-                    for (i=0; i < dropzones.length; i+=1) {
-                        dropzones[i].style.display = 'block';
-                    }
+                    qq.each(dropZones, function(idx, dropZone) {
+                        qq(dropZone).css({display: 'block'});
+                    });
                 }
             });
         }
         disposeSupport.attach(document, 'dragleave', function(e){
-            if (options.hideDropzones && qq.FineUploader.prototype._leaving_document_out(e)) {
-                for (i=0; i < dropzones.length; i+=1) {
-                    qq(dropzones[i]).hide();
-                }
+            if (options.hideDropZonesBeforeEnter && qq.FineUploader.prototype._leaving_document_out(e)) {
+                qq.each(dropZones, function(idx, dropZone) {
+                    qq(dropZone).hide();
+                });
             }
         });
         disposeSupport.attach(document, 'drop', function(e){
-            if (options.hideDropzones) {
-                for (i=0; i < dropzones.length; i+=1) {
-                    qq(dropzones[i]).hide();
-                }
+            if (options.hideDropZonesBeforeEnter) {
+                qq.each(dropZones, function(idx, dropZone) {
+                    qq(dropZone).hide();
+                });
             }
             e.preventDefault();
         });
     }
 
     return {
-        setup: function() {
-            setupDragDrop();
-        },
-
         setupExtraDropzone: function(element) {
-            options.extraDropzones.push(element);
+            options.dropZoneElements.push(element);
             setupDropzone(element);
         },
 
-        removeExtraDropzone: function(element) {
-            var i, dzs = options.extraDropzones;
+        removeDropzone: function(element) {
+            var i,
+                dzs = options.dropZoneElements;
+
             for(i in dzs) {
                 if (dzs[i] === element) {
                     return dzs.splice(i, 1);
@@ -220,6 +220,18 @@ qq.DragAndDrop = function(o) {
     };
 };
 
+qq.DragAndDrop.callbacks = function() {
+    return {
+        processingDroppedFiles: function() {},
+        processingDroppedFilesComplete: function(files) {},
+        dropError: function(code, errorSpecifics) {
+            qq.log("Drag & drop error code '" + code + " with these specifics: '" + errorSpecifics + "'", "error");
+        },
+        dropLog: function(message, level) {
+            qq.log(message, level);
+        }
+    }
+}
 
 qq.UploadDropZone = function(o){
     "use strict";

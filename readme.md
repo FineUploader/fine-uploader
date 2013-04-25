@@ -1,8 +1,8 @@
-# Fine Uploader 3.4.1 (Released April 1, 2013) #
+# Fine Uploader 3.5 (Released April 24, 2013) #
 
-###[Download the 3.4.1 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
+###[Download the 3.5 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 
-###[3.4.1 change summary](http://blog.fineuploader.com/2013/03/fine-uploader-34.html)###
+###[3.5 change summary](http://blog.fineuploader.com/2013/03/fine-uploader-34.html)###
 
 ###Leave your thoughts on the ["upload directly from a camera" case](https://github.com/Widen/fine-uploader/issues/389#issuecomment-15937234) ###
 
@@ -33,6 +33,7 @@
 * Upload any `Blob` objects via the API.
 * Easily set and enforce a maximum item limit.
 * [Upload images via paste (Chrome)](http://blog.fineuploader.com/2013/03/upload-image-via-paste-in-34.html).
+* [Standalone file & folder drag & drop module](docs/drag-and-drop.md).  Integrated by default into FineUploader mode.
 * Any many more!
 
 
@@ -138,6 +139,7 @@ Thanks to everybody who contributed, either by sending bug reports or donating. 
 <br/>
 ## Additional Reading ##
 * [Frequently Asked Questions (FAQ)](docs/faq.md)
+* [Supported Feature Detection module](docs/feature-detection.md)
 * [Styling FineUploader](docs/styling.md)
 * [Changing alert/messages to something more user friendly](docs/styling.md#changing-dialogs-to-something-more-user-friendly)
 * [qQuery (Public Utility Functions)](docs/qquery.md)

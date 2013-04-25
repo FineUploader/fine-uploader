@@ -446,6 +446,13 @@ For more details, please read the [blog post on the file resume feature](http://
     </thead>
     <tbody>
         <tr>
+            <td>defaultResponseError</td>
+            <td>String</td>
+            <td>Upload failure reason unknown</td>
+            <td>Message sent to the <code>onError</code> callback if no specific information about the error can be determined.  This is used if the server
+            indicates failure in the response but does not include an "error" property in the response and the error code is 200 (XHR only).</td>
+        </tr>
+        <tr>
             <td>sizeSymbols</td>
             <td>array of strings</td>
             <td>['kB', 'MB', 'GB', 'TB', 'PB', 'EB']</td>

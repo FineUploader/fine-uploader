@@ -7,8 +7,8 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         log = logCallback,
         fileState = [],
         cookieItemDelimiter = "|",
-        chunkFiles = options.chunking.enabled && qq.isFileChunkingSupported(),
-        resumeEnabled = options.resume.enabled && chunkFiles && qq.areCookiesEnabled(),
+        chunkFiles = options.chunking.enabled && qq.supportedFeatures.chunking,
+        resumeEnabled = options.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
         resumeId = getResumeId(),
         multipart = options.forceMultipart || options.paramsInBody,
         api;
@@ -503,7 +503,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             if (fileOrBlobData instanceof File) {
                 id = fileState.push({file: fileOrBlobData}) - 1;
             }
-            else if (fileOrBlobData.blob instanceof Blob) {
+            else if (qq.isBlob(fileOrBlobData.blob)) {
                 id = fileState.push({blobData: fileOrBlobData}) - 1;
             }
             else {

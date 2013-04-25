@@ -1,4 +1,8 @@
 ## Frequently Asked Questions (FAQ) ##
+**Q**: I'm using FineUploaderBasic mode, but I don't want to write my own code to handle dropped files and folders.  Can
+I use the DnD module used by FineUploader mode?    
+**A**: Certainly, and it's quite easy to do so!  Head on over to the [DnD Module Documentation](drag-and-drop.md) for more information.
+
 **Q**: In IE, when my server returns its response to an upload request, I see a "Save As..." dialog box on the client.  What am I doing wrong?    
 **A**: Your server's response content-type MUST be "text/plain".  IE does not handle the "application/json" mime-type.  You have
 probably read advice from others that claim "text/html" is also safe.  This is not always true.  You will run into problems with a content-type

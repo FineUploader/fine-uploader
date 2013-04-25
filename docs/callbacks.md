@@ -40,9 +40,10 @@ file will be uploaded immediately if there is at least one free connection avail
 option is set to true (the default).  This callback is invoked after the `onSubmit` callback has returned without a "false" return value.
 In FineUploader mode, it is safe to assume that the associated element(s) in the UI representing the associated file have already been added
 to the DOM immediately before this callback is invoked.
-* `onComplete(String id, String name, Object responseJSON)` - called when the file or `Blob` upload has finished.
+* `onComplete(String id, String name, Object responseJSON, XMLHttpRequest xhr)` - called when the file or `Blob` upload has finished.
 A successful upload will always have a `success` property in the `responseJSON` object with a value of `true`.  The
-`responseJSON` parameter will also contain any other elements of the JSON response returned by the server.
+`responseJSON` parameter will also contain any other elements of the JSON response returned by the server.  Note that
+the last parameter, xhr, will only be included if the upload is related to a request initiated by XMLHttpRequest.
 * `onCancel(String id, String name)` - called when the file or `Blob` upload has been cancelled.
 * `onUpload(String id, String name)` - called just before a file or `Blob` upload begins.
 * `onUploadChunk(String id, String name, Object chunkData)` - called just before a `File`/`Blob` chunk/partition request is sent.  The chunkData object has
@@ -75,8 +76,8 @@ You may return false from your handler if you want to ignore/stop the delete req
 ID, along with the request's XMLHttpRequest object and a boolean indicating whether the response succeeded or not (based on the response code)
 are sent along as parameters.
 * `onPasteReceived(blob)` - Called when a pasted image has been received (before uploading the image).  The pasted image is
-represented as a `Blob`.  **This is a promissory callback**, meaning your callback handler must return a [promise](promise.md).
-The value of the success parameter must be the name to associate with the pasted image.  If the associated attempt is marked
+represented as a `Blob`.  You _may_ return a [`qq.Promise`](promise.md) in your callback handler.  If you do return a `qq.Promise`,
+the value of the success parameter must be the name to associate with the pasted image.  If the associated attempt is marked
 a `failure` it is wise to include a string explaining the failure in your `failure` callback.
 Note that the `promptForName` in FineUploader mode, if set to true, will effectively wipe out any custom implementation of this
 callback.  The two are not meant to be used together.  This callback is meant to provide an alternative means to provide a name
