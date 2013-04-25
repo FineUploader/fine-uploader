@@ -1,8 +1,8 @@
-# Fine Uploader 3.5 (RELEASE CANDIDATE 2 - Release Pending) #
+# Fine Uploader 3.5 (Released April 24, 2013) #
 
-###[Download the 3.4.1 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
+###[Download the 3.5 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 
-###[3.4.1 change summary](http://blog.fineuploader.com/2013/03/fine-uploader-34.html)###
+###[3.5 change summary](http://blog.fineuploader.com/2013/03/fine-uploader-34.html)###
 
 ###Leave your thoughts on the ["upload directly from a camera" case](https://github.com/Widen/fine-uploader/issues/389#issuecomment-15937234) ###
 
