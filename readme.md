@@ -130,7 +130,7 @@ GPL v3.  Please see the [downloads page](http://fineuploader.com/downloads.html)
 
 <br/>
 ### Contributors ###
-We would love developers to contribute any improvements and bugfixes they produce.  Note that any pull requests MUST be against an "IP" branch!
+We would love developers to contribute any improvements and bugfixes they produce.  Note that any pull requests MUST be against the "develop" branch!
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
 
 Thanks to everybody who contributed, either by sending bug reports or donating. The project wouldn't be possible without all this generous help. Thank you!
