@@ -246,29 +246,36 @@ qq.FineUploaderBasic.prototype = {
             this._pasteHandler.reset();
         }
     },
-    addFiles: function(filesDataOrInputs, params, endpoint) {
+    addFiles: function(filesOrInputs, params, endpoint) {
         var self = this,
             verifiedFilesOrInputs = [],
-            index, fileOrInput;
+            fileOrInputIndex, fileOrInput, fileIndex;
 
-        if (filesDataOrInputs) {
-            if (!window.FileList || !(filesDataOrInputs instanceof FileList)) {
-                filesDataOrInputs = [].concat(filesDataOrInputs);
+        if (filesOrInputs) {
+            if (!window.FileList || !(filesOrInputs instanceof FileList)) {
+                filesOrInputs = [].concat(filesOrInputs);
             }
 
-            for (index = 0; index < filesDataOrInputs.length; index+=1) {
-                fileOrInput = filesDataOrInputs[index];
+            for (fileOrInputIndex = 0; fileOrInputIndex < filesOrInputs.length; fileOrInputIndex+=1) {
+                fileOrInput = filesOrInputs[fileOrInputIndex];
 
                 if (qq.isFileOrInput(fileOrInput)) {
-                    verifiedFilesOrInputs.push(fileOrInput);
+                    if (qq.isInput(fileOrInput) && qq.supportedFeatures.ajaxUploading) {
+                        for (fileIndex = 0; fileIndex < fileOrInput.files.length; fileIndex++) {
+                            verifiedFilesOrInputs.push(fileOrInput.files[fileIndex]);
+                        }
+                    }
+                    else {
+                        verifiedFilesOrInputs.push(fileOrInput);
+                    }
                 }
                 else {
                     self.log(fileOrInput + ' is not a File or INPUT element!  Ignoring!', 'warn');
                 }
             }
 
-            this.log('Processing ' + verifiedFilesOrInputs.length + ' files or inputs...');
-            this._uploadFileOrBlobDataList(verifiedFilesOrInputs, params, endpoint);
+            this.log('Received ' + verifiedFilesOrInputs.length + ' files or inputs.');
+            this._prepareItemsForUpload(verifiedFilesOrInputs, params, endpoint);
         }
     },
     addBlobs: function(blobDataOrArray, params, endpoint) {
@@ -292,7 +299,7 @@ qq.FineUploaderBasic.prototype = {
                 }
             });
 
-            this._uploadFileOrBlobDataList(verifiedBlobDataList, params, endpoint);
+            this._prepareItemsForUpload(verifiedBlobDataList, params, endpoint);
         }
         else {
             this.log("undefined or non-array parameter passed into addBlobs", "error");
@@ -556,11 +563,13 @@ qq.FineUploaderBasic.prototype = {
     },
     _onUpload: function(id, name){},
     _onInputChange: function(input){
-        if (qq.supportedFeatures.ajaxUploading){
+        if (qq.supportedFeatures.ajaxUploading) {
             this.addFiles(input.files);
-        } else {
+        }
+        else {
             this.addFiles(input);
         }
+
         this._button.reset();
     },
     _onBeforeAutoRetry: function(id, name) {
@@ -623,16 +632,16 @@ qq.FineUploaderBasic.prototype = {
             }
         }
     },
-    _uploadFileOrBlobDataList: function(fileOrBlobDataList, params, endpoint) {
+    _prepareItemsForUpload: function(items, params, endpoint) {
         var index,
-            validationDescriptors = this._getValidationDescriptors(fileOrBlobDataList),
+            validationDescriptors = this._getValidationDescriptors(items),
             batchValid = this._isBatchValid(validationDescriptors);
 
         if (batchValid) {
-            if (fileOrBlobDataList.length > 0) {
-                for (index = 0; index < fileOrBlobDataList.length; index++){
-                    if (this._validateFileOrBlobData(fileOrBlobDataList[index])){
-                        this._upload(fileOrBlobDataList[index], params, endpoint);
+            if (items.length > 0) {
+                for (index = 0; index < items.length; index++){
+                    if (this._validateFileOrBlobData(items[index])){
+                        this._upload(items[index], params, endpoint);
                     } else {
                         if (this._options.validation.stopOnFirstInvalidFile){
                             return;

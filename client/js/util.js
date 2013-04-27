@@ -180,16 +180,21 @@ qq.isFileOrInput = function(maybeFileOrInput) {
     if (window.File && maybeFileOrInput instanceof File) {
         return true;
     }
-    else if (window.HTMLInputElement) {
-        if (maybeFileOrInput instanceof HTMLInputElement) {
-            if (maybeFileOrInput.type && maybeFileOrInput.type.toLowerCase() === 'file') {
+
+    return qq.isInput(maybeFileOrInput);
+};
+
+qq.isInput = function(maybeInput) {
+    if (window.HTMLInputElement) {
+        if (maybeInput instanceof HTMLInputElement) {
+            if (maybeInput.type && maybeInput.type.toLowerCase() === 'file') {
                 return true;
             }
         }
     }
-    else if (maybeFileOrInput.tagName) {
-        if (maybeFileOrInput.tagName.toLowerCase() === 'input') {
-            if (maybeFileOrInput.type && maybeFileOrInput.type.toLowerCase() === 'file') {
+    else if (maybeInput.tagName) {
+        if (maybeInput.tagName.toLowerCase() === 'input') {
+            if (maybeInput.type && maybeInput.type.toLowerCase() === 'file') {
                 return true;
             }
         }
