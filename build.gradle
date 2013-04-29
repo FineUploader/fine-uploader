@@ -28,7 +28,7 @@ def cssFiles = ["$srcDir/fineuploader.css"]
 def imageFiles = ["$srcDir/loading.gif",
                   "$srcDir/processing.gif"]
 
-def additionalFilesToInclude(String dir) { ["${dir}/iframe.xss.response.js"] }
+def additionalFilesToInclude = ["${jsSrcDir}/iframe.xss.response.js"]
 
 def jQueryPluginFiles(String dir) { ["${dir}/jquery-plugin.js",
                          "${dir}/jquery-dnd.js"] }
@@ -96,7 +96,7 @@ task zip(type: Zip) {
 }
 
 task copyResources(type:Copy) {
-    from cssFiles + imageFiles + additionalFilesToInclude(jsSrcDir)
+    from cssFiles + imageFiles + additionalFilesToInclude
     into 'build'
     rename { String fileName ->
         fileName.replace('.css', "-${version}.css")
