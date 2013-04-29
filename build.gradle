@@ -2,35 +2,57 @@ def version = "3.6.0"
 def filename = "fineuploader"
 def srcDir = 'client'
 def jsSrcDir = "$srcDir/js"
+def tempSrcDir = 'build/temp'
 
 apply plugin: 'js'
 
-def coreFiles = ["${jsSrcDir}/header.js",
-                 "${jsSrcDir}/util.js",
-                 "${jsSrcDir}/features.js",
-                 "${jsSrcDir}/promise.js",
-                 "${jsSrcDir}/button.js",
-                 "${jsSrcDir}/paste.js",
-                 "${jsSrcDir}/uploader.basic.js",
-                 "${jsSrcDir}/dnd.js",
-                 "${jsSrcDir}/uploader.js",
-                 "${jsSrcDir}/ajax.requester.js",
-                 "${jsSrcDir}/deletefile.ajax.requester.js",
-                 "${jsSrcDir}/window.receive.message.js",
-                 "${jsSrcDir}/handler.base.js",
-                 "${jsSrcDir}/handler.form.js",
-                 "${jsSrcDir}/handler.xhr.js"]
+def coreFiles(String dir) {["${dir}/header.js",
+                 "${dir}/util.js",
+                 "${dir}/features.js",
+                 "${dir}/promise.js",
+                 "${dir}/button.js",
+                 "${dir}/paste.js",
+                 "${dir}/uploader.basic.js",
+                 "${dir}/dnd.js",
+                 "${dir}/uploader.js",
+                 "${dir}/ajax.requester.js",
+                 "${dir}/deletefile.ajax.requester.js",
+                 "${dir}/window.receive.message.js",
+                 "${dir}/handler.base.js",
+                 "${dir}/handler.form.js",
+                 "${dir}/handler.xhr.js"]
+}
 
 def cssFiles = ["$srcDir/fineuploader.css"]
 
 def imageFiles = ["$srcDir/loading.gif",
                   "$srcDir/processing.gif"]
 
-def additionalFilesToInclude = ["${jsSrcDir}/iframe.xss.response.js"]
+def additionalFilesToInclude(String dir) { ["${dir}/iframe.xss.response.js"] }
 
-def jQueryPluginFiles = ["${jsSrcDir}/jquery-plugin.js",
-                         "${jsSrcDir}/jquery-dnd.js"]
+def jQueryPluginFiles(String dir) { ["${dir}/jquery-plugin.js",
+                         "${dir}/jquery-dnd.js"] }
 
+def synchronized orderTasks( String aTasks ) {
+    // Laurence Toenjes 2012
+    // preserve dependency task order for Gradle (put this near the top of your gradle build file)
+    // example: task( 'seq-alpha', dependsOn: orderTasks( 'alpha bravo charlie' ) ) << { /* your task code */ }
+    // To view task dependency do cmd: gradle tasks --all
+    if ( !(project.ext.properties.containsKey("orderTasksCtr")) )
+        project.ext.orderTasksCtr = new java.util.concurrent.atomic.AtomicInteger(1000);
+    def cl_createProxyTask = { aTaskName ->
+        def ctr         = project.ext.orderTasksCtr.incrementAndGet();
+        def newTaskName = "_seq_${ctr}_${aTaskName}";
+        def newTask     = project.task( newTaskName );
+        newTask.dependsOn << "${aTaskName}";
+        def result = newTask;
+    }
+    ''' , ' " [ ] ( ) '''.trim().split().each {
+        if (it in aTasks)
+            aTasks = aTasks.replace( it, (32 as char).toString() )
+    }
+    return aTasks.split().collect { cl_createProxyTask(it) };
+}
 
 buildscript {
     repositories {
@@ -42,12 +64,12 @@ buildscript {
 }
 
 combineJs {
-    source = files(coreFiles)
+    source = files(coreFiles(tempSrcDir))
     dest = file("$buildDir/${filename}-${version}.js")
 }
 
 task combineJsJquery(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
-    source = files(coreFiles + jQueryPluginFiles)
+    source = files(coreFiles(tempSrcDir))  + files(jQueryPluginFiles(tempSrcDir))
     dest = file("$buildDir/jquery.${filename}-${version}.js")
 }
 
@@ -74,7 +96,7 @@ task zip(type: Zip) {
 }
 
 task copyResources(type:Copy) {
-    from cssFiles + imageFiles + additionalFilesToInclude
+    from cssFiles + imageFiles + additionalFilesToInclude(jsSrcDir)
     into 'build'
     rename { String fileName ->
         fileName.replace('.css', "-${version}.css")
@@ -86,12 +108,28 @@ task copyResources(type:Copy) {
 
 task clean << {
     delete files("$buildDir")
+    delete file(tempSrcDir)
 }
 
-task createJQueryRelease(dependsOn: ['clean', 'minifyJsJquery', 'copyResources', 'zipJquery']) {
+task deleteTemp << {
+    delete file(tempSrcDir)
+}
+
+task copyJsToTempDir(type:Copy) {
+    from coreFiles(jsSrcDir) + jQueryPluginFiles(jsSrcDir)
+    into tempSrcDir
+}
+
+task stampWithVersion << {
+    File headerFile = file("$tempSrcDir/header.js")
+    String newContents = headerFile.text.replaceFirst("Version:", "Version: $version")
+    headerFile.text = newContents
+}
+
+task createJQueryRelease(dependsOn: orderTasks('clean copyJsToTempDir stampWithVersion minifyJsJquery copyResources deleteTemp zipJquery')) {
     outputs.upToDateWhen { false }
 }
 
-task createRelease(dependsOn: ['clean', 'minifyJs', 'copyResources', 'zip']) {
+task createRelease(dependsOn: orderTasks('clean copyJsToTempDir stampWithVersion minifyJs copyResources deleteTemp zip')) {
     outputs.upToDateWhen { false }
 }
