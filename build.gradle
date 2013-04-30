@@ -1,4 +1,3 @@
-def version = "3.6.0"
 def filename = "fineuploader"
 def srcDir = 'client'
 def jsSrcDir = "$srcDir/js"
@@ -8,6 +7,7 @@ apply plugin: 'js'
 
 def coreFiles(String dir) {["${dir}/header.js",
                  "${dir}/util.js",
+                 "${dir}/version.js",
                  "${dir}/features.js",
                  "${dir}/promise.js",
                  "${dir}/button.js",
@@ -23,6 +23,9 @@ def coreFiles(String dir) {["${dir}/header.js",
                  "${dir}/handler.xhr.js"]
 }
 
+def tempVersionStampFile = "$tempSrcDir/version.js"
+def tempHeaderFile = "$tempSrcDir/header.js"
+
 def cssFiles = ["$srcDir/fineuploader.css"]
 
 def imageFiles = ["$srcDir/loading.gif",
@@ -33,25 +36,28 @@ def additionalFilesToInclude = ["${jsSrcDir}/iframe.xss.response.js"]
 def jQueryPluginFiles(String dir) { ["${dir}/jquery-plugin.js",
                          "${dir}/jquery-dnd.js"] }
 
-def synchronized orderTasks( String aTasks ) {
-    // Laurence Toenjes 2012
-    // preserve dependency task order for Gradle (put this near the top of your gradle build file)
-    // example: task( 'seq-alpha', dependsOn: orderTasks( 'alpha bravo charlie' ) ) << { /* your task code */ }
-    // To view task dependency do cmd: gradle tasks --all
+def synchronized orderTasks(String aTasks)
+{
     if ( !(project.ext.properties.containsKey("orderTasksCtr")) )
+    {
         project.ext.orderTasksCtr = new java.util.concurrent.atomic.AtomicInteger(1000);
+    }
+
     def cl_createProxyTask = { aTaskName ->
         def ctr         = project.ext.orderTasksCtr.incrementAndGet();
         def newTaskName = "_seq_${ctr}_${aTaskName}";
         def newTask     = project.task( newTaskName );
         newTask.dependsOn << "${aTaskName}";
-        def result = newTask;
     }
+
     ''' , ' " [ ] ( ) '''.trim().split().each {
         if (it in aTasks)
             aTasks = aTasks.replace( it, (32 as char).toString() )
     }
-    return aTasks.split().collect { cl_createProxyTask(it) };
+
+    return aTasks.split().collect {
+        cl_createProxyTask(it)
+    }
 }
 
 buildscript {
@@ -65,32 +71,32 @@ buildscript {
 
 combineJs {
     source = files(coreFiles(tempSrcDir))
-    dest = file("$buildDir/${filename}-${version}.js")
+    dest = file("$buildDir/${filename}-${fineUploaderVersion}.js")
 }
 
 task combineJsJquery(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
     source = files(coreFiles(tempSrcDir))  + files(jQueryPluginFiles(tempSrcDir))
-    dest = file("$buildDir/jquery.${filename}-${version}.js")
+    dest = file("$buildDir/jquery.${filename}-${fineUploaderVersion}.js")
 }
 
 minifyJs {
     source = combineJs
-    dest = file("$buildDir/${filename}-${version}.min.js")
+    dest = file("$buildDir/${filename}-${fineUploaderVersion}.min.js")
 }
 
 task minifyJsJquery(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
     source = combineJsJquery
-    dest = file("$buildDir/jquery.${filename}-${version}.min.js")
+    dest = file("$buildDir/jquery.${filename}-${fineUploaderVersion}.min.js")
 }
 
 task zipJquery(type: Zip) {
-    baseName "jquery.$filename-$version"
+    baseName "jquery.$filename-$fineUploaderVersion"
     from files("$buildDir")
     destinationDir file('release')
 }
 
 task zip(type: Zip) {
-    baseName "$filename-$version"
+    baseName "$filename-$fineUploaderVersion"
     from files("$buildDir")
     destinationDir file('release')
 }
@@ -99,10 +105,10 @@ task copyResources(type:Copy) {
     from cssFiles + imageFiles + additionalFilesToInclude
     into 'build'
     rename { String fileName ->
-        fileName.replace('.css', "-${version}.css")
+        fileName.replace('.css', "-${fineUploaderVersion}.css")
     }
     rename { String fileName ->
-        fileName.replace('.js', "-${version}.js")
+        fileName.replace('.js', "-${fineUploaderVersion}.js")
     }
 }
 
@@ -121,15 +127,25 @@ task copyJsToTempDir(type:Copy) {
 }
 
 task stampWithVersion << {
-    File headerFile = file("$tempSrcDir/header.js")
-    String newContents = headerFile.text.replaceFirst("Version:", "Version: $version")
+    //header (comments)
+    File headerFile = file("$tempHeaderFile")
+    String newContents = headerFile.text.replaceFirst("$fineUploaderversionPlaceholderText", "$fineUploaderVersion")
     headerFile.text = newContents
+
+    //version file (code)
+    File versionFile = file(tempVersionStampFile)
+    newContents = versionFile.text.replaceFirst("$fineUploaderversionPlaceholderText", "$fineUploaderVersion")
+    versionFile.text = newContents
 }
 
-task createJQueryRelease(dependsOn: orderTasks('clean copyJsToTempDir stampWithVersion minifyJsJquery copyResources deleteTemp zipJquery')) {
-    outputs.upToDateWhen { false }
+task createJqueryRelease(dependsOn: orderTasks('commonReleasePrep minifyJsJquery commonPostCombine zipJquery')) {
 }
 
-task createRelease(dependsOn: orderTasks('clean copyJsToTempDir stampWithVersion minifyJs copyResources deleteTemp zip')) {
-    outputs.upToDateWhen { false }
+task createRelease(dependsOn: orderTasks('commonReleasePrep minifyJs commonPostCombine zip')) {
+}
+
+task commonReleasePrep(dependsOn: orderTasks('clean copyJsToTempDir stampWithVersion')) {
+}
+
+task commonPostCombine(dependsOn: orderTasks('copyResources deleteTemp')) {
 }

@@ -151,10 +151,10 @@ qq.FineUploaderBasic = function(o){
 qq.FineUploaderBasic.prototype = {
     log: function(str, level) {
         if (this._options.debug && (!level || level === 'info')) {
-            qq.log('[FineUploader] ' + str);
+            qq.log('[FineUploader ' + qq.version + '] ' + str);
         }
         else if (level && level !== 'info') {
-            qq.log('[FineUploader] ' + str, level);
+            qq.log('[FineUploader ' + qq.version + '] ' + str, level);
 
         }
     },
