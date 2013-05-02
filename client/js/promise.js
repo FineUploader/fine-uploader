@@ -64,3 +64,7 @@ qq.Promise = function() {
         }
     };
 };
+
+qq.isPromise = function(maybePromise) {
+    return maybePromise && maybePromise.then && maybePromise.done;
+};

@@ -332,6 +332,25 @@ qq.FineUploaderBasic.prototype = {
             this._deleteFileEndpointStore.setEndpoint(endpoint, id);
         }
     },
+    _handleCallback: function(callbackName, callback, onSuccess, identifier, checkForFalse, args) {
+        var self = this,
+            callbackRetVal = callback.apply(this, args);
+
+        if (qq.isPromise(callbackRetVal)) {
+            this.log("Waiting for " + callbackName + " promise to be fulfilled for " + identifier);
+            callbackRetVal.then(
+                function() {
+                    self.log(callbackName + " promise success for " + identifier);
+                    onSuccess.apply(self, args);
+                },
+                function() {
+                    self.log(callbackName + " promise failure for " + identifier);
+                });
+        }
+        else if (!checkForFalse || callbackRetVal !== false) {
+            onSuccess.apply(this, args);
+        }
+    },
     _createUploadButton: function(element){
         var self = this;
 
@@ -655,8 +674,10 @@ qq.FineUploaderBasic.prototype = {
         }
     },
     _upload: function(blobOrFileContainer, params, endpoint) {
-        var id = this._handler.add(blobOrFileContainer);
-        var name = this._handler.getName(id);
+        var id = this._handler.add(blobOrFileContainer),
+            name = this._handler.getName(id),
+            self = this,
+            onSubmitRetVal;
 
         if (params) {
             this.setParams(params, id);
@@ -666,16 +687,17 @@ qq.FineUploaderBasic.prototype = {
             this.setEndpoint(endpoint, id);
         }
 
-        if (this._options.callbacks.onSubmit(id, name) !== false) {
-            this._onSubmit(id, name);
-            this._options.callbacks.onSubmitted(id, name);
+        this._handleCallback("onSubmit", this._options.callbacks.onSubmit, this._onSubmitCallbackSuccess, id, true, [id, name]);
+    },
+    _onSubmitCallbackSuccess: function(id, name) {
+        this._onSubmit(id, name);
+        this._options.callbacks.onSubmitted(id, name);
 
-            if (this._options.autoUpload) {
-                this._handler.upload(id);
-            }
-            else {
-                this._storeForLater(id);
-            }
+        if (this._options.autoUpload) {
+            this._handler.upload(id);
+        }
+        else {
+            this._storeForLater(id);
         }
     },
     _storeForLater: function(id) {
