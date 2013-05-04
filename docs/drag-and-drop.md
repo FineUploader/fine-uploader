@@ -13,7 +13,7 @@ This document will explain how to utilize this module.
 If you are not utilizing jQuery, you can use the plain javascript DnD module.  Here is a simple example:
 ```javascript
 var dragAndDropModule = new qq.DragAndDrop({
-        dropZoneElements: [document.getElementById('myDropZone')],
+        dropArea: [document.getElementById('myDropZone')],
         classes: {
           dropActive: "cssClassToAddToDropZoneOnEnter"
         },
