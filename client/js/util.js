@@ -360,7 +360,7 @@ qq.each = function(obj, callback) {
 };
 
 //include any args that should be passed to the new function after the context arg
-qq.newFunc = function(oldFunc, context) {
+qq.bind = function(oldFunc, context) {
     if (qq.isFunction(oldFunc)) {
         var args =  Array.prototype.slice.call(arguments, 2);
 

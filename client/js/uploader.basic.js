@@ -409,8 +409,8 @@ qq.FineUploaderBasic.prototype = {
             onCancel: function(id, name) {
                 return self._handleCheckedCallback({
                     name: "onCancel",
-                    callback: qq.newFunc(self._options.callbacks.onCancel, self, id, name),
-                    onSuccess: qq.newFunc(self._onCancel, self, id, name),
+                    callback: qq.bind(self._options.callbacks.onCancel, self, id, name),
+                    onSuccess: qq.bind(self._onCancel, self, id, name),
                     identifier: id,
                     ignoreIfFalseReturn: true
                 });
@@ -702,8 +702,8 @@ qq.FineUploaderBasic.prototype = {
 
         this._handleCheckedCallback({
             name: "onSubmit",
-            callback: qq.newFunc(this._options.callbacks.onSubmit, this, id, name),
-            onSuccess: qq.newFunc(this._onSubmitCallbackSuccess, this, id, name),
+            callback: qq.bind(this._options.callbacks.onSubmit, this, id, name),
+            onSuccess: qq.bind(this._onSubmitCallbackSuccess, this, id, name),
             identifier: id,
             ignoreIfFalseReturn: true
         });
