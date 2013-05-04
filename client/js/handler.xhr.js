@@ -491,6 +491,20 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         xhr.send(toSend);
     }
 
+    function onCancelSuccess(id) {
+        var xhr = fileState[id].xhr;
+
+        if (xhr) {
+            xhr.onreadystatechange = null;
+            xhr.abort();
+        }
+
+        if (resumeEnabled) {
+            deletePersistedChunkData(id);
+        }
+
+        delete fileState[id];
+    }
 
     api = {
         /**
@@ -568,30 +582,31 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         upload: function(id, retry){
             var name = this.getName(id);
 
-            options.onUpload(id, name);
+            if (this.isValid(id)) {
+                options.onUpload(id, name);
 
-            if (chunkFiles) {
-                handleFileChunkingUpload(id, retry);
-            }
-            else {
-                handleStandardFileUpload(id);
+                if (chunkFiles) {
+                    handleFileChunkingUpload(id, retry);
+                }
+                else {
+                    handleStandardFileUpload(id);
+                }
             }
         },
-        cancel: function(id){
-            var xhr = fileState[id].xhr;
+        cancel: function(id) {
+            var onCancelRetVal = options.onCancel(id, this.getName(id));
 
-            options.onCancel(id, this.getName(id));
-
-            if (xhr) {
-                xhr.onreadystatechange = null;
-                xhr.abort();
+            if (qq.isPromise(onCancelRetVal)) {
+                return onCancelRetVal.then(function() {
+                    onCancelSuccess(id);
+                });
+            }
+            else if (onCancelRetVal !== false) {
+                onCancelSuccess(id);
+                return true;
             }
 
-            if (resumeEnabled) {
-                deletePersistedChunkData(id);
-            }
-
-            delete fileState[id];
+            return false;
         },
         getResumableFilesData: function() {
             var matchingCookieNames = [],

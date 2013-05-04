@@ -35,6 +35,8 @@ new qq.FineUploader({
 
 * `onSubmit(String id, String name)` - called when the file or `Blob` is a candidate for uploading.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
+You may also return a `qq.Promise`(promise.md) if non-blocking work is required here.  Processing of this file will be deferred
+until the promise is fulfilled.
 * `onSubmitted(String id, String name)` - called when the file or `Blob` has been successfully submitted to the uploader.  The
 file will be uploaded immediately if there is at least one free connection available (see `maxConnections` option) and the `autoUpload`
 option is set to true (the default).  This callback is invoked after the `onSubmit` callback has returned without a "false" return value.
@@ -44,7 +46,11 @@ to the DOM immediately before this callback is invoked.
 A successful upload will always have a `success` property in the `responseJSON` object with a value of `true`.  The
 `responseJSON` parameter will also contain any other elements of the JSON response returned by the server.  Note that
 the last parameter, xhr, will only be included if the upload is related to a request initiated by XMLHttpRequest.
-* `onCancel(String id, String name)` - called when the file or `Blob` upload has been cancelled.
+* `onCancel(String id, String name)` - called when the file or `Blob` upload has been cancelled.  You may return "false" to
+prevent the upload from being cancelled.  You may also return a `qq.Promise`(promise.md) if non-blocking work is required
+here.  Processing of this cancel request will be deferred until the promise is fulfilled.  Note that there is no way to "pause"
+the upload in progress while waiting for the promise to be fulfilled, so the upload may complete while waiting for the promise
+to be fulfilled.
 * `onUpload(String id, String name)` - called just before a file or `Blob` upload begins.
 * `onUploadChunk(String id, String name, Object chunkData)` - called just before a `File`/`Blob` chunk/partition request is sent.  The chunkData object has
 4 properties: `partIndex` (the 0-based index of the associated partition), `startByte` (the byte offset of the current chunk in terms

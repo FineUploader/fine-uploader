@@ -332,24 +332,32 @@ qq.FineUploaderBasic.prototype = {
             this._deleteFileEndpointStore.setEndpoint(endpoint, id);
         }
     },
-    _handleCallback: function(callbackName, callback, onSuccess, identifier, checkForFalse, args) {
+    _handleCheckedCallback: function(details) {
         var self = this,
-            callbackRetVal = callback.apply(this, args);
+            callbackRetVal = details.callback.apply(this, details.args);
 
         if (qq.isPromise(callbackRetVal)) {
-            this.log("Waiting for " + callbackName + " promise to be fulfilled for " + identifier);
-            callbackRetVal.then(
+            this.log("Waiting for " + details.name + " promise to be fulfilled for " + details.identifier);
+            return callbackRetVal.then(
                 function() {
-                    self.log(callbackName + " promise success for " + identifier);
-                    onSuccess.apply(self, args);
+                    self.log(details.name + " promise success for " + details.identifier);
+                    details.onSuccess.apply(self, details.args);
                 },
                 function() {
-                    self.log(callbackName + " promise failure for " + identifier);
+                    self.log(details.name + " promise failure for " + details.identifier);
                 });
         }
-        else if (!checkForFalse || callbackRetVal !== false) {
-            onSuccess.apply(this, args);
+
+        if (details.ignoreIfFalseReturn) {
+            if (callbackRetVal !== false) {
+                details.onSuccess.apply(this, details.args);
+            }
         }
+        else {
+            details.onSuccess.apply(this, details.args);
+        }
+
+        return callbackRetVal;
     },
     _createUploadButton: function(element){
         var self = this;
@@ -398,9 +406,15 @@ qq.FineUploaderBasic.prototype = {
                 self._onComplete(id, name, result, xhr);
                 self._options.callbacks.onComplete(id, name, result, xhr);
             },
-            onCancel: function(id, name){
-                self._onCancel(id, name);
-                self._options.callbacks.onCancel(id, name);
+            onCancel: function(id, name) {
+                return self._handleCheckedCallback({
+                    name: "onCancel",
+                    callback: self._options.callbacks.onCancel,
+                    onSuccess: self._onCancel,
+                    identifier: id,
+                    ignoreIfFalseReturn: true,
+                    args: [id, name]
+                });
             },
             onUpload: function(id, name){
                 self._onUpload(id, name);
@@ -687,11 +701,17 @@ qq.FineUploaderBasic.prototype = {
             this.setEndpoint(endpoint, id);
         }
 
-        this._handleCallback("onSubmit", this._options.callbacks.onSubmit, this._onSubmitCallbackSuccess, id, true, [id, name]);
+        this._handleCheckedCallback({
+            name: "onSubmit",
+            callback: this._options.callbacks.onSubmit,
+            onSuccess: this._onSubmitCallbackSuccess,
+            identifier: id,
+            ignoreIfFalseReturn: true,
+            args: [id, name]
+        });
     },
     _onSubmitCallbackSuccess: function(id, name) {
         this._onSubmit(id, name);
-        this._options.callbacks.onSubmitted(id, name);
 
         if (this._options.autoUpload) {
             this._handler.upload(id);
