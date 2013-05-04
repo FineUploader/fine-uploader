@@ -334,14 +334,14 @@ qq.FineUploaderBasic.prototype = {
     },
     _handleCheckedCallback: function(details) {
         var self = this,
-            callbackRetVal = details.callback.apply(this, details.args);
+            callbackRetVal = details.callback();
 
         if (qq.isPromise(callbackRetVal)) {
             this.log("Waiting for " + details.name + " promise to be fulfilled for " + details.identifier);
             return callbackRetVal.then(
                 function() {
                     self.log(details.name + " promise success for " + details.identifier);
-                    details.onSuccess.apply(self, details.args);
+                    details.onSuccess();
                 },
                 function() {
                     self.log(details.name + " promise failure for " + details.identifier);
@@ -350,11 +350,11 @@ qq.FineUploaderBasic.prototype = {
 
         if (details.ignoreIfFalseReturn) {
             if (callbackRetVal !== false) {
-                details.onSuccess.apply(this, details.args);
+                details.onSuccess();
             }
         }
         else {
-            details.onSuccess.apply(this, details.args);
+            details.onSuccess();
         }
 
         return callbackRetVal;
@@ -409,11 +409,10 @@ qq.FineUploaderBasic.prototype = {
             onCancel: function(id, name) {
                 return self._handleCheckedCallback({
                     name: "onCancel",
-                    callback: self._options.callbacks.onCancel,
-                    onSuccess: self._onCancel,
+                    callback: qq.newFunc(self._options.callbacks.onCancel, self, id, name),
+                    onSuccess: qq.newFunc(self._onCancel, self, id, name),
                     identifier: id,
-                    ignoreIfFalseReturn: true,
-                    args: [id, name]
+                    ignoreIfFalseReturn: true
                 });
             },
             onUpload: function(id, name){
@@ -703,11 +702,10 @@ qq.FineUploaderBasic.prototype = {
 
         this._handleCheckedCallback({
             name: "onSubmit",
-            callback: this._options.callbacks.onSubmit,
-            onSuccess: this._onSubmitCallbackSuccess,
+            callback: qq.newFunc(this._options.callbacks.onSubmit, this, id, name),
+            onSuccess: qq.newFunc(this._onSubmitCallbackSuccess, this, id, name),
             identifier: id,
-            ignoreIfFalseReturn: true,
-            args: [id, name]
+            ignoreIfFalseReturn: true
         });
     },
     _onSubmitCallbackSuccess: function(id, name) {

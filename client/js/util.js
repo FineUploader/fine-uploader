@@ -359,6 +359,19 @@ qq.each = function(obj, callback) {
     }
 };
 
+//include any args that should be passed to the new function after the context arg
+qq.newFunc = function(oldFunc, context) {
+    if (qq.isFunction(oldFunc)) {
+        var args =  Array.prototype.slice.call(arguments, 2);
+
+        return function() {
+            return oldFunc.apply(context, args);
+        };
+    }
+
+    throw new Error("first parameter must be a function!");
+};
+
 /**
  * obj2url() takes a json-object as argument and generates
  * a querystring. pretty much like jQuery.param()
