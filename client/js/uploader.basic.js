@@ -352,6 +352,9 @@ qq.FineUploaderBasic.prototype = {
             if (callbackRetVal !== false) {
                 details.onSuccess();
             }
+            else {
+                this.log("Return value was 'false' for " + details.identifier + ".  Will not proceed.")
+            }
         }
         else {
             details.onSuccess();
@@ -665,26 +668,15 @@ qq.FineUploaderBasic.prototype = {
         }
     },
     _prepareItemsForUpload: function(items, params, endpoint) {
-        var index,
-            validationDescriptors = this._getValidationDescriptors(items),
-            batchValid = this._isBatchValid(validationDescriptors);
+        var validationDescriptors = this._getValidationDescriptors(items);
 
-        if (batchValid) {
-            if (items.length > 0) {
-                for (index = 0; index < items.length; index++){
-                    if (this._validateFileOrBlobData(items[index])){
-                        this._upload(items[index], params, endpoint);
-                    } else {
-                        if (this._options.validation.stopOnFirstInvalidFile){
-                            return;
-                        }
-                    }
-                }
-            }
-            else {
-                this._itemError("noFilesError", "");
-            }
-        }
+        this._handleCheckedCallback({
+            name: "onValidateBatch",
+            callback: qq.bind(this._options.callbacks.onValidateBatch, this, validationDescriptors),
+            onSuccess: qq.bind(this._onValidateBatchSuccess, this, validationDescriptors, items, params, endpoint),
+            identifier: "batch validation",
+            ignoreIfFalseReturn: true
+        });
     },
     _upload: function(blobOrFileContainer, params, endpoint) {
         var id = this._handler.add(blobOrFileContainer),
@@ -721,28 +713,34 @@ qq.FineUploaderBasic.prototype = {
     _storeForLater: function(id) {
         this._storedIds.push(id);
     },
-    _isBatchValid: function(validationDescriptors) {
-        //first, defer the check to the callback (ask the integrator)
+    _onValidateBatchSuccess: function(validationDescriptors, items, params, endpoint) {
         var errorMessage,
             itemLimit = this._options.validation.itemLimit,
             proposedNetFilesUploadedOrQueued = this._netUploadedOrQueued + validationDescriptors.length,
-            batchValid = this._options.callbacks.onValidateBatch(validationDescriptors) !== false;
+            index;
 
-        //if the callback hasn't rejected the batch, run some internal tests on the batch next
-        if (batchValid) {
-            if (itemLimit === 0 || proposedNetFilesUploadedOrQueued <= itemLimit) {
-                batchValid = true;
+        if (itemLimit === 0 || proposedNetFilesUploadedOrQueued <= itemLimit) {
+            if (items.length > 0) {
+                for (index = 0; index < items.length; index++){
+                    if (this._validateFileOrBlobData(items[index])){
+                        this._upload(items[index], params, endpoint);
+                    } else {
+                        if (this._options.validation.stopOnFirstInvalidFile){
+                            return;
+                        }
+                    }
+                }
             }
             else {
-                batchValid = false;
-                errorMessage = this._options.messages.tooManyItemsError
-                    .replace(/\{netItems\}/g, proposedNetFilesUploadedOrQueued)
-                    .replace(/\{itemLimit\}/g, itemLimit);
-                this._batchError(errorMessage);
+                this._itemError("noFilesError", "");
             }
         }
-
-        return batchValid;
+        else {
+            errorMessage = this._options.messages.tooManyItemsError
+                .replace(/\{netItems\}/g, proposedNetFilesUploadedOrQueued)
+                .replace(/\{itemLimit\}/g, itemLimit);
+            this._batchError(errorMessage);
+        }
     },
     _validateFileOrBlobData: function(fileOrBlobData){
         var validationDescriptor, name, size;

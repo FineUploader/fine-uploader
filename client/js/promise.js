@@ -11,8 +11,12 @@ qq.Promise = function() {
     return {
         then: function(onSuccess, onFailure) {
             if (state === 0) {
-                successCallbacks.push(onSuccess);
-                failureCallbacks.push(onFailure);
+                if (onSuccess) {
+                    successCallbacks.push(onSuccess);
+                }
+                if (onFailure) {
+                    failureCallbacks.push(onFailure);
+                }
             }
             else if (state === -1 && onFailure) {
                 onFailure(failureValue);

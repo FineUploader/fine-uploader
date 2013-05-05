@@ -35,8 +35,8 @@ new qq.FineUploader({
 
 * `onSubmit(String id, String name)` - called when the file or `Blob` is a candidate for uploading.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
-You may also return a [`qq.Promise`](promise.md) if non-blocking work is required here.  Processing of this file will be deferred
-until the promise is fulfilled.
+You may also return a [`qq.Promise`](promise.md) if non-blocking work is required here.  Processing of this item will be deferred
+until the promise is fulfilled.  If a promise is returned, a call to `failure` is the same as returning "false".
 
 * `onSubmitted(String id, String name)` - called when the file or `Blob` has been successfully submitted to the uploader.  The
 file will be uploaded immediately if there is at least one free connection available (see `maxConnections` option) and the `autoUpload`
@@ -53,7 +53,7 @@ the last parameter, xhr, will only be included if the upload is related to a req
 prevent the upload from being cancelled.  You may also return a [`qq.Promise`](promise.md) if non-blocking work is required
 here.  Processing of this cancel request will be deferred until the promise is fulfilled.  Note that there is no way to "pause"
 the upload in progress while waiting for the promise to be fulfilled, so the upload may complete while waiting for the promise
-to be fulfilled.
+to be fulfilled.  If a promise is returned, a call to `failure` is the same as returning "false".
 
 * `onUpload(String id, String name)` - called just before a file or `Blob` upload begins.
 
@@ -72,8 +72,10 @@ Note that the last parameter, xhr, will only be included if the error is related
 * `onManualRetry(String id, String name)` - called before each manual retry attempt.  Return false to prevent this and all future retry attempts on this file or `Blob`.
 
 * `onResume(String id, String fileName, Object chunkData)` - Called before an attempt is made to resume a failed/stopped upload from a previous session.
-If you return false, the resume will be cancelled and the uploader will start uploading the file from the first chunk.  The `chunkData` object contains the properties as
-the `chunkData` parameter passed into the `onUploadChunk` callback.
+If you return false, the resume will be cancelled and the uploader will start uploading the item from the first chunk.
+The `chunkData` object contains the properties as the `chunkData` parameter passed into the `onUploadChunk` callback.
+You may also return a [`qq.Promise`](promise.md) if non-blocking work is required here.  Processing of this resume request
+will be deferred until the promise is fulfilled.  If a promise is returned, a call to `failure` is the same as returning "false".
 
 * `onValidate(FileOrBlobData fileOrBlobData)` - This callback represents one of the files or `Blob`s selected for upload.  It is called once
 for each selected, dropped, or `addFiles` submitted file and for each `addBlobs` submitted `Blob`, provided you do not return false in your `onValidateBatch` handler, and also provided
@@ -86,7 +88,9 @@ via the `addFiles` or `addBlobs`  API functions.  A FileOrBlobData array is pass
 you to prevent the entire batch from being uploaded, if desired, by returning false.  If your handler does not return false,
 the `onValidate` callback will be invoked once for each individual file or `Blob` submitted.  This callback is always invoked before
 the default Fine Uploader validators execute.  Note that a `FileOrBlobData` object has two properties: `name` and `size`.
-The `size` property will be undefined if the user agent does not support the File API.
+The `size` property will be undefined if the user agent does not support the File API.  You may also return a
+[`qq.Promise`](promise.md) if non-blocking work is required here.  Processing of this batch will be deferred until the
+promise is fulfilled.  If a promise is returned, a call to `failure` is the same as returning "false".
 
 * `onSubmitDelete(id)` - Called before a file or `Blob` that has been marked for deletion has been submitted to the uploader.
 You may return false from your handler if you want to ignore/stop the delete request.

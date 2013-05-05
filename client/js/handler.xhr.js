@@ -433,10 +433,58 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         }
     }
 
-    function handleFileChunkingUpload(id, retry) {
+    function calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex) {
+        var currentChunkIndex;
+
+        for (currentChunkIndex = getTotalChunks(id)-1; currentChunkIndex >= firstChunkIndex; currentChunkIndex-=1) {
+            fileState[id].remainingChunkIdxs.unshift(currentChunkIndex);
+        }
+
+        uploadNextChunk(id);
+    }
+
+    function onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume) {
+        firstChunkIndex = persistedChunkInfoForResume.part;
+        fileState[id].uuid = persistedChunkInfoForResume.uuid;
+        fileState[id].loaded = persistedChunkInfoForResume.lastByteSent;
+        fileState[id].estTotalRequestsSize = persistedChunkInfoForResume.estTotalRequestsSize;
+        fileState[id].initialRequestOverhead = persistedChunkInfoForResume.initialRequestOverhead;
+        fileState[id].attemptingResume = true;
+        log('Resuming ' + name + " at partition index " + firstChunkIndex);
+
+        calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
+    }
+
+    function handlePossibleResumeAttempt(id, persistedChunkInfoForResume, firstChunkIndex) {
         var name = api.getName(id),
-            firstChunkIndex = 0,
-            persistedChunkInfoForResume, firstChunkDataForResume, currentChunkIndex;
+            firstChunkDataForResume = getChunkData(id, persistedChunkInfoForResume.part),
+            onResumeRetVal;
+
+        onResumeRetVal = options.onResume(id, name, getChunkDataForCallback(firstChunkDataForResume));
+        if (qq.isPromise(onResumeRetVal)) {
+            log("Waiting for onResume promise to be fulfilled for " + id);
+            onResumeRetVal.then(
+                function() {
+                    onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume);
+                },
+                function() {
+                    log("onResume promise fulfilled - failure indicated.  Will not resume.")
+                    calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
+                }
+            );
+        }
+        else if (onResumeRetVal !== false) {
+            onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume);
+        }
+        else {
+            log("onResume callback returned false.  Will not resume.");
+            calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
+        }
+    }
+
+    function handleFileChunkingUpload(id, retry) {
+        var firstChunkIndex = 0,
+            persistedChunkInfoForResume;
 
         if (!fileState[id].remainingChunkIdxs || fileState[id].remainingChunkIdxs.length === 0) {
             fileState[id].remainingChunkIdxs = [];
@@ -444,25 +492,19 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             if (resumeEnabled && !retry && fileState[id].file) {
                 persistedChunkInfoForResume = getPersistedChunkData(id);
                 if (persistedChunkInfoForResume) {
-                    firstChunkDataForResume = getChunkData(id, persistedChunkInfoForResume.part);
-                    if (options.onResume(id, name, getChunkDataForCallback(firstChunkDataForResume)) !== false) {
-                        firstChunkIndex = persistedChunkInfoForResume.part;
-                        fileState[id].uuid = persistedChunkInfoForResume.uuid;
-                        fileState[id].loaded = persistedChunkInfoForResume.lastByteSent;
-                        fileState[id].estTotalRequestsSize = persistedChunkInfoForResume.estTotalRequestsSize;
-                        fileState[id].initialRequestOverhead = persistedChunkInfoForResume.initialRequestOverhead;
-                        fileState[id].attemptingResume = true;
-                        log('Resuming ' + name + " at partition index " + firstChunkIndex);
-                    }
+                    handlePossibleResumeAttempt(id, persistedChunkInfoForResume, firstChunkIndex);
+                }
+                else {
+                    calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
                 }
             }
-
-            for (currentChunkIndex = getTotalChunks(id)-1; currentChunkIndex >= firstChunkIndex; currentChunkIndex-=1) {
-                fileState[id].remainingChunkIdxs.unshift(currentChunkIndex);
+            else {
+                calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
             }
         }
-
-        uploadNextChunk(id);
+        else {
+            uploadNextChunk(id);
+        }
     }
 
     function handleStandardFileUpload(id) {
