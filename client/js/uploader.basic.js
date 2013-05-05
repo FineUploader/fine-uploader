@@ -344,16 +344,28 @@ qq.FineUploaderBasic.prototype = {
                     details.onSuccess();
                 },
                 function() {
-                    self.log(details.name + " promise failure for " + details.identifier);
+                    if (details.onFailure) {
+                        self.log(details.name + " promise failure for " + details.identifier);
+                        details.onFailure();
+                    }
+                    else {
+                        self.log(details.name + " promise failure for " + details.identifier);
+                    }
                 });
         }
 
-        if (details.ignoreIfFalseReturn) {
+        if (details.failureIfFalseReturn) {
             if (callbackRetVal !== false) {
                 details.onSuccess();
             }
             else {
-                this.log("Return value was 'false' for " + details.identifier + ".  Will not proceed.")
+                if (details.onFailure) {
+                    this.log("Return value was 'false' for " + details.identifier + ".  Invoking failure callback.")
+                    details.onFailure();
+                }
+                else {
+                    this.log("Return value was 'false' for " + details.identifier + ".  Will not proceed.")
+                }
             }
         }
         else {
@@ -415,7 +427,7 @@ qq.FineUploaderBasic.prototype = {
                     callback: qq.bind(self._options.callbacks.onCancel, self, id, name),
                     onSuccess: qq.bind(self._onCancel, self, id, name),
                     identifier: id,
-                    ignoreIfFalseReturn: true
+                    failureIfFalseReturn: true
                 });
             },
             onUpload: function(id, name){
@@ -675,7 +687,7 @@ qq.FineUploaderBasic.prototype = {
             callback: qq.bind(this._options.callbacks.onValidateBatch, this, validationDescriptors),
             onSuccess: qq.bind(this._onValidateBatchSuccess, this, validationDescriptors, items, params, endpoint),
             identifier: "batch validation",
-            ignoreIfFalseReturn: true
+            failureIfFalseReturn: true
         });
     },
     _upload: function(blobOrFileContainer, params, endpoint) {
@@ -697,7 +709,7 @@ qq.FineUploaderBasic.prototype = {
             callback: qq.bind(this._options.callbacks.onSubmit, this, id, name),
             onSuccess: qq.bind(this._onSubmitCallbackSuccess, this, id, name),
             identifier: id,
-            ignoreIfFalseReturn: true
+            failureIfFalseReturn: true
         });
     },
     _onSubmitCallbackSuccess: function(id, name) {
@@ -716,20 +728,18 @@ qq.FineUploaderBasic.prototype = {
     _onValidateBatchSuccess: function(validationDescriptors, items, params, endpoint) {
         var errorMessage,
             itemLimit = this._options.validation.itemLimit,
-            proposedNetFilesUploadedOrQueued = this._netUploadedOrQueued + validationDescriptors.length,
-            index;
+            proposedNetFilesUploadedOrQueued = this._netUploadedOrQueued + validationDescriptors.length;
 
         if (itemLimit === 0 || proposedNetFilesUploadedOrQueued <= itemLimit) {
             if (items.length > 0) {
-                for (index = 0; index < items.length; index++){
-                    if (this._validateFileOrBlobData(items[index])){
-                        this._upload(items[index], params, endpoint);
-                    } else {
-                        if (this._options.validation.stopOnFirstInvalidFile){
-                            return;
-                        }
-                    }
-                }
+                this._handleCheckedCallback({
+                    name: "onValidate",
+                    callback: qq.bind(this._options.callbacks.onValidate, this, items[0]),
+                    onSuccess: qq.bind(this._onValidateCallbackSuccess, this, items, 0, params, endpoint),
+                    onFailure: qq.bind(this._onValidateCallbackFailure, this, items, 0, params, endpoint),
+                    identifier: "Item '" + items[0].name + "', size: " + items[0].size,
+                    failureIfFalseReturn: true
+                });
             }
             else {
                 this._itemError("noFilesError", "");
@@ -742,18 +752,53 @@ qq.FineUploaderBasic.prototype = {
             this._batchError(errorMessage);
         }
     },
-    _validateFileOrBlobData: function(fileOrBlobData){
-        var validationDescriptor, name, size;
+    _onValidateCallbackSuccess: function(items, index, params, endpoint) {
+        var nextIndex = index+1,
+            validationDescriptor = this._getValidationDescriptor(items[index]),
+            validItem = false;
 
-        validationDescriptor = this._getValidationDescriptor(fileOrBlobData);
-        name = validationDescriptor.name;
-        size = validationDescriptor.size;
+        if (this._validateFileOrBlobData(items[index], validationDescriptor)) {
+            validItem = true;
+            this._upload(items[index], params, endpoint);
+        }
+
+        this._maybeProcessNextItemAfterOnValidateCallback(validItem, items, nextIndex, params, endpoint);
+    },
+    _onValidateCallbackFailure: function(items, index, params, endpoint) {
+        var nextIndex = index+ 1;
+
+        this._maybeProcessNextItemAfterOnValidateCallback(false, items, nextIndex, params, endpoint);
+    },
+    _maybeProcessNextItemAfterOnValidateCallback: function(validItem, items, index, params, endpoint) {
+        var self = this;
+
+        if (items.length > index) {
+            if (validItem || !this._options.validation.stopOnFirstInvalidFile) {
+                //use setTimeout to prevent a stack overflow with a large number of files in the batch & non-promissory callbacks
+                setTimeout(function() {
+                    var validationDescriptor = self._getValidationDescriptor(items[index]);
+
+                    self._handleCheckedCallback({
+                        name: "onValidate",
+                        callback: qq.bind(self._options.callbacks.onValidate, self, items[index]),
+                        onSuccess: qq.bind(self._onValidateCallbackSuccess, self, items, index, params, endpoint),
+                        onFailure: qq.bind(self._onValidateCallbackFailure, self, items, index, params, endpoint),
+                        identifier: "Item '" + validationDescriptor.name + "', size: " + validationDescriptor.size,
+                        failureIfFalseReturn: true
+                    });
+                }, 0);
+            }
+        }
+    },
+    _validateFileOrBlobData: function(item, validationDescriptor) {
+        var name = validationDescriptor.name,
+            size = validationDescriptor.size;
 
         if (this._options.callbacks.onValidate(validationDescriptor) === false) {
             return false;
         }
 
-        if (qq.isFileOrInput(fileOrBlobData) && !this._isAllowedExtension(name)){
+        if (qq.isFileOrInput(item) && !this._isAllowedExtension(name)){
             this._itemError('typeError', name);
             return false;
 

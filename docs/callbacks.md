@@ -81,7 +81,12 @@ will be deferred until the promise is fulfilled.  If a promise is returned, a ca
 for each selected, dropped, or `addFiles` submitted file and for each `addBlobs` submitted `Blob`, provided you do not return false in your `onValidateBatch` handler, and also provided
 the `stopOnFirstInvalidFile` validation option is not set and a previous invocation of your `onValidate` callback in this batch has not returned false.
 This callback is always invoked before the default Fine Uploader validators execute.  Note that a `FileOrBlobData` object has two properties: `name`
-and `size`.  The `size` property will be undefined if the user agent does not support the File API.
+and `size`.  The `size` property will be undefined if the user agent does not support the File API.  You may also return
+a [`qq.Promise`](promise.md) if non-blocking work is required here.  Processing of this item, along with any additional
+items in the associated batch, will be deferred until the promise is fulfilled.  Deferral of all other items in the batch
+is done to ensure the `stopOnFirstInvalidFile` property of the `validation` option is respected.  If a promise is returned,
+a call to `failure` is the same as returning "false".
+
 
 * `onValidateBatch(Array fileOrBlobDataArray)` - This callback is invoked once for each batch of files or `Blob`s selected, dropped, or submitted
 via the `addFiles` or `addBlobs`  API functions.  A FileOrBlobData array is passed in representing all files or `Blob`s selected or dropped at once.  This allows

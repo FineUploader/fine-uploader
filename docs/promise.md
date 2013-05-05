@@ -92,3 +92,4 @@ Promises are acceptable return values in the following [callbacks](callbacks.md)
 * onSubmit
 * onCancel
 * onValidateBatch
+* onValidate
