@@ -91,5 +91,7 @@ name supplied by the user.
 Promises are acceptable return values in the following [callbacks](callbacks.md):
 * onSubmit
 * onCancel
+* onResume
 * onValidateBatch
 * onValidate
+* onSubmitDelete

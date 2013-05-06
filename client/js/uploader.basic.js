@@ -337,7 +337,7 @@ qq.FineUploaderBasic.prototype = {
             callbackRetVal = details.callback();
 
         if (qq.isPromise(callbackRetVal)) {
-            this.log("Waiting for " + details.name + " promise to be fulfilled for " + details.identifier);
+            this.log(details.name + " - waiting for " + details.name + " promise to be fulfilled for " + details.identifier);
             return callbackRetVal.then(
                 function() {
                     self.log(details.name + " promise success for " + details.identifier);
@@ -360,11 +360,11 @@ qq.FineUploaderBasic.prototype = {
             }
             else {
                 if (details.onFailure) {
-                    this.log("Return value was 'false' for " + details.identifier + ".  Invoking failure callback.")
+                    this.log(details.name + " - return value was 'false' for " + details.identifier + ".  Invoking failure callback.")
                     details.onFailure();
                 }
                 else {
-                    this.log("Return value was 'false' for " + details.identifier + ".  Will not proceed.")
+                    this.log(details.name + " - return value was 'false' for " + details.identifier + ".  Will not proceed.")
                 }
             }
         }
@@ -576,11 +576,15 @@ qq.FineUploaderBasic.prototype = {
         return (this._options.deleteFile.enabled &&
             (!this._options.cors.expected || qq.supportedFeatures.deleteFileCors));
     },
-    _onSubmitDelete: function(id) {
+    _onSubmitDelete: function(id, onSuccessCallback) {
         if (this._isDeletePossible()) {
-            if (this._options.callbacks.onSubmitDelete(id) !== false) {
-                this._deleteHandler.sendDelete(id, this.getUuid(id));
-            }
+            return this._handleCheckedCallback({
+                name: "onSubmitDelete",
+                callback: qq.bind(this._options.callbacks.onSubmitDelete, this, id),
+                onSuccess: onSuccessCallback || qq.bind(this._deleteHandler.sendDelete, this, id, this.getUuid(id)),
+                identifier: id,
+                failureIfFalseReturn: true
+            });
         }
         else {
             this.log("Delete request ignored for ID " + id + ", delete feature is disabled or request not possible " +

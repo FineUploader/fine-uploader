@@ -98,7 +98,9 @@ The `size` property will be undefined if the user agent does not support the Fil
 promise is fulfilled.  If a promise is returned, a call to `failure` is the same as returning "false".
 
 * `onSubmitDelete(id)` - Called before a file or `Blob` that has been marked for deletion has been submitted to the uploader.
-You may return false from your handler if you want to ignore/stop the delete request.
+You may return false from your handler if you want to ignore/stop the delete request.  You may also return a
+[`qq.Promise`](promise.md) if non-blocking work is required here.  Processing of this delete request will be deferred until the
+promise is fulfilled.  If a promise is returned, a call to `failure` is the same as returning "false".
 
 * `onDelete(id)` - Called just before a delete request is sent for the associated file or `Blob`.  The parameter is the ID.
 
