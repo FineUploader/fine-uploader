@@ -718,6 +718,7 @@ qq.FineUploaderBasic.prototype = {
     },
     _onSubmitCallbackSuccess: function(id, name) {
         this._onSubmit(id, name);
+        this._options.callbacks.onSubmitted(id, name);
 
         if (this._options.autoUpload) {
             this._handler.upload(id);
