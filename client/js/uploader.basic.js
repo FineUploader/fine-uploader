@@ -681,9 +681,7 @@ qq.FineUploaderBasic.prototype = {
     },
     _upload: function(blobOrFileContainer, params, endpoint) {
         var id = this._handler.add(blobOrFileContainer),
-            name = this._handler.getName(id),
-            self = this,
-            onSubmitRetVal;
+            name = this._handler.getName(id);
 
         if (params) {
             this.setParams(params, id);
