@@ -181,6 +181,28 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         return form;
     }
 
+    function onCancelSuccess(id) {
+        delete inputs[id];
+        delete uuids[id];
+        delete detachLoadEvents[id];
+
+        if (options.cors.expected) {
+            clearTimeout(postMessageCallbackTimers[id]);
+            delete postMessageCallbackTimers[id];
+            corsMessageReceiver.stopReceivingMessages(id);
+        }
+
+        var iframe = document.getElementById(id);
+        if (iframe) {
+            // to cancel request set src to something else
+            // we use src="javascript:false;" because it doesn't
+            // trigger ie6 prompt on https
+            iframe.setAttribute('src', 'java' + String.fromCharCode(115) + 'cript:false;'); //deal with "JSLint: javascript URL" warning, which apparently cannot be turned off
+
+            qq(iframe).remove();
+        }
+    }
+
 
     api = {
         add: function(fileInput) {
@@ -219,28 +241,21 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             return uuids[id];
         },
         cancel: function(id) {
-            options.onCancel(id, this.getName(id));
+            var onCancelRetVal = options.onCancel(id, this.getName(id));
 
-            delete inputs[id];
-            delete uuids[id];
-            delete detachLoadEvents[id];
-
-            if (options.cors.expected) {
-                clearTimeout(postMessageCallbackTimers[id]);
-                delete postMessageCallbackTimers[id];
-                corsMessageReceiver.stopReceivingMessages(id);
+            if (qq.isPromise(onCancelRetVal)) {
+                return onCancelRetVal.then(function() {
+                    onCancelSuccess(id);
+                });
+            }
+            else if (onCancelRetVal !== false) {
+                onCancelSuccess(id);
+                return true;
             }
 
-            var iframe = document.getElementById(id);
-            if (iframe) {
-                // to cancel request set src to something else
-                // we use src="javascript:false;" because it doesn't
-                // trigger ie6 prompt on https
-                iframe.setAttribute('src', 'java' + String.fromCharCode(115) + 'cript:false;'); //deal with "JSLint: javascript URL" warning, which apparently cannot be turned off
-
-                qq(iframe).remove();
-            }
+            return false;
         },
+
         upload: function(id){
             var input = inputs[id],
                 fileName = api.getName(id),

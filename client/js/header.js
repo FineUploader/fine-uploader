@@ -5,5 +5,7 @@
  *
  * Copyright © 2013, Widen Enterprises info@fineupoader.com
  *
+ * Version: -unstable-
+ *
  * Licensed under GNU GPL v3, see license.txt.
  */

@@ -401,19 +401,16 @@ qq.extend(qq.FineUploader.prototype, {
         }
     },
     _onSubmitDelete: function(id) {
-        if (this._isDeletePossible()) {
-            if (this._options.callbacks.onSubmitDelete(id) !== false) {
-                if (this._options.deleteFile.forceConfirm) {
-                    this._showDeleteConfirm(id);
-                }
-                else {
-                    this._sendDeleteRequest(id);
-                }
-            }
+        var onSuccessCallback = qq.bind(this._onSubmitDeleteSuccess, this, id);
+
+        qq.FineUploaderBasic.prototype._onSubmitDelete.call(this, id, onSuccessCallback);
+    },
+    _onSubmitDeleteSuccess: function(id) {
+        if (this._options.deleteFile.forceConfirm) {
+            this._showDeleteConfirm(id);
         }
         else {
-            this.log("Delete request ignored for file ID " + id + ", delete feature is disabled.", "warn");
-            return false;
+            this._sendDeleteRequest(id);
         }
     },
     _onDeleteComplete: function(id, xhr, isError) {

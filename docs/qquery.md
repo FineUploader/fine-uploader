@@ -41,6 +41,9 @@ The following element-related functions are available on the `qq(...)` function.
 * `qq.preventDefault(Event)` - A function used to prevent the user agent's default action.  To be used inside an event handler.
 * `qq.toElement()` - Creates and returns a new DIV element.
 * `qq.each(objectOrArray, callback)` - Iterates through an object or array, passing your callback the key and value for each element in the object.  `return false;` to stop iteration.
+* `qq.bind(oldFunc, context)` - Same concept as `Function.prototype.bind`, but this will function in all browsers.  Pass comma-separated
+values after the `context` parameter for all arguments to be passed to the new function (when invoked).  This is an alterative to
+modifying `Function.prototype`.
 * `qq.log(String logMessage, (optional) String logLevel)` - Log a message to the console.  No-op if console logging is not supported
 by the user agent.  Will delegate to the user agent's logging function that corresponds to the passed logging level, if
 it exists.  If a comparable function does not exist, but console logging is supported, the log event will be delegated

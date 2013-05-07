@@ -85,6 +85,12 @@ qq.UploadHandler = function(o) {
         handlerImpl = new qq.UploadHandlerForm(options, dequeue, log);
     }
 
+    function cancelSuccess(id) {
+        log('Cancelling ' + id);
+        options.paramsStore.remove(id);
+        dequeue(id);
+    }
+
 
     return {
         /**
@@ -118,10 +124,16 @@ qq.UploadHandler = function(o) {
          * Cancels file upload by id
          */
         cancel: function(id) {
-            log('Cancelling ' + id);
-            options.paramsStore.remove(id);
-            handlerImpl.cancel(id);
-            dequeue(id);
+            var cancelRetVal = handlerImpl.cancel(id);
+
+            if (qq.isPromise(cancelRetVal)) {
+                cancelRetVal.then(function() {
+                    cancelSuccess(id);
+                });
+            }
+            else if (cancelRetVal !== false) {
+                cancelSuccess(id);
+            }
         },
         /**
          * Cancels all queued or in-progress uploads

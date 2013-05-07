@@ -61,7 +61,7 @@ var qq = function(element) {
          * Fixes opacity in IE6-8.
          */
         css: function(styles) {
-            if (styles.opacity !== null){
+            if (styles.opacity != null){
                 if (typeof element.style.opacity !== 'string' && typeof(element.filters) !== 'undefined'){
                     styles.filter = 'alpha(opacity=' + Math.round(100 * styles.opacity) + ')';
                 }
@@ -180,16 +180,21 @@ qq.isFileOrInput = function(maybeFileOrInput) {
     if (window.File && maybeFileOrInput instanceof File) {
         return true;
     }
-    else if (window.HTMLInputElement) {
-        if (maybeFileOrInput instanceof HTMLInputElement) {
-            if (maybeFileOrInput.type && maybeFileOrInput.type.toLowerCase() === 'file') {
+
+    return qq.isInput(maybeFileOrInput);
+};
+
+qq.isInput = function(maybeInput) {
+    if (window.HTMLInputElement) {
+        if (maybeInput instanceof HTMLInputElement) {
+            if (maybeInput.type && maybeInput.type.toLowerCase() === 'file') {
                 return true;
             }
         }
     }
-    else if (maybeFileOrInput.tagName) {
-        if (maybeFileOrInput.tagName.toLowerCase() === 'input') {
-            if (maybeFileOrInput.type && maybeFileOrInput.type.toLowerCase() === 'file') {
+    else if (maybeInput.tagName) {
+        if (maybeInput.tagName.toLowerCase() === 'input') {
+            if (maybeInput.type && maybeInput.type.toLowerCase() === 'file') {
                 return true;
             }
         }
@@ -352,6 +357,22 @@ qq.each = function(obj, callback) {
             }
         }
     }
+};
+
+//include any args that should be passed to the new function after the context arg
+qq.bind = function(oldFunc, context) {
+    if (qq.isFunction(oldFunc)) {
+        var args =  Array.prototype.slice.call(arguments, 2);
+
+        return function() {
+            if (arguments.length) {
+                args = args.concat(Array.prototype.slice.call(arguments))
+            }
+            return oldFunc.apply(context, args);
+        };
+    }
+
+    throw new Error("first parameter must be a function!");
 };
 
 /**
