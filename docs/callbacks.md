@@ -115,6 +115,6 @@ a `failure` it is wise to include a string explaining the failure in your `failu
 Note that the `promptForName` in FineUploader mode, if set to true, will effectively wipe out any custom implementation of this
 callback.  The two are not meant to be used together.  This callback is meant to provide an alternative means to provide a name
 for a pasted image (such as via an ajax call).  If FineUploaderBasic mode is in use and you want to display your own user prompt
-for the name, you may also do so by overriding the default implementation of this callback.
+for the name, you may do so by overriding the default implementation of this callback.
 
 

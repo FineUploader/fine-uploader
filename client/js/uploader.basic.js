@@ -339,9 +339,9 @@ qq.FineUploaderBasic.prototype = {
         if (qq.isPromise(callbackRetVal)) {
             this.log(details.name + " - waiting for " + details.name + " promise to be fulfilled for " + details.identifier);
             return callbackRetVal.then(
-                function() {
+                function(successParam) {
                     self.log(details.name + " promise success for " + details.identifier);
-                    details.onSuccess();
+                    details.onSuccess(successParam);
                 },
                 function() {
                     if (details.onFailure) {
@@ -354,22 +354,17 @@ qq.FineUploaderBasic.prototype = {
                 });
         }
 
-        if (details.failureIfFalseReturn) {
-            if (callbackRetVal !== false) {
-                details.onSuccess();
-            }
-            else {
-                if (details.onFailure) {
-                    this.log(details.name + " - return value was 'false' for " + details.identifier + ".  Invoking failure callback.")
-                    details.onFailure();
-                }
-                else {
-                    this.log(details.name + " - return value was 'false' for " + details.identifier + ".  Will not proceed.")
-                }
-            }
+        if (callbackRetVal !== false) {
+            details.onSuccess(callbackRetVal);
         }
         else {
-            details.onSuccess();
+            if (details.onFailure) {
+                this.log(details.name + " - return value was 'false' for " + details.identifier + ".  Invoking failure callback.")
+                details.onFailure();
+            }
+            else {
+                this.log(details.name + " - return value was 'false' for " + details.identifier + ".  Will not proceed.")
+            }
         }
 
         return callbackRetVal;
@@ -426,8 +421,7 @@ qq.FineUploaderBasic.prototype = {
                     name: "onCancel",
                     callback: qq.bind(self._options.callbacks.onCancel, self, id, name),
                     onSuccess: qq.bind(self._onCancel, self, id, name),
-                    identifier: id,
-                    failureIfFalseReturn: true
+                    identifier: id
                 });
             },
             onUpload: function(id, name){
@@ -494,19 +488,12 @@ qq.FineUploaderBasic.prototype = {
                     self.log(str, level);
                 },
                 pasteReceived: function(blob) {
-                    var callback = self._options.callbacks.onPasteReceived,
-                        promise = callback(blob);
-
-                    if (promise && promise.then) {
-                        promise.then(function(successData) {
-                            self._handlePasteSuccess(blob, successData);
-                        }, function(failureData) {
-                            self.log("Ignoring pasted image per paste received callback.  Reason = '" + failureData + "'");
-                        });
-                    }
-                    else {
-                        self._handlePasteSuccess(blob);
-                    }
+                    self._handleCheckedCallback({
+                        name: "onPasteReceived",
+                        callback: qq.bind(self._options.callbacks.onPasteReceived, self, blob),
+                        onSuccess: qq.bind(self._handlePasteSuccess, self, blob),
+                        identifier: "pasted image"
+                    });
                 }
             }
         });
@@ -582,8 +569,7 @@ qq.FineUploaderBasic.prototype = {
                 name: "onSubmitDelete",
                 callback: qq.bind(this._options.callbacks.onSubmitDelete, this, id),
                 onSuccess: onSuccessCallback || qq.bind(this._deleteHandler.sendDelete, this, id, this.getUuid(id)),
-                identifier: id,
-                failureIfFalseReturn: true
+                identifier: id
             });
         }
         else {
@@ -690,8 +676,7 @@ qq.FineUploaderBasic.prototype = {
             name: "onValidateBatch",
             callback: qq.bind(this._options.callbacks.onValidateBatch, this, validationDescriptors),
             onSuccess: qq.bind(this._onValidateBatchSuccess, this, validationDescriptors, items, params, endpoint),
-            identifier: "batch validation",
-            failureIfFalseReturn: true
+            identifier: "batch validation"
         });
     },
     _upload: function(blobOrFileContainer, params, endpoint) {
@@ -712,8 +697,7 @@ qq.FineUploaderBasic.prototype = {
             name: "onSubmit",
             callback: qq.bind(this._options.callbacks.onSubmit, this, id, name),
             onSuccess: qq.bind(this._onSubmitCallbackSuccess, this, id, name),
-            identifier: id,
-            failureIfFalseReturn: true
+            identifier: id
         });
     },
     _onSubmitCallbackSuccess: function(id, name) {
@@ -742,8 +726,7 @@ qq.FineUploaderBasic.prototype = {
                     callback: qq.bind(this._options.callbacks.onValidate, this, items[0]),
                     onSuccess: qq.bind(this._onValidateCallbackSuccess, this, items, 0, params, endpoint),
                     onFailure: qq.bind(this._onValidateCallbackFailure, this, items, 0, params, endpoint),
-                    identifier: "Item '" + items[0].name + "', size: " + items[0].size,
-                    failureIfFalseReturn: true
+                    identifier: "Item '" + items[0].name + "', size: " + items[0].size
                 });
             }
             else {
@@ -788,8 +771,7 @@ qq.FineUploaderBasic.prototype = {
                         callback: qq.bind(self._options.callbacks.onValidate, self, items[index]),
                         onSuccess: qq.bind(self._onValidateCallbackSuccess, self, items, index, params, endpoint),
                         onFailure: qq.bind(self._onValidateCallbackFailure, self, items, index, params, endpoint),
-                        identifier: "Item '" + validationDescriptor.name + "', size: " + validationDescriptor.size,
-                        failureIfFalseReturn: true
+                        identifier: "Item '" + validationDescriptor.name + "', size: " + validationDescriptor.size
                     });
                 }, 0);
             }

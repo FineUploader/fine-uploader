@@ -365,6 +365,9 @@ qq.bind = function(oldFunc, context) {
         var args =  Array.prototype.slice.call(arguments, 2);
 
         return function() {
+            if (arguments.length) {
+                args = args.concat(Array.prototype.slice.call(arguments))
+            }
             return oldFunc.apply(context, args);
         };
     }
