@@ -560,7 +560,9 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             fileState = [];
         },
         getUuid: function(id) {
-            return fileState[id].uuid;
+            var persistedChunkData = getPersistedChunkData(id);
+
+    		return (persistedChunkData && persistedChunkData.uuid) ? persistedChunkData.uuid : fileState[id].uuid;
         },
         /**
          * Sends the file identified by id to the server
