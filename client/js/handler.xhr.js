@@ -445,7 +445,6 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
     function onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume) {
         firstChunkIndex = persistedChunkInfoForResume.part;
-        fileState[id].uuid = persistedChunkInfoForResume.uuid;
         fileState[id].loaded = persistedChunkInfoForResume.lastByteSent;
         fileState[id].estTotalRequestsSize = persistedChunkInfoForResume.estTotalRequestsSize;
         fileState[id].initialRequestOverhead = persistedChunkInfoForResume.initialRequestOverhead;
@@ -554,7 +553,8 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
          * Returns id to use with upload, cancel
          **/
         add: function(fileOrBlobData){
-            var id;
+            var id, persistedChunkData,
+                uuid = qq.getUniqueId();
 
             if (fileOrBlobData instanceof File) {
                 id = fileState.push({file: fileOrBlobData}) - 1;
@@ -566,7 +566,16 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
                 throw new Error('Passed obj in not a File or BlobData (in qq.UploadHandlerXhr)');
             }
 
-            fileState[id].uuid = qq.getUniqueId();
+            if (resumeEnabled) {
+                persistedChunkData = getPersistedChunkData(id);
+
+                if (persistedChunkData) {
+                    uuid = persistedChunkData.uuid;
+                }
+            }
+
+            fileState[id].uuid = uuid;
+
             return id;
         },
         getName: function(id){
