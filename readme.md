@@ -44,8 +44,8 @@ If you are an experienced user who has already read the [Introduction](#introduc
 (starting with the ["Choose Your Path..."](#choose-your-path) section), you might be looking for a set of links that point
 you at the API, callbacks, options, etc for the purpose of reference.  Here you go:
 
-* [API: FineUploaderBasic mode](docs/api-fineuploader.md)
-* [API: FineUploader mode](docs/api-fineuploaderbasic.md)
+* [API: FineUploaderBasic mode](docs/api-fineuploaderbasic.md)
+* [API: FineUploader mode](docs/api-fineuploader.md)
 * [Options: FineUploaderBasic mode](docs/options-fineuploaderbasic.md)
 * [Options: FineUploader mode](docs/options-fineuploader.md)
 * [Callbacks](docs/callbacks.md)
