@@ -38,6 +38,32 @@
 
 
 <br/>
+## Documentation Quick Reference ##
+If you are an experienced user who has already read the [Introduction](#introduction), the
+["Two Modes..." section](#fine-uploader-has-two-modes), and has followed the documentation wizard
+(starting with the ["Choose Your Path..."](#choose-your-path) section), you might be looking for a set of links that point
+you at the API, callbacks, options, etc for the purpose of reference.  Here you go:
+
+* [API: FineUploaderBasic mode](docs/api-fineuploader.md)
+* [API: FineUploader mode](docs/api-fineuploaderbasic.md)
+* [Options: FineUploaderBasic mode](docs/options-fineuploaderbasic.md)
+* [Options: FineUploader mode](docs/options-fineuploader.md)
+* [Callbacks](docs/callbacks.md)
+* [Promises - `qq.Promise`](docs/promise.md)
+* [qQuery - utility functions](docs/qquery.md)
+* [Styling Fine Uploader](docs/styling.md)
+* [Drag and Drop standalone module](docs/drag-and-drop.md)
+* [Feature Detection module](docs/feature-detection.md)
+* [IE Limitations](docs/limitations-ie.md)
+* [FAQ](docs/faq.md)
+* [Downloads](http://fineuploader.com/downloads.html)
+* [Support](http://fineuploader.com/support.html)
+* [Blog](http://blog.fineuploader.com)
+* [@fineuploader](https://twitter.com/fineuploader)
+* [Demo](http://fineuploader.com)
+
+
+<br/>
 ## Introduction ##
 This project attempts to achieve a user-friendly file-uploading experience over the web.
 It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
@@ -90,15 +116,6 @@ I didn't forget about you!  Read on, starting [here](docs/path-fineuploaderbasic
 
 
 <br/>
-## Important Fine Uploader Links ##
-* [Downloads](http://fineuploader.com/downloads.html)
-* [Support](http://fineuploader.com/support.html)
-* [Blog](http://blog.fineuploader.com)
-* [@fineuploader](https://twitter.com/fineuploader)
-* [Demo](http://fineuploader.com)
-
-
-<br/>
 ### Troubleshooting ###
 If you can't get the uploader to work, please try the following steps
 before asking for help.
@@ -134,13 +151,3 @@ We would love developers to contribute any improvements and bugfixes they produc
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
 
 Thanks to everybody who contributed, either by sending bug reports or donating. The project wouldn't be possible without all this generous help. Thank you!
-
-
-<br/>
-## Additional Reading ##
-* [Frequently Asked Questions (FAQ)](docs/faq.md)
-* [Supported Feature Detection module](docs/feature-detection.md)
-* [Styling FineUploader](docs/styling.md)
-* [Changing alert/messages to something more user friendly](docs/styling.md#changing-dialogs-to-something-more-user-friendly)
-* [qQuery (Public Utility Functions)](docs/qquery.md)
-* [Internet Explorer Limitations](docs/limitations-ie.md)
