@@ -22,7 +22,8 @@ qq.FineUploaderBasic = function(o){
             sizeLimit: 0,
             minSizeLimit: 0,
             itemLimit: 0,
-            stopOnFirstInvalidFile: true
+            stopOnFirstInvalidFile: true,
+            acceptFiles: null
         },
         callbacks: {
             onSubmit: function(id, name){},
@@ -112,10 +113,16 @@ qq.FineUploaderBasic = function(o){
         paste: {
             targetElement: null,
             defaultName: 'pasted_image'
+        },
+        camera: {
+            ios: false
         }
     };
 
     qq.extend(this._options, o, true);
+
+    this._handleCameraAccess();
+
     this._wrapCallbacks();
     this._disposeSupport =  new qq.DisposeSupport();
 
@@ -1023,5 +1030,17 @@ qq.FineUploaderBasic.prototype = {
                 endpointStore = {};
             }
         };
+    },
+    _handleCameraAccess: function() {
+        if (this._options.camera.ios && qq.ios()) {
+            this._options.multiple = false;
+
+            if (this._options.validation.acceptFiles === null) {
+                this._options.validation.acceptFiles = "image/*;capture=camera";
+            }
+            else {
+                this._options.validation.acceptFiles += ",image/*;capture=camera";
+            }
+        }
     }
 };

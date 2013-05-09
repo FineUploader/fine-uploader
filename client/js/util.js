@@ -315,6 +315,12 @@ qq.android = function(){
     "use strict";
     return navigator.userAgent.toLowerCase().indexOf('android') !== -1;
 };
+qq.ios = function() {
+    "use strict";
+    return navigator.userAgent.indexOf("iPad") !== -1
+        || navigator.userAgent.indexOf("iPod") !== -1
+        || navigator.userAgent.indexOf("iPhone") !== -1;
+};
 
 //
 // Events

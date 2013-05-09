@@ -607,3 +607,33 @@ Currently, only pasting images (from the web) is supported, and only in Chrome.
     	</tr>
     </tbody>
 </table>
+### `camera` option properties: ###
+Options specific to camera access.
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>ios</td>
+            <td>boolean</td>
+            <td><code>false</code></td>
+            <td>Set this to true to enable camera access on iOS (iPod, iPhone, iPad) devices.  Note that, due to limitations
+            related to camera access in iOS, setting this to true will prevent you from selecting multiple files at once.
+            Please see [the associated blog post] for more details on the implementation
+            of this feature.</td>
+    	</tr>
+        <tr>
+            <td>defaultName</td>
+            <td>string</td>
+            <td>pasted_image</td>
+            <td>If no name is supplied via the `onPasteReceived` or other means, this will be the name associated with
+            pasted images.  Note that an appropriate extension will always been appended to this name automatically.</td>
+    	</tr>
+    </tbody>
+</table>
