@@ -312,6 +312,9 @@ qq.FineUploaderBasic.prototype = {
             this.log("undefined or non-array parameter passed into addBlobs", "error");
         }
     },
+    isValid: function(id) {
+        return this._handler.isValid(id);
+    },
     getUuid: function(id) {
         return this._handler.getUuid(id);
     },
@@ -596,6 +599,7 @@ qq.FineUploaderBasic.prototype = {
         else {
             this._netUploadedOrQueued--;
             this._netUploaded--;
+            this._handler.cancel(id);
             this.log("Delete request for '" + name + "' has succeeded.");
         }
     },
