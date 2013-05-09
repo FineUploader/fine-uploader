@@ -625,15 +625,9 @@ Options specific to camera access.
             <td><code>false</code></td>
             <td>Set this to true to enable camera access on iOS (iPod, iPhone, iPad) devices.  Note that, due to limitations
             related to camera access in iOS, setting this to true will prevent you from selecting multiple files at once.
-            Please see [the associated blog post] for more details on the implementation
+            Please see <a href="http://blog.fineuploader.com/2013/05/upload-directly-via-camera-on-mobile.html">the associated blog post</a>
+            for more details on the implementation
             of this feature.</td>
-    	</tr>
-        <tr>
-            <td>defaultName</td>
-            <td>string</td>
-            <td>pasted_image</td>
-            <td>If no name is supplied via the `onPasteReceived` or other means, this will be the name associated with
-            pasted images.  Note that an appropriate extension will always been appended to this name automatically.</td>
     	</tr>
     </tbody>
 </table>
