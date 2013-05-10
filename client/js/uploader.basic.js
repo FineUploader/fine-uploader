@@ -339,6 +339,9 @@ qq.FineUploaderBasic.prototype = {
             this._deleteFileEndpointStore.setEndpoint(endpoint, id);
         }
     },
+    doesExist: function(fileOrBlobId) {
+        return this._handler.isValid(fileOrBlobId);
+    },
     _handleCheckedCallback: function(details) {
         var self = this,
             callbackRetVal = details.callback();
@@ -596,6 +599,7 @@ qq.FineUploaderBasic.prototype = {
         else {
             this._netUploadedOrQueued--;
             this._netUploaded--;
+            this._handler.expunge(id);
             this.log("Delete request for '" + name + "' has succeeded.");
         }
     },

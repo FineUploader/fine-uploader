@@ -532,7 +532,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         xhr.send(toSend);
     }
 
-    function onCancelSuccess(id) {
+    function expungeItem(id) {
         var xhr = fileState[id].xhr;
 
         if (xhr) {
@@ -612,17 +612,14 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
                 return fileState[id].file || fileState[id].blobData.blob;
             }
         },
-        /**
-         * Returns uploaded bytes for file identified by id
-         */
-        getLoaded: function(id){
-            return fileState[id].loaded || 0;
-        },
         isValid: function(id) {
             return fileState[id] !== undefined;
         },
         reset: function() {
             fileState = [];
+        },
+        expunge: function(id) {
+            return expungeItem(id);
         },
         getUuid: function(id) {
             return fileState[id].uuid;
@@ -649,11 +646,11 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
             if (qq.isPromise(onCancelRetVal)) {
                 return onCancelRetVal.then(function() {
-                    onCancelSuccess(id);
+                    expungeItem(id);
                 });
             }
             else if (onCancelRetVal !== false) {
-                onCancelSuccess(id);
+                expungeItem(id);
                 return true;
             }
 

@@ -168,17 +168,13 @@ qq.UploadHandler = function(o) {
                 return handlerImpl.getFile(id);
             }
         },
-        /**
-         * Returns id of files being uploaded or
-         * waiting for their turn
-         */
-        getQueue: function(){
-            return queue;
-        },
         reset: function() {
             log('Resetting upload handler');
             queue = [];
             handlerImpl.reset();
+        },
+        expunge: function(id) {
+            return handlerImpl.expunge(id);
         },
         getUuid: function(id) {
             return handlerImpl.getUuid(id);

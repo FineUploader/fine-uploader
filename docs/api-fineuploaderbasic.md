@@ -69,3 +69,4 @@ Fine Uploader actually uses the API call internally when a user clicks the delet
 
 * `getUuid(id)` - Retrieves the UUID associated with a file or `Blob`, given a current session file or `Blob` ID.
 
+* `doesExist(id)` - Returns true if the associated file or `Blob` is a currently registered with Fine Uploader.

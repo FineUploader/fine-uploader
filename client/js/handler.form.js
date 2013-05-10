@@ -181,7 +181,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         return form;
     }
 
-    function onCancelSuccess(id) {
+    function expungeFile(id) {
         delete inputs[id];
         delete uuids[id];
         delete detachLoadEvents[id];
@@ -237,6 +237,9 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             uuids = [];
             detachLoadEvents = {};
         },
+        expunge: function(id) {
+            return expungeFile(id);
+        },
         getUuid: function(id) {
             return uuids[id];
         },
@@ -245,11 +248,11 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
 
             if (qq.isPromise(onCancelRetVal)) {
                 return onCancelRetVal.then(function() {
-                    onCancelSuccess(id);
+                    expungeFile(id);
                 });
             }
             else if (onCancelRetVal !== false) {
-                onCancelSuccess(id);
+                expungeFile(id);
                 return true;
             }
 
