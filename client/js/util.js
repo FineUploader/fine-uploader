@@ -162,6 +162,11 @@ qq.isFunction = function(variable) {
     return typeof(variable) === "function";
 };
 
+qq.isArray = function(variable) {
+    "use strict";
+    Object.prototype.toString.call(variable) === "[object Array]";
+}
+
 qq.isString = function(maybeString) {
     "use strict";
     return Object.prototype.toString.call(maybeString) === '[object String]';
@@ -350,15 +355,25 @@ qq.toElement = (function(){
 }());
 
 //key and value are passed to callback for each item in the object or array
-qq.each = function(obj, callback) {
+qq.each = function(objOrArray, callback) {
     "use strict";
-    var key, retVal;
-    if (obj) {
-        for (key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                retVal = callback(key, obj[key]);
+    var keyOrIndex, retVal;
+    if (objOrArray) {
+        if (qq.isArray(objOrArray)) {
+            for (keyOrIndex = 0; i < objOrArray.length; i++) {
+                retVal = callback(keyOrIndex, objOrArray[keyOrIndex]);
                 if (retVal === false) {
                     break;
+                }
+            }
+        }
+        else {
+            for (keyOrIndex in objOrArray) {
+                if (Object.prototype.hasOwnProperty.call(objOrArray, keyOrIndex)) {
+                    retVal = callback(keyOrIndex, objOrArray[keyOrIndex]);
+                    if (retVal === false) {
+                        break;
+                    }
                 }
             }
         }
@@ -507,17 +522,21 @@ qq.setCookie = function(name, value, days) {
 qq.getCookie = function(name) {
 	var nameEQ = name + "=",
         ca = document.cookie.split(';'),
-        c;
+        cookie;
 
-	for(var i=0;i < ca.length;i++) {
-		c = ca[i];
-		while (c.charAt(0)==' ') {
-            c = c.substring(1,c.length);
+    qq.each(ca, function(idx, part) {
+        var cookiePart = part;
+        while (cookiePart.charAt(0)==' ') {
+            cookiePart = cookiePart.substring(1, cookiePart.length);
         }
-		if (c.indexOf(nameEQ) === 0) {
-            return c.substring(nameEQ.length,c.length);
+
+        if (cookiePart.indexOf(nameEQ) === 0) {
+            cookie = cookiePart.substring(nameEQ.length, cookiePart.length);
+            return false;
         }
-	}
+    });
+
+    return cookie;
 };
 
 qq.getCookieNames = function(regexp) {
