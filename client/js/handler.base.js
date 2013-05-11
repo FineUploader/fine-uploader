@@ -6,7 +6,7 @@ qq.UploadHandler = function(o) {
     "use strict";
 
     var queue = [],
-        options, log, dequeue, handlerImpl;
+        options, log, handlerImpl;
 
     // Default options, can be overridden by the user
     options = {
@@ -63,7 +63,7 @@ qq.UploadHandler = function(o) {
     /**
      * Removes element from queue, starts upload of next
      */
-    dequeue = function(id) {
+    function dequeue(id) {
         var i = qq.indexOf(queue, id),
             max = options.maxConnections,
             nextId;
