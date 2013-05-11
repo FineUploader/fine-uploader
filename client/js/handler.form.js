@@ -43,7 +43,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
 
         corsMessageReceiver.receiveMessage(id, function(message) {
             log("Received the following window message: '" + message + "'");
-            var response = qq.parseJson(message),
+            var response = parseResponse(id, message),
                 uuid = response.uuid,
                 onloadCallback;
 
@@ -107,7 +107,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
     /**
      * Returns json object received by iframe from server.
      */
-    function getIframeContentJson(iframe) {
+    function getIframeContentJson(id, iframe) {
         /*jshint evil: true*/
 
         var response;
@@ -116,19 +116,39 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         try {
             // iframe.contentWindow.document - for IE<7
             var doc = iframe.contentDocument || iframe.contentWindow.document,
-                innerHTML = doc.body.innerHTML;
+                innerHtml = doc.body.innerHTML;
 
             log("converting iframe's innerHTML to JSON");
-            log("innerHTML = " + innerHTML);
+            log("innerHTML = " + innerHtml);
             //plain text response may be wrapped in <pre> tag
-            if (innerHTML && innerHTML.match(/^<pre/i)) {
-                innerHTML = doc.body.firstChild.firstChild.nodeValue;
+            if (innerHtml && innerHtml.match(/^<pre/i)) {
+                innerHtml = doc.body.firstChild.firstChild.nodeValue;
             }
 
-            response = qq.parseJson(innerHTML);
-        } catch(error){
+            response = parseResponse(id, innerHtml);
+        }
+        catch(error) {
             log('Error when attempting to parse form upload response (' + error + ")", 'error');
             response = {success: false};
+        }
+
+        return response;
+    }
+
+    function parseResponse(id, innerHtmlOrMessage) {
+        var response;
+
+        try {
+            response = qq.parseJson(innerHtmlOrMessage);
+
+            if (response.newUuid !== undefined) {
+                log("Server requested UUID change from '" + uuids[id] + "' to '" + response.newUuid + "'");
+                uuids[id] = response.newUuid;
+            }
+        }
+        catch(error) {
+            log('Error when attempting to parse iframe upload response (' + error + ')', 'error');
+            response = {};
         }
 
         return response;
@@ -259,7 +279,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             return false;
         },
 
-        upload: function(id){
+        upload: function(id) {
             var input = inputs[id],
                 fileName = api.getName(id),
                 iframe = createIframe(id),
@@ -277,7 +297,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             attachLoadEvent(iframe, function(responseFromMessage){
                 log('iframe loaded');
 
-                var response = responseFromMessage ? responseFromMessage : getIframeContentJson(iframe);
+                var response = responseFromMessage ? responseFromMessage : getIframeContentJson(id, iframe);
 
                 detachLoadEvent(id);
 

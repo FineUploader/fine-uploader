@@ -261,11 +261,16 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         return xhr.status !== 200 || !response.success || response.reset;
     }
 
-    function parseResponse(xhr) {
+    function parseResponse(id, xhr) {
         var response;
 
         try {
             response = qq.parseJson(xhr.responseText);
+
+            if (response.newUuid !== undefined) {
+                log("Server requested UUID change from '" + fileState[id].uuid + "' to '" + response.newUuid + "'");
+                fileState[id].uuid = response.newUuid;
+            }
         }
         catch(error) {
             log('Error when attempting to parse xhr response text (' + error + ')', 'error');
@@ -317,7 +322,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
 
         log("xhr - server response received for " + id);
         log("responseText = " + xhr.responseText);
-        response = parseResponse(xhr);
+        response = parseResponse(id, xhr);
 
         if (isErrorResponse(xhr, response)) {
             if (response.reset) {
