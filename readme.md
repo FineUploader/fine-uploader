@@ -44,6 +44,7 @@ If you are an experienced user who has already read the [Introduction](#introduc
 (starting with the ["Choose Your Path..."](#choose-your-path) section), you might be looking for a set of links that point
 you at the API, callbacks, options, etc for the purpose of reference.  Here you go:
 
+* [Server-side guidelines and documentation](https://github.com/Widen/fine-uploader-server/blob/master/readme.md)
 * [API: FineUploaderBasic mode](docs/api-fineuploaderbasic.md)
 * [API: FineUploader mode](docs/api-fineuploader.md)
 * [Options: FineUploaderBasic mode](docs/options-fineuploaderbasic.md)
