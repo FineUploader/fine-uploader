@@ -10,5 +10,5 @@
 9. Have a look at the [Supported Feature Detection module](docs/feature-detection.md) if you'd like to be programmatically
 account for the differences in feature support between the various supported browsers.
 10. You might want to read up on [this short description](styling.md) that mentions how you can override the default alert and confirm dialogs as well as adjust styling of Fine Uploader.
-11. Head on over to the [server-side readme](https://github.com/Widen/fine-uploader-server/blob/master/readme.md).
+11. Head on over to the [server-side readme](server.md).
 
