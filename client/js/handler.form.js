@@ -12,6 +12,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
         log = logCallback,
         corsMessageReceiver = new qq.WindowReceiveMessage({log: log}),
         onloadCallbacks = {},
+        formHandlerInstanceId = qq.getUniqueId(),
         api;
 
 
@@ -23,16 +24,17 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
     }
 
     function registerPostMessageCallback(iframe, callback) {
-        var id = iframe.id;
+        var iframeName = iframe.id,
+            fileId = getFileIdForIframeName(iframeName);
 
-        onloadCallbacks[uuids[id]] = callback;
+        onloadCallbacks[uuids[fileId]] = callback;
 
-        detachLoadEvents[id] = qq(iframe).attach('load', function() {
-            if (inputs[id]) {
-                log("Received iframe load event for CORS upload request (file id " + id + ")");
+        detachLoadEvents[fileId] = qq(iframe).attach('load', function() {
+            if (inputs[fileId]) {
+                log("Received iframe load event for CORS upload request (iframe name " + iframeName + ")");
 
-                postMessageCallbackTimers[id] = setTimeout(function() {
-                    var errorMessage = "No valid message received from loaded iframe for file id " + id;
+                postMessageCallbackTimers[iframeName] = setTimeout(function() {
+                    var errorMessage = "No valid message received from loaded iframe for iframe name " + iframeName;
                     log(errorMessage, "error");
                     callback({
                         error: errorMessage
@@ -41,22 +43,23 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             }
         });
 
-        corsMessageReceiver.receiveMessage(id, function(message) {
+        corsMessageReceiver.receiveMessage(iframeName, function(message) {
             log("Received the following window message: '" + message + "'");
-            var response = parseResponse(id, message),
+            var response = parseResponse(getFileIdForIframeName(iframeName), message),
                 uuid = response.uuid,
                 onloadCallback;
 
             if (uuid && onloadCallbacks[uuid]) {
-                clearTimeout(postMessageCallbackTimers[id]);
-                delete postMessageCallbackTimers[id];
+                log("Handling response for iframe name " + iframeName);
+                clearTimeout(postMessageCallbackTimers[iframeName]);
+                delete postMessageCallbackTimers[iframeName];
 
-                detachLoadEvent(id);
+                detachLoadEvent(iframeName);
 
                 onloadCallback = onloadCallbacks[uuid];
 
                 delete onloadCallbacks[uuid];
-                corsMessageReceiver.stopReceivingMessages(id);
+                corsMessageReceiver.stopReceivingMessages(iframeName);
                 onloadCallback(response);
             }
             else if (!uuid) {
@@ -157,16 +160,17 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
     /**
      * Creates iframe with unique name
      */
-    function createIframe(id){
+    function createIframe(id) {
         // We can't use following code as the name attribute
         // won't be properly registered in IE6, and new window
         // on form submit will open
         // var iframe = document.createElement('iframe');
         // iframe.setAttribute('name', id);
 
-        var iframe = qq.toElement('<iframe src="javascript:false;" name="' + id + '" />');
+        var iframeName = getIframeName(id),
+            iframe = qq.toElement('<iframe src="javascript:false;" name="' + iframeName + '" />');
 
-        iframe.setAttribute('id', id);
+        iframe.setAttribute('id', iframeName);
 
         iframe.style.display = 'none';
         document.body.appendChild(iframe);
@@ -212,7 +216,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             corsMessageReceiver.stopReceivingMessages(id);
         }
 
-        var iframe = document.getElementById(id);
+        var iframe = document.getElementById(getIframeName(id));
         if (iframe) {
             // to cancel request set src to something else
             // we use src="javascript:false;" because it doesn't
@@ -221,6 +225,14 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
 
             qq(iframe).remove();
         }
+    }
+
+    function getFileIdForIframeName(iframeName) {
+        return iframeName.split("_")[0];
+    }
+
+    function getIframeName(fileId) {
+        return fileId + "_" + formHandlerInstanceId;
     }
 
 
@@ -256,6 +268,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             inputs = [];
             uuids = [];
             detachLoadEvents = {};
+            formHandlerInstanceId = qq.getUniqueId();
         },
         expunge: function(id) {
             return expungeFile(id);
@@ -264,7 +277,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             return uuids[id];
         },
         cancel: function(id) {
-            var onCancelRetVal = options.onCancel(id, this.getName(id));
+            var onCancelRetVal = options.onCancel(id, api.getName(id));
 
             if (qq.isPromise(onCancelRetVal)) {
                 return onCancelRetVal.then(function() {
@@ -289,7 +302,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
                 throw new Error('file with passed id was not added, or already uploaded or cancelled');
             }
 
-            options.onUpload(id, this.getName(id));
+            options.onUpload(id, api.getName(id));
 
             form = createForm(id, iframe);
             form.appendChild(input);
