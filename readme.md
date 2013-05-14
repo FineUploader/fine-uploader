@@ -1,4 +1,4 @@
-# Fine Uploader 3.5 (Released April 24, 2013) #
+# Fine Uploader 3.6 (IN PROGRESS) #
 
 ###[Download the 3.5 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 
@@ -34,7 +34,35 @@
 * Easily set and enforce a maximum item limit.
 * [Upload images via paste (Chrome)](http://blog.fineuploader.com/2013/03/upload-image-via-paste-in-34.html).
 * [Standalone file & folder drag & drop module](docs/drag-and-drop.md).  Integrated by default into FineUploader mode.
-* Any many more!
+* And many more!
+
+
+<br/>
+## Documentation Quick Reference ##
+If you are an experienced user who has already read the [Introduction](#introduction), the
+["Two Modes..." section](#fine-uploader-has-two-modes), and has followed the documentation wizard
+(starting with the ["Choose Your Path..."](#choose-your-path) section), you might be looking for a set of links that point
+you at the API, callbacks, options, etc for the purpose of reference.  Here you go:
+
+* [Server-side guidelines and documentation](docs/server.md)
+* [Server-side examples](https://github.com/Widen/fine-uploader-server)
+* [API: FineUploaderBasic mode](docs/api-fineuploaderbasic.md)
+* [API: FineUploader mode](docs/api-fineuploader.md)
+* [Options: FineUploaderBasic mode](docs/options-fineuploaderbasic.md)
+* [Options: FineUploader mode](docs/options-fineuploader.md)
+* [Callbacks](docs/callbacks.md)
+* [Promises - `qq.Promise`](docs/promise.md)
+* [qQuery - utility functions](docs/qquery.md)
+* [Styling Fine Uploader](docs/styling.md)
+* [Drag and Drop standalone module](docs/drag-and-drop.md)
+* [Feature Detection module](docs/feature-detection.md)
+* [IE Limitations](docs/limitations-ie.md)
+* [FAQ](docs/faq.md)
+* [Downloads](http://fineuploader.com/downloads.html)
+* [Support](http://fineuploader.com/support.html)
+* [Blog](http://blog.fineuploader.com)
+* [@fineuploader](https://twitter.com/fineuploader)
+* [Demo](http://fineuploader.com)
 
 
 <br/>
@@ -90,15 +118,6 @@ I didn't forget about you!  Read on, starting [here](docs/path-fineuploaderbasic
 
 
 <br/>
-## Important Fine Uploader Links ##
-* [Downloads](http://fineuploader.com/downloads.html)
-* [Support](http://fineuploader.com/support.html)
-* [Blog](http://blog.fineuploader.com)
-* [@fineuploader](https://twitter.com/fineuploader)
-* [Demo](http://fineuploader.com)
-
-
-<br/>
 ### Troubleshooting ###
 If you can't get the uploader to work, please try the following steps
 before asking for help.
@@ -133,14 +152,5 @@ GPL v3.  Please see the [downloads page](http://fineuploader.com/downloads.html)
 We would love developers to contribute any improvements and bugfixes they produce.  Note that any pull requests MUST be against the "develop" branch!
 See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
 
-Thanks to everybody who contributed, either by sending bug reports or donating. The project wouldn't be possible without all this generous help. Thank you!
-
-
-<br/>
-## Additional Reading ##
-* [Frequently Asked Questions (FAQ)](docs/faq.md)
-* [Supported Feature Detection module](docs/feature-detection.md)
-* [Styling FineUploader](docs/styling.md)
-* [Changing alert/messages to something more user friendly](docs/styling.md#changing-dialogs-to-something-more-user-friendly)
-* [qQuery (Public Utility Functions)](docs/qquery.md)
-* [Internet Explorer Limitations](docs/limitations-ie.md)
+Thanks to everybody who contributed, either by sending bug reports, pull requests, or purchasing a commercial license.
+The project wouldn't be possible without all this generous help. Thank you!

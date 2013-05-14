@@ -6,7 +6,7 @@ qq.UploadHandler = function(o) {
     "use strict";
 
     var queue = [],
-        options, log, dequeue, handlerImpl;
+        options, log, handlerImpl;
 
     // Default options, can be overridden by the user
     options = {
@@ -63,7 +63,7 @@ qq.UploadHandler = function(o) {
     /**
      * Removes element from queue, starts upload of next
      */
-    dequeue = function(id) {
+    function dequeue(id) {
         var i = qq.indexOf(queue, id),
             max = options.maxConnections,
             nextId;
@@ -83,6 +83,12 @@ qq.UploadHandler = function(o) {
     }
     else {
         handlerImpl = new qq.UploadHandlerForm(options, dequeue, log);
+    }
+
+    function cancelSuccess(id) {
+        log('Cancelling ' + id);
+        options.paramsStore.remove(id);
+        dequeue(id);
     }
 
 
@@ -118,10 +124,16 @@ qq.UploadHandler = function(o) {
          * Cancels file upload by id
          */
         cancel: function(id) {
-            log('Cancelling ' + id);
-            options.paramsStore.remove(id);
-            handlerImpl.cancel(id);
-            dequeue(id);
+            var cancelRetVal = handlerImpl.cancel(id);
+
+            if (qq.isPromise(cancelRetVal)) {
+                cancelRetVal.then(function() {
+                    cancelSuccess(id);
+                });
+            }
+            else if (cancelRetVal !== false) {
+                cancelSuccess(id);
+            }
         },
         /**
          * Cancels all queued or in-progress uploads
@@ -156,17 +168,13 @@ qq.UploadHandler = function(o) {
                 return handlerImpl.getFile(id);
             }
         },
-        /**
-         * Returns id of files being uploaded or
-         * waiting for their turn
-         */
-        getQueue: function(){
-            return queue;
-        },
         reset: function() {
             log('Resetting upload handler');
             queue = [];
             handlerImpl.reset();
+        },
+        expunge: function(id) {
+            return handlerImpl.expunge(id);
         },
         getUuid: function(id) {
             return handlerImpl.getUuid(id);
