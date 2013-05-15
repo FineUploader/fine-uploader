@@ -6,7 +6,7 @@ qq.UploadHandler = function(o) {
     "use strict";
 
     var queue = [],
-        options, log, handlerImpl;
+        options, log, handlerImpl, api;
 
     // Default options, can be overridden by the user
     options = {
@@ -92,7 +92,7 @@ qq.UploadHandler = function(o) {
     }
 
 
-    return {
+    api = {
         /**
          * Adds file or file input to the queue
          * @returns id
@@ -170,6 +170,7 @@ qq.UploadHandler = function(o) {
         },
         reset: function() {
             log('Resetting upload handler');
+            api.cancelAll();
             queue = [];
             handlerImpl.reset();
         },
@@ -192,4 +193,6 @@ qq.UploadHandler = function(o) {
             return [];
         }
     };
+
+    return api;
 };

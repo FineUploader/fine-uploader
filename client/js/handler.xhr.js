@@ -156,9 +156,12 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         fileState[id].attemptingResume = false;
 
         options.onProgress(id, name, size, size);
-
         options.onComplete(id, name, response, xhr);
-        delete fileState[id].xhr;
+
+        if (fileState[id]) {
+            delete fileState[id].xhr;
+        }
+
         uploadComplete(id);
     }
 
