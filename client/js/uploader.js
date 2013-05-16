@@ -94,7 +94,8 @@ qq.FineUploader = function(o){
 
         },
         display: {
-            fileSizeOnSubmit: false
+            fileSizeOnSubmit: false,
+            prependFiles: false
         },
         paste: {
             promptForName: false,
@@ -168,6 +169,9 @@ qq.FineUploader = function(o){
         if (this._options.paste.targetElement && this._options.paste.promptForName) {
             this._setupPastePrompt();
         }
+
+        this._totalFilesInBatch = 0;
+        this._filesInBatchAddedToUi = 0;
     }
 };
 
@@ -205,6 +209,9 @@ qq.extend(qq.FineUploader.prototype, {
         this._bindCancelAndRetryEvents();
         this._dnd.dispose();
         this._dnd = this._setupDragAndDrop();
+
+        this._totalFilesInBatch = 0;
+        this._filesInBatchAddedToUi = 0;
     },
     _removeFileItem: function(fileId) {
         var item = this.getItemByFileId(fileId);
@@ -269,7 +276,7 @@ qq.extend(qq.FineUploader.prototype, {
     /**
      * Gets one of the elements listed in this._options.classes
      **/
-    _find: function(parent, type){
+    _find: function(parent, type) {
         var element = qq(parent).getByClass(this._options.classes[type])[0];
         if (!element){
             throw new Error('element not found ' + type);
@@ -277,7 +284,7 @@ qq.extend(qq.FineUploader.prototype, {
 
         return element;
     },
-    _onSubmit: function(id, name){
+    _onSubmit: function(id, name) {
         qq.FineUploaderBasic.prototype._onSubmit.apply(this, arguments);
         this._addToList(id, name);
     },
@@ -467,11 +474,28 @@ qq.extend(qq.FineUploader.prototype, {
             this._clearList();
         }
 
-        this._listElement.appendChild(item);
+        if (this._options.display.prependFiles) {
+            this._prependItem(item);
+        }
+        else {
+            this._listElement.appendChild(item);
+        }
+        this._filesInBatchAddedToUi += 1;
 
         if (this._options.display.fileSizeOnSubmit && qq.supportedFeatures.ajaxUploading) {
             this._displayFileSize(id);
         }
+    },
+    _prependItem: function(item) {
+        var parentEl = this._listElement,
+            beforeEl = parentEl.firstChild;
+
+        if (this._totalFilesInBatch > 1 && this._filesInBatchAddedToUi > 0) {
+            beforeEl = qq(parentEl).children()[this._filesInBatchAddedToUi - 1].nextSibling;
+
+        }
+
+        parentEl.insertBefore(item, beforeEl);
     },
     _clearList: function(){
         this._listElement.innerHTML = '';
@@ -601,5 +625,14 @@ qq.extend(qq.FineUploader.prototype, {
 
             return self._options.showPrompt(message, defaultVal);
         };
+    },
+    _fileOrBlobRejected: function(id, name) {
+        this._totalFilesInBatch -= 1;
+        qq.FineUploaderBasic.prototype._fileOrBlobRejected.apply(this, arguments);
+    },
+    _prepareItemsForUpload: function(items, params, endpoint) {
+        this._totalFilesInBatch = items.length;
+        this._filesInBatchAddedToUi = 0;
+        qq.FineUploaderBasic.prototype._prepareItemsForUpload.apply(this, arguments);
     }
 });

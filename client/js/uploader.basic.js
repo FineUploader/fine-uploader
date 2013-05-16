@@ -686,7 +686,7 @@ qq.FineUploaderBasic.prototype = {
         this._handleCheckedCallback({
             name: "onValidateBatch",
             callback: qq.bind(this._options.callbacks.onValidateBatch, this, validationDescriptors),
-            onSuccess: qq.bind(this._onValidateBatchSuccess, this, validationDescriptors, items, params, endpoint),
+            onSuccess: qq.bind(this._onValidateBatchCallbackSuccess, this, validationDescriptors, items, params, endpoint),
             identifier: "batch validation"
         });
     },
@@ -706,6 +706,7 @@ qq.FineUploaderBasic.prototype = {
             name: "onSubmit",
             callback: qq.bind(this._options.callbacks.onSubmit, this, id, name),
             onSuccess: qq.bind(this._onSubmitCallbackSuccess, this, id, name),
+            onFailure: qq.bind(this._fileOrBlobRejected, this, id, name),
             identifier: id
         });
     },
@@ -723,7 +724,7 @@ qq.FineUploaderBasic.prototype = {
     _storeForLater: function(id) {
         this._storedIds.push(id);
     },
-    _onValidateBatchSuccess: function(validationDescriptors, items, params, endpoint) {
+    _onValidateBatchCallbackSuccess: function(validationDescriptors, items, params, endpoint) {
         var errorMessage,
             itemLimit = this._options.validation.itemLimit,
             proposedNetFilesUploadedOrQueued = this._netUploadedOrQueued + validationDescriptors.length;
@@ -764,6 +765,8 @@ qq.FineUploaderBasic.prototype = {
     _onValidateCallbackFailure: function(items, index, params, endpoint) {
         var nextIndex = index+ 1;
 
+        this._fileOrBlobRejected(undefined, items[0].name);
+
         this._maybeProcessNextItemAfterOnValidateCallback(false, items, nextIndex, params, endpoint);
     },
     _maybeProcessNextItemAfterOnValidateCallback: function(validItem, items, index, params, endpoint) {
@@ -788,33 +791,41 @@ qq.FineUploaderBasic.prototype = {
     },
     _validateFileOrBlobData: function(item, validationDescriptor) {
         var name = validationDescriptor.name,
-            size = validationDescriptor.size;
+            size = validationDescriptor.size,
+            valid = true;
 
         if (this._options.callbacks.onValidate(validationDescriptor) === false) {
-            return false;
+            valid = false;
         }
 
         if (qq.isFileOrInput(item) && !this._isAllowedExtension(name)){
             this._itemError('typeError', name);
-            return false;
+            valid = false;
 
         }
         else if (size === 0){
             this._itemError('emptyError', name);
-            return false;
+            valid = false;
 
         }
         else if (size && this._options.validation.sizeLimit && size > this._options.validation.sizeLimit){
             this._itemError('sizeError', name);
-            return false;
+            valid = false;
 
         }
         else if (size && size < this._options.validation.minSizeLimit){
             this._itemError('minSizeError', name);
-            return false;
+            valid = false;
         }
 
-        return true;
+        if (!valid) {
+            this._fileOrBlobRejected(undefined, name);
+        }
+
+        return valid;
+    },
+    _fileOrBlobRejected: function(id, name) {
+        //nothing to do in the core uploader for now
     },
     _itemError: function(code, nameOrNames) {
         var message = this._options.messages[code],
@@ -849,12 +860,12 @@ qq.FineUploaderBasic.prototype = {
             });
         }
 
-        this._options.callbacks.onError(null, name, message);
+        this._options.callbacks.onError(null, name, message, undefined);
 
         return message;
     },
     _batchError: function(message) {
-        this._options.callbacks.onError(null, null, message);
+        this._options.callbacks.onError(null, null, message, undefined);
     },
     _isAllowedExtension: function(fileName){
         var allowed = this._options.validation.allowedExtensions,
