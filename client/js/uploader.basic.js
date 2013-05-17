@@ -1,5 +1,4 @@
-qq.FineUploaderBasic = function(o){
-    var that = this;
+qq.FineUploaderBasic = function(o) {
     this._options = {
         debug: false,
         button: null,
@@ -896,9 +895,9 @@ qq.FineUploaderBasic.prototype = {
     _formatSize: function(bytes){
         var i = -1;
         do {
-            bytes = bytes / 1024;
+            bytes = bytes / 1000;
             i++;
-        } while (bytes > 99);
+        } while (bytes > 999);
 
         return Math.max(bytes, 0.1).toFixed(1) + this._options.text.sizeSymbols[i];
     },
