@@ -4,8 +4,6 @@
 
 ###[3.5 change summary](http://blog.fineuploader.com/2013/04/fine-uploader-35.html)###
 
-###Leave your thoughts on the ["upload directly from a camera" case](https://github.com/Widen/fine-uploader/issues/389#issuecomment-15937234) ###
-
 <br/>
 ## Features ##
 * Multiple file select, progress-bar in FF, Chrome, and Safari
