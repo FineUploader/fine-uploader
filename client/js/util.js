@@ -239,6 +239,7 @@ qq.isFileChunkingSupported = function() {
 
 qq.extend = function (first, second, extendNested) {
     "use strict";
+
     qq.each(second, function(prop, val) {
         if (extendNested && qq.isObject(val)) {
             if (first[prop] === undefined) {
@@ -250,6 +251,8 @@ qq.extend = function (first, second, extendNested) {
             first[prop] = val;
         }
     });
+
+    return first;
 };
 
 /**

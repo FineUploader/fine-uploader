@@ -635,7 +635,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
         /**
          * Sends the file identified by id to the server
          */
-        upload: function(id, retry){
+        upload: function(id, retry) {
             var name = this.getName(id);
 
             if (this.isValid(id)) {

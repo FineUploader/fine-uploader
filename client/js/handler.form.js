@@ -331,8 +331,6 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             log('Sending upload request for ' + id);
             form.submit();
             qq(form).remove();
-
-            return id;
         }
     };
 

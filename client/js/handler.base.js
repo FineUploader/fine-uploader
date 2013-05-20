@@ -108,8 +108,11 @@ qq.UploadHandler = function(o) {
 
             // if too many active uploads, wait...
             if (len <= options.maxConnections){
-                return handlerImpl.upload(id);
+                handlerImpl.upload(id);
+                return true;
             }
+
+            return false;
         },
         retry: function(id) {
             var i = qq.indexOf(queue, id);
