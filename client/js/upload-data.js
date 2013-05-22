@@ -1,78 +1,130 @@
+//TODO all registration of callbacks on status changes
 qq.UploadData = function(uploaderProxy) {
     var data = [],
+        byId = {},
+        byUuid = {},
+        byStatus = {},
         api;
 
-    //TODO support for status callbacks
+    function getDataById(id) {
+        return data[byId[id]];
+    }
+
+    function getDataByUuid(uuid) {
+        return data[byUuid[uuid]];
+    }
+
+    function getDataByStatus(status) {
+        var statusResultIndexes = byStatus[status],
+            statusResults = [];
+
+        if (statusResultIndexes !== undefined) {
+            qq.each(statusResultIndexes, function(i, dataIndex) {
+                statusResults.push(data[dataIndex]);
+            });
+        }
+
+        return statusResults;
+    }
+
+    function addIfUnique(array, dataItemCandidate) {
+        if (dataItemCandidate) {
+            var dataItemCandidates = [].concat(dataItemCandidate)
+
+            qq.each(array, function(idx, dataItem) {
+                var dataItemCandidatesCopy = qq.extend([], dataItemCandidates, true);
+
+                qq.each(dataItemCandidatesCopy, function(candidateIndex, candidate) {
+                    if (dataItem.id === candidate.id) {
+                        dataItemCandidates.splice(candidateIndex, 1);
+                    }
+                });
+            });
+
+            qq.each(dataItemCandidates, function(idx, candidate) {
+                array.push(candidate);
+            });
+        }
+    }
+
     api = {
         added: function(id) {
-            data.push({
+            var uuid = uploaderProxy.getUuid(id),
+                name = uploaderProxy.getName(id),
+                status = qq.status.SUBMITTING;
+
+            var index = data.push({
                 id: id,
-                name: uploaderProxy.getName(id),
-                uuid: uploaderProxy.getUuid(id),
-                status: qq.status.SUBMITTING
-            });
+                name: name,
+                uuid: uuid,
+                status: status
+            }) - 1;
+
+            byId[id] = index;
+
+            byUuid[uuid] = index;
+
+            if (byStatus[status] === undefined) {
+                byStatus[status] = [];
+            }
+            byStatus[status].push(index);
         },
 
-        //TODO quicker lookups and support for multiple IDs, UUIDs, and status values.  Also, make this code less horrendous.
         retrieve: function(optionalFilter) {
-            var results = qq.extend([], data, true),
-                filteredResults,
+            var filteredResults = [],
                 result;
 
-            if (qq.isObject(optionalFilter))  {
+            if (qq.isObject(optionalFilter) && data.length)  {
                 if (optionalFilter.id !== undefined) {
-                    result = results[optionalFilter.id];
-                    filteredResults = []
-                    filteredResults.push(result);
+                    result = getDataById(optionalFilter.id);
+                    addIfUnique(filteredResults, result);
                 }
 
-                if (optionalFilter.uuid !== undefined && results.length) {
-                    if (filteredResults === undefined) {
-                        filteredResults = [];
-
-                        qq.each(results, function(idx, dataItem) {
-                            if (dataItem.uuid === optionalFilter.uuid) {
-                                result = dataItem;
-                                return false;
-                            }
-                        });
-
-                        if (result) {
-                            filteredResults.push(result);
-                        }
-                    }
-                    else if (filteredResults[0].uuid !== optionalFilter.uuid) {
-                        filteredResults = [];
-                    }
+                if (optionalFilter.uuid !== undefined) {
+                    result = getDataByUuid(optionalFilter.uuid);
+                    addIfUnique(filteredResults, result);
                 }
 
-                if (optionalFilter.status && results.length) {
-                    if (filteredResults === undefined) {
-                        filteredResults = [];
-
-                        qq.each(results, function(index, dataItem) {
-                            if (dataItem.status === optionalFilter.status) {
-                                filteredResults.push(dataItem);
-                            }
-                        });
-                    }
-                    else if (filteredResults[0].status !== optionalFilter.status) {
-                        filteredResults = [];
-                    }
+                if (optionalFilter.status) {
+                    addIfUnique(filteredResults, getDataByStatus(optionalFilter.status));
                 }
-
-                results = filteredResults || [];
+            }
+            else {
+                filteredResults = qq.extend([], data, true);
             }
 
-            return results;
+            return filteredResults;
         },
 
         reset: function() {
             data = [];
+            byId = {};
+            byUuid = {};
+            byStatus = {};
         },
 
         setStatus: function(id, newStatus) {
+            var dataIndex = byId[id],
+                oldStatus = data[dataIndex].status,
+                byStatusOldStatusIndex = qq.indexOf(byStatus[oldStatus], dataIndex);
+
+            byStatus[oldStatus].splice(byStatusOldStatusIndex, 1);
+
             data[id].status = newStatus;
+
+            if (byStatus[newStatus] === undefined) {
+                byStatus[newStatus] = [];
+            }
+            byStatus[newStatus].push(dataIndex);
+        },
+
+        uuidChanged: function(id, newUuid) {
+            var dataIndex = byId[id],
+                oldUuid = data[dataIndex].uuid;
+
+            dataIndex[dataIndex].uuid = newUuid;
+            byUuid[newUuid] = dataIndex;
+            delete byUuid[oldUuid];
         }
     };
 

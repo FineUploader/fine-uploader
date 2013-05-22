@@ -1,5 +1,5 @@
 /*globals qq, File, XMLHttpRequest, FormData, Blob*/
-qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
+qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChange, logCallback) {
     "use strict";
     
     var options = o,
@@ -273,6 +273,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
             if (response.newUuid !== undefined) {
                 log("Server requested UUID change from '" + fileState[id].uuid + "' to '" + response.newUuid + "'");
                 fileState[id].uuid = response.newUuid;
+                onUuidChanged(id, response.newUuid);
             }
         }
         catch(error) {

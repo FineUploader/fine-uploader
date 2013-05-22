@@ -467,6 +467,9 @@ qq.FineUploaderBasic.prototype = {
                 else {
                     return false;
                 }
+            },
+            onUuidChanged: function(id, newUuid) {
+                self._uploadData.uuidChanged(id, newUuid);
             }
         });
     },
