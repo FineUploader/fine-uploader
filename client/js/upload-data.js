@@ -6,45 +6,49 @@ qq.UploadData = function(uploaderProxy) {
         byStatus = {},
         api;
 
-    function getDataById(id) {
-        return data[byId[id]];
+    function getDataByIds(ids) {
+        if (qq.isArray(ids)) {
+            var entries = [];
+
+            qq.each(ids, function(idx, id) {
+                entries.push(data[byId[id]]);
+            });
+
+            return entries;
+        }
+
+        return data[byId[ids]];
     }
 
-    function getDataByUuid(uuid) {
-        return data[byUuid[uuid]];
+    function getDataByUuids(uuids) {
+        if (qq.isArray(uuids)) {
+            var entries = [];
+
+            qq.each(uuids, function(idx, uuid) {
+                entries.push(data[byUuid[uuid]]);
+            });
+
+            return entries;
+        }
+
+        return data[byUuid[uuids]];
     }
 
     function getDataByStatus(status) {
-        var statusResultIndexes = byStatus[status],
-            statusResults = [];
+        var statusResults = [],
+            statuses = [].concat(status);
 
-        if (statusResultIndexes !== undefined) {
-            qq.each(statusResultIndexes, function(i, dataIndex) {
-                statusResults.push(data[dataIndex]);
-            });
-        }
+        qq.each(statuses, function(index, statusEnum) {
+            var statusResultIndexes = byStatus[status];
+
+            if (statusResultIndexes !== undefined) {
+                qq.each(statusResultIndexes, function(i, dataIndex) {
+                    statusResults.push(data[dataIndex]);
+                });
+            }
+        });
 
         return statusResults;
-    }
-
-    function addIfUnique(array, dataItemCandidate) {
-        if (dataItemCandidate) {
-            var dataItemCandidates = [].concat(dataItemCandidate)
-
-            qq.each(array, function(idx, dataItem) {
-                var dataItemCandidatesCopy = qq.extend([], dataItemCandidates, true);
-
-                qq.each(dataItemCandidatesCopy, function(candidateIndex, candidate) {
-                    if (dataItem.id === candidate.id) {
-                        dataItemCandidates.splice(candidateIndex, 1);
-                    }
-                });
-            });
-
-            qq.each(dataItemCandidates, function(idx, candidate) {
-                array.push(candidate);
-            });
-        }
     }
 
     api = {
@@ -71,29 +75,22 @@ qq.UploadData = function(uploaderProxy) {
         },
 
         retrieve: function(optionalFilter) {
-            var filteredResults = [],
-                result;
-
             if (qq.isObject(optionalFilter) && data.length)  {
                 if (optionalFilter.id !== undefined) {
-                    result = getDataById(optionalFilter.id);
-                    addIfUnique(filteredResults, result);
+                    return getDataByIds(optionalFilter.id);
                 }
 
-                if (optionalFilter.uuid !== undefined) {
-                    result = getDataByUuid(optionalFilter.uuid);
-                    addIfUnique(filteredResults, result);
+                else if (optionalFilter.uuid !== undefined) {
+                    return getDataByUuids(optionalFilter.uuid);
                 }
 
-                if (optionalFilter.status) {
-                    addIfUnique(filteredResults, getDataByStatus(optionalFilter.status));
+                else if (optionalFilter.status) {
+                    return getDataByStatus(optionalFilter.status);
                 }
             }
             else {
-                filteredResults = qq.extend([], data, true);
+                return qq.extend([], data, true);
             }
-
-            return filteredResults;
         },
 
         reset: function() {
