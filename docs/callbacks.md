@@ -117,4 +117,5 @@ callback.  The two are not meant to be used together.  This callback is meant to
 for a pasted image (such as via an ajax call).  If FineUploaderBasic mode is in use and you want to display your own user prompt
 for the name, you may do so by overriding the default implementation of this callback.
 
-
+* `onStatusChange(id, oldStatus, newStatus)` - This will be invoked whenever the status changes for any item submitted to
+the uploader.  The status values correspond to a "constant" defined in the `qq.status` object.
