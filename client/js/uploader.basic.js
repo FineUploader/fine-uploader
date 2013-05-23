@@ -528,6 +528,9 @@ qq.FineUploaderBasic.prototype = {
             getUuid: function(id) {
                 return self.getUuid(id);
             },
+            getSize: function(id) {
+                return self.getSize(id);
+            },
             onStatusChange: function(id, oldStatus, newStatus) {
                 self._options.callbacks.onStatusChange(id, oldStatus, newStatus);
             }

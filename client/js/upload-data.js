@@ -54,12 +54,14 @@ qq.UploadData = function(uploaderProxy) {
         added: function(id) {
             var uuid = uploaderProxy.getUuid(id),
                 name = uploaderProxy.getName(id),
+                size = uploaderProxy.getSize(id),
                 status = qq.status.SUBMITTING;
 
             var index = data.push({
                 id: id,
                 name: name,
                 uuid: uuid,
+                size: size,
                 status: status
             }) - 1;
 
