@@ -41,7 +41,8 @@ qq.FineUploaderBasic = function(o) {
             onSubmitDelete: function(id) {},
             onDelete: function(id){},
             onDeleteComplete: function(id, xhr, isError){},
-            onPasteReceived: function(blob) {}
+            onPasteReceived: function(blob) {},
+            onStatusChange: function(id, oldStatus, newStatus) {}
         },
         messages: {
             typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
@@ -526,6 +527,9 @@ qq.FineUploaderBasic.prototype = {
             },
             getUuid: function(id) {
                 return self.getUuid(id);
+            },
+            onStatusChange: function(id, oldStatus, newStatus) {
+                self._options.callbacks.onStatusChange(id, oldStatus, newStatus);
             }
         });
     },

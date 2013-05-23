@@ -1,4 +1,3 @@
-//TODO all registration of callbacks on status changes
 qq.UploadData = function(uploaderProxy) {
     var data = [],
         byId = {},
@@ -72,6 +71,8 @@ qq.UploadData = function(uploaderProxy) {
                 byStatus[status] = [];
             }
             byStatus[status].push(index);
+
+            uploaderProxy.onStatusChange(id, undefined, status);
         },
 
         retrieve: function(optionalFilter) {
@@ -113,6 +114,8 @@ qq.UploadData = function(uploaderProxy) {
                 byStatus[newStatus] = [];
             }
             byStatus[newStatus].push(dataIndex);
+
+            uploaderProxy.onStatusChange(id, oldStatus, newStatus);
         },
 
         uuidChanged: function(id, newUuid) {
