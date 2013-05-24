@@ -1,7 +1,7 @@
 /*globals qq, File, XMLHttpRequest, FormData, Blob*/
 qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     "use strict";
-    
+
     var options = o,
         uploadComplete = uploadCompleteCallback,
         log = logCallback,
@@ -262,6 +262,14 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, logCallback) {
     }
 
     function parseResponse(xhr) {
+        if (typeof options.parseResponse === "function") {
+            return options.parseResponse(xhr);
+        }
+
+        return _parseResponse(xhr);
+    }
+
+    function _parseResponse(xhr){
         var response;
 
         try {
