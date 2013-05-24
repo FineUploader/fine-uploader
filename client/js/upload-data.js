@@ -38,7 +38,7 @@ qq.UploadData = function(uploaderProxy) {
             statuses = [].concat(status);
 
         qq.each(statuses, function(index, statusEnum) {
-            var statusResultIndexes = byStatus[status];
+            var statusResultIndexes = byStatus[statusEnum];
 
             if (statusResultIndexes !== undefined) {
                 qq.each(statusResultIndexes, function(i, dataIndex) {
@@ -110,7 +110,7 @@ qq.UploadData = function(uploaderProxy) {
 
             byStatus[oldStatus].splice(byStatusOldStatusIndex, 1);
 
-            data[id].status = newStatus;
+            data[dataIndex].status = newStatus;
 
             if (byStatus[newStatus] === undefined) {
                 byStatus[newStatus] = [];
@@ -124,7 +124,7 @@ qq.UploadData = function(uploaderProxy) {
             var dataIndex = byId[id],
                 oldUuid = data[dataIndex].uuid;
 
-            dataIndex[dataIndex].uuid = newUuid;
+            data[dataIndex].uuid = newUuid;
             byUuid[newUuid] = dataIndex;
             delete byUuid[oldUuid];
         }

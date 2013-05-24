@@ -58,6 +58,16 @@ $(document).ready(function() {
         })
         .on("upload", function(event, id, filename) {
             $(this).fineUploader('setParams', {"hey": "ho"}, id);
+        })
+        .on("submit", function() {
+            var promise =  new qq.Promise();
+            setTimeout(function() {
+                promise.failure();
+            }, 5000);
+            return promise;
+        })
+        .on("statusChange", function(event, id, oldStatus, newStatus) {
+            qq.log("id: " + id + ", prev: " + oldStatus + ", new: " + newStatus);
         });
 //        on("pasteReceived", function(event, blob) {
 //            qq.log(blob);
