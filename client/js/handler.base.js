@@ -53,7 +53,8 @@ qq.UploadHandler = function(o) {
         onUpload: function(id, fileName){},
         onUploadChunk: function(id, fileName, chunkData){},
         onAutoRetry: function(id, fileName, response, xhr){},
-        onResume: function(id, fileName, chunkData){}
+        onResume: function(id, fileName, chunkData){},
+        onUuidChanged: function(id, newUuid){}
 
     };
     qq.extend(options, o);
@@ -79,10 +80,10 @@ qq.UploadHandler = function(o) {
     };
 
     if (qq.supportedFeatures.ajaxUploading) {
-        handlerImpl = new qq.UploadHandlerXhr(options, dequeue, log);
+        handlerImpl = new qq.UploadHandlerXhr(options, dequeue, options.onUuidChanged, log);
     }
     else {
-        handlerImpl = new qq.UploadHandlerForm(options, dequeue, log);
+        handlerImpl = new qq.UploadHandlerForm(options, dequeue, options.onUuidChanged, log);
     }
 
     function cancelSuccess(id) {
@@ -108,8 +109,11 @@ qq.UploadHandler = function(o) {
 
             // if too many active uploads, wait...
             if (len <= options.maxConnections){
-                return handlerImpl.upload(id);
+                handlerImpl.upload(id);
+                return true;
             }
+
+            return false;
         },
         retry: function(id) {
             var i = qq.indexOf(queue, id);

@@ -1,6 +1,6 @@
 /*globals qq, document, setTimeout*/
 /*globals clearTimeout*/
-qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
+qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChange, logCallback) {
     "use strict";
 
     var options = o,
@@ -147,6 +147,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             if (response.newUuid !== undefined) {
                 log("Server requested UUID change from '" + uuids[id] + "' to '" + response.newUuid + "'");
                 uuids[id] = response.newUuid;
+                onUuidChanged(id, response.newUuid);
             }
         }
         catch(error) {
@@ -331,8 +332,6 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, logCallback) {
             log('Sending upload request for ' + id);
             form.submit();
             qq(form).remove();
-
-            return id;
         }
     };
 

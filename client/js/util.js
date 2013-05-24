@@ -164,7 +164,7 @@ qq.isFunction = function(variable) {
 
 qq.isArray = function(variable) {
     "use strict";
-    Object.prototype.toString.call(variable) === "[object Array]";
+    return Object.prototype.toString.call(variable) === "[object Array]";
 }
 
 qq.isString = function(maybeString) {
@@ -239,6 +239,7 @@ qq.isFileChunkingSupported = function() {
 
 qq.extend = function (first, second, extendNested) {
     "use strict";
+
     qq.each(second, function(prop, val) {
         if (extendNested && qq.isObject(val)) {
             if (first[prop] === undefined) {
@@ -250,6 +251,8 @@ qq.extend = function (first, second, extendNested) {
             first[prop] = val;
         }
     });
+
+    return first;
 };
 
 /**
@@ -360,7 +363,7 @@ qq.each = function(objOrArray, callback) {
     var keyOrIndex, retVal;
     if (objOrArray) {
         if (qq.isArray(objOrArray)) {
-            for (keyOrIndex = 0; i < objOrArray.length; i++) {
+            for (keyOrIndex = 0; keyOrIndex < objOrArray.length; keyOrIndex++) {
                 retVal = callback(keyOrIndex, objOrArray[keyOrIndex]);
                 if (retVal === false) {
                     break;
