@@ -72,7 +72,8 @@ qq.supportedFeatures = (function() {
         uploadViaPaste: supportsUploadViaPaste,
         progressBar: supportsAjaxFileUploading,
         uploadCors: supportsUploadCors,
-        deleteFileCors: supportsDeleteFileCors
+        deleteFileCors: supportsDeleteFileCors,
+        canDetermineSize: supportsAjaxFileUploading
     }
 
 }());

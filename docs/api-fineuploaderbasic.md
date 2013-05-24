@@ -77,4 +77,6 @@ objects (filter by array of IDs or UUIDs, filter by status, no filter).  The obj
 properties: `id`, `uuid`, `name`, `size` (if available), and `status`.  The status values correspond to "constants"
 defined in the `qq.status` object.  You may filter the results by one of the following filters: `id`, `uuid`, or
 `status`.  The filter may be a single value or an array of values.  For example, if you would like to retrieve information
-about the first 3 items submitted to the uploader, you would call `uploaderInstance.getUploads({id: [0, 1, 2]});`.
+about the first 3 items submitted to the uploader, you would call `uploaderInstance.getUploads({id: [0, 1, 2]});`.  Please
+see [the blog post on upload stats retrieval](http://blog.fineuploader.com/2013/05/query-fine-uploader-for-upload-stats.html)
+for more details and examples.

@@ -118,4 +118,6 @@ for a pasted image (such as via an ajax call).  If FineUploaderBasic mode is in 
 for the name, you may do so by overriding the default implementation of this callback.
 
 * `onStatusChange(id, oldStatus, newStatus)` - This will be invoked whenever the status changes for any item submitted to
-the uploader.  The status values correspond to a "constant" defined in the `qq.status` object.
+the uploader.  The status values correspond to a "constant" defined in the `qq.status` object.  Please
+see [the blog post on upload stats retrieval](http://blog.fineuploader.com/2013/05/query-fine-uploader-for-upload-stats.html)
+for more details and examples.
