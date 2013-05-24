@@ -194,11 +194,15 @@ qq.FineUploaderBasic.prototype = {
     uploadStoredFiles: function(){
         "use strict";
         var idToUpload;
-
-        while(this._storedIds.length) {
-            idToUpload = this._storedIds.shift();
-            this._filesInProgress.push(idToUpload);
-            this._handler.upload(idToUpload);
+        if (this._storedIds.length > 0) {
+            while(this._storedIds.length) {
+                idToUpload = this._storedIds.shift();
+                this._filesInProgress.push(idToUpload);
+                this._handler.upload(idToUpload);
+            }
+        }
+        else {
+            this._itemError("noFilesError", "");
         }
     },
     clearStoredFiles: function(){
