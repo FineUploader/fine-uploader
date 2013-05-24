@@ -125,7 +125,9 @@ that conforms with [necolas's guidelines](https://github.com/necolas/issue-guide
 <br/>
 ### License ###
 This plugin is open sourced under GNU GPL v3 or you may purchase a Widen Commerical license to release you from the terms of
-GPL v3.  Please see the [downloads page](http://fineuploader.com/downloads.html) for details.
+GPL v3.  Please see the [downloads page](http://fineuploader.com/downloads.html) for details.  For open-source users (those
+comfortable with the GPL v3 license) please see the [GPL Developers](docs/gpl-devs.md) readme for information on building
+your own version-stamped copy of the library.
 
 
 <br/>
