@@ -417,11 +417,17 @@ describe('cookies', function () {
 
 // parseJson
 describe('parseJSON', function () {
+    var json, parsedJson, object;
+
     before(function () {
-        this.json = "{a: 'a', b: 'b'}"; 
+        object = { a: 'a', b: 'b'};
+        json = JSON.stringify(object)
+        parsedJson = JSON.parse(json);
     }); 
 
-    it('can parse JSON', function () {});
+    it('can parse JSON', function () {
+        assert.deepEqual(qq.parseJson(json), parsedJson); 
+    });
 });
 
 // isFileOrInput
