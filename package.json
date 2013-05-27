@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "make test",
-    "docs": "echo 'docs'"
+    "docs": "make docs",
+    "build": "make"
   },
   "repository": {
     "type": "git",

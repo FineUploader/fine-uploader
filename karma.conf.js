@@ -12,10 +12,13 @@ files = [
   MOCHA_ADAPTER,
   './test/vendor/*.js',
   './fine-uploader/js/**/*.js',
-  './test/specs/*.js',
-  './test/units/*.js'
+  //'./test/specs/*.js',
+  './test/units/*.js',
+  //'./test/fixtures/*.html'
 ];
 
+preprocessors = {
+};
 
 // list of files to exclude
 exclude = [
@@ -25,7 +28,7 @@ exclude = [
 
 // test results reporter to use
 // possible values: 'dots', 'progress', 'junit'
-reporters = ['progress'];
+reporters = ['dots'];
 
 
 // web server port
