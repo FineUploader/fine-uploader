@@ -12,3 +12,9 @@ release/*
 master
 
 node_modules/
+test/vendor/*
+
+fine-uploader/
+hardcopy*
+?selenium.log*
+test/pid.txt
