@@ -29,8 +29,7 @@ JS_SRC_CORE=${SRC}header.js \
 	 ${SRC}handler.form.js \
 	 ${SRC}handler.xhr.js 
 JS_SRC_JQUERY+=${JS_SRC_CORE}
-JS_SRC_JQUERY+=${SRC}paste.js \
-			   ${SRC}jquery-plugin.js \
+JS_SRC_JQUERY+=${SRC}jquery-plugin.js \
 			   ${SRC}jquery-dnd.js
 
 all: fine-uploader
@@ -79,6 +78,9 @@ concat-js:
 	@echo "Combining js ..."
 	cat ${JS_SRC_CORE} | tee ${BUILD}js/fine-uploader.js
 	cat ${JS_SRC_JQUERY} | tee ${BUILD}js/jquery-fine-uploader.js
+	cat ${SRC}iframe.xss.response.js | tee ${BUILD}js/iframe.xss.response.js
+	cp README ${BUILD}README
+	cp LICENSE ${BUILD}LICENSE
 	@echo "Js combined."
 
 #
