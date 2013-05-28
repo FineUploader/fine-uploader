@@ -2,7 +2,7 @@
   "name": "fine-uploader",
   "version": "3.6.0",
   "description": "Multiple file upload plugin with progress-bar, drag-and-drop.",
-  "main": "index.js",
+  "main": "./fine-uploader/js/fine-uploader.js",
   "directories": {
     "doc": "docs",
     "test": "test"
@@ -12,34 +12,35 @@
     "docs": "make docs",
     "build": "make"
   },
+  "keywords": [
+    "upload",
+    "file",
+    "chunking",
+    "file-uploader"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/Widen/fine-uploader.git"
   },
   "author": "Widen Enterprises, Inc.",
   "license": "GPLv3",
-  "readmeFilename": "readme.md",
+  "readmeFilename": "README",
   "bugs": {
     "url": "https://github.com/Widen/fine-uploader/issues"
   },
   "gitHead": "a6fc6a12111de2f884bf02545f3949331c577266",
-  "devDependencies": {
-    "mocha": "~1.10.0",
-    "chai": "~1.6.0",
-    "webdriverjs": "~0.7.8",
-    "phantomjs": "~1.9.0-4",
-    "jshint": "~2.1.2",
-    "uglify-js": "~2.3.6",
+  "devDependencies": { 
     "docco": "~0.6.2",
-    "clean-css": "~1.0.4",
-    "connect": "~2.7.10",
-    "karma": "~0.8.5"
+    "webdriverjs": "~0.7.8"
   },
   "dependencies": {
+    "mocha": "~1.10.0",
     "chai": "~1.6.0",
     "phantomjs": "~1.9.0-4",
-    "webdriverjs": "~0.7.8",
     "uglify-js": "~2.3.6",
-    "jshint": "~2.1.2"
+    "clean-css": "~1.0.4",
+    "jshint": "~2.1.2",
+    "connect": "~2.7.10",
+    "karma": "~0.8.5"
   }
 }
