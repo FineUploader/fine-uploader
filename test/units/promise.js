@@ -28,11 +28,8 @@ describe('promise.js', function() {
             promise.then(function(value){
                 expect(value).equals(true);
                 done();
-            }).done(done);
-
-            var timer = setTimeout(function () {
-                promise.success(true);
-            }, 50);
+            });
+            promise.success(true);
         });
      
         it("should expect failure pass", function(done){
@@ -40,12 +37,18 @@ describe('promise.js', function() {
             promise.then(null, function(value){
                 expect(value).equals(true);
                 done();
-            }).done(done);
-
-            var timer = setTimeout(function () {
-                promise.failure(true);
             });
+            promise.failure(true);
         });
+
+        // it("should expect done to be called", function(done){
+        //  
+        //     promise.done(function(value){
+        //         expect(value).equals(true);
+        //         done();
+        //     });
+        //     promise.failure(true);
+        // });
 
     });
 });
