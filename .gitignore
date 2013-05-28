@@ -18,3 +18,4 @@ fine-uploader/
 hardcopy*
 ?selenium.log*
 test/pid.txt
+test/coverage/*

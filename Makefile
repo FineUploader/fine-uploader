@@ -36,18 +36,20 @@ all: fine-uploader
 
 fine-uploader: clean build test docs
 	@echo "${HR}"
-	@echo ${DATE}\n
+	@echo "${DATE}\n"
 
 #
 # Node Modules
 #
 node_modules: package.json
-	npm install
+	npm update
+
+VERSION=$(shell cat ./client/js/version.js | sed 's/[^\"]*\"\([^\"]*\)\"[^\"]*/\1/g')
 
 #
 # Clean
 #
-clean: clean-node node_modules clean-build clean-docs
+clean: clean-node clean-build clean-docs
 
 clean-build:
 	rm -rf ${BUILD}*
@@ -64,7 +66,7 @@ clean-docs:
 #
 # Build
 #
-build: build-js build-css build-img
+build: node_modules build-js build-css build-img
 
 build-js: concat-js minify-js 
 #build-js: lint concat-js minify-js 
@@ -74,10 +76,12 @@ build-css: minify-css
 build-img:
 	cp ${SRC}../{loading.gif,processing.gif} ${BUILD}img 
 
+build-docs: docs
+
 concat-js:
 	@echo "Combining js ..."
-	cat ${JS_SRC_CORE} | tee ${BUILD}js/fine-uploader.js
-	cat ${JS_SRC_JQUERY} | tee ${BUILD}js/jquery-fine-uploader.js
+	cat ${JS_SRC_CORE} | tee ${BUILD}js/fine-uploader-${VERSION}.js
+	cat ${JS_SRC_JQUERY} | tee ${BUILD}js/jquery-fine-uploader-${VERSION}.js
 	cat ${SRC}iframe.xss.response.js | tee ${BUILD}js/iframe.xss.response.js
 	cp README ${BUILD}README
 	cp LICENSE ${BUILD}LICENSE
@@ -90,14 +94,15 @@ minify: minify-js minify-css
 
 minify-js:
 	@echo "Minifying js ..."
-	${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/fine-uploader.js -o ./fine-uploader/js/fine-uploader.min.js
-	${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/jquery-fine-uploader.js -o ./fine-uploader/js/jquery-fine-uploader.min.js
+	${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/fine-uploader-${VERSION}.js -o ./fine-uploader/js/fine-uploader-${VERSION}.min.js
+	${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/jquery-fine-uploader-${VERSION}.js -o ./fine-uploader/js/jquery-fine-uploader-${VERSION}.min.js
 	@echo "Js minified."
 
 minify-css:
 	@echo "Minifying css ..."
-	${NODE_MODULES}clean-css/bin/cleancss -o ${BUILD}css/fine-uploader.min.css \
-		./client/fineuploader.css
+	cp ./client/fineuploader.css ${BUILD}css/fine-uploader-${VERSION}.css
+	${NODE_MODULES}clean-css/bin/cleancss -o ${BUILD}css/fine-uploader-${VERSION}.min.css \
+		${BUILD}css/fine-uploader-${VERSION}.css
 	@echo "Css minified."
 
 #
@@ -121,7 +126,9 @@ docs:
 #
 # Tests
 #
-test: clean build
+test-all: clean build test
+
+test:
 	@echo "\n${HR}"
 	@echo "Running tests ..."
 	PHANTOMJS_BIN=${NODE_MODULES}phantomjs/bin/phantomjs ${NODE_MODULES}karma/bin/karma start --single-run
