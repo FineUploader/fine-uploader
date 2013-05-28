@@ -10,7 +10,6 @@ branches:
 before_install:
     - sudo apt-get update -qq
     - sudo apt-get install -qq dbus-x11
-    - sudo apt-get install chromium-browser
 
 before_script:
     - export DISPLAY=:99.0
