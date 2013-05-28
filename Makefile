@@ -161,7 +161,7 @@ start-test-server:
 
 stop-test-server:
 	@echo "Stop test HTTP server ..."
-	cat ${TEST}pid.txt | xargs kill
+	cat ${TESTS}pid.txt | xargs kill
 	sleep 5
 	@echo "Test HTTP server stop."
 
