@@ -1,15 +1,15 @@
 
 CWD=$(shell pwd)
 
-SRC="./client/js/"
-BUILD="./fine-uploader/"
-TESTS="./test/"
-DOCS="./docs/"
-LIBS="./libs/"
+SRC=./client/js/
+BUILD=./fine-uploader/
+TESTS=./test/
+DOCS=./docs/
+LIBS=./libs/
 
-NODE_MODULES="./node_modules/"
+NODE_MODULES=./node_modules/
 
-SELENIUM="${TESTS}vendor/selenium-server-standalone-2.33.0.jar"
+SELENIUM=${TESTS}vendor/selenium-server-standalone-2.33.0.jar
 
 JS_SRC_CORE=${SRC}header.js \
 	 ${SRC}util.js \
@@ -120,7 +120,7 @@ lint:
 docs:
 	@echo "\n${HR}"
 	@echo "Building docs ..."
-	${NODE_MODULES}docco/bin/docco -o ${DOCS} ${BUILD}js/fine-uploader.js
+	#${NODE_MODULES}docco/bin/docco -o ${DOCS} ${BUILD}js/fine-uploader.js
 	@echo "Docs built."
 
 #
