@@ -5,7 +5,7 @@ node_js:
 
 branches:
     only:
-        - 810-add-automation-to-testing-process-v2
+        - "feature/810-add-automation-to-testing-process-v2"
 
 before_install:
     - sudo apt-get update -qq
