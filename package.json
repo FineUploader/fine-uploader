@@ -29,7 +29,7 @@
     "url": "https://github.com/Widen/fine-uploader/issues"
   },
   "gitHead": "a6fc6a12111de2f884bf02545f3949331c577266",
-  "devDependencies": { 
+  "devDependencies": {
     "docco": "~0.6.2",
     "webdriverjs": "~0.7.8"
   },
