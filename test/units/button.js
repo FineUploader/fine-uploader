@@ -1,6 +1,10 @@
 var assert = chai.assert
   , expect = chai.expect;
 
-describe('UploadButton', function () {
+describe('button.js', function () {
 
-});
+    describe('UploadButton', function () {
+
+    });
+
+})
