@@ -128,7 +128,7 @@ docs:
 #
 test-all: clean build test
 
-test: build
+test:
 	@echo "\n${HR}"
 	@echo "Running tests ..."
 	PHANTOMJS_BIN=${NODE_MODULES}phantomjs/bin/phantomjs ${NODE_MODULES}karma/bin/karma start --single-run
