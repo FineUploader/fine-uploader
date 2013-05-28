@@ -1,5 +1,7 @@
 # Fine Uploader 3.6 (IN PROGRESS) #
 
+[![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=feature/810-add-automation-to-testing-process-v2)](https://travis-ci.org/Widen/fine-uploader)
+
 ###[Download the 3.5 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 
 ###[3.5 change summary](http://blog.fineuploader.com/2013/04/fine-uploader-35.html)###
