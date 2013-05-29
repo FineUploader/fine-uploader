@@ -37,28 +37,51 @@ def additionalFilesToInclude = ["${jsSrcDir}/iframe.xss.response.js"]
 def jQueryPluginFiles(String dir) { ["${dir}/jquery-plugin.js",
                          "${dir}/jquery-dnd.js"] }
 
-def synchronized orderTasks(String aTasks)
-{
-    if ( !(project.ext.properties.containsKey("orderTasksCtr")) )
-    {
-        project.ext.orderTasksCtr = new java.util.concurrent.atomic.AtomicInteger(1000);
-    }
+def synchronized orderTasks( String aTasks ) {
+	// Laurence Toenjes 2012
+	// preserve dependency task order for Gradle (put this near the top of your gradle build file)
+	// example: task( 'seq-alpha', dependsOn: orderTasks( 'alpha bravo charlie' ) ) << { /* your task code */ }
+	// To view task dependency do cmd: gradle tasks --all
+	if ( !(project.ext.properties.containsKey("orderTasksCtr")) )
+		project.ext.orderTasksCtr = new java.util.concurrent.atomic.AtomicInteger(1000);
+	def cl_createProxyTask = { aTaskName ->
+		def ctr         = project.ext.orderTasksCtr.incrementAndGet();
+		def newTaskName = "_seq_${ctr}_${aTaskName}";
+		def newTask     = project.task( newTaskName );
+		newTask.dependsOn << "${aTaskName}";
+		def result = newTask;
+	}
+	''' , ' " [ ] ( ) '''.trim().split().each {
+		if (it in aTasks)
+			aTasks = aTasks.replace( it, (32 as char).toString() )
+	}
+	return aTasks.split().collect { cl_createProxyTask(it) };
+}
 
-    def cl_createProxyTask = { aTaskName ->
-        def ctr         = project.ext.orderTasksCtr.incrementAndGet();
-        def newTaskName = "_seq_${ctr}_${aTaskName}";
-        def newTask     = project.task( newTaskName );
-        newTask.dependsOn << "${aTaskName}";
-    }
+/////////////////////////////////////////////////////////////////////////////
 
-    ''' , ' " [ ] ( ) '''.trim().split().each {
-        if (it in aTasks)
-            aTasks = aTasks.replace( it, (32 as char).toString() )
-    }
+def calcSubTasks( aTask ) {
+	// used by taskInfo
+	def st      = ( aTask.dependsOn.collect {it} as List ).flatten();
+	def filter1 = ( st.findAll { !("$it" == 'file collection') } );
+	return filter1;
+}
 
-    return aTasks.split().collect {
-        cl_createProxyTask(it)
-    }
+def taskInfo( aTask, aLevel = -1 ) {
+	// use this recursive routine to print out an indented task dependency.
+	// example call: taskInfo( 'someTaskName' );
+	// uses calcSubTasks( aTask )
+	aLevel++;
+	def SPACE = "${32 as char}"
+	def indent = (SPACE*2) * aLevel;
+	print indent;
+	def skip = "${aTask.name}".startsWith("_seq_");
+	if (!skip)
+		println "${aTask.name}";
+	calcSubTasks( aTask ).each {
+		def theTask = (it instanceof org.gradle.api.internal.AbstractTask) ? it :  project.tasks[ "$it" ] ;
+		taskInfo( theTask, aLevel )
+	}
 }
 
 buildscript {
