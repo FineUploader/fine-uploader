@@ -48,7 +48,7 @@ release: clean-node clean-vendor clean node_modules vendor_modules build test do
 #
 # Build
 #
-build: build-js build-css build-img
+build: node_modules vendor_modules build-js build-css build-img
 	@echo "${CHECK} Built!"
 
 build-js: concat-js minify-js 
@@ -100,14 +100,14 @@ docs:
 test-all: clean build test
 
 ## Quicker test; useful during development
-test:
+test: build
 	@echo "\n${HR}"
 	@echo "Running tests ..."
 	PHANTOMJS_BIN=${NODE_MODULES}phantomjs/bin/phantomjs ${NODE_MODULES}karma/bin/karma start --single-run
 	@echo "${CHECK} Tests complete!\n"
 
 ## Test whenever changes are made.
-test-watch:
+test-watch: build
 	@echo "Watching tests ..."
 	PHANTOMJS_BIN=${NODE_MODULES}phantomjs/bin/phantomjs ${NODE_MODULES}karma/bin/karma start
 	@echo "${CHECK} Tests complete!\n"
