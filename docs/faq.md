@@ -1,4 +1,9 @@
 ## Frequently Asked Questions (FAQ) ##
+**Q**: Why can't I select multiple files at once in Android?
+**A**: Android doesn't officially support the multiple attribute on file input elements.  I believe
+some builds of Android unofficially supported this, but I can't recall which specific versions.
+See case #840 for more details.
+
 **Q**: I'm using FineUploaderBasic mode, but I don't want to write my own code to handle dropped files and folders.  Can
 I use the DnD module used by FineUploader mode?    
 **A**: Certainly, and it's quite easy to do so!  Head on over to the [DnD Module Documentation](drag-and-drop.md) for more information.
