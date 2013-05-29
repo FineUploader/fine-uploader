@@ -193,7 +193,7 @@ start-basic-server:
 
 stop-basic-server:
 	@echo "Stopping basic HTTP server ..."
-	cat ${TESTS}pid.txt | xargs kill
+	cat ${TEST_DIR}pid.txt | xargs kill
 	@echo "Test HTTP server stopped."
 
 restart-basic-server: stop-basic-server start-basic-server
