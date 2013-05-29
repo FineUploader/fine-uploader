@@ -1,0 +1,10 @@
+script
+    mocha.checkLeaks();
+    mocha.globals(['jQuery', 'purl', 'json2']);
+    window.onload = mocha.run;
+    $(document).ready(function () {
+        
+        mocha.run();
+        console.log("MMMMMMmmmmm.....mocha"); 
+    });
+

@@ -1,4 +1,0 @@
-// DisposeSupport
-describe('DisposeSupport', function () {
-});
-

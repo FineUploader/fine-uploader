@@ -1,0 +1,16 @@
+extends layout
+
+block test-information
+    h3 Simple and Automatic
+    p This is Fine Uploader with only the required options set. 
+      Note that by default, you may also drag & drop files onto 
+      the button if you are using a browser that supports the 
+      multiple attributes on input elements, and the File and 
+      FormData objects, as well as the upload function on the 
+      XHR object. This currently rules out at least IE9 and earlier.
+
+    ul(class="basicUploadSuccessExample", class="unstyled")
+
+block test-runners
+    script(src="/integrations/js/simple.js", type="text/javascript");
+    include run-test
