@@ -48,7 +48,7 @@ release: clean-node clean-vendor clean node_modules vendor_modules build test do
 #
 # Build
 #
-build: node_modules vendor_modules build-js build-css build-img
+build: node_modules clean-vendor vendor_modules build-js build-css build-img
 	@echo "${CHECK} Built!"
 
 build-js: concat-js minify-js 
