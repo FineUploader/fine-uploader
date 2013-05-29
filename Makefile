@@ -82,6 +82,7 @@ clean-node:
 
 clean-vendor:
 	rm -rf ${TEST_DIR}vendor/*
+	mkdir -p ${TEST_DIR}vendor
 
 #
 # Docs
@@ -120,9 +121,9 @@ node_modules: package.json
 	npm update
 
 vendor_modules:
-	cp ${NODE_MODULES}chai/chai.js ${TEST_DIR}vendor
-	cp ${NODE_MODULES}mocha/mocha.js ${TEST_DIR}vendor
-	cp ${NODE_MODULES}mocha/mocha.css ${TEST_DIR}vendor
+	cp ${NODE_MODULES}chai/chai.js ${TEST_DIR}vendor/.
+	cp ${NODE_MODULES}mocha/mocha.js ${TEST_DIR}vendor/.
+	cp ${NODE_MODULES}mocha/mocha.css ${TEST_DIR}vendor/.
 	curl http://code.jquery.com/jquery-1.10.0.min.js >> ${TEST_DIR}vendor/jquery-1.10.0.min.js
 	curl http://code.jquery.com/jquery-2.0.1.min.js >> ${TEST_DIR}vendor/jquery-2.0.1.min.js
 	curl https://raw.github.com/allmarkedup/jQuery-URL-Parser/master/purl.js > ${TEST_DIR}vendor/purl.js
