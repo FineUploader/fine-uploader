@@ -40,7 +40,7 @@ JQ_SRCJS+=${SRCJS_DIR}jquery-plugin.js \
 
 all: release
 
-release: clean build test docs
+release: clean-node clean-vendor clean node_modules vendor_modules build test docs
 	@echo "${HR}"
 	@echo "${DATE}\n"
 	@echo "${CHECK} Done with a release build.\n"
@@ -64,7 +64,7 @@ build-img:
 #
 # Clean
 #
-clean: clean-build clean-docs
+clean: clean-build clean-docs clean-vendor
 	@echo "\n${HR}"
 	@echo "${CHECK} So fresh, so clean!\n"
 
@@ -79,6 +79,9 @@ clean-docs:
 
 clean-node:
 	rm -rf ${NODE_MODULES}
+
+clean-vendor:
+	rm -rf ${TEST_DIR}vendor/*
 
 #
 # Docs
@@ -115,6 +118,15 @@ test-watch:
 ## Node Modules
 node_modules: package.json
 	npm update
+
+vendor_modules:
+	cp ${NODE_MODULES}chai/chai.js ${TEST_DIR}vendor
+	cp ${NODE_MODULES}mocha/mocha.js ${TEST_DIR}vendor
+	cp ${NODE_MODULES}mocha/mocha.css ${TEST_DIR}vendor
+	curl http://code.jquery.com/jquery-1.10.0.min.js >> ${TEST_DIR}vendor/jquery-1.10.0.min.js
+	curl http://code.jquery.com/jquery-2.0.1.min.js >> ${TEST_DIR}vendor/jquery-2.0.1.min.js
+	curl https://raw.github.com/allmarkedup/jQuery-URL-Parser/master/purl.js > ${TEST_DIR}vendor/purl.js
+	curl https://raw.github.com/douglascrockford/JSON-js/master/json2.js >> ${TEST_DIR}vendor/json2.js
 
 ## Concatenation
 concat-js:

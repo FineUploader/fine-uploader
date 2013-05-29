@@ -20,3 +20,4 @@ hardcopy*
 ?selenium.log*
 test/pid.txt
 test/coverage/*
+test/vendor/*
