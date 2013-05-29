@@ -1,72 +1,55 @@
-
+VERSION=$(shell cat ./client/js/version.js | sed 's/[^\"]*\"\([^\"]*\)\"[^\"]*/\1/g')
 CWD=$(shell pwd)
+DATE=$(shell date +%I:%M%p)
+CHECK=\033[32m✔\033[39m
+HR=\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 
-SRC=./client/js/
-BUILD=./fine-uploader/
-TESTS=./test/
+SRC_DIR=./client/
+SRCJS_DIR=./client/js/
+TEST_DIR=./test/
 DOCS=./docs/
-LIBS=./libs/
+BUILD=./fine-uploader/
 
 NODE_MODULES=./node_modules/
 
 SELENIUM=${TESTS}vendor/selenium-server-standalone-2.33.0.jar
 
-JS_SRC_CORE=${SRC}header.js \
-	 ${SRC}util.js \
-	 ${SRC}version.js \
-	 ${SRC}features.js \
-	 ${SRC}promise.js \
-	 ${SRC}button.js \
-	 ${SRC}paste.js \
-	 ${SRC}upload-data.js \
-	 ${SRC}uploader.basic.js \
-	 ${SRC}dnd.js \
-	 ${SRC}uploader.js \
-	 ${SRC}ajax.requester.js \
-	 ${SRC}deletefile.ajax.requester.js \
-	 ${SRC}window.receive.message.js \
-	 ${SRC}handler.base.js \
-	 ${SRC}handler.form.js \
-	 ${SRC}handler.xhr.js 
-JS_SRC_JQUERY+=${JS_SRC_CORE}
-JS_SRC_JQUERY+=${SRC}jquery-plugin.js \
-			   ${SRC}jquery-dnd.js
+# core
+SRCJS=${SRCJS_DIR}header.js \
+	  ${SRCJS_DIR}util.js \
+	  ${SRCJS_DIR}version.js \
+	  ${SRCJS_DIR}features.js \
+	  ${SRCJS_DIR}promise.js \
+	  ${SRCJS_DIR}button.js \
+	  ${SRCJS_DIR}paste.js \
+	  ${SRCJS_DIR}upload-data.js \
+	  ${SRCJS_DIR}uploader.basic.js \
+	  ${SRCJS_DIR}dnd.js \
+	  ${SRCJS_DIR}uploader.js \
+	  ${SRCJS_DIR}ajax.requester.js \
+	  ${SRCJS_DIR}deletefile.ajax.requester.js \
+	  ${SRCJS_DIR}window.receive.message.js \
+	  ${SRCJS_DIR}handler.base.js \
+	  ${SRCJS_DIR}handler.form.js \
+	  ${SRCJS_DIR}handler.xhr.js 
 
-all: fine-uploader
+# jQuery plugin
+JQ_SRCJS+=${SRCJS}
+JQ_SRCJS+=${SRCJS_DIR}jquery-plugin.js \
+		  ${SRCJS_DIR}jquery-dnd.js
 
-fine-uploader: clean build test docs
+all: release
+
+release: clean build test docs
 	@echo "${HR}"
 	@echo "${DATE}\n"
-
-#
-# Node Modules
-#
-node_modules: package.json
-	npm update
-
-VERSION=$(shell cat ./client/js/version.js | sed 's/[^\"]*\"\([^\"]*\)\"[^\"]*/\1/g')
-
-#
-# Clean
-#
-clean: clean-node clean-build clean-docs
-
-clean-build:
-	rm -rf ${BUILD}*
-	mkdir -p ${BUILD}{js,css,img}
-
-clean-node:
-	rm -rf ${NODE_MODULES}
-
-clean-docs:
-	rm -rf ${DOCS}docco.css
-	rm -rf ${DOCS}fine-uploader.html
-	rm -rf ${DOCS}public
+	@echo "${CHECK} Done with a release build.\n"
 
 #
 # Build
 #
-build: node_modules build-js build-css build-img
+build: build-js build-css build-img
+	@echo "${CHECK} Built!"
 
 build-js: concat-js minify-js 
 #build-js: lint concat-js minify-js 
@@ -74,45 +57,28 @@ build-js: concat-js minify-js
 build-css: minify-css
 
 build-img:
-	cp ${SRC}../{loading.gif,processing.gif} ${BUILD}img 
+	cp ${SRC_DIR}{loading.gif,processing.gif} ${BUILD}img 
 
-build-docs: docs
-
-concat-js:
-	@echo "Combining js ..."
-	cat ${JS_SRC_CORE} | tee ${BUILD}js/fine-uploader-${VERSION}.js
-	cat ${JS_SRC_JQUERY} | tee ${BUILD}js/jquery-fine-uploader-${VERSION}.js
-	cat ${SRC}iframe.xss.response.js | tee ${BUILD}js/iframe.xss.response.js
-	cp README ${BUILD}README
-	cp LICENSE ${BUILD}LICENSE
-	@echo "Js combined."
+#build-docs: docs
 
 #
-# Minify
+# Clean
 #
-minify: minify-js minify-css
-
-minify-js:
-	@echo "Minifying js ..."
-	${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/fine-uploader-${VERSION}.js -o ./fine-uploader/js/fine-uploader-${VERSION}.min.js
-	${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/jquery-fine-uploader-${VERSION}.js -o ./fine-uploader/js/jquery-fine-uploader-${VERSION}.min.js
-	@echo "Js minified."
-
-minify-css:
-	@echo "Minifying css ..."
-	cp ./client/fineuploader.css ${BUILD}css/fine-uploader-${VERSION}.css
-	${NODE_MODULES}clean-css/bin/cleancss -o ${BUILD}css/fine-uploader-${VERSION}.min.css \
-		${BUILD}css/fine-uploader-${VERSION}.css
-	@echo "Css minified."
-
-#
-# Lint
-#
-lint:
+clean: clean-build clean-docs
 	@echo "\n${HR}"
-	@echo "Linting ..."
-	${NODE_MODULES}jshint/bin/jshint ${SRC}
-	@echo "Linted."
+	@echo "${CHECK} So fresh, so clean!\n"
+
+clean-build:
+	rm -rf ${BUILD}*
+	mkdir -p ${BUILD}{js,css,img}
+
+clean-docs:
+	rm -rf ${DOCS}docco.css
+	rm -rf ${DOCS}fine-uploader.html
+	rm -rf ${DOCS}public
+
+clean-node:
+	rm -rf ${NODE_MODULES}
 
 #
 # Docs
@@ -121,28 +87,74 @@ docs:
 	@echo "\n${HR}"
 	@echo "Building docs ..."
 	#${NODE_MODULES}docco/bin/docco -o ${DOCS} ${BUILD}js/fine-uploader.js
-	@echo "Docs built."
+	@echo "${CHECK} Docs built!\n"
 
 #
 # Tests
 #
+## Test everything, done before a release
 test-all: clean build test
 
+## Quicker test; useful during development
 test:
 	@echo "\n${HR}"
 	@echo "Running tests ..."
 	PHANTOMJS_BIN=${NODE_MODULES}phantomjs/bin/phantomjs ${NODE_MODULES}karma/bin/karma start --single-run
-	@echo "Tests run."
+	@echo "${CHECK} Tests complete!\n"
 
+## Test whenever changes are made.
 test-watch:
-	@echo "\n${HR}"
 	@echo "Watching tests ..."
 	PHANTOMJS_BIN=${NODE_MODULES}phantomjs/bin/phantomjs ${NODE_MODULES}karma/bin/karma start
-	@echo "Tests run."
+	@echo "${CHECK} Tests complete!\n"
 
 #
 # Utils
 #
+
+## Node Modules
+node_modules: package.json
+	npm update
+
+## Concatenation
+concat-js:
+	@echo "Combining js ..."
+	cat ${SRCJS} | tee ${BUILD}js/fine-uploader.js
+	@#cat ${SRCJS} | tee ${BUILD}js/fine-uploader-${VERSION}.js
+	cat ${JQ_SRCJS} | tee ${BUILD}js/jquery-fine-uploader.js
+	@#cat ${JQ_SRCJS} | tee ${BUILD}js/jquery-fine-uploader-${VERSION}.js
+	cat ${SRC}js/iframe.xss.response.js | tee ${BUILD}js/iframe.xss.response.js
+	cp README.md ${BUILD}README
+	cp LICENSE ${BUILD}LICENSE
+	@echo "${SRC} JS combined."
+
+# Minification
+minify: minify-js minify-css
+
+minify-js:
+	@echo "Minifying js ..."
+	${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/fine-uploader.js -o ./fine-uploader/js/fine-uploader.min.js
+	@#${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/fine-uploader-${VERSION}.js -o ./fine-uploader/js/fine-uploader-${VERSION}.min.js
+	${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/jquery-fine-uploader.js -o ./fine-uploader/js/jquery-fine-uploader.min.js
+	@#${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/jquery-fine-uploader-${VERSION}.js -o ./fine-uploader/js/jquery-fine-uploader-${VERSION}.min.js
+	@echo "${CHECK} JS minified.\n"
+
+minify-css:
+	@echo "Minifying css ..."
+	cp ./client/fineuploader.css ${BUILD}css/fine-uploader.css
+	@#cp ./client/fineuploader.css ${BUILD}css/fine-uploader-${VERSION}.css
+	${NODE_MODULES}clean-css/bin/cleancss -o ${BUILD}css/fine-uploader.min.css ${BUILD}css/fine-uploader.css
+	@#${NODE_MODULES}clean-css/bin/cleancss -o ${BUILD}css/fine-uploader-${VERSION}.min.css ${BUILD}css/fine-uploader-${VERSION}.css
+	@echo "${CHECK} CSS minified.\n"
+
+## Linting
+lint:
+	@echo "\n${HR}"
+	@echo "Linting ..."
+	${NODE_MODULES}jshint/bin/jshint ${SRCJS_DIR}
+	@echo "Linted."
+
+## Selenium
 start-selenium:
 	@echo "Starting Selenium ..."
 	export PATH=./node_modules/phantomjs/bin:$$PATH
@@ -160,32 +172,30 @@ stop-selenium:
 
 restart-selenium: stop-selenium start-selenium
 
-start-test-server:
-	@echo "Starting test HTTP server ..."
-	node test/test-server.js &
+## Test Server
+start-basic-server:
+	@echo "Starting basic HTTP server ..."
+	node test/basic-server.js &
 	sleep 5
 	@echo "Test HTTP server started."
 
-stop-test-server:
-	@echo "Stop test HTTP server ..."
+stop-basic-server:
+	@echo "Stopping basic HTTP server ..."
 	cat ${TESTS}pid.txt | xargs kill
-	sleep 5
-	@echo "Test HTTP server stop."
+	@echo "Test HTTP server stopped."
 
-restart-test-server: stop-test-server start-test-server
+restart-basic-server: stop-basic-server start-basic-server
 
-DATE=$(shell date +%I:%M%p)
-CHECK=\033[32m✔\033[39m
-HR=\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
 
 #
 # Instructions
 #
 
-.PHONY: all
-.PHONY: start-selenium stop-selenium restart-selenium
-.PHONY: start-test-server stop-test-server restart-test-server
-.PHONY: test test-watch
-.PHONY: docs lint minify clean build
-.PHONY: build-js build-css
-.PHONY: minify-js minify-css
+.PHONY: all release
+.PHONY: clean clean-build clean-node
+.PHONY: build build-release build-js build-img build-css
+.PHONY: minify minify-js minify-css
+.PHONY: test test-all test-watch
+.PHONY: docs lint
+.PHONY: start-basic-server stop-basic-server restart-basic-server
+#.PHONY: start-selenium stop-selenium restart-selenium
