@@ -12,7 +12,7 @@ BUILD=./fine-uploader/
 
 NODE_MODULES=./node_modules/
 
-SELENIUM=${TESTS}vendor/selenium-server-standalone-2.33.0.jar
+SELENIUM=${TEST_DIR}vendor/selenium-server-standalone.jar
 
 # core
 SRCJS=${SRCJS_DIR}header.js \
@@ -128,6 +128,7 @@ vendor_modules:
 	curl http://code.jquery.com/jquery-2.0.1.min.js >> ${TEST_DIR}vendor/jquery-2.0.1.min.js
 	curl https://raw.github.com/allmarkedup/jQuery-URL-Parser/master/purl.js > ${TEST_DIR}vendor/purl.js
 	curl https://raw.github.com/douglascrockford/JSON-js/master/json2.js >> ${TEST_DIR}vendor/json2.js
+	curl http://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar >> ${TEST_DIR}vendor/selenium-server-standalone.jar
 
 ## Concatenation
 concat-js:
