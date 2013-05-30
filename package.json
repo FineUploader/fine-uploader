@@ -23,8 +23,8 @@
     "url": "git://github.com/Widen/fine-uploader.git"
   },
   "author": "Widen Enterprises, Inc.",
-  "license": "GPLv3",
-  "readmeFilename": "README",
+  "license": "GPL3",
+  "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/Widen/fine-uploader/issues"
   },

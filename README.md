@@ -1,14 +1,15 @@
-![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)
-
-[![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=feature/810-add-automation-to-testing-process-v2)](https://travis-ci.org/Widen/fine-uploader)
+<<<<<<< HEAD:README.md
 
 **Current Version:** 3.6 (in progress)
 
 ## Download ##
 
-###[Download the 3.5 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
+# Fine Uploader 3.6 (Released May 29, 2013) #
+![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png) [![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=feature/810-add-automation-to-testing-process-v2)](https://travis-ci.org/Widen/fine-uploader)
 
-###[3.5 change summary](http://blog.fineuploader.com/2013/04/fine-uploader-35.html)###
+###[Download the 3.6 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
+
+###[3.6 change summary](http://blog.fineuploader.com/2013/05/fine-uploader-36.html)###
 
 <br/>
 ## Features ##
