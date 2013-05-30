@@ -284,6 +284,15 @@ check out the server-side readme.
             <td>If set to true, the file or `Blob` size (if available) will be displayed next to the file immediately after the file has been submitted/selected.
             Otherwise, it will only appear once the actual upload starts.</td>
     	</tr>
+        <tr>
+            <td>prependFiles</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>If set to true, each batch of files submitted will be added to the top of the UI's file list.  If batch
+            selection or drag and drop is not supported, each individual file submitted will be added to the top of the
+            UI's file list.  Note that this will not affect the order in which files are actually uploaded.  Files will
+            still be uploaded in the order they are actually submitted.</td>
+    	</tr>
     </tbody>
 </table>
 

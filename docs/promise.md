@@ -56,14 +56,15 @@ name supplied by the user.
             <td>Call this on a promise instance to register your callbacks for success and failure.  For each callback,
             the value, if any, supplied by the creator of the promise will be passed into your callbacks.  If success or
             failure has already ocurred before you register your callbacks, they will be called immediately after this
-            call has executed.</td>
+            call has executed.  Each call to <code>then</code> registers an additional set of callbacks.</td>
         </tr>
         <tr>
             <td>done</td>
             <td>(function)callback</td>
             <td>promise instance</td>
             <td>Call this on a promise instance to register your callbacks for success OR failure.  This callback will be
-            invoked when the promise is fulfilled, regardless of the result.</td>
+            invoked when the promise is fulfilled, regardless of the result.  Each call to <code>done</code> registers an
+            additional set of callbacks.</td>
         </tr>
         <tr>
             <td>success</td>
@@ -80,3 +81,18 @@ name supplied by the user.
         </tr>
     </tbody>
 </table>
+
+
+<br/>
+### Fine Uploader Supports ###
+
+#### Callbacks ####
+
+Promises are acceptable return values in the following [callbacks](callbacks.md):
+* onSubmit
+* onCancel
+* onResume
+* onValidateBatch
+* onValidate
+* onSubmitDelete
+* onPasteReceived

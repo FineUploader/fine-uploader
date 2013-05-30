@@ -3,14 +3,20 @@ qq.Promise = function() {
     "use strict";
 
     var successValue, failureValue,
-        successCallback, failureCallback, doneCallback,
+        successCallbacks = [],
+        failureCallbacks = [],
+        doneCallbacks = [],
         state = 0;
 
     return {
         then: function(onSuccess, onFailure) {
             if (state === 0) {
-                successCallback = onSuccess;
-                failureCallback = onFailure;
+                if (onSuccess) {
+                    successCallbacks.push(onSuccess);
+                }
+                if (onFailure) {
+                    failureCallbacks.push(onFailure);
+                }
             }
             else if (state === -1 && onFailure) {
                 onFailure(failureValue);
@@ -24,7 +30,7 @@ qq.Promise = function() {
 
         done: function(callback) {
             if (state === 0) {
-                doneCallback = callback;
+                doneCallbacks.push(callback);
             }
             else {
                 callback();
@@ -37,12 +43,16 @@ qq.Promise = function() {
             state = 1;
             successValue = val;
 
-            if (successCallback) {
-                successCallback(val);
+            if (successCallbacks.length) {
+                qq.each(successCallbacks, function(idx, callback) {
+                    callback(val);
+                })
             }
 
-            if(doneCallback) {
-                doneCallback();
+            if(doneCallbacks.length) {
+                qq.each(doneCallbacks, function(idx, callback) {
+                    callback();
+                })
             }
 
             return this;
@@ -52,15 +62,23 @@ qq.Promise = function() {
             state = -1;
             failureValue = val;
 
-            if (failureCallback) {
-                failureCallback(val);
+            if (failureCallbacks.length) {
+                qq.each(failureCallbacks, function(idx, callback) {
+                    callback(val);
+                })
             }
 
-            if(doneCallback) {
-                doneCallback();
+            if(doneCallbacks.length) {
+                qq.each(doneCallbacks, function(idx, callback) {
+                    callback();
+                })
             }
 
             return this;
         }
     };
+};
+
+qq.isPromise = function(maybePromise) {
+    return maybePromise && maybePromise.then && maybePromise.done;
 };

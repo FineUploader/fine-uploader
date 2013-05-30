@@ -61,7 +61,7 @@ var qq = function(element) {
          * Fixes opacity in IE6-8.
          */
         css: function(styles) {
-            if (styles.opacity !== null){
+            if (styles.opacity != null){
                 if (typeof element.style.opacity !== 'string' && typeof(element.filters) !== 'undefined'){
                     styles.filter = 'alpha(opacity=' + Math.round(100 * styles.opacity) + ')';
                 }
@@ -162,6 +162,11 @@ qq.isFunction = function(variable) {
     return typeof(variable) === "function";
 };
 
+qq.isArray = function(variable) {
+    "use strict";
+    return Object.prototype.toString.call(variable) === "[object Array]";
+}
+
 qq.isString = function(maybeString) {
     "use strict";
     return Object.prototype.toString.call(maybeString) === '[object String]';
@@ -180,16 +185,21 @@ qq.isFileOrInput = function(maybeFileOrInput) {
     if (window.File && maybeFileOrInput instanceof File) {
         return true;
     }
-    else if (window.HTMLInputElement) {
-        if (maybeFileOrInput instanceof HTMLInputElement) {
-            if (maybeFileOrInput.type && maybeFileOrInput.type.toLowerCase() === 'file') {
+
+    return qq.isInput(maybeFileOrInput);
+};
+
+qq.isInput = function(maybeInput) {
+    if (window.HTMLInputElement) {
+        if (maybeInput instanceof HTMLInputElement) {
+            if (maybeInput.type && maybeInput.type.toLowerCase() === 'file') {
                 return true;
             }
         }
     }
-    else if (maybeFileOrInput.tagName) {
-        if (maybeFileOrInput.tagName.toLowerCase() === 'input') {
-            if (maybeFileOrInput.type && maybeFileOrInput.type.toLowerCase() === 'file') {
+    else if (maybeInput.tagName) {
+        if (maybeInput.tagName.toLowerCase() === 'input') {
+            if (maybeInput.type && maybeInput.type.toLowerCase() === 'file') {
                 return true;
             }
         }
@@ -229,6 +239,7 @@ qq.isFileChunkingSupported = function() {
 
 qq.extend = function (first, second, extendNested) {
     "use strict";
+
     qq.each(second, function(prop, val) {
         if (extendNested && qq.isObject(val)) {
             if (first[prop] === undefined) {
@@ -240,6 +251,8 @@ qq.extend = function (first, second, extendNested) {
             first[prop] = val;
         }
     });
+
+    return first;
 };
 
 /**
@@ -310,6 +323,12 @@ qq.android = function(){
     "use strict";
     return navigator.userAgent.toLowerCase().indexOf('android') !== -1;
 };
+qq.ios = function() {
+    "use strict";
+    return navigator.userAgent.indexOf("iPad") !== -1
+        || navigator.userAgent.indexOf("iPod") !== -1
+        || navigator.userAgent.indexOf("iPhone") !== -1;
+};
 
 //
 // Events
@@ -339,19 +358,45 @@ qq.toElement = (function(){
 }());
 
 //key and value are passed to callback for each item in the object or array
-qq.each = function(obj, callback) {
+qq.each = function(objOrArray, callback) {
     "use strict";
-    var key, retVal;
-    if (obj) {
-        for (key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                retVal = callback(key, obj[key]);
+    var keyOrIndex, retVal;
+    if (objOrArray) {
+        if (qq.isArray(objOrArray)) {
+            for (keyOrIndex = 0; keyOrIndex < objOrArray.length; keyOrIndex++) {
+                retVal = callback(keyOrIndex, objOrArray[keyOrIndex]);
                 if (retVal === false) {
                     break;
                 }
             }
         }
+        else {
+            for (keyOrIndex in objOrArray) {
+                if (Object.prototype.hasOwnProperty.call(objOrArray, keyOrIndex)) {
+                    retVal = callback(keyOrIndex, objOrArray[keyOrIndex]);
+                    if (retVal === false) {
+                        break;
+                    }
+                }
+            }
+        }
     }
+};
+
+//include any args that should be passed to the new function after the context arg
+qq.bind = function(oldFunc, context) {
+    if (qq.isFunction(oldFunc)) {
+        var args =  Array.prototype.slice.call(arguments, 2);
+
+        return function() {
+            if (arguments.length) {
+                args = args.concat(Array.prototype.slice.call(arguments))
+            }
+            return oldFunc.apply(context, args);
+        };
+    }
+
+    throw new Error("first parameter must be a function!");
 };
 
 /**
@@ -480,17 +525,21 @@ qq.setCookie = function(name, value, days) {
 qq.getCookie = function(name) {
 	var nameEQ = name + "=",
         ca = document.cookie.split(';'),
-        c;
+        cookie;
 
-	for(var i=0;i < ca.length;i++) {
-		c = ca[i];
-		while (c.charAt(0)==' ') {
-            c = c.substring(1,c.length);
+    qq.each(ca, function(idx, part) {
+        var cookiePart = part;
+        while (cookiePart.charAt(0)==' ') {
+            cookiePart = cookiePart.substring(1, cookiePart.length);
         }
-		if (c.indexOf(nameEQ) === 0) {
-            return c.substring(nameEQ.length,c.length);
+
+        if (cookiePart.indexOf(nameEQ) === 0) {
+            cookie = cookiePart.substring(nameEQ.length, cookiePart.length);
+            return false;
         }
-	}
+    });
+
+    return cookie;
 };
 
 qq.getCookieNames = function(regexp) {
