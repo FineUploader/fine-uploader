@@ -1,7 +1,8 @@
 {
   "name": "fine-uploader",
+  "title": "Fine Uploader",
   "version": "3.6.0",
-  "description": "Multiple file upload plugin with progress-bar, drag-and-drop.",
+  "description": "Multiple file upload library with support for all major browsers.  Many features such as drag & drop, auto & manual retry, file chunking, auto-resume, and more!  Does NOT use Flash or Java.  Highly configurable.  A no-dependency version is ALSO available in the downloads section.",
   "main": "./fine-uploader/js/fine-uploader.js",
   "directories": {
     "doc": "docs",
@@ -23,7 +24,7 @@
     "url": "git://github.com/Widen/fine-uploader.git"
   },
   "author": "Widen Enterprises, Inc.",
-  "license": "GPL3",
+  "license": "GPL 3",
   "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/Widen/fine-uploader/issues"
