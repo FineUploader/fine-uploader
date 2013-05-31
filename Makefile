@@ -1,3 +1,15 @@
+####
+#
+# Makefile
+#
+# Fine Uploader
+# @author: Mark Feltner
+#
+# Tasks:
+
+
+CURRENT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
+ON_MASTER=$(shell if [[ "master" == $$CURRENT_BRANCH ]]; then echo "true"; else echo "false"; fi)
 VERSION=$(shell cat ./client/js/version.js | sed 's/[^\"]*\"\([^\"]*\)\"[^\"]*/\1/g')
 CWD=$(shell pwd)
 DATE=$(shell date +%I:%M%p)
@@ -11,6 +23,7 @@ DOCS=./docs/
 BUILD=./fine-uploader/
 
 NODE_MODULES=./node_modules/
+BIN = ${NODE_MODULES}.bin/
 
 SELENIUM=${TEST_DIR}vendor/selenium-server-standalone.jar
 
@@ -38,56 +51,54 @@ JQ_SRCJS+=${SRCJS}
 JQ_SRCJS+=${SRCJS_DIR}jquery-plugin.js \
 		  ${SRCJS_DIR}jquery-dnd.js
 
-all: release
-
-release: clean-node clean-vendor clean node_modules vendor_modules build test docs
+all: clean-node clean-vendor build test docs
 	@echo "${HR}"
 	@echo "${DATE}\n"
-	@echo "${CHECK} Done with a release build.\n"
+	@echo "${CHECK} Done with a comprehensive build.\n"
 
 #
 # Build
 #
-build: node_modules clean-vendor vendor_modules build-js build-css build-img
+build: modules clean fineuploader
+	@echo "${HR}"
+	@echo "${DATE}\n"
 	@echo "${CHECK} Built!"
 
-build-js: concat-js minify-js 
-#build-js: lint concat-js minify-js 
+fineuploader: js css img
 
-build-css: minify-css
+js: concat-js minify-js 
+#js: lint concat-js minify-js 
 
-build-img:
+css: minify-css
+
+img:
 	cp ${SRC_DIR}{loading.gif,processing.gif} ${BUILD}img 
 
-#build-docs: docs
-
-#
-# Clean
-#
-clean: clean-build clean-docs clean-vendor
+clean: clean-build clean-docs 
 	@echo "\n${HR}"
 	@echo "${CHECK} So fresh, so clean!\n"
 
-clean-build:
-	rm -rf ${BUILD}*
-	mkdir -p ${BUILD}{js,css,img}
+wipe: clean clean-node clean-vendor
 
-clean-docs:
+clean-build:
+	rm -rf ${BUILD}
+
+clean-docs: $(DOCS)
 	rm -rf ${DOCS}docco.css
 	rm -rf ${DOCS}fine-uploader.html
 	rm -rf ${DOCS}public
 
-clean-node:
+clean-node: $(NODE_MODULES)
 	rm -rf ${NODE_MODULES}
 
-clean-vendor:
-	rm -rf ${TEST_DIR}vendor/*
-	mkdir -p ${TEST_DIR}vendor
+clean-vendor: $(TEST_DIR)vendor/
+	rm -rf ${TEST_DIR}vendor/
 
 #
 # Docs
 #
-docs:
+docs: $(DOCS)
+	mkdir -p ${DOCS}
 	@echo "\n${HR}"
 	@echo "Building docs ..."
 	#${NODE_MODULES}docco/bin/docco -o ${DOCS} ${BUILD}js/fine-uploader.js
@@ -97,19 +108,23 @@ docs:
 # Tests
 #
 ## Test everything, done before a release
-test-all: clean build test
+test-all: wipe build test
 
 ## Quicker test; useful during development
 test: build
 	@echo "\n${HR}"
 	@echo "Running tests ..."
-	PHANTOMJS_BIN=${NODE_MODULES}phantomjs/bin/phantomjs ${NODE_MODULES}karma/bin/karma start --single-run
+ifeq ($(ON_MASTER), true)
+	$(shell false)
+else
+	PHANTOMJS_BIN=${BIN}phantomjs ${BIN}karma start --single-run
 	@echo "${CHECK} Tests complete!\n"
+endif
 
 ## Test whenever changes are made.
 test-watch: build
 	@echo "Watching tests ..."
-	PHANTOMJS_BIN=${NODE_MODULES}phantomjs/bin/phantomjs ${NODE_MODULES}karma/bin/karma start
+	PHANTOMJS_BIN=${BIN}phantomjs ${BIN}karma/bin/karma start
 	@echo "${CHECK} Tests complete!\n"
 
 #
@@ -120,7 +135,8 @@ test-watch: build
 node_modules: package.json
 	npm update
 
-vendor_modules:
+vendor_modules: node_modules 
+	mkdir -p ${TEST_DIR}vendor
 	cp ${NODE_MODULES}chai/chai.js ${TEST_DIR}vendor/.
 	cp ${NODE_MODULES}mocha/mocha.js ${TEST_DIR}vendor/.
 	cp ${NODE_MODULES}mocha/mocha.css ${TEST_DIR}vendor/.
@@ -128,16 +144,19 @@ vendor_modules:
 	curl http://code.jquery.com/jquery-2.0.1.min.js >> ${TEST_DIR}vendor/jquery-2.0.1.min.js
 	curl https://raw.github.com/allmarkedup/jQuery-URL-Parser/master/purl.js > ${TEST_DIR}vendor/purl.js
 	curl https://raw.github.com/douglascrockford/JSON-js/master/json2.js >> ${TEST_DIR}vendor/json2.js
-	curl http://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar >> ${TEST_DIR}vendor/selenium-server-standalone.jar
+	#curl http://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar >> ${TEST_DIR}vendor/selenium-server-standalone.jar
+
+modules: vendor_modules
 
 ## Concatenation
-concat-js:
+concat-js: 
 	@echo "Combining js ..."
+	mkdir -p ${BUILD}{js,css,img}
 	cat ${SRCJS} | tee ${BUILD}js/fine-uploader.js
 	@#cat ${SRCJS} | tee ${BUILD}js/fine-uploader-${VERSION}.js
 	cat ${JQ_SRCJS} | tee ${BUILD}js/jquery-fine-uploader.js
 	@#cat ${JQ_SRCJS} | tee ${BUILD}js/jquery-fine-uploader-${VERSION}.js
-	cat ${SRC}js/iframe.xss.response.js | tee ${BUILD}js/iframe.xss.response.js
+	cat ${SRCJS_DIR}js/iframe.xss.response.js | tee ${BUILD}js/iframe.xss.response.js
 	cp README.md ${BUILD}README
 	cp LICENSE ${BUILD}LICENSE
 	@echo "${SRC} JS combined."
@@ -147,9 +166,9 @@ minify: minify-js minify-css
 
 minify-js:
 	@echo "Minifying js ..."
-	${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/fine-uploader.js -o ./fine-uploader/js/fine-uploader.min.js
+	${BIN}uglifyjs ./fine-uploader/js/fine-uploader.js -o ./fine-uploader/js/fine-uploader.min.js
 	@#${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/fine-uploader-${VERSION}.js -o ./fine-uploader/js/fine-uploader-${VERSION}.min.js
-	${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/jquery-fine-uploader.js -o ./fine-uploader/js/jquery-fine-uploader.min.js
+	${BIN}uglifyjs ./fine-uploader/js/jquery-fine-uploader.js -o ./fine-uploader/js/jquery-fine-uploader.min.js
 	@#${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/jquery-fine-uploader-${VERSION}.js -o ./fine-uploader/js/jquery-fine-uploader-${VERSION}.min.js
 	@echo "${CHECK} JS minified.\n"
 
@@ -157,15 +176,15 @@ minify-css:
 	@echo "Minifying css ..."
 	cp ./client/fineuploader.css ${BUILD}css/fine-uploader.css
 	@#cp ./client/fineuploader.css ${BUILD}css/fine-uploader-${VERSION}.css
-	${NODE_MODULES}clean-css/bin/cleancss -o ${BUILD}css/fine-uploader.min.css ${BUILD}css/fine-uploader.css
+	${BIN}cleancss -o ${BUILD}css/fine-uploader.min.css ${BUILD}css/fine-uploader.css
 	@#${NODE_MODULES}clean-css/bin/cleancss -o ${BUILD}css/fine-uploader-${VERSION}.min.css ${BUILD}css/fine-uploader-${VERSION}.css
 	@echo "${CHECK} CSS minified.\n"
 
 ## Linting
-lint:
+lint: $(SRCJS_DIR)
 	@echo "\n${HR}"
 	@echo "Linting ..."
-	${NODE_MODULES}jshint/bin/jshint ${SRCJS_DIR}
+	${BIN}jshint ${SRCJS_DIR}
 	@echo "Linted."
 
 ## Selenium
@@ -187,29 +206,67 @@ stop-selenium:
 restart-selenium: stop-selenium start-selenium
 
 ## Test Server
-start-basic-server:
+start-server:
 	@echo "Starting basic HTTP server ..."
 	node test/basic-server.js &
 	sleep 5
 	@echo "Test HTTP server started."
 
-stop-basic-server:
+stop-server:
 	@echo "Stopping basic HTTP server ..."
 	cat ${TEST_DIR}pid.txt | xargs kill
 	@echo "Test HTTP server stopped."
 
-restart-basic-server: stop-basic-server start-basic-server
+restart-server: stop-basic-server start-basic-server
 
+# rewrite package.json with a new incremented version number
+# creates a corresponding git commit and tag
+define release
+	VERSION=`node -pe "require('./package.json').version"` && \
+	NEXT_VERSION=`node -pe "require('semver').inc(\"$$VERSION\", '$(1)')"` && \
+	node -e "\
+		var j = require('./package.json');\
+		j.version = \"$$NEXT_VERSION\";\
+		var s = JSON.stringify(j, null, 2);\
+		require('fs').writeFileSync('./package.json', s);" 
+		git commit -m "release $$NEXT_VERSION" -- package.json && \
+		git tag "$$NEXT_VERSION" -m "release $$NEXT_VERSION"
+endef
+
+release-patch: build test
+	@$(call release,patch)
+
+release-minor: build test
+	@$(call release,minor)
+
+release-major: build test
+	@$(call release,major)
+
+publish:
+	@echo "Publishing ..."
+	git push --tags origin HEAD:master
+	npm publish
+	@echo "${DATE}\n"
+	@echo "${CHECK} Published!"
+
+
+branch:
+	@echo $(ON_MASTER)
+			
+
+is-master:
+	@$(call branch)
+	
 
 #
 # Instructions
 #
 
-.PHONY: all release
-.PHONY: clean clean-build clean-node
-.PHONY: build build-release build-js build-img build-css
-.PHONY: minify minify-js minify-css
-.PHONY: test test-all test-watch
-.PHONY: docs lint
-.PHONY: start-basic-server stop-basic-server restart-basic-server
+#.PHONY: all release modules wipe build minify
+#.PHONY: clean wipe clean-build clean-node
+#.PHONY: build js css img fineuploader
+#.PHONY: minify minify-js minify-css
+#.PHONY: test test-all test-watch
+#.PHONY: docs lint
+#.PHONY: start-basic-server stop-basic-server restart-basic-server
 #.PHONY: start-selenium stop-selenium restart-selenium
