@@ -11,9 +11,10 @@ release/*
 master
 
 !.travis.yml
-fine-uploader/
 hardcopy*
-?selenium.log*
+selenium.log*
+
+fine-uploader/
 test/upload/*
 test/pid.txt
 test/coverage/*
