@@ -2,8 +2,18 @@
   "name": "fine-uploader",
   "title": "Fine Uploader",
   "version": "3.6.0",
-  "description": "Multiple file upload library with support for all major browsers.  Many features such as drag & drop, auto & manual retry, file chunking, auto-resume, and more!  Does NOT use Flash or Java.  Highly configurable.  A no-dependency version is ALSO available in the downloads section.",
+  "description": "Multiple file upload library with support for all major browsers.  Many features such as drag & drop, auto & manual retry, file chunking, auto-resume, and more!  Does NOT use Flash or Java.  Highly configurable.  A no-dependency version is also available in the downloads section.",
   "main": "./fine-uploader/js/fine-uploader.js",
+  "maintainers": [
+    {
+      "name": "Ray Nicholus",
+      "email": "rnicholus@widen.com"
+    },
+    {
+      "name": "Mark Feltner",
+      "email": "mfeltner@widen.com"
+    }
+  ],
   "directories": {
     "doc": "docs",
     "test": "test"
@@ -24,7 +34,16 @@
     "url": "git://github.com/Widen/fine-uploader.git"
   },
   "author": "Widen Enterprises, Inc.",
-  "license": "GPL 3",
+  "licenses": [
+    {
+      "type": "GPL 3",
+      "url": "http://www.gnu.org/licenses/gpl-3.0.txt"
+    },
+    {
+      "type": "Widen Commerical License",
+      "url": "http://fineuploader.com/downloads.html"
+    }
+  ],
   "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/Widen/fine-uploader/issues"
@@ -45,6 +64,7 @@
     "karma": "~0.8.5",
     "express": "~3.2.5",
     "jade": "~0.30.0",
-    "optimist": "~0.5.0"
+    "optimist": "~0.5.0",
+    "semver": "~1.1.4"
   }
 }
