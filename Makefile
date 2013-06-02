@@ -25,6 +25,7 @@ BUILD=./fine-uploader/
 NODE_MODULES=./node_modules/
 BIN = ${NODE_MODULES}.bin/
 
+CASPERJS=${TEST_DIR}vendor/casperjs/bin/casperjs
 SELENIUM=${TEST_DIR}vendor/selenium-server-standalone.jar
 
 # core
@@ -111,20 +112,25 @@ docs: $(DOCS)
 test-all: wipe build test
 
 ## Quicker test; useful during development
+ci-test: build
+ifeq ($(ON_MASTER), true)
+	@echo "\nWoah, no running tests on master!\n"
+	$(shell false)
+else
+	${BIN}mocha-phantomjs -p ${BIN}phantomjs -R dot ${TEST_DIR}index.html
+	@echo "${CHECK} Tests complete!\n"
+
 test: build
 	@echo "\n${HR}"
 	@echo "Running tests ..."
-ifeq ($(ON_MASTER), true)
-	$(shell false)
-else
-	PHANTOMJS_BIN=${BIN}phantomjs ${BIN}karma start --single-run
+	${BIN}mocha-phantomjs -p ${BIN}phantomjs -R dot ${TEST_DIR}index.html
 	@echo "${CHECK} Tests complete!\n"
 endif
 
 ## Test whenever changes are made.
 test-watch: build
 	@echo "Watching tests ..."
-	PHANTOMJS_BIN=${BIN}phantomjs ${BIN}karma/bin/karma start
+	PHANTOMJS_BIN=${BIN}phantomjs ${BIN}karma start
 	@echo "${CHECK} Tests complete!\n"
 
 #
@@ -144,6 +150,8 @@ vendor_modules: node_modules
 	curl http://code.jquery.com/jquery-2.0.1.min.js >> ${TEST_DIR}vendor/jquery-2.0.1.min.js
 	curl https://raw.github.com/allmarkedup/jQuery-URL-Parser/master/purl.js > ${TEST_DIR}vendor/purl.js
 	curl https://raw.github.com/douglascrockford/JSON-js/master/json2.js >> ${TEST_DIR}vendor/json2.js
+	#git clone git://github.com/n1k0/casperjs.git ${TEST_DIR}vendor/casperjs
+	#$(shell cd ${TEST_DIR}vendor/casperjs && git checkout tags/1.0.2)
 	#curl http://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar >> ${TEST_DIR}vendor/selenium-server-standalone.jar
 
 modules: vendor_modules
@@ -208,7 +216,7 @@ restart-selenium: stop-selenium start-selenium
 ## Test Server
 start-server:
 	@echo "Starting basic HTTP server ..."
-	node test/basic-server.js &
+	node test/server.js &
 	sleep 5
 	@echo "Test HTTP server started."
 
@@ -217,7 +225,11 @@ stop-server:
 	cat ${TEST_DIR}pid.txt | xargs kill
 	@echo "Test HTTP server stopped."
 
-restart-server: stop-basic-server start-basic-server
+restart-server: stop-server start-server
+
+#
+# Releasing, Publishing, and Deploying
+# 
 
 # rewrite package.json with a new incremented version number
 # creates a corresponding git commit and tag
@@ -248,15 +260,6 @@ publish:
 	npm publish
 	@echo "${DATE}\n"
 	@echo "${CHECK} Published!"
-
-
-branch:
-	@echo $(ON_MASTER)
-			
-
-is-master:
-	@$(call branch)
-	
 
 #
 # Instructions
