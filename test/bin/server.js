@@ -33,8 +33,8 @@ app.configure(function () {
     
     // Static URLS
     app.use(baseDir, express.static(baseDir));
-    app.use('/vendor', express.static(settings.paths.vendor));
-    app.use('/specs', express.static(settings.paths.specs));
+    app.use('/tests/vendor', express.static(settings.paths.vendor));
+    app.use('/tests/specs', express.static(settings.paths.specs));
     app.use('/fine-uploader', express.static(settings.paths.source));
 
 })

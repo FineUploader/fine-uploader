@@ -14,9 +14,9 @@ master
 hardcopy*
 selenium.log*
 
+pid.txt
 fine-uploader/
 test/upload/*
-test/pid.txt
 test/coverage/*
 test/vendor/*
 test/uploads/*

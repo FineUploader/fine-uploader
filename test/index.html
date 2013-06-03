@@ -8,19 +8,21 @@
     </head>
 
     <body>
-        <div id="mocha"></div>
+        <div id="qunit"></div>
+        <div id="qunit-fixture"></div>
 
-        <!-- mocha -->
+        <!-- mocha 
         <link href="vendor/mocha.css" rel="stylesheet" type="text/css" />
         <script src="vendor/mocha.js" type="text/javascript"></script>
-
-        <!-- chai -->
-        <script src="vendor/chai.js" type="text/javascript"></script>
+        -->
+        <link href="vendor/qunit.css" rel="stylesheet" type="text/css" />
+        <script src="vendor/qunit.js" type="text/javascript"></script>
 
         <!-- dependencies -->
-        <script src="vendor/jquery-1.10.0.min.js" type="text/javascript"></script>
         <script src="vendor/purl.js" type="text/javascript"></script>
         <script src="vendor/json2.js" type="text/javascript"></script>
+        <script src="vendor/jquery-1.10.0.min.js" type="text/javascript"></script>
+        <script src="vendor/pavlov.js" type="text/javascript"></script>
 
         <!-- Fine Uploader -->
         <link href="../fine-uploader/css/fine-uploader.css" />
@@ -28,11 +30,10 @@
 
         <!-- set up the test suite -->
         <script>
-            mocha.ui('tdd');
-            mocha.reporter('html');
+            // cache this selector
+            $fixture = $("#qunit-fixture");
 
-            assert = chai.assert
-          , expect = chai.expect;
+            QUnit.config.altertitle = false;
         </script>
 
         <!-- load the test scripts -->
@@ -43,12 +44,8 @@
 
         <!-- run the tests -->
         <script>
-        if (window.mochaPhantomJS) { 
-            mochaPhantomJS.run();
-        } else { 
-            onload = function () { mocha.run(); }
-        }
-        console.log("MMMmmm.... mocha.");
+        console.log("Tests ran!");
         </script>
 
-
+    </body>
+</html>

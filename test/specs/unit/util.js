@@ -1,72 +1,61 @@
-var assert = chai.assert
-  , expect = chai.expect;
+pavlov.specify("util.js", function() {
 
-// isObject
-describe('util.js', function () { 
-
-    var $fixture;
-
-    beforeEach(function () {
-        $("body").append("<div id='fixture'></div>");
-        $fixture = $("#fixture");
-    });
-
-    afterEach(function () {
-        $fixture.empty(); 
-    });
-
+    // isObject
     describe('isObject', function() {
 
         it('should return true for an empty Object', function() {
-            assert.isTrue(qq.isObject({})); 
+            ok(qq.isObject({})); 
         });
 
         it('should return true for a simple Object', function () {
-            assert.isTrue(qq.isObject({ foo: 'bar' }));
+            ok(qq.isObject({ foo: 'bar' }));
         });
 
         it('should return true for a newed up Object', function() {
-            assert.isTrue(qq.isObject(new Object())); 
+            ok(qq.isObject(new Object())); 
         });
 
         it('should return false for a function', function () {
-            assert.isFalse(qq.isObject(function(){})); 
+            ok(!qq.isObject(function(){})); 
         });
 
         it('should return false for null', function () {
-            assert.isFalse(qq.isObject(null));
+            ok(!qq.isObject(null));
         });
 
         it('should return false for an array', function () {
-            assert.isFalse(qq.isObject([]));
+            ok(!qq.isObject([]));
         });
 
         it('should return undefined for an undefined', function () {
-            assert.isUndefined(qq.isObject(undefined));
+            equal(qq.isObject(undefined), undefined);
         });
     });
 
+    // isFunction
     describe('isFunction', function () {
+
         it ('should return true for an empty simple function', function () {
-            assert.isTrue(qq.isFunction(function() {}));
+            ok(qq.isFunction(function() {}));
         });
 
         it('should return false for an Object', function () {
-            assert.isFalse(qq.isFunction({})); 
+            ok(!qq.isFunction({})); 
         });
     });
 
+    // isArray
     describe('isArray', function () {
         it('should return true for an empty array', function () {
-            assert.isTrue(qq.isArray([]));
+            ok(qq.isArray([]));
         });
 
         it('should return true for a basic array', function () {
-            assert.isTrue(qq.isArray([1, "foo", { herp: "derp" }]));
+            ok(qq.isArray([1, "foo", { herp: "derp" }]));
         });
         
         it('should return false for a string', function () {
-            assert.isFalse(qq.isArray("Herp derp"));
+            ok(!qq.isArray("Herp derp"));
         });
 
     });
@@ -74,38 +63,38 @@ describe('util.js', function () {
     // isString
     describe('isString', function () {
         it('should return true for the empty string', function () {
-            assert.isTrue(qq.isString(''));
+            ok(qq.isString(''));
         });
 
         it('should return true for a string with characters', function () {
-            assert.isTrue(qq.isString('Herp derp'));
+            ok(qq.isString('Herp derp'));
         });
     });
 
     // trimStr
     describe('trimStr', function () {
         it('can trim around string', function () {
-            assert.equal(qq.trimStr(' blah '), 'blah');
+            equal(qq.trimStr(' blah '), 'blah');
         });
 
         it('can trim after string', function () {
-            assert.equal(qq.trimStr('blah '), 'blah');
+            equal(qq.trimStr('blah '), 'blah');
         });
 
         it('can trim before string', function () {
-            assert.equal(qq.trimStr(' blah') , 'blah');
+            equal(qq.trimStr(' blah') , 'blah');
         });
 
         it('can trim with nothing to trim', function () {
-            assert.equal(qq.trimStr('blah'), 'blah');
+            equal(qq.trimStr('blah'), 'blah');
         });
 
         it('can trim a string with many spaces everywhere', function () {
-            assert.equal(qq.trimStr('bl a h'), 'bl a h');
+            equal(qq.trimStr('bl a h'), 'bl a h');
         });
 
         it('can trim the empty string', function () {
-            assert.equal(qq.trimStr(''), '');
+            equal(qq.trimStr(''), '');
         });
 
     });
@@ -129,7 +118,7 @@ describe('util.js', function () {
             four_1 = {},
             four_2 = {};
 
-        beforeEach(function () {
+        before(function () {
             testy = 
                 {   one: 'one', 
                     two: 'two', 
@@ -146,29 +135,29 @@ describe('util.js', function () {
 
         it('can extend simple objects', function () {
             var new_testy = qq.extend(testy, five)
-            assert.equal(new_testy.one, testy.one);
-            assert.equal(new_testy.two, testy.two);
-            assert.equal(new_testy.three, testy.three);
-            assert.equal(new_testy.four, testy.four);
-            assert.equal(new_testy.five, testy.five);
+            deepEqual(new_testy.one, testy.one);
+            deepEqual(new_testy.two, testy.two);
+            deepEqual(new_testy.three, testy.three);
+            deepEqual(new_testy.four, testy.four);
+            deepEqual(new_testy.five, testy.five);
         });
 
         it('can extend nested objects', function () {
             var new_testy = qq.extend(testy, four_1, true);
-            assert.equal(new_testy.one, testy.one);
-            assert.equal(new_testy.two, testy.two);
-            assert.equal(new_testy.three, testy.three);
-            assert.equal(new_testy.four.a, testy.four.a);
-            assert.equal(new_testy.four.b, testy.four.b);
-            assert.equal(new_testy.four.c, testy.four.c);
+            deepEqual(new_testy.one, testy.one);
+            deepEqual(new_testy.two, testy.two);
+            deepEqual(new_testy.three, testy.three);
+            deepEqual(new_testy.four.a, testy.four.a);
+            deepEqual(new_testy.four.b, testy.four.b);
+            deepEqual(new_testy.four.c, testy.four.c);
         });
 
         it('can extend non-nested objects', function () {
             var new_testy = qq.extend(testy, four_2);
-            assert.equal(new_testy.one, testy.one);
-            assert.equal(new_testy.two, testy.two);
-            assert.equal(new_testy.three, testy.three);
-            assert.equal(new_testy.four.d, testy.four.d);
+            deepEqual(new_testy.one, testy.one);
+            deepEqual(new_testy.two, testy.two);
+            deepEqual(new_testy.three, testy.three);
+            deepEqual(new_testy.four.d, testy.four.d);
         });
 
     });
@@ -185,23 +174,23 @@ describe('util.js', function () {
         });
 
         it('should return true for a string that is present', function () {
-            assert.equal(qq.indexOf(arr, 'a'), 0);
+            equal(qq.indexOf(arr, 'a'), 0);
         });
 
         it('should return true for an object that is present', function () {
-            assert.equal(qq.indexOf(arr, obj), 1);
+            equal(qq.indexOf(arr, obj), 1);
         });
 
         it('should return true for a number that is present', function () {
-            assert.equal(qq.indexOf(arr, 3), 2);
+            equal(qq.indexOf(arr, 3), 2);
         });
 
         it('should return false for an object that is not present due to strict equals', function () {
-            assert.equal(qq.indexOf(arr, { foo: 'bar' }), -1);
+            equal(qq.indexOf(arr, { foo: 'bar' }), -1);
         });
 
         it('should return false for an object that is not present at all', function () {
-            assert.equal(qq.indexOf(arr, 4), -1);
+            equal(qq.indexOf(arr, 4), -1);
         });
 
     });
@@ -220,7 +209,7 @@ describe('util.js', function () {
             bucket.sort();
             var last = bucket[0];
             for (var i = 1; i < bucket.length; i++) {
-                assert.notEqual(bucket[i], last);
+                notEqual(bucket[i], last);
                 last = bucket[i];
             }
         });
@@ -232,7 +221,7 @@ describe('util.js', function () {
         
         it('should provide value and iteration count ', function () {
             qq.each([0, 1, 2], function (i, num) {
-                assert.equal(i, num);
+                equal(i, num);
             });
         });
 
@@ -242,17 +231,17 @@ describe('util.js', function () {
             obj.constructor.prototype.four = 4;
 
             qq.each(obj, function (key, value) { answers.push(key); });
-            assert.equal(answers.join(', '), 'one, two, three');
+            equal(answers.join(', '), 'one, two, three');
 
             var answers = [];
             qq.each(obj, function (key, value) { answers.push(value); });
-            assert.equal(answers.join(', '), '1, 2, 3');
+            equal(answers.join(', '), '1, 2, 3');
         });
 
         it('can handle a null properly', function () {
             var answers = 0;
             qq.each(null, function () { ++answers; });
-            assert.equal(0, answers);
+            equal(0, answers);
         });
 
     });
@@ -260,23 +249,25 @@ describe('util.js', function () {
     // bind
     describe('bind', function () {
         
-        beforeEach(function () {
-            this.context = { foo: 'bar' };
-            this.func = function (arg) { return 'foo: ' + (this.foo || arg); };
+        var context, func;
+
+        before(function () {
+            context = { foo: 'bar' };
+            func = function (arg) { return 'foo: ' + (this.foo || arg); };
         });
 
         it('can bind a function to a context', function () {
-            var bound = qq.bind(this.func, this.context);
-            assert.equal(bound(), 'foo: bar');
+            var bound = qq.bind(func, context);
+            equal(bound(), 'foo: bar');
         });
 
         it('can bind without a context', function () {
-            var bound = qq.bind(this.func, null, 'bar');
-            assert.equal(bound(), 'foo: bar');
+            var bound = qq.bind(func, null, 'bar');
+            equal(bound(), 'foo: bar');
         });
 
         it('can bind a function to 0, empty string, and false', function () {
-            var func = function (ctx, msg) { assert.equal(this, ctx, msg); };
+            var func = function (ctx, msg) { equal(this, ctx, msg); };
             qq.bind(func, 0, 0)();
             qq.bind(func, '', '')();
             qq.bind(func, false, false)();
@@ -286,54 +277,56 @@ describe('util.js', function () {
 
     // obj2url
     describe('obj2url', function () {
+        var baseUrl, urlWithEncodedPath, params1, params2, params3, params4;
+
         before(function () {
-            this.baseUrl = 'http://mydomain.com/upload';
-            this.urlWithEncodedPath = 'http://mydomain.com/upload%20me';
-            this.params1 = { one: 'one', two: 'two', three: 'three' };
-            this.params2 = { a: 'this is a test' };
-            this.params3 = { a : { b: 'innerProp' }};
-            this.params4 = { a: function () { return 'funky'; }};
+            baseUrl = 'http://mydomain.com/upload';
+            urlWithEncodedPath = 'http://mydomain.com/upload%20me';
+            params1 = { one: 'one', two: 'two', three: 'three' };
+            params2 = { a: 'this is a test' };
+            params3 = { a : { b: 'innerProp' }};
+            params4 = { a: function () { return 'funky'; }};
         });
 
         it('can construct a URL with a basic object as param', function () {
-            var varUrl = qq.obj2url(this.params2, this.baseUrl);
-            var controlUrl = $.url(varUrl);
+            var varUrl = qq.obj2url(params2, baseUrl);
+            var controlUrl = purl(varUrl);
 
-            assert.equal(controlUrl.param('a'), 'this is a test');
+            equal(controlUrl.param('a'), 'this is a test');
         });
 
         it('can construct a URL with a basic object as params', function () {
-            var varUrl = qq.obj2url(this.params1, this.baseUrl);
-            var controlUrl = $.url(varUrl);
+            var varUrl = qq.obj2url(params1, baseUrl);
+            var controlUrl = purl(varUrl);
 
-            assert.equal(controlUrl.param('one'), 'one');
-            assert.equal(controlUrl.param('two'), 'two');
-            assert.equal(controlUrl.param('three'), 'three');
+            equal(controlUrl.param('one'), 'one');
+            equal(controlUrl.param('two'), 'two');
+            equal(controlUrl.param('three'), 'three');
         });
 
         it('can construct a URL with an embedded object as a param value', function () {
-            var varUrl = qq.obj2url(this.params3, this.baseUrl);
-            var controlUrl = $.url(varUrl);
+            var varUrl = qq.obj2url(params3, baseUrl);
+            var controlUrl = purl(varUrl);
 
-            assert.equal(controlUrl.param('a').b, 'innerProp');
+            equal(controlUrl.param('a').b, 'innerProp');
         });
 
         it('can construct a URL with a function as a param value', function () {
-            var varUrl = qq.obj2url(this.params4, this.baseUrl);
-            var controlUrl = $.url(varUrl);
+            var varUrl = qq.obj2url(params4, baseUrl);
+            var controlUrl = purl(varUrl);
 
-            assert.equal(controlUrl.param('a'), 'funky');
+            equal(controlUrl.param('a'), 'funky');
         });
 
         it('can construct an empty URL with params', function () {
-            var varUrl = qq.obj2url(this.params1, '');
-            assert.equal(varUrl, 'one=one&two=two&three=three');
+            var varUrl = qq.obj2url(params1, '');
+            equal(varUrl, 'one=one&two=two&three=three');
         });
 
         it('will leave encoded paths alone', function () {
-            var varUrl = qq.obj2url(this.params1, this.urlWithEncodedPath);
-            var regex = new RegExp('^' + this.urlWithEncodedPath);
-            assert.match(varUrl, regex);
+            var varUrl = qq.obj2url(params1, urlWithEncodedPath);
+            var regex = new RegExp('^' + urlWithEncodedPath);
+            ok(varUrl.match(regex));
         });
     });
 
@@ -341,9 +334,10 @@ describe('util.js', function () {
     // obj2FormData
     describe('obj2FormData', function () {
         
+        var formData, params1, params2, params3;
         before(function () {
             
-            this.formData = function () {
+            formData = function () {
                 var data = {};
                 return {
                     append: function (k, v) {
@@ -358,40 +352,41 @@ describe('util.js', function () {
                 };
             }();
 
-            this.params1 = { one: 'one', two: 'two', three: 'three' };
-            this.params2 = { a : { b: 'innerProp' }};
-            this.params3 = { a: function () { return 'funky'; }};
+            params1 = { one: 'one', two: 'two', three: 'three' };
+            params2 = { a : { b: 'innerProp' }};
+            params3 = { a: function () { return 'funky'; }};
         });
 
         after(function () {
-            this.formData.clear();
+            formData.clear();
         });
 
         it('can construct a URL with a basic object as param', function () {
-            assert.equal(
-                qq.obj2FormData(this.params1, this.formData).get('one'), 'one');
-            assert.equal(
-                qq.obj2FormData(this.params1, this.formData).get('two'), 'two');
-            assert.equal(
-                qq.obj2FormData(this.params1, this.formData).get('three'), 'three');
+            equal(
+                qq.obj2FormData(params1, formData).get('one'), 'one');
+            equal(
+                qq.obj2FormData(params1, formData).get('two'), 'two');
+            equal(
+                qq.obj2FormData(params1, formData).get('three'), 'three');
         });
 
         it('can construct a URL with an embedded object as param', function () {
-            assert.equal(qq.obj2FormData(this.params2, this.formData).get('a[b]'), 'innerProp');
+            equal(qq.obj2FormData(params2, formData).get('a[b]'), 'innerProp');
         });
 
         it('can construct a URL with a function as param', function () {
-            assert.equal(qq.obj2FormData(this.params3, this.formData).get('a'), 'funky');
+            equal(qq.obj2FormData(params3, formData).get('a'), 'funky');
         });
     });
 
     // obj2Inputs
     describe('obj2Inputs', function () {
        
+        var params1, params2, params3;
         before(function () {
-            this.params1 = { one: 'one', two: 'two', three: 'three' };
-            this.params2 = { a : { b: 'innerProp' }};
-            this.params3 = { a: function () { return 'funky'; }};
+            params1 = { one: 'one', two: 'two', three: 'three' };
+            params2 = { a : { b: 'innerProp' }};
+            params3 = { a: function () { return 'funky'; }};
         });
 
     });
@@ -413,18 +408,18 @@ describe('util.js', function () {
             qq.setCookie(cookie_name1, cookie_val1, 1);
             qq.setCookie(cookie_name2, cookie_val2, 1);
 
-            assert.equal(qq.getCookie(cookie_name1), cookie_val1);
-            assert.equal(qq.getCookie(cookie_name2), cookie_val2);
+            equal(qq.getCookie(cookie_name1), cookie_val1);
+            equal(qq.getCookie(cookie_name2), cookie_val2);
 
             var matchingCookieNames = qq.getCookieNames(/^qq\|cookieName/).sort();
-            assert.equal(matchingCookieNames.length, 2);
-            assert.equal(matchingCookieNames[0], cookie_name1);
-            assert.equal(matchingCookieNames[1], cookie_name2);
+            equal(matchingCookieNames.length, 2);
+            equal(matchingCookieNames[0], cookie_name1);
+            equal(matchingCookieNames[1], cookie_name2);
 
             qq.deleteCookie(cookie_name1);
-            assert.isUndefined(qq.getCookie(cookie_name1));
+            equal(qq.getCookie(cookie_name1), undefined);
             qq.deleteCookie(cookie_name2);
-            assert.isUndefined(qq.getCookie(cookie_name2));
+            equal(qq.getCookie(cookie_name2), undefined);
         });
     });
 
@@ -439,7 +434,7 @@ describe('util.js', function () {
         }); 
 
         it('can parse JSON', function () {
-            assert.deepEqual(qq.parseJson(json), parsedJson); 
+            deepEqual(qq.parseJson(json), parsedJson); 
         });
     });
 
@@ -453,36 +448,40 @@ describe('util.js', function () {
             delete file, frame1, frame2, window1, window2; 
         });
 
+        before(function () {
+          $fixture.append("<iframe id='window1'></iframe>");
+          $fixture.append("<iframe id='window2'></iframe>");
+        });
+
         it('should return true when comparing a File object created in another window', function () {
-            $fixture.append("<iframe id='window1'></iframe>"); 
-            $fixture.append("<iframe id='window2'></iframe>");
             
+            console.log($fixture);
             window1 = $fixture.find("#window1")[0];
             window2 = $fixture.find("#window2")[0];
 
             file1 = window1.contentWindow.File;
-            assert.isTrue(qq.isFileOrInput(file1));
+            ok(qq.isFileOrInput(file1));
         });
 
         // it('should return false on a regular input element', function () {
         //     //$('#fixture').append("<input id='bar'/>");
         //     var input = document.createElement('input');
         //     input.id('bar');
-        //     assert.isFalse(qq.isFileOrInput(input), "must be a file input");
+        //     ok(!qq.isFileOrInput(input), "must be a file input");
         // });
     
         // it('should return true for a file-input field', function () {
         //     var input = document.createElement('input');
         //     input.id('bar2');
         //     input.type('file');
-        //     assert.isTrue(qq.isFileOrInput(input), "this is a file input");
+        //     ok(qq.isFileOrInput(input), "this is a file input");
         // 
         // });
     
         // it('should return false on a div element', function () {
         //     var input = document.createElement('div');
         //     input.id('foo');
-        //     assert.isFalse(qq.isFileOrInput(input), "div is not an input");
+        //     ok(!qq.isFileOrInput(input), "div is not an input");
         // });
      
     });
@@ -497,13 +496,13 @@ describe('util.js', function () {
     //     it('should return true on an input element', function () {
     //         $('#fixture').append("<input id='foo' type='file'></input>");
     //         var el = $("#foo")[0];
-    //         assert.isTrue(qq.isInput(el), "inputs are inputs");
+    //         ok(qq.isInput(el), "inputs are inputs");
     //     });
     // 
     //     it('should return false on a div', function () {
     //         $("#fixture").append("<div id='foo'></div>");
     //         var el = $('#foo')[0];
-    //         assert.isFalse(qq.isInput(el), "divs are not inputs");
+    //         ok(!qq.isInput(el), "divs are not inputs");
     //     });
     // 
     //     after(function () {

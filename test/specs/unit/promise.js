@@ -1,18 +1,21 @@
-// promise-test.js
-//
-// Tests the various functions found in promise.js
-
-describe('promise.js', function() {
+pavlov.specify('promise.js', function() {
 
     // isPromise
     describe('isPromise', function () {
+
         var promise;
 
+        before(function () {
+            promise = new qq.Promise(); 
+        });
+
+        after(function () {
+            delete promise; 
+        });
+
         it("should be return true for a new'd promise", function () {
-            promise = new qq.Promise();
             assert(qq.isPromise(promise));
-            promise = null;
-            assert.isFalse(qq.isPromise(promise));
+            ok(!qq.isPromise(promise));
         });
 
     });
@@ -23,28 +26,28 @@ describe('promise.js', function() {
         var foo = false;
         var promise;
          
-        beforeEach(function(){
+        before(function(){
             promise = new qq.Promise()
         });
 
-        afterEach(function () {
+        after(function () {
             promise = null; 
         });
 
-        it("should expect success pass", function(done){
+        asyncTest("should expect success pass", function(){
          
             promise.then(function(value){
                 expect(value).equals(true);
-                done();
+                start();
             });
             promise.success(true);
         });
      
-        it("should expect failure pass", function(done){
+        asyncTest("should expect failure pass", function(){
          
             promise.then(null, function(value){
                 expect(value).equals(true);
-                done();
+                start();
             });
             promise.failure(true);
         });

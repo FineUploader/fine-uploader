@@ -1,7 +1,4 @@
-var assert = chai.assert
-  , expect = chai.expect;
-
-describe('upload-data.js', function () {
+pavlov.specify('upload-data.js', function () {
 
     function createUploadData(onStatusChange) {
         return new qq.UploadData({

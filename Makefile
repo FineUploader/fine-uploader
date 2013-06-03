@@ -144,14 +144,13 @@ node_modules: package.json
 vendor_modules: node_modules 
 	mkdir -p ${TEST_DIR}vendor
 	cp ${NODE_MODULES}chai/chai.js ${TEST_DIR}vendor/.
-	cp ${NODE_MODULES}mocha/mocha.js ${TEST_DIR}vendor/.
-	cp ${NODE_MODULES}mocha/mocha.css ${TEST_DIR}vendor/.
-	curl http://code.jquery.com/jquery-1.10.0.min.js >> ${TEST_DIR}vendor/jquery-1.10.0.min.js
-	curl http://code.jquery.com/jquery-2.0.1.min.js >> ${TEST_DIR}vendor/jquery-2.0.1.min.js
-	curl https://raw.github.com/allmarkedup/jQuery-URL-Parser/master/purl.js > ${TEST_DIR}vendor/purl.js
-	curl https://raw.github.com/douglascrockford/JSON-js/master/json2.js >> ${TEST_DIR}vendor/json2.js
-	#git clone git://github.com/n1k0/casperjs.git ${TEST_DIR}vendor/casperjs
-	#$(shell cd ${TEST_DIR}vendor/casperjs && git checkout tags/1.0.2)
+	curl --progress-bar http://code.jquery.com/jquery-1.10.0.min.js >> ${TEST_DIR}vendor/jquery-1.10.0.min.js
+	curl --progress-bar http://code.jquery.com/jquery-2.0.1.min.js >> ${TEST_DIR}vendor/jquery-2.0.1.min.js
+	curl --progress-bar http://code.jquery.com/qunit/qunit-1.11.0.js >> ${TEST_DIR}vendor/qunit.js
+	curl --progress-bar http://code.jquery.com/qunit/qunit-1.11.0.css >> ${TEST_DIR}vendor/qunit.css
+	curl --progress-bar https://raw.github.com/allmarkedup/purl/master/purl.js >> ${TEST_DIR}vendor/purl.js
+	curl --progress-bar https://raw.github.com/douglascrockford/JSON-js/master/json2.js >> ${TEST_DIR}vendor/json2.js
+	curl --progress-bar https://raw.github.com/mmonteleone/pavlov/master/pavlov.js >> ${TEST_DIR}vendor/pavlov.js
 	#curl http://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar >> ${TEST_DIR}vendor/selenium-server-standalone.jar
 
 modules: vendor_modules
@@ -216,13 +215,13 @@ restart-selenium: stop-selenium start-selenium
 ## Test Server
 start-server:
 	@echo "Starting basic HTTP server ..."
-	node test/server.js &
+	node ${TEST_DIR}bin/server.js &
 	sleep 5
 	@echo "Test HTTP server started."
 
 stop-server:
 	@echo "Stopping basic HTTP server ..."
-	cat ${TEST_DIR}pid.txt | xargs kill
+	cat ${TEST_DIR}bin/pid.txt | xargs kill
 	@echo "Test HTTP server stopped."
 
 restart-server: stop-server start-server
