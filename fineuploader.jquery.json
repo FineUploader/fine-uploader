@@ -8,7 +8,7 @@
     "chunking",
     "file-uploader"
   ],
-  "version": "3.6.0",
+  "version": "3.6.1",
   "author": {
     "name": "Widen Enterprises",
     "url": "http://widen.com"
@@ -20,7 +20,7 @@
     },
     {
       "type": "Widen Commerical License",
-      "url": "http://fineuploader.com/downloads.html"
+      "url": "http://fineuploader.com/licensing.html"
     }
   ],
   "bugs": "https://github.com/Widen/fine-uploader/issues",
