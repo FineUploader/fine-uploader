@@ -1,4 +1,4 @@
-# Fine Uploader 3.6 (Released May 29, 2013) #
+# Fine Uploader 3.6.1 (IN PROGRESS) #
 
 ###[Download the 3.6 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 

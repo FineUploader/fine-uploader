@@ -154,7 +154,7 @@ qq.log = function(message, level) {
 
 qq.isObject = function(variable) {
     "use strict";
-    return variable !== null && variable && typeof(variable) === "object" && variable.constructor === Object;
+    return Object.prototype.toString.call(variable) === '[object Object]';
 };
 
 qq.isFunction = function(variable) {
@@ -180,18 +180,25 @@ qq.trimStr = function(string) {
     return string.replace(/^\s+|\s+$/g,'');
 };
 
+qq.isFile = function(maybeFile) {
+    "use strict";
+
+    return window.File && Object.prototype.toString.call(maybeFile) === '[object File]'
+};
+
+qq.isFileList = function(maybeFileList) {
+    return window.FileList && Object.prototype.toString.call(maybeFileList) === '[object FileList]'
+}
+
 qq.isFileOrInput = function(maybeFileOrInput) {
     "use strict";
-    if (window.File && maybeFileOrInput instanceof File) {
-        return true;
-    }
 
-    return qq.isInput(maybeFileOrInput);
+    return qq.isFile(maybeFileOrInput) || qq.isInput(maybeFileOrInput);
 };
 
 qq.isInput = function(maybeInput) {
     if (window.HTMLInputElement) {
-        if (maybeInput instanceof HTMLInputElement) {
+        if (Object.prototype.toString.call(maybeInput) === '[object HTMLInputElement]') {
             if (maybeInput.type && maybeInput.type.toLowerCase() === 'file') {
                 return true;
             }
