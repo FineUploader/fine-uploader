@@ -119,7 +119,7 @@ docs:
 test-all: wipe build test
 
 ## Quicker test; useful during development
-ci-test: start-server
+ci-test:
 ifeq ($(TRAVIS_BRANCH), master)
 	@echo "\nWoah, no running tests on master!\n"
 	$(shell false)
