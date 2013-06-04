@@ -16,6 +16,7 @@ selenium.log*
 
 pid.txt
 fine-uploader/
+test/bin/runner.js
 test/upload/*
 test/coverage/*
 test/vendor/*

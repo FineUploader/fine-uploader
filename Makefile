@@ -59,7 +59,7 @@ all: clean-node clean-vendor build test docs
 #
 # Build
 #
-build: clean modules fineuploader
+build: modules clean fineuploader
 	@echo "${HR}"
 	@echo "${DATE}\n"
 	@echo "${CHECK} Built!"
@@ -84,13 +84,13 @@ clean-build:
 	rm -rf ${BUILD}
 	mkdir -p ${BUILD}{css,js,img}
 
-clean-docs: $(DOCS)
+clean-docs: 
 	rm -rf ${DOCS}docco.css
 	rm -rf ${DOCS}fine-uploader.html
 	rm -rf ${DOCS}public
 	mkdir -p ${DOCS}
 
-clean-node: $(NODE_MODULES)
+clean-node: 
 	rm -rf ${NODE_MODULES}
 	mkdir -p ${NODE_MODULES}
 
@@ -101,7 +101,7 @@ clean-vendor:
 #
 # Docs
 #
-docs: $(DOCS)
+docs: 
 	mkdir -p ${DOCS}
 	@echo "\n${HR}"
 	@echo "Building docs ..."
@@ -143,10 +143,10 @@ watch: clean-build build restart-server
 #
 
 ## Node Modules
-node_modules: package.json
+node-modules: package.json
 	npm update
 
-vendor_modules: node_modules 
+vendor-modules:
 	mkdir -p ${TEST_DIR}vendor
 	curl --progress-bar http://code.jquery.com/jquery-1.10.0.min.js >> ${TEST_DIR}vendor/jquery-1.10.0.min.js
 	curl --progress-bar http://code.jquery.com/qunit/qunit-1.11.0.js >> ${TEST_DIR}vendor/qunit.js
@@ -157,10 +157,10 @@ vendor_modules: node_modules
 	curl --progress-bar http://underscorejs.org/underscore-min.js >> ${TEST_DIR}vendor/underscore.min.js
 	#curl http://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar >> ${TEST_DIR}vendor/selenium-server-standalone.jar
 
-modules: vendor_modules
+modules: vendor-modules node-modules
 
 ## Concatenation
-concat-js: ${SRCJS} ${JQ_SRCJS} ${SRCJS_DIR} ${SRC}
+concat-js:
 	@echo "Combining js ..."
 	mkdir -p ${BUILD}{js,css,img}
 	@cat ${SRCJS} > ${BUILD}js/fine-uploader.js
