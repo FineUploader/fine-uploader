@@ -102,7 +102,7 @@ clean-vendor:
 # Docs
 #
 docs: 
-	mkdir -p ${DOCS}
+	@mkdir -p ${DOCS}
 	@echo "\n${HR}"
 	@echo "Building docs ..."
 	#${NODE_MODULES}docco/bin/docco -o ${DOCS} ${BUILD}js/fine-uploader.js
@@ -143,11 +143,11 @@ watch: clean-build build restart-server
 #
 
 ## Node Modules
-node-modules: package.json
+node_modules: package.json
 	npm update
 
-vendor-modules:
-	mkdir -p ${TEST_DIR}vendor
+vendor_modules:
+	@mkdir -p ${TEST_DIR}vendor
 	curl --progress-bar http://code.jquery.com/jquery-1.10.0.min.js >> ${TEST_DIR}vendor/jquery-1.10.0.min.js
 	curl --progress-bar http://code.jquery.com/qunit/qunit-1.11.0.js >> ${TEST_DIR}vendor/qunit.js
 	curl --progress-bar http://code.jquery.com/qunit/qunit-1.11.0.css >> ${TEST_DIR}vendor/qunit.css
@@ -157,7 +157,7 @@ vendor-modules:
 	curl --progress-bar http://underscorejs.org/underscore-min.js >> ${TEST_DIR}vendor/underscore.min.js
 	#curl http://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar >> ${TEST_DIR}vendor/selenium-server-standalone.jar
 
-modules: vendor-modules node-modules
+modules: vendor_modules node_modules
 
 ## Concatenation
 concat-js:
