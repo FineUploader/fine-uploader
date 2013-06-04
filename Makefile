@@ -111,7 +111,7 @@ docs: $(DOCS)
 test-all: wipe build test
 
 ## Quicker test; useful during development
-ci-test: build
+ci-test: build restart-server
 ifeq ($(ON_MASTER), true)
 	@echo "\nWoah, no running tests on master!\n"
 	$(shell false)
@@ -128,7 +128,7 @@ test: build restart-server
 endif
 
 ## Test whenever changes are made.
-watch: build restart-server
+watch: clean-build build restart-server
 	@echo "Watching tests ..."
 	watchr ${TEST_DIR}bin/watchr
 	#${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
@@ -145,25 +145,25 @@ node_modules: package.json
 vendor_modules: node_modules 
 	mkdir -p ${TEST_DIR}vendor
 	curl --progress-bar http://code.jquery.com/jquery-1.10.0.min.js >> ${TEST_DIR}vendor/jquery-1.10.0.min.js
-	curl --progress-bar http://code.jquery.com/jquery-2.0.1.min.js >> ${TEST_DIR}vendor/jquery-2.0.1.min.js
 	curl --progress-bar http://code.jquery.com/qunit/qunit-1.11.0.js >> ${TEST_DIR}vendor/qunit.js
 	curl --progress-bar http://code.jquery.com/qunit/qunit-1.11.0.css >> ${TEST_DIR}vendor/qunit.css
 	curl --progress-bar https://raw.github.com/allmarkedup/purl/master/purl.js >> ${TEST_DIR}vendor/purl.js
 	curl --progress-bar https://raw.github.com/douglascrockford/JSON-js/master/json2.js >> ${TEST_DIR}vendor/json2.js
 	curl --progress-bar https://raw.github.com/jquery/qunit/master/addons/phantomjs/runner.js >> ${TEST_DIR}bin/runner.js
+	curl --progress-bar http://underscorejs.org/underscore-min.js >> ${TEST_DIR}vendor/underscore.min.js
 	#curl http://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar >> ${TEST_DIR}vendor/selenium-server-standalone.jar
 
 modules: vendor_modules
 
 ## Concatenation
-concat-js: 
+concat-js: ${SRCJS} ${JQ_SRCJS} ${SRCJS_DIR} ${SRC}
 	@echo "Combining js ..."
 	mkdir -p ${BUILD}{js,css,img}
-	@cat ${SRCJS} | tee ${BUILD}js/fine-uploader.js
-	@#cat ${SRCJS} | tee ${BUILD}js/fine-uploader-${VERSION}.js
-	@cat ${JQ_SRCJS} | tee ${BUILD}js/jquery-fine-uploader.js
-	@#cat ${JQ_SRCJS} | tee ${BUILD}js/jquery-fine-uploader-${VERSION}.js
-	@cat ${SRCJS_DIR}iframe.xss.response.js | tee ${BUILD}js/iframe.xss.response.js
+	@cat ${SRCJS} > ${BUILD}js/fine-uploader.js
+	@cat ${SRCJS} > ${BUILD}js/fine-uploader-${VERSION}.js
+	@cat ${JQ_SRCJS} > ${BUILD}js/jquery-fine-uploader.js
+	@cat ${JQ_SRCJS} > ${BUILD}js/jquery-fine-uploader-${VERSION}.js
+	@cat ${SRCJS_DIR}iframe.xss.response.js > ${BUILD}js/iframe.xss.response.frame.js
 	cp README.md ${BUILD}README
 	cp LICENSE ${BUILD}LICENSE
 	@echo "${SRC} JS combined."
@@ -243,8 +243,13 @@ define release
 		j.version = \"$$NEXT_VERSION\";\
 		var s = JSON.stringify(j, null, 2);\
 		require('fs').writeFileSync('./package.json', s);" 
-		git commit -m "release $$NEXT_VERSION" -- package.json && \
-		git tag "$$NEXT_VERSION" -m "release $$NEXT_VERSION"
+	node -e "\
+		var j = require('./fineuploader.jquery.json');\
+		j.version = \"$$NEXT_VERSION\";\
+		var s = JSON.stringify(j, null, 2);\
+		require('fs').writeFileSync('./fineuploader.jquery.json', s);"
+	git commit -m "release $$NEXT_VERSION" -- package.json && \
+	git tag "$$NEXT_VERSION" -m "release $$NEXT_VERSION"
 endef
 
 release-patch: build test
