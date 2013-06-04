@@ -96,6 +96,7 @@ qq.FineUploaderBasic = function(o) {
         },
         deleteFile : {
             enabled: false,
+            method: "DELETE",
             endpoint: '/server/upload',
             customHeaders: {},
             params: {}
@@ -478,7 +479,9 @@ qq.FineUploaderBasic.prototype = {
         var self = this;
 
         return new qq.DeleteFileAjaxRequestor({
+            method: this._options.deleteFile.method,
             maxConnections: this._options.maxConnections,
+            uuidParamName: this._options.request.uuidName,
             customHeaders: this._options.deleteFile.customHeaders,
             paramsStore: this._deleteFileParamsStore,
             endpointStore: this._deleteFileEndpointStore,
