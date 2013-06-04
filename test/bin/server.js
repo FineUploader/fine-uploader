@@ -37,7 +37,7 @@ app.configure(function () {
     app.use('/tests/specs', express.static(settings.paths.specs));
     app.use('/fine-uploader', express.static(settings.paths.source));
 
-})
+});
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log("## node.js Server Listening on Port: " + app.get('port'));
@@ -61,6 +61,11 @@ app.get('/tests', function (req, res) {
     res.send(fs.readFileSync(baseDir + '/index.html'));
 });
 
+app.get('/integrations', function (req, res) {
+    res.set('Content-type', 'text/html');
+    res.send(fs.readFileSync(settings.paths.specs + "/integration/index.html"));
+})
+
 // CORS
 // app.use(function (req, res) {
 //     res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -78,7 +83,7 @@ app.get('/tests', function (req, res) {
 
 app.post("/uploads", function (req, res, next) {
 
-    var savePath = settings.uploadPath;
+    var savePath = settings.paths.uploads;
     var filename, uuid, totalFileSize;
 
     //var isiFrame = req.get('X-Requested-With') == null || !req.get('X-Requested-With') === ('XMLHttpRequest');
@@ -96,14 +101,15 @@ app.post("/uploads", function (req, res, next) {
 
     if (req.files.qqfile) {
             var exists = fs.existsSync(req.files.qqfile.path);
-            fs.rename(req.files.qqfile.path, settings.uploadPath + uuid, function (err) { 
+            fs.rename(req.files.qqfile.path, settings.paths.uploads + "/" + uuid, function (err) { 
                 if (!exists) {
                     console.log(">> Error!: " + error);
                     res.send(JSON.stringify({ success: false, error: err }), { 'Content-type': 'application/json' }, 200);
                 }
                 else {
-                    console.log('File Uploaded! ' + settings.uploadPath + uuid);
-                    res.send(JSON.stringify({ success: true, newUuid: uuid }), { 'Content-type': 'application/json' }, 200);
+                    console.log('File Uploaded! ' + settings.paths.uploads + "/" + uuid);
+                    res.send(JSON.stringify({ success: true }), { 'Content-type': 'application/json' }, 200);
+                    //res.send(JSON.stringify({ success: true, newUuid: uuid }), { 'Content-type': 'application/json' }, 200);
                 }
         });
     } else {
@@ -113,7 +119,7 @@ app.post("/uploads", function (req, res, next) {
 });
 
 app.get('/uploads/:uuid', function (req, res) {
-    var filename = settings.uploadPath + req.params.uuid;
+    var filename = settings.paths.uploads + "/" + req.params.uuid;
     fs.readFile(filename, function (err, data) {
         if (err != null) {
             console.log(">> Error!: " + err);
@@ -126,7 +132,7 @@ app.get('/uploads/:uuid', function (req, res) {
 });
 
 app.delete('/uploads/:uuid', function (req, res) {
-    var filename = settings.uploadPath + req.params.uuid;
+    var filename = settings.paths.uploads + "/" + req.params.uuid;
 
     fs.unlink(filename, function (err) {
         if (err != null) {
