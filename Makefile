@@ -10,7 +10,7 @@
 
 #CURRENT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 #ON_MASTER=$(shell if [[ "master" == $$CURRENT_BRANCH ]]; then echo "true"; else echo "false"; fi)
-VERSION=$(shell cat ./client/js/version.js | sed 's/[^\"]*\"\([^\"]*\)\"[^\"]*/\1/g')
+VERSION=`node -pe "require('./package.json').version"`
 CWD=$(shell pwd)
 DATE=$(shell date +%I:%M%p)
 CHECK=\033[32m✔\033[39m
