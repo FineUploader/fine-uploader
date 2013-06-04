@@ -82,7 +82,9 @@ wipe: clean clean-node clean-vendor
 
 clean-build:
 	rm -rf ${BUILD}
-	mkdir -p ${BUILD}{css,js,img}
+	mkdir -p ${BUILD}css
+	mkdir -p ${BUILD}js
+	mkdir -p ${BUILD}img
 
 clean-docs: 
 	rm -rf ${DOCS}docco.css
@@ -162,7 +164,9 @@ modules: vendor_modules node_modules
 ## Concatenation
 concat-js:
 	@echo "Combining js ..."
-	mkdir -p ${BUILD}{js,css,img}
+	mkdir -p ${BUILD}css
+	mkdir -p ${BUILD}js
+	mkdir -p ${BUILD}img
 	@cat ${SRCJS} > ${BUILD}js/fine-uploader.js
 	@cat ${SRCJS} > ${BUILD}js/fine-uploader-${VERSION}.js
 	@cat ${JQ_SRCJS} > ${BUILD}js/jquery-fine-uploader.js
