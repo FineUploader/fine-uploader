@@ -9,7 +9,7 @@ before_install:
 before_script:
     - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
-    - make
+    - make build
 
 script:
     - make ci-test

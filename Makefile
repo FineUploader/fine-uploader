@@ -276,11 +276,13 @@ publish:
 # Instructions
 #
 
-#.PHONY: all release modules wipe build minify
-#.PHONY: clean wipe clean-build clean-node
-#.PHONY: build js css img fineuploader
-#.PHONY: minify minify-js minify-css
-#.PHONY: test test-all test-watch
-#.PHONY: docs lint
-#.PHONY: start-basic-server stop-basic-server restart-basic-server
+.PHONY: all release-patch 
+.PHONY: release-patch release-minor release-major publish modules wipe build minify
+.PHONY: node_modules vendor_modules modules
+.PHONY: test ci-test test-all test-watch
+.PHONY: clean wipe clean-build clean-node
+.PHONY: build js css img fineuploader
+.PHONY: minify minify-js minify-css
+.PHONY: docs lint
+.PHONY: start-basic-server stop-basic-server restart-basic-server
 #.PHONY: start-selenium stop-selenium restart-selenium
