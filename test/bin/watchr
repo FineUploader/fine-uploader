@@ -1,0 +1,1 @@
+watch('(client/js/.*\.js|test/specs/.*/.*\.js)') { system 'make test' }
