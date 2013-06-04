@@ -93,6 +93,23 @@ $(function () {
              equal(qq.trimStr(''), '');
          });
 
+    module('File API Support')
+        test('can detect and identify a file if possible', function () {
+            try {
+                ok(qq.isFile(new File()));
+            } catch (ex) {
+                ok(!qq.supportedFeatures.supportsUploader);    
+            }
+        });
+
+        test("can detect and identify an input of type file", function () {
+            var input;
+            $fixture.append("<input id='foo' type='file'></input>");
+            input = $fixture.find("#foo")[0]
+            ok(qq.isInput(input));
+            ok(qq.isFileOrInput(input));
+        });
+
     // extend
     module('extend')
     
@@ -461,33 +478,58 @@ $(function () {
             deepEqual(qq.parseJson(json), parsedJson); 
         });
 
+
+    module("isFile")
+        //testSkip("should work for a browser supporting the File API", function () {
+        //    var blob, file, reader;
+        //    try {
+        //        blob = new Blob([1, 2, 3, 4, 5, 6, 7, 8], { type: 'application/octet-binary' });
+        //        var reader = new FileReader();
+        //        file = reader.readAsBinaryString(blob);
+        //        console.log(file);
+        //        ok(qq.isFile(file));
+        //    } catch (ex) {
+        //       ok(qq.supportedFeatures.supportsAjaxFileUploading);  
+        //    }
+        //});
+        
+        //testSkip('should return true when comparing a File object created in another window', function () {
+        //    var frame1, frame2, file1, file2;
+        //    $fixture.append("<iframe id='frame1'></iframe>");
+        //    $fixture.append("<iframe id='frame2'></iframe>");
+
+        //    frame1 = $fixture.find("#frame1")[0];
+        //    frame2 = $fixture.find("#frame2")[0];
+
+        //    file1 = new frame1.contentWindow.File;
+        //    file2 = new frame2.contentWindow.File;
+        //    console.log(file1);
+
+        //    ok(qq.isFile(file1));
+        //    ok(qq.isFile(file2));
+        //});
+
     // isFileOrInput
     // @TODO: This is going to need some sort of DOM manipulation to work.
     module('isFileOrInput')
-
-        test('should return true when comparing a File object created in another window', function () {
-            $fixture.append("<iframe id='window1'></iframe>");
-            $fixture.append("<iframe id='window2'></iframe>");
-
-            var window1 = $fixture.find("#window1")[0];
-            var window2 = $fixture.find("#window2")[0];
-
-            var file1 = window1.contentWindow.File;
-            ok(qq.isFileOrInput(file1));
-        });
-
         test('should return false on a regular input element', function () {
-            var $input = $fixture.append("<input id='bar'></input>");
+            var $input;
+            $fixture.append("<input id='bar'></input>");
+            $input = $fixture.find("#bar");
             ok(!qq.isFileOrInput($input[0]), "must be a file input");
         });
     
         test('should return true for a file-input field', function () {
-            var $input = $fixture.append("<input id='bar2' type='file'></input>");
+            var $input;
+            $fixture.append("<input id='bar2' type='file'></input>");
+            $input = $fixture.find("#bar2");
             ok(qq.isFileOrInput($input[0]), "this is a file input");
         });
     
         test('should return false on a div element', function () {
-            var $input = $fixture.append("<div id='foo'></div>");
+            var $input;
+            $fixture.append("<div id='foo'></div>");
+            $input = $fixture.find("#foo");
             ok(!qq.isFileOrInput($input[0]), "div is not an input");
         });
     
@@ -512,11 +554,11 @@ $(function () {
     module('isBlob')
         
         test('should identify BLOBs', function () {
-            if (window.Blob) {
-                var b = new window.Blob();
-                ok(qq.isBlob(b));
-            } else {
-                ok.isUndefined(windw.Blob); 
-            } 
+            try { 
+                var blob = new Blob([1, 2, 3, 4, 5, 6, 7, 8], { type: 'application/octet-binary' });
+                ok(qq.isBlob(blob));
+            } catch (ex) {
+                ok(true);                 
+            }
         });
 });

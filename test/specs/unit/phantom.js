@@ -11,6 +11,16 @@ QUnit.moduleDone = function (opts) {
   }
 }
 
+// not exactly working...
+QUnit.testSkip = function( testName, callback ) {
+    QUnit.test(testName + ' (SKIPPED)', function() {
+        var li = document.getElementById(QUnit.config.current.id);
+        QUnit.done(function() {
+            li.style.background = '#FFFF99';
+        });
+    });
+};
+
 QUnit.done = function (opts) {
   console.log("\n================================================")
   console.log("Tests completed in " + opts.runtime + " milliseconds")

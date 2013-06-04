@@ -1,5 +1,5 @@
 $(function () {
-    module('UploadButton')
+    module('button')
 
         test('should construct, getInput, and reset', function () {
             var button, input;

@@ -1,5 +1,5 @@
 $(function () {
-    module("upload data module");
+    module("Upload Data");
 
         function createUploadData(onStatusChange) {
             return new qq.UploadData({
