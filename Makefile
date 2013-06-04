@@ -82,17 +82,21 @@ wipe: clean clean-node clean-vendor
 
 clean-build:
 	rm -rf ${BUILD}
+	mkdir -p ${BUILD}{css,js,img}
 
 clean-docs: $(DOCS)
 	rm -rf ${DOCS}docco.css
 	rm -rf ${DOCS}fine-uploader.html
 	rm -rf ${DOCS}public
+	mkdir -p ${DOCS}
 
 clean-node: $(NODE_MODULES)
 	rm -rf ${NODE_MODULES}
+	mkdir -p ${NODE_MODULES}
 
-clean-vendor: $(TEST_DIR)vendor/
+clean-vendor: 
 	rm -rf ${TEST_DIR}vendor/
+	mkdir -p ${TEST_DIR}vendor/
 
 #
 # Docs
