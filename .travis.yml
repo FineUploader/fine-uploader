@@ -3,20 +3,12 @@ language: node_js
 node_js:
     - "0.10"
 
-branches:
-    only:
-        - "feature/810-add-automation-to-testing-process-v2"
-
 before_install:
     - sudo apt-get update -qq
-    #- sudo apt-get install -qq dbus-x11
 
 before_script:
     - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
-    #- export $(dbus-launch)
-    - sleep 5
-    - make build
 
 script:
-    - make test
+    - make ci-test
