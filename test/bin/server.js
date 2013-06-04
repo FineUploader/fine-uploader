@@ -19,8 +19,6 @@ var settings = {
     }
 };
 
-console.log(settings);
-
 // Options and whatnot
 app.configure(function () {
     app.use(express.bodyParser({ uploadDir: settings.paths.uploads }));
@@ -41,13 +39,13 @@ app.configure(function () {
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log("## node.js Server Listening on Port: " + app.get('port'));
-    console.log("\n> TESTS");
-    console.log("http://localhost:3000/tests");
-    console.log(" unit: http://localhost:3000/tests/unit");
-    console.log(" integration: http://localhost:3000/tests/integration");
-    console.log("\n> UPLOADS");
-    console.log("POST     -> http://localhost:3000/uploads");
-    console.log("DELETE   -> http://localhost:3000/uploads/<uuid>");
+    //console.log("\n> TESTS");
+    //console.log("http://localhost:3000/tests");
+    //console.log(" unit: http://localhost:3000/tests/unit");
+    //console.log(" integration: http://localhost:3000/tests/integration");
+    //console.log("\n> UPLOADS");
+    //console.log("POST     -> http://localhost:3000/uploads");
+    //console.log("DELETE   -> http://localhost:3000/uploads/<uuid>");
     fs.writeFileSync(__dirname + '/pid.txt', process.pid, 'utf-8')
 });
 

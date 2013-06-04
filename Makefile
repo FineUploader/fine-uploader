@@ -72,8 +72,8 @@ js: concat-js minify-js
 css: minify-css
 
 img:
-	cp ${SRC_DIR}loading.gif ${BUILD}img/loading.gif
-	cp ${SRC_DIR}processing.gif ${BUILD}img/processing.gif 
+	cp ${SRC_DIR}loading.gif ${BUILD}loading.gif
+	cp ${SRC_DIR}processing.gif ${BUILD}processing.gif 
 	#cp ${SRC_DIR}{loading.gif,processing.gif} ${BUILD}img 
 
 clean: clean-build clean-docs 
@@ -84,7 +84,6 @@ wipe: clean clean-node clean-vendor
 
 clean-build:
 	rm -rf ${BUILD}
-	mkdir -p ${BUILD}css
 	mkdir -p ${BUILD}js
 	mkdir -p ${BUILD}img
 
@@ -184,16 +183,18 @@ minify: minify-js minify-css
 minify-js:
 	@echo "Minifying js ..."
 	${BIN}uglifyjs ./fine-uploader/js/fine-uploader.js -o ./fine-uploader/js/fine-uploader.min.js
+	${BIN}uglifyjs ./fine-uploader/js/fine-uploader.js -o ./fine-uploader/js/fine-uploader-${VERSION}.min.js
 	@#${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/fine-uploader-${VERSION}.js -o ./fine-uploader/js/fine-uploader-${VERSION}.min.js
 	${BIN}uglifyjs ./fine-uploader/js/jquery-fine-uploader.js -o ./fine-uploader/js/jquery-fine-uploader.min.js
+	${BIN}uglifyjs ./fine-uploader/js/fine-uploader.js -o ./fine-uploader/js/jquery-fine-uploader-${VERSION}.min.js
 	@#${NODE_MODULES}uglify-js/bin/uglifyjs ./fine-uploader/js/jquery-fine-uploader-${VERSION}.js -o ./fine-uploader/js/jquery-fine-uploader-${VERSION}.min.js
 	@echo "${CHECK} JS minified.\n"
 
 minify-css:
 	@echo "Minifying css ..."
-	cp ./client/fineuploader.css ${BUILD}css/fine-uploader.css
+	cp ./client/fineuploader.css ${BUILD}fine-uploader.css
 	@#cp ./client/fineuploader.css ${BUILD}css/fine-uploader-${VERSION}.css
-	${BIN}cleancss -o ${BUILD}css/fine-uploader.min.css ${BUILD}css/fine-uploader.css
+	${BIN}cleancss -o ${BUILD}fine-uploader.min.css ${BUILD}fine-uploader.css
 	@#${NODE_MODULES}clean-css/bin/cleancss -o ${BUILD}css/fine-uploader-${VERSION}.min.css ${BUILD}css/fine-uploader-${VERSION}.css
 	@echo "${CHECK} CSS minified.\n"
 
