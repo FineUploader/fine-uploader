@@ -120,19 +120,18 @@ else
 	${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
 	@echo "${CHECK} Tests complete!\n"
 
-test: build
+test: build restart-server
 	@echo "\n${HR}"
 	@echo "Running tests ..."
-	node ./test/bin/server.js &
 	${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
 	@echo "${CHECK} Tests complete!\n"
 endif
 
 ## Test whenever changes are made.
-test-watch: build
+watch: build restart-server
 	@echo "Watching tests ..."
-	node ./test/bin/server.js &
-	${BIN}mocha-phantomjs -p ${BIN}phantomjs "http://localhost:3000/tests/"
+	watchr ${TEST_DIR}bin/watchr
+	#${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
 	@echo "${CHECK} Tests complete!\n"
 
 #
@@ -160,11 +159,11 @@ modules: vendor_modules
 concat-js: 
 	@echo "Combining js ..."
 	mkdir -p ${BUILD}{js,css,img}
-	cat ${SRCJS} | tee ${BUILD}js/fine-uploader.js
+	@cat ${SRCJS} | tee ${BUILD}js/fine-uploader.js
 	@#cat ${SRCJS} | tee ${BUILD}js/fine-uploader-${VERSION}.js
-	cat ${JQ_SRCJS} | tee ${BUILD}js/jquery-fine-uploader.js
+	@cat ${JQ_SRCJS} | tee ${BUILD}js/jquery-fine-uploader.js
 	@#cat ${JQ_SRCJS} | tee ${BUILD}js/jquery-fine-uploader-${VERSION}.js
-	cat ${SRCJS_DIR}js/iframe.xss.response.js | tee ${BUILD}js/iframe.xss.response.js
+	@cat ${SRCJS_DIR}iframe.xss.response.js | tee ${BUILD}js/iframe.xss.response.js
 	cp README.md ${BUILD}README
 	cp LICENSE ${BUILD}LICENSE
 	@echo "${SRC} JS combined."
@@ -217,7 +216,6 @@ restart-selenium: stop-selenium start-selenium
 start-server:
 	@echo "Starting basic HTTP server ..."
 	node ${TEST_DIR}bin/server.js &
-	sleep 5
 	@echo "Test HTTP server started."
 
 stop-server:
@@ -225,7 +223,11 @@ stop-server:
 	cat ${TEST_DIR}bin/pid.txt | xargs kill
 	@echo "Test HTTP server stopped."
 
-restart-server: stop-server start-server
+restart-server: 
+	@echo "Restarting basic HTTP server ..."
+	$(shell if [[ "" != `ps aux | grep $$(cat ${TEST_DIR}bin/pid.txt)` ]]; then cat ${TEST_DIR}bin/pid.txt | xargs kill; fi)
+	node ${TEST_DIR}bin/server.js &
+	@echo "Test HTTP server restarted."
 
 #
 # Releasing, Publishing, and Deploying
