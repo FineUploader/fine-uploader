@@ -7,6 +7,8 @@
 
 ---
 
+[**Download**](http://fineuploader.com/downloads.html) | [**Changelog**](http://blog.fineuploader.com/2013/05/fine-uploader-36.html) | [**Blog**](http://blog.fineuploader.com/)
+
 Fine Uploader attempts to achieve a user-friendly file-uploading experience over the web.
 It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
 
@@ -18,7 +20,6 @@ It does not use Flash, jQuery, or any other external libraries.  There is an opt
 integrate Fine Uploader into your project, but it is NOT required.  The same features are available with or without the
 jQuery plug-in.
 
-[**Download**](http://fineuploader.com/downloads.html) | [**Changelog**](http://blog.fineuploader.com/2013/05/fine-uploader-36.html) | [**Blog**](http://blog.fineuploader.com/)
 
 ## Features ##
 * Multiple file select, progress-bar in FF, Chrome, and Safari
