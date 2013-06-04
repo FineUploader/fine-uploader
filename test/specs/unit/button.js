@@ -1,18 +1,19 @@
-pavlov.specify('button.js', function () {
+$(function () {
+    module('UploadButton')
 
-    describe('UploadButton', function () {
-        
-        it('should construct, getInput, and reset', function () {
+        test('should construct, getInput, and reset', function () {
+            var button, input;
+            var $fixture = $("#qunit-fixture");
             $fixture.append("<div id='foo'></div>");
             
-            var button = new qq.UploadButton({
-                element: $("#foo")[0],
+            button = new qq.UploadButton({
+                element: $fixture.find("#foo")[0],
                 multiple: true,
                 acceptFiles: "image/*,video/*,.test",
                 name: "testFile"
             });
 
-            var input = button.getInput();
+            input = button.getInput();
 
             notEqual(input, null);
             notEqual($(input).attr('multiple'), null);
@@ -20,8 +21,6 @@ pavlov.specify('button.js', function () {
             equal($(input).attr('name'), "testFile");
 
             button.reset();
-            ok(!$(input).is(button.getInput()));
+            notDeepEqual($(input), button.getInput());
         });
-    });
-
-})
+});

@@ -8,32 +8,27 @@
     </head>
 
     <body>
+
         <div id="qunit"></div>
         <div id="qunit-fixture"></div>
 
-        <!-- mocha 
-        <link href="vendor/mocha.css" rel="stylesheet" type="text/css" />
-        <script src="vendor/mocha.js" type="text/javascript"></script>
-        -->
-        <link href="vendor/qunit.css" rel="stylesheet" type="text/css" />
+        <link href="vendor/qunit.css" rel="stylesheet" type="text/css" media="screen" />
         <script src="vendor/qunit.js" type="text/javascript"></script>
 
         <!-- dependencies -->
         <script src="vendor/purl.js" type="text/javascript"></script>
         <script src="vendor/json2.js" type="text/javascript"></script>
         <script src="vendor/jquery-1.10.0.min.js" type="text/javascript"></script>
-        <script src="vendor/pavlov.js" type="text/javascript"></script>
+
+        <!-- phantomjs logging script -->
+        <script src="specs/unit/phantom.js"></script>
 
         <!-- Fine Uploader -->
         <link href="../fine-uploader/css/fine-uploader.css" />
         <script src="../fine-uploader/js/fine-uploader.js" type="text/javascript"></script>
 
-        <!-- set up the test suite -->
+        <!-- any setup code... -->
         <script>
-            // cache this selector
-            $fixture = $("#qunit-fixture");
-
-            QUnit.config.altertitle = false;
         </script>
 
         <!-- load the test scripts -->
@@ -41,10 +36,11 @@
         <script src="specs/unit/promise.js"></script>
         <script src="specs/unit/button.js"></script>
         <script src="specs/unit/upload-data.js"></script>
+        <script src="specs/unit/features.js"></script>
 
         <!-- run the tests -->
         <script>
-        console.log("Tests ran!");
+            console.log("Tests ran!");
         </script>
 
     </body>

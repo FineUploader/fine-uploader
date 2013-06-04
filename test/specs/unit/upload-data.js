@@ -1,91 +1,115 @@
-pavlov.specify('upload-data.js', function () {
+$(function () {
+    module("upload data module");
 
-    function createUploadData(onStatusChange) {
-        return new qq.UploadData({
-            getUuid: function(id) {
-                return id + "_uuid";
-            },
+        function createUploadData(onStatusChange) {
+            return new qq.UploadData({
+                getUuid: function(id) {
+                    return id + "_uuid";
+                },
 
-            getName: function(id) {
-                return id + "_name";
-            },
+                getName: function(id) {
+                    return id + "_name";
+                },
 
-            getSize: function(id) {
-                return 1980;
-            },
+                getSize: function(id) {
+                    return 1980;
+                },
 
-            onStatusChange: function(id, oldStatus, newStatus) {
-                if (onStatusChange !== undefined) {
-                    onStatusChange(id, oldStatus, newStatus);
+                onStatusChange: function(id, oldStatus, newStatus) {
+                    if (onStatusChange !== undefined) {
+                        onStatusChange(id, oldStatus, newStatus);
+                    }
                 }
-            }
-        });
-    }
+            });
+        }
 
-    var id, expectedOldStatus, expectedNewStatus, onStatusChange, uploadData;
+    test("test callbacks", 9, function() {
+        var id = 0,
+            expectedOldStatus = undefined,
+            expectedNewStatus = qq.status.SUBMITTING,
+            onStatusChange = function(relatedId, oldStatus, newStatus) {
+                equal(relatedId, id, "make sure status change is for correct item");
+                equal(oldStatus, expectedOldStatus, "make sure old status is as expected");
+                equal(newStatus, expectedNewStatus, "make sure new status is as expected");
+            },
+            uploadData = createUploadData(onStatusChange);
 
-    it("should make the correct callbacks", function () {
-        id = 0
-        expectedOldStatus = undefined,
-        expectedNewStatus = qq.status.SUBMITTING,
-        onStatusChange = function (relatedId, oldStatus, newStatus) { 
-            assert.equal(relatedId, id);
-            assert.equal(oldStatus, expectedOldStatus);
-            assert.equal(newStatus, expectedNewStatus);
-        },
-        uploadData = createUploadData(onStatusChange);
         uploadData.added(id);
+
+
         expectedOldStatus = expectedNewStatus;
         expectedNewStatus = qq.status.UPLOAD_SUCCESSFUL;
 
-        uploadData.setStatus(id, qq.status.UPLOAD_SUCCESSFUL);
+        uploadData.setStatus(id, qq.status.UPLOAD_SUCCESSFUL)
+
 
         expectedOldStatus = expectedNewStatus;
         expectedNewStatus = qq.status.DELETED;
-        uploadData.setStatus(id, qq.status.DELETED);
+
+        uploadData.setStatus(id, qq.status.DELETED)
     });
 
-    it("should work for overriden uuids", function () {
+    test("test overriden uuid", function() {
         var uploadData = createUploadData();
-        uploadData.added(0);
 
-        assert.equal(uploadData.retrieve({ id: 0 }).uuid, "0_uuid");
+        uploadData.added(0);
+        equal(uploadData.retrieve({id: 0}).uuid, "0_uuid", "checking initial uuid");
 
         uploadData.uuidChanged(0, "foobar");
-        assert.equal(uploadData.retrieve({ id: 0 }).uuid, "foobar");
+        equal(uploadData.retrieve({id: 0}).uuid, "foobar", "checking new uuid");
     });
 
-    it("should properly reset", function () {
+    test("test reset", function() {
         var uploadData = createUploadData();
 
         uploadData.added(0);
         uploadData.reset();
-        assert.equal(uploadData.retrieve().length, 0);
+        equal(uploadData.retrieve().length, 0, "ensuring upload data has been cleared");
     });
 
-    it("should properly retrive by id and ids", function () {
+    test("test retrieve by id and ids", function() {
         var uploadData = createUploadData();
 
         uploadData.added(0);
-        uploadData.added(0);
         var uploadDataItem = uploadData.retrieve({id: 0});
-        assert.equal(uploadDataItem.id, 0);
-        assert.equal(uploadDataItem.uuid, "0_uuid");
-        assert.equal(uploadDataItem.name, "0_name");
-        assert.equal(uploadDataItem.size, 1980);
+        equal(uploadDataItem.id, 0);
+        equal(uploadDataItem.uuid, "0_uuid");
+        equal(uploadDataItem.name, "0_name");
+        equal(uploadDataItem.size, 1980);
 
-        assert.equal(uploadData.retrieve({id: 1}), undefined);
+        equal(uploadData.retrieve({id: 1}), undefined);
 
         uploadData.added(2);
         var uploadDataItems = uploadData.retrieve({id: [0, 2]});
-        assert.equal(uploadDataItems.length, 2);
-        assert.equal(uploadDataItems[0].id, 0);
-        assert.equal(uploadDataItems[1].id, 2);
-        assert.equal(uploadDataItems[0].name, "0_name");
-        assert.equal(uploadDataItems[1].name, "2_name");
+        equal(uploadDataItems.length, 2);
+        equal(uploadDataItems[0].id, 0);
+        equal(uploadDataItems[1].id, 2);
+        equal(uploadDataItems[0].name, "0_name");
+        equal(uploadDataItems[1].name, "2_name");
     });
 
-    it("should retrieve by status and statuses", function() {
+    test("test retrieve by uuid and uuids", function() {
+        var uploadData = createUploadData();
+
+        uploadData.added(0);
+        var uploadDataItem = uploadData.retrieve({uuid: "0_uuid"});
+        equal(uploadDataItem.id, 0);
+        equal(uploadDataItem.uuid, "0_uuid");
+        equal(uploadDataItem.name, "0_name");
+        equal(uploadDataItem.size, 1980);
+
+        equal(uploadData.retrieve({uuid: "foobar"}), undefined);
+
+        uploadData.added(2);
+        var uploadDataItems = uploadData.retrieve({uuid: ["0_uuid", "2_uuid"]});
+        equal(uploadDataItems.length, 2);
+        equal(uploadDataItems[0].id, 0);
+        equal(uploadDataItems[1].id, 2);
+        equal(uploadDataItems[0].name, "0_name");
+        equal(uploadDataItems[1].name, "2_name");
+    });
+
+    test("test retrieve by status and statuses", function() {
         var uploadData = createUploadData();
 
         uploadData.added(0);
@@ -94,34 +118,33 @@ pavlov.specify('upload-data.js', function () {
         uploadData.added(2);
         uploadData.setStatus(2, qq.status.CANCELED)
 
-        assert.equal(uploadDataItems.length, 1);
-        assert.equal(uploadDataItems[0].id, 0);
-        assert.equal(uploadDataItems[0].uuid, "0_uuid");
-        assert.equal(uploadDataItems[0].name, "0_name");
-        assert.equal(uploadDataItems[0].size, 1980);
+        equal(uploadDataItems.length, 1);
+        equal(uploadDataItems[0].id, 0);
+        equal(uploadDataItems[0].uuid, "0_uuid");
+        equal(uploadDataItems[0].name, "0_name");
+        equal(uploadDataItems[0].size, 1980);
 
 
-        assert.equal(uploadData.retrieve({status: "foobar"}).length, 0);
+        equal(uploadData.retrieve({status: "foobar"}).length, 0);
 
 
         uploadDataItems = uploadData.retrieve({status: [qq.status.SUBMITTING, qq.status.CANCELED]});
-        assert.equal(uploadDataItems.length, 2);
-        assert.equal(uploadDataItems[0].id, 0);
-        assert.equal(uploadDataItems[1].id, 2);
-        assert.equal(uploadDataItems[0].name, "0_name");
-        assert.equal(uploadDataItems[1].name, "2_name");
+        equal(uploadDataItems.length, 2);
+        equal(uploadDataItems[0].id, 0);
+        equal(uploadDataItems[1].id, 2);
+        equal(uploadDataItems[0].name, "0_name");
+        equal(uploadDataItems[1].name, "2_name");
     });
-
-    it("should retrieve without filter", function() {
+    test("test retrieve without filter", function() {
         var uploadData = createUploadData();
 
         uploadData.added(0);
         uploadData.added(2);
 
         var uploadDataItems = uploadData.retrieve();
-        assert.equal(uploadDataItems.length, 2);
-        assert.equal(uploadDataItems[0].id, 0);
-        assert.equal(uploadDataItems[1].id, 2);
+        equal(uploadDataItems.length, 2);
+        equal(uploadDataItems[0].id, 0);
+        equal(uploadDataItems[1].id, 2);
     });
-    
 });
+
