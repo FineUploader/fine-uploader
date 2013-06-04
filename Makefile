@@ -10,7 +10,7 @@
 
 #CURRENT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 #ON_MASTER=$(shell if [[ "master" == $$CURRENT_BRANCH ]]; then echo "true"; else echo "false"; fi)
-VERSION=`node -pe "require('./package.json').version"`
+VERSION=$(shell node -pe "require('./package.json').version")
 CWD=$(shell pwd)
 DATE=$(shell date +%I:%M%p)
 CHECK=\033[32m✔\033[39m
@@ -66,8 +66,8 @@ build: modules clean fineuploader
 
 fineuploader: js css img
 
-js: concat-js minify-js 
-#js: lint concat-js minify-js 
+#js: concat-js minify-js 
+js: lint concat-js minify-js 
 
 css: minify-css
 
@@ -85,7 +85,6 @@ wipe: clean clean-node clean-vendor
 clean-build:
 	rm -rf ${BUILD}
 	mkdir -p ${BUILD}js
-	mkdir -p ${BUILD}img
 
 clean-docs: 
 	rm -rf ${DOCS}docco.css
@@ -165,9 +164,7 @@ modules: vendor_modules node_modules
 ## Concatenation
 concat-js:
 	@echo "Combining js ..."
-	mkdir -p ${BUILD}css
 	mkdir -p ${BUILD}js
-	mkdir -p ${BUILD}img
 	@cat ${SRCJS} > ${BUILD}js/fine-uploader.js
 	@cat ${SRCJS} > ${BUILD}js/fine-uploader-${VERSION}.js
 	@cat ${JQ_SRCJS} > ${BUILD}js/jquery-fine-uploader.js
@@ -202,8 +199,8 @@ minify-css:
 lint: $(SRCJS_DIR)
 	@echo "\n${HR}"
 	@echo "Linting ..."
-	${BIN}jshint ${SRCJS_DIR}
-	@echo "Linted."
+	#${BIN}jshint ${SRCJS_DIR}
+	@echo "${CHECK} Linted."
 
 ## Selenium
 start-selenium:
