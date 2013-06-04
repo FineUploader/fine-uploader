@@ -53,13 +53,11 @@
     "docco": "~0.6.2"
   },
   "dependencies": {
-    "chai": "~1.6.0",
     "phantomjs": ">=1.9.0-4",
     "uglify-js": "~2.3.6",
     "clean-css": "~1.0.4",
     "jshint": "~2.1.2",
     "express": "~3.2.5",
-    "semver": "~1.1.4",
-    "mocha-phantomjs": "~2.0.2"
+    "semver": "~1.1.4"
   }
 }

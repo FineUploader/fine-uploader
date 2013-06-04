@@ -23,9 +23,8 @@ DOCS=./docs/
 BUILD=./fine-uploader/
 
 NODE_MODULES=./node_modules/
-BIN = ${NODE_MODULES}.bin/
+BIN=${NODE_MODULES}.bin/
 
-CASPERJS=${TEST_DIR}vendor/casperjs/bin/casperjs
 SELENIUM=${TEST_DIR}vendor/selenium-server-standalone.jar
 
 # core
@@ -117,20 +116,23 @@ ifeq ($(ON_MASTER), true)
 	@echo "\nWoah, no running tests on master!\n"
 	$(shell false)
 else
-	${BIN}mocha-phantomjs -p ${BIN}phantomjs -R dot ${TEST_DIR}index.html
+	node ./test/bin/server.js &
+	${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
 	@echo "${CHECK} Tests complete!\n"
 
 test: build
 	@echo "\n${HR}"
 	@echo "Running tests ..."
-	${BIN}mocha-phantomjs -p ${BIN}phantomjs -R dot ${TEST_DIR}index.html
+	node ./test/bin/server.js &
+	${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
 	@echo "${CHECK} Tests complete!\n"
 endif
 
 ## Test whenever changes are made.
 test-watch: build
 	@echo "Watching tests ..."
-	PHANTOMJS_BIN=${BIN}phantomjs ${BIN}karma start
+	node ./test/bin/server.js &
+	${BIN}mocha-phantomjs -p ${BIN}phantomjs "http://localhost:3000/tests/"
 	@echo "${CHECK} Tests complete!\n"
 
 #
@@ -143,14 +145,13 @@ node_modules: package.json
 
 vendor_modules: node_modules 
 	mkdir -p ${TEST_DIR}vendor
-	cp ${NODE_MODULES}chai/chai.js ${TEST_DIR}vendor/.
 	curl --progress-bar http://code.jquery.com/jquery-1.10.0.min.js >> ${TEST_DIR}vendor/jquery-1.10.0.min.js
 	curl --progress-bar http://code.jquery.com/jquery-2.0.1.min.js >> ${TEST_DIR}vendor/jquery-2.0.1.min.js
 	curl --progress-bar http://code.jquery.com/qunit/qunit-1.11.0.js >> ${TEST_DIR}vendor/qunit.js
 	curl --progress-bar http://code.jquery.com/qunit/qunit-1.11.0.css >> ${TEST_DIR}vendor/qunit.css
 	curl --progress-bar https://raw.github.com/allmarkedup/purl/master/purl.js >> ${TEST_DIR}vendor/purl.js
 	curl --progress-bar https://raw.github.com/douglascrockford/JSON-js/master/json2.js >> ${TEST_DIR}vendor/json2.js
-	curl --progress-bar https://raw.github.com/mmonteleone/pavlov/master/pavlov.js >> ${TEST_DIR}vendor/pavlov.js
+	curl --progress-bar https://raw.github.com/jquery/qunit/master/addons/phantomjs/runner.js >> ${TEST_DIR}bin/runner.js
 	#curl http://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar >> ${TEST_DIR}vendor/selenium-server-standalone.jar
 
 modules: vendor_modules
