@@ -72,7 +72,9 @@ js: concat-js minify-js
 css: minify-css
 
 img:
-	cp ${SRC_DIR}{loading.gif,processing.gif} ${BUILD}img 
+	cp ${SRC_DIR}loading.gif ${BUILD}img/loading.gif
+	cp ${SRC_DIR}processing.gif ${BUILD}img/processing.gif 
+	#cp ${SRC_DIR}{loading.gif,processing.gif} ${BUILD}img 
 
 clean: clean-build clean-docs 
 	@echo "\n${HR}"
