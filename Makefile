@@ -59,7 +59,7 @@ all: clean-node clean-vendor build test docs
 #
 # Build
 #
-build: modules clean fineuploader
+build: clean modules fineuploader
 	@echo "${HR}"
 	@echo "${DATE}\n"
 	@echo "${CHECK} Built!"
