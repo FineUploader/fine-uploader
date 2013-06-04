@@ -565,7 +565,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChange, logCallb
             var id, persistedChunkData,
                 uuid = qq.getUniqueId();
 
-            if (fileOrBlobData instanceof File) {
+            if (qq.isFile(fileOrBlobData)) {
                 id = fileState.push({file: fileOrBlobData}) - 1;
             }
             else if (qq.isBlob(fileOrBlobData.blob)) {

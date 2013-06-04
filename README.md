@@ -1,15 +1,8 @@
-<<<<<<< HEAD:README.md
+# Fine Uploader 3.6.1 (Released June 2, 2013) #
 
-**Current Version:** 3.6 (in progress)
+###[Download the 3.6.1 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
 
-## Download ##
-
-# Fine Uploader 3.6 (Released May 29, 2013) #
-![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png) [![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=feature/810-add-automation-to-testing-process-v2)](https://travis-ci.org/Widen/fine-uploader)
-
-###[Download the 3.6 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
-
-###[3.6 change summary](http://blog.fineuploader.com/2013/05/fine-uploader-36.html)###
+###[3.6.0 & 3.6.1 change summary](http://blog.fineuploader.com/2013/05/fine-uploader-36.html)###
 
 <br/>
 ## Features ##
