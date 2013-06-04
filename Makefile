@@ -8,8 +8,8 @@
 # Tasks:
 
 
-CURRENT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
-ON_MASTER=$(shell if [[ "master" == $$CURRENT_BRANCH ]]; then echo "true"; else echo "false"; fi)
+#CURRENT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
+#ON_MASTER=$(shell if [[ "master" == $$CURRENT_BRANCH ]]; then echo "true"; else echo "false"; fi)
 VERSION=$(shell cat ./client/js/version.js | sed 's/[^\"]*\"\([^\"]*\)\"[^\"]*/\1/g')
 CWD=$(shell pwd)
 DATE=$(shell date +%I:%M%p)
@@ -112,20 +112,20 @@ test-all: wipe build test
 
 ## Quicker test; useful during development
 ci-test: build restart-server
-ifeq ($(ON_MASTER), true)
+ifeq ($(TRAVIS_BRANCH), master)
 	@echo "\nWoah, no running tests on master!\n"
 	$(shell false)
 else
 	node ./test/bin/server.js &
 	${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
 	@echo "${CHECK} Tests complete!\n"
+endif
 
 test: build restart-server
 	@echo "\n${HR}"
 	@echo "Running tests ..."
 	${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
 	@echo "${CHECK} Tests complete!\n"
-endif
 
 ## Test whenever changes are made.
 watch: clean-build build restart-server
