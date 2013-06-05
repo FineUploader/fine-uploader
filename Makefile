@@ -64,14 +64,13 @@ define release
 		var j = require('./package.json');\
 		j.version = \"$$NEXT_VERSION\";\
 		var s = JSON.stringify(j, null, 2);\
-		require('fs').writeFileSync('./package.json', s);" 
-	node -e "\
+		require('fs').writeFileSync('./package.json', s);\
 		var j = require('./fineuploader.jquery.json');\
 		j.version = \"$$NEXT_VERSION\";\
 		var s = JSON.stringify(j, null, 2);\
 		require('fs').writeFileSync('./fineuploader.jquery.json', s);"
-	git commit -m "release $$NEXT_VERSION" -- package.json fineuploader.jquery.json && \
-	git tag "$$NEXT_VERSION" -m "release $$NEXT_VERSION"
+	#git commit -m "release $$NEXT_VERSION" package.json fineuploader.jquery.json && \
+	#git tag "$$NEXT_VERSION" -m "release $$NEXT_VERSION"
 endef
 
 .PHONY: all build dist clean test watch wipe publish
@@ -236,7 +235,6 @@ release-major: build test docs dist
 publish:
 	@echo "Publishing ..."
 	#git push --tags origin HEAD:master
-	#npm publish
 	@echo "${DATE}\n"
 	@echo "Published...									${CHECK} Done\n"
 
