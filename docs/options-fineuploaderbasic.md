@@ -487,7 +487,7 @@ check out the server-side readme.
             <td>DELETE</td>
             <td>You can choose between a POST and a DELETE method for the delete file request sent by Fine Uploader.
             Please see the <a href="http://blog.fineuploader.com/2013/06/delete-files-via-post-and-delete.html">blog post
-            that describes the how the delete file feature requests are constructed</a> based on the value of this option.</td>
+            that describes how the delete file feature requests are constructed</a> based on the value of this option.</td>
         </tr>
         <tr>
             <td>endpoint</td>
