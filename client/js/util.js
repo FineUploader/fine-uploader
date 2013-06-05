@@ -204,7 +204,7 @@ qq.isInput = function(maybeInput) {
             }
         }
     }
-    else if (maybeInput.tagName) {
+    if (maybeInput.tagName) {
         if (maybeInput.tagName.toLowerCase() === 'input') {
             if (maybeInput.type && maybeInput.type.toLowerCase() === 'file') {
                 return true;
