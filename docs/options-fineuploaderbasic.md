@@ -482,6 +482,14 @@ check out the server-side readme.
             this will also render a "delete" link next to each successfully uploaded file or `Blob`.</td>
         </tr>
         <tr>
+            <td>method</td>
+            <td>string</td>
+            <td>DELETE</td>
+            <td>You can choose between a POST and a DELETE method for the delete file request sent by Fine Uploader.
+            Please see the <a href="http://blog.fineuploader.com/2013/06/delete-files-via-post-and-delete.html">blog post
+            that describes the how the delete file feature requests are constructed</a> based on the value of this option.</td>
+        </tr>
+        <tr>
             <td>endpoint</td>
             <td>string</td>
             <td>/server/upload</td>
