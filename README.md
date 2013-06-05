@@ -20,7 +20,6 @@ It does not use Flash, jQuery, or any other external libraries.  There is an opt
 integrate Fine Uploader into your project, but it is NOT required.  The same features are available with or without the
 jQuery plug-in.
 
-
 ## Features ##
 * Multiple file select, progress-bar in FF, Chrome, and Safari
 * Drag-and-drop file select in FF, Chrome, and Safari (OS X)

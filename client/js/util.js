@@ -154,7 +154,7 @@ qq.log = function(message, level) {
 
 qq.isObject = function(variable) {
     "use strict";
-    return Object.prototype.toString.call(variable) === '[object Object]';
+    return variable && !variable.nodeType && Object.prototype.toString.call(variable) === '[object Object]';
 };
 
 qq.isFunction = function(variable) {
