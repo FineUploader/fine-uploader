@@ -118,7 +118,7 @@ dist: build test
 	@cp LICENSE ${JQ_DIST}LICENSE
 	@find ${CORE_DIST} -path '/*.*' -prune -o -type f -print | zip fine-uploader-${VERSION}.zip -@ -j
 	@find ${JQ_DIST} -path '/*.*' -prune -o -type f -print | zip jquery.fine-uploader-${VERSION}.zip -@ -j
-	@echo "Fine Uploader distribution assembled...		${CHECK} Done\n"
+	@echo "Fine Uploader distribution assembled...						${CHECK} Done\n"
 
 ## Clean out the ./build ./dist and ./docs folders
 clean: clean-build clean-dist clean-docs 
@@ -128,7 +128,7 @@ clean: clean-build clean-dist clean-docs
 test: build restart-server
 	@echo "Running tests ..."
 	${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
-	@echo "Headless phantomsjs tests complete...		${CHECK} Done\n"
+	@echo "Headless phantomsjs tests complete...				${CHECK} Done\n"
 
 ## Test whenever changes are made.
 watch: clean-build build restart-server
@@ -136,11 +136,11 @@ watch: clean-build build restart-server
 	watchr ${TEST_DIR}bin/watchr
 
 wipe: clean clean-modules
-	@echo "Everything wiped...							${CHECK} Done\n"
+	@echo "Everything wiped...						${CHECK} Done\n"
 
 fineuploader: js css img
 	@echo "\n${HR}"
-	@echo "Fine Uploader built from latest source...	${CHECK} Done\n"
+	@echo "Fine Uploader built from latest source...			${CHECK} Done\n"
 
 js: lint concat-js minify-js 
 
@@ -164,7 +164,7 @@ concat-js:
 	@cat ${SRCJS} > ${BUILD}fine-uploader.js
 	@cat ${JQ_SRCJS} > ${BUILD}jquery-fine-uploader.js
 	@cat ${SRCJS_DIR}iframe.xss.response.js > ${BUILD}iframe.xss.response.js
-	@echo "JS combined...								${CHECK} Done\n"
+	@echo "JS combined...							${CHECK} Done\n"
 
 ## Minification
 minify: minify-js minify-css
@@ -173,27 +173,27 @@ minify-js:
 	@echo "Minifying js ..."
 	${BIN}uglifyjs ${BUILD}fine-uploader.js -o ${BUILD}fine-uploader.min.js
 	${BIN}uglifyjs ${BUILD}jquery-fine-uploader.js -o ${BUILD}jquery-fine-uploader.min.js
-	@echo "JS minified...								${CHECK} Done\n"
+	@echo "JS minified...							${CHECK} Done\n"
 
 minify-css:
 	@echo "Minifying css ..."
 	cp ./client/fineuploader.css ${BUILD}fine-uploader.css
 	${BIN}cleancss -o ${BUILD}fine-uploader.min.css ${BUILD}fine-uploader.css
-	@echo "CSS minified...								${CHECK} Done\n"
+	@echo "CSS minified...							${CHECK} Done\n"
 
 clean-dist:
 	rm -rf ${DIST}
-	@echo "Dist cleansed...								${CHECK} Done\n"
+	@echo "Dist cleansed...						${CHECK} Done\n"
 
 clean-build:
 	rm -rf ${BUILD}
-	@echo "Build cleansed...							${CHECK} Done\n"
+	@echo "Build cleansed...						${CHECK} Done\n"
 
 clean-docs: 
 	rm -rf ${DOCS}docco.css
 	rm -rf ${DOCS}fine-uploader.html
 	rm -rf ${DOCS}public
-	@echo "Docs cleansed...								${CHECK} Done\n"
+	@echo "Docs cleansed...						${CHECK} Done\n"
 
 clean-node: 
 	rm -rf ${NODE_MODULES}
@@ -201,7 +201,7 @@ clean-node:
 
 clean-vendor: 
 	rm -rf ${TEST_DIR}vendor/
-	@echo "Vendor modules cleansed...					${CHECK} Done\n"
+	@echo "Vendor modules cleansed...						${CHECK} Done\n"
 
 clean-modules: clean-node clean-vendor
 
@@ -211,7 +211,7 @@ docs:
 	mkdir -p ${DOCS}
 	mkdir -p ${DOCS}
 	#${NODE_MODULES}docco/bin/docco -o ${DOCS} ${BUILD}js/fine-uploader.js
-	@echo "Docs built...								${CHECK} Done\n"
+	@echo "Docs built...						${CHECK} Done\n"
 
 #
 # Releasing, Publishing, and Deploying
@@ -219,24 +219,24 @@ docs:
 ## Updates the x: a.b.x
 release-patch: build test docs dist
 	@$(call release,patch)
-	@echo "Patch released...							${CHECK} Done\n"
+	@echo "Patch released...						${CHECK} Done\n"
 
 ## Updates the x: a.x.c
 release-minor: build test docs dist
 	@$(call release,minor)
-	@echo "Minor released...							${CHECK} Done\n"
+	@echo "Minor released...						${CHECK} Done\n"
 
 ## Updates the x: x.b.c
 release-major: build test docs dist
 	@$(call release,major)
-	@echo "Major released...							${CHECK} Done\n"
+	@echo "Major released...						${CHECK} Done\n"
 
 ## Publish the release online
 publish:
 	@echo "Publishing ..."
 	#git push --tags origin HEAD:master
 	@echo "${DATE}\n"
-	@echo "Published...									${CHECK} Done\n"
+	@echo "Published...						${CHECK} Done\n"
 
 #
 # Utils
@@ -285,7 +285,7 @@ ifeq ($(TRAVIS_BRANCH), master)
 else
 	node ./test/bin/server.js &
 	${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
-	@echo "CI Test Complete...							${CHECK} Done\n"
+	@echo "CI Test Complete...						${CHECK} Done\n"
 endif
 
 #SELENIUM=${TEST_DIR}vendor/selenium-server-standalone.jar
