@@ -60,11 +60,11 @@ $(document).ready(function() {
             $(this).fineUploader('setParams', {"hey": "ho"}, id);
         })
         .on("submit", function() {
-            var promise =  new qq.Promise();
-            setTimeout(function() {
-                promise.failure();
-            }, 5000);
-            return promise;
+//            var promise =  new qq.Promise();
+//            setTimeout(function() {
+//                promise.failure();
+//            }, 5000);
+//            return promise;
         })
         .on("statusChange", function(event, id, oldStatus, newStatus) {
             qq.log("id: " + id + ", prev: " + oldStatus + ", new: " + newStatus);
