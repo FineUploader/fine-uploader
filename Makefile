@@ -70,7 +70,7 @@ define release
 		j.version = \"$$NEXT_VERSION\";\
 		var s = JSON.stringify(j, null, 2);\
 		require('fs').writeFileSync('./fineuploader.jquery.json', s);"
-	git commit -m "release $$NEXT_VERSION" -- package.json && \
+	git commit -m "release $$NEXT_VERSION" -- package.json fineuploader.jquery.json && \
 	git tag "$$NEXT_VERSION" -m "release $$NEXT_VERSION"
 endef
 
