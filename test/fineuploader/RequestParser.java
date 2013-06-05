@@ -18,7 +18,7 @@ public class RequestParser
     private static String UUID_PARAM = "qquuid";
     private static String PART_FILENAME_PARAM = "qqfilename";
     private static String BLOB_NAME_PARAM = "qqblobname";
-    private static String METHOD_PARAM = "qqmethod";
+    private static String METHOD_PARAM = "_method";
 
     private static String GENERATE_ERROR_PARAM = "generateError";
 
