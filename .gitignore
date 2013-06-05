@@ -6,7 +6,9 @@
 !.gitignore
 Thumbs.db
 
-build/*
+build/
+dist/
+*.zip
 release/*
 master
 

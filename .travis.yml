@@ -7,10 +7,7 @@ before_install:
     - sudo apt-get update -qq
 
 before_script:
-    - export DISPLAY=:99.0
-    - sh -e /etc/init.d/xvfb start
-    - make modules
-    - make fineuploader
+    - make build 
 
 script:
     - make ci-test

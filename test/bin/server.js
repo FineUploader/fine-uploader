@@ -14,8 +14,9 @@ var settings = {
     paths: {
         uploads: baseDir + '/uploads',
         vendor: baseDir + '/vendor',
+        build: baseDir + '/../build',
         specs: baseDir + '/specs',
-        source: baseDir + '/../fine-uploader'
+        source: baseDir + '/../client/js'
     }
 };
 
@@ -33,7 +34,7 @@ app.configure(function () {
     app.use(baseDir, express.static(baseDir));
     app.use('/tests/vendor', express.static(settings.paths.vendor));
     app.use('/tests/specs', express.static(settings.paths.specs));
-    app.use('/fine-uploader', express.static(settings.paths.source));
+    app.use('/build', express.static(settings.paths.build));
 
 });
 
@@ -58,11 +59,6 @@ app.get('/tests', function (req, res) {
     res.set('Content-Type', 'text/html');
     res.send(fs.readFileSync(baseDir + '/index.html'));
 });
-
-app.get('/integrations', function (req, res) {
-    res.set('Content-type', 'text/html');
-    res.send(fs.readFileSync(settings.paths.specs + "/integration/index.html"));
-})
 
 // CORS
 // app.use(function (req, res) {

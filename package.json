@@ -5,14 +5,8 @@
   "description": "Multiple file upload library with support for all major browsers.  Many features such as drag & drop, auto & manual retry, file chunking, auto-resume, and more!  Does NOT use Flash or Java.  Highly configurable.  A no-dependency version is also available in the downloads section.",
   "main": "./fine-uploader/js/fine-uploader.js",
   "maintainers": [
-    {
-      "name": "Ray Nicholus",
-      "email": "rnicholus@widen.com"
-    },
-    {
-      "name": "Mark Feltner",
-      "email": "mfeltner@widen.com"
-    }
+    "Ray Nicholus <rnicholus@widen.com>",
+    "Mark Feltner <mfeltner@widen.com>"
   ],
   "directories": {
     "doc": "docs",
@@ -59,5 +53,6 @@
     "jshint": "~2.1.2",
     "express": "~3.2.5",
     "semver": "~1.1.4"
-  }
+  },
+  "license": "GPL3"
 }
