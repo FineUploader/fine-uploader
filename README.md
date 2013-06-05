@@ -1,13 +1,13 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-**Current Version:** [3.6.1](https://github.com/Widen/fine-uploader/tree/3.6.1) (Released June 2, 2013)
+**Current Version:** [3.6.3](https://github.com/Widen/fine-uploader/tree/3.6.3) (Released June 2, 2013)
 
 **Master**: [![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=master)](https://travis-ci.org/Widen/fine-uploader)
 **Develop**: [![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=develop)](https://travis-ci.org/Widen/fine-uploader)
 
 ---
 
-[**Download**](http://fineuploader.com/downloads.html) | [**Changelog**](http://blog.fineuploader.com/2013/05/fine-uploader-36.html) | [**Blog**](http://blog.fineuploader.com/)
+[**Download**](http://fineuploader.com/downloads.html) | [**Blog**](http://blog.fineuploader.com/) | [**Changelog**](http://blog.fineuploader.com/2013/05/fine-uploader-36.html) 
 
 Fine Uploader attempts to achieve a user-friendly file-uploading experience over the web.
 It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.

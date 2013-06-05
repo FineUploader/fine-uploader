@@ -1,7 +1,7 @@
 {
   "name": "fine-uploader",
   "title": "Fine Uploader",
-  "version": "3.6.2",
+  "version": "3.6.3",
   "description": "Multiple file upload library with support for all major browsers.  Many features such as drag & drop, auto & manual retry, file chunking, auto-resume, and more!  Does NOT use Flash or Java.  Highly configurable.  A no-dependency version is also available in the downloads section.",
   "main": "./fine-uploader/js/fine-uploader.js",
   "maintainers": [
