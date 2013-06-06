@@ -6,8 +6,5 @@ node_js:
 before_install:
     - sudo apt-get update -qq
 
-before_script:
-    - make build 
-
 script:
     - make ci-test

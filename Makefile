@@ -9,8 +9,10 @@
 
 
 # Global Variables
+SHELL=/bin/bash
 HR=\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
-CHECK=\033[32m✔\033[39m
+CHECK=✔
+#CHECK=\033[32m✔\033[39m
 CWD=$(shell pwd)
 DATE=$(shell date +%I:%M%p)
 VERSION=$(shell node -pe "require('./package.json').version")
@@ -273,7 +275,7 @@ stop-server:
 
 restart-server: 
 	@echo "Restarting basic HTTP server ..."
-	$(shell if [[ "" != `ps aux | grep $$(cat ${TEST_DIR}bin/pid.txt)` ]]; then cat ${TEST_DIR}bin/pid.txt | xargs kill; fi)
+	$(shell if [[ "" != `ps aux | grep $$(cat ${TEST_DIR}bin/pid.txt)` ]]; then cat ${TEST_DIR}bin/pid.txt | xargs kill; fi;)
 	node ${TEST_DIR}bin/server.js &
 	@echo "Test HTTP server restarted.					${CHECK} Done\n"
 
