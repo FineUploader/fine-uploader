@@ -16,6 +16,7 @@ CHECK=✔
 CWD=$(shell pwd)
 DATE=$(shell date +%I:%M%p)
 VERSION=$(shell node -pe "require('./package.json').version")
+ON_MASTER=$(shell if [[ "master" == $$TRAVIS_BRANCH ]]; then echo "true"; else echo "false"; fi)
 PULL_REQUEST=$(shell if [[ "false" != `echo $$TRAVIS_PULL_REQUEST` ]]; then echo "true"; else echo "false"; fi;)
 #CURRENT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 #ON_MASTER=$(shell if [[ "master" == $$CURRENT_BRANCH ]]; then echo "true"; else echo "false"; fi)
@@ -281,19 +282,19 @@ restart-server:
 
 ## Travis test
 ci-test:
-ifeq ($(TRAVIS_BRANCH), master)
-	ifneq ($(PULL_REQUEST), false)
-		@echo "\nWoah there, buddy! Pull requests should be branched from develop!\n"
-		@echo "Details on contributing pull requests found here:"
-		@echo "https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md\n"
-		$(shell false)
-	else
-		make test
-		@echo "CI Test Complete...						${CHECK} Done\n"
-	endif
+ifneq ($(ON_MASTER), true)
+	make test
+	@echo "CI Test Complete...						${CHECK} Done\n"
+else
+ifneq ($(PULL_REQUEST), false)
+	@echo "\nWoah there, buddy! Pull requests should be branched from develop!\n"
+	@echo "Details on contributing pull requests found here:"
+	@echo "https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md\n"
+	$(shell false)
 else
 	make test
 	@echo "CI Test Complete...						${CHECK} Done\n"
+endif
 endif
 
 #SELENIUM=${TEST_DIR}vendor/selenium-server-standalone.jar
