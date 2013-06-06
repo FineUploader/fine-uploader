@@ -1,0 +1,58 @@
+{
+  "name": "fine-uploader",
+  "title": "Fine Uploader",
+  "version": "3.6.3",
+  "description": "Multiple file upload library with support for all major browsers.  Many features such as drag & drop, auto & manual retry, file chunking, auto-resume, and more!  Does NOT use Flash or Java.  Highly configurable.  A no-dependency version is also available in the downloads section.",
+  "main": "./fine-uploader/js/fine-uploader.js",
+  "maintainers": [
+    "Ray Nicholus <rnicholus@widen.com>",
+    "Mark Feltner <mfeltner@widen.com>"
+  ],
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "make test",
+    "docs": "make docs",
+    "build": "make"
+  },
+  "keywords": [
+    "upload",
+    "file",
+    "chunking",
+    "file-uploader"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Widen/fine-uploader.git"
+  },
+  "author": "Widen Enterprises, Inc.",
+  "licenses": [
+    {
+      "type": "GPL 3",
+      "url": "http://www.gnu.org/licenses/gpl-3.0.txt"
+    },
+    {
+      "type": "Widen Commerical License",
+      "url": "http://fineuploader.com/downloads.html"
+    }
+  ],
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/Widen/fine-uploader/issues"
+  },
+  "gitHead": "a6fc6a12111de2f884bf02545f3949331c577266",
+  "devDependencies": {
+    "docco": "~0.6.2"
+  },
+  "dependencies": {
+    "phantomjs": ">=1.9.0-4",
+    "uglify-js": "~2.3.6",
+    "clean-css": "~1.0.4",
+    "jshint": "~2.1.2",
+    "express": "~3.2.5",
+    "semver": "~1.1.4"
+  },
+  "license": "GPL3"
+}

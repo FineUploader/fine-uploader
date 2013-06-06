@@ -1,0 +1,13 @@
+language: node_js
+
+node_js:
+    - "0.10"
+
+before_install:
+    - sudo apt-get update -qq
+
+before_script:
+    - make build 
+
+script:
+    - make ci-test

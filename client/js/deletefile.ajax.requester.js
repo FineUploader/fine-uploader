@@ -4,7 +4,10 @@ qq.DeleteFileAjaxRequestor = function(o) {
     "use strict";
 
     var requestor,
+        validMethods = ["POST", "DELETE"],
         options = {
+            method: "DELETE",
+            uuidParamName: "qquuid",
             endpointStore: {},
             maxConnections: 3,
             customHeaders: {},
@@ -21,13 +24,31 @@ qq.DeleteFileAjaxRequestor = function(o) {
 
     qq.extend(options, o);
 
+    if (qq.indexOf(validMethods, getNormalizedMethod()) < 0) {
+        throw new Error("'" + getNormalizedMethod() + "' is not a supported method for delete file requests!");
+    }
+
+    function getNormalizedMethod() {
+        return options.method.toUpperCase();
+    }
+
+    function getMandatedParams() {
+        if (getNormalizedMethod() === "POST") {
+            return {
+                "_method": "DELETE"
+            };
+        }
+
+        return {};
+    }
+
     requestor = new qq.AjaxRequestor({
-        method: 'DELETE',
+        method: getNormalizedMethod(),
         endpointStore: options.endpointStore,
         paramsStore: options.paramsStore,
+        mandatedParams: getMandatedParams(),
         maxConnections: options.maxConnections,
         customHeaders: options.customHeaders,
-        successfulResponseCodes: [200, 202, 204],
         demoMode: options.demoMode,
         log: options.log,
         onSend: options.onDelete,
@@ -37,8 +58,17 @@ qq.DeleteFileAjaxRequestor = function(o) {
 
     return {
         sendDelete: function(id, uuid) {
-            requestor.send(id, uuid);
-            options.log("Submitted delete file request for " + id);
+            var additionalOptions = {};
+
+            options.log("Submitting delete file request for " + id);
+
+            if (getNormalizedMethod() === "DELETE") {
+                requestor.send(id, uuid);
+            }
+            else {
+                additionalOptions[options.uuidParamName] = uuid;
+                requestor.send(id, null, additionalOptions);
+            }
         }
     };
 };
