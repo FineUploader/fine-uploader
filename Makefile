@@ -280,7 +280,7 @@ restart-server:
 ## Travis test
 ci-test:
 ifeq ($(TRAVIS_BRANCH), master)
-	ifneq($(TRAVIS_PULL_REQUEST), false)
+	ifneq ($(TRAVIS_PULL_REQUEST), false)
 		@echo "\nWoah there!  No pull requests allowed against master!\n"
 		$(shell false)
 	else
