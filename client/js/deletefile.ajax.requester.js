@@ -52,7 +52,8 @@ qq.DeleteFileAjaxRequestor = function(o) {
         demoMode: options.demoMode,
         log: options.log,
         onSend: options.onDelete,
-        onComplete: options.onDeleteComplete
+        onComplete: options.onDeleteComplete,
+        cors: options.cors
     });
 
 
