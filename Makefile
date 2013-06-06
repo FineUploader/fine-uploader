@@ -281,8 +281,8 @@ restart-server:
 ci-test:
 ifeq ($(TRAVIS_BRANCH), master)
     ifneq($(TRAVIS_PULL_REQUEST), false)
-        @echo "\nWoah there!  No pull requests allowed against master!\n"
-        $(shell false)
+	    @echo "\nWoah there!  No pull requests allowed against master!\n"
+	    $(shell false)
     else
         node ./test/bin/server.js &
         ${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
