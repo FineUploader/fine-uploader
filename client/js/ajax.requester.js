@@ -1,5 +1,4 @@
 /** Generic class for sending non-upload ajax requests and handling the associated responses **/
-//TODO Use XDomainRequest if expectCors = true.  Not necessary now since only DELETE requests are sent and XDR doesn't support pre-flighting.
 /*globals qq, XMLHttpRequest*/
 qq.AjaxRequestor = function(o) {
     "use strict";
@@ -13,8 +12,11 @@ qq.AjaxRequestor = function(o) {
             customHeaders: {},
             endpointStore: {},
             paramsStore: {},
-            successfulResponseCodes: [200],
-            demoMode: false,
+            mandatedParams: {},
+            successfulResponseCodes:  {
+                "DELETE": [200, 202, 204],
+                "POST": [200, 204]
+            },
             cors: {
                 expected: false,
                 sendCredentials: false
@@ -27,7 +29,7 @@ qq.AjaxRequestor = function(o) {
 
     qq.extend(options, o);
     log = options.log;
-    shouldParamsBeInQueryString = getMethod() === 'GET' || getMethod() === 'DELETE';
+    shouldParamsBeInQueryString = options.method === 'GET' || options.method === 'DELETE';
 
 
     /**
@@ -49,7 +51,7 @@ qq.AjaxRequestor = function(o) {
 
     function onComplete(id) {
         var xhr = requestState[id].xhr,
-            method = getMethod(),
+            method = options.method,
             isError = false;
 
         dequeue(id);
@@ -62,17 +64,37 @@ qq.AjaxRequestor = function(o) {
         options.onComplete(id, xhr, isError);
     }
 
-    function sendRequest(id) {
-        var xhr = new XMLHttpRequest(),
-            method = getMethod(),
-            params = {},
-            url;
-
-        options.onSend(id);
+    function getParams(id) {
+        var params = {},
+            additionalParams = requestState[id].additionalParams,
+            mandatedParams = options.mandatedParams;
 
         if (options.paramsStore.getParams) {
             params = options.paramsStore.getParams(id);
         }
+
+        if (additionalParams) {
+            qq.each(additionalParams, function(name, val) {
+                params[name] = val;
+            });
+        }
+
+        if (mandatedParams) {
+            qq.each(mandatedParams, function(name, val) {
+                params[name] = val;
+            });
+        }
+
+        return params;
+    }
+
+    function sendRequest(id) {
+        var xhr = new XMLHttpRequest(),
+            method = options.method,
+            params = getParams(id),
+            url;
+
+        options.onSend(id);
 
         url = createUrl(id, params);
 
@@ -99,7 +121,7 @@ qq.AjaxRequestor = function(o) {
         var endpoint = options.endpointStore.getEndpoint(id),
             addToPath = requestState[id].addToPath;
 
-        if (addToPath !== undefined) {
+        if (addToPath != undefined) {
             endpoint += "/" + addToPath;
         }
 
@@ -128,6 +150,10 @@ qq.AjaxRequestor = function(o) {
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("Cache-Control", "no-cache");
 
+        if (options.method === "POST" || options.method === "PUT") {
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        }
+
         qq.each(customHeaders, function(name, val) {
             xhr.setRequestHeader(name, val);
         });
@@ -135,7 +161,7 @@ qq.AjaxRequestor = function(o) {
 
     function cancelRequest(id) {
         var xhr = requestState[id].xhr,
-            method = getMethod();
+            method = options.method;
 
         if (xhr) {
             xhr.onreadystatechange = null;
@@ -152,22 +178,14 @@ qq.AjaxRequestor = function(o) {
     }
 
     function isResponseSuccessful(responseCode) {
-        return qq.indexOf(options.successfulResponseCodes, responseCode) >= 0;
+        return qq.indexOf(options.successfulResponseCodes[options.method], responseCode) >= 0;
     }
-
-    function getMethod() {
-        if (options.demoMode) {
-            return "GET";
-        }
-
-        return options.method;
-    }
-
 
     return {
-        send: function(id, addToPath) {
+        send: function(id, addToPath, additionalParams) {
             requestState[id] = {
-                addToPath: addToPath
+                addToPath: addToPath,
+                additionalParams: additionalParams
             };
 
             var len = queue.push(id);

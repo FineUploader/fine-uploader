@@ -1,10 +1,28 @@
-# Fine Uploader 3.6.3 (Released June 5, 2013) #
+Travis, don't do it man!
+====
 
-###[Download the 3.6.3 combined & minified javascript file (along with all other required files) here](http://fineuploader.com/downloads.html)###
+[![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-###[3.6.x change summary](http://blog.fineuploader.com/2013/05/fine-uploader-36.html)###
+**Development Branch:** 3.7.0 (Planned Release For Early July)
 
-<br/>
+<!--**Master**: [![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=master)](https://travis-ci.org/Widen/fine-uploader)-->
+**Develop**: [![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=develop)](https://travis-ci.org/Widen/fine-uploader)
+
+---
+
+[**Download**](http://fineuploader.com/downloads.html) | [**Blog**](http://blog.fineuploader.com/) | [**Changelog**](http://blog.fineuploader.com/2013/05/fine-uploader-36.html) 
+
+Fine Uploader attempts to achieve a user-friendly file-uploading experience over the web.
+It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
+
+This plugin uses an XMLHttpRequest (AJAX) for uploading multiple files with a progress-bar in
+FF3.6+, Safari4+, Chrome and falls back to hidden-iframe-based upload in other browsers (namely IE),
+providing good user experience everywhere.
+
+It does not use Flash, jQuery, or any other external libraries.  There is an optional jQuery plug-in that can be used to
+integrate Fine Uploader into your project, but it is NOT required.  The same features are available with or without the
+jQuery plug-in.
+
 ## Features ##
 * Multiple file select, progress-bar in FF, Chrome, and Safari
 * Drag-and-drop file select in FF, Chrome, and Safari (OS X)
@@ -64,20 +82,6 @@ you at the API, callbacks, options, etc for the purpose of reference.  Here you 
 * [Blog](http://blog.fineuploader.com)
 * [@fineuploader](https://twitter.com/fineuploader)
 * [Demo](http://fineuploader.com)
-
-
-<br/>
-## Introduction ##
-This project attempts to achieve a user-friendly file-uploading experience over the web.
-It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
-
-This plugin uses an XMLHttpRequest (AJAX) for uploading multiple files with a progress-bar in
-FF3.6+, Safari4+, Chrome and falls back to hidden-iframe-based upload in other browsers (namely IE),
-providing good user experience everywhere.
-
-It does not use Flash, jQuery, or any other external libraries.  There is an optional jQuery plug-in that can be used to
-integrate Fine Uploader into your project, but it is NOT required.  The same features are available with or without the
-jQuery plug-in.
 
 
 <br/>
