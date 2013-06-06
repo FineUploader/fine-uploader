@@ -277,12 +277,6 @@ restart-server:
 	node ${TEST_DIR}bin/server.js &
 	@echo "Test HTTP server restarted.					${CHECK} Done\n"
 
-define runTests
-    node ./test/bin/server.js &
-    ${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
-    @echo "CI Test Complete...						${CHECK} Done\n"
-endef
-
 ## Travis test
 ci-test:
 ifeq ($(TRAVIS_BRANCH), master)
@@ -290,10 +284,14 @@ ifeq ($(TRAVIS_BRANCH), master)
 	    @echo "\nWoah there!  No pull requests allowed against master!\n"
 	    $(shell false)
     else
-        $(call runTests)
+        node ./test/bin/server.js &
+        ${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
+        @echo "Master CI Test Complete...						${CHECK} Done\n"
     endif
 else
-    $(call runTests)
+    node ./test/bin/server.js &
+    ${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
+    @echo "CI Test Complete...						${CHECK} Done\n"
 endif
 
 #SELENIUM=${TEST_DIR}vendor/selenium-server-standalone.jar
