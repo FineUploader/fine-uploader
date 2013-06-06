@@ -1,3 +1,4 @@
+/**
 QUnit.begin = function () {
     console.log("Starting test suite");
     console.log("================================================\n")
@@ -26,3 +27,4 @@ QUnit.done = function (opts) {
   console.log("Tests completed in " + opts.runtime + " milliseconds")
   console.log(opts.passed + " tests of " + opts.total + " passed, " + opts.failed + " failed.")
 }
+*/

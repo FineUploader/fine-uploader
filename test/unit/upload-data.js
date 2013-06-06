@@ -1,5 +1,5 @@
 $(function () {
-    module("Upload Data");
+    module("Upload-Data");
 
         function createUploadData(onStatusChange) {
             return new qq.UploadData({
@@ -24,6 +24,7 @@ $(function () {
         }
 
     test("test callbacks", 9, function() {
+        /* jshint -W080 */
         var id = 0,
             expectedOldStatus = undefined,
             expectedNewStatus = qq.status.SUBMITTING,

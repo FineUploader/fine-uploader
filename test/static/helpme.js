@@ -25,7 +25,7 @@ var helpme = (function () {
                 multiple: true,
                 maxConnections: 3,
                 disableCancelForFormUploads: false,
-                autoUpload: true,
+                autoUpload: true
             };
             var default_request = {
                 endpoint: "http://localhost:3000/upload",

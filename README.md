@@ -1,9 +1,6 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-**Development Branch:** 3.7.0 (Planned Release For Early July)
-
-<!--**Master**: [![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=master)](https://travis-ci.org/Widen/fine-uploader)-->
-**Develop**: [![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=develop)](https://travis-ci.org/Widen/fine-uploader)
+Version: 3.6.3 (Released June 5, 2013)
 
 ---
 
@@ -141,6 +138,15 @@ If you are having other issues, please read [the FAQ section](docs/faq.md) befor
 ### Issue Tracker ###
 Have a bug or feature request? Please [create an issue here on GitHub](https://github.com/Widen/fine-uploader/issues) 
 that conforms with [necolas's guidelines](https://github.com/necolas/issue-guidelines/blob/master/README.md).
+
+
+<br/>
+### Build Status ###
+**Master**: [![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=master)
+
+**Develop**: [![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=develop)
+
+Fine-Uploader is continuously integrated with [Travis-CI](https://www.travis-ci.org/).
 
 
 <br/>
