@@ -290,7 +290,7 @@ ifneq ($(PULL_REQUEST), false)
 	@echo "\nWoah there, buddy! Pull requests should be branched from develop!\n"
 	@echo "Details on contributing pull requests found here:"
 	@echo "https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md\n"
-	$(shell false)
+	false
 else
 	make test
 	@echo "CI Test Complete...						${CHECK} Done\n"
