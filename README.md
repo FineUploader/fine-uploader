@@ -1,3 +1,7 @@
+
+Don't Let Me Do It, Travis!!!
+====
+
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
 **Development Branch:** 3.7.0 (Planned Release For Early July)
