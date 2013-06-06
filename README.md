@@ -1,6 +1,6 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-**Current Version:** [3.6.3](https://github.com/Widen/fine-uploader/tree/3.6.3) (Released June 5, 2013)
+**Development Branch:** 3.7.0 (Planned Release For Early July)
 
 <!--**Master**: [![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=master)](https://travis-ci.org/Widen/fine-uploader)-->
 **Develop**: [![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=develop)](https://travis-ci.org/Widen/fine-uploader)
