@@ -9,11 +9,15 @@
 
 
 # Global Variables
+SHELL=/bin/bash
 HR=\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#
-CHECK=\033[32m✔\033[39m
+CHECK=✔
+#CHECK=\033[32m✔\033[39m
 CWD=$(shell pwd)
 DATE=$(shell date +%I:%M%p)
 VERSION=$(shell node -pe "require('./package.json').version")
+ON_MASTER=$(shell if [[ "master" == $$TRAVIS_BRANCH ]]; then echo "true"; else echo "false"; fi)
+PULL_REQUEST=$(shell if [[ "false" != `echo $$TRAVIS_PULL_REQUEST` ]]; then echo "true"; else echo "false"; fi;)
 #CURRENT_BRANCH=$(shell git rev-parse --abbrev-ref HEAD)
 #ON_MASTER=$(shell if [[ "master" == $$CURRENT_BRANCH ]]; then echo "true"; else echo "false"; fi)
 
@@ -257,7 +261,6 @@ vendor_modules:
 	@curl -L --progress-bar https://raw.github.com/allmarkedup/purl/master/purl.js >> ${TEST_DIR}vendor/purl.js
 	@curl -L --progress-bar https://raw.github.com/douglascrockford/JSON-js/master/json2.js >> ${TEST_DIR}vendor/json2.js
 	@curl -L --progress-bar https://raw.github.com/jquery/qunit/master/addons/phantomjs/runner.js >> ${TEST_DIR}bin/runner.js
-	@curl -L --progress-bar http://underscorejs.org/underscore-min.js >> ${TEST_DIR}vendor/underscore.min.js
 	##curl http://selenium.googlecode.com/files/selenium-server-standalone-2.33.0.jar >> ${TEST_DIR}vendor/selenium-server-standalone.jar
 
 ## Test Server
@@ -268,24 +271,30 @@ start-server:
 
 stop-server:
 	@echo "Stopping basic HTTP server ..."
-	cat ${TEST_DIR}bin/pid.txt | xargs kill
+	$(shell if [[ -f ${TEST_DIR}bin/pid.txt ]]; then cat ${TEST_DIR}bin/pid.txt | xargs kill; fi;)
 	@echo "Test HTTP server stopped.					${CHECK} Done\n"
 
 restart-server: 
 	@echo "Restarting basic HTTP server ..."
-	$(shell if [[ "" != `ps aux | grep $$(cat ${TEST_DIR}bin/pid.txt)` ]]; then cat ${TEST_DIR}bin/pid.txt | xargs kill; fi)
+	$(shell if [[ "" != `ps aux | grep $$(cat ${TEST_DIR}bin/pid.txt)` ]]; then cat ${TEST_DIR}bin/pid.txt | xargs kill; fi;)
 	node ${TEST_DIR}bin/server.js &
 	@echo "Test HTTP server restarted.					${CHECK} Done\n"
 
 ## Travis test
 ci-test:
-ifeq ($(TRAVIS_BRANCH), master)
-	@echo "\nWoah, no running tests on master!\n"
+ifneq ($(ON_MASTER), true)
+	make test
+	@echo "CI Test Complete...						${CHECK} Done\n"
+else
+ifneq ($(PULL_REQUEST), false)
+	@echo "\nWoah there, buddy! Pull requests should be branched from develop!\n"
+	@echo "Details on contributing pull requests found here:"
+	@echo "https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md\n"
 	$(shell false)
 else
-	node ./test/bin/server.js &
-	${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
+	make test
 	@echo "CI Test Complete...						${CHECK} Done\n"
+endif
 endif
 
 #SELENIUM=${TEST_DIR}vendor/selenium-server-standalone.jar
