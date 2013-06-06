@@ -290,6 +290,7 @@ ifeq ($(TRAVIS_BRANCH), master)
 		@echo "Master CI Test Complete...						${CHECK} Done\n"
 	endif
 else
+	@echo "TRAVIS_BRANCH = ${TRAVIS_BRANCH}"
 	node ./test/bin/server.js &
 	${BIN}phantomjs ${TEST_DIR}bin/phantomjs "http://localhost:3000/tests/"
 	@echo "CI Test Complete...						${CHECK} Done\n"
