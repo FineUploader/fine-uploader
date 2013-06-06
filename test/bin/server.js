@@ -3,20 +3,22 @@
 /*
 * Simple express server for localized testing.
 */
-var express = require('express')
+var path = require('path')
   , fs = require('fs')
   , http = require('http')
+  , express = require('express')
   , app = express();
 
-var baseDir = __dirname + '/..';
+var testDir = path.join(__dirname + '/..');
 var settings = {
     port: 3000,
     paths: {
-        uploads: baseDir + '/uploads',
-        vendor: baseDir + '/vendor',
-        build: baseDir + '/../build',
-        specs: baseDir + '/specs',
-        source: baseDir + '/../client/js'
+        uploads: path.join(testDir + '/uploads'),
+        static: path.join(testDir + '/static'),
+        vendor: path.join(testDir + '/vendor'),
+        source: path.join(testDir + '/../build'),
+        unit: path.join(testDir + '/unit'),
+        integration: path.join(testDir + '/integration')
     }
 };
 
@@ -28,13 +30,16 @@ app.configure(function () {
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
     app.use(express.cookieParser());
     app.use(express.methodOverride());
-    app.use(app.router);
     
     // Static URLS
-    app.use(baseDir, express.static(baseDir));
-    app.use('/tests/vendor', express.static(settings.paths.vendor));
-    app.use('/tests/specs', express.static(settings.paths.specs));
-    app.use('/build', express.static(settings.paths.build));
+    app.use(testDir, express.static(testDir));
+    app.use('/static', express.static(settings.paths.static));
+    app.use('/vendor', express.static(settings.paths.vendor));
+    app.use('/source', express.static(settings.paths.source));
+    app.use('/unit', express.static(settings.paths.unit));
+    app.use('/integration', express.static(settings.paths.integration));
+
+    app.use(app.router);
 
 });
 
@@ -52,12 +57,8 @@ http.createServer(app).listen(app.get('port'), function () {
 
 // Routes
 app.get("/", function (req, res) {
-    res.redirect(200, "/tests");
-});
-
-app.get('/tests', function (req, res) {
     res.set('Content-Type', 'text/html');
-    res.send(fs.readFileSync(baseDir + '/index.html'));
+    res.send(fs.readFileSync(testDir + '/index.html'));
 });
 
 // CORS

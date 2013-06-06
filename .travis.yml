@@ -1,10 +1,22 @@
+---
 language: node_js
-
 node_js:
-    - "0.10"
-
+- '0.10'
 before_install:
-    - sudo apt-get update -qq
-
+- sudo apt-get update -qq
+- npm install -g grunt-cli
+- git submodule update --init --recursive
+- grunt prepare
+- grunt build
+env:
+  global:
+  - secure: |-
+      caiZawX1I0N6l9lh9ksYXf7SaoinQckitLw1Be8SY4UnG8fUKOoRN3qhAzf7
+      KaJeafrGDpQEkvt8BARaRRHGfReUcfLfcY8jvq5t2t8yEESpwtOrAfavAWP7
+      SrV1RO8tx0UieurhR0lo/Jh78oKWEN/pbao3UNO7vI6cZw+SO8o=
+  - secure: |-
+      h4wy2zjh9583ZwSgr+CMMLgWUyW1kx8uBjW4Zt1HcQGs1sQFE9EIJWHRB9iX
+      zrJYJnEjFG3sxbz6uvDZf5fvvxLQzOrjgIvAbkS00/I71BSeXg5Qclvvn0mp
+      8lO+hj8Pb93acGIcRnWvErvTJ9TNDqLpIosu6e61ZY/QpKl7Bkg=
 script:
-    - make ci-test
+- grunt test-sauce

@@ -17,10 +17,11 @@ hardcopy*
 selenium.log*
 
 pid.txt
+sauce_connect.log
 fine-uploader/
-test/bin/runner.js
 test/upload/*
 test/coverage/*
 test/vendor/*
 test/uploads/*
+test/temp*
 node_modules/
