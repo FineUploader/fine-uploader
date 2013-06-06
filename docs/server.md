@@ -74,10 +74,18 @@ For more details, please read the [blog post on the file resume feature](http://
 
 <br/>
 ## Deleting Files ##
-If you have enabled the `deleteFile` feature, you will need to handle `DELETE` requests server-side.  The UUID of the file
-to delete will be specified as the last element of the URI path.  Any parameters specified will be added to the query string.  Success
-of the request will depend solely on the response code.  Acceptable response codes that indicate success are 200, 202, and 204.
-Please see [the associated blog post](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html) for more information on this feature.
+If you have enabled the `deleteFile` feature, you will need to handle `DELETE` or `POST` requests server-side.  The method
+is configurable via the `method` property of the [`deleteFile` option](options-fineuploaderbasic#deletefile-option-properties).
+
+For DELETE  requests, the UUID of the file to delete will be specified as the last element of the URI path.  Any custom parameters
+specified will be added to the query string.  For POST requests, the UUID is sent as a "qquuid" parameter, and a "_method"
+parameter is sent with a value of "DELETE".  All POST request parameters are sent in the request payload.
+
+Success of the request will depend solely on the response code.  Acceptable response codes that indicate success are 200,
+202, and 204 for DELETE requests and 200 or 204 for POST requests.
+
+Please see [the latest blog post on the delete file feature](http://blog.fineuploader.com/2013/06/delete-files-via-post-and-delete.html)
+for more information.
 
 <br/>
 ## CORS Support ##

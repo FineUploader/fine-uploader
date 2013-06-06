@@ -14,6 +14,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+//commented code blocks are only used for CORS environments
 public class UploadReceiver extends HttpServlet
 {
     private static final File UPLOAD_DIR = new File("test/uploads");
@@ -36,6 +37,11 @@ public class UploadReceiver extends HttpServlet
     {
         String uuid = req.getPathInfo().replaceAll("/", "");
 
+        handleDeleteFileRequest(uuid, resp);
+    }
+
+    private void handleDeleteFileRequest(String uuid, HttpServletResponse resp) throws IOException
+    {
         FileUtils.deleteDirectory(new File(UPLOAD_DIR, uuid));
 
         if (new File(UPLOAD_DIR, uuid).exists())
@@ -70,7 +76,8 @@ public class UploadReceiver extends HttpServlet
 
         try
         {
-            resp.setContentType(isIframe ? "text/html" : "text/plain");
+//            resp.setContentType(isIframe ? "text/html" : "text/plain");
+            resp.setContentType("text/plain");
             resp.setStatus(SUCCESS_RESPONSE_CODE);
 
 //            resp.addHeader("Access-Control-Allow-Origin", "http://192.168.130.118:8080");
@@ -87,8 +94,19 @@ public class UploadReceiver extends HttpServlet
             else
             {
                 requestParser = RequestParser.getInstance(req, null);
-                writeFileForNonMultipartRequest(req, requestParser);
-                writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, isIframe, false, requestParser);
+
+                //handle POST delete file request
+                if (requestParser.getMethod() != null
+                        && requestParser.getMethod().equalsIgnoreCase("DELETE"))
+                {
+                    String uuid = requestParser.getUuid();
+                    handleDeleteFileRequest(uuid, resp);
+                }
+                else
+                {
+                    writeFileForNonMultipartRequest(req, requestParser);
+                    writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, isIframe, false, requestParser);
+                }
             }
         } catch (Exception e)
         {

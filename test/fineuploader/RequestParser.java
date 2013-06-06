@@ -18,6 +18,7 @@ public class RequestParser
     private static String UUID_PARAM = "qquuid";
     private static String PART_FILENAME_PARAM = "qqfilename";
     private static String BLOB_NAME_PARAM = "qqblobname";
+    private static String METHOD_PARAM = "_method";
 
     private static String GENERATE_ERROR_PARAM = "generateError";
 
@@ -30,6 +31,7 @@ public class RequestParser
     private int totalParts;
     private String uuid;
     private String originalFilename;
+    private String method;
 
     private Map<String, String> customParams = new HashMap<>();
 
@@ -104,6 +106,11 @@ public class RequestParser
         return originalFilename;
     }
 
+    public String getMethod()
+    {
+        return method;
+    }
+
     public Map<String, String> getCustomParams()
     {
         return customParams;
@@ -140,7 +147,6 @@ public class RequestParser
         {
             requestParser.uuid = multipartUploadParser.getParams().get(UUID_PARAM);
         }
-
     }
 
     private static void parseQueryStringParams(RequestParser requestParser, HttpServletRequest req)
@@ -174,6 +180,11 @@ public class RequestParser
         if (requestParser.uuid == null)
         {
             requestParser.uuid = req.getParameter(UUID_PARAM);
+        }
+
+        if (requestParser.method == null)
+        {
+            requestParser.method = req.getParameter(METHOD_PARAM);
         }
     }
 
