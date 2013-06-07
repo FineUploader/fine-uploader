@@ -220,8 +220,8 @@ qq.AjaxRequestor = function (o) {
         }
     }
 
-    // This will be called by IE to indicate **failure** for an associated `
-    // XDomainRequest` transported request.
+    // This will be called by IE to indicate **failure** for an associated
+    // `XDomainRequest` transported request.
     function getXdrErrorHandler(id) {
         return function () {
             onComplete(id, true);
@@ -232,7 +232,7 @@ qq.AjaxRequestor = function (o) {
         var xhr = getXhrOrXdr(id),
             customHeaders = options.customHeaders;
 
-        //If this is a CORS request and a simple method with simple headers are
+        // If this is a CORS request and a simple method with simple headers are used
         // on an `XMLHttpRequest`, exclude these specific non-simple headers
         // in an attempt to prevent preflighting.
         if (!options.cors.expected
