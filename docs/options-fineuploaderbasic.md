@@ -463,7 +463,8 @@ For more details, please read the [blog post on the file resume feature](http://
 
 ### `deleteFile` option properties: ###
 For more information on the Delete File feature, please read the [associated blog post](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html) and
-check out the server-side readme.
+check out the server-side readme.  If you want to support this feature in IE9 and IE8 for cross-origin environments, please
+read about the [changes that occurred in 3.7 that optionally allow this](http://blog.fineuploader.com/2013/06/37-cross-origin-delete-file-support-for.html).
 <table>
     <thead>
         <tr>

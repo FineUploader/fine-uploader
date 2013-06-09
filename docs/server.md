@@ -90,7 +90,8 @@ that the Content-Type will be absent from the request header, and credentials (c
 cannot be sent.
 
 Please see [the latest blog post on the delete file feature](http://blog.fineuploader.com/2013/06/delete-files-via-post-and-delete.html)
-for more information.
+for more information.  If you want to support this feature in IE9 and IE8 for cross-origin environments, please
+read about the [changes that occurred in 3.7 that optionally allow this](http://blog.fineuploader.com/2013/06/37-cross-origin-delete-file-support-for.html).
 
 <br/>
 ## CORS Support ##
