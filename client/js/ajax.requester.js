@@ -235,8 +235,7 @@ qq.AjaxRequestor = function (o) {
         // If this is a CORS request and a simple method with simple headers are used
         // on an `XMLHttpRequest`, exclude these specific non-simple headers
         // in an attempt to prevent preflighting.
-        if (!options.cors.expected
-            || (!isSimpleMethod() && !isXdr(xhr) && !containsNonSimpleHeaders(customHeaders))) {
+        if (!options.cors.expected || (!isSimpleMethod() || containsNonSimpleHeaders(customHeaders))) {
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             xhr.setRequestHeader("Cache-Control", "no-cache");
         }
