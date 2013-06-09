@@ -1,10 +1,12 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-Version: 3.6.3 (Released June 5, 2013)
+Version: 3.7.0 (Planned Release: Early-June, 2013)
 
 ---
 
 [**Download**](http://fineuploader.com/downloads.html) | [**Blog**](http://blog.fineuploader.com/) | [**Changelog**](http://blog.fineuploader.com/2013/05/fine-uploader-36.html) 
+
+**Develop**: [![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=develop)
 
 Fine Uploader attempts to achieve a user-friendly file-uploading experience over the web.
 It's built as a Javascript plugin for developers looking to incorporate file-uploading into their website.
@@ -138,15 +140,6 @@ If you are having other issues, please read [the FAQ section](docs/faq.md) befor
 ### Issue Tracker ###
 Have a bug or feature request? Please [create an issue here on GitHub](https://github.com/Widen/fine-uploader/issues) 
 that conforms with [necolas's guidelines](https://github.com/necolas/issue-guidelines/blob/master/README.md).
-
-
-<br/>
-### Build Status ###
-**Master**: [![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=master)
-
-**Develop**: [![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=develop)
-
-Fine-Uploader is continuously integrated with [Travis-CI](https://www.travis-ci.org/).
 
 
 <br/>
