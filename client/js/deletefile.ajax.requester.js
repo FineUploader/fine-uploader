@@ -19,7 +19,7 @@ qq.DeleteFileAjaxRequestor = function(o) {
             },
             log: function(str, level) {},
             onDelete: function(id) {},
-            onDeleteComplete: function(id, xhr, isError) {}
+            onDeleteComplete: function(id, xhrOrXdr, isError) {}
         };
 
     qq.extend(options, o);
@@ -52,7 +52,8 @@ qq.DeleteFileAjaxRequestor = function(o) {
         demoMode: options.demoMode,
         log: options.log,
         onSend: options.onDelete,
-        onComplete: options.onDeleteComplete
+        onComplete: options.onDeleteComplete,
+        cors: options.cors
     });
 
 

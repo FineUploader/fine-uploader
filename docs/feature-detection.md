@@ -24,4 +24,5 @@ Note, this will also return true for browsers that are not explicitly supported 
 * `progressBar`: Can upload progress be reported client-side?
 * `uploadCors`: Are cross-domain uploads supported?
 * `deleteFileCors`: Are cross-domain delete file requests supported?
+* `deleteFileCorsXhr`: Are cross-domain delete file requests supported via `XMLHttpRequest`?
 * `canDetermineSize`: Can file size be determined client-side?

@@ -3,7 +3,8 @@ package fineuploader;
 import org.apache.commons.fileupload.FileItem;
 
 import javax.servlet.http.HttpServletRequest;
-
+import java.io.BufferedReader;
+import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,8 +48,15 @@ public class RequestParser
 
         if (multipartUploadParser == null)
         {
-            requestParser.filename = request.getParameter(FILENAME_PARAM);
-            parseQueryStringParams(requestParser, request);
+            if (request.getMethod().equals("POST") && request.getContentType() == null)
+            {
+                parseXdrPostParams(request, requestParser);
+            }
+            else
+            {
+                requestParser.filename = request.getParameter(FILENAME_PARAM);
+                parseQueryStringParams(requestParser, request);
+            }
         }
         else
         {
@@ -200,5 +208,57 @@ public class RequestParser
                 paramIterator.remove();
             }
         }
+    }
+
+    private static void parseXdrPostParams(HttpServletRequest request, RequestParser requestParser) throws Exception
+    {
+        String queryString = getQueryStringFromRequestBody(request);
+        String[] queryParams = queryString.split("&");
+
+        for (String queryParam : queryParams)
+        {
+            String[] keyAndVal = queryParam.split("=");
+            String key = URLDecoder.decode(keyAndVal[0], "UTF-8");
+            String value = URLDecoder.decode(keyAndVal[1], "UTF-8");
+
+            if (key.equals(UUID_PARAM))
+            {
+                requestParser.uuid = value;
+            }
+            else if (key.equals(METHOD_PARAM))
+            {
+                requestParser.method = value;
+            }
+            else
+            {
+                requestParser.customParams.put(key, value);
+            }
+        }
+    }
+
+    private static String getQueryStringFromRequestBody(HttpServletRequest request) throws Exception
+    {
+        StringBuilder content = new StringBuilder();
+        BufferedReader reader = null;
+
+        try
+        {
+            reader = request.getReader();
+            char[] chars = new char[128];
+            int bytesRead;
+            while ( (bytesRead = reader.read(chars)) != -1 )
+            {
+                content.append(chars, 0, bytesRead);
+            }
+        }
+        finally
+        {
+            if (reader != null)
+            {
+                reader.close();
+            }
+        }
+
+        return content.toString();
     }
 }

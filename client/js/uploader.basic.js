@@ -33,14 +33,14 @@ qq.FineUploaderBasic = function(o) {
             onUploadChunk: function(id, name, chunkData){},
             onResume: function(id, fileName, chunkData){},
             onProgress: function(id, name, loaded, total){},
-            onError: function(id, name, reason, maybeXhr) {},
+            onError: function(id, name, reason, maybeXhrOrXdr) {},
             onAutoRetry: function(id, name, attemptNumber) {},
             onManualRetry: function(id, name) {},
             onValidateBatch: function(fileOrBlobData) {},
             onValidate: function(fileOrBlobData) {},
             onSubmitDelete: function(id) {},
             onDelete: function(id){},
-            onDeleteComplete: function(id, xhr, isError){},
+            onDeleteComplete: function(id, xhrOrXdr, isError){},
             onPasteReceived: function(blob) {},
             onStatusChange: function(id, oldStatus, newStatus) {}
         },
@@ -103,7 +103,8 @@ qq.FineUploaderBasic = function(o) {
         },
         cors: {
             expected: false,
-            sendCredentials: false
+            sendCredentials: false,
+            allowXdr: false
         },
         blobs: {
             defaultName: 'misc_data',
@@ -494,9 +495,9 @@ qq.FineUploaderBasic.prototype = {
                 self._onDelete(id);
                 self._options.callbacks.onDelete(id);
             },
-            onDeleteComplete: function(id, xhr, isError) {
-                self._onDeleteComplete(id, xhr, isError);
-                self._options.callbacks.onDeleteComplete(id, xhr, isError);
+            onDeleteComplete: function(id, xhrOrXdr, isError) {
+                self._onDeleteComplete(id, xhrOrXdr, isError);
+                self._options.callbacks.onDeleteComplete(id, xhrOrXdr, isError);
             }
 
         });
@@ -606,8 +607,23 @@ qq.FineUploaderBasic.prototype = {
         }
     },
     _isDeletePossible: function() {
-        return (this._options.deleteFile.enabled &&
-            (!this._options.cors.expected || qq.supportedFeatures.deleteFileCors));
+        if (!this._options.deleteFile.enabled) {
+            return false;
+        }
+
+        if (this._options.cors.expected) {
+            if (qq.supportedFeatures.deleteFileCorsXhr) {
+                return true;
+            }
+
+            if (qq.supportedFeatures.deleteFileCorsXdr && this._options.cors.allowXdr) {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
     },
     _onSubmitDelete: function(id, onSuccessCallback) {
         if (this._isDeletePossible()) {
@@ -627,13 +643,21 @@ qq.FineUploaderBasic.prototype = {
     _onDelete: function(id) {
         this._uploadData.setStatus(id, qq.status.DELETING);
     },
-    _onDeleteComplete: function(id, xhr, isError) {
+    _onDeleteComplete: function(id, xhrOrXdr, isError) {
         var name = this._handler.getName(id);
 
         if (isError) {
             this._uploadData.setStatus(id, qq.status.DELETE_FAILED);
             this.log("Delete request for '" + name + "' has failed.", "error");
-            this._options.callbacks.onError(id, name, "Delete request failed with response code " + xhr.status, xhr);
+
+            // For error reporing, we only have accesss to the response status if this is not
+            // an `XDomainRequest`.
+            if (xhrOrXdr.withCredentials === undefined) {
+                this._options.callbacks.onError(id, name, "Delete request failed", xhrOrXdr);
+            }
+            else {
+                this._options.callbacks.onError(id, name, "Delete request failed with response code " + xhrOrXdr.status, xhrOrXdr);
+            }
         }
         else {
             this._uploadData.setStatus(id, qq.status.DELETED);
