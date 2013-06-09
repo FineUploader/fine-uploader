@@ -237,10 +237,13 @@ qq.AjaxRequestor = function (o) {
 
         // If this is a CORS request and a simple method with simple headers are used
         // on an `XMLHttpRequest`, exclude these specific non-simple headers
-        // in an attempt to prevent preflighting.
-        if (!options.cors.expected || (!isSimpleMethod() || containsNonSimpleHeaders(customHeaders))) {
-            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            xhr.setRequestHeader("Cache-Control", "no-cache");
+        // in an attempt to prevent preflighting.  `XDomainRequest` does not support setting
+        // request headers, so we will take this into account as well.
+        if (isXdr(xhr)) {
+            if (!options.cors.expected || (!isSimpleMethod() || containsNonSimpleHeaders(customHeaders))) {
+                xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                xhr.setRequestHeader("Cache-Control", "no-cache");
+            }
         }
 
         // Assuming that all POST and PUT requests will need to be URL encoded.
