@@ -48,6 +48,7 @@ qq.supportedFeatures = (function () {
         if (window.XMLHttpRequest) {
             var xhr = new XMLHttpRequest();
 
+            //Commonly accepted test for XHR CORS support.
             return xhr.withCredentials !== undefined;
         }
 
@@ -105,7 +106,7 @@ qq.supportedFeatures = (function () {
         progressBar: supportsAjaxFileUploading,
         uploadCors: supportsUploadCors,
         deleteFileCorsXhr: supportsDeleteFileCorsXhr,
-        deleteFileCorsXdr: supportsDeleteFileXdr,
+        deleteFileCorsXdr: supportsDeleteFileXdr, //NOTE: will also return true in IE10, where XDR is also supported
         deleteFileCors: supportsDeleteFileCors,
         canDetermineSize: supportsAjaxFileUploading
     }

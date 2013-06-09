@@ -56,9 +56,11 @@ qq.AjaxRequestor = function (o) {
     }
 
     function isXdr(xhr) {
-        return xhr.withCredentials === undefined;
+        //The `withCredentials` test is a commonly accepted way to determine if XHR supports CORS.
+        return options.cors.expected && xhr.withCredentials === undefined;
     }
 
+    // Returns either a new `XMLHttpRequest` or `XDomainRequest` instance.
     function getCorsAjaxTransport() {
         var xhrOrXdr;
 
@@ -73,6 +75,7 @@ qq.AjaxRequestor = function (o) {
         return xhrOrXdr;
     }
 
+    // Returns either a new XHR/XDR instance, or an existing one for the associated `File` or `Blob`.
     function getXhrOrXdr(id, dontCreateIfNotExist) {
         var xhrOrXdr = requestState[id].xhr;
 
@@ -90,9 +93,7 @@ qq.AjaxRequestor = function (o) {
         return xhrOrXdr;
     }
 
-    /**
-     * Removes element from queue, sends next request
-     */
+    // Removes element from queue, sends next request
     function dequeue(id) {
         var i = qq.indexOf(queue, id),
             max = options.maxConnections,
@@ -159,6 +160,7 @@ qq.AjaxRequestor = function (o) {
 
         url = createUrl(id, params);
 
+        // XDR and XHR status detection APIs differ a bit.
         if (isXdr(xhr)) {
             xhr.onload = getXdrLoadHandler(id);
             xhr.onerror = getXdrErrorHandler(id);
@@ -167,6 +169,7 @@ qq.AjaxRequestor = function (o) {
             xhr.onreadystatechange = getXhrReadyStateChangeHandler(id);
         }
 
+        // The last parameter is assumed to be ignored if we are actually using `XDomainRequest`.
         xhr.open(method, url, true);
 
         // Instruct the transport to send cookies along with the CORS request,
