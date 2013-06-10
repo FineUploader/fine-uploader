@@ -1,6 +1,6 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-Version: 3.7.0 (Planned Release: Early-June, 2013)
+Version: 3.7.0 (Planned Release: early July, 2013)
 
 ---
 
