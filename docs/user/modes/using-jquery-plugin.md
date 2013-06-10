@@ -1,16 +1,9 @@
 ## Using the optional jQuery plug-in ##
-A jQuery plug-in exists that wraps the native Fine Uploader code.  If you would like to reap all of the benefits that
-a jQuery plug-in offers, such as use of jQuery Events, specifying elements using the jQuery object/jQuery selectors,
-easy integration into your otherwise jQuery project: look no further!
 
-To use the jQuery plug-in, ensure you include the proper Fine Uploader js file on your page, and instantiate it like so:
-```javascript
-$('#fineUploaderElementId').fineUploader({
-    request: {
-        endpoint: '/upload/endpoint'
-    }
-});
-```
+Fine Uploader also provides an optional jQuery plug-in.  This simply wraps the native uploader code.  You can use either of
+the modes described above when using the jQuery plug-in via the `uploaderType` option.  More on the plug-in in the
+[jQuery plug-in section](docs/using-jquery-plugin.md).
+
 **It is important to understand that the target of your plug-in should be an existing container element for your upload
 component, *NOT* the button element.  Your button element must be specified separately via the `button` option.**
 

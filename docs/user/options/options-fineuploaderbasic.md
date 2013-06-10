@@ -1,4 +1,4 @@
-## FineUploaderBasic mode options ##
+## FineUploaderBasic mode options
 <table>
     <thead>
         <tr>

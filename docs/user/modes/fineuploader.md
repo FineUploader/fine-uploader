@@ -1,4 +1,9 @@
-## FineUploader mode users ##
+## FineUploader mode ##
+
+FineUploader mode is the easiest way to get started with a dependency-free FineUploader. This mode provides a customizable UI, drag and drop support, progress bars, status messages, a file list with color-coded status indicators, and other UI niceties. Most developers will likely opt to use FineUploader mode.
+
+FineUploader mode is defined in the `qq.FineUploader` module in the code.  It inherits everything from [FineUploaderBasic](fineuploaderbasic.md).
+
 1. Download the latest released native javascript plug-in from the [Downloads](http://fineuploader.com/downloads.html) section.
 2. Read the [getting started for non-jQuery users](native-getting-started.md).
 3. Read about the available [FineUploaderBasic mode options](options-fineuploaderbasic.md).

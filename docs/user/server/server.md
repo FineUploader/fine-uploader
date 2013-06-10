@@ -1,5 +1,7 @@
 # Server-Side Notes & Requirements #
 
+In the server folder you will find some examples for different platforms. If you can't find the one you need, please read up on the server-side guidelines handling multipart form requests and XHR upload requests in your server-side language of choice.
+
 Note that you can fine server-side examples in the [Fine Uploader Server repository](https://github.com/Widen/fine-uploader-server).
 
 ## Handling the request (defaults) ##
