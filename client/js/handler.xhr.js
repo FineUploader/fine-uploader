@@ -1,5 +1,5 @@
 /*globals qq, File, XMLHttpRequest, FormData, Blob*/
-qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChange, logCallback) {
+qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCallback) {
     "use strict";
     
     var options = o,
