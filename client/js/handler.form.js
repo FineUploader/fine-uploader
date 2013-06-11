@@ -1,6 +1,6 @@
 /*globals qq, document, setTimeout*/
 /*globals clearTimeout*/
-qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChange, logCallback) {
+qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChanged, logCallback) {
     "use strict";
 
     var options = o,
