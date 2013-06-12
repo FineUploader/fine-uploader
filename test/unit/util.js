@@ -1,100 +1,287 @@
 $(function () { 
-    var $fixture = $("#qunit-fixture");
     
-    // // isObject
-    module('isObject')
+    module('Util')
 
-        test('should return true for an empty Object', function() {
+        test('hide - should hide an element.', function () {
+            var el, $el, $fixture;
+            $fixture = $("#qunit-fixture");
+            $fixture.append("<div id='foo'></div>");
+            $el = $fixture.find("#foo");
+            el = qq($el[0]);
+            
+            notEqual($el.css('display'), 'none');
+            el.hide();
+            equal($el.css('display'), 'none');
+        });
+
+        test('attach - should attach an event to an element.', function () {
+            var el, $el, $fixture;
+            $fixture = $("#qunit-fixture");
+            $fixture.append("<div id='foo'></div>");
+            $el = $fixture.find("#foo");
+            el = qq($el[0]);
+            
+            el.attach('click', function () {
+                ok(true);
+            });  
+
+            $el.trigger('click');
+        });
+
+        test('detach - should detach an event from an element.', function () {
+            expect(0);
+            var el, $el, $fixture;
+            $fixture = $("#qunit-fixture");
+            $fixture.append("<div id='foo'></div>");
+            $el = $fixture.find("#foo");
+            el = qq($el[0]);
+
+            var detacher = el.attach('click', function () {
+                ok(false);
+            });
+            detacher();
+            
+            $el.trigger('click');
+        }); 
+
+        test('contains - should return true if the element contains itself', function () {
+            var $fixture, $el, el;
+            $fixture = $("#qunit-fixture");
+            $fixture.append("<div id='foo'></div>");
+            
+            $el = $fixture.find("#foo");
+            el = $el[0];
+            ok(qq(el).contains(el));
+        });
+
+        test('contains - should return true if the element contains the descendant', function () {
+            var $fixture, $el, el;
+            $fixture = $("#qunit-fixture");
+            $fixture.append("<div id='foo'></div>");
+            
+            $el = $fixture.find("#foo");
+            el = $el[0];
+            ok(qq($fixture[0]).contains(el));
+        });
+
+        test('contains - should return false if the element does not contain the descendant', function () {
+            var $fixture, $el, el;
+            $fixture = $("#qunit-fixture");
+            $fixture.append("<div id='foo'></div>");
+            
+            $el = $fixture.find("#bar");
+            el = $el[0];
+            ok(!qq($fixture[0]).contains(el));
+        });
+
+        test('insertBefore', function () {
+            var el, $el, elB, $elB, $fixture;
+            $fixture = $("#qunit-fixture");
+            $fixture.append("<div id='foo'></div>");
+            
+            $elB = $("#foo");
+            elB = $elB[0];
+            
+            $el = $("<div/>").html("<div id='bar'></div>").contents();
+            el = $el[0];
+
+            // insert `el` before `elB`
+            qq(el).insertBefore(elB);
+            
+            ok($fixture.find("#bar").length > 0);
+        });
+
+        test('remove', function () {
+            var el, $el, elB, $elB, $fixture;
+            $fixture = $("#qunit-fixture");
+            $fixture.append("<div id='foo'></div>");
+            
+            $el = $fixture.find("#foo");
+            $el.append("<div id='bar'></div>");
+            el = $el[0];
+
+            $elB = $el.find("#bar");
+            elB = $elB[0];
+
+            qq(el).remove(elB);
+            equal($fixture.find("#bar").length, 0);
+        });
+
+        // test('css', function () {
+        //     var el, $el, $fixture;
+        //     $fixture = $("#qunit-fixture");
+        //     $fixture.append("<div id='foo'></div>");
+
+        //     $el = $fixture.find("#foo");
+        //     el = qq($el[0]);
+
+        //     //qq(el).css({ display: 'block' });
+        //     el.css({ display: 'block' });
+        //     equal($("#foo").css('display'), 'block');
+
+        //     el.css({ display: 'inline' });
+        //     equal($("#foo").css('display'), 'inline');
+
+        //     // @TODO: bug here?
+        //     el.css({ float: 'left' });
+        //     equal($("#foo").css('display'), 'inline');
+        //     equal($("#foo").css('float'), 'left');
+        //     //equal($("#foo").css('display'), 'inline');
+        //     //equal($("#foo").css('float'), 'left');
+
+        // });
+
+        test('hasClass', function () {
+            var el = document.createElement('div');
+            $(el).addClass('derp');
+            ok(qq(el).hasClass('derp'));
+
+            ok(!qq(el).hasClass("Derp"));
+        });
+
+        test('addClass', function () {
+            var el = document.createElement('div');     
+            qq(el).addClass('derp');
+            ok($(el).hasClass('derp'));
+        });
+
+        test('removeClass', function () {
+            var el = document.createElement('div');
+            $(el).addClass('derp');
+            qq(el).removeClass('derp');
+            ok(!$(el).hasClass('derp'));
+        });
+
+        test('getByClass', function () {
+            var $fixture, results, expected;
+            results = []
+            $fixture = $("#qunit-fixture");
+            var q = qq($fixture[0]);
+            $fixture.append("<div class='foo'></div>");
+            $fixture.append("<div class='bar'></div>");
+            $fixture.append("<div class='foo bar'></div>");
+
+            results = q.getByClass("foo");
+            equal(results.length, 2);
+
+            results = q.getByClass("bar");
+            equal(results.length, 2);
+
+            // results = q.getByClass("foo bar");
+            // equal(results.length, 1);
+        });
+
+        test('children', function () {
+            var $fixture, results, expected;
+            results = []
+            $fixture = $("#qunit-fixture");
+            var q = qq($fixture[0]);
+            $fixture.append("<div class='foo'></div>");
+            $fixture.append("<div class='bar'></div>");
+            $fixture.append("<div class='foo bar'></div>");
+             
+            results = q.children();
+            equal(results.length, 3)
+        });
+
+        test('setText', function () {
+            var el = document.createElement('p');
+            qq(el).setText("Herp Derp");
+            equal($(el).text(), "Herp Derp");
+        });
+
+        test('clearText', function () {
+            var el = document.createElement('p');
+            $(el).text("Herp Derp");
+            qq(el).clearText();
+            equal($(el).text(), "")
+        });
+
+        test('isObject - should return true for an empty Object', function() {
             ok(qq.isObject({})); 
         });
 
-        test('should return true for a simple Object', function () {
+        test('isObject - should return true for a simple Object', function () {
             ok(qq.isObject({ foo: 'bar' }));
         });
 
-        test('should return true for a newed up Object', function() {
+        test('isObject - should return true for a newed up Object', function() {
+            /* jshint -W010 */
             ok(qq.isObject(new Object())); 
         });
 
-        test('should return false for a function', function () {
+        test('isObject - should return false for a function', function () {
             ok(!qq.isObject(function(){})); 
         });
 
-        test('should return false for null', function () {
+        test('isObject - should return false for null', function () {
             ok(!qq.isObject(null));
         });
 
-        test('should return false for an array', function () {
+        test('isObject - should return false for an array', function () {
             ok(!qq.isObject([]));
         });
 
-        test('should return undefined for an undefined', function () {
+        test('isObject - should return undefined for an undefined', function () {
             ok(!qq.isObject(undefined));
         });
 
-    // isFunction
-    module('isFunction')
-
-        test ('should return true for an empty simple function', function () {
+        test ('isFunction - should return true for an empty simple function', function () {
             ok(qq.isFunction(function() {}));
         });
 
-        test('should return false for an Object', function () {
+        test('isFunction - should return false for an Object', function () {
             ok(!qq.isFunction({})); 
         });
 
     // isArray
-    module('isArray') 
-        test('should return true for an empty array', function () {
+        test('isArray - should return true for an empty array', function () {
             ok(qq.isArray([]));
         });
 
-        test('should return true for a basic array', function () {
+        test('isArray - should return true for a basic array', function () {
             ok(qq.isArray([1, "foo", { herp: "derp" }]));
         });
         
-        test('should return false for a string', function () {
+        test('isArray - should return false for a string', function () {
             ok(!qq.isArray("Herp derp"));
         });
 
     // isString
-    module('isString') 
-         test('should return true for the empty string', function () {
+         test('isString - should return true for the empty string', function () {
              ok(qq.isString(''));
          });
 
-         test('should return true for a string wtesth characters', function () {
+         test('isString - should return true for a string wtesth characters', function () {
              ok(qq.isString('Herp derp'));
          });
 
     // trimStr
-    module('trimStr')
-         test('can trim around string', function () {
+         test('trimStr - can trim around string', function () {
              equal(qq.trimStr(' blah '), 'blah');
          });
 
-         test('can trim after string', function () {
+         test('trimStr - can trim after string', function () {
              equal(qq.trimStr('blah '), 'blah');
          });
 
-         test('can trim before string', function () {
+         test('trimStr - can trim before string', function () {
              equal(qq.trimStr(' blah'), 'blah');
          });
 
-         test('can trim wtesth nothing to trim', function () {
+         test('trimStr - can trim wtesth nothing to trim', function () {
              equal(qq.trimStr('blah'), 'blah');
          });
 
-         test('can trim a string wtesth many spaces everywhere', function () {
+         test('trimStr - can trim a string wtesth many spaces everywhere', function () {
              equal(qq.trimStr('bl a h'), 'bl a h');
          });
 
-         test('can trim the empty string', function () {
+         test('trimStr - can trim the empty string', function () {
              equal(qq.trimStr(''), '');
          });
 
-    module('File API Support')
-        test('can detect and identify a file if possible', function () {
+        test('isFile - can detect and identify a file if possible', function () {
             try {
                 ok(qq.isFile(new File()));
             } catch (ex) {
@@ -102,8 +289,9 @@ $(function () {
             }
         });
 
-        test("can detect and identify an input of type file", function () {
-            var input;
+        test("isFile - can detect and identify an input of type file", function () {
+            var input, $fixture;
+            $fixture = $("#qunit-fixture");
             $fixture.append("<input id='foo' type='file'></input>");
             input = $fixture.find("#foo")[0]
             ok(qq.isInput(input));
@@ -111,9 +299,7 @@ $(function () {
         });
 
     // extend
-    module('extend')
-    
-        test('can extend simple objects', function () {
+        test('extend - can extend simple objects', function () {
             var testy = 
                 {   one: 'one', 
                     two: 'two', 
@@ -134,7 +320,7 @@ $(function () {
             deepEqual(new_testy.five, testy.five);
         });
 
-        test('can extend nested objects', function () {
+        test('extend - can extend nested objects', function () {
             var testy = 
                 {   one: 'one', 
                     two: 'two', 
@@ -156,7 +342,7 @@ $(function () {
             deepEqual(new_testy.four.c, testy.four.c);
         });
 
-        test('can extend non-nested objects', function () {
+        test('extend - can extend non-nested objects', function () {
             var testy = 
                 {   one: 'one', 
                     two: 'two', 
@@ -178,42 +364,38 @@ $(function () {
 
 
     // indexOf
-    module('indexOf')
-
-        test('should return true for a string that is present', function () {
+        test('indexOf - should return true for a string that is present', function () {
             var obj = { foo: 'bar' };
             var arr = ['a', obj, 3];
             equal(qq.indexOf(arr, 'a'), 0);
         });
 
-        test('should return true for an object that is present', function () {
+        test('indexOf - should return true for an object that is present', function () {
             var obj = { foo: 'bar' };
             var arr = ['a', obj, 3];
             equal(qq.indexOf(arr, obj), 1);
         });
 
-        test('should return true for a number that is present', function () {
+        test('indexOf - should return true for a number that is present', function () {
             var obj = { foo: 'bar' };
             var arr = ['a', obj, 3];
             equal(qq.indexOf(arr, 3), 2);
         });
 
-        test('should return false for an object that is not present due to strict equals', function () {
+        test('indexOf - should return false for an object that is not present due to strict equals', function () {
             var obj = { foo: 'bar' };
             var arr = ['a', obj, 3];
             equal(qq.indexOf(arr, { foo: 'bar' }), -1);
         });
 
-        test('should return false for an object that is not present at all', function () {
+        test('indexOf - should return false for an object that is not present at all', function () {
             var obj = { foo: 'bar' };
             var arr = ['a', obj, 3];
             equal(qq.indexOf(arr, 4), -1);
         });
 
     // getUniqueId
-    module('getUniqueId')
-        
-        test('should not collide for 10000 generations', function () {
+        test('getUniqueId - should not collide for 10000 generations', function () {
             var bucket = [];
             // generate a bucket of 1000 unique ids
             for (var i = 0; i < 10000; i++) {
@@ -223,22 +405,20 @@ $(function () {
             // check for duplicates
             bucket.sort();
             var last = bucket[0];
-            for (var i = 1; i < bucket.length; i++) {
-                notEqual(bucket[i], last);
-                last = bucket[i];
+            for (var j = 1; j < bucket.length; j++) {
+                notEqual(bucket[j], last);
+                last = bucket[j];
             }
         });
 
     // each
-    module('each')
-        
-        test('should provide value and testeration count ', function () {
+        test('each - should provide value and testeration count ', function () {
             qq.each([0, 1, 2], function (i, num) {
                 equal(i, num);
             });
         });
 
-        test('can allow testerating over objects', function () {
+        test('each - can allow testerating over objects', function () {
             var answers = [];
             var obj = { one: 1, two: 2, three: 3 };
             obj.constructor.prototype.four = 4;
@@ -246,28 +426,26 @@ $(function () {
             qq.each(obj, function (key, value) { answers.push(key); });
             equal(answers.join(', '), 'one, two, three');
 
-            var answers = [];
+            answers = [];
             qq.each(obj, function (key, value) { answers.push(value); });
             equal(answers.join(', '), '1, 2, 3');
         });
 
-        test('can handle a null properly', function () {
+        test('each - can handle a null properly', function () {
             var answers = 0;
             qq.each(null, function () { ++answers; });
             equal(0, answers);
         });
 
     // bind
-    module('bind')
-        
-        test('can bind a function to a context', function () {
+        test('bind - can bind a function to a context', function () {
             var context = { foo: 'bar' };
             var func = function (arg) { return 'foo: ' + (this.foo || arg); };
             var bound = qq.bind(func, context);
             equal(bound(), 'foo: bar');
         });
 
-        test('can bind wtesthout a context', function () {
+        test('bind - can bind wtesthout a context', function () {
             var context = { foo: 'bar' };
             var func = function (arg) { return 'foo: ' + (this.foo || arg); };
             var bound = qq.bind(func, null, 'bar');
@@ -277,9 +455,7 @@ $(function () {
         // test('can bind a function to 0, empty string, and false', function () {});
 
     // obj2url
-    module('obj2url')
-
-        test('can construct a URL wtesth a basic object as param', function () {
+        test('obj2url - can construct a URL wtesth a basic object as param', function () {
             var baseUrl = 'http://mydomain.com/upload';
             var urlWtesthEncodedPath = 'http://mydomain.com/upload%20me';
             var params1 = { one: 'one', two: 'two', three: 'three' };
@@ -292,7 +468,7 @@ $(function () {
             equal(controlUrl.param('a'), 'this is a test');
         });
 
-        test('can construct a URL wtesth a basic object as params', function () {
+        test('obj2url - can construct a URL wtesth a basic object as params', function () {
             var baseUrl = 'http://mydomain.com/upload';
             var urlWtesthEncodedPath = 'http://mydomain.com/upload%20me';
             var params1 = { one: 'one', two: 'two', three: 'three' };
@@ -307,7 +483,7 @@ $(function () {
             equal(controlUrl.param('three'), 'three');
         });
 
-        test('can construct a URL wtesth an embedded object as a param value', function () {
+        test('obj2url - can construct a URL wtesth an embedded object as a param value', function () {
             var baseUrl = 'http://mydomain.com/upload';
             var urlWtesthEncodedPath = 'http://mydomain.com/upload%20me';
             var params1 = { one: 'one', two: 'two', three: 'three' };
@@ -320,7 +496,7 @@ $(function () {
             equal(controlUrl.param('a').b, 'innerProp');
         });
 
-        test('can construct a URL wtesth a function as a param value', function () {
+        test('obj2url - can construct a URL wtesth a function as a param value', function () {
             var baseUrl = 'http://mydomain.com/upload';
             var urlWtesthEncodedPath = 'http://mydomain.com/upload%20me';
             var params1 = { one: 'one', two: 'two', three: 'three' };
@@ -333,7 +509,7 @@ $(function () {
             equal(controlUrl.param('a'), 'funky');
         });
 
-        test('can construct an empty URL wtesth params', function () {
+        test('obj2url - can construct an empty URL wtesth params', function () {
             var baseUrl = 'http://mydomain.com/upload';
             var urlWtesthEncodedPath = 'http://mydomain.com/upload%20me';
             var params1 = { one: 'one', two: 'two', three: 'three' };
@@ -344,7 +520,7 @@ $(function () {
             equal(varUrl, 'one=one&two=two&three=three');
         });
 
-        test('will leave encoded paths alone', function () {
+        test('obj2url - will leave encoded paths alone', function () {
             var baseUrl = 'http://mydomain.com/upload';
             var urlWtesthEncodedPath = 'http://mydomain.com/upload%20me';
             var params1 = { one: 'one', two: 'two', three: 'three' };
@@ -358,14 +534,7 @@ $(function () {
 
 
     // obj2FormData
-    module('obj2FormData', {
-        setup: function() {
-        },
-        teardown: function () {
-        }});
-        
-
-        test('can construct a URL wtesth a basic object as param', function () {
+        test('obj2formdata - can construct a URL wtesth a basic object as param', function () {
             var formData = function () {
                 var data = {};
                 return {
@@ -391,7 +560,7 @@ $(function () {
             formData.clear(); 
         });
 
-        test('can construct a URL wtesth an embedded object as param', function () {
+        test('obj2formdata - can construct a URL wtesth an embedded object as param', function () {
             var formData = function () {
                 var data = {};
                 return {
@@ -412,7 +581,7 @@ $(function () {
             equal(qq.obj2FormData(params2, formData).get('a[b]'), 'innerProp');
         });
 
-        test('can construct a URL wtesth a function as param', function () {
+        test('obj2formdata - can construct a URL wtesth a function as param', function () {
             var formData = function () {
                 var data = {};
                 return {
@@ -432,19 +601,9 @@ $(function () {
             var params3 = { a: function () { return 'funky'; }};
             equal(qq.obj2FormData(params3, formData).get('a'), 'funky');
         });
-
-    // obj2Inputs
-    module('obj2Inputs', { 
-        setup: function () { 
-            var params1 = { one: 'one', two: 'two', three: 'three' };
-            var params2 = { a : { b: 'innerProp' }};
-            var params3 = { a: function () { return 'funky'; }};
-    }});
        
-    // testing get/set/delete cookie(s)
-    module('cookies')
-
-        test('can perform CRUD on a cookie', function () {
+        // testing get/set/delete cookie(s)
+        test('cookies - can perform CRUD on a cookie', function () {
             var cookie_name1 = 'qq|cookieName1';
             var cookie_val1 = 'cookieVal1';
 
@@ -468,10 +627,8 @@ $(function () {
             equal(qq.getCookie(cookie_name2), undefined);
         });
 
-    // parseJson
-    module('parseJSON')
-
-        test('can parse JSON', function () {
+        // parseJson
+        test('parseJSON - can parse JSON', function () {
             var object = { a: 'a', b: 'b'};
             var json = JSON.stringify(object)
             var parsedJson = JSON.parse(json);
@@ -479,86 +636,110 @@ $(function () {
         });
 
 
-    module("isFile")
-        //testSkip("should work for a browser supporting the File API", function () {
-        //    var blob, file, reader;
-        //    try {
-        //        blob = new Blob([1, 2, 3, 4, 5, 6, 7, 8], { type: 'application/octet-binary' });
-        //        var reader = new FileReader();
-        //        file = reader.readAsBinaryString(blob);
-        //        console.log(file);
-        //        ok(qq.isFile(file));
-        //    } catch (ex) {
-        //       ok(qq.supportedFeatures.supportsAjaxFileUploading);  
-        //    }
-        //});
+        // test("should work for a browser supporting the File API", function () {
+        //     var blob, file, reader;
+        //     try {
+        //         blob = new Blob([1, 2, 3, 4, 5, 6, 7, 8], { type: 'application/octet-binary' });
+        //         reader = new FileReader();
+        //         file = reader.readAsBinaryString(blob);
+        //         ok(qq.isFile(file));
+        //     } catch (ex) {
+        //        ok(true);  
+        //     }
+        // });
         
-        //testSkip('should return true when comparing a File object created in another window', function () {
-        //    var frame1, frame2, file1, file2;
-        //    $fixture.append("<iframe id='frame1'></iframe>");
-        //    $fixture.append("<iframe id='frame2'></iframe>");
+        // test('should return true when comparing a File object created in another window', function () {
+        //     var frame1, frame2, file1, file2;
+        //     $fixture.append("<iframe id='frame1'></iframe>");
+        //     $fixture.append("<iframe id='frame2'></iframe>");
 
-        //    frame1 = $fixture.find("#frame1")[0];
-        //    frame2 = $fixture.find("#frame2")[0];
+        //     frame1 = $fixture.find("#frame1")[0];
+        //     frame2 = $fixture.find("#frame2")[0];
 
-        //    file1 = new frame1.contentWindow.File;
-        //    file2 = new frame2.contentWindow.File;
-        //    console.log(file1);
+        //     try {
+        //         file1 = new frame1.contentWindow.File;
+        //         file2 = new frame2.contentWindow.File;
 
-        //    ok(qq.isFile(file1));
-        //    ok(qq.isFile(file2));
-        //});
+        //         file1.onload(function () {
+        //              
+        //         })
+        //     } catch (ex) {
+        //         ok(true);
+        //     }
+
+        //     ok(qq.isFile(file1));
+        //     ok(qq.isFile(file2));
+        // });
 
     // isFileOrInput
     // @TODO: This is going to need some sort of DOM manipulation to work.
-    module('isFileOrInput')
-        test('should return false on a regular input element', function () {
-            var $input;
+        test('isFileOrInput - should return false on a regular input element', function () {
+            var $input, $fixture;
+            $fixture = $("#qunit-fixture");
             $fixture.append("<input id='bar'></input>");
             $input = $fixture.find("#bar");
             ok(!qq.isFileOrInput($input[0]), "must be a file input");
         });
     
-        test('should return true for a file-input field', function () {
-            var $input;
+        test('isFileOrInput - should return true for a file-input field', function () {
+            var $input, $fixture;
+            $fixture = $("#qunit-fixture");
             $fixture.append("<input id='bar2' type='file'></input>");
             $input = $fixture.find("#bar2");
             ok(qq.isFileOrInput($input[0]), "this is a file input");
         });
     
-        test('should return false on a div element', function () {
-            var $input;
+        test('isFileOrInput - should return false on a div element', function () {
+            var $input, $fixture;
+            $fixture = $("#qunit-fixture");
             $fixture.append("<div id='foo'></div>");
             $input = $fixture.find("#foo");
             ok(!qq.isFileOrInput($input[0]), "div is not an input");
         });
     
     // isInput
-    module('isInput')
-    
-        test('should return true on an input element', function () {
-
+        test('isInput - should return true on an input element', function () {
+            var $fixture;
+            $fixture = $("#qunit-fixture");
             $fixture.append("<input id='foo' type='file'></input>");
             var el = $("#foo")[0];
             ok(qq.isInput(el), "inputs are inputs");
         });
     
-        test('should return false on a div', function () {
+        test('isInput - should return false on a div', function () {
+            var $fixture;
+            $fixture = $("#qunit-fixture");
             $fixture.append("<div id='foo'></div>");
             var el = $('#foo')[0];
             ok(!qq.isInput(el), "divs are not inputs");
         });
     
-    
     // isBlob
-    module('isBlob')
-        
-        test('should identify BLOBs', function () {
+        test('isBlob - should identify BLOBs', function () {
             try { 
                 var blob = new Blob([1, 2, 3, 4, 5, 6, 7, 8], { type: 'application/octet-binary' });
                 ok(qq.isBlob(blob));
             } catch (ex) {
                 ok(true);                 
             }
+        });
+
+        // Dispose Support
+        // @TODO: modularize
+        test("DisposeSupport - should add disposers and dispose of them", function () {
+            var disposer = new qq.DisposeSupport(); 
+            disposer.addDisposer(function () {
+                ok(true); 
+            });
+
+            disposer.dispose();
+        });
+
+        test("DisposeSupport - should attach event handler and register de-attacher as disposer", function () {
+            var el, disposer;
+            disposer = new qq.DisposeSupport();
+            el = document.createElement('div');
+            disposer.attach(el, 'click', function () { ok(true); });
+            $(el).click();
         });
 });
