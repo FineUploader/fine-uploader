@@ -1,6 +1,6 @@
 ## Documentation
 
-Welcome to FineUploader's documentation. This documentation is divided into different parts. It's recommended that you start at the [Users' guide](#users's-guide) and afterwards head over to [Quickstart](#Quickstart). If you’d rather dive into the internals of FineUploader, check out the [API documentation](#api-reference). Common server-side examples are found in the [server examples repository](#Server-side).
+Welcome to FineUploader's documentation. This documentation is divided into different parts. It's recommended that you start at the [Users' guide](#userss-guide) and afterwards head over to [Quickstart](#quickstart). If you’d rather dive into the internals of FineUploader, check out the [API documentation](#api-reference). Common server-side examples are found in the [server examples repository](#server-side).
 
 ### User's Guide
 
