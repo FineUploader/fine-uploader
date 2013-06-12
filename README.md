@@ -2,7 +2,7 @@
 
 Version: 3.7.0 (Scheduled: Early July 2013)
 
-[![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=develop) 
+[![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=develop) | [![Selenium Test Status](https://saucelabs.com/buildstatus/feltnerm)](https://saucelabs.com/u/feltnerm)
 
 [**Download**](http://fineuploader.com/downloads.html) |
 [**Docs**](docs/documentation.md) |

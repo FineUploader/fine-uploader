@@ -1,6 +1,12 @@
 ## Development
 
 ### Build status
+
+#### Selenium
+[![Selenium Test Status](https://saucelabs.com/browser-matrix/fineuploader.svg)](https://saucelabs.com/u/fineuploader)
+
+#### Travis
+
 **Master**:    
 [![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=master)
 
