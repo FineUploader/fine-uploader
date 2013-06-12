@@ -5,7 +5,6 @@ node_js:
 before_install:
 - sudo apt-get update -qq
 - npm install -g grunt-cli
-- npm link grunt
 - git submodule update --init --recursive
 env:
   global:
