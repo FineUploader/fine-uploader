@@ -20,4 +20,4 @@ before_script:
     - grunt prepare
     - grunt build
 script:
-- grunt test-sauce
+- grunt travis 

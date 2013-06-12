@@ -65,10 +65,9 @@
     "grunt-coffeelint": "0.0.6",
     "grunt-version": "~0.2.2",
     "grunt-banner": "~0.1.4",
-    "grunt-complexity": "~0.1.3"
-  },
-  "dependencies": {
+    "grunt-complexity": "~0.1.3",
     "grunt-bower": "~0.5.1"
   },
+  "dependencies": {},
   "license": "GPL3"
 }

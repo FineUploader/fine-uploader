@@ -394,7 +394,7 @@ module.exports = (grunt) ->
                     urls: ['http://localhost:9001/index.html'] 
                     concurrency: 3
                     tunneled: true
-                    build: process.env.TRAVIS_JOB_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString();
+                    build: process.env.TRAVIS_JOB_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()
                     tags: [process.env.TRAVIS_BRANCH || 'local']
                     testname: 'qunit tests'
                     browsers: [
@@ -516,7 +516,19 @@ module.exports = (grunt) ->
     # Travis
     # ---------
     # @todo
-    grunt.registerTask 'travis', 'IN THE WORKS: Run on travis', []
+    grunt.registerTask 'check_for_pull_request_from_master', 'Fails if we are testing a pull request against master', ->
+        if (process.env.TRAVIS_BRANCH == 'master' and process.env.TRAVIS_PULL_REQUEST != 'false')
+            grunt.fail.fatal '''Woah there, buddy! Pull requests should be 
+            branched from develop!\n
+            Details on contributing pull requests found here: \n
+            https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md\n
+            '''
+
+    grunt.registerTask 'travis', [
+        'check_for_pull_request_from_master'
+        'test-sauce'
+    ]
+
     
     # Build
     # ----------
