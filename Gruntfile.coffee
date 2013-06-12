@@ -390,9 +390,12 @@ module.exports = (grunt) ->
         'saucelabs-qunit': 
             all:
                 options:
+
                     urls: ['http://localhost:9001/index.html'] 
                     concurrency: 3
                     tunneled: true
+                    build: process.env.TRAVIS_JOB_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString();
+                    tags: [process.env.TRAVIS_BRANCH || 'local']
                     testname: 'qunit tests'
                     browsers: [
                         {
