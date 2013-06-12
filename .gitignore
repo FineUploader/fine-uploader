@@ -17,7 +17,7 @@ hardcopy*
 selenium.log*
 
 pid.txt
-sauce_connect.log
+sauce_connect.log*
 fine-uploader/
 test/upload/*
 test/coverage/*
