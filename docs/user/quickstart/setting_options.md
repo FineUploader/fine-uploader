@@ -6,11 +6,13 @@ At this point in the tutorial you should have an index.html page with a FineUplo
 
 FineUploader comes with a wealth of options. The two most important ones are the endpoint and the element.
 
-    options = {
-        request: { endpoint: '/uploads' }
-        element: document.getElementById("fine-uploader")
-    }
-    
+```javascript
+options = {
+	request: { endpoint: '/uploads' }
+	element: document.getElementById("fine-uploader")
+}
+```
+
 _Note: if using the jQuery plugin, there is no need to set the element._
 
 #### Debug mode
@@ -24,11 +26,13 @@ Setting `auto upload: true` will mean that Fine Uploader will automatically send
 #### Retrying Uploads
 
 Networks can be unreliable, and if your upload fails, FineUpload offers the ability to retry. The `retry` option can be set to enable this:
-    
-       retry: {
-           enableAuto: true, // defaults to false
-           maxAutoAttempts: 5
-       }
+
+```javascript
+retry: {
+   enableAuto: true, // defaults to false
+   maxAutoAttempts: 5
+}
+```
        
 Now, user's have 5 attempts to retry their upload.
 
@@ -38,11 +42,13 @@ If a user has uploaded a file, but realized it was a mistake before aborting, th
 
 You can use the `deleteFile` option properties to control this feature:
 
-    deleteFile: {
-        enabled: true, // defaults to false
-        forceConfirm: true,
-        endpoint: '/uploads'
-    }
+```javascript
+deleteFile: {
+	enabled: true, // defaults to false
+	forceConfirm: true,
+	endpoint: '/uploads'
+}
+```
 
 A file is eligible for deletion only after it has been successfully uploaded. In FineUploader mode, if this feature is enabled, a customizable delete link will appear next to the file after it has successfully uploaded.
 
@@ -54,20 +60,22 @@ In FineUploaderBasic mode, you can send a delete request via the `deleteFile` AP
 
 Now our FineUploader instance should look like this:
 
-    var uploader = new qq.FineUploader({
-	        element: document.getElementById('fine-uploader'),
-	        request: {
-		        endpoint: '/uploads'
-	        },
-	        retry: {
-               enableAuto: true,
-               maxAutoAttempts: 5
-             },
-	        deleteFile: {
-                enabled: true,
-                endpoint: '/uploads'
-            }
-        });
+```javascript
+var uploader = new qq.FineUploader({
+        element: document.getElementById('fine-uploader'),
+        request: {
+	        endpoint: '/uploads'
+        },
+        retry: {
+       enableAuto: true,
+       maxAutoAttempts: 5
+     },
+        deleteFile: {
+        enabled: true,
+        endpoint: '/uploads'
+    }
+});
+```
 
 
 [Next](setting_up_server.md), you'll learn to set up a simple server to handle uploads.
