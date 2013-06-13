@@ -12,80 +12,80 @@ Let's rock! First, download express:
 
 Coooool. Create a new file in your text editor called `server.js`. Time to code the first part of the server:
 
-    javascript
-    var express = require('express')
-      , fs = require('fs')
-      , http = require('http')
-      , express = express();
-    var settings = {
-       port: 3000,
-       paths: {
-           static: __dirname + '/static',
-           uploads: __dirname + '/uploads',
-       }
-    };
-   
-    // Configure express to parse multipart form and URL encoded requests and set the upload path.
-    app.configure(function () {
-        app.set('port', settings.port);
-        app.use(express.bodyParser({ uploadDir: settings.paths.upload }));
-        app.use(app.router);
-       
-        app.use('/static', express.static(settings.paths.static));
-    });
-   
-    http.createServer(app).listen(app.get('port'), function () {
-        console.log('>> Node.js server listening on port: ' app.get('port'));
-    });
-   
-    // Root, serves index.html, which should contain your FineUploader instance.
-    app.get('/', function (req, res) {
-        res.set('Content-Type', 'text/html');
-        res.send(fs.readFileSync(__dirname + '/index.html'));
-    }
-   
-    // The endpoint for uploads
-    app.post("/uploads", function (req, res, next) {
+```javascript
+var express = require('express')
+  , fs = require('fs')
+  , http = require('http')
+  , express = express();
+var settings = {
+   port: 3000,
+   paths: {
+       static: __dirname + '/static',
+       uploads: __dirname + '/uploads',
+   }
+};
 
-       var savePath = settings.paths.uploads;
-       var filename, uuid, totalFileSize;
-
-       if (req.body) {
-           uuid = req.body.qquuid;
-           totalFileSize = req.body.qqtotalfilesize;
-       }
-
-       if (req.files.qqfile) {
-           var exists = fs.existsSync(req.files.qqfile.path);
-           fs.rename(req.files.qqfile.path, settings.paths.uploads + "/" + uuid, function (err) { 
-           if (err) {
-               console.log(">> Error!: " + error);
-               res.send(JSON.stringify({ success: false, error: err }), { 'Content-type': 'application/json' }, 200);
-           }
-           else {
-               console.log('File Uploaded! ' + settings.paths.uploads + "/" + uuid);
-               res.send(JSON.stringify({ success: true }), { 'Content-type': 'application/json' }, 200);
-           }});
-       } else {
-           res.send(JSON.stringify({ success: false, error: "No file sent!" }, { "Content-type": "application/json" }, 200));
-       }
-    });
+// Configure express to parse multipart form and URL encoded requests and set the upload path.
+app.configure(function () {
+    app.set('port', settings.port);
+    app.use(express.bodyParser({ uploadDir: settings.paths.upload }));
+    app.use(app.router);
    
-    // Our delete route
-    app.delete('/uploads/:uuid', function (req, res) {
-       var filename = settings.paths.uploads + "/" + req.params.uuid;
+    app.use('/static', express.static(settings.paths.static));
+});
 
-       fs.unlink(filename, function (err) {
-       if (err != null) {
-           console.log(">> Error!: " + err);
-           res.send(JSON.stringify({}), { 'Content-type': 'application/json' }, 404);
+http.createServer(app).listen(app.get('port'), function () {
+    console.log('>> Node.js server listening on port: ' app.get('port'));
+});
+
+// Root, serves index.html, which should contain your FineUploader instance.
+app.get('/', function (req, res) {
+    res.set('Content-Type', 'text/html');
+    res.send(fs.readFileSync(__dirname + '/index.html'));
+}
+
+// The endpoint for uploads
+app.post("/uploads", function (req, res, next) {
+
+   var savePath = settings.paths.uploads;
+   var filename, uuid, totalFileSize;
+
+   if (req.body) {
+       uuid = req.body.qquuid;
+       totalFileSize = req.body.qqtotalfilesize;
+   }
+
+   if (req.files.qqfile) {
+       var exists = fs.existsSync(req.files.qqfile.path);
+       fs.rename(req.files.qqfile.path, settings.paths.uploads + "/" + uuid, function (err) { 
+       if (err) {
+           console.log(">> Error!: " + error);
+           res.send(JSON.stringify({ success: false, error: err }), { 'Content-type': 'application/json' }, 200);
        }
        else {
-            console.log("File Deleted! " + filename);
-            res.send(JSON.stringify({ success: true }), { 'Content-type': 'application/json' } , 200);
-        }});
-    });
+           console.log('File Uploaded! ' + settings.paths.uploads + "/" + uuid);
+           res.send(JSON.stringify({ success: true }), { 'Content-type': 'application/json' }, 200);
+       }});
+   } else {
+       res.send(JSON.stringify({ success: false, error: "No file sent!" }, { "Content-type": "application/json" }, 200));
+   }
+});
 
+// Our delete route
+app.delete('/uploads/:uuid', function (req, res) {
+   var filename = settings.paths.uploads + "/" + req.params.uuid;
+
+   fs.unlink(filename, function (err) {
+   if (err != null) {
+       console.log(">> Error!: " + err);
+       res.send(JSON.stringify({}), { 'Content-type': 'application/json' }, 404);
+   }
+   else {
+        console.log("File Deleted! " + filename);
+        res.send(JSON.stringify({ success: true }), { 'Content-type': 'application/json' } , 200);
+    }});
+});
+```
 Sweet! We can now upload files to our server. Just use node to run it:
 
 `node server.js`
