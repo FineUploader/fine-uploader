@@ -104,6 +104,12 @@ Note that all [FineUploaderBasic mode options](options-fineuploaderbasic.md) are
             <td>Text that appears next to a failed file or `Blob` item</td>
         </tr>
         <tr>
+            <td>deleteButton</td>
+             <td>string</td>
+             <td>Delete</td>
+             <td>The delete file link text.</td>
+         </tr>
+         <tr> 
             <td>dragZone</td>
             <td>string</td>
             <td>Drop files here to upload</td>

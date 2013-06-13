@@ -1,4 +1,4 @@
-## FineUploaderBasic mode options ##
+## FineUploaderBasic mode options
 <table>
     <thead>
         <tr>
@@ -487,9 +487,9 @@ read about the [changes that occurred in 3.7 that optionally allow this](http://
             <td>string</td>
             <td>DELETE</td>
             <td>You can choose between a POST and a DELETE method for the delete file request sent by Fine Uploader.
-            Keep in mind that you should be using "POST" if you want to help ensure that the request will not be preflighted.
-            Please see the <a href="http://blog.fineuploader.com/2013/06/delete-files-via-post-and-delete.html">blog post
-            that describes how the delete file feature requests are constructed</a> based on the value of this option.</td>
+             Keep in mind that you should be using "POST" if you want to help ensure that the request will not be preflighted.
+             Please see the <a href="http://blog.fineuploader.com/2013/06/delete-files-via-post-and-delete.html">blog post
+             that describes how the delete file feature requests are constructed</a> based on the value of this option.</td>        
         </tr>
         <tr>
             <td>endpoint</td>
@@ -502,15 +502,15 @@ read about the [changes that occurred in 3.7 that optionally allow this](http://
             <td>object</td>
             <td>{}</td>
             <td>Any additional headers to attach to all delete file requests.  Note that you should generally avoid sending any
-            additional headers if you are using the "POST" verb to send this method, as this will require the browser to
-            preflight the request.  Also note that these headers will not be sent in IE9 and older if you are allowing
-            XDR requests in a cross-origin environment.</td>
+             additional headers if you are using the "POST" verb to send this method, as this will require the browser to
+             preflight the request.  Also note that these headers will not be sent in IE9 and older if you are allowing
+             XDR requests in a cross-origin environment.</td> 
         </tr>
         <tr>
             <td>params</td>
             <td>object</td>
             <td>{}</td>
-            <td>Any additional parameters to attach to delete file requests.  This works the exact same way as the
+            <td>Any additional parameters to attach to delete file requests.  This works the exact same way as the 
             <code>params</code> property of the <code>request</code> option.  Note that all parameters are sent in the
             query string for DELETE requests and the request body for POST requests.</td>
         </tr>
@@ -543,14 +543,14 @@ check out the server-side readme.
             <td>false</td>
             <td>Set this to true if you would like credentials (i.e. cookies) sent along with each CORS request.  Your response must,
             as a result, include the appropriate headers.  Note that this is ignored if `XDomainRequest` is being used
-            as it does not support credentialed cross-origin requests.</td>
-        </tr>
-        <tr>
-            <td>allowXdr</td>
-            <td>boolean</td>
-            <td>false</td>
-            <td>Set this to true if you would like to allow Fine Uploader to send cross-origin requests
-            from IE9 and older, where XDomainRequest must be used to handle these types of requests.</td>
+             as it does not support credentialed cross-origin requests.</td>
+         </tr>
+         <tr>
+             <td>allowXdr</td>
+             <td>boolean</td>
+             <td>false</td>
+             <td>Set this to true if you would like to allow Fine Uploader to send cross-origin requests
+             from IE9 and older, where XDomainRequest must be used to handle these types of requests.</td> 
         </tr>
     </tbody>
 </table>
