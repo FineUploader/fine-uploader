@@ -335,11 +335,13 @@ module.exports = (grunt) ->
             root_server:
                 options:
                     base: "."
+                    hostname: "0.0.0.0"
                     port: 9000
                     keepalive: true
             test_server:
                 options:
                     base: "test"
+                    hostname: "0.0.0.0"
                     port: 9001
 
         # Watching for changes
