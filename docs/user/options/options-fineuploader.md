@@ -86,7 +86,7 @@ Note that all [FineUploaderBasic mode options](options-fineuploaderbasic.md) are
             <td>The cancel button text (which is more of a link than a button).</td>
         </tr>
         <tr>
-            <td>retry</td>
+            <td>retryButton</td>
             <td>string</td>
             <td>Retry</td>
             <td>The retry (a failed upload) link text.</td>
@@ -98,6 +98,12 @@ Note that all [FineUploaderBasic mode options](options-fineuploaderbasic.md) are
             <td>Text that appears next to a failed file or `Blob` item</td>
         </tr>
         <tr>
+            <td>deleteButton</td>
+             <td>string</td>
+             <td>Delete</td>
+             <td>The delete file link text.</td>
+         </tr>
+         <tr> 
             <td>dragZone</td>
             <td>string</td>
             <td>Drop files here to upload</td>
