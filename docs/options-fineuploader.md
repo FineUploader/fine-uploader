@@ -86,10 +86,16 @@ Note that all [FineUploaderBasic mode options](options-fineuploaderbasic.md) are
             <td>The cancel button text (which is more of a link than a button).</td>
         </tr>
         <tr>
-            <td>retry</td>
+            <td>retryButton</td>
             <td>string</td>
             <td>Retry</td>
             <td>The retry (a failed upload) link text.</td>
+        </tr>
+        <tr>
+            <td>deleteButton</td>
+            <td>string</td>
+            <td>Delete</td>
+            <td>The delete file link text.</td>
         </tr>
         <tr>
             <td>failUpload</td>
