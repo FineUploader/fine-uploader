@@ -397,7 +397,7 @@ module.exports = (grunt) ->
                     concurrency: 3
                     tunneled: true
                     build: process.env.TRAVIS_JOB_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()
-                    tags: [process.env.TRAVIS_BRANCH || 'local #{process.env.USER}']
+                    tags: [ process.env.TRAVIS_BRANCH || "local :: " + process.env.USER ]
                     testname: 'qunit tests'
                     browsers: [
                         {
@@ -485,6 +485,7 @@ module.exports = (grunt) ->
     # Test
     # ----------
     grunt.registerTask 'test', 'Run headless unit tests', [
+        'prepare'
         'build'
         'copy:test'
         'connect:test_server'
@@ -494,7 +495,14 @@ module.exports = (grunt) ->
     # Test on Saucelabs
     # ----------
     grunt.registerTask 'test-sauce', 'Run tests on Saucelabs', [
+        'prepare'
         'build'
+        'copy:test'
+        'connect:test_server'
+        'saucelabs-qunit'
+    ]
+
+    grunt.registerTask 'travis-sauce', 'Run tests on Saucelabs', [
         'copy:test'
         'connect:test_server'
         'saucelabs-qunit'
@@ -503,7 +511,6 @@ module.exports = (grunt) ->
     # Watcher
     # ----------
     grunt.registerTask 'test-watch', 'Run headless unit-tests and re-run on file changes', [
-        'build'
         'test'
         'watch'
     ]
@@ -531,7 +538,7 @@ module.exports = (grunt) ->
 
     grunt.registerTask 'travis', [
         'check_for_pull_request_from_master'
-        'test-sauce'
+        'travis-sauce'
     ]
 
     
@@ -539,7 +546,8 @@ module.exports = (grunt) ->
     # ----------
     # @verify
     grunt.registerTask 'build', 'build from latest source', [
-        'concat',
+        'bower'
+        'concat'
         'minify'
         'usebanner'
     ]
@@ -558,7 +566,6 @@ module.exports = (grunt) ->
     # ----------
     grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', [
         'clean'
-        'bower'
         #'lint'
         'build'
         'test'
