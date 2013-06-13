@@ -485,6 +485,7 @@ module.exports = (grunt) ->
     # Test
     # ----------
     grunt.registerTask 'test', 'Run headless unit tests', [
+        'build'
         'copy:test'
         'connect:test_server'
         'qunit'
@@ -493,6 +494,7 @@ module.exports = (grunt) ->
     # Test on Saucelabs
     # ----------
     grunt.registerTask 'test-sauce', 'Run tests on Saucelabs', [
+        'build'
         'copy:test'
         'connect:test_server'
         'saucelabs-qunit'
@@ -501,6 +503,7 @@ module.exports = (grunt) ->
     # Watcher
     # ----------
     grunt.registerTask 'test-watch', 'Run headless unit-tests and re-run on file changes', [
+        'build'
         'test'
         'watch'
     ]
