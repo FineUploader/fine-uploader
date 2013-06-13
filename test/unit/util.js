@@ -74,6 +74,19 @@ $(function () {
             ok(!qq($fixture[0]).contains(el));
         });
 
+        test('contains - #887 account for IE7 bug in Node.contains which results in an error', function () {
+            var $fixture, el, el;
+            $fixture = $("#qunit-fixture");
+            $fixture.append("<div id='foo'></div>");
+
+            $el = $fixture.find("#foo");
+            el = $el[0];
+            equal(qq(el).contains(null), false, 
+                  "should return false when passed a `null` parameter");
+            equal(qq(el).contains(undefined), false, 
+                  "should return false when passed an `undefined` parameter");
+        })
+
         test('insertBefore', function () {
             var el, $el, elB, $elB, $fixture;
             $fixture = $("#qunit-fixture");
