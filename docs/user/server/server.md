@@ -86,6 +86,12 @@ parameter is sent with a value of "DELETE".  All POST request parameters are sen
 Success of the request will depend solely on the response code.  Acceptable response codes that indicate success are 200,
 202, and 204 for DELETE requests and 200 or 204 for POST requests.
 
+If you would like to enable the delete file feature for cross-origin environments in IE9 or older, you will need to set
+the `allowXdr` property of the `cors` client-side option and adjust your server-side code appropriately.  Keep in mind
+that the Content-Type will be absent from the request header, and credentials (cookies) and [non-simple headers](http://www.w3.org/TR/cors/#simple-header)
+cannot be sent.
+
+
 Please see [the latest blog post on the delete file feature](http://blog.fineuploader.com/2013/06/delete-files-via-post-and-delete.html)
 for more information.
 
