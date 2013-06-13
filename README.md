@@ -31,7 +31,7 @@ You only need to include one JavaScript file. There are absolutely no other depe
 window.onload = function () {
     var uploader = new qq.FineUploader({
         element: document.getElementById("fine-uploader"),
-        request: { endpoint: '/upload_bucket }
+        request: { endpoint: '/upload_bucket' }
     });   
 </script>
 ```
