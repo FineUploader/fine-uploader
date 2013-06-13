@@ -35,7 +35,7 @@ This area of the documentation is mostly prose and examples. It is meant to be h
 
 #### Browser Support
 
-* [IE Limitations](docs/user/limitations-ie.md)
+* [IE Limitations](user/limitations-ie.md)
 
 ### API Reference
 
