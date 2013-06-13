@@ -20,19 +20,21 @@ Fine Uploader aims to make file-uploading on the web possible in every browser a
 
 You only need to include one JavaScript file. There are absolutely no other dependencies. 
 
-    <script src="fine-uploader.js" type="text/javascript"></script>
-    
-    <!-- The element which will contain Fine Uploader -->
-    <div id="fine-uploader"></div>
-    
-    <script>        
-    // Create a Fine Uploader instance after the page has loaded.
-    window.onload = function () {
-        var uploader = new qq.FineUploader({
-            element: document.getElementById("fine-uploader"),
-            request: { endpoint: '/upload_bucket }
-        });   
-    </script>
+```html
+<script src="fine-uploader.js" type="text/javascript"></script>
+
+<!-- The element which will contain Fine Uploader -->
+<div id="fine-uploader"></div>
+
+<script>        
+// Create a Fine Uploader instance after the page has loaded.
+window.onload = function () {
+    var uploader = new qq.FineUploader({
+        element: document.getElementById("fine-uploader"),
+        request: { endpoint: '/upload_bucket }
+    });   
+</script>
+```
     
 You're now ready to upload! Told you it was easy.
     
