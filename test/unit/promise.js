@@ -1,48 +1,51 @@
-$(function() {
+describe('promise.js', function () {
 
-    // isPromise
-    module('Promise')
-
-        test("isPromise - should be return true for a new'd promise", function () {
+    describe('isPromise', function () {
+        it("returns true for a new'd promise", function () {
             var promise = new qq.Promise(); 
-            ok(qq.isPromise(promise));
+            assert.ok(qq.isPromise(promise), 
+               'a `new qq.Promise()` should be a promise');
         });
+    });
 
-        asyncTest("promise - should expect success pass", function(){
+    describe('Promise API', function () {
+
+        it("expects `success` callback", function(finish){
             var promise = new qq.Promise(); 
             promise.then(function(value){
-                ok(value);
-                start();
+                assert.ok(value);
+                finish();
             });
 
             promise.success(true);
         });
      
-        asyncTest("promise - should expect failure pass", function(){
+        it("expects `failure` callback", function(finish){
             var promise = new qq.Promise(); 
             promise.then(null, function(value){
-                ok(value);
-                start();
+                assert.ok(value);
+                finish()
             });
 
             promise.failure(true);
         });
 
-        asyncTest("promise - should expect done to be called", function () {
+        it("expects `done` to be callback", function (finish) {
             var promise = new qq.Promise();
             promise.done(function (value) {
-                ok(true);
-                start();
+                assert.ok(true);
+                finish()
             });
 
             promise.success();
         });
 
-      // asyncTest("should expect done to be called", function(){
-      //     var promise = new qq.Promise(); 
-      //     promise.done(function(value){
-      //         ok(true);
-      //     });
-      //     start();
-      // });
+      it.skip("expects done to be called", function(finish){
+          var promise = new qq.Promise(); 
+          promise.done(function(value){
+              assert.ok(true);
+              finish();
+          });
+      });
+    });
 });

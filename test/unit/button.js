@@ -1,58 +1,64 @@
-$(function () {
-    module('Button')
+describe('button.js', function () {
+    var $fixture, $input, input, button;
 
-        test('constructor', function () {
-            var button, input, $input;
-            var $fixture = $("#qunit-fixture");
-            $fixture.append("<div id='foo'></div>");
-            
-            button = new qq.UploadButton({
-                element: $fixture.find("#foo")[0],
-                multiple: true,
-                acceptFiles: "image/*,video/*,.test",
-                name: "testFile"
-            });
+    beforeEach(function () {
+        $fixture = helpme.withTests.createFixture();
+    });
 
-            input = button.getInput();
-            $input = $(input);
+    afterEach(function () {
+        helpme.withTests.destroyFixture(); 
+    })
 
-            notEqual(input, null);
-            equal($input.attr('type'), 'file')
-            equal($input.attr('accept'), "image/*,video/*,.test");
-            equal($input.attr('name'), "testFile");
-        });
-
-        test('reset', function () {
-            var button, input, $input, $fixture;
-            $fixture = $("#qunit-fixture");
-            $fixture.append("<div id='foo'></div>");
-
-            button = new qq.UploadButton({
-                element: $fixture.find("#foo")[0]
-            });
-
-            input = button.getInput();
-            $input = $(input);
-
-            button.reset();
-            notEqual($input[0], button.getInput());
-        });
-
+    it('constructor works', function () {
+        $fixture.append("<div id='foo'></div>");
         
-        // test('onChange callback', function () {
-        //     var button, input, $input;
-        //     var $fixture = $("#qunit-fixture");
-        //     $fixture.append("<div id='foo'></div>");
+        button = new qq.UploadButton({
+            element: $fixture.find("#foo")[0],
+            multiple: true,
+            acceptFiles: "image/*,video/*,.test",
+            name: "testFile"
+        });
 
-        //     button = new qq.UploadButton({
-        //         element: $fixture.find("#foo")[0],
-        //         onChange: function (input) {
-        //             ok(true); 
-        //         },
-        //     });
+        input = button.getInput();
+        $input = $(input);
 
-        //     button.dispatch('onChange');
-        //     
-        // });
+        assert.notEqual(input, null, 
+            'a newed up upload button should have a non-null input element');
+        assert.equal($input.attr('type'), 'file', 
+                     'the input type should be `file`')
+        assert.equal($input.attr('accept'), "image/*,video/*,.test", 
+                    'uploader should valid which files are accepted');
+        assert.equal($input.attr('name'), "testFile", 
+                    'the name of the upload button should be set');
+    });
+
+    it('reset works', function () {
+        $fixture.append("<div id='foo'></div>");
+
+        button = new qq.UploadButton({
+            element: $fixture.find("#foo")[0]
+        });
+
+        input = button.getInput();
+        $input = $(input);
+
+        button.reset();
+        assert.notEqual($input[0], button.getInput(), 
+               'resetting the button should clear the element from the DOM');
+    });
+
+    
+    it.skip('onChange callback', function () {
+        $fixture.append("<div id='foo'></div>");
+
+        button = new qq.UploadButton({
+            element: $fixture.find("#foo")[0],
+            onChange: function (input) {
+                ok(true); 
+            },
+        });
+
+        button.dispatch('onChange');
+    });
 
 });
