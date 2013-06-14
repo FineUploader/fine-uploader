@@ -287,6 +287,9 @@ qq.extend(qq.FineUploader.prototype, {
                 self.cancel(fileId);
             },
             onRetry: function(fileId) {
+                var item = self.getItemByFileId(fileId);
+
+                qq(item).removeClass(self._classes.retryable);
                 self.retry(fileId);
             },
             onGetName: function(fileId) {
