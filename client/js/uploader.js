@@ -162,7 +162,8 @@ qq.FineUploader = function(o){
             this._button = this._createUploadButton(this._find(this._element, 'button'));
         }
 
-        this._bindCancelAndRetryEvents();
+        this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
+        this._filenameClickHandler = this._bindFilenameClickEvent();
 
         this._dnd = this._setupDragAndDrop();
 
@@ -206,7 +207,13 @@ qq.extend(qq.FineUploader.prototype, {
         if (!this._options.button) {
             this._button = this._createUploadButton(this._find(this._element, 'button'));
         }
-        this._bindCancelAndRetryEvents();
+
+        this._deleteRetryOrCancelClickHandler.dispose();
+        this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
+
+        this._filenameClickHandler.dispose();
+        this._filenameClickHandler = this._bindFilenameClickEvent();
+
         this._dnd.dispose();
         this._dnd = this._setupDragAndDrop();
 
@@ -261,6 +268,49 @@ qq.extend(qq.FineUploader.prototype, {
                 dropLog: function(message, level) {
                     self.log(message, level);
                 }
+            }
+        });
+    },
+    _bindDeleteRetryOrCancelClickEvent: function() {
+        var self = this;
+
+        return new qq.DeleteRetryOrCancelClickHandler({
+            listElement: this._listElement,
+            classes: this._classes,
+            log: function(message, lvl) {
+                self.log(message, lvl);
+            },
+            onDeleteFile: function(fileId) {
+                self.deleteFile(fileId);
+            },
+            onCancel: function(fileId) {
+                self.cancel(fileId);
+            },
+            onRetry: function(fileId) {
+                self.retry(fileId);
+            },
+            onGetName: function(fileId) {
+                return self.getName(fileId);
+            }
+        });
+    },
+    _bindFilenameClickEvent: function() {
+        var self = this;
+
+        return new qq.FilenameClickHandler({
+            listElement: this._listElement,
+            classes: this._classes,
+            log: function(message, lvl) {
+                self.log(message, lvl);
+            },
+            onGetUploadStatus: function(fileId) {
+                return self.getUploads({id: fileId}).status;
+            },
+            onGetName: function(fileId) {
+                return self.getName(fileId);
+            },
+            onSetName: function(fileId, newName) {
+                self._handler.setName(fileId, newName);
             }
         });
     },
@@ -513,38 +563,6 @@ qq.extend(qq.FineUploader.prototype, {
 
         qq(sizeEl).css({display: 'inline'});
         qq(sizeEl).setText(sizeForDisplay);
-    },
-    /**
-     * delegate click event for cancel & retry links
-     **/
-    _bindCancelAndRetryEvents: function(){
-        var self = this,
-            list = this._listElement;
-
-        this._disposeSupport.attach(list, 'click', function(e){
-            e = e || window.event;
-            var target = e.target || e.srcElement;
-
-            if (qq(target).hasClass(self._classes.cancel) || qq(target).hasClass(self._classes.retry) || qq(target).hasClass(self._classes.deleteButton)){
-                qq.preventDefault(e);
-
-                var item = target.parentNode;
-                while(item.qqFileId === undefined) {
-                    item = item.parentNode;
-                }
-
-                if (qq(target).hasClass(self._classes.deleteButton)) {
-                    self.deleteFile(item.qqFileId);
-                }
-                else if (qq(target).hasClass(self._classes.cancel)) {
-                    self.cancel(item.qqFileId);
-                }
-                else {
-                    qq(item).removeClass(self._classes.retryable);
-                    self.retry(item.qqFileId);
-                }
-            }
-        });
     },
     _formatProgress: function (uploadedSize, totalSize) {
         var message = this._options.text.formatProgress;

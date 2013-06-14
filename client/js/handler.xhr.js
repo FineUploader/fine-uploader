@@ -89,9 +89,15 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
             url = endpoint,
             name = api.getName(id),
             size = api.getSize(id),
-            blobData = fileState[id].blobData;
+            blobData = fileState[id].blobData,
+            newName = fileState[id].newName;
 
         params[options.uuidParamName] = fileState[id].uuid;
+
+        if (newName !== undefined) {
+            //TODO use/generalize the chunking.paramNames.fileName property
+            params['qqfilename'] = newName;
+        }
 
         if (multipart) {
             params[options.totalFileSizeParamName] = size;
@@ -587,12 +593,16 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
 
             return id;
         },
-        getName: function(id){
+        getName: function(id) {
             if (api.isValid(id)) {
                 var file = fileState[id].file,
-                    blobData = fileState[id].blobData;
+                    blobData = fileState[id].blobData,
+                    newName = fileState[id].newName;
 
-                if (file) {
+                if (newName !== undefined) {
+                    return newName;
+                }
+                else if (file) {
                     // fix missing name in Safari 4
                     //NOTE: fixed missing name firefox 11.0a2 file.fileName is actually undefined
                     return (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
@@ -605,7 +615,10 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
                 log(id + " is not a valid item ID.", "error");
             }
         },
-        getSize: function(id){
+        setName: function(id, newName) {
+            fileState[id].newName = newName;
+        },
+        getSize: function(id) {
             /*jshint eqnull: true*/
             var fileOrBlob = fileState[id].file || fileState[id].blobData.blob;
 
