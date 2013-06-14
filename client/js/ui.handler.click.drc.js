@@ -27,11 +27,11 @@ qq.DeleteRetryOrCancelClickHandler = function(s) {
             qq.preventDefault(event);
 
             spec.log(qq.format("Detected valid cancel, retry, or delete click event on file '{}', ID: {}.", spec.onGetName(fileId), fileId));
-            deleteRetryOrCancel(target, item, fileId);
+            deleteRetryOrCancel(target, fileId);
         }
     }
 
-    function deleteRetryOrCancel(target, item, fileId) {
+    function deleteRetryOrCancel(target, fileId) {
         if (qq(target).hasClass(spec.classes.deleteButton)) {
             spec.onDeleteFile(fileId);
         }
@@ -39,7 +39,6 @@ qq.DeleteRetryOrCancelClickHandler = function(s) {
             spec.onCancel(fileId);
         }
         else {
-            qq(item).removeClass(spec.classes.retryable);
             spec.onRetry(fileId);
         }
     }
