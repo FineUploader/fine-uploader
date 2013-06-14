@@ -20,8 +20,11 @@ pid.txt
 sauce_connect.log*
 fine-uploader/
 test/upload/*
+test/uploadsTemp/
 test/coverage/*
 test/vendor/*
 test/uploads/*
 test/temp*
 node_modules/
+
+bin/
