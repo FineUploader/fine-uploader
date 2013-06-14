@@ -19,13 +19,23 @@ var helpme = (function () {
         },
 
         createAndTriggerMouseEvent: function(type, element) {
-            var eventCreator = document.createEvent || document.createEventObject,
-                event = eventCreator("MouseEvents");
+            var event;
 
-            event.initMouseEvent(type, true, true, window,
-                0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            if (document.createEvent) {
+                event = document.createEvent("MouseEvents");
+            }
+            else {
+                event = document.createEventObject();
+            }
 
-            element.dispatchEvent(event);
+            if (event.initMouseEvent && element.dispatchEvent) {
+                event.initMouseEvent(type, true, true, window,
+                    0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                element.dispatchEvent(event);
+            }
+            else {
+                element.fireEvent(qq.format('on{}', type), event);
+            }
         },
     
         createFineUploader: function (options, request, validation) {
