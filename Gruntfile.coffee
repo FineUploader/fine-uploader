@@ -6,6 +6,21 @@ module.exports = (grunt) ->
     # Utilities
     # ==========
     path = require 'path'
+    request = require 'request'
+    Q = require 'Q'
+    api = (url, method, data, username, accessKey) ->
+            deferred = Q.defer()
+            request
+                method: method
+                uri: ["https://", username, ":", accessKey, "@saucelabs.com/rest", url].join("")
+                headers:
+                    'Content-Type': 'application/json'
+                body: JSON.stringify(data)
+                (err, res, body) ->
+                    grunt.write.debug "body: " + body
+                    grunt.write.debug "res.body: " + res.body
+                    deferred.resolve res.body
+            return deferred.promise
 
     # Package
     # ==========
@@ -32,7 +47,7 @@ module.exports = (grunt) ->
         './client/js/handler.form.js',
         './client/js/handler.xhr.js',
     ]
-    
+
     # jQuery plugin modules
     jquery = core.concat './client/js/jquery-plugin.js',
                          './client/js/jquery-dnd.js'
@@ -46,10 +61,62 @@ module.exports = (grunt) ->
         './LICENSE'
     ]
 
+    browsers = [
+        {
+            browserName: 'chrome'
+            platform: 'Windows 7'
+        }
+        # {
+        #     browserName: 'iphone'
+        #     platform: 'OS X 10.8'
+        #     version: '6'
+        # }
+        # {
+        #     browserName: 'safari'
+        #     platform: 'OS X 10.8'
+        #     version: '6'
+        # }
+        # {
+        #     browserName: 'firefox'
+        #     platform: 'Windows 7'
+        #     version: '19'
+        # }
+        # {
+        #     browserName: 'safari'
+        #     platform: 'OS X 10.6'
+        #     version: '5'
+        # }
+        # {
+        #     browserName: 'android'
+        #     platform: 'Linux'
+        #     version: '4.0'
+        # }
+        # {
+        #     browserName: 'internet explorer'
+        #     platform: 'Windows 8'
+        #     version: '10'
+        # }
+        # {
+        #     browserName: 'internet explorer'
+        #     platform: 'Windows 7'
+        #     version: '9'
+        # }
+        # {
+        #     browserName: 'internet explorer'
+        #     platform: 'Windows 7'
+        #     version: '8'
+        # }
+        # {
+        #     browserName: 'internet explorer'
+        #     platform: 'Windows XP'
+        #     version: '7'
+        # }
+    ]
+
     # Configuration
     # ==========
     grunt.initConfig
-    
+
         # Package
         # --------
         pkg: pkg
@@ -65,20 +132,21 @@ module.exports = (grunt) ->
                     install: true
                     cleanTargetDir: true
                     cleanBowerDir: true
+                    layout: 'byComponent'
 
         # Clean
         # --------
         clean:
-            build: 
+            build:
                 files:
                     src: './build'
             dist:
                 files:
                     src: './dist'
-            test: 
-                files: 
+            test:
+                files:
                     src: ['./test/temp*', 'test/coverage']
-            vendor: 
+            vendor:
                 files:
                     src: './test/vendor/*'
 
@@ -106,24 +174,14 @@ module.exports = (grunt) ->
             footer:
                 src: ['./build/*.{js,css}']
                 options:
-                    position: 'bottom' 
+                    position: 'bottom'
                     banner: '/*! <%= grunt.template.today("yyyy-mm-dd") %> */\n'
-
-        # Coverage
-        # ----------
-        'qunit-cov':
-          test:
-            minimum: 0.9
-            srcDir: "./client/js/"
-            depDirs: ["./test/vendor"]
-            outDir: "./test/coverage"
-            testFiles: ["test/index.html"]
 
         # Complexity
         # ----------
         complexity:
                 src:
-                    files: 
+                    files:
                         src: ['./client/js/*.js']
                     options:
                         errorsOnly: false # show only maintainability errors
@@ -148,7 +206,7 @@ module.exports = (grunt) ->
             css:
                 src: ['./client/*.css']
                 dest: './build/<%= pkg.name %>.css'
-        
+
 
         # Uglify
         # --------
@@ -199,56 +257,56 @@ module.exports = (grunt) ->
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
                         ext: '.<%= pkg.name %>-<%= pkg.version %>.min.js'
                     }
-                    { 
+                    {
                         expand: true
                         cwd: './client/js/'
                         src: ['iframe.xss.response.js']
-                        dest: './dist/<%= pkg.name %>-<%= pkg.version %>/' 
+                        dest: './dist/<%= pkg.name %>-<%= pkg.version %>/'
                     }
-                    { 
+                    {
                         expand: true
                         cwd: './client/js/'
                         src: ['iframe.xss.response.js']
-                        dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/' 
+                        dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
                     }
-                    { 
+                    {
                         expand: true
                         cwd: './client/'
                         src: ['*.gif']
-                        dest: './dist/<%= pkg.name %>-<%= pkg.version %>/' 
+                        dest: './dist/<%= pkg.name %>-<%= pkg.version %>/'
                     }
-                    { 
+                    {
                         expand: true
                         cwd: './client/'
                         src: ['*.gif']
-                        dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/' 
+                        dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
                     }
-                    { 
+                    {
                         expand: true
                         cwd: './'
                         src: ['README.md', 'LICENSE']
-                        dest: './dist/<%= pkg.name %>-<%= pkg.version %>/' 
+                        dest: './dist/<%= pkg.name %>-<%= pkg.version %>/'
                     }
-                    { 
+                    {
                         expand: true
                         cwd: './'
                         src: ['README.md', 'LICENSE']
-                        dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/' 
+                        dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
                     }
                 ]
             build:
                 files: [
-                    { 
+                    {
                         expand: true
                         cwd: './client/js/'
                         src: ['iframe.xss.response.js']
-                        dest: './build/' 
+                        dest: './build/'
                     },
-                    { 
+                    {
                         expand: true
                         cwd: './client/'
                         src: ['*.gif']
-                        dest: './build/' 
+                        dest: './build/'
                     }
                 ]
             test:
@@ -264,19 +322,19 @@ module.exports = (grunt) ->
             core:
                 options:
                     archive: './dist/<%= pkg.name %>-<%= pkg.version %>.zip'
-                files: [ 
+                files: [
                     {
-                        src: './dist/<%= pkg.name %>-<%= pkg.version %>/*' 
+                        src: './dist/<%= pkg.name %>-<%= pkg.version %>/*'
                     }
-                ] 
+                ]
             jquery:
                 options:
                     archive: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>.zip'
-                files: [ 
+                files: [
                     {
                         src: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/*'
                     }
-                ] 
+                ]
 
         # cssmin
         # ---------
@@ -288,7 +346,7 @@ module.exports = (grunt) ->
             files:
                 src: '<%= concat.css.dest %>'
                 dest: './build/<%= pkg.name %>.min.css'
-        
+
         # Lint
         # --------
         # @nowork
@@ -313,21 +371,14 @@ module.exports = (grunt) ->
         coffeelint:
             options:
                 indentation:
-                    level: 'ignore' 
+                    level: 'ignore'
                 no_trailing_whitespace:
                     level: 'ignore'
                 max_line_length:
                     level: 'ignore'
             grunt: './Gruntfile.coffee'
 
-        # Test
-        # ----------
-        # @nowork
-        qunit:
-            all: 
-                options:
-                    urls: ['http://localhost:9001/index.html']
-        
+
         # Server to run tests against and host static files
         # ----------
         # @works
@@ -389,67 +440,53 @@ module.exports = (grunt) ->
                     release: 'build'
                 src: ['package.json', 'fineuploader.jquery.json', 'client/js/version.js']
 
-        'saucelabs-qunit': 
+        # Test
+        # ----------
+        mocha:
             all:
                 options:
+                    urls: ['http://localhost:9001/index.html']
+                    mocha:
+                        ignoreLeaks: false
+                    reporter: 'Nyan'
+                    run: true
 
-                    urls: ['http://localhost:9001/index.html'] 
-                    concurrency: 3
+        # Saucelas + Mocha
+        # ---------
+        'saucelabs-mocha':
+            all:
+                options:
+                    urls: ['http://localhost:9001/index.html']
                     tunneled: true
-                    build: process.env.TRAVIS_JOB_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()
-                    tags: [ process.env.TRAVIS_BRANCH || "local :: " + process.env.USER ]
-                    testname: 'qunit tests'
-                    browsers: [
-                        {
-                            browserName: 'chrome' 
-                            platform: 'Windows 7'
-                        }
-                        {
-                            browserName: 'iphone' 
-                            platform: 'OS X 10.8'
-                            version: '6'
-                        }
-                        {
-                            browserName: 'safari' 
-                            platform: 'OS X 10.8'
-                            version: '6'
-                        }
-                        {
-                            browserName: 'firefox' 
-                            platform: 'Windows 7'
-                            version: '19'
-                        }
-                        {
-                            browserName: 'safari' 
-                            platform: 'OS X 10.6'
-                            version: '5'
-                        }
-                        {
-                            browserName: 'android' 
-                            platform: 'Linux'
-                            version: '4.0'
-                        }
-                        {
-                            browserName: 'internet explorer' 
-                            platform: 'Windows 8'
-                            version: '10'
-                        }
-                        {
-                            browserName: 'internet explorer' 
-                            platform: 'Windows 7'
-                            version: '9'
-                        }
-                        {
-                            browserName: 'internet explorer' 
-                            platform: 'Windows 7'
-                            version: '8'
-                        }
-                        {
-                            browserName: 'internet explorer' 
-                            platform: 'Windows XP'
-                            version: '7'
-                        }
-                    ]
+                    concurrency: 3
+                    identifier: process.env.TRAVIS_JOB_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()
+                    tags: [ process.env.TRAVIS_BRANCH || "local :: " + process.env.SAUCE_USERNAME ]
+                    testname: 'Unit Tests'
+                    detailedError: true
+                    browsers: browsers
+                    onTestComplete: (status, page, config, browser) ->
+                        done = @async()
+                        browser.eval 'JSON.stringify(window.mochaResults)', (err, res) ->
+                            done(err) if err
+
+                            res = JSON.parse res
+                            res.browser = config
+
+                            grunt.log.debug('[%s] Results: %j', config.prefix, res);
+
+                            data =
+                                'custom-data':
+                                    mocha: res.jsonReport
+                                'passed': !res.failures
+
+                            request
+                                method: 'PUT'
+                                uri: ["https://", process.env.SAUCE_USERNAME, ":", process.env.SAUCE_ACCESS_KEY, "@saucelabs.com/rest", "/v1/", process.env.SAUCE_USERNAME, "/jobs/", browser.sessionID].join('')
+                                headers:
+                                    'Content-Type': 'application/json'
+                                body: JSON.stringify data
+                            , (error, response, body) ->
+                                 done null, res
 
     # Dependencies
     # ==========
@@ -458,14 +495,6 @@ module.exports = (grunt) ->
 
     # Tasks
     # ==========
-    
-    # Prepare
-    # ----------
-    # @verify
-    grunt.registerTask 'prepare', 'Prepare the environment for FineUploader development', [
-        'clean'
-        'bower'
-    ]
 
     # Lint
     # ----------
@@ -481,56 +510,30 @@ module.exports = (grunt) ->
         'uglify'
         'cssmin'
     ]
-     
-    # Test
-    # ----------
-    grunt.registerTask 'test', 'Run headless unit tests', [
-        'prepare'
-        'build'
-        'copy:test'
-        'connect:test_server'
-        'qunit'
-    ]
-
-    # Test on Saucelabs
-    # ----------
-    grunt.registerTask 'test-sauce', 'Run tests on Saucelabs', [
-        'prepare'
-        'build'
-        'copy:test'
-        'connect:test_server'
-        'saucelabs-qunit'
-    ]
-
-    grunt.registerTask 'travis-sauce', 'Run tests on Saucelabs', [
-        'copy:test'
-        'connect:test_server'
-        'saucelabs-qunit'
-    ]
-
-    # Watcher
-    # ----------
-    grunt.registerTask 'test-watch', 'Run headless unit-tests and re-run on file changes', [
-        'test'
-        'watch'
-    ]
-    
-    # Coverage
-    # ----------
-    # @todo
-    grunt.registerTask 'coverage', 'IN THE WORKS: Generate a code coverage report', []
 
     # Docs
     # ----------
     # @todo
     grunt.registerTask 'docs', 'IN THE WORKS: Generate documentation', []
 
+
+    # Watcher
+    # ----------
+    grunt.registerTask 'test-watch', 'Run headless unit-tests and re-run on file changes', [
+        'rebuild'
+        'watch'
+    ]
+    # Coverage
+    # ----------
+    # @todo
+    grunt.registerTask 'coverage', 'IN THE WORKS: Generate a code coverage report', []
+
     # Travis
     # ---------
     # @todo
     grunt.registerTask 'check_for_pull_request_from_master', 'Fails if we are testing a pull request against master', ->
         if (process.env.TRAVIS_BRANCH == 'master' and process.env.TRAVIS_PULL_REQUEST != 'false')
-            grunt.fail.fatal '''Woah there, buddy! Pull requests should be 
+            grunt.fail.fatal '''Woah there, buddy! Pull requests should be
             branched from develop!\n
             Details on contributing pull requests found here: \n
             https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md\n
@@ -541,15 +544,96 @@ module.exports = (grunt) ->
         'travis-sauce'
     ]
 
-    
+
+    # Test
+    # ----------
+    grunt.registerTask 'test', 'Run headless unit tests', [
+        'rebuild'
+        'copy:test'
+        'connect:test_server'
+        'mocha'
+    ]
+
+    # Test on Saucelabs
+    # ----------
+    grunt.registerTask 'test-sauce', 'Run tests on Saucelabs', [
+        'rebuild'
+        'copy:test'
+        'connect:test_server'
+        'saucelabs-mocha'
+    ]
+
+    # Mocha-sauce tests
+    # ----------
+    grunt.registerTask 'mocha-sauce', 'Run mocha tests on Saucelabs (with fancy error reporting)', () ->
+        grunt.config.requires('mocha-sauce')
+        name = grunt.config('mocha-sauce').get('name')
+        username = grunt.config('mocha-sauce').get('username') or process.env.SAUCE_USERNAME
+        accessKey = grunt.config('mocha-sauce').get 'accessKey'  or process.env.SAUCE_ACCESS_KEY
+        host = grunt.config('mocha-sauce').get ('name') or 'localhost'
+        port = grunt.config('mocha-sauce').get ('port')  or 80
+        url = grunt.config('mocha-sauce').get ('url') or ''
+        browsers = grunt.config('mocha-sauce').get ('browsers')
+        build = grunt.config('mocha-sauce').get('build') or Date.now
+        tags = grunt.config('mocha-sauce').get('tags') or []
+
+
+        sauce = new MochaSauce
+            name: name
+            username: username
+            accessKey: accessKey
+            host: host
+            port: port
+            url: url
+            browsers: browsers
+            build: build
+            tags: tags
+
+        for browser in grunt.config('mocha-sauce').get('browsers')
+            sauce.browser(browser)
+
+        sauce.record(grunt.config('mocha-sauce').get('record'))
+
+        sauce.on 'init', (browser) ->
+             console.log('  init : %s %s', browser.browserName, browser.platform)
+
+        sauce.on 'start', (browser) ->
+            console.log('  start : %s %s', browser.browserName, browser.platform)
+
+        sauce.on 'end', (browser) ->
+            console.log('  end : %s %s : %d failures', browser.browserName, browser.platform, res.failures)
+
+        sauce.start()
+
+
+    # Travis' own test
+    grunt.registerTask 'travis-sauce', 'Run tests on Saucelabs', [
+        'copy:test'
+        'connect:test_server'
+        'saucelabs-mocha'
+    ]
     # Build
     # ----------
     # @verify
     grunt.registerTask 'build', 'build from latest source', [
-        'bower'
         'concat'
         'minify'
         'usebanner'
+    ]
+
+    # Prepare
+    # ----------
+    # @verify
+    grunt.registerTask 'prepare', 'Prepare the environment for FineUploader development', [
+        'clean'
+        'bower'
+    ]
+
+    # Rebuild
+    # ----------
+    grunt.registerTask 'rebuild', "Rebuild the environment and source", [
+        'prepare',
+        'build'
     ]
 
     # Dist
@@ -560,7 +644,6 @@ module.exports = (grunt) ->
         'copy:dist'
         'compress'
     ]
-
 
     # Default
     # ----------

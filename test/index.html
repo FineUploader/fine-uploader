@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Test Suite :: Fine Uploader</title>
+        <title> Test Suite :: FineUploader</title>
         <meta http-equiv='Content-Type' content='text/html' charset='utf-8' />
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 
@@ -9,20 +9,22 @@
 
     <body>
 
-        <div id="qunit"></div>
-        <div id="qunit-fixture"></div>
-
-        <link href="vendor/qunit/qunit.css" rel="stylesheet" type="text/css" media="screen" />
-        <script src="vendor/qunit/qunit.js" type="text/javascript"></script>
+        <div id="mocha"></div>
 
         <!-- dependencies -->
         <script src="vendor/purl/purl.js" type="text/javascript"></script>
         <script src="vendor/json2/json2.js" type="text/javascript"></script>
         <script src="vendor/jquery/jquery.js" type="text/javascript"></script>
 
-        <!-- phantomjs logging script 
+        <link href="vendor/mocha/css/mocha.css" rel="stylesheet" type="text/css" media="screen" />
+        <script src="vendor/mocha/js/mocha.js" type="text/javascript"></script>
+        <script src="vendor/chai/js/chai.js" type="text/javascript"></script>
+        <script src="vendor/chai-jquery/chai-jquery.js" type="text/javascript"></script>
+
+        <!-- phantomjs logging script
         <script src="/static/phantom.js"></script>
         -->
+        <script src="static/client.js"></script>
         <script src="static/helpme.js"></script>
 
         <!-- Fine Uploader -->
@@ -34,6 +36,10 @@
 
         <!-- any setup code... -->
         <script>
+            var assert = chai.assert;
+            var expect = chai.expect;
+            var should = chai.should;
+            mocha.setup('tdd');
         </script>
 
         <!-- load the test scripts -->
@@ -45,6 +51,7 @@
 
         <!-- run the tests -->
         <script>
+        mochaSaucePlease();
         </script>
 
     </body>
