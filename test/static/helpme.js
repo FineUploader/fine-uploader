@@ -19,7 +19,8 @@ var helpme = (function () {
         },
 
         createAndTriggerMouseEvent: function(type, element) {
-            var event = document.createEvent("MouseEvents");
+            var eventCreator = document.createEvent || document.createEventObject,
+                event = eventCreator("MouseEvents");
 
             event.initMouseEvent(type, true, true, window,
                 0, 0, 0, 0, 0, false, false, false, false, 0, null);
