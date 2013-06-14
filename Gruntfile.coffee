@@ -31,6 +31,9 @@ module.exports = (grunt) ->
         './client/js/handler.base.js',
         './client/js/handler.form.js',
         './client/js/handler.xhr.js',
+        './client/js/ui.handler.events.js',
+        './client/js/ui.handler.click.drc.js',
+        './client/js/ui.handler.click.filename.js'
     ]
     
     # jQuery plugin modules
