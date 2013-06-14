@@ -80,7 +80,7 @@ $(function () {
         });
 
         test('contains - #887 account for IE7 bug in Node.contains which results in an error', function () {
-            var $fixture, el, el;
+            var $fixture, el;
             $fixture = $("#qunit-fixture");
             $fixture.append("<div id='foo'></div>");
 

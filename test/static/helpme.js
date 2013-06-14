@@ -17,6 +17,15 @@ var helpme = (function () {
 
             return blobby;
         },
+
+        createAndTriggerMouseEvent: function(type, element) {
+            var event = document.createEvent("MouseEvents");
+
+            event.initMouseEvent(type, true, true, window,
+                0, 0, 0, 0, 0, false, false, false, false, 0, null);
+
+            element.dispatchEvent(event);
+        },
     
         createFineUploader: function (options, request, validation) {
             var defaults = {
