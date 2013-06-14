@@ -439,7 +439,6 @@ $(function () {
         test('each - can allow testerating over objects', function () {
             var answers = [];
             var obj = { one: 1, two: 2, three: 3 };
-            obj.constructor.prototype.four = 4;
 
             qq.each(obj, function (key, value) { answers.push(key); });
             equal(answers.join(', '), 'one, two, three');

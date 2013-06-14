@@ -6,7 +6,7 @@ $(function () {
 
             var $fixture = $("#qunit-fixture"),
                 fileId = 123,
-                $container, $fileItem, $cancelLink, $deleteLink, $retryLink, handler;
+                $container, $fileItem, $cancelLink, $deleteLink, $retryLink;
 
             $fixture.append('<div class="testcontainer"></div>');
 
