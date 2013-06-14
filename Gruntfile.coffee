@@ -514,7 +514,6 @@ module.exports = (grunt) ->
     # Watcher
     # ----------
     grunt.registerTask 'test-watch', 'Run headless unit-tests and re-run on file changes', [
-        'test'
         'watch'
     ]
     
