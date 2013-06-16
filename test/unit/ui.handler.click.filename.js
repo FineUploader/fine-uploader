@@ -38,7 +38,8 @@ $(function () {
         });
 
     test('filename click handler - file submitted', function () {
-        //can't get some of these tests to pass in FF on SauceLabs, even though code being tested seems to work fine during manual testing
+        // can't get some of these tests to pass in FF on SauceLabs, even though code
+        // being tested seems to work fine during manual testing and auto-testing in FF locally
         expect(qq.firefox() ? 4 : 7);
 
         var origName = "test.foo.bar",
@@ -54,7 +55,8 @@ $(function () {
             },
             onGetName: function() { return origName; },
             onSetName: function(fileId, name) {
-                //can't get some of these tests to pass in FF on SauceLabs, even though code being tested seems to work fine during manual testing
+                // can't get this test to pass in FF on SauceLabs, even though code being tested
+                // seems to work fine during manual testing and auto-testing in FF locally
                 if (!qq.firefox()) {
                     equal(name, newName, "new name should have the original extension appended");
                 }
@@ -75,11 +77,12 @@ $(function () {
         ok(!$filenameDiv.is(":visible"), "filename display should not be visible");
         equal($input.val(), origNameSansExt, "filename input should equal original filename sans extension initially");
 
-        $input.val(newNameSansExt);
-        $input.blur();
-
-        //can't get some of these tests to pass in FF on SauceLabs, even though code being tested seems to work fine during manual testing
+        // can't get these tests to pass in FF on SauceLabs, even though code being tested
+        // seems to work fine during manual testing and auto-testing in FF locally
         if (!qq.firefox()) {
+            $input.val(newNameSansExt);
+            $input.blur();
+
             stop();
 
             setTimeout(function() {
