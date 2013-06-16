@@ -420,7 +420,7 @@ module.exports = (grunt) ->
                         {
                             browserName: 'firefox' 
                             platform: 'Windows 7'
-                            version: '19'
+                            version: '21'
                         }
                         {
                             browserName: 'safari' 
