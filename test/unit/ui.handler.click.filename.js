@@ -70,14 +70,18 @@ $(function () {
         equal($input.val(), origNameSansExt, "filename input should equal original filename sans extension initially");
 
         $input.val(newNameSansExt);
-        $input.blur();
 
         stop();
 
         setTimeout(function() {
-            ok($filenameDiv.is(":visible"), "filename display should be visible again");
-            equal($filenameDiv.text(), newName, "filename display should equal new name with original extension");
-            start();
+            $input.blur();
+
+            setTimeout(function() {
+                ok($filenameDiv.is(":visible"), "filename display should be visible again");
+                equal($filenameDiv.text(), newName, "filename display should equal new name with original extension");
+                start();
+            }, 100);
         }, 100);
+
     });
 });
