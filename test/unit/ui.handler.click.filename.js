@@ -78,6 +78,6 @@ $(function () {
             ok($filenameDiv.is(":visible"), "filename display should be visible again");
             equal($filenameDiv.text(), newName, "filename display should equal new name with original extension");
             start();
-        }, 0);
+        }, 100);
     });
 });
