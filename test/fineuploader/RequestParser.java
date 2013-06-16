@@ -75,7 +75,7 @@ public class RequestParser
 
     public String getFilename()
     {
-        return filename;
+        return originalFilename != null ? originalFilename : filename;
     }
 
     //only non-null for MPFRs
@@ -143,7 +143,6 @@ public class RequestParser
 
             requestParser.totalFileSize = Integer.parseInt(multipartUploadParser.getParams().get(FILE_SIZE_PARAM));
             requestParser.totalParts = Integer.parseInt(multipartUploadParser.getParams().get(TOTAL_PARTS_PARAM));
-            requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
         }
 
         for (Map.Entry<String, String> paramEntry : multipartUploadParser.getParams().entrySet())
@@ -154,6 +153,11 @@ public class RequestParser
         if (requestParser.uuid == null)
         {
             requestParser.uuid = multipartUploadParser.getParams().get(UUID_PARAM);
+        }
+
+        if (requestParser.originalFilename == null)
+        {
+            requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
         }
     }
 
@@ -175,7 +179,6 @@ public class RequestParser
             requestParser.partIndex = Integer.parseInt(partNumStr);
             requestParser.totalFileSize = Integer.parseInt(req.getParameter(FILE_SIZE_PARAM));
             requestParser.totalParts = Integer.parseInt(req.getParameter(TOTAL_PARTS_PARAM));
-            requestParser.originalFilename = req.getParameter(PART_FILENAME_PARAM);
         }
 
         Enumeration<String> paramNames = req.getParameterNames();
@@ -193,6 +196,11 @@ public class RequestParser
         if (requestParser.method == null)
         {
             requestParser.method = req.getParameter(METHOD_PARAM);
+        }
+
+        if (requestParser.originalFilename == null)
+        {
+            requestParser.originalFilename = req.getParameter(PART_FILENAME_PARAM);
         }
     }
 

@@ -14,6 +14,27 @@ qq.FilenameClickHandler = function(s) {
             onSetName: function(fileId, newName) {}
     };
 
+    function getFilenameSansExtension(fileId) {
+        var filenameSansExt = spec.onGetName(fileId),
+            extIdx = filenameSansExt.lastIndexOf('.');
+
+        if (extIdx > 0) {
+            filenameSansExt = filenameSansExt.substr(0, extIdx);
+        }
+
+        return filenameSansExt;
+    }
+
+    function getOriginalExtension(fileId) {
+        var origName = spec.onGetName(fileId),
+            extIdx = origName.lastIndexOf('.'),
+            ext;
+
+        if (extIdx > 0) {
+            return origName.substr(extIdx, origName.length - extIdx);
+        }
+    }
+
     // This will be called by the base handler when a click event is received on the list element.
     function examineEvent(target, event) {
         if (qq(target).hasClass(spec.classes.file)) {
@@ -41,7 +62,7 @@ qq.FilenameClickHandler = function(s) {
 
         newFilenameInputEl = document.createElement('input');
         newFilenameInputEl.type = "text";
-        newFilenameInputEl.value = spec.onGetName(fileId);
+        newFilenameInputEl.value = getFilenameSansExtension(fileId);
 
         qq(newFilenameInputEl).insertBefore(target);
         newFilenameInputEl.focus();
@@ -52,6 +73,8 @@ qq.FilenameClickHandler = function(s) {
             var newName = newFilenameInputEl.value;
 
             qq(newFilenameInputEl).remove();
+
+            newName = newName + getOriginalExtension(fileId);
 
             qq(target).setText(newName);
             spec.onSetName(fileId, newName);

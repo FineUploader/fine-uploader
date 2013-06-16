@@ -25,7 +25,6 @@ $(function () {
 
             new qq.DeleteRetryOrCancelClickHandler({
                 listElement: $container[0],
-                log: function() {},
                 classes: {
                     cancel: 'test-cancel',
                     deleteButton: 'test-delete',
