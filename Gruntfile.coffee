@@ -293,6 +293,30 @@ module.exports = (grunt) ->
                         src: ['README.md', 'LICENSE']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
                     }
+                    {
+                        expand: true
+                        cwd: './build'
+                        src: ['*.min.css']
+                        dest: './dist/<%= pkg.name %>-<%= pkg.version %>/<%= pkg.name %>-<%= pkg.version %>.min.css'
+                    }
+                    {
+                        expand: true
+                        cwd: './build'
+                        src: ['*.css', '!*.min.css']
+                        dest: './dist/<%= pkg.name %>-<%= pkg.version %>/<%= pkg.name %>-<%= pkg.version %>.css'
+                    }
+                    {
+                        expand: true
+                        cwd: './build'
+                        src: ['*.min..css']
+                        dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/<%= pkg.name %>-<%= pkg.version %>.min.css'
+                    }
+                    {
+                        expand: true
+                        cwd: './build'
+                        src: ['*.css', '!*.min.css']
+                        dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/<%= pkg.name %>-<%= pkg.version %>.css'
+                    }
                 ]
             build:
                 files: [
@@ -472,7 +496,7 @@ module.exports = (grunt) ->
                             res = JSON.parse res
                             res.browser = config
 
-                            grunt.log.debug('[%s] Results: %j', config.prefix, res);
+                            grunt.log.debug '[%s] Results: %j', config.prefix, res 
 
                             data =
                                 'custom-data':
