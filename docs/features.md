@@ -24,7 +24,7 @@
 * Upload any `Blob` objects via the API.
 * Easily set and enforce a maximum item limit.
 * [Upload images via paste (Chrome)](http://blog.fineuploader.com/2013/03/upload-image-via-paste-in-34.html).
-* [Standalone file & folder drag & drop module](docs/drag-and-drop.md).  Integrated by default into FineUploader mode.
+* [Standalone file & folder drag & drop module](docs/api/drag-and-drop.md).  Integrated by default into FineUploader mode.
 * [Perform async (non-blocking) tasks in callbacks that influence the associated file or files](http://blog.fineuploader.com/2013/05/callbacks-that-permit-asynchronous.html)
 * [Upload images directly from a mobile device's camera](http://blog.fineuploader.com/2013/05/upload-directly-via-camera-on-mobile.html)
 * [Retrieve statistics for uploaded files and receive callbacks on status changes](http://blog.fineuploader.com/2013/05/query-fine-uploader-for-upload-stats.html)
