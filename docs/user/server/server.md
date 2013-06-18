@@ -11,7 +11,7 @@ content-disposition header of the file boundary will have a value of "blob" so y
 parameter in this case to determine the name of the associated file.
 
 Note that each request contains a UUID parameter.  By default, the name of this parameter is `qquuid`, but this is configurable
-in the [`request` option section](options-fineuploaderbasic.md#request-option-properties).  This parameter value
+in the [`request` option section](/docs/user/options/options-fineuploaderbasic.md#request-option-properties).  This parameter value
 should be used to uniquelyidentify the file, and the associationbetween this UUID and the file should be maintained
 sever-side if you want to handle DELETE requests, the resume feature, or chunking.
 
@@ -77,7 +77,7 @@ For more details, please read the [blog post on the file resume feature](http://
 <br/>
 ## Deleting Files ##
 If you have enabled the `deleteFile` feature, you will need to handle `DELETE` or `POST` requests server-side.  The method
-is configurable via the `method` property of the [`deleteFile` option](options-fineuploaderbasic#deletefile-option-properties).
+is configurable via the `method` property of the [`deleteFile` option](/docs/user/options/options-fineuploaderbasic#deletefile-option-properties).
 
 For DELETE  requests, the UUID of the file to delete will be specified as the last element of the URI path.  Any custom parameters
 specified will be added to the query string.  For POST requests, the UUID is sent as a "qquuid" parameter, and a "_method"
