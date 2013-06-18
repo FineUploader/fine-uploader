@@ -77,7 +77,7 @@ For more details, please read the [blog post on the file resume feature](http://
 <br/>
 ## Deleting Files ##
 If you have enabled the `deleteFile` feature, you will need to handle `DELETE` or `POST` requests server-side.  The method
-is configurable via the `method` property of the [`deleteFile` option](/docs/user/options/options-fineuploaderbasic#deletefile-option-properties).
+is configurable via the `method` property of the [`deleteFile` option](/docs/user/options/options-fineuploaderbasic.md#deletefile-option-properties).
 
 For DELETE  requests, the UUID of the file to delete will be specified as the last element of the URI path.  Any custom parameters
 specified will be added to the query string.  For POST requests, the UUID is sent as a "qquuid" parameter, and a "_method"
