@@ -33,14 +33,15 @@ $(function () {
             });
 
 
-            helpme.createAndTriggerMouseEvent('click', $filenameDiv[0]);
+            $filenameDiv.simulate('click');
             equal($container.find('INPUT').length, 0, "should not create input element to change filename, upload already in progress");
         });
 
     test('filename click handler - file submitted', function () {
         // can't get some of these tests to pass in FF on SauceLabs, even though code
         // being tested seems to work fine during manual testing and auto-testing in FF locally
-        expect(qq.firefox() ? 4 : 7);
+//        expect(qq.firefox() ? 4 : 7);
+        expect(7);
 
         var origName = "test.foo.bar",
             origNameSansExt = "test.foo",
@@ -57,18 +58,18 @@ $(function () {
             onSetName: function(fileId, name) {
                 // can't get this test to pass in FF on SauceLabs, even though code being tested
                 // seems to work fine during manual testing and auto-testing in FF locally
-                if (!qq.firefox()) {
+//                if (!qq.firefox()) {
                     equal(name, newName, "new name should have the original extension appended");
-                }
+//                }
             },
             onGetUploadStatus: function(fileId) { return qq.status.SUBMITTED; }
         });
 
 
         //this shouldn't allow the user to change the filename
-        helpme.createAndTriggerMouseEvent('click', $container[0]);
+        $container.simulate('click');
 
-        helpme.createAndTriggerMouseEvent('click', $filenameDiv[0]);
+        $filenameDiv.simulate('click');
 
         $input = $container.find('INPUT');
 
@@ -79,9 +80,9 @@ $(function () {
 
         // can't get these tests to pass in FF on SauceLabs, even though code being tested
         // seems to work fine during manual testing and auto-testing in FF locally
-        if (!qq.firefox()) {
+//        if (!qq.firefox()) {
             $input.val(newNameSansExt);
-            $input.blur();
+            $input.simulate('blur');
 
             stop();
 
@@ -90,6 +91,6 @@ $(function () {
                 equal($filenameDiv.text(), newName, "filename display should equal new name with original extension");
                 start();
             }, 0);
-        }
+//        }
     });
 });

@@ -43,12 +43,12 @@ $(function () {
             });
 
             //these should result in callbacks
-            helpme.createAndTriggerMouseEvent('click', $cancelLink[0]);
-            helpme.createAndTriggerMouseEvent('click', $deleteLink[0]);
-            helpme.createAndTriggerMouseEvent('click', $retryLink[0]);
+            $cancelLink.simulate('click');
+            $deleteLink.simulate('click');
+            $retryLink.simulate('click');
 
-            //these should not
-            helpme.createAndTriggerMouseEvent('click', $container[0]);
-            helpme.createAndTriggerMouseEvent('click', $fileItem[0]);
+            //these should not result in callbacks
+            $container.simulate('click');
+            $fileItem.simulate('click');
         });
 });

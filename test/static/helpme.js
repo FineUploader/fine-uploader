@@ -18,26 +18,6 @@ var helpme = (function () {
             return blobby;
         },
 
-        createAndTriggerMouseEvent: function(type, element) {
-            var event;
-
-            if (document.createEvent) {
-                event = document.createEvent("MouseEvents");
-            }
-            else {
-                event = document.createEventObject();
-            }
-
-            if (event.initMouseEvent && element.dispatchEvent) {
-                event.initMouseEvent(type, true, true, window,
-                    0, 0, 0, 0, 0, false, false, false, false, 0, null);
-                element.dispatchEvent(event);
-            }
-            else {
-                element.fireEvent(qq.format('on{}', type), event);
-            }
-        },
-    
         createFineUploader: function (options, request, validation) {
             var defaults = {
                 debug: true,
