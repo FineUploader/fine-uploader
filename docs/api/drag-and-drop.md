@@ -1,6 +1,6 @@
 ## File Drag and Drop Module ##
 
-#### Note: This module is aimed at FineUploaderBasic mode integrators only.  If you are running the library in FineUploader mode, have a look at the [dragAndDrop options](options-fineuploader.md#draganddrop-option-properties) instead. ####
+#### Note: This module is aimed at FineUploaderBasic mode integrators only.  If you are running the library in FineUploader mode, have a look at the [dragAndDrop options](/docs/user/options/options-fineuploader.md#draganddrop-option-properties) instead. ####
 
 If you are integrating Fine Uploader and utilizing FineUploaderBasic mode, you are likely building you own UI entirely.
 In case you want to support drag and drop of folders and files, you probably don't want to re-invent the wheel, since
@@ -40,7 +40,7 @@ var dragAndDropModule = new qq.DragAndDrop({
 ### jQuery Plug-in Wrapper Notes & Example ###
 For jQuery users, a jQuery-wrapped DnD module is also available in the combined and minified Fine Uplpoader javascript file.
 This jQuery wrapper follows the same conventions as the jQuery plug-in that wraps the uploader library.  To read more
-about these conventions, please see the [Using jQuery plug-in](using-jquery-plugin.md) readme document.
+about these conventions, please see the [Using jQuery plug-in](/docs/user/modes/using-jquery-plugin.md) readme document.
 
 There are a couple things to be aware of when using the DnD standalone module via the jQuery plug-in wrapper:
 * The only API method available is `dispose`.  This restriction is in place since the other API functions don't really make sense in the context of a jQuery plug-in.
