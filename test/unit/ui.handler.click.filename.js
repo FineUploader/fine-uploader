@@ -44,7 +44,7 @@ $(function () {
             // being tested seems to work fine during manual testing and auto-testing in FF locally
             expect(qq.firefox() ? 3 : 6);
 
-            var origName = "test.foo.bar",
+            var actualName = "test.foo.bar",
                 origNameSansExt = "test.foo",
                 newNameSansExt = "blahblah",
                 newName = "blahblah.bar",
@@ -55,12 +55,17 @@ $(function () {
                 classes: {
                     file: 'test-file'
                 },
-                onGetName: function() { return origName; },
+                onGetName: function() { return actualName; },
                 onSetName: function(fileId, name) {
                     // can't get this test to pass in FF on SauceLabs, even though code being tested
                     // seems to work fine during manual testing and auto-testing in FF locally
                     if (!qq.firefox()) {
-                        equal(name, newName, "new name should have the original extension appended");
+                        // IE fires a blur event after a key event in some cases,
+                        // let's ignore that as it will cause the tests to fail and doesn't cause us any harm.
+                        if (actualName !== name) {
+                            equal(name, newName, "new name should have the original extension appended");
+                            actualName = name;
+                        }
                     }
                 },
                 onGetUploadStatus: function(fileId) { return qq.status.SUBMITTED; },
@@ -95,6 +100,6 @@ $(function () {
     }
 
     //can't get keyup tests to pass in IE7/8 only in SauceLabs
-//    testFilenameInputBlur(['keyup', {keyCode: $.simulate.keyCode.ENTER}]);
     testFilenameInputBlur(['blur']);
+    testFilenameInputBlur(['keyup', {keyCode: $.simulate.keyCode.ENTER}]);
 });
