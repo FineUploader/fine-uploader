@@ -46,8 +46,8 @@ $(function () {
 
             var actualName = "test.foo.bar",
                 origNameSansExt = "test.foo",
-                newNameSansExt = "blahblah",
                 newName = "blahblah.bar",
+                newNameSansExt = "blahblah",
                 $input = $container.find('INPUT');
 
             new qq.FilenameClickHandler({
@@ -72,6 +72,8 @@ $(function () {
                 onGetInput: function(item) { return $input[0]; }
             });
 
+            //Fine Uploader would normally already have this set
+            $filenameDiv.text(actualName);
 
             //this shouldn't allow the user to change the filename
             $container.simulate('click');
@@ -99,7 +101,44 @@ $(function () {
         });
     }
 
-    //can't get keyup tests to pass in IE7/8 only in SauceLabs
     testFilenameInputBlur(['blur']);
     testFilenameInputBlur(['keyup', {keyCode: $.simulate.keyCode.ENTER}]);
+
+
+    test('filename click handler - undefined or empty filename submitted', function () {
+        expect(4);
+
+        var actualName = "test.foo.bar",
+            origNameSansExt = "test.foo",
+            $input = $container.find('INPUT');
+
+        new qq.FilenameClickHandler({
+            listElement: $container[0],
+            classes: {
+                file: 'test-file'
+            },
+            onGetName: function() { return actualName; },
+            onGetUploadStatus: function(fileId) { return qq.status.SUBMITTED; },
+            onGetInput: function(item) { return $input[0]; }
+        });
+
+        //Fine Uploader would normally already have this set
+        $filenameDiv.text(actualName);
+
+        $filenameDiv.simulate('click');
+
+        ok($input.is(':visible'), "filename input should be visible");
+        ok(!$filenameDiv.is(":visible"), "filename display should not be visible");
+        equal($input.val(), origNameSansExt, "filename input should equal original filename sans extension initially");
+
+        $input.val("");
+        $input.simulate('blur');
+
+        stop();
+
+        setTimeout(function() {
+            equal($filenameDiv.text(), actualName, "filename display should equal old name");
+            start();
+        }, 0);
+    });
 });

@@ -60,10 +60,12 @@ qq.FilenameClickHandler = function(s) {
 
         qq(newFilenameInputEl).hide();
 
-        newName = newName + getOriginalExtension(fileId);
+        if (newName !== undefined && qq.trimStr(newName).length > 0) {
+            newName = newName + getOriginalExtension(fileId);
 
-        qq(filenameDisplayEl).setText(newName);
-        spec.onSetName(fileId, newName);
+            qq(filenameDisplayEl).setText(newName);
+            spec.onSetName(fileId, newName);
+        }
 
         qq(filenameDisplayEl).css({display: ''});
     }
