@@ -60,6 +60,7 @@ qq.UploadData = function(uploaderProxy) {
             var index = data.push({
                 id: id,
                 name: name,
+                originalName: name,
                 uuid: uuid,
                 size: size,
                 status: status

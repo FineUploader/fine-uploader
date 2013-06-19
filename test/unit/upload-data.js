@@ -68,6 +68,7 @@ $(function () {
 
         uploadData.nameChanged(0, "foobar");
         equal(uploadData.retrieve({id: 0}).name, "foobar", "checking new name");
+        equal(uploadData.retrieve({id: 0}).originalName, "0_name", "checking original name");
     });
 
     test("test reset", function() {
