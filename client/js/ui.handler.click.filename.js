@@ -12,7 +12,8 @@ qq.FilenameClickHandler = function(s) {
             onGetUploadStatus: function(fileId) {},
             onGetName: function(fileId) {},
             onSetName: function(fileId, newName) {},
-            onGetInput: function(item) {}
+            onGetInput: function(item) {},
+            onEditingStatusChange: function(fileId, isEditing) {}
     };
 
     function getFilenameSansExtension(fileId) {
@@ -67,6 +68,8 @@ qq.FilenameClickHandler = function(s) {
             spec.onSetName(fileId, newName);
         }
 
+        spec.onEditingStatusChange(fileId, false);
+
         qq(filenameDisplayEl).css({display: ''});
     }
 
@@ -90,6 +93,8 @@ qq.FilenameClickHandler = function(s) {
     // Allow the filename to be "changed", then update the file displayed when the input loses focus
     function handleFilenameClick(fileId, target, item) {
         var newFilenameInputEl = spec.onGetInput(item);
+
+        spec.onEditingStatusChange(fileId, true);
 
         // Here we hide the filename and show the input element
         // which we will use to store the new filename.

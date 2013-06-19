@@ -42,13 +42,14 @@ $(function () {
         test('filename click handler - file submitted w/ blur event = ' + simulateArgs, function () {
             // can't get some of these tests to pass in FF on SauceLabs, even though code
             // being tested seems to work fine during manual testing and auto-testing in FF locally
-            expect(qq.firefox() ? 3 : 6);
+            expect(qq.firefox() ? 5 : 10);
 
             var actualName = "test.foo.bar",
                 origNameSansExt = "test.foo",
                 newName = "blahblah.bar",
                 newNameSansExt = "blahblah",
-                $input = $container.find('INPUT');
+                $input = $container.find('INPUT'),
+                editing;
 
             new qq.FilenameClickHandler({
                 listElement: $container[0],
@@ -69,7 +70,23 @@ $(function () {
                     }
                 },
                 onGetUploadStatus: function(fileId) { return qq.status.SUBMITTED; },
-                onGetInput: function(item) { return $input[0]; }
+                onGetInput: function(item) { return $input[0]; },
+                onEditingStatusChange: function(id, isEditing) {
+                    // IE fires a blur event after a key event in some cases,
+                    // let's ignore that as it will cause the tests to fail and doesn't cause us any harm.
+                    if (editing !== false) {
+                        equal(id, fileId, "onEditingStatusChange fileId should be correct");
+
+                        if (editing === undefined) {
+                            ok(isEditing, "We should be in edit mode");
+                        }
+                        else {
+                            ok(!isEditing, "We should not be in edit mode");
+                        }
+
+                        editing = isEditing
+                    }
+                }
             });
 
             //Fine Uploader would normally already have this set

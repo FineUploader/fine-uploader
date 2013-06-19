@@ -325,6 +325,17 @@ qq.extend(qq.FineUploader.prototype, {
             },
             onGetInput: function(item) {
                 return self._find(item, 'editFilenameInput');
+            },
+            onEditingStatusChange: function(fileId, isEditing) {
+                var item = self.getItemByFileId(fileId),
+                    qqCancel = qq(self._find(item, 'cancel'));
+
+                if (isEditing) {
+                    qqCancel.hide();
+                }
+                else {
+                    qqCancel.css({display: ''});
+                }
             }
         });
     },
