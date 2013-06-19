@@ -42,8 +42,7 @@ $(function () {
         test('filename click handler - file submitted w/ blur event = ' + simulateArgs, function () {
             // can't get some of these tests to pass in FF on SauceLabs, even though code
             // being tested seems to work fine during manual testing and auto-testing in FF locally
-    //        expect(qq.firefox() ? 4 : 7);
-            expect(6);
+            expect(qq.firefox() ? 3 : 6);
 
             var origName = "test.foo.bar",
                 origNameSansExt = "test.foo",
@@ -60,9 +59,9 @@ $(function () {
                 onSetName: function(fileId, name) {
                     // can't get this test to pass in FF on SauceLabs, even though code being tested
                     // seems to work fine during manual testing and auto-testing in FF locally
-    //                if (!qq.firefox()) {
+                    if (!qq.firefox()) {
                         equal(name, newName, "new name should have the original extension appended");
-    //                }
+                    }
                 },
                 onGetUploadStatus: function(fileId) { return qq.status.SUBMITTED; },
                 onGetInput: function(item) { return $input[0]; }
@@ -80,7 +79,7 @@ $(function () {
 
             // can't get these tests to pass in FF on SauceLabs, even though code being tested
             // seems to work fine during manual testing and auto-testing in FF locally
-    //        if (!qq.firefox()) {
+            if (!qq.firefox()) {
                 $input.val(newNameSansExt);
                 $input.simulate.apply($input, simulateArgs);
 
@@ -91,7 +90,7 @@ $(function () {
                     equal($filenameDiv.text(), newName, "filename display should equal new name with original extension");
                     start();
                 }, 0);
-    //        }
+            }
         });
     }
 
