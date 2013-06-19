@@ -55,7 +55,7 @@ describe('button.js', function () {
             element: $fixture.find("#foo")[0],
             onChange: function (input) {
                 ok(true); 
-            },
+            }
         });
 
         button.dispatch('onChange');

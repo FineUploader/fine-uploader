@@ -18,8 +18,7 @@
 
         <link href="vendor/mocha/css/mocha.css" rel="stylesheet" type="text/css" media="screen" />
         <script src="vendor/mocha/js/mocha.js" type="text/javascript"></script>
-        <script src="vendor/chai/js/chai.js" type="text/javascript"></script>
-        <script src="vendor/chai-jquery/chai-jquery.js" type="text/javascript"></script>
+        <script src="vendor/assert/assert.js" type="text/javascript"></script>
 
         <!-- phantomjs logging script
         <script src="/static/phantom.js"></script>
@@ -36,9 +35,6 @@
 
         <!-- any setup code... -->
         <script>
-            var assert = chai.assert;
-            var expect = chai.expect;
-            var should = chai.should;
             mocha.setup('tdd');
         </script>
 

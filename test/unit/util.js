@@ -48,7 +48,7 @@ describe('util.js', function () {
             $el = $fixture.find("#foo");
             el = $el[0];
 
-            assert.isTrue(qq(el).contains(el), 'the element should contain itself');
+            assert.ok(qq(el).contains(el), 'the element should contain itself');
         });
 
         it('return true if the element contains the descendant', function () {
@@ -56,7 +56,7 @@ describe('util.js', function () {
             $el = $fixture.find("#foo");
             el = $el[0];
 
-            assert.isTrue(qq($fixture[0]).contains(el), '$el is a descendant of $fixture');
+            assert.ok(qq($fixture[0]).contains(el), '$el is a descendant of $fixture');
         });
 
         it('returns false if the element does not contain the descendant', function () {
@@ -64,7 +64,7 @@ describe('util.js', function () {
             $el = $fixture.find("#bar");
             el = $el[0];
 
-            assert.isFalse(qq($fixture[0]).contains(el), '$el is not a descendant of $fixture');
+            assert.ok(!qq($fixture[0]).contains(el), '$el is not a descendant of $fixture');
         });
 
         it('#887 - accounts for IE7 bug in Node.contains', function () {
@@ -72,8 +72,8 @@ describe('util.js', function () {
             $el = $fixture.find("#foo");
             el = $el[0];
 
-            assert.isFalse(qq(el).contains(null), "should return false when passed a `null` parameter");
-            assert.isFalse(qq(el).contains(undefined), "should return false when passed an `undefined` parameter");
+            assert.ok(!qq(el).contains(null), "should return false when passed a `null` parameter");
+            assert.ok(!qq(el).contains(undefined), "should return false when passed an `undefined` parameter");
         });
     }); // contains
 
@@ -142,8 +142,8 @@ describe('util.js', function () {
             el = document.createElement('div');
             $(el).addClass('derp');
 
-            assert.isTrue(qq(el).hasClass('derp'), "el should have the 'derp' class");
-            assert.isFalse(qq(el).hasClass('herp'), "el should not have the class 'herp'");
+            assert.ok(qq(el).hasClass('derp'), "el should have the 'derp' class");
+            assert.ok(!qq(el).hasClass('herp'), "el should not have the class 'herp'");
         }); 
     }); // hasClass
 
@@ -151,11 +151,11 @@ describe('util.js', function () {
         it('adds a class to an element', function () {
             el = document.createElement('div');
 
-            assert.isFalse($(el).hasClass('derp'), "element should NOT have the 'derp' class")
+            assert.ok(!$(el).hasClass('derp'), "element should NOT have the 'derp' class")
 
             qq(el).addClass('derp');
             
-            assert.isTrue($(el).hasClass('derp'), "element should have the 'derp' class")
+            assert.ok($(el).hasClass('derp'), "element should have the 'derp' class")
         }); 
     }); // addClass
 
@@ -165,7 +165,7 @@ describe('util.js', function () {
             $(el).addClass('derp');
             qq(el).removeClass('derp');
 
-            assert.isFalse($(el).hasClass('derp'), 'class should have been removed from the element');
+            assert.ok(!$(el).hasClass('derp'), 'class should have been removed from the element');
         }); 
     }); // hasClass
 
@@ -182,11 +182,11 @@ describe('util.js', function () {
 
             results = q.getByClass("foo");
 
-            assert.lengthOf(results, 2, "getting the wrong number of classes");
+            assert.equal(results.length, 2, "getting the wrong number of classes");
 
             results = q.getByClass("bar");
 
-            assert.lengthOf(results, 2, "getting the wrong number of classes");
+            assert.equal(results.length, 2, "getting the wrong number of classes");
         }); 
     
     }); // getByClass
@@ -203,7 +203,7 @@ describe('util.js', function () {
             $fixture.append("<div class='foo bar'></div>");
              
             results = q.children();
-            assert.lengthOf(results, 3, "was expecting 3 children");
+            assert.equal(results.length, 3, "was expecting 3 children");
         }); 
     }); // children
 
@@ -230,20 +230,20 @@ describe('util.js', function () {
 
     describe('isObject', function () {
         it('returns true for an empty object', function () {
-            assert.isTrue(qq.isObject({}), "empty objects are objects"); 
+            assert.ok(qq.isObject({}), "empty objects are objects"); 
         }); 
 
         it('returns true for a simple object', function () {
-            assert.isTrue(qq.isObject({ foo: 'bar' }), "simple objects are objects"); 
+            assert.ok(qq.isObject({ foo: 'bar' }), "simple objects are objects"); 
         });
 
         it('should return true for a newed up Object', function() {
             /* jshint -W010 */
-            assert.isTrue(qq.isObject(new Object()), "new objects are objects"); 
+            assert.ok(qq.isObject(new Object()), "new objects are objects"); 
         });
 
         it('should return false for a function', function () {
-            assert.isFalse(qq.isObject(function(){}), "This is not Ruby. Functions are not objects"); 
+            assert.ok(!qq.isObject(function(){}), "This is not Ruby. Functions are not objects"); 
         });
 
         it('should return false for null', function () {
@@ -261,11 +261,11 @@ describe('util.js', function () {
 
     describe('isFunction', function () {
         it ('returns true for an empty simple function', function () {
-            assert.isTrue(qq.isFunction(function() {}));
+            assert.ok(qq.isFunction(function() {}));
         });
 
         it('returns false for an Object', function () {
-            assert.isFalse(qq.isFunction({})); 
+            assert.ok(!qq.isFunction({})); 
         });
     }); // isFunction
 
