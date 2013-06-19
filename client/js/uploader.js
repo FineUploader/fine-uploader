@@ -39,6 +39,7 @@ qq.FineUploader = function(o){
             '<span class="qq-upload-spinner"></span>' +
             '<span class="qq-upload-finished"></span>' +
             '<span class="qq-upload-file"></span>' +
+            (this._options.editFilename && this._options.editFilename.enabled ? '<input class="qq-edit-filename" tabindex="0" type="text" style="display: none;">' : '') +
             '<span class="qq-upload-size"></span>' +
             '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
             '<a class="qq-upload-retry" href="#">{retryButtonText}</a>' +
@@ -61,6 +62,7 @@ qq.FineUploader = function(o){
             deleteButton: 'qq-upload-delete',
             retry: 'qq-upload-retry',
             statusText: 'qq-upload-status-text',
+            editFilenameInput: 'qq-edit-filename',
 
             success: 'qq-upload-success',
             fail: 'qq-upload-fail',
@@ -96,6 +98,9 @@ qq.FineUploader = function(o){
         display: {
             fileSizeOnSubmit: false,
             prependFiles: false
+        },
+        editFilename: {
+            enabled: false
         },
         paste: {
             promptForName: false,
@@ -163,7 +168,10 @@ qq.FineUploader = function(o){
         }
 
         this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
-        this._filenameClickHandler = this._bindFilenameClickEvent();
+
+        if (this._options.editFilename.enabled) {
+            this._filenameClickHandler = this._bindFilenameClickEvent();
+        }
 
         this._dnd = this._setupDragAndDrop();
 
@@ -314,6 +322,9 @@ qq.extend(qq.FineUploader.prototype, {
             },
             onSetName: function(fileId, newName) {
                 self._handler.setName(fileId, newName);
+            },
+            onGetInput: function(item) {
+                return self._find(item, 'editFilenameInput');
             }
         });
     },
