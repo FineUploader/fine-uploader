@@ -60,6 +60,16 @@ $(function () {
         equal(uploadData.retrieve({id: 0}).uuid, "foobar", "checking new uuid");
     });
 
+    test("test overriden name", function() {
+        var uploadData = createUploadData();
+
+        uploadData.added(0);
+        equal(uploadData.retrieve({id: 0}).name, "0_name", "checking initial name");
+
+        uploadData.nameChanged(0, "foobar");
+        equal(uploadData.retrieve({id: 0}).name, "foobar", "checking new name");
+    });
+
     test("test reset", function() {
         var uploadData = createUploadData();
 

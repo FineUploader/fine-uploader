@@ -329,7 +329,7 @@ qq.extend(qq.FineUploader.prototype, {
                     qqFilenameDisplay = qq(self._find(item, 'file'));
 
                 qqFilenameDisplay.setText(newName);
-                self._handler.setName(fileId, newName);
+                self.setName(fileId, newName);
             },
             onGetInput: function(item) {
                 return self._find(item, 'editFilenameInput');

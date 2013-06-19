@@ -127,6 +127,12 @@ qq.UploadData = function(uploaderProxy) {
             data[dataIndex].uuid = newUuid;
             byUuid[newUuid] = dataIndex;
             delete byUuid[oldUuid];
+        },
+
+        nameChanged: function(id, newName) {
+            var dataIndex = byId[id];
+
+            data[dataIndex].name = newName;
         }
     };
 

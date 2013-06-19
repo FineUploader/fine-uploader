@@ -330,6 +330,10 @@ qq.FineUploaderBasic.prototype = {
     getName: function(id) {
         return this._handler.getName(id);
     },
+    setName: function(id, newName) {
+        this._handler.setName(id, newName);
+        this._uploadData.nameChanged(id, newName);
+    },
     getFile: function(fileOrBlobId) {
         return this._handler.getFile(fileOrBlobId);
     },
