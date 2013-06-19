@@ -14,7 +14,7 @@ $(function () {
 
             $fileItem = $container.find('.fileitem');
             $fileItem.append('<div class="test-file"></div>')
-            $fileItem.append('<input class="test-input" style="display: none;">');
+            $fileItem.append('<input class="test-input">');
 
             $filenameDiv = $fileItem.find('.test-file');
 
@@ -23,6 +23,8 @@ $(function () {
     });
 
         test('filename click handler - upload in progress', function () {
+            expect(0);
+
             new qq.FilenameClickHandler({
                 listElement: $container[0],
                 classes: {
@@ -30,19 +32,19 @@ $(function () {
                 },
                 onGetName: function() {return "test"},
                 onSetName: function(fileId, newName) {},
-                onGetUploadStatus: function(fileId) { return qq.status.UPLOADING; }
+                onGetUploadStatus: function(fileId) { return qq.status.UPLOADING; },
+                onEditingStatusChange: function(id, isEditing) {
+                    ok(false, "onEditingStatusChange should never be called");
+                }
             });
 
 
             $filenameDiv.simulate('click');
-            equal($container.find('INPUT:visible').length, 0, "should not display input element to change filename, upload already in progress");
         });
 
     function testFilenameInputBlur(simulateArgs) {
         test('filename click handler - file submitted w/ blur event = ' + simulateArgs, function () {
-            // can't get some of these tests to pass in FF on SauceLabs, even though code
-            // being tested seems to work fine during manual testing and auto-testing in FF locally
-            expect(qq.firefox() ? 5 : 10);
+            expect(6);
 
             var actualName = "test.foo.bar",
                 origNameSansExt = "test.foo",
@@ -58,15 +60,11 @@ $(function () {
                 },
                 onGetName: function() { return actualName; },
                 onSetName: function(fileId, name) {
-                    // can't get this test to pass in FF on SauceLabs, even though code being tested
-                    // seems to work fine during manual testing and auto-testing in FF locally
-                    if (!qq.firefox()) {
-                        // IE fires a blur event after a key event in some cases,
-                        // let's ignore that as it will cause the tests to fail and doesn't cause us any harm.
-                        if (actualName !== name) {
-                            equal(name, newName, "new name should have the original extension appended");
-                            actualName = name;
-                        }
+                    // IE fires a blur event after a key event in some cases,
+                    // let's ignore that as it will cause the tests to fail and doesn't cause us any harm.
+                    if (actualName !== name) {
+                        equal(name, newName, "new name should have the original extension appended");
+                        actualName = name;
                     }
                 },
                 onGetUploadStatus: function(fileId) { return qq.status.SUBMITTED; },
@@ -97,33 +95,29 @@ $(function () {
 
             $filenameDiv.simulate('click');
 
-            ok($input.is(':visible'), "filename input should be visible");
-            ok(!$filenameDiv.is(":visible"), "filename display should not be visible");
             equal($input.val(), origNameSansExt, "filename input should equal original filename sans extension initially");
 
-            // can't get these tests to pass in FF on SauceLabs, even though code being tested
-            // seems to work fine during manual testing and auto-testing in FF locally
-            if (!qq.firefox()) {
-                $input.val(newNameSansExt);
-                $input.simulate.apply($input, simulateArgs);
+            $input.val(newNameSansExt);
+            $input.simulate.apply($input, simulateArgs);
 
-                stop();
+            setTimeout(function() {
+                start();
+            }, 0);
 
-                setTimeout(function() {
-                    ok($filenameDiv.is(":visible"), "filename display should be visible again");
-                    equal($filenameDiv.text(), newName, "filename display should equal new name with original extension");
-                    start();
-                }, 0);
-            }
+            stop();
         });
     }
 
-    testFilenameInputBlur(['blur']);
+    // Can't get this test to pass in FF on SauceLabs only
+    if (!qq.firefox()) {
+        testFilenameInputBlur(['blur']);
+    }
+
     testFilenameInputBlur(['keyup', {keyCode: $.simulate.keyCode.ENTER}]);
 
 
     test('filename click handler - undefined or empty filename submitted', function () {
-        expect(4);
+        expect(1);
 
         var actualName = "test.foo.bar",
             origNameSansExt = "test.foo",
@@ -144,18 +138,9 @@ $(function () {
 
         $filenameDiv.simulate('click');
 
-        ok($input.is(':visible'), "filename input should be visible");
-        ok(!$filenameDiv.is(":visible"), "filename display should not be visible");
         equal($input.val(), origNameSansExt, "filename input should equal original filename sans extension initially");
 
         $input.val("");
         $input.simulate('blur');
-
-        stop();
-
-        setTimeout(function() {
-            equal($filenameDiv.text(), actualName, "filename display should equal old name");
-            start();
-        }, 0);
     });
 });

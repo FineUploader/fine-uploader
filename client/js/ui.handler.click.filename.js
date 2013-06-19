@@ -29,8 +29,7 @@ qq.FilenameClickHandler = function(s) {
 
     function getOriginalExtension(fileId) {
         var origName = spec.onGetName(fileId),
-            extIdx = origName.lastIndexOf('.'),
-            ext;
+            extIdx = origName.lastIndexOf('.');
 
         if (extIdx > 0) {
             return origName.substr(extIdx, origName.length - extIdx);
@@ -54,60 +53,49 @@ qq.FilenameClickHandler = function(s) {
         }
     }
 
-    // Hide the input, change the displayed text, and record
-    // the new filename when the input loses focus.
-    function handleNameUpdate(newFilenameInputEl, filenameDisplayEl, fileId) {
+    // Callback iff the name has been changed
+    function handleNameUpdate(newFilenameInputEl, fileId) {
         var newName = newFilenameInputEl.value;
-
-        qq(newFilenameInputEl).hide();
 
         if (newName !== undefined && qq.trimStr(newName).length > 0) {
             newName = newName + getOriginalExtension(fileId);
 
-            qq(filenameDisplayEl).setText(newName);
             spec.onSetName(fileId, newName);
         }
 
         spec.onEditingStatusChange(fileId, false);
-
-        qq(filenameDisplayEl).css({display: ''});
     }
 
-    function registerInputBlurHandler(inputEl, displayEl, fileId) {
+    function registerInputBlurHandler(inputEl, fileId) {
         baseApi.getDisposeSupport().attach(inputEl, 'blur', function() {
-            handleNameUpdate(inputEl, displayEl, fileId)
+            handleNameUpdate(inputEl, fileId)
         });
     }
 
-    function registerInputEnterKeyHandler(inputEl, displayEl, fileId) {
+    function registerInputEnterKeyHandler(inputEl, fileId) {
         baseApi.getDisposeSupport().attach(inputEl, 'keyup', function(event) {
 
             var code = event.keyCode || event.which;
 
             if (code === 13) {
-                handleNameUpdate(inputEl, displayEl, fileId)
+                handleNameUpdate(inputEl, fileId)
             }
         });
     }
 
-    // Allow the filename to be "changed", then update the file displayed when the input loses focus
+    // Allow the filename to be "changed", then callback when the input loses focus
     function handleFilenameClick(fileId, target, item) {
         var newFilenameInputEl = spec.onGetInput(item);
 
         spec.onEditingStatusChange(fileId, true);
-
-        // Here we hide the filename and show the input element
-        // which we will use to store the new filename.
-        qq(target).hide();
-        qq(newFilenameInputEl).css({display: ''});
 
         newFilenameInputEl.value = getFilenameSansExtension(fileId);
 
         qq(newFilenameInputEl).insertBefore(target);
         newFilenameInputEl.focus();
 
-        registerInputBlurHandler(newFilenameInputEl, target, fileId);
-        registerInputEnterKeyHandler(newFilenameInputEl, target, fileId);
+        registerInputBlurHandler(newFilenameInputEl, fileId);
+        registerInputEnterKeyHandler(newFilenameInputEl, fileId);
     }
 
     qq.extend(spec, s);

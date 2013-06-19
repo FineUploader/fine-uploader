@@ -145,3 +145,13 @@
     margin-bottom: 3px;
     display: none;
 }
+
+INPUT.qq-edit-filename {
+    position: absolute;
+    left: -100%;
+}
+
+INPUT.qq-edit-filename.qq-editing {
+    position: relative;
+    left: 0;
+}

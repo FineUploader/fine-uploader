@@ -39,7 +39,7 @@ qq.FineUploader = function(o){
             '<span class="qq-upload-spinner"></span>' +
             '<span class="qq-upload-finished"></span>' +
             '<span class="qq-upload-file"></span>' +
-            (this._options.editFilename && this._options.editFilename.enabled ? '<input class="qq-edit-filename" tabindex="0" type="text" style="display: none;">' : '') +
+            (this._options.editFilename && this._options.editFilename.enabled ? '<input class="qq-edit-filename" tabindex="0" type="text">' : '') +
             '<span class="qq-upload-size"></span>' +
             '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
             '<a class="qq-upload-retry" href="#">{retryButtonText}</a>' +
@@ -321,6 +321,10 @@ qq.extend(qq.FineUploader.prototype, {
                 return self.getName(fileId);
             },
             onSetName: function(fileId, newName) {
+                var item = self.getItemByFileId(fileId),
+                    qqFilenameDisplay = qq(self._find(item, 'file'));
+
+                qqFilenameDisplay.setText(newName);
                 self._handler.setName(fileId, newName);
             },
             onGetInput: function(item) {
@@ -328,13 +332,19 @@ qq.extend(qq.FineUploader.prototype, {
             },
             onEditingStatusChange: function(fileId, isEditing) {
                 var item = self.getItemByFileId(fileId),
-                    qqCancel = qq(self._find(item, 'cancel'));
+                    qqCancel = qq(self._find(item, 'cancel')),
+                    qqInput = qq(self._find(item, 'editFilenameInput')),
+                    qqFilenameDisplay = qq(self._find(item, 'file'));
 
                 if (isEditing) {
                     qqCancel.hide();
+                    qqInput.addClass('qq-editing');
+                    qqFilenameDisplay.hide();
                 }
                 else {
                     qqCancel.css({display: ''});
+                    qqInput.removeClass('qq-editing');
+                    qqFilenameDisplay.css({display: ''});
                 }
             }
         });
