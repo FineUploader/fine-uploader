@@ -1,8 +1,8 @@
-// Handles click events on a file item (FineUploader mode).
+// Child of FilenameEditHandler.  Used to detect click events on filename display elements.
 qq.FilenameClickHandler = function(s) {
     "use strict";
 
-    var baseApi = {},
+    var inheritedInternalApi = {},
         spec = {
             log: function(message, lvl) {},
             classes: {
@@ -14,11 +14,11 @@ qq.FilenameClickHandler = function(s) {
 
     qq.extend(spec, s);
 
-    // This will be called by the base handler when a click event is received on the list element.
+    // This will be called by the parent handler when a `click` event is received on the list element.
     function examineEvent(target, event) {
         if (qq(target).hasClass(spec.classes.file)) {
-            var item = baseApi.getItemFromEventTarget(target),
-                fileId = baseApi.getFileIdFromItem(item),
+            var item = inheritedInternalApi.getItemFromEventTarget(target),
+                fileId = inheritedInternalApi.getFileIdFromItem(item),
                 status = spec.onGetUploadStatus(fileId);
 
             // We only allow users to change filenames of files that have been submitted but not yet uploaded.
@@ -26,7 +26,7 @@ qq.FilenameClickHandler = function(s) {
                 spec.log(qq.format("Detected valid filename click event on file '{}', ID: {}.", spec.onGetName(fileId), fileId));
                 qq.preventDefault(event);
 
-                baseApi.handleFilenameEdit(fileId, target, item, true);
+                inheritedInternalApi.handleFilenameEdit(fileId, target, item, true);
             }
         }
     }
@@ -34,5 +34,5 @@ qq.FilenameClickHandler = function(s) {
     spec.eventType = 'click';
     spec.onHandled = examineEvent;
 
-    return qq.extend(this, new qq.FilenameEditHandler(spec, baseApi));
+    return qq.extend(this, new qq.FilenameEditHandler(spec, inheritedInternalApi));
 };

@@ -1,9 +1,9 @@
-// Handles edit-related events on a file item (FineUploader mode).
-qq.FilenameEditHandler = function(s, baseApi) {
+// Handles edit-related events on a file item (FineUploader mode).  This is meant to be a parent handler.
+// Children will delegate to this handler when specific edit-related actions are detected.
+qq.FilenameEditHandler = function(s, inheritedInternalApi) {
     "use strict";
 
-    var publicApi = {},
-        spec = {
+    var spec = {
             listElement: document,
             log: function(message, lvl) {},
             classes: {
@@ -14,7 +14,8 @@ qq.FilenameEditHandler = function(s, baseApi) {
             onSetName: function(fileId, newName) {},
             onGetInput: function(item) {},
             onEditingStatusChange: function(fileId, isEditing) {}
-    };
+        },
+        publicApi;
 
     function getFilenameSansExtension(fileId) {
         var filenameSansExt = spec.onGetName(fileId),
@@ -49,14 +50,16 @@ qq.FilenameEditHandler = function(s, baseApi) {
         spec.onEditingStatusChange(fileId, false);
     }
 
+    // The name has been updated if the filename edit input loses focus.
     function registerInputBlurHandler(inputEl, fileId) {
-        baseApi.getDisposeSupport().attach(inputEl, 'blur', function() {
+        inheritedInternalApi.getDisposeSupport().attach(inputEl, 'blur', function() {
             handleNameUpdate(inputEl, fileId)
         });
     }
 
+    // The name has been updated if the user presses enter.
     function registerInputEnterKeyHandler(inputEl, fileId) {
-        baseApi.getDisposeSupport().attach(inputEl, 'keyup', function(event) {
+        inheritedInternalApi.getDisposeSupport().attach(inputEl, 'keyup', function(event) {
 
             var code = event.keyCode || event.which;
 
@@ -70,9 +73,9 @@ qq.FilenameEditHandler = function(s, baseApi) {
 
     spec.attachTo = spec.listElement;
 
-    publicApi = qq.extend(this, new qq.UiEventHandler(spec, baseApi));
+    publicApi = qq.extend(this, new qq.UiEventHandler(spec, inheritedInternalApi));
 
-    qq.extend(baseApi, {
+    qq.extend(inheritedInternalApi, {
         handleFilenameEdit: function(fileId, target, item, focusInput) {
             var newFilenameInputEl = spec.onGetInput(item);
 

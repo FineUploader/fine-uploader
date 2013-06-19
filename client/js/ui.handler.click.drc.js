@@ -1,7 +1,7 @@
 qq.DeleteRetryOrCancelClickHandler = function(s) {
     "use strict";
 
-    var baseApi = {},
+    var inheritedInternalApi = {},
         spec = {
             listElement: document,
             log: function(message, lvl) {},
@@ -21,8 +21,8 @@ qq.DeleteRetryOrCancelClickHandler = function(s) {
             || qq(target).hasClass(spec.classes.retry)
             || qq(target).hasClass(spec.classes.deleteButton)) {
 
-            var item = baseApi.getItemFromEventTarget(target),
-                fileId = baseApi.getFileIdFromItem(item);
+            var item = inheritedInternalApi.getItemFromEventTarget(target),
+                fileId = inheritedInternalApi.getFileIdFromItem(item);
 
             qq.preventDefault(event);
 
@@ -49,5 +49,5 @@ qq.DeleteRetryOrCancelClickHandler = function(s) {
     spec.onHandled = examineEvent;
     spec.attachTo = spec.listElement;
 
-    qq.extend(this, new qq.UiEventHandler(spec, baseApi));
+    qq.extend(this, new qq.UiEventHandler(spec, inheritedInternalApi));
 };
