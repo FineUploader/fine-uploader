@@ -1,7 +1,7 @@
 {
   "name": "fine-uploader",
   "title": "Fine Uploader",
-  "version": "3.6.3",
+  "version": "3.6.4",
   "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
   "main": "./fine-uploader/js/fine-uploader.js",
   "maintainers": [
@@ -38,18 +38,16 @@
       "url": "http://fineuploader.com/downloads.html"
     }
   ],
-  "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/Widen/fine-uploader/issues"
   },
-  "gitHead": "a6fc6a12111de2f884bf02545f3949331c577266",
   "devDependencies": {
     "wd": "0.0.32",
     "express": "~3.2.5",
     "semver": "~1.1.4",
     "coffee-script": "~1.6.3",
     "grunt": "~0.4.1",
-    "grunt-saucelabs": "~4.0.4",
+    "grunt-saucelabs": "git+ssh://git@github.com/feltnerm/grunt-saucelabs.git",
     "grunt-contrib-watch": "~0.4.4",
     "grunt-contrib-connect": "~0.3.0",
     "grunt-contrib-uglify": "~0.2.2",
@@ -66,11 +64,9 @@
     "grunt-banner": "~0.1.4",
     "grunt-complexity": "~0.1.3",
     "chai": "~1.6.1",
-    "grunt-mocha": "git://github.com/feltnerm/grunt-mocha.git",
-    "mocha-sauce": "git://github.com/pbakaus/mocha-sauce.git",
-    "q": "~0.9.6",
+    "grunt-mocha": "git://github.com/kmiyashiro/grunt-mocha.git",
     "request": "~2.21.0"
   },
   "dependencies": {},
-  "license": "GPL3"
+  "license": "GPLv3"
 }

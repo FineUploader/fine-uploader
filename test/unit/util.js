@@ -465,7 +465,6 @@ describe('util.js', function () {
         it('allows iterating over objects', function () {
             var answers = [];
             var obj = { one: 1, two: 2, three: 3 };
-            obj.constructor.prototype.four = 4;
 
             qq.each(obj, function (key, value) { answers.push(key); });
             assert.equal(answers.join(', '), 'one, two, three');

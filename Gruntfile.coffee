@@ -7,20 +7,6 @@ module.exports = (grunt) ->
     # ==========
     path = require 'path'
     request = require 'request'
-    Q = require 'Q'
-    api = (url, method, data, username, accessKey) ->
-            deferred = Q.defer()
-            request
-                method: method
-                uri: ["https://", username, ":", accessKey, "@saucelabs.com/rest", url].join("")
-                headers:
-                    'Content-Type': 'application/json'
-                body: JSON.stringify(data)
-                (err, res, body) ->
-                    grunt.write.debug "body: " + body
-                    grunt.write.debug "res.body: " + res.body
-                    deferred.resolve res.body
-            return deferred.promise
 
     # Package
     # ==========
@@ -486,31 +472,32 @@ module.exports = (grunt) ->
                     identifier: process.env.TRAVIS_JOB_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()
                     tags: [ process.env.TRAVIS_BRANCH || "local :: " + process.env.SAUCE_USERNAME ]
                     testname: 'Unit Tests'
-                    detailedError: true
+                    detailedError: false
                     browsers: browsers
-                    onTestComplete: (status, page, config, browser) ->
-                        done = @async()
-                        browser.eval 'JSON.stringify(window.mochaResults)', (err, res) ->
-                            done(err) if err
+                    ## onTestComplete: (status, page, config, browser) ->
+                    ##     done = @async()
+                    ##     browser.eval 'JSON.stringify(window.mochaResults)', (err, res) ->
+                    ##         done(err) if err
 
-                            res = JSON.parse res
-                            res.browser = config
+                    ##         res = JSON.parse res
+                    ##         res.browser = config
 
-                            grunt.log.debug '[%s] Results: %j', config.prefix, res 
+                    ##         grunt.log.debug '[%s] Results: %j', config.prefix, res 
 
-                            data =
-                                'custom-data':
-                                    mocha: res.jsonReport
-                                'passed': !res.failures
+                    ##         data =
+                    ##             'custom-data':
+                    ##                 mocha: res.jsonReport
+                    ##             'passed': !res.failures
 
-                            request
-                                method: 'PUT'
-                                uri: ["https://", process.env.SAUCE_USERNAME, ":", process.env.SAUCE_ACCESS_KEY, "@saucelabs.com/rest", "/v1/", process.env.SAUCE_USERNAME, "/jobs/", browser.sessionID].join('')
-                                headers:
-                                    'Content-Type': 'application/json'
-                                body: JSON.stringify data
-                            , (error, response, body) ->
-                                 done null, res
+                    ##         request
+                    ##             method: 'PUT'
+                    ##             uri: ["https://", process.env.SAUCE_USERNAME, ":", process.env.SAUCE_ACCESS_KEY, "@saucelabs.com/rest", "/v1/", process.env.SAUCE_USERNAME, "/jobs/", browser.sessionID].join('')
+                    ##             headers:
+                    ##                 'Content-Type': 'application/json'
+                    ##             body: JSON.stringify data
+                    ##         , (error, response, body) ->
+                    ##             done(error) if error
+                    ##             done res
 
     # Dependencies
     # ==========
@@ -544,7 +531,8 @@ module.exports = (grunt) ->
     # Watcher
     # ----------
     grunt.registerTask 'test-watch', 'Run headless unit-tests and re-run on file changes', [
-        'rebuild'
+        'rebuild',
+        'copy:test'
         'watch'
     ]
     # Coverage
@@ -554,7 +542,6 @@ module.exports = (grunt) ->
 
     # Travis
     # ---------
-    # @todo
     grunt.registerTask 'check_for_pull_request_from_master', 'Fails if we are testing a pull request against master', ->
         if (process.env.TRAVIS_BRANCH == 'master' and process.env.TRAVIS_PULL_REQUEST != 'false')
             grunt.fail.fatal '''Woah there, buddy! Pull requests should be
@@ -562,12 +549,19 @@ module.exports = (grunt) ->
             Details on contributing pull requests found here: \n
             https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md\n
             '''
+    
+    # Travis' own test
+    # ----------
+    grunt.registerTask 'travis-sauce', 'Run tests on Saucelabs', [
+        'copy:test'
+        'connect:test_server'
+        'saucelabs-mocha'
+    ]
 
     grunt.registerTask 'travis', [
         'check_for_pull_request_from_master'
         'travis-sauce'
     ]
-
 
     # Test
     # ----------
@@ -587,55 +581,14 @@ module.exports = (grunt) ->
         'saucelabs-mocha'
     ]
 
-    # Mocha-sauce tests
+    # Local tests (indefinite)
     # ----------
-    grunt.registerTask 'mocha-sauce', 'Run mocha tests on Saucelabs (with fancy error reporting)', () ->
-        grunt.config.requires('mocha-sauce')
-        name = grunt.config('mocha-sauce').get('name')
-        username = grunt.config('mocha-sauce').get('username') or process.env.SAUCE_USERNAME
-        accessKey = grunt.config('mocha-sauce').get 'accessKey'  or process.env.SAUCE_ACCESS_KEY
-        host = grunt.config('mocha-sauce').get ('name') or 'localhost'
-        port = grunt.config('mocha-sauce').get ('port')  or 80
-        url = grunt.config('mocha-sauce').get ('url') or ''
-        browsers = grunt.config('mocha-sauce').get ('browsers')
-        build = grunt.config('mocha-sauce').get('build') or Date.now
-        tags = grunt.config('mocha-sauce').get('tags') or []
-
-
-        sauce = new MochaSauce
-            name: name
-            username: username
-            accessKey: accessKey
-            host: host
-            port: port
-            url: url
-            browsers: browsers
-            build: build
-            tags: tags
-
-        for browser in grunt.config('mocha-sauce').get('browsers')
-            sauce.browser(browser)
-
-        sauce.record(grunt.config('mocha-sauce').get('record'))
-
-        sauce.on 'init', (browser) ->
-             console.log('  init : %s %s', browser.browserName, browser.platform)
-
-        sauce.on 'start', (browser) ->
-            console.log('  start : %s %s', browser.browserName, browser.platform)
-
-        sauce.on 'end', (browser) ->
-            console.log('  end : %s %s : %d failures', browser.browserName, browser.platform, res.failures)
-
-        sauce.start()
-
-
-    # Travis' own test
-    grunt.registerTask 'travis-sauce', 'Run tests on Saucelabs', [
+    grunt.registerTask 'test-local', 'Run a local server indefinitely for testing', [
         'copy:test'
-        'connect:test_server'
-        'saucelabs-mocha'
+        'connect:root_server'
     ]
+
+    
     # Build
     # ----------
     # @verify
