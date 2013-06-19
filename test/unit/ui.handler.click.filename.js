@@ -94,6 +94,6 @@ $(function () {
         });
     }
 
-//    testFilenameInputBlur(['keyup', {keyCode: $.simulate.keyCode.ENTER}]);
+    testFilenameInputBlur(['keyup', {keyCode: $.simulate.keyCode.ENTER}]);
     testFilenameInputBlur(['blur']);
 });
