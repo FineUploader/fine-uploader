@@ -70,7 +70,15 @@ qq.FilenameClickHandler = function(s) {
 
     function registerInputBlurHandler(inputEl, displayEl, fileId) {
         baseApi.getDisposeSupport().attach(inputEl, 'blur', function() {
-            handleNameUpdate(inputEl, displayEl, fileId)
+
+            // Ignore the blur event if we are already processing a targeted keyup event.  We do this as IE may fire a blur
+            // event after a keyup event when some keys, such as ENTER, are pressed.
+            if (qq(inputEl).hasClass('qq-keyupped')) {
+                qq(inputEl).removeClass('qq-keyupped');
+            }
+            else {
+                handleNameUpdate(inputEl, displayEl, fileId)
+            }
         });
     }
 
@@ -79,6 +87,7 @@ qq.FilenameClickHandler = function(s) {
             var code = event.keyCode || event.which;
 
             if (code === 13) {
+                qq(inputEl).removeClass('qq-keyupped').addClass('qq-keyupped');
                 handleNameUpdate(inputEl, displayEl, fileId)
             }
         });
