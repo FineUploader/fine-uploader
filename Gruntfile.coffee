@@ -33,7 +33,9 @@ module.exports = (grunt) ->
         './client/js/handler.xhr.js',
         './client/js/ui.handler.events.js',
         './client/js/ui.handler.click.drc.js',
-        './client/js/ui.handler.click.filename.js'
+        './client/js/ui.handler.edit.filename.js',
+        './client/js/ui.handler.click.filename.js',
+        './client/js/ui.handler.focus.filenameinput.js'
     ]
     
     # jQuery plugin modules

@@ -1,0 +1,93 @@
+// Handles edit-related events on a file item (FineUploader mode).
+qq.FilenameEditHandler = function(s, baseApi) {
+    "use strict";
+
+    var publicApi = {},
+        spec = {
+            listElement: document,
+            log: function(message, lvl) {},
+            classes: {
+                file: 'qq-upload-file'
+            },
+            onGetUploadStatus: function(fileId) {},
+            onGetName: function(fileId) {},
+            onSetName: function(fileId, newName) {},
+            onGetInput: function(item) {},
+            onEditingStatusChange: function(fileId, isEditing) {}
+    };
+
+    function getFilenameSansExtension(fileId) {
+        var filenameSansExt = spec.onGetName(fileId),
+            extIdx = filenameSansExt.lastIndexOf('.');
+
+        if (extIdx > 0) {
+            filenameSansExt = filenameSansExt.substr(0, extIdx);
+        }
+
+        return filenameSansExt;
+    }
+
+    function getOriginalExtension(fileId) {
+        var origName = spec.onGetName(fileId),
+            extIdx = origName.lastIndexOf('.');
+
+        if (extIdx > 0) {
+            return origName.substr(extIdx, origName.length - extIdx);
+        }
+    }
+
+    // Callback iff the name has been changed
+    function handleNameUpdate(newFilenameInputEl, fileId) {
+        var newName = newFilenameInputEl.value;
+
+        if (newName !== undefined && qq.trimStr(newName).length > 0) {
+            newName = newName + getOriginalExtension(fileId);
+
+            spec.onSetName(fileId, newName);
+        }
+
+        spec.onEditingStatusChange(fileId, false);
+    }
+
+    function registerInputBlurHandler(inputEl, fileId) {
+        baseApi.getDisposeSupport().attach(inputEl, 'blur', function() {
+            handleNameUpdate(inputEl, fileId)
+        });
+    }
+
+    function registerInputEnterKeyHandler(inputEl, fileId) {
+        baseApi.getDisposeSupport().attach(inputEl, 'keyup', function(event) {
+
+            var code = event.keyCode || event.which;
+
+            if (code === 13) {
+                handleNameUpdate(inputEl, fileId)
+            }
+        });
+    }
+
+    qq.extend(spec, s);
+
+    spec.attachTo = spec.listElement;
+
+    publicApi = qq.extend(this, new qq.UiEventHandler(spec, baseApi));
+
+    qq.extend(baseApi, {
+        handleFilenameEdit: function(fileId, target, item, focusInput) {
+            var newFilenameInputEl = spec.onGetInput(item);
+
+            spec.onEditingStatusChange(fileId, true);
+
+            newFilenameInputEl.value = getFilenameSansExtension(fileId);
+
+            if (focusInput) {
+                newFilenameInputEl.focus();
+            }
+
+            registerInputBlurHandler(newFilenameInputEl, fileId);
+            registerInputEnterKeyHandler(newFilenameInputEl, fileId);
+        }
+    });
+
+    return publicApi;
+};

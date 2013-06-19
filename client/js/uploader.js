@@ -171,6 +171,7 @@ qq.FineUploader = function(o){
 
         if (this._options.editFilename.enabled) {
             this._filenameClickHandler = this._bindFilenameClickEvent();
+            this._filenameInputFocusHandler = this._bindFilenameInputFocusEvent();
         }
 
         this._dnd = this._setupDragAndDrop();
@@ -221,6 +222,9 @@ qq.extend(qq.FineUploader.prototype, {
 
         this._filenameClickHandler.dispose();
         this._filenameClickHandler = this._bindFilenameClickEvent();
+
+        this._filenameInputFocusHandler.dispose();
+        this._filenameInputFocusHandler = this._bindFilenameInputFocusEvent();
 
         this._dnd.dispose();
         this._dnd = this._setupDragAndDrop();
@@ -305,10 +309,10 @@ qq.extend(qq.FineUploader.prototype, {
             }
         });
     },
-    _bindFilenameClickEvent: function() {
+    _filenameEditHandler: function() {
         var self = this;
 
-        return new qq.FilenameClickHandler({
+        return {
             listElement: this._listElement,
             classes: this._classes,
             log: function(message, lvl) {
@@ -347,7 +351,17 @@ qq.extend(qq.FineUploader.prototype, {
                     qqFilenameDisplay.css({display: ''});
                 }
             }
-        });
+        };
+    },
+    _bindFilenameInputFocusEvent: function() {
+        var spec = qq.extend({}, this._filenameEditHandler());
+
+        return new qq.FilenameInputFocusHandler(spec);
+    },
+    _bindFilenameClickEvent: function() {
+        var spec = qq.extend({}, this._filenameEditHandler());
+
+        return new qq.FilenameClickHandler(spec);
     },
     _leaving_document_out: function(e){
         return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
