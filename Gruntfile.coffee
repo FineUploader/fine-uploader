@@ -48,10 +48,11 @@ module.exports = (grunt) ->
     ]
 
     browsers = [
-        {
-            browserName: 'chrome'
-            platform: 'Windows 7'
-        }
+        #{
+        #    browserName: 'android'
+        #    platform: 'Linux'
+        #    version: '4.0'
+        #}
         {
             browserName: 'iphone'
             platform: 'OS X 10.8'
@@ -63,19 +64,9 @@ module.exports = (grunt) ->
             version: '6'
         }
         {
-            browserName: 'firefox'
-            platform: 'Windows 7'
-            version: '19'
-        }
-        {
             browserName: 'safari'
             platform: 'OS X 10.6'
             version: '5'
-        }
-        {
-            browserName: 'android'
-            platform: 'Linux'
-            version: '4.0'
         }
         {
             browserName: 'internet explorer'
@@ -96,6 +87,14 @@ module.exports = (grunt) ->
             browserName: 'internet explorer'
             platform: 'Windows XP'
             version: '7'
+        }
+        {
+            browserName: 'chrome'
+            platform: 'Windows 7'
+        }
+        {
+            browserName: 'firefox'
+            platform: 'Windows 7'
         }
     ]
 
