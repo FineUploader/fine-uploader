@@ -135,6 +135,13 @@
             Note that this is only passed with MPE requests that originate from the XHR uploader, since there is no way to
             determine file size client-side when using the form uploader.</td>
         </tr>
+        <tr>
+            <td>filenameParam</td>
+            <td>string</td>
+            <td>qqfilename</td>
+            <td>Name of the parameter passed if the original file name has been edited/overridden or if the entity being sent
+            is a <code>Blob</code>.  Note that <code>Blob</code>s are always sent if a call to
+            <code>qq.supportedFeatures.ajaxUploading</code> returns true and chunking is enabled.</td>
         </tr>
     </tbody>
 </table>
@@ -366,14 +373,6 @@ on the topic.
             <td>qqtotalparts</td>
             <td>Name of the parameter passed with a chunked request that specifies the total number of chunks associated with the underlying file or `Blob`.</td>
         </tr>
-        <tr>
-            <td>filename</td>
-            <td>string</td>
-            <td>qqfilename</td>
-            <td>Name of the parameter passed with a chunked request that specifies the name of the associated file or `Blob`.  This is useful for chunked
-            requests that are multipart encoded, since the filename reported by the user agent in the content-disposition header
-            will be either "blob" or an empty string.</td>
-        </tr>
     </tbody>
 </table>
 
@@ -573,27 +572,6 @@ Options used when `Blob` objects are to be uploaded.
             <td>Misc data</td>
             <td>If you do not include a name along with the `Blob` submitted to the uploader (via a `BlobData` object) this
             default name will be used.</td>
-        </tr>
-    </tbody>
-</table>
-
-### `blobs.paramNames` option properties: ###
-Options used when `Blob` objects are to be uploaded.
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Default</th>
-            <th>Note</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>name</td>
-            <td>string</td>
-            <td>qqblobname</td>
-            <td>A request parameter used to specify the associated name with any uploaded `Blob`.</td>
         </tr>
     </tbody>
 </table>

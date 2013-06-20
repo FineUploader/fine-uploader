@@ -14,7 +14,8 @@ qq.FineUploaderBasic = function(o) {
             forceMultipart: true,
             inputName: 'qqfile',
             uuidName: 'qquuid',
-            totalFileSizeName: 'qqtotalfilesize'
+            totalFileSizeName: 'qqtotalfilesize',
+            filenameParam: 'qqfilename'
         },
         validation: {
             allowedExtensions: [],
@@ -72,8 +73,7 @@ qq.FineUploaderBasic = function(o) {
                 partByteOffset: 'qqpartbyteoffset',
                 chunkSize: 'qqchunksize',
                 totalFileSize: 'qqtotalfilesize',
-                totalParts: 'qqtotalparts',
-                filename: 'qqfilename'
+                totalParts: 'qqtotalparts'
             }
         },
         resume: {
@@ -108,9 +108,6 @@ qq.FineUploaderBasic = function(o) {
         },
         blobs: {
             defaultName: 'misc_data',
-            paramNames: {
-                name: 'qqblobname'
-            }
         },
         paste: {
             targetElement: null,
@@ -419,6 +416,7 @@ qq.FineUploaderBasic.prototype = {
             customHeaders: this._options.request.customHeaders,
             inputName: this._options.request.inputName,
             uuidParamName: this._options.request.uuidName,
+            filenameParam: this._options.request.filenameParam,
             totalFileSizeParamName: this._options.request.totalFileSizeName,
             cors: this._options.cors,
             demoMode: this._options.demoMode,

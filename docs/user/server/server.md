@@ -108,3 +108,6 @@ your server's response.  If chunking is enabled, it generally would be most prud
 to the first or last chunk.  Once you return the new UUID in your response, Fine Uploader will update its client-side
 records and begin to use that UUID from that point forward.  New UUIDs must be returned as the value of a `newUuid` property.
 See the [values](#values) section above for an example.
+
+<br/>
+## Handling an Overridden Filename ##

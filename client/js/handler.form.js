@@ -193,8 +193,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChanged, logCal
         params[options.uuidParamName] = uuids[id];
 
         if (newNames[id] !== undefined) {
-            //TODO use/generalize the chunking.paramNames.fileName property
-            params['qqfilename'] = newNames[id];
+            params[options.filenameParam] = newNames[id];
         }
 
         if (!options.paramsInBody) {

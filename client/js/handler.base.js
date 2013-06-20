@@ -15,6 +15,7 @@ qq.UploadHandler = function(o) {
         paramsInBody: false,
         paramsStore: {},
         endpointStore: {},
+        filenameParam: 'qqfilename',
         cors: {
             expected: false,
             sendCredentials: false
@@ -39,11 +40,6 @@ qq.UploadHandler = function(o) {
             cookiesExpireIn: 7, //days
             paramNames: {
                 resuming: "qqresume"
-            }
-        },
-        blobs: {
-            paramNames: {
-                name: 'qqblobname'
             }
         },
         log: function(str, level) {},

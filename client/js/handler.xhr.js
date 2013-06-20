@@ -29,7 +29,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
          * or an empty string.  So, we will need to include the actual file name as a param in this case.
          */
         if (multipart) {
-            params[options.chunking.paramNames.filename] = name;
+            params[options.filenameParam] = name;
         }
     }
 
@@ -94,11 +94,6 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
 
         params[options.uuidParamName] = fileState[id].uuid;
 
-        if (newName !== undefined) {
-            //TODO use/generalize the chunking.paramNames.fileName property
-            params['qqfilename'] = newName;
-        }
-
         if (multipart) {
             params[options.totalFileSizeParamName] = size;
 
@@ -107,14 +102,18 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
                  * When a Blob is sent in a multipart request, the filename value in the content-disposition header is either "blob"
                  * or an empty string.  So, we will need to include the actual file name as a param in this case.
                  */
-                params[options.blobs.paramNames.name] = blobData.name;
+                params[options.filenameParam] = blobData.name;
             }
+        }
+
+        if (newName !== undefined) {
+            params[options.filenameParam] = newName;
         }
 
         //build query string
         if (!options.paramsInBody) {
             if (!multipart) {
-                params[options.inputName] = name;
+                params[options.inputName] = newName || name;
             }
             url = qq.obj2url(params, endpoint);
         }
