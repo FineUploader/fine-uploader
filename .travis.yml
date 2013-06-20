@@ -6,18 +6,18 @@ before_install:
 - sudo apt-get update -qq
 - npm install -g grunt-cli
 - git submodule update --init --recursive
+before_script:
+- grunt prepare
+- grunt build
+script:
+- grunt travis
 env:
   global:
   - secure: |-
-      caiZawX1I0N6l9lh9ksYXf7SaoinQckitLw1Be8SY4UnG8fUKOoRN3qhAzf7
-      KaJeafrGDpQEkvt8BARaRRHGfReUcfLfcY8jvq5t2t8yEESpwtOrAfavAWP7
-      SrV1RO8tx0UieurhR0lo/Jh78oKWEN/pbao3UNO7vI6cZw+SO8o=
+      gHDpZQb3YZtwxHnYCwP/mMeqNDU1OCptFtZ/2wfY/R81Of5JXnwO4nvk3ZT+
+      9TmUexNxC7pgM4sU5MPYBPVcUJ1jKXp/DifgFmLzdygMkMHkQNji0Ey53W/7
+      9Rs6+kIGSez+S5RbR9itYuZ3NTBM54o+YdUHhz7fERyOjHaCPvY=
   - secure: |-
-      h4wy2zjh9583ZwSgr+CMMLgWUyW1kx8uBjW4Zt1HcQGs1sQFE9EIJWHRB9iX
-      zrJYJnEjFG3sxbz6uvDZf5fvvxLQzOrjgIvAbkS00/I71BSeXg5Qclvvn0mp
-      8lO+hj8Pb93acGIcRnWvErvTJ9TNDqLpIosu6e61ZY/QpKl7Bkg=
-before_script:
-    - grunt prepare
-    - grunt build
-script:
-- grunt travis 
+      ItUbCE5lEEhfjbRw2xcG8F8L4T7JriFXCphlNV26ZzrRTGNGXKi2D7TDv2S5
+      rwbV6veaxef5UrKDyR5vbRuyXcKg7B05snD3jvKhp/Jwn3cU9NbddwFqffej
+      EFukvU9VidYA2iyLTB4UTVBh7AhZU05hLo5P4npKKcpObvSAL/8=
