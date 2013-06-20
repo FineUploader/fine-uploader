@@ -6,7 +6,8 @@ qq.FilenameClickHandler = function(s) {
         spec = {
             log: function(message, lvl) {},
             classes: {
-                file: 'qq-upload-file'
+                file: 'qq-upload-file',
+                editNameIcon: 'qq-edit-filename-icon'
             },
             onGetUploadStatus: function(fileId) {},
             onGetName: function(fileId) {}
@@ -16,7 +17,7 @@ qq.FilenameClickHandler = function(s) {
 
     // This will be called by the parent handler when a `click` event is received on the list element.
     function examineEvent(target, event) {
-        if (qq(target).hasClass(spec.classes.file)) {
+        if (qq(target).hasClass(spec.classes.file) || qq(target).hasClass(spec.classes.editNameIcon)) {
             var item = inheritedInternalApi.getItemFromEventTarget(target),
                 fileId = inheritedInternalApi.getFileIdFromItem(item),
                 status = spec.onGetUploadStatus(fileId);

@@ -47,6 +47,7 @@ module.exports = (grunt) ->
         './client/js/iframe.xss.response.js'
         './client/loading.gif',
         './client/processing.gif',
+        './client/edit.gif',
         './README.md',
         './LICENSE'
     ]
