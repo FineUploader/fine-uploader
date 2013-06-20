@@ -39,10 +39,15 @@ qq.FilenameEditHandler = function(s, inheritedInternalApi) {
 
     // Callback iff the name has been changed
     function handleNameUpdate(newFilenameInputEl, fileId) {
-        var newName = newFilenameInputEl.value;
+        var newName = newFilenameInputEl.value,
+            origExtension;
 
         if (newName !== undefined && qq.trimStr(newName).length > 0) {
-            newName = newName + getOriginalExtension(fileId);
+            origExtension = getOriginalExtension(fileId);
+
+            if (origExtension !== undefined) {
+                newName = newName + getOriginalExtension(fileId);
+            }
 
             spec.onSetName(fileId, newName);
         }

@@ -42,14 +42,11 @@ $(function () {
             $filenameDiv.simulate('click');
         });
 
-    function testFilenameInputBlur(simulateArgs) {
+    function testFilenameInputBlur(origName, origNameSansExt, newName, newNameSansExt, simulateArgs) {
         test('filename click handler - file submitted w/ blur event = ' + simulateArgs, function () {
             expect(6);
 
-            var actualName = "test.foo.bar",
-                origNameSansExt = "test.foo",
-                newName = "blahblah.bar",
-                newNameSansExt = "blahblah",
+            var actualName = origName,
                 $input = $container.find('INPUT'),
                 editing;
 
@@ -110,10 +107,12 @@ $(function () {
 
     // Can't get this test to pass in FF on SauceLabs only
     if (!qq.firefox()) {
-        testFilenameInputBlur(['blur']);
+        testFilenameInputBlur("test.foo.bar", "test.foo", "blahblah.bar", "blahblah", ['blur']);
+        testFilenameInputBlur("test", "test", "blahblah", "blahblah", ['blur']);
     }
 
-    testFilenameInputBlur(['keyup', {keyCode: $.simulate.keyCode.ENTER}]);
+    testFilenameInputBlur("test.foo.bar", "test.foo", "blahblah.bar", "blahblah", ['keyup', {keyCode: $.simulate.keyCode.ENTER}]);
+    testFilenameInputBlur("test", "test", "blahblah", "blahblah", ['keyup', {keyCode: $.simulate.keyCode.ENTER}]);
 
 
     test('filename click handler - undefined or empty filename submitted', function () {
