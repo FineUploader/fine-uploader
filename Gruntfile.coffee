@@ -1,4 +1,6 @@
 # Gruntfile
+#   for
+# fineuploader
 
 # the 'wrapper' function
 module.exports = (grunt) ->
