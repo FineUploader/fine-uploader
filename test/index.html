@@ -35,6 +35,8 @@
 
         <!-- any setup code... -->
         <script>
+            window.chocoReady = false;
+            window.mochaResults = {};
             mocha.setup('tdd');
         </script>
 
@@ -48,6 +50,7 @@
         <!-- run the tests -->
         <script>
         mochaSaucePlease();
+        console.log("Android sucks.");
         </script>
 
     </body>
