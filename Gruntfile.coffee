@@ -436,19 +436,19 @@ module.exports = (grunt) ->
             major:
                 options:
                     release: 'major'
-                src: ['package.json', 'fineuploader.jquery.json', 'client/js/version.js']
+                src: ['package.json', 'fineuploader.jquery.json', 'client/js/version.js', 'bower.json']
             minor:
                 options:
                     release: 'minor'
-                src: ['package.json', 'fineuploader.jquery.json', 'client/js/version.js']
+                src: ['package.json', 'fineuploader.jquery.json', 'client/js/version.js', 'bower.json']
             hotfix:
                 options:
                     release: 'patch'
-                src: ['package.json', 'fineuploader.jquery.json', 'client/js/version.js']
+                src: ['package.json', 'fineuploader.jquery.json', 'client/js/version.js', 'bower.json']
             build:
                 options:
                     release: 'build'
-                src: ['package.json', 'fineuploader.jquery.json', 'client/js/version.js']
+                src: ['package.json', 'fineuploader.jquery.json', 'client/js/version.js', 'bower.json']
 
         # Test
         # ----------
