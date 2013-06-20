@@ -18,7 +18,6 @@ public class RequestParser
     private static String TOTAL_PARTS_PARAM = "qqtotalparts";
     private static String UUID_PARAM = "qquuid";
     private static String PART_FILENAME_PARAM = "qqfilename";
-    private static String BLOB_NAME_PARAM = "qqblobname";
     private static String METHOD_PARAM = "_method";
 
     private static String GENERATE_ERROR_PARAM = "generateError";
@@ -131,11 +130,6 @@ public class RequestParser
             requestParser.generateError = Boolean.parseBoolean(multipartUploadParser.getParams().get(GENERATE_ERROR_PARAM));
         }
 
-        if (multipartUploadParser.getParams().get(BLOB_NAME_PARAM) != null)
-        {
-            requestParser.filename = multipartUploadParser.getParams().get(BLOB_NAME_PARAM);
-        }
-
         String partNumStr = multipartUploadParser.getParams().get(PART_INDEX_PARAM);
         if (partNumStr != null)
         {
@@ -166,11 +160,6 @@ public class RequestParser
         if (req.getParameter(GENERATE_ERROR_PARAM) != null)
         {
             requestParser.generateError = Boolean.parseBoolean(req.getParameter(GENERATE_ERROR_PARAM));
-        }
-
-        if (req.getParameter(BLOB_NAME_PARAM) != null)
-        {
-            requestParser.filename = req.getParameter(BLOB_NAME_PARAM);
         }
 
         String partNumStr = req.getParameter(PART_INDEX_PARAM);
