@@ -326,9 +326,10 @@ qq.extend(qq.FineUploader.prototype, {
             },
             onSetName: function(fileId, newName) {
                 var item = self.getItemByFileId(fileId),
-                    qqFilenameDisplay = qq(self._find(item, 'file'));
+                    qqFilenameDisplay = qq(self._find(item, 'file')),
+                    formattedFilename = self._options.formatFileName(newName);
 
-                qqFilenameDisplay.setText(newName);
+                qqFilenameDisplay.setText(formattedFilename);
                 self.setName(fileId, newName);
             },
             onGetInput: function(item) {
@@ -341,12 +342,10 @@ qq.extend(qq.FineUploader.prototype, {
                     qqFilenameDisplay = qq(self._find(item, 'file'));
 
                 if (isEditing) {
-                    qqCancel.hide();
                     qqInput.addClass('qq-editing');
                     qqFilenameDisplay.hide();
                 }
                 else {
-                    qqCancel.css({display: ''});
                     qqInput.removeClass('qq-editing');
                     qqFilenameDisplay.css({display: ''});
                 }

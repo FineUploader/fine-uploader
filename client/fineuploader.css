@@ -146,12 +146,16 @@
     display: none;
 }
 
-INPUT.qq-edit-filename {
+.qq-edit-filename {
     position: absolute;
     left: -100%;
 }
 
-INPUT.qq-edit-filename.qq-editing {
+.qq-edit-filename.qq-editing {
     position: relative;
     left: 0;
+}
+
+.qq-edit-filename.qq-editing ~ .qq-upload-cancel {
+    display: none;
 }
