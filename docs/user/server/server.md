@@ -111,3 +111,5 @@ See the [values](#values) section above for an example.
 
 <br/>
 ## Handling an Overridden Filename ##
+Simple look for a "qqfilename" parameter.  If this exists in the request, be sure to use this when naming your file server-side.
+See the [blog post](http://blog.fineuploader.com/2013/06/37-edit-override-file-names.html) for more details.
