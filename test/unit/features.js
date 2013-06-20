@@ -1,3 +1,2 @@
-$(function() { 
-
-}); 
+describe.skip('features.js', function () {
+});
