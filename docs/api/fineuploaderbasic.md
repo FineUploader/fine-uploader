@@ -56,6 +56,12 @@ if the user agent does not support the File API.
 
 * `getName(id)` - Returns the name of the file or `Blob` represented by the passed ID.
 
+* `setName(id, newName)` - Provide an alternate/new name for the associated file or blob.
+This will be sent along with the upload request, by default, as the value of a "qqfilename" parameter.
+You should only call this method before the upload request has been sent.  Read
+[the blog post about the edit filename feature](http://blog.fineuploader.com/2013/06/37-edit-override-filenames.html)
+in both FineUploader and FineUploaderBasic for more details.
+
 * `getFile(id)` - Returns the `File` or `Blob` object associated with the passed ID.  Undefined if the underlying `File` or `Blob` cannot be found,
 or if the user agent does not support the File API.  For more info on the `File` and `Blob` objects, please see
 [the File entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file) and [the Blob entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-Blob), respectively.
