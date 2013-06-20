@@ -47,7 +47,7 @@
     "semver": "~1.1.4",
     "coffee-script": "~1.6.3",
     "grunt": "~0.4.1",
-    "grunt-saucelabs": "git+ssh://git@github.com/feltnerm/grunt-saucelabs.git",
+    "grunt-saucelabs": "git://github.com/feltnerm/grunt-saucelabs.git",
     "grunt-contrib-watch": "~0.4.4",
     "grunt-contrib-connect": "~0.3.0",
     "grunt-contrib-uglify": "~0.2.2",
