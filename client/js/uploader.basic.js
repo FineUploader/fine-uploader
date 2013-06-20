@@ -540,9 +540,13 @@ qq.FineUploaderBasic.prototype = {
                 return self.getSize(id);
             },
             onStatusChange: function(id, oldStatus, newStatus) {
+                self._onUploadStatusChange(id, oldStatus, newStatus);
                 self._options.callbacks.onStatusChange(id, oldStatus, newStatus);
             }
         });
+    },
+    _onUploadStatusChange: function(id, oldStatus, newStatus) {
+        //nothing to do in the basic uploader
     },
     _handlePasteSuccess: function(blob, extSuppliedName) {
         var extension = blob.type.split("/")[1],
@@ -787,7 +791,8 @@ qq.FineUploaderBasic.prototype = {
         this._uploadData.setStatus(id, qq.status.SUBMITTED);
 
         this._onSubmit(id, name);
-        this._options.callbacks.onSubmitted(id, name);
+        this._onSubmitted(id, name);
+        this._options.callbacks.onSubmitted(id);
 
         if (this._options.autoUpload) {
             if (!this._handler.upload(id)) {
@@ -797,6 +802,9 @@ qq.FineUploaderBasic.prototype = {
         else {
             this._storeForLater(id);
         }
+    },
+    _onSubmitted: function(id) {
+        //nothing to do in the base uploader
     },
     _storeForLater: function(id) {
         this._storedIds.push(id);

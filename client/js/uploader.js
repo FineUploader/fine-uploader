@@ -169,7 +169,7 @@ qq.FineUploader = function(o){
 
         this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
 
-        if (this._options.editFilename.enabled) {
+        if (this._isEditFilenameEnabled()) {
             this._filenameClickHandler = this._bindFilenameClickEvent();
             this._filenameInputFocusHandler = this._bindFilenameInputFocusEvent();
         }
@@ -216,15 +216,6 @@ qq.extend(qq.FineUploader.prototype, {
         if (!this._options.button) {
             this._button = this._createUploadButton(this._find(this._element, 'button'));
         }
-
-        this._deleteRetryOrCancelClickHandler.dispose();
-        this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
-
-        this._filenameClickHandler.dispose();
-        this._filenameClickHandler = this._bindFilenameClickEvent();
-
-        this._filenameInputFocusHandler.dispose();
-        this._filenameInputFocusHandler = this._bindFilenameInputFocusEvent();
 
         this._dnd.dispose();
         this._dnd = this._setupDragAndDrop();
@@ -309,6 +300,9 @@ qq.extend(qq.FineUploader.prototype, {
             }
         });
     },
+    _isEditFilenameEnabled: function() {
+        return this._options.editFilename.enabled && !this._options.autoUpload;
+    },
     _filenameEditHandler: function() {
         var self = this;
 
@@ -337,7 +331,6 @@ qq.extend(qq.FineUploader.prototype, {
             },
             onEditingStatusChange: function(fileId, isEditing) {
                 var item = self.getItemByFileId(fileId),
-                    qqCancel = qq(self._find(item, 'cancel')),
                     qqInput = qq(self._find(item, 'editFilenameInput')),
                     qqFilenameDisplay = qq(self._find(item, 'file'));
 
@@ -351,6 +344,18 @@ qq.extend(qq.FineUploader.prototype, {
                 }
             }
         };
+    },
+    _onUploadStatusChange: function(id, oldStatus, newStatus) {
+        if (this._isEditFilenameEnabled()) {
+            var item = this.getItemByFileId(id),
+                qqFilenameDisplay;
+
+            // Status for a file exists before it has been added to the DOM, so we must be careful here.
+            if (item && newStatus !== qq.status.SUBMITTED) {
+                qqFilenameDisplay = qq(this._find(item, 'file'));
+                qqFilenameDisplay.removeClass("qq-editable");
+            }
+        }
     },
     _bindFilenameInputFocusEvent: function() {
         var spec = qq.extend({}, this._filenameEditHandler());
@@ -385,6 +390,15 @@ qq.extend(qq.FineUploader.prototype, {
     _onSubmit: function(id, name) {
         qq.FineUploaderBasic.prototype._onSubmit.apply(this, arguments);
         this._addToList(id, name);
+    },
+    // The file item has been added to the DOM.
+    _onSubmitted: function(id) {
+        if (this._isEditFilenameEnabled()) {
+            var item = this.getItemByFileId(id),
+                qqFilenameDisplay = qq(this._find(item, 'file'));
+
+            qqFilenameDisplay.addClass("qq-editable");
+        }
     },
     // Update the progress bar & percentage as the file is uploaded
     _onProgress: function(id, name, loaded, total){

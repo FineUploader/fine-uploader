@@ -151,9 +151,15 @@
     left: -100%;
 }
 
+.qq-upload-file.qq-editable {
+    cursor: pointer;
+}
+
 .qq-edit-filename.qq-editing {
     position: relative;
     left: 0;
+    margin-top: 5px;
+    margin-right: 10px;
 }
 
 .qq-edit-filename.qq-editing ~ .qq-upload-cancel {
