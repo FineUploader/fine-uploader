@@ -107,7 +107,7 @@ qq.FineUploaderBasic = function(o) {
             allowXdr: false
         },
         blobs: {
-            defaultName: 'misc_data',
+            defaultName: 'misc_data'
         },
         paste: {
             targetElement: null,
