@@ -102,12 +102,12 @@ qq.FineUploader = function(o){
             fileSizeOnSubmit: false,
             prependFiles: false
         },
-        editFilename: {
-            enabled: false
-        },
         paste: {
             promptForName: false,
             namePromptMessage: "Please name this image"
+        },
+        editFilename: {
+            enabled: false
         },
         showMessage: function(message){
             setTimeout(function() {

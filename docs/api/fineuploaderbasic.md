@@ -80,7 +80,7 @@ Fine Uploader actually uses the API call internally when a user clicks the delet
 * `getUploads(optionalFilter)` - Get information about all files or `Blob`s that have been submitted to the uploader during
 this session.  The return type is either a single object (filter by single ID, filter by single UUID), or an array of
 objects (filter by array of IDs or UUIDs, filter by status, no filter).  The object referred to here has the following
-properties: `id`, `uuid`, `name`, `size` (if available), and `status`.  The status values correspond to "constants"
+properties: `id`, `uuid`, `originalName`, `name`, `size` (if available), and `status`.  The status values correspond to "constants"
 defined in the `qq.status` object.  You may filter the results by one of the following filters: `id`, `uuid`, or
 `status`.  The filter may be a single value or an array of values.  For example, if you would like to retrieve information
 about the first 3 items submitted to the uploader, you would call `uploaderInstance.getUploads({id: [0, 1, 2]});`.  Please
