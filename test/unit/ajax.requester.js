@@ -1,2 +1,1 @@
-describe.skip('ajax.requester.js', function () {
-});
+describe.skip('ajax.requester.js', function () {});

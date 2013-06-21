@@ -1,13 +1,5 @@
 describe('button.js', function () {
-    var $fixture, $input, input, button;
-
-    beforeEach(function () {
-        $fixture = helpme.withTests.createFixture();
-    });
-
-    afterEach(function () {
-        helpme.withTests.destroyFixture(); 
-    })
+    var $input, input, button;
 
     it('constructor works', function () {
         $fixture.append("<div id='foo'></div>");

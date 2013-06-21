@@ -1,12 +1,11 @@
-$(function () {
-    module('Delete, Retry, and Cancel Click Handlers')
+describe('ui.handler.click.drc.js', function () {
 
-        test('delete, retry, and cancel click handler', function () {
-            expect(3);
-
-            var $fixture = $("#qunit-fixture"),
-                fileId = 123,
-                $container, $fileItem, $cancelLink, $deleteLink, $retryLink;
+    describe('click handlers', function () {
+        var fileId = 123,
+            $container, $fileItem, $cancelLink, $deleteLink, $retryLink;
+    
+        it('delete, retry, and cancel click handlers', function () {
+            //expect(3);
 
             $fixture.append('<div class="testcontainer"></div>');
 
@@ -23,22 +22,22 @@ $(function () {
 
             $fileItem[0].qqFileId = fileId;
 
-            new qq.DeleteRetryOrCancelClickHandler({
+            var handler = new qq.DeleteRetryOrCancelClickHandler({
                 listElement: $container[0],
                 classes: {
                     cancel: 'test-cancel',
                     deleteButton: 'test-delete',
                     retry: 'test-retry'
                 },
-                onGetName: function() {return "test"},
+                onGetName: function() { return "test"; },
                 onDeleteFile: function(id) {
-                    equal(id, fileId, "deleted file");
+                    assert.equal(id, fileId, "deleted file");
                 },
                 onCancel: function(id) {
-                    equal(id, fileId, "cancelled upload");
+                    assert.equal(id, fileId, "cancelled upload");
                 },
                 onRetry: function(id) {
-                    equal(id, fileId, "retried upload");
+                    assert.equal(id, fileId, "retried upload");
                 }
             });
 
@@ -51,4 +50,5 @@ $(function () {
             $container.simulate('click');
             $fileItem.simulate('click');
         });
+    });
 });

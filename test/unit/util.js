@@ -1,16 +1,6 @@
-var el, $el, $fixture;
-// before each test we want to setup a fixture with which to manipulate DOM
-beforeEach(function () {
-    $fixture = helpme.withTests.createFixture();
-});
-
-// after each test we want to teardown this fixture
-afterEach(function () {
-    helpme.withTests.destroyFixture(); 
-});
 
 describe('util.js', function () {
-
+    var el, $el;
 
     describe('hide', function () {
         it('properly hide an element', function () { 

@@ -10,6 +10,7 @@
     <body>
 
         <div id="mocha"></div>
+        <div id="mocha-fixture"></div>
 
         <!-- dependencies -->
         <script src="vendor/purl/purl.js" type="text/javascript"></script>
@@ -39,9 +40,21 @@
             window.chocoReady = false;
             window.mochaResults = {};
             mocha.setup('tdd');
+
+            var $fixture;
+            beforeEach(function () {
+                $fixture = helpme.withTests.createFixture();
+            });
+
+            afterEach(function () {
+                $fixture = helpme.withTests.destroyFixture(); 
+            });
+
         </script>
 
         <!-- load the test scripts -->
+        <!--
+        -->
         <script src="unit/util.js"></script>
         <script src="unit/promise.js"></script>
         <script src="unit/button.js"></script>
@@ -53,7 +66,7 @@
         <!-- run the tests -->
         <script>
         mochaSaucePlease();
-        console.log("Android sucks.");
+        console.log("The droids you were looking for ...");
         </script>
 
     </body>
