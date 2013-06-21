@@ -1,12 +1,13 @@
 describe('ui.handler.click.drc.js', function () {
 
     describe('click handlers', function () {
-        var fileId = 123,
-            $container, $fileItem, $cancelLink, $deleteLink, $retryLink;
     
-        it('delete, retry, and cancel click handlers', function () {
+        it('delete, retry, and cancel click handlers', function (done) {
+            var fileId = 123,
+                $container, $fileItem, $cancelLink, $deleteLink, $retryLink;
             //expect(3);
 
+            console.log($fixture);
             $fixture.append('<div class="testcontainer"></div>');
 
             $container = $fixture.find('.testcontainer');
@@ -41,6 +42,7 @@ describe('ui.handler.click.drc.js', function () {
                 }
             });
 
+
             //these should result in callbacks
             $cancelLink.simulate('click');
             $deleteLink.simulate('click');
@@ -49,6 +51,7 @@ describe('ui.handler.click.drc.js', function () {
             //these should not result in callbacks
             $container.simulate('click');
             $fileItem.simulate('click');
+            done();
         });
     });
 });

@@ -463,10 +463,11 @@ module.exports = (grunt) ->
             all:
                 options:
                     urls: ['http://localhost:9001/index.html']
+                    log: true
                     mocha:
                         ignoreLeaks: false
-                    reporter: 'Nyan'
-                    run: true
+                    reporter: 'Spec'
+                    run: false
 
         # Saucelas + Mocha
         # ---------

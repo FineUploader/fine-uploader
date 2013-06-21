@@ -8,12 +8,14 @@ function FancyJSON(runner) {
         result.durationSec = 0;
         result.passed = true;
 
-        if(suite.title)
+        if(suite.title) {
             result.description = suite.title;
+        }
 
         if(suite.tests.length) {
             result.specs = [];
-            for (var i = 0; i < suite.tests.length; i++) {
+            var i = 0;
+            for (i; i < suite.tests.length; i++) {
 
                 if (!suite.tests[i].pending) {
                     result.specs.push({
@@ -27,8 +29,9 @@ function FancyJSON(runner) {
 
                     result.durationSec += (suite.tests[i].duration / 1000) || 0;
 
-                    if(suite.tests[i].state !== "passed")
+                    if(suite.tests[i].state !== "passed") {
                         result.passed = false;
+                    }
                 }
 
             }
@@ -39,7 +42,8 @@ function FancyJSON(runner) {
             result.suites = [];
 
             var sub = null;
-            for (var j = 0; j < suite.suites.length; j++) {
+            var j = 0;
+            for (j; j < suite.suites.length; j++) {
 
                 sub = {};
                 recurse(suite.suites[j], sub);
@@ -47,8 +51,9 @@ function FancyJSON(runner) {
 
                 result.durationSec += sub.durationSec || 0;
 
-                if(!sub.passed)
+                if(!sub.passed) {
                     result.passed = false;
+                }
 
             }
 
@@ -57,7 +62,7 @@ function FancyJSON(runner) {
     }
 
     runner.on('suite', function(suite) {
-        if(suite.parent.root) root = suite.parent;
+        if(suite.parent.root) { root = suite.parent; }
     });
 
     runner.on('end', function() {
@@ -84,7 +89,7 @@ function mochaSaucePlease(fn) {
 
         // Generate JSON coverage
         mocha.reporter(FancyJSON);
-        new mocha._reporter(runner);
+        var m = new mocha._reporter(runner);
 
         // Generate XUnit coverage
         //window.xUnitReport = '';
@@ -120,6 +125,7 @@ function mochaSaucePlease(fn) {
             window.chocoReady = true;
         });
 
-    })(window.mochaPhantomJS ? mochaPhantomJS.run() : mocha.run());
+    }(mocha.run()));
+    //})(window.mochaPhantomJS ? mochaPhantomJS.run() : mocha.run());
 
 }

@@ -53,8 +53,6 @@
         </script>
 
         <!-- load the test scripts -->
-        <!--
-        -->
         <script src="unit/util.js"></script>
         <script src="unit/promise.js"></script>
         <script src="unit/button.js"></script>
@@ -65,8 +63,10 @@
 
         <!-- run the tests -->
         <script>
-        mochaSaucePlease();
-        console.log("The droids you were looking for ...");
+        $(function () {
+            mochaSaucePlease();
+            console.log("The droids you were looking for ...");
+        });
         </script>
 
     </body>
