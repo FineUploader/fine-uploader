@@ -605,6 +605,12 @@ qq.FineUploaderBasic.prototype = {
         if (!this._options.autoUpload && storedItemIndex >= 0) {
             this._storedIds.splice(storedItemIndex, 1);
         }
+
+        var itemLimit = this._options.validation.itemLimit;
+        if (itemLimit > 0 && itemLimit > this._netUploadedOrQueued) {
+            var btn = this._find(this._element, 'button');
+            btn.style.display = '';
+        }
     },
     _isDeletePossible: function() {
         if (!this._options.deleteFile.enabled) {
@@ -792,6 +798,12 @@ qq.FineUploaderBasic.prototype = {
         }
         else {
             this._storeForLater(id);
+        }
+
+        var itemLimit = this._options.validation.itemLimit;
+        if (itemLimit > 0 && itemLimit <= this._netUploadedOrQueued) {
+            var btn = this._find(this._element, 'button');
+            qq(btn).hide();
         }
     },
     _storeForLater: function(id) {
