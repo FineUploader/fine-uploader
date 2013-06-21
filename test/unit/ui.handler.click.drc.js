@@ -7,7 +7,6 @@ describe('ui.handler.click.drc.js', function () {
                 $container, $fileItem, $cancelLink, $deleteLink, $retryLink;
             //expect(3);
 
-            console.log($fixture);
             $fixture.append('<div class="testcontainer"></div>');
 
             $container = $fixture.find('.testcontainer');
