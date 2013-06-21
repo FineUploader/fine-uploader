@@ -40,7 +40,7 @@ describe("upload-data.js", function () {
     });
 
     it("allows override name", function() {
-        var uploadData = createUploadData();
+        var uploadData = helpme.createUploadData();
 
         uploadData.added(0);
         assert.equal(uploadData.retrieve({id: 0}).name, "0_name", "checking initial name");
