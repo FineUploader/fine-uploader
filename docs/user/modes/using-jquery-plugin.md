@@ -2,7 +2,7 @@
 
 Fine Uploader also provides an optional jQuery plug-in.  This simply wraps the native uploader code.  You can use either of
 the modes described above when using the jQuery plug-in via the `uploaderType` option.  More on the plug-in in the
-[jQuery plug-in section](docs/using-jquery-plugin.md).
+[jQuery plug-in section](docs/user/modes/using-jquery-plugin.md).
 
 **It is important to understand that the target of your plug-in should be an existing container element for your upload
 component, *NOT* the button element.  Your button element must be specified separately via the `button` option.**
@@ -26,7 +26,7 @@ Uploader.  For example, if specify a value for the `extraDropzones` option, and,
 to native Fine Uploader.
 
 ### Callbacks ###
-All [callbacks defined in the native uploader](callbacks.md) are also available when using
+All [callbacks defined in the native uploader](/docs/api/callbacks.md) are also available when using
 the jQuery plug-in.  However, as is common with jQuery plug-ins, these callbacks are actually custom events.  For example,
 if you want to be notified whenever an error occurs and whenever an upload has completed, your client-side code may look
 something like this:
@@ -62,8 +62,8 @@ $('#fineUploaderElementId').fineUploader({
 
 ### Public API / Instance Functions ###
 All public API (instance) functions defined in the native javascript uploader are accessible when
-using the jQuery plug-in.  See the [FineUploaderBasic mode API functions section](api-fineuploaderbasic.md) and the
-[FineUploader mode API functions section](api-fineuploader.md) for more details.  Public/instance functions on a jQuery plug-in are made accessible as recommended in the
+using the jQuery plug-in.  See the [FineUploaderBasic mode API functions section](/docs/api/fineuploaderbasic.md) and the
+[FineUploader mode API functions section](/docs/api/fineuploader.md) for more details.  Public/instance functions on a jQuery plug-in are made accessible as recommended in the
 [jQuery plug-in documentation](http://docs.jquery.com/Plugins/Authoring#Plugin_Methods).  Looking for an example?
 Please see the above code fragment, where we call the `setParams` instance function and pass it an object.
 

@@ -81,6 +81,6 @@ such feature that optionally uses this is the `deleteFile` feature.  The default
 may override this with something a bit nicer, if you choose.  The okCallback will be executed if the user clicks "ok" and the
 `cancelCallback` if the user clicks "cancel".  The `cancelCallback` is optional, but the `okCallback` is required.
 * `showPrompt: function(message, defaultValue) {...}` - This function is used to prompt the user for a value.  Note that **this
-is a promissory callback**, meaning it requires a [`qq.Promise`](promise.md) to be returned.  The `qq.Promise` documentation
+is a promissory callback**, meaning it requires a [`qq.Promise`](api/promise.md) to be returned.  The `qq.Promise` documentation
 includes a simple example that overrides this default implementation using bootbox.  The default implementation here simply
 uses `window.prompt`.

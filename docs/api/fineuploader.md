@@ -1,5 +1,5 @@
 ## FineUploader mode API functions ##
-Note that all [FineUploaderBasic mode API functions](api-fineuploaderbasic.md) are all available when running in FineUploader mode.
+Note that all [FineUploaderBasic mode API functions](/docs/api/fineuploaderbasic.md) are all available when running in FineUploader mode.
 
 * `getItemByFileId(String id)` - Returns the HTMLElement associated with the passed file or `Blob` ID.
 * `addExtraDropzone(HTMLElement element)` - Use this to mark an element as a drop zone on an already-instantiated FineUploader.

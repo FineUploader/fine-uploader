@@ -23,10 +23,10 @@ This area of the documentation is mostly prose and examples. It is meant to be h
 
 * [FineUploaderBasic](user/options/options-fineuploaderbasic.md)
 * [FineUploader](user/options/options-fineuploader.md)
-* [Styling Fine Uploader](user/options/styling.md)
-    * [Templates](user/options/styling.md#templates)
-    * [Classes](user/options/styling.md#classes)
-    * [Dialogs](user/options/styling.md#dialogs)
+* [Styling Fine Uploader](styling.md)
+    * [Templates](styling.md#templates)
+    * [Classes](styling.md#classes)
+    * [Dialogs](styling.md#dialogs)
 
 #### Server-side
 

@@ -1,11 +1,18 @@
 {
   "name": "fine-uploader",
-  "version": "0.0.0",
+  "version": "3.6.4",
   "devDependencies": {
-    "qunit": "~1.11.0",
     "jquery": "1.10.0",
     "purl": "git://github.com/allmarkedup/purl.git#~2.3.1",
     "jquery.simulate": "git://github.com/jquery/jquery-simulate.git",
-    "json2": "latest"
+    "json2": "latest",
+    "mocha": "~1.11.0",
+    "assert": "git://github.com/Jxck/assert.git"
+  },
+  "exportsOverride": {
+    "mocha": {
+      "js": "mocha.js",
+      "css": "mocha.css"
+    }
   }
 }

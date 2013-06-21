@@ -6,7 +6,7 @@ See case [#840](https://github.com/Widen/fine-uploader/issues/840) for more deta
 
 **Q**: I'm using FineUploaderBasic mode, but I don't want to write my own code to handle dropped files and folders.  Can
 I use the DnD module used by FineUploader mode?    
-**A**: Certainly, and it's quite easy to do so!  Head on over to the [DnD Module Documentation](drag-and-drop.md) for more information.
+**A**: Certainly, and it's quite easy to do so!  Head on over to the [DnD Module Documentation](api/drag-and-drop.md) for more information.
 
 **Q**: In IE, when my server returns its response to an upload request, I see a "Save As..." dialog box on the client.  What am I doing wrong?    
 **A**: Your server's response content-type MUST be "text/plain".  IE does not handle the "application/json" mime-type.  You have
@@ -24,7 +24,7 @@ component, *NOT* the button element.  Your button element must be specified sepa
 **A:** There are two common causes.  One cause is triggering the "select files" dialog via javascript.  IE does not permit this
 and will throw a security error when Fine Uploader attempts to submit the underlying form.  Another cause is returning a
 response code that is not 200.  The error occurs when Fine Uploader attempts to parse the response in the hidden iframe.
-See the [Internet Explorer Limitations](limitations-ie.md) for more details.
+See the [Internet Explorer Limitations](user/limitations-ie.md) for more details.
 
 **Q:** Why can't I use a progress bar, drag and drop, multiple file selection, chunking, or auto-resume in some browsers?   
 **A:** Some browsers (IE9 and older, along with Android 2.3.x and older) do not support the File API the `multiple` attribute on file input elements.

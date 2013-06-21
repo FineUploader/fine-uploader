@@ -6,9 +6,21 @@ var helpme = (function () {
 
     var obj = {
     
+        // create a test fixture in the dom
+        withTests: {
+            createFixture: function () {
+                $("<div id='mocha-fixture'></div>").appendTo('body'); 
+                return $("#mocha-fixture");
+            },
+
+            destroyFixture: function() {
+                return $('#mocha-fixture').empty();
+            }
+        },
+       
         // create a BLOB object
         createBlob: function (data) {
-            var data, blobby;
+            var blobby;
             
             if (!data)
                 data  = ["Hello, world!"];
@@ -16,6 +28,28 @@ var helpme = (function () {
             blobby = new Blob(data);
 
             return blobby;
+        },
+    
+        createUploadData: function (onStatusChange) {
+            return new qq.UploadData({
+                getUuid: function(id) {
+                    return id + "_uuid";
+                },
+
+                getName: function(id) {
+                    return id + "_name";
+                },
+
+                getSize: function(id) {
+                    return 1980;
+                },
+
+                onStatusChange: function(id, oldStatus, newStatus) {
+                    if (onStatusChange !== undefined) {
+                        onStatusChange(id, oldStatus, newStatus);
+                    }
+                }
+            });
         },
 
         createFineUploader: function (options, request, validation) {

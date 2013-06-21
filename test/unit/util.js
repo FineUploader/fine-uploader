@@ -1,100 +1,86 @@
-$(function () { 
-    
-    module('Util')
+var el, $el, $fixture;
+// before each test we want to setup a fixture with which to manipulate DOM
+beforeEach(function () {
+    $fixture = helpme.withTests.createFixture();
+});
 
-        test('hide - should hide an element.', function () {
-            var el, $el, $fixture;
-            $fixture = $("#qunit-fixture");
+// after each test we want to teardown this fixture
+afterEach(function () {
+    helpme.withTests.destroyFixture(); 
+});
+
+describe('util.js', function () {
+
+
+    describe('hide', function () {
+        it('properly hide an element', function () { 
             $fixture.append("<div id='foo'></div>");
             $el = $fixture.find("#foo");
             el = qq($el[0]);
-            
-            notEqual($el.css('display'), 'none');
+
+            //assert.notEqual($el.css('display'), 'none', 'element should not be hidden');
             el.hide();
-            equal($el.css('display'), 'none');
+            assert.equal($el.css('display'), 'none', 'element should be hidden');
         });
+    }); // hide
+    
+    describe('attach', function () {
+        it.skip('attaches an event to an element', function () {}); 
+    });
 
-        // test('attach - should attach an event to an element.', 1, function () {
-        //     var el, $el, $fixture;
-        //     $fixture = $("#qunit-fixture");
-        //     $fixture.append("<div id='foo'></div>");
-        //     $el = $fixture.find("#foo");
-        //     el = $el[0];
-        //     console.log($el[0]);
-        //     
-        //     qq(el).attach('click', function () {
-        //         ok(true);
-        //     });  
-        //     // $el.click(function () {
-        //     //     ok(true);
-        //     // });
-
-        //     //$el.trigger('click');
-        //     $el.click();
-        // });
-
-        test('detach - should detach an event from an element.', function () {
-            expect(0);
-            var el, $el, $fixture;
-            $fixture = $("#qunit-fixture");
+    describe('detach',function () {
+        it.skip('detaches an event from an element', function () {
             $fixture.append("<div id='foo'></div>");
             $el = $fixture.find("#foo");
             el = qq($el[0]);
 
             var detacher = el.attach('click', function () {
-                ok(false);
+                return false;
             });
-            detacher();
-            
+
             $el.trigger('click');
         }); 
+    }); // detach
 
-        test('contains - should return true if the element contains itself', function () {
-            var $fixture, $el, el;
-            $fixture = $("#qunit-fixture");
+    describe('contains', function () {
+        it('returns true if the element contains itself', function () {
             $fixture.append("<div id='foo'></div>");
-            
             $el = $fixture.find("#foo");
             el = $el[0];
-            ok(qq(el).contains(el));
+
+            assert.ok(qq(el).contains(el), 'the element should contain itself');
         });
 
-        test('contains - should return true if the element contains the descendant', function () {
-            var $fixture, $el, el;
-            $fixture = $("#qunit-fixture");
+        it('return true if the element contains the descendant', function () {
             $fixture.append("<div id='foo'></div>");
-            
             $el = $fixture.find("#foo");
             el = $el[0];
-            ok(qq($fixture[0]).contains(el));
+
+            assert.ok(qq($fixture[0]).contains(el), '$el is a descendant of $fixture');
         });
 
-        test('contains - should return false if the element does not contain the descendant', function () {
-            var $fixture, $el, el;
-            $fixture = $("#qunit-fixture");
+        it('returns false if the element does not contain the descendant', function () {
             $fixture.append("<div id='foo'></div>");
-            
             $el = $fixture.find("#bar");
             el = $el[0];
-            ok(!qq($fixture[0]).contains(el));
+
+            assert.ok(!qq($fixture[0]).contains(el), '$el is not a descendant of $fixture');
         });
 
-        test('contains - #887 account for IE7 bug in Node.contains which results in an error', function () {
-            var $fixture, el;
-            $fixture = $("#qunit-fixture");
+        it('#887 - accounts for IE7 bug in Node.contains', function () {
             $fixture.append("<div id='foo'></div>");
-
             $el = $fixture.find("#foo");
             el = $el[0];
-            equal(qq(el).contains(null), false, 
-                  "should return false when passed a `null` parameter");
-            equal(qq(el).contains(undefined), false, 
-                  "should return false when passed an `undefined` parameter");
-        })
 
-        test('insertBefore', function () {
-            var el, $el, elB, $elB, $fixture;
-            $fixture = $("#qunit-fixture");
+            assert.ok(!qq(el).contains(null), "should return false when passed a `null` parameter");
+            assert.ok(!qq(el).contains(undefined), "should return false when passed an `undefined` parameter");
+        });
+    }); // contains
+
+    describe('insertBefore', function () {
+        it('inserts an element before another', function () {
+           var elB, $elB;  
+
             $fixture.append("<div id='foo'></div>");
             
             $elB = $("#foo");
@@ -106,12 +92,14 @@ $(function () {
             // insert `el` before `elB`
             qq(el).insertBefore(elB);
             
-            ok($fixture.find("#bar").length > 0);
-        });
+            assert.ok($fixture.find("#bar").length > 0, "should have inserted #bar before #foo");
+        }); 
+    }); // insertBefore
 
-        test('remove', function () {
-            var el, $el, elB, $elB, $fixture;
-            $fixture = $("#qunit-fixture");
+    describe('remove', function () {
+        it('removes an element from the DOM', function () {
+            var elB, $elB;
+
             $fixture.append("<div id='foo'></div>");
             
             $el = $fixture.find("#foo");
@@ -122,202 +110,238 @@ $(function () {
             elB = $elB[0];
 
             qq(el).remove(elB);
-            equal($fixture.find("#bar").length, 0);
+            assert.equal($fixture.find("#bar").length, 0, "#bar should have been removed");
         });
+    });
 
-        // test('css', function () {
-        //     var el, $el, $fixture;
-        //     $fixture = $("#qunit-fixture");
-        //     $fixture.append("<div id='foo'></div>");
+    describe.skip('css', function () {
+        it('applies css styles to DOM elements', function () {
+            $fixture = $("#qunit-fixture");
+            $fixture.append("<div id='foo'></div>");
 
-        //     $el = $fixture.find("#foo");
-        //     el = qq($el[0]);
+            $el = $fixture.find("#foo");
+            el = qq($el[0]);
 
-        //     //qq(el).css({ display: 'block' });
-        //     el.css({ display: 'block' });
-        //     equal($("#foo").css('display'), 'block');
+            //qq(el).css({ display: 'block' });
+            el.css({ display: 'block' });
+            assert.equal($("#foo").css('display'), 'block');
 
-        //     el.css({ display: 'inline' });
-        //     equal($("#foo").css('display'), 'inline');
+            el.css({ display: 'inline' });
+            assert.equal($("#foo").css('display'), 'inline');
 
-        //     // @TODO: bug here?
-        //     el.css({ float: 'left' });
-        //     equal($("#foo").css('display'), 'inline');
-        //     equal($("#foo").css('float'), 'left');
-        //     //equal($("#foo").css('display'), 'inline');
-        //     //equal($("#foo").css('float'), 'left');
+            // @TODO: bug here?
+            el.css({ float: 'left' });
 
-        // });
+            assert.equal($("#foo").css('display'), 'inline');
+            assert.equal($("#foo").css('float'), 'left');
+        });
+    }); // css
 
-        test('hasClass', function () {
-            var el = document.createElement('div');
+    describe('hasClass', function () {
+        it('asks an element whether it has a class', function () {
+            el = document.createElement('div');
             $(el).addClass('derp');
-            ok(qq(el).hasClass('derp'));
 
-            ok(!qq(el).hasClass("Derp"));
-        });
+            assert.ok(qq(el).hasClass('derp'), "el should have the 'derp' class");
+            assert.ok(!qq(el).hasClass('herp'), "el should not have the class 'herp'");
+        }); 
+    }); // hasClass
 
-        test('addClass', function () {
-            var el = document.createElement('div');     
+    describe('addClass', function () {
+        it('adds a class to an element', function () {
+            el = document.createElement('div');
+
+            assert.ok(!$(el).hasClass('derp'), "element should NOT have the 'derp' class")
+
             qq(el).addClass('derp');
-            ok($(el).hasClass('derp'));
-        });
+            
+            assert.ok($(el).hasClass('derp'), "element should have the 'derp' class")
+        }); 
+    }); // addClass
 
-        test('removeClass', function () {
-            var el = document.createElement('div');
+    describe('removeClass', function () {
+        it('removes a class from an element', function () {
+            el = document.createElement('div');
             $(el).addClass('derp');
             qq(el).removeClass('derp');
-            ok(!$(el).hasClass('derp'));
-        });
 
-        test('getByClass', function () {
-            var $fixture, results, expected;
+            assert.ok(!$(el).hasClass('derp'), 'class should have been removed from the element');
+        }); 
+    }); // hasClass
+
+    describe('getByClass', function () {
+        it('gets a list of elements by class', function () {
+            var results, q;
+
             results = []
-            $fixture = $("#qunit-fixture");
-            var q = qq($fixture[0]);
+            $fixture.empty();
+            q = qq($fixture[0]);
             $fixture.append("<div class='foo'></div>");
             $fixture.append("<div class='bar'></div>");
             $fixture.append("<div class='foo bar'></div>");
 
             results = q.getByClass("foo");
-            equal(results.length, 2);
+
+            assert.equal(results.length, 2, "getting the wrong number of classes");
 
             results = q.getByClass("bar");
-            equal(results.length, 2);
 
-            // results = q.getByClass("foo bar");
-            // equal(results.length, 1);
-        });
+            assert.equal(results.length, 2, "getting the wrong number of classes");
+        }); 
+    
+    }); // getByClass
 
-        test('children', function () {
-            var $fixture, results, expected;
+    describe('children', function () {
+        it('returns a list of children of an element', function () {
+            var results, q;
+            
             results = []
-            $fixture = $("#qunit-fixture");
-            var q = qq($fixture[0]);
+            $fixture.empty();
+            q = qq($fixture[0]);
             $fixture.append("<div class='foo'></div>");
             $fixture.append("<div class='bar'></div>");
             $fixture.append("<div class='foo bar'></div>");
              
             results = q.children();
-            equal(results.length, 3)
-        });
+            assert.equal(results.length, 3, "was expecting 3 children");
+        }); 
+    }); // children
 
-        test('setText', function () {
-            var el = document.createElement('p');
-            qq(el).setText("Herp Derp");
-            equal($(el).text(), "Herp Derp");
-        });
+    describe('setText', function () {
+        it('sets the inner text of an element', function () {
+            var text = "Herp Derp";
+            el = document.createElement('p');
+            qq(el).setText(text);
 
-        test('clearText', function () {
-            var el = document.createElement('p');
-            $(el).text("Herp Derp");
+            assert.equal($(el).text(), text, "text should have been set to " + text);
+        }); 
+    }); // setText
+
+    describe('clearText', function () {
+        it('clears any text set on an element', function () {
+            var text = "Herp Derp";
+            el = document.createElement('p');
+            qq(el).setText(text);
             qq(el).clearText();
-            equal($(el).text(), "")
+
+            assert.equal($(el).text(), '', "text was not cleared");
+        }); 
+    }); // clearText
+
+    describe('isObject', function () {
+        it('returns true for an empty object', function () {
+            assert.ok(qq.isObject({}), "empty objects are objects"); 
+        }); 
+
+        it('returns true for a simple object', function () {
+            assert.ok(qq.isObject({ foo: 'bar' }), "simple objects are objects"); 
         });
 
-        test('isObject - should return true for an empty Object', function() {
-            ok(qq.isObject({})); 
-        });
-
-        test('isObject - should return true for a simple Object', function () {
-            ok(qq.isObject({ foo: 'bar' }));
-        });
-
-        test('isObject - should return true for a newed up Object', function() {
+        it('should return true for a newed up Object', function() {
             /* jshint -W010 */
-            ok(qq.isObject(new Object())); 
+            assert.ok(qq.isObject(new Object()), "new objects are objects"); 
         });
 
-        test('isObject - should return false for a function', function () {
-            ok(!qq.isObject(function(){})); 
+        it('should return false for a function', function () {
+            assert.ok(!qq.isObject(function(){}), "This is not Ruby. Functions are not objects"); 
         });
 
-        test('isObject - should return false for null', function () {
-            ok(!qq.isObject(null));
+        it('should return false for null', function () {
+            assert.ok(!qq.isObject(null), "the null is not an object");
         });
 
-        test('isObject - should return false for an array', function () {
-            ok(!qq.isObject([]));
+        it('should return false for an array', function () {
+            assert.ok(!qq.isObject([]), "arrays are not objects");
         });
 
-        test('isObject - should return undefined for an undefined', function () {
-            ok(!qq.isObject(undefined));
+        it('should return undefined for an undefined', function () {
+            assert.ok(!qq.isObject(undefined), "");
+        });
+    }); // isObject
+
+    describe('isFunction', function () {
+        it ('returns true for an empty simple function', function () {
+            assert.ok(qq.isFunction(function() {}));
         });
 
-        test ('isFunction - should return true for an empty simple function', function () {
-            ok(qq.isFunction(function() {}));
+        it('returns false for an Object', function () {
+            assert.ok(!qq.isFunction({})); 
+        });
+    }); // isFunction
+
+    describe('isArray', function () {
+        it('returns true for an empty array', function () {
+            assert.ok(qq.isArray([]));
         });
 
-        test('isFunction - should return false for an Object', function () {
-            ok(!qq.isFunction({})); 
-        });
-
-    // isArray
-        test('isArray - should return true for an empty array', function () {
-            ok(qq.isArray([]));
-        });
-
-        test('isArray - should return true for a basic array', function () {
-            ok(qq.isArray([1, "foo", { herp: "derp" }]));
+        it('returns true for a basic array', function () {
+            assert.ok(qq.isArray([1, "foo", { herp: "derp" }]));
         });
         
-        test('isArray - should return false for a string', function () {
-            ok(!qq.isArray("Herp derp"));
+        it('returns false for a string', function () {
+            assert.ok(!qq.isArray("Herp derp"));
         });
+    }); // isArray
 
-    // isString
-         test('isString - should return true for the empty string', function () {
-             ok(qq.isString(''));
+    // template
+    describe('isString', function () {
+         it('returns true for the empty string', function () {
+             assert.ok(qq.isString(''), 'the empty string IS a string');
          });
 
-         test('isString - should return true for a string wtesth characters', function () {
-             ok(qq.isString('Herp derp'));
+         it('should return true for a string with characters', function () {
+             assert.ok(qq.isString('Herp derp'), 'strings are strings');
+         });
+    }); // isString
+
+    describe('trimStr', function () {
+         it('trims around string', function () {
+             assert.equal(qq.trimStr(' blah '), 'blah');
          });
 
-    // trimStr
-         test('trimStr - can trim around string', function () {
-             equal(qq.trimStr(' blah '), 'blah');
+         it('trims after string', function () {
+             assert.equal(qq.trimStr('blah '), 'blah');
          });
 
-         test('trimStr - can trim after string', function () {
-             equal(qq.trimStr('blah '), 'blah');
+         it('trims before string', function () {
+             assert.equal(qq.trimStr(' blah'), 'blah');
          });
 
-         test('trimStr - can trim before string', function () {
-             equal(qq.trimStr(' blah'), 'blah');
+         it('trims with nothing to trim', function () {
+             assert.equal(qq.trimStr('blah'), 'blah');
          });
 
-         test('trimStr - can trim wtesth nothing to trim', function () {
-             equal(qq.trimStr('blah'), 'blah');
+         it('trimStr - can trim a string with many spaces everywhere', function () {
+             assert.equal(qq.trimStr('bl a h'), 'bl a h');
          });
 
-         test('trimStr - can trim a string wtesth many spaces everywhere', function () {
-             equal(qq.trimStr('bl a h'), 'bl a h');
+         it('trimStr - can trim the empty string', function () {
+             assert.equal(qq.trimStr(''), '');
          });
+    }); // trimStr
 
-         test('trimStr - can trim the empty string', function () {
-             equal(qq.trimStr(''), '');
-         });
-
-        test('isFile - can detect and identify a file if possible', function () {
+    describe('isFile', function () {
+        it('detects and identifies a file, if possible', function () {
             try {
-                ok(qq.isFile(new File()));
+                assert.ok(qq.isFile(new File()));
             } catch (ex) {
-                ok(!qq.supportedFeatures.supportsUploader);    
-            }
-        });
+                assert.ok(!qq.supportedFeatures.supportsUploader);
+            } 
+        }); 
+    }); // isFile
 
-        test("isFile - can detect and identify an input of type file", function () {
-            var input, $fixture;
-            $fixture = $("#qunit-fixture");
+    describe('isInput', function () {
+        it('detects and identifies an input of type file', function () {
+            var input;
+
             $fixture.append("<input id='foo' type='file'></input>");
             input = $fixture.find("#foo")[0]
-            ok(qq.isInput(input));
-            ok(qq.isFileOrInput(input));
-        });
+            assert.ok(qq.isInput(input));
+        }); 
+    }); // isInput
 
-    // extend
-        test('extend - can extend simple objects', function () {
+    describe('extend', function () {
+        it('extends simple objects', function () {
             var testy = 
                 {   one: 'one', 
                     two: 'two', 
@@ -331,14 +355,14 @@ $(function () {
             var four_1 = { four: { c: 'c' }};
             var four_2 = { four: { d: 'd' }};
             var new_testy = qq.extend(testy, five)
-            deepEqual(new_testy.one, testy.one);
-            deepEqual(new_testy.two, testy.two);
-            deepEqual(new_testy.three, testy.three);
-            deepEqual(new_testy.four, testy.four);
-            deepEqual(new_testy.five, testy.five);
+            assert.deepEqual(new_testy.one, testy.one);
+            assert.deepEqual(new_testy.two, testy.two);
+            assert.deepEqual(new_testy.three, testy.three);
+            assert.deepEqual(new_testy.four, testy.four);
+            assert.deepEqual(new_testy.five, testy.five);
         });
 
-        test('extend - can extend nested objects', function () {
+        it('extends nested objects', function () {
             var testy = 
                 {   one: 'one', 
                     two: 'two', 
@@ -352,15 +376,15 @@ $(function () {
             var four_1 = { four: { c: 'c' }};
             var four_2 = { four: { d: 'd' }};
             var new_testy = qq.extend(testy, four_1, true);
-            deepEqual(new_testy.one, testy.one);
-            deepEqual(new_testy.two, testy.two);
-            deepEqual(new_testy.three, testy.three);
-            deepEqual(new_testy.four.a, testy.four.a);
-            deepEqual(new_testy.four.b, testy.four.b);
-            deepEqual(new_testy.four.c, testy.four.c);
+            assert.deepEqual(new_testy.one, testy.one);
+            assert.deepEqual(new_testy.two, testy.two);
+            assert.deepEqual(new_testy.three, testy.three);
+            assert.deepEqual(new_testy.four.a, testy.four.a);
+            assert.deepEqual(new_testy.four.b, testy.four.b);
+            assert.deepEqual(new_testy.four.c, testy.four.c);
         });
 
-        test('extend - can extend non-nested objects', function () {
+        it('extends non-nested objects', function () {
             var testy = 
                 {   one: 'one', 
                     two: 'two', 
@@ -374,46 +398,47 @@ $(function () {
             var four_1 = { four: { c: 'c' }};
             var four_2 = { four: { d: 'd' }};
             var new_testy = qq.extend(testy, four_2);
-            deepEqual(new_testy.one, testy.one);
-            deepEqual(new_testy.two, testy.two);
-            deepEqual(new_testy.three, testy.three);
-            deepEqual(new_testy.four.d, testy.four.d);
+            assert.deepEqual(new_testy.one, testy.one);
+            assert.deepEqual(new_testy.two, testy.two);
+            assert.deepEqual(new_testy.three, testy.three);
+            assert.deepEqual(new_testy.four.d, testy.four.d);
         });
+    }); // extend
 
-
-    // indexOf
-        test('indexOf - should return true for a string that is present', function () {
+    describe('indexOf', function () {
+        it('returns true for a string that is present', function () {
             var obj = { foo: 'bar' };
             var arr = ['a', obj, 3];
-            equal(qq.indexOf(arr, 'a'), 0);
+            assert.equal(qq.indexOf(arr, 'a'), 0);
         });
 
-        test('indexOf - should return true for an object that is present', function () {
+        it('returns true for an object that is present', function () {
             var obj = { foo: 'bar' };
             var arr = ['a', obj, 3];
-            equal(qq.indexOf(arr, obj), 1);
+            assert.equal(qq.indexOf(arr, obj), 1);
         });
 
-        test('indexOf - should return true for a number that is present', function () {
+        it('returns true for a number that is present', function () {
             var obj = { foo: 'bar' };
             var arr = ['a', obj, 3];
-            equal(qq.indexOf(arr, 3), 2);
+            assert.equal(qq.indexOf(arr, 3), 2);
         });
 
-        test('indexOf - should return false for an object that is not present due to strict equals', function () {
+        it('returns false for an object that is not present due to strict assert.equals', function () {
             var obj = { foo: 'bar' };
             var arr = ['a', obj, 3];
-            equal(qq.indexOf(arr, { foo: 'bar' }), -1);
+            assert.equal(qq.indexOf(arr, { foo: 'bar' }), -1);
         });
 
-        test('indexOf - should return false for an object that is not present at all', function () {
+        it('returns false for an object that is not present at all', function () {
             var obj = { foo: 'bar' };
             var arr = ['a', obj, 3];
-            equal(qq.indexOf(arr, 4), -1);
+            assert.equal(qq.indexOf(arr, 4), -1);
         });
+    }); // indexOf
 
-    // getUniqueId
-        test('getUniqueId - should not collide for 10000 generations', function () {
+    describe('getUniqueId', function () {
+        it('no collisions for 10000 generations', function () {
             var bucket = [];
             // generate a bucket of 1000 unique ids
             for (var i = 0; i < 10000; i++) {
@@ -424,134 +449,137 @@ $(function () {
             bucket.sort();
             var last = bucket[0];
             for (var j = 1; j < bucket.length; j++) {
-                notEqual(bucket[j], last);
+                assert.notEqual(bucket[j], last);
                 last = bucket[j];
             }
         });
+    }); // getUniqueId
 
-    // each
-        test('each - should provide value and testeration count ', function () {
+    describe('each', function () {
+        it('provides value and iteration count ', function () {
             qq.each([0, 1, 2], function (i, num) {
-                equal(i, num);
+                assert.equal(i, num);
             });
         });
 
-        test('each - can allow testerating over objects', function () {
+        it('allows iterating over objects', function () {
             var answers = [];
             var obj = { one: 1, two: 2, three: 3 };
 
             qq.each(obj, function (key, value) { answers.push(key); });
-            equal(answers.join(', '), 'one, two, three');
+            assert.equal(answers.join(', '), 'one, two, three');
 
             answers = [];
             qq.each(obj, function (key, value) { answers.push(value); });
-            equal(answers.join(', '), '1, 2, 3');
+            assert.equal(answers.join(', '), '1, 2, 3');
         });
 
-        test('each - can handle a null properly', function () {
+        it('handles a null properly', function () {
             var answers = 0;
             qq.each(null, function () { ++answers; });
-            equal(0, answers);
+            assert.equal(0, answers);
         });
+    }); // each
 
-    // bind
-        test('bind - can bind a function to a context', function () {
+    describe('bind', function () {
+        it('binds a function to a context', function () {
             var context = { foo: 'bar' };
             var func = function (arg) { return 'foo: ' + (this.foo || arg); };
             var bound = qq.bind(func, context);
-            equal(bound(), 'foo: bar');
+            assert.equal(bound(), 'foo: bar');
         });
 
-        test('bind - can bind wtesthout a context', function () {
+        it('binds a function without a context', function () {
             var context = { foo: 'bar' };
             var func = function (arg) { return 'foo: ' + (this.foo || arg); };
             var bound = qq.bind(func, null, 'bar');
-            equal(bound(), 'foo: bar');
+            assert.equal(bound(), 'foo: bar');
         });
+    }); // bind
 
-        // test('can bind a function to 0, empty string, and false', function () {});
-
-    // obj2url
-        test('obj2url - can construct a URL wtesth a basic object as param', function () {
+    describe('obj2url', function () {
+        it('obj2url - can construct a URL with a basic object as param', function () {
             var baseUrl = 'http://mydomain.com/upload';
-            var urlWtesthEncodedPath = 'http://mydomain.com/upload%20me';
+            var urlWithEncodedPath = 'http://mydomain.com/upload%20me';
             var params1 = { one: 'one', two: 'two', three: 'three' };
-            var params2 = { a: 'this is a test' };
+            var params2 = { a: 'this is a it' };
             var params3 = { a : { b: 'innerProp' }};
             var params4 = { a: function () { return 'funky'; }};
             var varUrl = qq.obj2url(params2, baseUrl);
             var controlUrl = purl(varUrl);
 
-            equal(controlUrl.param('a'), 'this is a test');
+            assert.equal(controlUrl.param('a'), 'this is a it');
         });
 
-        test('obj2url - can construct a URL wtesth a basic object as params', function () {
+        it('obj2url - can construct a URL with a basic object as params', function () {
             var baseUrl = 'http://mydomain.com/upload';
-            var urlWtesthEncodedPath = 'http://mydomain.com/upload%20me';
+            var urlWithEncodedPath = 'http://mydomain.com/upload%20me';
             var params1 = { one: 'one', two: 'two', three: 'three' };
-            var params2 = { a: 'this is a test' };
+            var params2 = { a: 'this is a it' };
             var params3 = { a : { b: 'innerProp' }};
             var params4 = { a: function () { return 'funky'; }};
             var varUrl = qq.obj2url(params1, baseUrl);
             var controlUrl = purl(varUrl);
 
-            equal(controlUrl.param('one'), 'one');
-            equal(controlUrl.param('two'), 'two');
-            equal(controlUrl.param('three'), 'three');
+            assert.equal(controlUrl.param('one'), 'one');
+            assert.equal(controlUrl.param('two'), 'two');
+            assert.equal(controlUrl.param('three'), 'three');
         });
 
-        test('obj2url - can construct a URL wtesth an embedded object as a param value', function () {
+        it('obj2url - can construct a URL with an embedded object as a param value', function () {
             var baseUrl = 'http://mydomain.com/upload';
-            var urlWtesthEncodedPath = 'http://mydomain.com/upload%20me';
+            var urlWithEncodedPath = 'http://mydomain.com/upload%20me';
             var params1 = { one: 'one', two: 'two', three: 'three' };
-            var params2 = { a: 'this is a test' };
+            var params2 = { a: 'this is a it' };
             var params3 = { a : { b: 'innerProp' }};
             var params4 = { a: function () { return 'funky'; }};
             var varUrl = qq.obj2url(params3, baseUrl);
             var controlUrl = purl(varUrl);
 
-            equal(controlUrl.param('a').b, 'innerProp');
+            assert.equal(controlUrl.param('a').b, 'innerProp');
         });
 
-        test('obj2url - can construct a URL wtesth a function as a param value', function () {
+        it('obj2url - can construct a URL with a function as a param value', function () {
             var baseUrl = 'http://mydomain.com/upload';
-            var urlWtesthEncodedPath = 'http://mydomain.com/upload%20me';
+            var urlWithEncodedPath = 'http://mydomain.com/upload%20me';
             var params1 = { one: 'one', two: 'two', three: 'three' };
-            var params2 = { a: 'this is a test' };
+            var params2 = { a: 'this is a it' };
             var params3 = { a : { b: 'innerProp' }};
             var params4 = { a: function () { return 'funky'; }};
             var varUrl = qq.obj2url(params4, baseUrl);
             var controlUrl = purl(varUrl);
 
-            equal(controlUrl.param('a'), 'funky');
+            assert.equal(controlUrl.param('a'), 'funky');
         });
 
-        test('obj2url - can construct an empty URL wtesth params', function () {
+        it('obj2url - can construct an empty URL with params', function () {
             var baseUrl = 'http://mydomain.com/upload';
-            var urlWtesthEncodedPath = 'http://mydomain.com/upload%20me';
+            var urlWithEncodedPath = 'http://mydomain.com/upload%20me';
             var params1 = { one: 'one', two: 'two', three: 'three' };
-            var params2 = { a: 'this is a test' };
+            var params2 = { a: 'this is a it' };
             var params3 = { a : { b: 'innerProp' }};
             var params4 = { a: function () { return 'funky'; }};
             var varUrl = qq.obj2url(params1, '');
-            equal(varUrl, 'one=one&two=two&three=three');
+
+            assert.equal(varUrl, 'one=one&two=two&three=three');
         });
 
-        test('obj2url - will leave encoded paths alone', function () {
+        it('obj2url - will leave encoded paths alone', function () {
             var baseUrl = 'http://mydomain.com/upload';
-            var urlWtesthEncodedPath = 'http://mydomain.com/upload%20me';
+            var urlWithEncodedPath = 'http://mydomain.com/upload%20me';
             var params1 = { one: 'one', two: 'two', three: 'three' };
-            var params2 = { a: 'this is a test' };
+            var params2 = { a: 'this is a it' };
             var params3 = { a : { b: 'innerProp' }};
             var params4 = { a: function () { return 'funky'; }};
-            var varUrl = qq.obj2url(params1, urlWtesthEncodedPath);
-            var regex = new RegExp('^' + urlWtesthEncodedPath);
-            ok(varUrl.match(regex));
+            var varUrl = qq.obj2url(params1, urlWithEncodedPath);
+            var regex = new RegExp('^' + urlWithEncodedPath);
+
+            assert.ok(varUrl.match(regex));
         });
+    }); // obj2url
 
-
-    // obj2FormData
-        test('obj2formdata - can construct a URL wtesth a basic object as param', function () {
+    describe('obj2FormData', function () {
+        it('constructs a URL with a basic object as param', function () {
             var formData = function () {
                 var data = {};
                 return {
@@ -570,14 +598,15 @@ $(function () {
             var params1 = { one: 'one', two: 'two', three: 'three' };
             var params2 = { a : { b: 'innerProp' }};
             var params3 = { a: function () { return 'funky'; }};
-            equal(qq.obj2FormData(params1, formData).get('one'), 'one');
-            equal(qq.obj2FormData(params1, formData).get('two'), 'two');
-            equal(qq.obj2FormData(params1, formData).get('three'), 'three');
+
+            assert.equal(qq.obj2FormData(params1, formData).get('one'), 'one');
+            assert.equal(qq.obj2FormData(params1, formData).get('two'), 'two');
+            assert.equal(qq.obj2FormData(params1, formData).get('three'), 'three');
 
             formData.clear(); 
         });
 
-        test('obj2formdata - can construct a URL wtesth an embedded object as param', function () {
+        it('constructs a URL with an embedded object as param', function () {
             var formData = function () {
                 var data = {};
                 return {
@@ -595,10 +624,11 @@ $(function () {
             var params1 = { one: 'one', two: 'two', three: 'three' };
             var params2 = { a : { b: 'innerProp' }};
             var params3 = { a: function () { return 'funky'; }};
-            equal(qq.obj2FormData(params2, formData).get('a[b]'), 'innerProp');
+
+            assert.equal(qq.obj2FormData(params2, formData).get('a[b]'), 'innerProp');
         });
 
-        test('obj2formdata - can construct a URL wtesth a function as param', function () {
+        it('constructs a URL with a function as param', function () {
             var formData = function () {
                 var data = {};
                 return {
@@ -616,11 +646,13 @@ $(function () {
             var params1 = { one: 'one', two: 'two', three: 'three' };
             var params2 = { a : { b: 'innerProp' }};
             var params3 = { a: function () { return 'funky'; }};
-            equal(qq.obj2FormData(params3, formData).get('a'), 'funky');
+
+            assert.equal(qq.obj2FormData(params3, formData).get('a'), 'funky');
         });
-       
-        // testing get/set/delete cookie(s)
-        test('cookies - can perform CRUD on a cookie', function () {
+    }); // obj2FormData
+
+    describe('cookies', function () {
+        it('perform CRUD on a cookie', function () {
             var cookie_name1 = 'qq|cookieName1';
             var cookie_val1 = 'cookieVal1';
 
@@ -630,136 +662,118 @@ $(function () {
             qq.setCookie(cookie_name1, cookie_val1, 1);
             qq.setCookie(cookie_name2, cookie_val2, 1);
 
-            equal(qq.getCookie(cookie_name1), cookie_val1);
-            equal(qq.getCookie(cookie_name2), cookie_val2);
+            assert.equal(qq.getCookie(cookie_name1), cookie_val1);
+            assert.equal(qq.getCookie(cookie_name2), cookie_val2);
 
-            var matchingCookieNames = qq.getCookieNames(/^qq\|cookieName/).sort();
-            equal(matchingCookieNames.length, 2);
-            equal(matchingCookieNames[0], cookie_name1);
-            equal(matchingCookieNames[1], cookie_name2);
+            var matchingcookieNames = qq.getCookieNames(/^qq\|cookieName/).sort();
+
+            assert.equal(matchingcookieNames.length, 2);
+            assert.equal(matchingcookieNames[0], cookie_name1);
+            assert.equal(matchingcookieNames[1], cookie_name2);
 
             qq.deleteCookie(cookie_name1);
-            equal(qq.getCookie(cookie_name1), undefined);
-            qq.deleteCookie(cookie_name2);
-            equal(qq.getCookie(cookie_name2), undefined);
-        });
 
-        // parseJson
-        test('parseJSON - can parse JSON', function () {
+            assert.equal(qq.getCookie(cookie_name1), undefined);
+            qq.deleteCookie(cookie_name2);
+
+            assert.equal(qq.getCookie(cookie_name2), undefined);
+        });
+    }); // cookies
+
+    describe('parseJson', function () {
+        it('parses JSON', function () {
             var object = { a: 'a', b: 'b'};
             var json = JSON.stringify(object)
             var parsedJson = JSON.parse(json);
-            deepEqual(qq.parseJson(json), parsedJson); 
+
+            assert.deepEqual(qq.parseJson(json), parsedJson); 
         });
+    }); // parseJson
 
+    describe('isFileOrInput', function () {
+        it('detects and identifies an input of type file', function () {
+            var input;
 
-        // test("should work for a browser supporting the File API", function () {
-        //     var blob, file, reader;
-        //     try {
-        //         blob = new Blob([1, 2, 3, 4, 5, 6, 7, 8], { type: 'application/octet-binary' });
-        //         reader = new FileReader();
-        //         file = reader.readAsBinaryString(blob);
-        //         ok(qq.isFile(file));
-        //     } catch (ex) {
-        //        ok(true);  
-        //     }
-        // });
-        
-        // test('should return true when comparing a File object created in another window', function () {
-        //     var frame1, frame2, file1, file2;
-        //     $fixture.append("<iframe id='frame1'></iframe>");
-        //     $fixture.append("<iframe id='frame2'></iframe>");
+            $fixture.append("<input id='foo' type='file'></input>");
+            input = $fixture.find("#foo")[0]
 
-        //     frame1 = $fixture.find("#frame1")[0];
-        //     frame2 = $fixture.find("#frame2")[0];
+            assert.ok(qq.isFileOrInput(input));
+        }); 
+        it('returns false on a regular input element', function () {
+            var $input;
 
-        //     try {
-        //         file1 = new frame1.contentWindow.File;
-        //         file2 = new frame2.contentWindow.File;
-
-        //         file1.onload(function () {
-        //              
-        //         })
-        //     } catch (ex) {
-        //         ok(true);
-        //     }
-
-        //     ok(qq.isFile(file1));
-        //     ok(qq.isFile(file2));
-        // });
-
-    // isFileOrInput
-    // @TODO: This is going to need some sort of DOM manipulation to work.
-        test('isFileOrInput - should return false on a regular input element', function () {
-            var $input, $fixture;
-            $fixture = $("#qunit-fixture");
             $fixture.append("<input id='bar'></input>");
             $input = $fixture.find("#bar");
-            ok(!qq.isFileOrInput($input[0]), "must be a file input");
+
+            assert.ok(!qq.isFileOrInput($input[0]), "must be a file input");
         });
     
-        test('isFileOrInput - should return true for a file-input field', function () {
-            var $input, $fixture;
-            $fixture = $("#qunit-fixture");
+        it('returns true for a file-input field', function () {
+            var $input;
+
             $fixture.append("<input id='bar2' type='file'></input>");
             $input = $fixture.find("#bar2");
-            ok(qq.isFileOrInput($input[0]), "this is a file input");
+
+            assert.ok(qq.isFileOrInput($input[0]), "this is a file input");
         });
     
-        test('isFileOrInput - should return false on a div element', function () {
-            var $input, $fixture;
-            $fixture = $("#qunit-fixture");
+        it('isFileOrInput - should return false on a div element', function () {
+            var $input;
+
             $fixture.append("<div id='foo'></div>");
             $input = $fixture.find("#foo");
-            ok(!qq.isFileOrInput($input[0]), "div is not an input");
+
+            assert.ok(!qq.isFileOrInput($input[0]), "div is not an input");
         });
-    
-    // isInput
-        test('isInput - should return true on an input element', function () {
-            var $fixture;
-            $fixture = $("#qunit-fixture");
+    }); // isFileOrInput
+
+    describe('isInput', function () {
+        it('returns true on an input element', function () {
             $fixture.append("<input id='foo' type='file'></input>");
             var el = $("#foo")[0];
-            ok(qq.isInput(el), "inputs are inputs");
+
+            assert.ok(qq.isInput(el), "inputs are inputs");
         });
     
-        test('isInput - should return false on a div', function () {
-            var $fixture;
-            $fixture = $("#qunit-fixture");
+        it('isInput - should return false on a div', function () {
             $fixture.append("<div id='foo'></div>");
             var el = $('#foo')[0];
-            ok(!qq.isInput(el), "divs are not inputs");
+
+            assert.ok(!qq.isInput(el), "divs are not inputs");
         });
-    
-    // isBlob
-        test('isBlob - should identify BLOBs', function () {
+    }); //
+
+    describe('isBlob', function () {
+        it.skip('identifies BLOBs, if possible', function () {
             try { 
                 var blob = new Blob([1, 2, 3, 4, 5, 6, 7, 8], { type: 'application/octet-binary' });
-                ok(qq.isBlob(blob));
+                assert.ok(qq.isBlob(blob));
             } catch (ex) {
-                ok(true);                 
+                assert.ok(true);                 
             }
         });
+    }); //
 
-        // Dispose Support
-        // @TODO: modularize
-        test("DisposeSupport - should add disposers and dispose of them", function () {
+    describe('DisposeSupport', function () {
+        it("adds disposers and dispose of them", function () {
             var disposer = new qq.DisposeSupport(); 
             disposer.addDisposer(function () {
-                ok(true); 
+                assert.ok(true); 
             });
 
             disposer.dispose();
         });
 
-        // test("DisposeSupport - should attach event handler and register de-attacher as disposer", function () {
-        //     var $fixture, $el, el, disposer;
-        //     disposer = new qq.DisposeSupport();
-        //     $fixture = $("#qunit-fixture");
-        //     el = document.createElement('div');
-        //     $fixture.append(el);
+        it.skip("attaches event handler and register de-attacher as disposer", function () {
+            var disposer;
+            disposer = new qq.DisposeSupport();
+            el = document.createElement('div');
+            $fixture.append(el);
 
-        //     disposer.attach(el, 'click', function () { ok(true); });
-        //     $(el).click();
-        // });
-});
+            disposer.attach(el, 'click', function () { assert.ok(true); });
+            $(el).click();
+        });
+    }); //
+
+}); // Util
+
