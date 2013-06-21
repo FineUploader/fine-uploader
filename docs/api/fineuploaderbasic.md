@@ -10,6 +10,7 @@ as well as [this one explaining how this function works in 3.1 and later version
 You can either change the endpoint for a specific file or `Blob`, or for all files and `Blob`s.  To do the latter, simply omit the `id` parameter.
 
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files and `Blob`s.
+If there are no items to upload, this will result in "no files" error.
 
 * `clearStoredFiles()` - Clears the internal list of stored files and `Blob`s.  Only applicable when `autoUpload` is set to false.
 

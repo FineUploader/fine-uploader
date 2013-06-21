@@ -85,7 +85,7 @@ qq.FineUploaderBasic = function(o) {
             }
         },
         formatFileName: function(fileOrBlobName) {
-            if (fileOrBlobName.length > 33) {
+            if (fileOrBlobName !== undefined && fileOrBlobName.length > 33) {
                 fileOrBlobName = fileOrBlobName.slice(0, 19) + '...' + fileOrBlobName.slice(-14);
             }
             return fileOrBlobName;
@@ -201,14 +201,18 @@ qq.FineUploaderBasic.prototype = {
     getNetUploads: function() {
         return this._netUploaded;
     },
-    uploadStoredFiles: function(){
-        "use strict";
+    uploadStoredFiles: function() {
         var idToUpload;
 
-        while(this._storedIds.length) {
-            idToUpload = this._storedIds.shift();
-            this._filesInProgress.push(idToUpload);
-            this._handler.upload(idToUpload);
+        if (this._storedIds.length === 0) {
+            this._itemError('noFilesError');
+        }
+        else {
+            while (this._storedIds.length) {
+                idToUpload = this._storedIds.shift();
+                this._filesInProgress.push(idToUpload);
+                this._handler.upload(idToUpload);
+            }
         }
     },
     clearStoredFiles: function(){
@@ -902,10 +906,10 @@ qq.FineUploaderBasic.prototype = {
             this._uploadData.setStatus(id, qq.status.REJECTED);
         }
     },
-    _itemError: function(code, nameOrNames) {
+    _itemError: function(code, maybeNameOrNames) {
         var message = this._options.messages[code],
             allowedExtensions = [],
-            names = [].concat(nameOrNames),
+            names = [].concat(maybeNameOrNames),
             name = names[0],
             extensionsForMessage, placeholderMatch;
 
