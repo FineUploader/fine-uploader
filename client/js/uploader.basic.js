@@ -732,7 +732,7 @@ qq.FineUploaderBasic.prototype = {
             }
 
             if (itemLimit > 0 && this._netUploadedOrQueued+1 > itemLimit) {
-                this._itemError("retryFailTooManyItems", "");
+                this._itemError("retryFailTooManyItems");
                 return false;
             }
 
@@ -827,7 +827,7 @@ qq.FineUploaderBasic.prototype = {
                 });
             }
             else {
-                this._itemError("noFilesError", "");
+                this._itemError("noFilesError");
             }
         }
         else {
