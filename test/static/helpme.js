@@ -13,8 +13,13 @@ var helpme = (function () {
                 return $("#mocha-fixture");
             },
 
+            getFixture: function () {
+                return $("#mocha-fixture"); 
+            },
+
             destroyFixture: function() {
-                return $('#mocha-fixture').empty();
+                $("#mocha-fixture").empty();
+                return $("#mocha-fixture").remove();
             }
         },
        
@@ -22,8 +27,9 @@ var helpme = (function () {
         createBlob: function (data) {
             var blobby;
             
-            if (!data)
+            if (!data) {
                 data  = ["Hello, world!"];
+            }
 
             blobby = new Blob(data);
 

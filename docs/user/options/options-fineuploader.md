@@ -339,3 +339,24 @@ for additional `paste` options.
     	</tr>
     </tbody>
 </table>
+
+### `editFilename` option properties: ###
+If enabled, this will allow users to edit the filename via the UI.  See the [blog post](http://blog.fineuploader.com/2013/06/37-edit-override-file-names.html) for more details.
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>enabled</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>If set to true, users will be allowed to edit the name of all submitted files via the UI.</td>
+    	</tr>
+    </tbody>
+</table>

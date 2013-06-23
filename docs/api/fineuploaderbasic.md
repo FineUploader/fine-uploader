@@ -57,6 +57,12 @@ if the user agent does not support the File API.
 
 * `getName(id)` - Returns the name of the file or `Blob` represented by the passed ID.
 
+* `setName(id, newName)` - Provide an alternate/new name for the associated file or blob.
+This will be sent along with the upload request, by default, as the value of a "qqfilename" parameter.
+You should only call this method before the upload request has been sent.  Read
+[the blog post about the edit filename feature](http://blog.fineuploader.com/2013/06/37-edit-override-filenames.html)
+in both FineUploader and FineUploaderBasic for more details.
+
 * `getFile(id)` - Returns the `File` or `Blob` object associated with the passed ID.  Undefined if the underlying `File` or `Blob` cannot be found,
 or if the user agent does not support the File API.  For more info on the `File` and `Blob` objects, please see
 [the File entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file) and [the Blob entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-Blob), respectively.
@@ -75,7 +81,7 @@ Fine Uploader actually uses the API call internally when a user clicks the delet
 * `getUploads(optionalFilter)` - Get information about all files or `Blob`s that have been submitted to the uploader during
 this session.  The return type is either a single object (filter by single ID, filter by single UUID), or an array of
 objects (filter by array of IDs or UUIDs, filter by status, no filter).  The object referred to here has the following
-properties: `id`, `uuid`, `name`, `size` (if available), and `status`.  The status values correspond to "constants"
+properties: `id`, `uuid`, `originalName`, `name`, `size` (if available), and `status`.  The status values correspond to "constants"
 defined in the `qq.status` object.  You may filter the results by one of the following filters: `id`, `uuid`, or
 `status`.  The filter may be a single value or an array of values.  For example, if you would like to retrieve information
 about the first 3 items submitted to the uploader, you would call `uploaderInstance.getUploads({id: [0, 1, 2]});`.  Please

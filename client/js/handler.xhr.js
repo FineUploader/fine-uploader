@@ -29,7 +29,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
          * or an empty string.  So, we will need to include the actual file name as a param in this case.
          */
         if (multipart) {
-            params[options.chunking.paramNames.filename] = name;
+            params[options.filenameParam] = name;
         }
     }
 
@@ -89,7 +89,8 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
             url = endpoint,
             name = api.getName(id),
             size = api.getSize(id),
-            blobData = fileState[id].blobData;
+            blobData = fileState[id].blobData,
+            newName = fileState[id].newName;
 
         params[options.uuidParamName] = fileState[id].uuid;
 
@@ -101,14 +102,18 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
                  * When a Blob is sent in a multipart request, the filename value in the content-disposition header is either "blob"
                  * or an empty string.  So, we will need to include the actual file name as a param in this case.
                  */
-                params[options.blobs.paramNames.name] = blobData.name;
+                params[options.filenameParam] = blobData.name;
             }
+        }
+
+        if (newName !== undefined) {
+            params[options.filenameParam] = newName;
         }
 
         //build query string
         if (!options.paramsInBody) {
             if (!multipart) {
-                params[options.inputName] = name;
+                params[options.inputName] = newName || name;
             }
             url = qq.obj2url(params, endpoint);
         }
@@ -587,12 +592,16 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
 
             return id;
         },
-        getName: function(id){
+        getName: function(id) {
             if (api.isValid(id)) {
                 var file = fileState[id].file,
-                    blobData = fileState[id].blobData;
+                    blobData = fileState[id].blobData,
+                    newName = fileState[id].newName;
 
-                if (file) {
+                if (newName !== undefined) {
+                    return newName;
+                }
+                else if (file) {
                     // fix missing name in Safari 4
                     //NOTE: fixed missing name firefox 11.0a2 file.fileName is actually undefined
                     return (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
@@ -605,7 +614,10 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
                 log(id + " is not a valid item ID.", "error");
             }
         },
-        getSize: function(id){
+        setName: function(id, newName) {
+            fileState[id].newName = newName;
+        },
+        getSize: function(id) {
             /*jshint eqnull: true*/
             var fileOrBlob = fileState[id].file || fileState[id].blobData.blob;
 

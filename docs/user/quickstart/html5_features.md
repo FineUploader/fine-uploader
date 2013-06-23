@@ -24,4 +24,4 @@ Drag and drop is enabled by default in browsers that support it.
 Pasting is enabled by default in supported browsers as well.
 
 
-Now that FineUploader is working with the most bleeding-edge web features, let's turn on the style. See the [Styling FineUploader](styling_fineuploader.md) section next.
+Now that FineUploader is working with the most bleeding-edge web features, let's turn on the style. See the [Styling FineUploader](docs/styling.md) section next.

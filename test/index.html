@@ -10,11 +10,13 @@
     <body>
 
         <div id="mocha"></div>
+        <div id="mocha-fixture"></div>
 
         <!-- dependencies -->
         <script src="vendor/purl/purl.js" type="text/javascript"></script>
         <script src="vendor/json2/json2.js" type="text/javascript"></script>
         <script src="vendor/jquery/jquery.js" type="text/javascript"></script>
+        <script src="vendor/jquery.simulate/jquery.simulate.js" type="text/javascript"></script>
 
         <link href="vendor/mocha/css/mocha.css" rel="stylesheet" type="text/css" media="screen" />
         <script src="vendor/mocha/js/mocha.js" type="text/javascript"></script>
@@ -38,6 +40,16 @@
             window.chocoReady = false;
             window.mochaResults = {};
             mocha.setup('tdd');
+
+            var $fixture;
+            beforeEach(function () {
+                $fixture = helpme.withTests.createFixture();
+            });
+
+            afterEach(function () {
+                $fixture = helpme.withTests.destroyFixture(); 
+            });
+
         </script>
 
         <!-- load the test scripts -->
@@ -46,11 +58,15 @@
         <script src="unit/button.js"></script>
         <script src="unit/upload-data.js"></script>
         <script src="unit/features.js"></script>
+        <script src="unit/ui.handler.click.drc.js"></script>
+        <script src="unit/ui.handler.click.filename.js"></script>
 
         <!-- run the tests -->
         <script>
-        mochaSaucePlease();
-        console.log("Android sucks.");
+        $(function () {
+            mochaSaucePlease();
+            console.log("The droids you were looking for ...");
+        });
         </script>
 
     </body>

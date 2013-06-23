@@ -10,28 +10,32 @@ default elements that make up one file item in the file list.
 
 Here is the default `template` option:
 
-    javascript
-    template: '<div class="qq-uploader">' +
-        ((!this._options.dragAndDrop || !this._options.dragAndDrop.disableDefaultDropzone) ? '<div class="qq-upload-drop-area"><span>{dragZoneText}</span></div>' : '') +
-        (!this._options.button ? '<div class="qq-upload-button"><div>{uploadButtonText}</div></div>' : '') +
-        '<span class="qq-drop-processing"><span>{dropProcessingText}</span><span class="qq-drop-processing-spinner"></span></span>' +
-        (!this._options.listElement ? '<ul class="qq-upload-list"></ul>' : '') +
-        '</div>'
+```javascript
+template: '<div class="qq-uploader">' +
+    ((!this._options.dragAndDrop || !this._options.dragAndDrop.disableDefaultDropzone) ? '<div class="qq-upload-drop-area"><span>{dragZoneText}</span></div>' : '') +
+    (!this._options.button ? '<div class="qq-upload-button"><div>{uploadButtonText}</div></div>' : '') +
+    '<span class="qq-drop-processing"><span>{dropProcessingText}</span><span class="qq-drop-processing-spinner"></span></span>' +
+    (!this._options.listElement ? '<ul class="qq-upload-list"></ul>' : '') +
+    '</div>'
+```
 
 ...and the default `fileTemplate` options:
 
-    javascript
-    fileTemplate: '<li>' +
-        '<div class="qq-progress-bar"></div>' +
-        '<span class="qq-upload-spinner"></span>' +
-        '<span class="qq-upload-finished"></span>' +
-        '<span class="qq-upload-file"></span>' +
-        '<span class="qq-upload-size"></span>' +
-        '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
-        '<a class="qq-upload-retry" href="#">{retryButtonText}</a>' +
-        '<a class="qq-upload-delete" href="#">{deleteButtonText}</a>' +
-        '<span class="qq-upload-status-text">{statusText}</span>' +
-        '</li>'
+```javascript
+fileTemplate: '<li>' +
+    '<div class="qq-progress-bar"></div>' +
+    '<span class="qq-upload-spinner"></span>' +
+    '<span class="qq-upload-finished"></span>' +
+    (this._options.editFilename && this._options.editFilename.enabled ? '<span class="qq-edit-filename-icon"></span>' : '') +
+    '<span class="qq-upload-file"></span>' +
+    '(this._options.editFilename && this._options.editFilename.enabled ? '<input class="qq-edit-filename" tabindex="0" type="text">' : '')' +
+    '<span class="qq-upload-size"></span>' +
+    '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
+    '<a class="qq-upload-retry" href="#">{retryButtonText}</a>' +
+    '<a class="qq-upload-delete" href="#">{deleteButtonText}</a>' +
+    '<span class="qq-upload-status-text">{statusText}</span>' +
+    '</li>'
+```
 
 ### Classes
 
@@ -55,8 +59,11 @@ exist in FineUploader mode (with default values in parentheses):
 * `deleteButton` (qq-upload-delete)
 * `retry` (qq-upload-retry)
 * `statusText` (qq-upload-status-text)
+* `editFilenameInput` (qq-edit-filename)
 * `success` (qq-upload-success)
 * `fail` (qq-upload-fail)
+* `editable` (qq-editable)
+* `editNameIcon` (qq-edit-filename-icon)
 * `successIcon` (`null`)
 * `failIcon` (`null`)
 * `dropProcessing` (qq-drop-processing)

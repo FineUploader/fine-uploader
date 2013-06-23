@@ -60,6 +60,7 @@ qq.UploadData = function(uploaderProxy) {
             var index = data.push({
                 id: id,
                 name: name,
+                originalName: name,
                 uuid: uuid,
                 size: size,
                 status: status
@@ -127,6 +128,12 @@ qq.UploadData = function(uploaderProxy) {
             data[dataIndex].uuid = newUuid;
             byUuid[newUuid] = dataIndex;
             delete byUuid[oldUuid];
+        },
+
+        nameChanged: function(id, newName) {
+            var dataIndex = byId[id];
+
+            data[dataIndex].name = newName;
         }
     };
 

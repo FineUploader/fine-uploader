@@ -188,6 +188,21 @@ qq.trimStr = function(string) {
     return string.replace(/^\s+|\s+$/g,'');
 };
 
+
+// Returns a string, swapping argument values with the associated occurrence of {} in the passed string.
+qq.format = function(str) {
+    "use strict";
+
+    var args =  Array.prototype.slice.call(arguments, 1),
+        newStr = str;
+
+    qq.each(args, function(idx, val) {
+        newStr = newStr.replace(/{}/, val);
+    });
+
+    return newStr;
+};
+
 qq.isFile = function(maybeFile) {
     "use strict";
 

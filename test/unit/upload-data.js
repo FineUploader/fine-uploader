@@ -39,6 +39,17 @@ describe("upload-data.js", function () {
         assert.equal(uploadData.retrieve({id: 0}).uuid, "foobar", "checking new uuid");
     });
 
+    it("allows override name", function() {
+        var uploadData = helpme.createUploadData();
+
+        uploadData.added(0);
+        assert.equal(uploadData.retrieve({id: 0}).name, "0_name", "checking initial name");
+
+        uploadData.nameChanged(0, "foobar");
+        assert.equal(uploadData.retrieve({id: 0}).name, "foobar", "checking new name");
+        assert.equal(uploadData.retrieve({id: 0}).originalName, "0_name", "checking original name");
+    });
+
     it("resets properly", function() {
         var uploadData = helpme.createUploadData();
 

@@ -15,6 +15,7 @@ qq.UploadHandler = function(o) {
         paramsInBody: false,
         paramsStore: {},
         endpointStore: {},
+        filenameParam: 'qqfilename',
         cors: {
             expected: false,
             sendCredentials: false
@@ -39,11 +40,6 @@ qq.UploadHandler = function(o) {
             cookiesExpireIn: 7, //days
             paramNames: {
                 resuming: "qqresume"
-            }
-        },
-        blobs: {
-            paramNames: {
-                name: 'qqblobname'
             }
         },
         log: function(str, level) {},
@@ -156,8 +152,13 @@ qq.UploadHandler = function(o) {
         /**
          * Returns name of the file identified by id
          */
-        getName: function(id){
+        getName: function(id) {
             return handlerImpl.getName(id);
+        },
+        // Update/change the name of the associated file.
+        // This updated name should be sent as a parameter.
+        setName: function(id, newName) {
+            handlerImpl.setName(id, newName);
         },
         /**
          * Returns size of the file identified by id

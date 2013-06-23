@@ -34,6 +34,11 @@ module.exports = (grunt) ->
         './client/js/handler.base.js',
         './client/js/handler.form.js',
         './client/js/handler.xhr.js',
+        './client/js/ui.handler.events.js',
+        './client/js/ui.handler.click.drc.js',
+        './client/js/ui.handler.edit.filename.js',
+        './client/js/ui.handler.click.filename.js',
+        './client/js/ui.handler.focus.filenameinput.js'
     ]
 
     # jQuery plugin modules
@@ -45,6 +50,7 @@ module.exports = (grunt) ->
         './client/js/iframe.xss.response.js'
         './client/loading.gif',
         './client/processing.gif',
+        './client/edit.gif',
         './README.md',
         './LICENSE'
     ]
@@ -457,10 +463,11 @@ module.exports = (grunt) ->
             all:
                 options:
                     urls: ['http://localhost:9001/index.html']
+                    log: true
                     mocha:
                         ignoreLeaks: false
-                    reporter: 'Nyan'
-                    run: true
+                    reporter: 'Spec'
+                    run: false
 
         # Saucelas + Mocha
         # ---------
