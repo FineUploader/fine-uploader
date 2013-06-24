@@ -603,8 +603,6 @@ qq.FineUploaderBasic.prototype = {
         this._maybeParseAndSendUploadError(id, name, result, xhr);
     },
     _onCancel: function(id, name) {
-        this._uploadData.setStatus(id, qq.status.CANCELED);
-
         this._netUploadedOrQueued--;
 
         this._removeFromFilesInProgress(id);
@@ -615,6 +613,8 @@ qq.FineUploaderBasic.prototype = {
         if (!this._options.autoUpload && storedItemIndex >= 0) {
             this._storedIds.splice(storedItemIndex, 1);
         }
+
+        this._uploadData.setStatus(id, qq.status.CANCELED);
     },
     _isDeletePossible: function() {
         if (!this._options.deleteFile.enabled) {
