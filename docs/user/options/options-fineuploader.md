@@ -196,6 +196,12 @@ Note that all [FineUploaderBasic mode options](options-fineuploaderbasic.md) are
             <td>You may only drop one file</td>
             <td>Text sent to `showMessage` and the `onError` callback when `multiple` is `false` and more the one file is dropped at once.</td>
     	</tr>
+        <tr>
+            <td>unsupportedBrowser</td>
+            <td>string</td>
+            <td>Unrecoverable error - this browser does not permit file uploading of any kind.</td>
+            <td>Text displayed in place of the normal uploader contents when the current browser does not support browser-based uploading of any kind.</td>
+    	</tr>
     </tbody>
 </table>
 
