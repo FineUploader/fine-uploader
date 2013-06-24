@@ -591,12 +591,12 @@ qq.FineUploaderBasic.prototype = {
     },
     _onComplete: function(id, name, result, xhr) {
         if (!result.success) {
-            this._uploadData.setStatus(id, qq.status.UPLOAD_FAILED);
             this._netUploadedOrQueued--;
+            this._uploadData.setStatus(id, qq.status.UPLOAD_FAILED);
         }
         else {
-            this._uploadData.setStatus(id, qq.status.UPLOAD_SUCCESSFUL);
             this._netUploaded++;
+            this._uploadData.setStatus(id, qq.status.UPLOAD_SUCCESSFUL);
         }
 
         this._removeFromFilesInProgress(id);
@@ -670,10 +670,10 @@ qq.FineUploaderBasic.prototype = {
             }
         }
         else {
-            this._uploadData.setStatus(id, qq.status.DELETED);
             this._netUploadedOrQueued--;
             this._netUploaded--;
             this._handler.expunge(id);
+            this._uploadData.setStatus(id, qq.status.DELETED);
             this.log("Delete request for '" + name + "' has succeeded.");
         }
     },
