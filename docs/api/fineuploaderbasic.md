@@ -15,6 +15,10 @@ If there are no items to upload, this will result in "no files" error.
 * `clearStoredFiles()` - Clears the internal list of stored files and `Blob`s.  Only applicable when `autoUpload` is set to false.
 
 * `getInProgress()` - Returns the number of files or `Blob`s that are either currently uploading or waiting in line to be uploaded.
+Note that calling this method inside of an `onCancel` callback will return a value that includes the upload
+associated with the `onCancel` callback.  This is due to the fact that the upload will not be cancelled until the
+`onCancel` callback returns, since this callback provides the opportunity to prevent the upload from being cancelled
+by returning false inline or via a promise.
 
 * `getNetUploads()` - Returns the number of files or `Blob`s that have both been successfully uploaded and have NOT been deleted.
 
