@@ -243,7 +243,7 @@ Note that all [FineUploaderBasic mode options](options-fineuploaderbasic.md) are
 </table>
 
 ### `deleteFile` option properties: ###
-For more information on the Delete File feature, please read the [associated blog post](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html) and
+For more information on the Delete File feature, please read the [associated blog post](http://blog.fineuploader.com/2013/01/25/delete-an-uploaded-file-in-3-3/) and
 check out the server-side readme.
 <table>
     <thead>
@@ -347,7 +347,7 @@ for additional `paste` options.
 </table>
 
 ### `editFilename` option properties: ###
-If enabled, this will allow users to edit the filename via the UI.  See the [blog post](http://blog.fineuploader.com/2013/06/37-edit-override-file-names.html) for more details.
+If enabled, this will allow users to edit the filename via the UI.  See the [blog post](http://blog.fineuploader.com/2013/06/23/3-7-edit-override-file-names/) for more details.
 <table>
     <thead>
         <tr>

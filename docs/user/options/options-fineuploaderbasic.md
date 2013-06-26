@@ -88,7 +88,7 @@
             <td>object</td>
             <td>{}</td>
             <td>These parameters are sent with the request to the endpoint specified in the action option.  An individual parameter value
-            may be a number, string, another object, or a function that returns a number or string.  See the <a href="http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html">associated blog post</a>
+            may be a number, string, another object, or a function that returns a number or string.  See the <a href="http://blog.fineuploader.com/2012/12/05/include-params-in-the-request-body-or-the-query-string/">associated blog post</a>
             for more details.</td>
         </tr>
         <tr>
@@ -97,7 +97,7 @@
             <td>true</td>
             <td>Set this to <code>true</code> if you want all parameters to be sent in the request body.  Note that setting this option
             to <code>true</code> will force all requests to be multipart encoded.  If the value is <code>false</code> all params will be
-            included in the query string.   See the <a href="http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html">associated blog post</a>
+            included in the query string.   See the <a href="http://blog.fineuploader.com/2012/12/05/include-params-in-the-request-body-or-the-query-string/">associated blog post</a>
             for more details.</td>
         </tr>
         <tr>
@@ -308,7 +308,7 @@
 </table>
 
 ### `chunking` option properties: ###
-For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html).
+For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/28/file-chunkingpartitioning-is-now-available-in-3-2/).
 on the topic.
 <table>
     <thead>
@@ -337,7 +337,7 @@ on the topic.
 </table>
 
 ### `chunking.paramNames` option properties: ###
-For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html).
+For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/28/file-chunkingpartitioning-is-now-available-in-3-2/).
 on the topic.
 <table>
     <thead>
@@ -377,7 +377,7 @@ on the topic.
 </table>
 
 ### `resume` option properties: ###
-For more details, please read the [blog post on the file resume feature](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html).
+For more details, please read the [blog post on the file resume feature](http://blog.fineuploader.com/2013/01/01/resume-uploads-from-previous-sessions-in-3-2/).
 <table>
     <thead>
         <tr>
@@ -413,7 +413,7 @@ For more details, please read the [blog post on the file resume feature](http://
 </table>
 
 ### `resume.paramNames` option properties: ###
-For more details, please read the [blog post on the file resume feature](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html).
+For more details, please read the [blog post on the file resume feature](http://blog.fineuploader.com/2013/01/01/resume-uploads-from-previous-sessions-in-3-2/).
 <table>
     <thead>
         <tr>
@@ -461,9 +461,9 @@ For more details, please read the [blog post on the file resume feature](http://
 </table>
 
 ### `deleteFile` option properties: ###
-For more information on the Delete File feature, please read the [associated blog post](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html) and
+For more information on the Delete File feature, please read the [associated blog post](http://blog.fineuploader.com/2013/01/25/delete-an-uploaded-file-in-3-3/) and
 check out the server-side readme.  If you want to support this feature in IE9 and IE8 for cross-origin environments, please
-read about the [changes that occurred in 3.7 that optionally allow this](http://blog.fineuploader.com/2013/06/37-cross-origin-delete-file-support-for.html).
+read about the [changes that occurred in 3.7 that optionally allow this](http://blog.fineuploader.com/2013/06/09/3-7-cross-origin-delete-file-support-for-ie9-and-ie8/).
 <table>
     <thead>
         <tr>
@@ -487,7 +487,7 @@ read about the [changes that occurred in 3.7 that optionally allow this](http://
             <td>DELETE</td>
             <td>You can choose between a POST and a DELETE method for the delete file request sent by Fine Uploader.
              Keep in mind that you should be using "POST" if you want to help ensure that the request will not be preflighted.
-             Please see the <a href="http://blog.fineuploader.com/2013/06/delete-files-via-post-and-delete.html">blog post
+             Please see the <a href="http://blog.fineuploader.com/2013/06/05/delete-files-via-post-and-delete-requests/">blog post
              that describes how the delete file feature requests are constructed</a> based on the value of this option.</td>        
         </tr>
         <tr>
@@ -517,7 +517,7 @@ read about the [changes that occurred in 3.7 that optionally allow this](http://
 </table>
 
 ### `cors` option properties: ###
-For more information on CORS support, please read the [associated blog post](http://blog.fineuploader.com/2013/01/cors-support-in-33.html) and
+For more information on CORS support, please read the [associated blog post](http://blog.fineuploader.com/2013/01/31/cors-support-in-3-3/) and
 check out the server-side readme.
 <table>
     <thead>
@@ -623,7 +623,7 @@ Options specific to camera access.
             <td><code>false</code></td>
             <td>Set this to true to enable camera access on iOS (iPod, iPhone, iPad) devices.  Note that, due to limitations
             related to camera access in iOS, setting this to true will prevent you from selecting multiple files at once.
-            Please see <a href="http://blog.fineuploader.com/2013/05/upload-directly-via-camera-on-mobile.html">the associated blog post</a>
+            Please see <a href="http://blog.fineuploader.com/2013/05/09/upload-directly-via-a-camera-on-mobile-devices/">the associated blog post</a>
             for more details on the implementation
             of this feature.</td>
     	</tr>

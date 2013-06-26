@@ -15,18 +15,18 @@
 * Receive callback at various stages of the upload process
 * Send any parameters server-side along with each file.
 * Upload directories via drag and drop (Chrome 21+).
-* [Include parameters in the query string OR the request body.](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
+* [Include parameters in the query string OR the request body.](http://blog.fineuploader.com/2012/12/05/include-params-in-the-request-body-or-the-query-string/)
 * Submit files to be uploaded via the API.
 * [Split up a file into multiple requests](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html) (file chunking/partitioning).
-* [Resume failed/stopped uploads from previous sessions](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html)
-* [Delete uploaded files](http://blog.fineuploader.com/2013/01/delete-uploaded-file-in-33.html)
-* [CORS support](http://blog.fineuploader.com/2013/01/cors-support-in-33.html)
+* [Resume failed/stopped uploads from previous sessions](http://blog.fineuploader.com/2012/12/28/file-chunkingpartitioning-is-now-available-in-3-2/)
+* [Delete uploaded files](http://blog.fineuploader.com/2013/01/25/delete-an-uploaded-file-in-3-3/)
+* [CORS support](http://blog.fineuploader.com/2013/01/31/cors-support-in-3-3/)
 * Upload any `Blob` objects via the API.
 * Easily set and enforce a maximum item limit.
-* [Upload images via paste (Chrome)](http://blog.fineuploader.com/2013/03/upload-image-via-paste-in-34.html).
+* [Upload images via paste (Chrome)](http://blog.fineuploader.com/2013/03/04/upload-an-image-via-paste-in-3-4/).
 * [Standalone file & folder drag & drop module](docs/api/drag-and-drop.md).  Integrated by default into FineUploader mode.
-* [Perform async (non-blocking) tasks in callbacks that influence the associated file or files](http://blog.fineuploader.com/2013/05/callbacks-that-permit-asynchronous.html)
-* [Upload images directly from a mobile device's camera](http://blog.fineuploader.com/2013/05/upload-directly-via-camera-on-mobile.html)
-* [Retrieve statistics for uploaded files and receive callbacks on status changes](http://blog.fineuploader.com/2013/05/query-fine-uploader-for-upload-stats.html)
-* [Edit / override filenames](http://blog.fineuploader.com/2013/06/37-edit-override-filenames.html)
+* [Perform async (non-blocking) tasks in callbacks that influence the associated file or files](http://blog.fineuploader.com/2013/05/07/callbacks-that-permit-asynchronous-returns/)
+* [Upload images directly from a mobile device's camera](http://blog.fineuploader.com/2013/05/09/upload-directly-via-a-camera-on-mobile-devices/)
+* [Retrieve statistics for uploaded files and receive callbacks on status changes](http://blog.fineuploader.com/2013/05/24/query-fine-uploader-for-upload-stats/)
+* [Edit / override filenames](http://blog.fineuploader.com/2013/06/23/3-7-edit-override-file-names/)
 * And many more!

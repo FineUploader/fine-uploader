@@ -119,5 +119,5 @@ for the name, you may do so by overriding the default implementation of this cal
 
 * `onStatusChange(id, oldStatus, newStatus)` - This will be invoked whenever the status changes for any item submitted to
 the uploader.  The status values correspond to a "constant" defined in the `qq.status` object.  Please
-see [the blog post on upload stats retrieval](http://blog.fineuploader.com/2013/05/query-fine-uploader-for-upload-stats.html)
+see [the blog post on upload stats retrieval](http://blog.fineuploader.com/2013/05/24/query-fine-uploader-for-upload-stats/)
 for more details and examples.

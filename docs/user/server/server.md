@@ -19,8 +19,8 @@ sever-side if you want to handle DELETE requests, the resume feature, or chunkin
 ## Request Format Options ##
 * If you would like to ensure all parameters are sent in the request body (instead of the query string), you
 must set the `paramsInBody` request option (which will also force all requests to be multipart encoded as well).
-* For more information about request parameters, see the main project readme and [this blog post about setting your own custom parameters](http://blog.fineuploader.com/2012/12/setparams-is-now-much-more-useful-in-31.html)
-along with [this post about how parameters are specified in the request](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html).
+* For more information about request parameters, see the main project readme and [this blog post about setting your own custom parameters](http://blog.fineuploader.com/2012/12/09/setparams-is-now-much-more-useful-in-3-1/)
+along with [this post about how parameters are specified in the request](http://blog.fineuploader.com/2012/12/05/include-params-in-the-request-body-or-the-query-string/).
 
 <br/>
 ## Response ##
@@ -57,7 +57,7 @@ to avoid collisions during accumulation of chunks between files with the same na
 
 Some server-side examples have been updated to handle file chunking.
 
-For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/file-chunkingpartitioning-is-now.html).
+For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/28/file-chunkingpartitioning-is-now-available-in-3-2/).
 on the topic.
 
 <br/>
@@ -72,7 +72,7 @@ passed.  If, for some reason, you receive a request that indicates a resume has 
 chunks is missing or invalid, you can return a valid JSON response containing a "reset" property with a value of "true".  This will
 let Fine Uploader know that it should start the file upload from the first chunk instead of the last failed chunk.
 
-For more details, please read the [blog post on the file resume feature](http://blog.fineuploader.com/2013/01/resume-failed-uploads-from-previous.html).
+For more details, please read the [blog post on the file resume feature](http://blog.fineuploader.com/2013/01/01/resume-uploads-from-previous-sessions-in-3-2/).
 
 <br/>
 ## Deleting Files ##
@@ -91,14 +91,14 @@ the `allowXdr` property of the `cors` client-side option and adjust your server-
 that the Content-Type will be absent from the request header, and credentials (cookies) and [non-simple headers](http://www.w3.org/TR/cors/#simple-header)
 cannot be sent.
 
-Please see [the latest blog post on the delete file feature](http://blog.fineuploader.com/2013/06/delete-files-via-post-and-delete.html)
+Please see [the latest blog post on the delete file feature](http://blog.fineuploader.com/2013/06/05/delete-files-via-post-and-delete-requests/)
 for more information.  If you want to support this feature in IE9 and IE8 for cross-origin environments, please
-read about the [changes that occurred in 3.7 that optionally allow this](http://blog.fineuploader.com/2013/06/37-cross-origin-delete-file-support-for.html).
+read about the [changes that occurred in 3.7 that optionally allow this](http://blog.fineuploader.com/2013/06/09/3-7-cross-origin-delete-file-support-for-ie9-and-ie8/).
 
 <br/>
 ## CORS Support ##
 As of version 3.3, CORS is supported.  For more details on how this works, limitations, and how to properly configure your server,
-please see the [blog post on CORS support](http://blog.fineuploader.com/2013/01/cors-support-in-33.html).  Also, please see the
+please see the [blog post on CORS support](http://blog.fineuploader.com/2013/01/31/cors-support-in-3-3/).  Also, please see the
 cors option documentation in the main readme.
 
 <br/>
@@ -112,4 +112,4 @@ See the [values](#values) section above for an example.
 <br/>
 ## Handling an Overridden Filename ##
 Simple look for a "qqfilename" parameter.  If this exists in the request, be sure to use this when naming your file server-side.
-See the [blog post](http://blog.fineuploader.com/2013/06/37-edit-override-file-names.html) for more details.
+See the [blog post](http://blog.fineuploader.com/2013/06/23/3-7-edit-override-file-names/) for more details.

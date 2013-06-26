@@ -3,8 +3,8 @@
 
 * `setParams(Object newParams, [optional] Number id)` - Set the parameters sent along with the request after initializing the uploader.
 You can either change the parameters for a specific file or `Blob`, or for all files and `Blob`s.  To do the latter, simply omit the `id` parameter.
-See this [blog post explaining parameters](http://blog.fineuploader.com/2012/11/include-params-in-request-body-or-query.html)
-as well as [this one explaining how this function works in 3.1 and later versions](http://blog.fineuploader.com/2012/12/setparams-is-now-much-more-useful-in-31.html).
+See this [blog post explaining parameters](http://blog.fineuploader.com/2012/12/05/include-params-in-the-request-body-or-the-query-string/)
+as well as [this one explaining how this function works in 3.1 and later versions](http://blog.fineuploader.com/2012/12/09/setparams-is-now-much-more-useful-in-3-1/).
 
 * `setEndpoint(String endpointPath, [optional] Number id)` - Modify the location,  after initializing the uploader, where upload requests should be directed.
 You can either change the endpoint for a specific file or `Blob`, or for all files and `Blob`s.  To do the latter, simply omit the `id` parameter.
@@ -64,7 +64,7 @@ if the user agent does not support the File API.
 * `setName(id, newName)` - Provide an alternate/new name for the associated file or blob.
 This will be sent along with the upload request, by default, as the value of a "qqfilename" parameter.
 You should only call this method before the upload request has been sent.  Read
-[the blog post about the edit filename feature](http://blog.fineuploader.com/2013/06/37-edit-override-filenames.html)
+[the blog post about the edit filename feature](http://blog.fineuploader.com/2013/06/23/3-7-edit-override-file-names/)
 in both FineUploader and FineUploaderBasic for more details.
 
 * `getFile(id)` - Returns the `File` or `Blob` object associated with the passed ID.  Undefined if the underlying `File` or `Blob` cannot be found,
@@ -89,5 +89,5 @@ properties: `id`, `uuid`, `originalName`, `name`, `size` (if available), and `st
 defined in the `qq.status` object.  You may filter the results by one of the following filters: `id`, `uuid`, or
 `status`.  The filter may be a single value or an array of values.  For example, if you would like to retrieve information
 about the first 3 items submitted to the uploader, you would call `uploaderInstance.getUploads({id: [0, 1, 2]});`.  Please
-see [the blog post on upload stats retrieval](http://blog.fineuploader.com/2013/05/query-fine-uploader-for-upload-stats.html)
+see [the blog post on upload stats retrieval](http://blog.fineuploader.com/2013/05/24/query-fine-uploader-for-upload-stats/)
 for more details and examples.

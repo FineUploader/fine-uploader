@@ -52,7 +52,6 @@ All major browsers (including IE7 and above) and the most cutting-edge HTML5 fea
 - [Look at server-side examples](https://github.com/Widen/fine-uploader-server).
 - [Get support and ask questions about Fine Uploader](http://stackoverflow.com/questions/tagged/fine-uploader).
 - [Report bugs and discuss upcoming features](https://github.com/Widen/fine-uploader/issues).
-- [Read the changelog](http://blog.fineuploader.com/2013/05/fine-uploader-36.html).
 
 ### Community
 
