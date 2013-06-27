@@ -256,35 +256,39 @@ module.exports = (grunt) ->
                         cwd: './client/js/'
                         src: ['iframe.xss.response.js']
                         dest: './dist/<%= pkg.name %>-<%= pkg.version %>/'
+                        ext: '.xss.response-<%= pkg.version %>.js'
                     }
                     {
                         expand: true
                         cwd: './client/js/'
                         src: ['iframe.xss.response.js']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
+                        ext: '.xss.response-<%= pkg.version %>.js'
                     }
                     {
                         expand: true
                         cwd: './client/'
                         src: ['*.gif']
                         dest: './dist/<%= pkg.name %>-<%= pkg.version %>/'
+                        ext: '-<%= pkg.version %>.gif'
                     }
                     {
                         expand: true
                         cwd: './client/'
                         src: ['*.gif']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
+                        ext: '-<%= pkg.version %>.gif'
                     }
                     {
                         expand: true
                         cwd: './'
-                        src: ['README.md', 'LICENSE']
+                        src: ['LICENSE']
                         dest: './dist/<%= pkg.name %>-<%= pkg.version %>/'
                     }
                     {
                         expand: true
                         cwd: './'
-                        src: ['README.md', 'LICENSE']
+                        src: ['LICENSE']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
                     }
                     {
@@ -292,24 +296,28 @@ module.exports = (grunt) ->
                         cwd: './build'
                         src: ['*.min.css']
                         dest: './dist/<%= pkg.name %>-<%= pkg.version %>'
+                        ext: '-<%= pkg.version %>.min.css'
                     }
                     {
                         expand: true
                         cwd: './build'
                         src: ['*.css', '!*.min.css']
                         dest: './dist/<%= pkg.name %>-<%= pkg.version %>'
+                        ext: '-<%= pkg.version %>.css'
                     }
                     {
                         expand: true
                         cwd: './build'
                         src: ['*.min.css']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>'
+                        ext: '-<%= pkg.version %>.min.css'
                     }
                     {
                         expand: true
                         cwd: './build'
                         src: ['*.css', '!*.min.css']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>'
+                        ext: '-<%= pkg.version %>.css'
                     }
                 ]
             build:
