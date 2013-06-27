@@ -22,8 +22,8 @@ Fine Uploader aims to make file-uploading on the web possible in every browser a
 You only need to include one JavaScript file. There are absolutely no other dependencies. 
 
 ```html
-<script src="fine-uploader-{VERSION}.css" type="text/javascript"></script>
-<script src="fine-uploader-{VERSION}.js" type="text/javascript"></script>
+<script src="fineuploader-{VERSION}.css" type="text/javascript"></script>
+<script src="fineuploader-{VERSION}.js" type="text/javascript"></script>
 
 <!-- The element which will contain Fine Uploader -->
 <div id="fine-uploader"></div>

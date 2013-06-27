@@ -3,7 +3,7 @@
   "title": "Fine Uploader",
   "version": "3.7.0",
   "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
-  "main": "./fine-uploader/js/fine-uploader.js",
+  "main": "./fine-uploader/js/fineuploader.js",
   "maintainers": [
     "Ray Nicholus <rnicholus@widen.com>",
     "Mark Feltner <mfeltner@widen.com>"
