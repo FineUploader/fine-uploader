@@ -1,1 +1,1 @@
-qq.version="-unstable-";
+qq.version="3.7.0";

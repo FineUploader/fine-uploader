@@ -155,7 +155,7 @@ module.exports = (grunt) ->
                             /*!
                              * <%= pkg.title %>
                              *
-                             * Copyright © 2013, <%= pkg.author %> info@fineuploader.com
+                             * Copyright 2013, <%= pkg.author %> info@fineuploader.com
                              *
                              * Version: <%= pkg.version %>
                              *
@@ -206,8 +206,8 @@ module.exports = (grunt) ->
         # --------
         uglify:
             options:
-                mangle: false
-                compress: false
+                mangle: true
+                compress: true
                 report: 'min'
                 preserveComments: 'some'
             core:
@@ -291,25 +291,25 @@ module.exports = (grunt) ->
                         expand: true
                         cwd: './build'
                         src: ['*.min.css']
-                        dest: './dist/<%= pkg.name %>-<%= pkg.version %>/<%= pkg.name %>-<%= pkg.version %>.min.css'
+                        dest: './dist/<%= pkg.name %>-<%= pkg.version %>'
                     }
                     {
                         expand: true
                         cwd: './build'
                         src: ['*.css', '!*.min.css']
-                        dest: './dist/<%= pkg.name %>-<%= pkg.version %>/<%= pkg.name %>-<%= pkg.version %>.css'
+                        dest: './dist/<%= pkg.name %>-<%= pkg.version %>'
                     }
                     {
                         expand: true
                         cwd: './build'
-                        src: ['*.min..css']
-                        dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/<%= pkg.name %>-<%= pkg.version %>.min.css'
+                        src: ['*.min.css']
+                        dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>'
                     }
                     {
                         expand: true
                         cwd: './build'
                         src: ['*.css', '!*.min.css']
-                        dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/<%= pkg.name %>-<%= pkg.version %>.css'
+                        dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>'
                     }
                 ]
             build:
