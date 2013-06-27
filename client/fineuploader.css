@@ -146,9 +146,11 @@
     display: none;
 }
 
-.qq-edit-filename {
+INPUT.qq-edit-filename {
     position: absolute;
-    left: -100%;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 }
 
 .qq-upload-file.qq-editable {
@@ -160,11 +162,14 @@
     cursor: pointer;
 }
 
-.qq-edit-filename.qq-editing {
+INPUT.qq-edit-filename.qq-editing {
     position: relative;
-    left: 0;
     margin-top: 5px;
     margin-right: 10px;
+
+    opacity: 1;
+    filter: alpha(opacity=100);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 }
 
 .qq-edit-filename-icon {
@@ -176,6 +181,6 @@
     margin-right: 5px;
 }
 
-.qq-edit-filename.qq-editing ~ .qq-upload-cancel {
+INPUT.qq-edit-filename.qq-editing ~ .qq-upload-cancel {
     display: none;
 }

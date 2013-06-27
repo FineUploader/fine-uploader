@@ -341,6 +341,7 @@ qq.extend(qq.FineUploader.prototype, {
 
                 if (isEditing) {
                     qqInput.addClass('qq-editing');
+
                     qqFilenameDisplay.hide();
                     qqEditFilenameIcon.removeClass(editableClass);
                 }
@@ -349,6 +350,9 @@ qq.extend(qq.FineUploader.prototype, {
                     qqFilenameDisplay.css({display: ''});
                     qqEditFilenameIcon.addClass(editableClass);
                 }
+
+                // Force IE8 and older to repaint
+                qq(item).addClass('qq-temp').removeClass('qq-temp');
             }
         };
     },
