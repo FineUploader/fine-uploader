@@ -270,14 +270,12 @@ module.exports = (grunt) ->
                         cwd: './client/'
                         src: ['*.gif']
                         dest: './dist/<%= pkg.name %>-<%= pkg.version %>/'
-                        ext: '-<%= pkg.version %>.gif'
                     }
                     {
                         expand: true
                         cwd: './client/'
                         src: ['*.gif']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
-                        ext: '-<%= pkg.version %>.gif'
                     }
                     {
                         expand: true
