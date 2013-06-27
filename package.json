@@ -1,5 +1,5 @@
 {
-  "name": "fine-uploader",
+  "name": "fineuploader",
   "title": "Fine Uploader",
   "version": "3.7.0",
   "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
