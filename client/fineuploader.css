@@ -163,7 +163,7 @@ INPUT.qq-edit-filename {
 }
 
 INPUT.qq-edit-filename.qq-editing {
-    position: relative;
+    position: static;
     margin-top: 5px;
     margin-right: 10px;
 
