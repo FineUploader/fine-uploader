@@ -164,8 +164,9 @@ INPUT.qq-edit-filename {
 
 INPUT.qq-edit-filename.qq-editing {
     position: static;
-    margin-top: 5px;
+    margin-top: -5px;
     margin-right: 10px;
+    margin-bottom: -5px;
 
     opacity: 1;
     filter: alpha(opacity=100);
