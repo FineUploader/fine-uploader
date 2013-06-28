@@ -172,8 +172,13 @@ qq.FineUploader = function(o){
 
         this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
 
+        // A better approach would be to check specifically for focusin event support by querying the DOM API,
+        // but the DOMFocusIn event is not exposed as a property, so we have to resort to UA string sniffing.
+        this._focusinEventSupported = !qq.firefox();
+
         if (this._isEditFilenameEnabled()) {
             this._filenameClickHandler = this._bindFilenameClickEvent();
+            this._filenameInputFocusInHandler = this._bindFilenameInputFocusInEvent();
             this._filenameInputFocusHandler = this._bindFilenameInputFocusEvent();
         }
 
@@ -372,6 +377,11 @@ qq.extend(qq.FineUploader.prototype, {
             }
         }
     },
+    _bindFilenameInputFocusInEvent: function() {
+        var spec = qq.extend({}, this._filenameEditHandler());
+
+        return new qq.FilenameInputFocusInHandler(spec);
+    },
     _bindFilenameInputFocusEvent: function() {
         var spec = qq.extend({}, this._filenameEditHandler());
 
@@ -408,6 +418,7 @@ qq.extend(qq.FineUploader.prototype, {
     },
     // The file item has been added to the DOM.
     _onSubmitted: function(id) {
+        // If the edit filename feature is enabled, mark the filename element as "editable" and the associated edit icon
         if (this._isEditFilenameEnabled()) {
             var item = this.getItemByFileId(id),
                 qqFilenameDisplay = qq(this._find(item, 'file')),
@@ -417,6 +428,10 @@ qq.extend(qq.FineUploader.prototype, {
             qqFilenameDisplay.addClass(editableClass);
             qqEditFilenameIcon.addClass(editableClass);
 
+            // If the focusin event is not supported, we must add a focus handler to the newly create edit filename text input
+            if (!this._focusinEventSupported) {
+                this._filenameInputFocusHandler.addHandler(this._find(item, 'editFilenameInput'));
+            }
         }
     },
     // Update the progress bar & percentage as the file is uploaded

@@ -4,7 +4,7 @@ qq.FilenameEditHandler = function(s, inheritedInternalApi) {
     "use strict";
 
     var spec = {
-            listElement: document,
+            listElement: null,
             log: function(message, lvl) {},
             classes: {
                 file: 'qq-upload-file'

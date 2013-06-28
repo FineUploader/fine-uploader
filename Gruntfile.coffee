@@ -38,6 +38,7 @@ module.exports = (grunt) ->
         './client/js/ui.handler.click.drc.js',
         './client/js/ui.handler.edit.filename.js',
         './client/js/ui.handler.click.filename.js',
+        './client/js/ui.handler.focusin.filenameinput.js',
         './client/js/ui.handler.focus.filenameinput.js'
     ]
 

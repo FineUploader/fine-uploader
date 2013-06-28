@@ -6,12 +6,16 @@ qq.UiEventHandler = function(s, protectedApi) {
     var disposer = new qq.DisposeSupport(),
         spec = {
             eventType: 'click',
-            attachTo: document,
+            attachTo: null,
             onHandled: function(target, event) {}
         },
         // This makes up the "public" API methods that will be accessible
         // to instances constructing a base or child handler
         publicApi = {
+            addHandler: function(element) {
+                addHandler(element);
+            },
+
             dispose: function() {
                 disposer.dispose();
             }
@@ -19,8 +23,8 @@ qq.UiEventHandler = function(s, protectedApi) {
 
 
 
-    function initHandler() {
-        disposer.attach(spec.attachTo, spec.eventType, function(event) {
+    function addHandler(element) {
+        disposer.attach(element, spec.eventType, function(event) {
             // Only in IE: the `event` is a property of the `window`.
             event = event || window.event;
 
@@ -56,6 +60,10 @@ qq.UiEventHandler = function(s, protectedApi) {
 
 
     qq.extend(spec, s);
-    initHandler();
+
+    if (spec.attachTo) {
+        addHandler(spec.attachTo);
+    }
+
     return publicApi;
 };
