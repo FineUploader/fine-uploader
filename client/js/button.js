@@ -10,8 +10,6 @@
  * available on all supported browsers.
  *
  * @param o Options to override the default values
- * @return {{getInput: Function, reset: Function}}
- * @constructor
  */
 qq.UploadButton = function(o) {
     "use strict";
