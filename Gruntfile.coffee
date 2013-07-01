@@ -60,7 +60,8 @@ module.exports = (grunt) ->
         'package.json',
         'fineuploader.jquery.json',
         'client/js/version.js',
-        'bower.json'
+        'bower.json',
+        'README.md'
     ]
 
     browsers = [
@@ -454,7 +455,8 @@ module.exports = (grunt) ->
         # ----------
         version:
             options:
-                pkg: pkg
+                pkg: pkg,
+                prefix: '[^\\-][Vv]ersion[\'"]?\\s*[:=]\\s*[\'"]?'
             major:
                 options:
                     release: 'major'
