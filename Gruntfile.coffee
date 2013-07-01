@@ -112,7 +112,7 @@ module.exports = (grunt) ->
         {
             browserName: 'firefox'
             platform: 'Windows 7'
-            version: '22'
+            version: '21'
         }
     ]
 
