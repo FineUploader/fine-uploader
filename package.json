@@ -44,7 +44,7 @@
   "devDependencies": {
     "wd": "0.0.32",
     "express": "~3.2.5",
-    "semver": "~1.1.4",
+    "semver": "2.0.x",
     "coffee-script": "~1.6.3",
     "grunt": "~0.4.1",
     "grunt-saucelabs": "git://github.com/feltnerm/grunt-saucelabs.git",
