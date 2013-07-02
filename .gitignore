@@ -19,6 +19,7 @@ selenium.log*
 pid.txt
 sauce_connect.log*
 fine-uploader/
+test/*.js
 test/upload/*
 test/uploadsTemp/
 test/coverage/*
