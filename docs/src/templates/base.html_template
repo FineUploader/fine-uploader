@@ -1,0 +1,2 @@
+{% extends "templates/layout.html_template" %}
+{% block content %}{% endblock %}
