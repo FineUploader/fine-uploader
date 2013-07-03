@@ -173,7 +173,13 @@ qq.isFunction = function(variable) {
 qq.isArray = function(variable) {
     "use strict";
     return Object.prototype.toString.call(variable) === "[object Array]";
-}
+};
+
+// Looks for an object on a `DataTransfer` object that is associated with drop events when utilizing the Filesystem API.
+qq.isItemList = function(maybeItemList) {
+    "use strict";
+    return Object.prototype.toString.call(maybeItemList) === "[object DataTransferItemList]";
+};
 
 qq.isString = function(maybeString) {
     "use strict";
@@ -392,7 +398,8 @@ qq.each = function(objOrArray, callback) {
     "use strict";
     var keyOrIndex, retVal;
     if (objOrArray) {
-        if (qq.isArray(objOrArray)) {
+        // `DataTransferItemList` objects are array-like and should be treated as arrays when iterating over items inside the object.
+        if (qq.isArray(objOrArray) || qq.isItemList(objOrArray)) {
             for (keyOrIndex = 0; keyOrIndex < objOrArray.length; keyOrIndex++) {
                 retVal = callback(keyOrIndex, objOrArray[keyOrIndex]);
                 if (retVal === false) {
@@ -448,8 +455,7 @@ qq.bind = function(oldFunc, context) {
 qq.obj2url = function(obj, temp, prefixDone){
     "use strict";
     /*jshint laxbreak: true*/
-     var i, len,
-         uristrings = [],
+     var uristrings = [],
          prefix = '&',
          add = function(nextObj, i){
             var nextTemp = temp
@@ -473,17 +479,13 @@ qq.obj2url = function(obj, temp, prefixDone){
         uristrings.push(temp);
         uristrings.push(qq.obj2url(obj));
     } else if ((Object.prototype.toString.call(obj) === '[object Array]') && (typeof obj !== 'undefined') ) {
-        // we wont use a for-in-loop on an array (performance)
-        for (i = -1, len = obj.length; i < len; i+=1){
-            add(obj[i], i);
-        }
+        qq.each(obj, function(idx, val) {
+            add(val, idx);
+        });
     } else if ((typeof obj !== 'undefined') && (obj !== null) && (typeof obj === "object")){
-        // for anything else but a scalar, we will use for-in-loop
-        for (i in obj){
-            if (obj.hasOwnProperty(i)) {
-                add(obj[i], i);
-            }
-        }
+        qq.each(obj, function(prop, val) {
+            add(val, prop);
+        });
     } else {
         uristrings.push(encodeURIComponent(temp) + '=' + encodeURIComponent(obj));
     }

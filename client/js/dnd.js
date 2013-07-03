@@ -27,7 +27,7 @@ qq.DragAndDrop = function(o) {
     }
 
     function traverseFileTree(entry) {
-        var dirReader, i,
+        var dirReader,
             parseEntryPromise = new qq.Promise();
 
         if (entry.isFile) {
@@ -45,15 +45,15 @@ qq.DragAndDrop = function(o) {
             dirReader.readEntries(function(entries) {
                 var entriesLeft = entries.length;
 
-                for (i = 0; i < entries.length; i+=1) {
-                    traverseFileTree(entries[i]).done(function() {
+                qq.each(entries, function(idx, entry) {
+                    traverseFileTree(entry).done(function() {
                         entriesLeft-=1;
 
                         if (entriesLeft === 0) {
                             parseEntryPromise.success();
                         }
                     });
-                }
+                });
 
                 if (!entries.length) {
                     parseEntryPromise.success();
@@ -68,8 +68,7 @@ qq.DragAndDrop = function(o) {
     }
 
     function handleDataTransfer(dataTransfer) {
-        var i, items, entry,
-            pendingFolderPromises = [],
+        var pendingFolderPromises = [],
             handleDataTransferPromise = new qq.Promise();
 
         options.callbacks.processingDroppedFiles();
@@ -85,14 +84,13 @@ qq.DragAndDrop = function(o) {
             droppedFiles = [];
 
             if (qq.isFolderDropSupported(dataTransfer)) {
-                items = dataTransfer.items;
+                qq.each(dataTransfer.items, function(idx, item) {
+                    var entry = item.webkitGetAsEntry();
 
-                for (i = 0; i < items.length; i+=1) {
-                    entry = items[i].webkitGetAsEntry();
                     if (entry) {
                         //due to a bug in Chrome's File System API impl - #149735
                         if (entry.isFile) {
-                            droppedFiles.push(items[i].getAsFile());
+                            droppedFiles.push(item.getAsFile());
                         }
 
                         else {
@@ -104,7 +102,7 @@ qq.DragAndDrop = function(o) {
                             }));
                         }
                     }
-                }
+                });
             }
             else {
                 droppedFiles = dataTransfer.files;
