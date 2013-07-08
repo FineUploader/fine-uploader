@@ -1,0 +1,16 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+## Debugging Errors
+
+For debugging errors, FineUploader features a `debug` option
+
+1. Set the `debug` option of the FineUploader to true.
+2. Open the page where you have a FineUploader.
+3. Open developer console in your browser.
+4. Try to upload the file. You should see a server response.
+
+It should be `{"success":true}` for completed requests. If it's not,
+then you have a problem with your server-side script.
+{% endmarkdown %}
+{% endblock %}

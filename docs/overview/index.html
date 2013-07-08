@@ -1,0 +1,75 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+[![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
+Version: 3.7.0 (Scheduled: Early July 2013)
+[**Examples**](http://fineuploader.com/#demo) | [**Changelog**](http://blog.fineuploader.com/2013/05/fine-uploader-36.html)
+Fine Uploader aims to make file-uploading on the web possible in every browser and mobile device.
+It is **cross-browser**, **dependency-free**, and **100% Javascript**.
+{: .hero-unit}
+
+
+### FineUploader is simple
+
+You only need to include one JavaScript file. There are absolutely no other dependencies.
+```html
+{% if TAG is not sameas ''  %}
+<script src="fine-uploader-{{ TAG }}.css" type="text/javascript"></script>
+<script src="fine-uploader-{{ TAG }}.js" type="text/javascript"></script>
+{% else %}
+<script src="fine-uploader-{ VERSION }.css" type="text/javascript"></script>
+<script src="fine-uploader-{ VERSION }.js" type="text/javascript"></script>
+{% endif %}
+
+<!-- The element which will contain Fine Uploader -->
+<div id="fine-uploader"></div>
+
+<script>
+// Create a Fine Uploader instance after the page has loaded.
+window.onload = function () {
+    var uploader = new qq.FineUploader({
+        element: document.getElementById("fine-uploader"),
+        request: { endpoint: '/upload_bucket' }
+    });
+</script>
+```
+
+You're now ready to upload! Told you it was easy.
+
+### FineUploader is powerful
+
+All major browsers (including IE7 and above) and the most cutting-edge HTML5 features are supported. FineUploader is highly customizable too. Along with a pre-styled FineUploader mode, there is also a FineUploaderBasic mode which allow integrators to tweak and customize every aspect of their users' upload experience.
+
+### Interested?
+
+- [Dive in and download the latest release](http://fineuploader.com/downloads.html).
+- [Read the documentation](docs/index.html).
+- [Try out a demo](http://fineuploader.com/#demo).
+- [Look at server-side examples](https://github.com/Widen/fine-uploader-server).
+- [Get support and ask questions about Fine Uploader]({{ URL_ROOT }}/overview/support.html).
+- [Report bugs and discuss upcoming features](https://github.com/Widen/fine-uploader/issues).
+- [Read the changelog](http://blog.fineuploader.com/2013/05/fine-uploader-36.html).
+
+### Community
+
+To read about the latest features and tutorials on the [FineUploader blog](http://blog.fineuploader.com/). To stay up to date on the latest Fine Uploader releases, follow us on [Twitter](https://twitter.com/fineuploader) or [Facebook](https://www.facebook.com/fineuploader).
+
+Fine Uploader is available for use under the [GPL 3 Software License](https://www.gnu.org/licenses/gpl-3.0-standalone.html) or the [Widen Commercial License](http://fineuploader.com/licensing.html).
+
+*Fine Uploader is an open-source component of [Widen, Enterprises, Inc.](http://www.widen.com/)*
+
+### Contribute
+
+Got an issue with Fine Uploader? Or a feature you'd like to suggest? FineUploader's development takes place on [GitHub](https://github.com/Widen/fine-uploader), and we would love developers to contribute any improvements or bugfixes. Note that any pull requests **MUST** be against the "develop" branch! See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
+
+For more information check out our [development guidelines](development.html).
+
+Thanks to everybody who contributed, either by sending bug reports, pull requests, or purchasing a commercial license. The project wouldn't be possible without all this generous help. Thank you!
+
+### License ###
+This plugin is open sourced under GNU GPL v3 or you may purchase a Widen Commerical license to release you from the terms of
+GPL v3.  Please see the [downloads page](http://fineuploader.com/downloads.html) for details.  For open-source users (those
+comfortable with the GPL v3 license) please see the [developers](development.html) readme for information on building
+your own version-stamped copy of the library.
+{% endmarkdown %}
+{% endblock %}

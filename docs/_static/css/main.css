@@ -1,0 +1,15 @@
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+body { margin-top: 25px; }
+@media (max-width: 979px) { body { padding-top: 0px; }}
+pre {
+    overflow: -moz-scrollbars-vertical;
+    overflow: scroll;
+    word-wrap: normal !important;
+    white-space: pre !important;
+}
+.nav > .brand > img { margin-top: -13px; }
+.dropdown-menu { min-width: 220px; }
