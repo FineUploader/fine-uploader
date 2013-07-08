@@ -27,7 +27,7 @@ component, *NOT* the button element.  Your button element must be specified sepa
 **A:** There are two common causes.  One cause is triggering the "select files" dialog via javascript.  IE does not permit this
 and will throw a security error when Fine Uploader attempts to submit the underlying form.  Another cause is returning a
 response code that is not 200.  The error occurs when Fine Uploader attempts to parse the response in the hidden iframe.
-See the [Internet Explorer Limitations](user/limitations-ie.html) for more details.
+See the [Internet Explorer Limitations](integrating/limitations-ie.html) for more details.
 
 **Q:** Why can't I use a progress bar, drag and drop, multiple file selection, chunking, or auto-resume in some browsers?
 **A:** Some browsers (IE9 and older, along with Android 2.3.x and older) do not support the File API the `multiple` attribute on file input elements.
