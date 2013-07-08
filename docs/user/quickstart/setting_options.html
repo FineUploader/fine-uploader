@@ -1,0 +1,86 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+### Setting FineUploader Options
+
+At this point in the tutorial you should have an index.html page with a FineUploader instance. This section will go over setting some of the more common options of FineUploader.
+
+#### Required Options
+
+FineUploader comes with a wealth of options. The two most important ones are the endpoint and the element.
+
+```javascript
+options = {
+	request: { endpoint: '/uploads' }
+	element: document.getElementById("fine-uploader")
+}
+```
+
+_Note: if using the jQuery plugin, there is no need to set the element._
+
+#### Debug mode
+
+Set `debug: true` to enable debug mode. With this mode on, Fine Uploader will spit out log messages to the console. This allows you to diagnose any application errors.
+
+#### Auto Upload
+
+Setting `auto upload: true` will mean that Fine Uploader will automatically send files to the server as soon as they're dropped or added to the uploader. If you want to control how and when files are uploaded, then set this option to false.
+
+#### Retrying Uploads
+
+Networks can be unreliable, and if your upload fails, FineUpload offers the ability to retry. The `retry` option can be set to enable this:
+
+```javascript
+retry: {
+   enableAuto: true, // defaults to false
+   maxAutoAttempts: 5
+}
+```
+
+Now, user's have 5 attempts to retry their upload.
+
+#### Deleting Files
+
+If a user has uploaded a file, but realized it was a mistake before aborting, then FineUploder can also help them delete files. FineUploader supports deleting files via POST and across origins.
+
+You can use the `deleteFile` option properties to control this feature:
+
+```javascript
+deleteFile: {
+	enabled: true, // defaults to false
+	forceConfirm: true,
+	endpoint: '/uploads'
+}
+```
+
+A file is eligible for deletion only after it has been successfully uploaded. In FineUploader mode, if this feature is enabled, a customizable delete link will appear next to the file after it has successfully uploaded.
+
+Upon clicking the delete link, the `onSubmitDelete` callback is invoked, and a customizable confirmation dialog is presented to the user (if `forceConfirm` is set to `true`).
+
+In FineUploaderBasic mode, you can send a delete request via the `deleteFile` API method.
+
+#### Putting it together
+
+Now our FineUploader instance should look like this:
+
+```javascript
+var uploader = new qq.FineUploader({
+        element: document.getElementById('fine-uploader'),
+        request: {
+	        endpoint: '/uploads'
+        },
+        retry: {
+       enableAuto: true,
+       maxAutoAttempts: 5
+     },
+        deleteFile: {
+        enabled: true,
+        endpoint: '/uploads'
+    }
+});
+```
+
+
+[Next](setting_up_server.html), you'll learn to set up a simple server to handle uploads.
+{% endmarkdown %}
+{% endblock %}
