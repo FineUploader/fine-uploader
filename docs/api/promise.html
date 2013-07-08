@@ -1,7 +1,7 @@
 {% extends "_templates/base.html" %}
 {% block content %}
 {% markdown %}
-## Promises ##
+## Promises
 
 In some cases, Fine Uploader requires use of "promises", both internally and via the API.  Promises are helpful when
 dealing with asynchronous patterns.  If you are not familiar with this concept, simply "Google" it.  There are many documents
@@ -41,7 +41,8 @@ once the result has been updated on the promise instance, Fine Uploader will pro
 name supplied by the user.
 
 
-### `qq.Promise` API: ###
+### `qq.Promise` API: 
+
 <table class='table table-bordered table-striped'>
     <thead>
         <tr>
@@ -87,17 +88,19 @@ name supplied by the user.
 
 
 <br/>
-### Fine Uploader Supports ###
+### Fine Uploader Supports
 
-#### Callbacks ####
+#### Callbacks
 
 Promises are acceptable return values in the following [callbacks](callbacks.html):
-* onSubmit
-* onCancel
-* onResume
-* onValidateBatch
-* onValidate
-* onSubmitDelete
-* onPasteReceived
+
+* `onSubmit`
+* `onCancel`
+* `onResume`
+* `onValidateBatch`
+* `onValidate`
+* `onSubmitDelete`
+* `onPasteReceived`
+
 {% endmarkdown %}
 {% endblock %}

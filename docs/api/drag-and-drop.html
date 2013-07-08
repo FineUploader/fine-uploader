@@ -1,9 +1,9 @@
 {% extends "_templates/base.html" %}
 {% block content %}
 {% markdown %}
-## File Drag and Drop Module ##
+## File Drag and Drop Module
 
-#### Note: This module is aimed at FineUploaderBasic mode integrators only.  If you are running the library in FineUploader mode, have a look at the [dragAndDrop options]({{ URL_ROOT }}/integrating/options/options-fineuploader.html#draganddrop-option-properties) instead. ####
+#### Note: This module is aimed at FineUploaderBasic mode integrators only.  If you are running the library in FineUploader mode, have a look at the [dragAndDrop options]({{ URL_ROOT }}/integrating/options/options-fineuploader.html#draganddrop-option-properties) instead.
 
 If you are integrating Fine Uploader and utilizing FineUploaderBasic mode, you are likely building you own UI entirely.
 In case you want to support drag and drop of folders and files, you probably don't want to re-invent the wheel, since
@@ -11,9 +11,10 @@ Fine Uploader already has code to handle this in FineUploader mode.  Fine Upload
 a standalone module, so it can be easily integrated into your FineUploaderBasic mode app (or even any non-Fine Uploader app).
 This document will explain how to utilize this module.
 
-<br/>
-### Non-jQuery Example ###
+### Non-jQuery Example
+
 If you are not utilizing jQuery, you can use the plain javascript DnD module.  Here is a simple example:
+
 ```javascript
 var dragAndDropModule = new qq.DragAndDrop({
         dropZoneElements: [document.getElementById('myDropZone')],
@@ -39,8 +40,8 @@ var dragAndDropModule = new qq.DragAndDrop({
   });
 ```
 
-<br/>
-### jQuery Plug-in Wrapper Notes & Example ###
+## jQuery Plug-in Wrapper Notes & Example
+
 For jQuery users, a jQuery-wrapped DnD module is also available in the combined and minified Fine Uplpoader javascript file.
 This jQuery wrapper follows the same conventions as the jQuery plug-in that wraps the uploader library.  To read more
 about these conventions, please see the [Using jQuery plug-in]({{ URL_ROOT }}/integrating/modes/using-jquery-plugin.html) readme document.
@@ -50,6 +51,7 @@ There are a couple things to be aware of when using the DnD standalone module vi
 * The target of your plug-in instance takes the place of the `dropZoneElements` option.  Do not pass a `dropZoneElements` option, it will be ignored.
 
 Here is the above example rewritten using the jQuery plug-in wrappers:
+
 ```javascript
 $('#myDropZone').fineUploaderDnd({
     classes: {
@@ -72,8 +74,8 @@ $('#fineUploaderBasicContainer').fineUploader({
 });
 ```
 
-<br/>
-### Options ###
+### Options
+
 <table class='table table-bordered table-striped'>
     <thead>
         <tr>
@@ -106,7 +108,8 @@ $('#fineUploaderBasicContainer').fineUploader({
     </tbody>
 </table>
 
-#### `classes` option ###
+#### `classes` option
+
 <table class='table table-bordered table-striped'>
     <thead>
         <tr>
@@ -126,7 +129,8 @@ $('#fineUploaderBasicContainer').fineUploader({
     </tbody>
 </table>
 
-#### `callbacks` option ####
+#### `callbacks` option
+
 <table class='table table-bordered table-striped'>
     <thead>
         <tr>
@@ -161,8 +165,8 @@ $('#fineUploaderBasicContainer').fineUploader({
 </table>
 
 
-<br/>
-### API ###
+### API
+
 <table class='table table-bordered table-striped'>
     <thead>
         <tr>
