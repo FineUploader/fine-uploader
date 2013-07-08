@@ -11,17 +11,5 @@ pre {
     word-wrap: normal !important;
     white-space: pre !important;
 }
+.nav > .brand > img { margin-top: -13px; }
 .dropdown-menu { min-width: 220px; }
-
-
-
-
-
-
-
-
-
-
-
-
-
