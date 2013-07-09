@@ -357,7 +357,9 @@ module.exports = (grunt) ->
                     archive: './dist/<%= pkg.name %>-<%= pkg.version %>.zip'
                 files: [
                     {
-                        src: './dist/<%= pkg.name %>-<%= pkg.version %>/*'
+                        expand: true
+                        cwd: 'dist/'
+                        src: './<%= pkg.name %>-<%= pkg.version %>/*'
                     }
                 ]
             jquery:
@@ -365,7 +367,9 @@ module.exports = (grunt) ->
                     archive: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>.zip'
                 files: [
                     {
-                        src: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/*'
+                        expand: true
+                        cwd: 'dist/'
+                        src: './jquery.<%= pkg.name %>-<%= pkg.version %>/*'
                     }
                 ]
 
