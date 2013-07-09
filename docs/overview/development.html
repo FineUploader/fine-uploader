@@ -23,11 +23,12 @@ _FineUploader is continuously integrated with [Travis-CI](https://www.travis-ci.
 Oh, you think you can code? Great!
 
 If you are developing an open-source project and are comfortable with the GPL v3 license, you can build your own
-version-stamped copy of Fine Uploader's combined javascript/css files using the provided Makefile. To do this just
+version-stamped copy of Fine Uploader's combined javascript/css files using the provided Gruntfile. To do this just
 
 1. Clone the "develop" branch
-2. Run `make build`
-3. A release built from the latest source will be built in the `dist/` directory in the root source directory.
+2. Run `npm install` which will download all the required development dependencies
+3. `grunt build` will build the latest version from the source code.
+4. `grunt dist` will build from the latest source will be built in the `dist/` directory in the root source directory.
 
 To contribute to development [fork it](https://github.com/Widen/fine-uploader/fork), and make sure to submit any pull requests against the "develop" branch.  See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
 
