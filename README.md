@@ -9,7 +9,7 @@ Version: 3.7.0 (Released July 9, 2013)
 [**Examples**](http://fineuploader.com) |
 [**Support**](http://fineuploader.com/support.html) |
 [**Blog**](http://blog.fineuploader.com/) | 
-[**Changelog**](http://blog.fineuploader.com/2013/05/fine-uploader-36.html) |
+[**Changelog**](http://blog.fineuploader.com/2013/05/fine-uploader-36.html)
 
 ---
 
