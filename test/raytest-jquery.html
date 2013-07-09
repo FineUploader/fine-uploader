@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <title>Fine Uploader</title>
+        <meta charset="utf-8" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.1.0/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+        <link href="../client/fineuploader.css" rel="stylesheet" type="text/css"/>
+        <link href="styles.css" rel="stylesheet" type="text/css"/>
+        <script src="../client/js/util.js"></script>
+        <script src="../client/js/version.js"></script>
+        <script src="../client/js/features.js"></script>
+        <script src="../client/js/promise.js"></script>
+        <script src="../client/js/button.js"></script>
+        <script src="../client/js/upload-data.js"></script>
+        <script src="../client/js/ajax.requester.js"></script>
+        <script src="../client/js/deletefile.ajax.requester.js"></script>
+        <script src="../client/js/handler.base.js"></script>
+        <script src="../client/js/window.receive.message.js"></script>
+        <script src="../client/js/handler.form.js"></script>
+        <script src="../client/js/handler.xhr.js"></script>
+        <script src="../client/js/paste.js"></script>
+        <script src="../client/js/uploader.basic.js"></script>
+        <script src="../client/js/dnd.js"></script>
+        <script src="../client/js/uploader.js"></script>
+        <script src="../client/js/jquery-plugin.js"></script>
+        <script src="../client/js/jquery-dnd.js"></script>
+        <script src="../client/js/ui.handler.events.js"></script>
+        <script src="../client/js/ui.handler.click.drc.js"></script>
+        <script src="../client/js/ui.handler.edit.filename.js"></script>
+        <script src="../client/js/ui.handler.click.filename.js"></script>
+        <script src="../client/js/ui.handler.focusin.filenameinput.js"></script>
+        <script src="../client/js/ui.handler.focus.filenameinput.js"></script>
+        <script src="uploader-demo-jquery.js"></script>
+    </head>
+    <body>
+        <h1>Fine Uploader Demo</h1>
+
+        <img src="https://www.google.com/images/srpr/logo3w.png"/>
+
+        <div id="examples">
+            <div class="example">
+                <h3>Simple & Automatic</h3>
+                <p>
+                    This is the Fine Uploader with only required options set.  Note that, by default, you may also drag & drop
+                    files onto the button if you are using a browser that supports the multiple attribute on input elements, and
+                    the File and FormData objects, as well as the upload function on the XHR object.  This currently rules out
+                    at least IE 9 and earlier.
+                </p>
+                <ul id="basicUploadSuccessExample" class="unstyled"></ul>
+            </div>
+            <div class="example">
+                <h3>Manually Trigger Uploads</h3>
+                <p>
+                    The default behavior of Fine Uploader is to immediately attempt to upload files as they are selected.
+                    One option allows you to simply queue all files, and then start uploading at a later time by calling
+                    <code>uploadStoredFiles()</code> on your Fine Uploader instance.
+                </p>
+                <ul id="manualUploadModeExample" class="unstyled"></ul>
+                <span id="triggerUpload" class="btn btn-primary">Upload Queued Files</span>
+            </div>
+            <div class="example">
+                <h3>See server failure messages</h3>
+                <p>
+                    If your server returns a response that includes a reason property, such as <code>{"success": false, "reason": "unsupported file type"}</code>
+                    the error message is accessible in the UI by hovering over the failed upload item.
+                </p>
+                <ul id="basicUploadFailureExample" class="unstyled"></ul>
+            </div>
+            <div class="example">
+                <h3>Various Options</h3>
+                <p>
+                    There are various options available to you when using Fine Uploader.  In this example, I've used a
+                    small subset of these options to create an uploader with custom upload button text, restricted to one
+                    file upload/selection at once (may not select multiple files), restricted to <code>jpeg</code>, <code>jpg</code>, and <code>txt</code> files,
+                    and restricted to a max file size of 50 kb.
+                </p>
+                <ul id="uploadWithVariousOptionsExample" class="unstyled"></ul>
+            </div>
+            <div class="example">
+                <h3>FineUploaderBasic</h3>
+                <div id="fubExample"></div>
+                <div id="fubUploadButton" class="btn btn-primary"><div>Select Files</div></div>
+            </div>
+
+            <h4 class="endingRemark">Fine Uploader is currently an active project, and many improvements and adjustments are possible in the near future.  Please see the
+            <a href="https://github.com/Widen/fine-uploader">Github project page</a> for more details.
+            You may also examine the <a href="js/uploader-demo.js" class="decorate"><code>uploader-demo.js</code></a>
+            source file on this page.</h4>
+        </div>
+    </body>
+</html>
+

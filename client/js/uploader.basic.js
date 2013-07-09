@@ -14,7 +14,8 @@ qq.FineUploaderBasic = function(o) {
             forceMultipart: true,
             inputName: 'qqfile',
             uuidName: 'qquuid',
-            totalFileSizeName: 'qqtotalfilesize'
+            totalFileSizeName: 'qqtotalfilesize',
+            filenameParam: 'qqfilename'
         },
         validation: {
             allowedExtensions: [],
@@ -33,14 +34,14 @@ qq.FineUploaderBasic = function(o) {
             onUploadChunk: function(id, name, chunkData){},
             onResume: function(id, fileName, chunkData){},
             onProgress: function(id, name, loaded, total){},
-            onError: function(id, name, reason, maybeXhr) {},
+            onError: function(id, name, reason, maybeXhrOrXdr) {},
             onAutoRetry: function(id, name, attemptNumber) {},
             onManualRetry: function(id, name) {},
             onValidateBatch: function(fileOrBlobData) {},
             onValidate: function(fileOrBlobData) {},
             onSubmitDelete: function(id) {},
             onDelete: function(id){},
-            onDeleteComplete: function(id, xhr, isError){},
+            onDeleteComplete: function(id, xhrOrXdr, isError){},
             onPasteReceived: function(blob) {},
             onStatusChange: function(id, oldStatus, newStatus) {}
         },
@@ -72,8 +73,7 @@ qq.FineUploaderBasic = function(o) {
                 partByteOffset: 'qqpartbyteoffset',
                 chunkSize: 'qqchunksize',
                 totalFileSize: 'qqtotalfilesize',
-                totalParts: 'qqtotalparts',
-                filename: 'qqfilename'
+                totalParts: 'qqtotalparts'
             }
         },
         resume: {
@@ -85,7 +85,7 @@ qq.FineUploaderBasic = function(o) {
             }
         },
         formatFileName: function(fileOrBlobName) {
-            if (fileOrBlobName.length > 33) {
+            if (fileOrBlobName !== undefined && fileOrBlobName.length > 33) {
                 fileOrBlobName = fileOrBlobName.slice(0, 19) + '...' + fileOrBlobName.slice(-14);
             }
             return fileOrBlobName;
@@ -96,19 +96,18 @@ qq.FineUploaderBasic = function(o) {
         },
         deleteFile : {
             enabled: false,
+            method: "DELETE",
             endpoint: '/server/upload',
             customHeaders: {},
             params: {}
         },
         cors: {
             expected: false,
-            sendCredentials: false
+            sendCredentials: false,
+            allowXdr: false
         },
         blobs: {
-            defaultName: 'misc_data',
-            paramNames: {
-                name: 'qqblobname'
-            }
+            defaultName: 'misc_data'
         },
         paste: {
             targetElement: null,
@@ -199,14 +198,18 @@ qq.FineUploaderBasic.prototype = {
     getNetUploads: function() {
         return this._netUploaded;
     },
-    uploadStoredFiles: function(){
-        "use strict";
+    uploadStoredFiles: function() {
         var idToUpload;
 
-        while(this._storedIds.length) {
-            idToUpload = this._storedIds.shift();
-            this._filesInProgress.push(idToUpload);
-            this._handler.upload(idToUpload);
+        if (this._storedIds.length === 0) {
+            this._itemError('noFilesError');
+        }
+        else {
+            while (this._storedIds.length) {
+                idToUpload = this._storedIds.shift();
+                this._filesInProgress.push(idToUpload);
+                this._handler.upload(idToUpload);
+            }
         }
     },
     clearStoredFiles: function(){
@@ -328,6 +331,10 @@ qq.FineUploaderBasic.prototype = {
     getName: function(id) {
         return this._handler.getName(id);
     },
+    setName: function(id, newName) {
+        this._handler.setName(id, newName);
+        this._uploadData.nameChanged(id, newName);
+    },
     getFile: function(fileOrBlobId) {
         return this._handler.getFile(fileOrBlobId);
     },
@@ -413,6 +420,7 @@ qq.FineUploaderBasic.prototype = {
             customHeaders: this._options.request.customHeaders,
             inputName: this._options.request.inputName,
             uuidParamName: this._options.request.uuidName,
+            filenameParam: this._options.request.filenameParam,
             totalFileSizeParamName: this._options.request.totalFileSizeName,
             cors: this._options.cors,
             demoMode: this._options.demoMode,
@@ -478,7 +486,9 @@ qq.FineUploaderBasic.prototype = {
         var self = this;
 
         return new qq.DeleteFileAjaxRequestor({
+            method: this._options.deleteFile.method,
             maxConnections: this._options.maxConnections,
+            uuidParamName: this._options.request.uuidName,
             customHeaders: this._options.deleteFile.customHeaders,
             paramsStore: this._deleteFileParamsStore,
             endpointStore: this._deleteFileEndpointStore,
@@ -491,9 +501,9 @@ qq.FineUploaderBasic.prototype = {
                 self._onDelete(id);
                 self._options.callbacks.onDelete(id);
             },
-            onDeleteComplete: function(id, xhr, isError) {
-                self._onDeleteComplete(id, xhr, isError);
-                self._options.callbacks.onDeleteComplete(id, xhr, isError);
+            onDeleteComplete: function(id, xhrOrXdr, isError) {
+                self._onDeleteComplete(id, xhrOrXdr, isError);
+                self._options.callbacks.onDeleteComplete(id, xhrOrXdr, isError);
             }
 
         });
@@ -532,9 +542,13 @@ qq.FineUploaderBasic.prototype = {
                 return self.getSize(id);
             },
             onStatusChange: function(id, oldStatus, newStatus) {
+                self._onUploadStatusChange(id, oldStatus, newStatus);
                 self._options.callbacks.onStatusChange(id, oldStatus, newStatus);
             }
         });
+    },
+    _onUploadStatusChange: function(id, oldStatus, newStatus) {
+        //nothing to do in the basic uploader
     },
     _handlePasteSuccess: function(blob, extSuppliedName) {
         var extension = blob.type.split("/")[1],
@@ -577,20 +591,18 @@ qq.FineUploaderBasic.prototype = {
     },
     _onComplete: function(id, name, result, xhr) {
         if (!result.success) {
-            this._uploadData.setStatus(id, qq.status.UPLOAD_FAILED);
             this._netUploadedOrQueued--;
+            this._uploadData.setStatus(id, qq.status.UPLOAD_FAILED);
         }
         else {
-            this._uploadData.setStatus(id, qq.status.UPLOAD_SUCCESSFUL);
             this._netUploaded++;
+            this._uploadData.setStatus(id, qq.status.UPLOAD_SUCCESSFUL);
         }
 
         this._removeFromFilesInProgress(id);
         this._maybeParseAndSendUploadError(id, name, result, xhr);
     },
     _onCancel: function(id, name) {
-        this._uploadData.setStatus(id, qq.status.CANCELED);
-
         this._netUploadedOrQueued--;
 
         this._removeFromFilesInProgress(id);
@@ -601,10 +613,27 @@ qq.FineUploaderBasic.prototype = {
         if (!this._options.autoUpload && storedItemIndex >= 0) {
             this._storedIds.splice(storedItemIndex, 1);
         }
+
+        this._uploadData.setStatus(id, qq.status.CANCELED);
     },
     _isDeletePossible: function() {
-        return (this._options.deleteFile.enabled &&
-            (!this._options.cors.expected || qq.supportedFeatures.deleteFileCors));
+        if (!this._options.deleteFile.enabled) {
+            return false;
+        }
+
+        if (this._options.cors.expected) {
+            if (qq.supportedFeatures.deleteFileCorsXhr) {
+                return true;
+            }
+
+            if (qq.supportedFeatures.deleteFileCorsXdr && this._options.cors.allowXdr) {
+                return true;
+            }
+
+            return false;
+        }
+
+        return true;
     },
     _onSubmitDelete: function(id, onSuccessCallback) {
         if (this._isDeletePossible()) {
@@ -624,19 +653,27 @@ qq.FineUploaderBasic.prototype = {
     _onDelete: function(id) {
         this._uploadData.setStatus(id, qq.status.DELETING);
     },
-    _onDeleteComplete: function(id, xhr, isError) {
+    _onDeleteComplete: function(id, xhrOrXdr, isError) {
         var name = this._handler.getName(id);
 
         if (isError) {
             this._uploadData.setStatus(id, qq.status.DELETE_FAILED);
             this.log("Delete request for '" + name + "' has failed.", "error");
-            this._options.callbacks.onError(id, name, "Delete request failed with response code " + xhr.status, xhr);
+
+            // For error reporing, we only have accesss to the response status if this is not
+            // an `XDomainRequest`.
+            if (xhrOrXdr.withCredentials === undefined) {
+                this._options.callbacks.onError(id, name, "Delete request failed", xhrOrXdr);
+            }
+            else {
+                this._options.callbacks.onError(id, name, "Delete request failed with response code " + xhrOrXdr.status, xhrOrXdr);
+            }
         }
         else {
-            this._uploadData.setStatus(id, qq.status.DELETED);
             this._netUploadedOrQueued--;
             this._netUploaded--;
             this._handler.expunge(id);
+            this._uploadData.setStatus(id, qq.status.DELETED);
             this.log("Delete request for '" + name + "' has succeeded.");
         }
     },
@@ -695,7 +732,7 @@ qq.FineUploaderBasic.prototype = {
             }
 
             if (itemLimit > 0 && this._netUploadedOrQueued+1 > itemLimit) {
-                this._itemError("retryFailTooManyItems", "");
+                this._itemError("retryFailTooManyItems");
                 return false;
             }
 
@@ -755,8 +792,9 @@ qq.FineUploaderBasic.prototype = {
     _onSubmitCallbackSuccess: function(id, name) {
         this._uploadData.setStatus(id, qq.status.SUBMITTED);
 
-        this._onSubmit(id, name);
-        this._options.callbacks.onSubmitted(id, name);
+        this._onSubmit.apply(this, arguments);
+        this._onSubmitted.apply(this, arguments);
+        this._options.callbacks.onSubmitted.apply(this, arguments);
 
         if (this._options.autoUpload) {
             if (!this._handler.upload(id)) {
@@ -766,6 +804,9 @@ qq.FineUploaderBasic.prototype = {
         else {
             this._storeForLater(id);
         }
+    },
+    _onSubmitted: function(id) {
+        //nothing to do in the base uploader
     },
     _storeForLater: function(id) {
         this._storedIds.push(id);
@@ -786,7 +827,7 @@ qq.FineUploaderBasic.prototype = {
                 });
             }
             else {
-                this._itemError("noFilesError", "");
+                this._itemError("noFilesError");
             }
         }
         else {
@@ -875,10 +916,10 @@ qq.FineUploaderBasic.prototype = {
             this._uploadData.setStatus(id, qq.status.REJECTED);
         }
     },
-    _itemError: function(code, nameOrNames) {
+    _itemError: function(code, maybeNameOrNames) {
         var message = this._options.messages[code],
             allowedExtensions = [],
-            names = [].concat(nameOrNames),
+            names = [].concat(maybeNameOrNames),
             name = names[0],
             extensionsForMessage, placeholderMatch;
 

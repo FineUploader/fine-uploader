@@ -1,0 +1,32 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+### HTML5 Feature Support
+
+At this point, you should have a fully functional FineUploader instance and a working Node.js server for saving files to your local machine
+
+FineUploader contains first-class support for the latest HTML5 features including drag and drop, uploading via paste, upload chunking, and more. Of course, FineUploader will fall back to sane defaults (no Flash, Silverlight, or Java applets to worry about) which will work in any major browser.
+
+All the HTML5 features can be configured via the options object that is passed into the initial FineUploader instance.
+
+#### File Chunking
+File chunking is a feature made possible by the HTML5 File API. Chunking is currently possibly is Chrome, Firefox, Safari in iOS6 and OS X, and Internet Explorer 10. Chunking is required for the auto-retry and auto-resume features. Not much has to be changed in FineUploader to handle chunking, simply set the options:
+
+    chunking: {
+        enabled: true
+    }
+
+And you should be good to go.
+
+#### Drag and Drop
+
+Drag and drop is enabled by default in browsers that support it.
+
+#### Paste
+
+Pasting is enabled by default in supported browsers as well.
+
+
+Now that FineUploader is working with the most bleeding-edge web features, let's turn on the style. See the [Styling FineUploader](styling.html) section next.
+{% endmarkdown %}
+{% endblock %}

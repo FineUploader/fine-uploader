@@ -1,0 +1,23 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+## FineUploader mode ##
+
+FineUploader mode is the easiest way to get started with a dependency-free FineUploader. This mode provides a customizable UI, drag and drop support, progress bars, status messages, a file list with color-coded status indicators, and other UI niceties. Most developers will likely opt to use FineUploader mode.
+
+FineUploader mode is defined in the `qq.FineUploader` module in the code.  It inherits everything from [FineUploaderBasic](fineuploaderbasic.html).
+
+1. Download the latest released native javascript plug-in from the [Downloads](http://fineuploader.com/downloads.html) section.
+2. Read the [getting started for non-jQuery users]({{ URL_ROOT }}/integrating/quickstart).
+3. Read about the available [FineUploaderBasic mode options]({{ URL_ROOT }}/integrating/options/fineuploaderbasic.html).
+4. Study the available [FineUploader mode options]({{ URL_ROOT }}/integrating/options/fineuploader.html).
+5. Glance at this quick blurb on [overriding options]({{ URL_ROOT }}/integrating/options/overriding.html).
+6. Have a look at the available [API functions in FineUploaderBasic mode]({{ URL_ROOT }}/api/fineuploaderbasic.html).
+7. Check out the available [API functions in FineUploader mode]({{ URL_ROOT }}/api/fineuploader.html).
+8. Examine the [available callbacks]({{ URL_ROOT }}/api/callbacks.html).
+9. Have a look at the [Supported Feature Detection module]({{ URL_ROOT }}/api/feature-detection.html) if you'd like to be programmatically
+account for the differences in feature support between the various supported browsers.
+10. You might want to read up on [this short description]({{ URL_ROOT }}/styling.html) that mentions how you can override the default alert and confirm dialogs as well as adjust styling of Fine Uploader.
+11. Head on over to the [server-side readme]({{ URL_ROOT }}/integrating/server).
+{% endmarkdown %}
+{% endblock %}

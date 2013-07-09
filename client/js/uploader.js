@@ -38,7 +38,9 @@ qq.FineUploader = function(o){
             '<div class="qq-progress-bar"></div>' +
             '<span class="qq-upload-spinner"></span>' +
             '<span class="qq-upload-finished"></span>' +
+            (this._options.editFilename && this._options.editFilename.enabled ? '<span class="qq-edit-filename-icon"></span>' : '') +
             '<span class="qq-upload-file"></span>' +
+            (this._options.editFilename && this._options.editFilename.enabled ? '<input class="qq-edit-filename" tabindex="0" type="text">' : '') +
             '<span class="qq-upload-size"></span>' +
             '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
             '<a class="qq-upload-retry" href="#">{retryButtonText}</a>' +
@@ -61,12 +63,15 @@ qq.FineUploader = function(o){
             deleteButton: 'qq-upload-delete',
             retry: 'qq-upload-retry',
             statusText: 'qq-upload-status-text',
+            editFilenameInput: 'qq-edit-filename',
 
             success: 'qq-upload-success',
             fail: 'qq-upload-fail',
 
             successIcon: null,
             failIcon: null,
+            editNameIcon: 'qq-edit-filename-icon',
+            editable: 'qq-editable',
 
             dropProcessing: 'qq-drop-processing',
             dropProcessingSpinner: 'qq-drop-processing-spinner'
@@ -100,6 +105,9 @@ qq.FineUploader = function(o){
         paste: {
             promptForName: false,
             namePromptMessage: "Please name this image"
+        },
+        editFilename: {
+            enabled: false
         },
         showMessage: function(message){
             setTimeout(function() {
@@ -162,7 +170,17 @@ qq.FineUploader = function(o){
             this._button = this._createUploadButton(this._find(this._element, 'button'));
         }
 
-        this._bindCancelAndRetryEvents();
+        this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
+
+        // A better approach would be to check specifically for focusin event support by querying the DOM API,
+        // but the DOMFocusIn event is not exposed as a property, so we have to resort to UA string sniffing.
+        this._focusinEventSupported = !qq.firefox();
+
+        if (this._isEditFilenameEnabled()) {
+            this._filenameClickHandler = this._bindFilenameClickEvent();
+            this._filenameInputFocusInHandler = this._bindFilenameInputFocusInEvent();
+            this._filenameInputFocusHandler = this._bindFilenameInputFocusEvent();
+        }
 
         this._dnd = this._setupDragAndDrop();
 
@@ -206,7 +224,7 @@ qq.extend(qq.FineUploader.prototype, {
         if (!this._options.button) {
             this._button = this._createUploadButton(this._find(this._element, 'button'));
         }
-        this._bindCancelAndRetryEvents();
+
         this._dnd.dispose();
         this._dnd = this._setupDragAndDrop();
 
@@ -264,6 +282,116 @@ qq.extend(qq.FineUploader.prototype, {
             }
         });
     },
+    _bindDeleteRetryOrCancelClickEvent: function() {
+        var self = this;
+
+        return new qq.DeleteRetryOrCancelClickHandler({
+            listElement: this._listElement,
+            classes: this._classes,
+            log: function(message, lvl) {
+                self.log(message, lvl);
+            },
+            onDeleteFile: function(fileId) {
+                self.deleteFile(fileId);
+            },
+            onCancel: function(fileId) {
+                self.cancel(fileId);
+            },
+            onRetry: function(fileId) {
+                var item = self.getItemByFileId(fileId);
+
+                qq(item).removeClass(self._classes.retryable);
+                self.retry(fileId);
+            },
+            onGetName: function(fileId) {
+                return self.getName(fileId);
+            }
+        });
+    },
+    _isEditFilenameEnabled: function() {
+        return this._options.editFilename.enabled && !this._options.autoUpload;
+    },
+    _filenameEditHandler: function() {
+        var self = this;
+
+        return {
+            listElement: this._listElement,
+            classes: this._classes,
+            log: function(message, lvl) {
+                self.log(message, lvl);
+            },
+            onGetUploadStatus: function(fileId) {
+                return self.getUploads({id: fileId}).status;
+            },
+            onGetName: function(fileId) {
+                return self.getName(fileId);
+            },
+            onSetName: function(fileId, newName) {
+                var item = self.getItemByFileId(fileId),
+                    qqFilenameDisplay = qq(self._find(item, 'file')),
+                    formattedFilename = self._options.formatFileName(newName);
+
+                qqFilenameDisplay.setText(formattedFilename);
+                self.setName(fileId, newName);
+            },
+            onGetInput: function(item) {
+                return self._find(item, 'editFilenameInput');
+            },
+            onEditingStatusChange: function(fileId, isEditing) {
+                var item = self.getItemByFileId(fileId),
+                    qqInput = qq(self._find(item, 'editFilenameInput')),
+                    qqFilenameDisplay = qq(self._find(item, 'file')),
+                    qqEditFilenameIcon = qq(self._find(item, 'editNameIcon')),
+                    editableClass = self._classes.editable;
+
+                if (isEditing) {
+                    qqInput.addClass('qq-editing');
+
+                    qqFilenameDisplay.hide();
+                    qqEditFilenameIcon.removeClass(editableClass);
+                }
+                else {
+                    qqInput.removeClass('qq-editing');
+                    qqFilenameDisplay.css({display: ''});
+                    qqEditFilenameIcon.addClass(editableClass);
+                }
+
+                // Force IE8 and older to repaint
+                qq(item).addClass('qq-temp').removeClass('qq-temp');
+            }
+        };
+    },
+    _onUploadStatusChange: function(id, oldStatus, newStatus) {
+        if (this._isEditFilenameEnabled()) {
+            var item = this.getItemByFileId(id),
+                editableClass = this._classes.editable,
+                qqFilenameDisplay, qqEditFilenameIcon;
+
+            // Status for a file exists before it has been added to the DOM, so we must be careful here.
+            if (item && newStatus !== qq.status.SUBMITTED) {
+                qqFilenameDisplay = qq(this._find(item, 'file'));
+                qqEditFilenameIcon = qq(this._find(item, 'editNameIcon'));
+
+                qqFilenameDisplay.removeClass(editableClass);
+                qqEditFilenameIcon.removeClass(editableClass);
+            }
+        }
+    },
+    _bindFilenameInputFocusInEvent: function() {
+        var spec = qq.extend({}, this._filenameEditHandler());
+
+        return new qq.FilenameInputFocusInHandler(spec);
+    },
+    _bindFilenameInputFocusEvent: function() {
+        var spec = qq.extend({}, this._filenameEditHandler());
+
+        return new qq.FilenameInputFocusHandler(spec);
+    },
+    _bindFilenameClickEvent: function() {
+        var spec = qq.extend({}, this._filenameEditHandler());
+
+        return new qq.FilenameClickHandler(spec);
+    },
     _leaving_document_out: function(e){
         return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
             || (qq.firefox() && !e.relatedTarget); // null e.relatedTarget for Firefox
@@ -287,6 +415,24 @@ qq.extend(qq.FineUploader.prototype, {
     _onSubmit: function(id, name) {
         qq.FineUploaderBasic.prototype._onSubmit.apply(this, arguments);
         this._addToList(id, name);
+    },
+    // The file item has been added to the DOM.
+    _onSubmitted: function(id) {
+        // If the edit filename feature is enabled, mark the filename element as "editable" and the associated edit icon
+        if (this._isEditFilenameEnabled()) {
+            var item = this.getItemByFileId(id),
+                qqFilenameDisplay = qq(this._find(item, 'file')),
+                qqEditFilenameIcon = qq(this._find(item, 'editNameIcon')),
+                editableClass = this._classes.editable;
+
+            qqFilenameDisplay.addClass(editableClass);
+            qqEditFilenameIcon.addClass(editableClass);
+
+            // If the focusin event is not supported, we must add a focus handler to the newly create edit filename text input
+            if (!this._focusinEventSupported) {
+                this._filenameInputFocusHandler.addHandler(this._find(item, 'editFilenameInput'));
+            }
+        }
     },
     // Update the progress bar & percentage as the file is uploaded
     _onProgress: function(id, name, loaded, total){
@@ -513,38 +659,6 @@ qq.extend(qq.FineUploader.prototype, {
 
         qq(sizeEl).css({display: 'inline'});
         qq(sizeEl).setText(sizeForDisplay);
-    },
-    /**
-     * delegate click event for cancel & retry links
-     **/
-    _bindCancelAndRetryEvents: function(){
-        var self = this,
-            list = this._listElement;
-
-        this._disposeSupport.attach(list, 'click', function(e){
-            e = e || window.event;
-            var target = e.target || e.srcElement;
-
-            if (qq(target).hasClass(self._classes.cancel) || qq(target).hasClass(self._classes.retry) || qq(target).hasClass(self._classes.deleteButton)){
-                qq.preventDefault(e);
-
-                var item = target.parentNode;
-                while(item.qqFileId === undefined) {
-                    item = item.parentNode;
-                }
-
-                if (qq(target).hasClass(self._classes.deleteButton)) {
-                    self.deleteFile(item.qqFileId);
-                }
-                else if (qq(target).hasClass(self._classes.cancel)) {
-                    self.cancel(item.qqFileId);
-                }
-                else {
-                    qq(item).removeClass(self._classes.retryable);
-                    self.retry(item.qqFileId);
-                }
-            }
-        });
     },
     _formatProgress: function (uploadedSize, totalSize) {
         var message = this._options.text.formatProgress;

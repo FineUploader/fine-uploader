@@ -129,11 +129,23 @@
     //assuming we have already verified that this is a valid command, call the associated function in the underlying
     // Fine Uploader instance (passing along the arguments from the caller) and return the result of the call back to the caller
     delegateCommand = function(command) {
-        var xformedArgs = [], origArgs = Array.prototype.slice.call(arguments, 1);
+        var xformedArgs = [],
+            origArgs = Array.prototype.slice.call(arguments, 1),
+            retVal;
 
         transformVariables(origArgs, xformedArgs);
 
-        return uploader()[command].apply(uploader(), xformedArgs);
+        retVal = uploader()[command].apply(uploader(), xformedArgs);
+
+        // If the command is returning an `HTMLElement` or `HTMLDocument`, wrap it in a `jQuery` object
+        if(typeof retVal === "object"
+            && (retVal.nodeType === 1 || retVal.nodeType === 9)
+            && retVal.cloneNode) {
+
+            retVal = $(retVal);
+        }
+
+        return retVal;
     };
 
     $.fn.fineUploader = function(optionsOrCommand) {

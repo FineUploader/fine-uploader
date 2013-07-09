@@ -1,0 +1,26 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+## FineUploaderBasic mode
+
+FineUploaderBasic mode offers all the features of regular FineUploader mode, but rather than make assumptions about the UI, allows the developer to explicitly define which elements in the DOM FineUploader should act upon. This opens the door for finely tuned integration between FineUploader and your existing application. Choose this mode if you need very tight control over your uploader's UI.
+
+FineUploaderBasic mode is defined in the `qq.FineUploaderBasic` module in the code. This is the base module for Fine Uploader, and provides all functions that do not involve UI components.
+
+FineUploaderBasic has a couple more options that need to be set than regular FineUploader mode.
+
+### Getting started
+
+
+1. Download the latest released native javascript plug-in from the [Downloads](http://fineuploader.com/downloads.html) section.
+2. Read the [getting started for non-jQuery users]({{ URL_ROOT }}/integrating/quickstart).
+3. Read about the available [FineUploaderBasic mode options]({{ URL_ROOT }}/integrating/options/fineuploaderbasic.html).
+4. Glance at this quick blurb on [overriding options]({{ URL_ROOT }}/integrating/options/overriding.html).
+5. Have a look at the available [API functions in FineUploaderBasic mode]({{ URL_ROOT }}/api/fineuploaderbasic.html).
+6. Examine the [available callbacks]({{ URL_ROOT }}/api/callbacks.html).
+7. Have a look at the [drag and drop module documentation]({{ URL_ROOT }}/api/drag-and-drop.html) if you want to utilize Fine Uploader's file/folder drag & drop module.
+8. Have a look at the [Supported Feature Detection module]({{ URL_ROOT }}/api/feature-detection.html) if you'd like to be programmatically
+account for the differences in feature support between the various supported browsers.
+9. Head on over to the [server-side readme]({{ URL_ROOT }}/integrating/server).
+{% endmarkdown %}
+{% endblock %}

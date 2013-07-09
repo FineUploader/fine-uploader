@@ -1,0 +1,106 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+## Promises
+
+In some cases, Fine Uploader requires use of "promises", both internally and via the API.  Promises are helpful when
+dealing with asynchronous patterns.  If you are not familiar with this concept, simply "Google" it.  There are many documents
+that explain this concept, and it doesn't make sense to duplicate any of those explanations here.
+
+Fine Uploader's support for promises is encapsulated in the `qq.Promise` class.  I imagine that more public functions
+will be added to this class in the future, but, for now, it's quite simple.  I'll demonstrate a simple use of this promise
+implementation below.
+
+Suppose you are overriding a promissory function or callback.  For example, suppose you want to override the `showPrompt`
+option (function).  The default implementation of this function uses `window.prompt`, which isn't very stylish.  You may want
+to provide a more appropriate prompt dialog for your application.  Your implementation, using [bootbox](http://bootboxjs.com/)
+for your prompt dialog, might look something like this:
+
+```javascript
+showPrompt: function(message, defaultValue) {
+    var promise = new qq.Promise();
+
+    bootbox.prompt("Enter a value", "Cancel", "Confirm", function(result) {
+        if (result === null || qq.trimStr(result).length === 0) {
+            promise.failure("User cancelled prompt dialog or entered an empty string.");
+        }
+        else {
+            promise.success(result);
+        }
+    }, defaultValue);
+
+    return promise;
+}
+```
+
+The bootbox prompt dialog is not blocking, meaning the `showPrompt` call will return before the user has entered any
+information.  So, you must return a promise that will be updated with the user's response after it is submitted.  Fine
+Uploader will wait for a callback indicating either success or failure, and will then continue executing the original task
+based on this result.  One use of the `showPrompt` function is to grab a name, from the user, of a pasted image.  In this case
+once the result has been updated on the promise instance, Fine Uploader will proceed to upload the pasted image using the
+name supplied by the user.
+
+
+### `qq.Promise` API: 
+
+<table class='table table-bordered table-striped'>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Takes</th>
+            <th>Returns</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>then</td>
+            <td>(function)successCallback, (function)failureCallback</td>
+            <td>promise instance</td>
+            <td>Call this on a promise instance to register your callbacks for success and failure.  For each callback,
+            the value, if any, supplied by the creator of the promise will be passed into your callbacks.  If success or
+            failure has already ocurred before you register your callbacks, they will be called immediately after this
+            call has executed.  Each call to <code>then</code> registers an additional set of callbacks.</td>
+        </tr>
+        <tr>
+            <td>done</td>
+            <td>(function)callback</td>
+            <td>promise instance</td>
+            <td>Call this on a promise instance to register your callbacks for success OR failure.  This callback will be
+            invoked when the promise is fulfilled, regardless of the result.  Each call to <code>done</code> registers an
+            additional set of callbacks.</td>
+        </tr>
+        <tr>
+            <td>success</td>
+            <td>result</td>
+            <td>promise instance</td>
+            <td>Call this on a promise instance to indicate success.  The parameter value will depend on the situation.</td>
+        </tr>
+        <tr>
+            <td>failure</td>
+            <td>result</td>
+            <td>promise instance</td>
+            <td>Call this on a promise instance to indicate failure.  The parameter value will depend on the situation.
+            In most cases, I would imagine that this would be a simple explanation of the failure.</td>
+        </tr>
+    </tbody>
+</table>
+
+
+<br/>
+### Fine Uploader Supports
+
+#### Callbacks
+
+Promises are acceptable return values in the following [callbacks](callbacks.html):
+
+* `onSubmit`
+* `onCancel`
+* `onResume`
+* `onValidateBatch`
+* `onValidate`
+* `onSubmitDelete`
+* `onPasteReceived`
+
+{% endmarkdown %}
+{% endblock %}

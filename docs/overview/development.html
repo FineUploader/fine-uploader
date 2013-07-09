@@ -1,0 +1,52 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+## Development
+
+### Build status
+
+#### Selenium
+[![Selenium Test Status](https://saucelabs.com/buildstatus/feltnerm)](https://saucelabs.com/u/fineuploader)
+
+#### Travis
+
+**Master**:
+[![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=master)
+
+**Develop**:
+[![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=develop)
+
+_FineUploader is continuously integrated with [Travis-CI](https://www.travis-ci.org/)._
+
+### Coding
+
+Oh, you think you can code? Great!
+
+If you are developing an open-source project and are comfortable with the GPL v3 license, you can build your own
+version-stamped copy of Fine Uploader's combined javascript/css files using the provided Gruntfile. To do this just
+
+1. Clone the "develop" branch
+2. Run `npm install` which will download all the required development dependencies
+3. `grunt build` will build the latest version from the source code.
+4. `grunt dist` will build from the latest source will be built in the `dist/` directory in the root source directory.
+
+To contribute to development [fork it](https://github.com/Widen/fine-uploader/fork), and make sure to submit any pull requests against the "develop" branch.  See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
+
+Pull requests **MUST** be against the "develop" branch!
+
+### Testing
+
+If you're reading this, then good for you!
+
+You can run the test suite by forking or cloning the repo and running `grunt test` on your development machine.
+
+### Writing
+
+Like to write for people rather than computers?
+
+FineUploader could always use better documentation, examples, tutorials, and demos. Feel free to answer questions on the support forum, discuss issues on GitHub, write tutorials on your blog, posts screencasts on YouTube, … anything that can help the developers spend more time creating new features always helps!
+
+![Semver badge](http://calm-shore-6115.herokuapp.com/?label=semver&value=2.0.0&color=green)
+
+{% endmarkdown %}
+{% endblock %}

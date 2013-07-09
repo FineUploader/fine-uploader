@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fine Uploader</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--jQuery-->
+    <script src="/tests/vendor/jquery-1.10.0.min.js"></script>
+
+    <!--Fine Uploader sources-->
+    <link href="/fine-uploader/css/fineuploader.css">
+    <script src="/fine-uploader/js/fineuploader.js"></script>
+
+  </head>
+  <body>
+    <h1>Fine Uploader Integration Tests </h1>
+    <div id="test-info">
+      <h3>Simple and Automatic</h3>
+      <p>This is Fine Uploader with only the required options set. 
+        Note that by default, you may also drag & drop files onto Note
+        the button if you are using a browser that supports the  the
+        multiple attributes on input elements, and the File and  multiple
+        FormData objects, as well as the upload function on the  FormData
+        XHR object. This currently rules out at least IE9 and earlier. 
+      </p>
+    </div>
+    <div id="fixture"></div>
+
+    <hr>
+
+    <script src="/tests/specs/integration/simple.js" type="text/javascript">;</script>
+
+  </body>
+</html>

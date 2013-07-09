@@ -1,4 +1,4 @@
-qq.supportedFeatures = (function() {
+qq.supportedFeatures = (function () {
     var supportsUploading,
         supportsAjaxFileUploading,
         supportsFolderDrop,
@@ -6,6 +6,8 @@ qq.supportedFeatures = (function() {
         supportsResume,
         supportsUploadViaPaste,
         supportsUploadCors,
+        supportsDeleteFileXdr,
+        supportsDeleteFileCorsXhr,
         supportsDeleteFileCors;
 
 
@@ -18,11 +20,11 @@ qq.supportedFeatures = (function() {
             tempInput.type = 'file';
             qq(tempInput).hide();
 
-            if(tempInput.disabled) {
+            if (tempInput.disabled) {
                 supported = false;
             }
         }
-        catch(ex) {
+        catch (ex) {
             supported = false;
         }
 
@@ -41,6 +43,33 @@ qq.supportedFeatures = (function() {
             navigator.userAgent.match(/Chrome\/[1][4-9]|Chrome\/[2-9][0-9]/) !== undefined;
     }
 
+    //Ensure we can send cross-origin `XMLHttpRequest`s
+    function isCrossOriginXhrSupported() {
+        if (window.XMLHttpRequest) {
+            var xhr = new XMLHttpRequest();
+
+            //Commonly accepted test for XHR CORS support.
+            return xhr.withCredentials !== undefined;
+        }
+
+        return false;
+    }
+
+    //Test for (terrible) cross-origin ajax transport fallback for IE9 and IE8
+    function isXdrSupported() {
+        return window.XDomainRequest !== undefined;
+    }
+
+    // CORS Ajax requests are supported if it is either possible to send credentialed `XMLHttpRequest`s,
+    // or if `XDomainRequest` is an available alternative.
+    function isCrossOriginAjaxSupported() {
+        if (isCrossOriginXhrSupported()) {
+            return true;
+        }
+
+        return isXdrSupported();
+    }
+
 
     supportsUploading = testSupportsFileInputElement();
 
@@ -56,7 +85,11 @@ qq.supportedFeatures = (function() {
 
     supportsUploadCors = supportsUploading && (window.postMessage !== undefined || supportsAjaxFileUploading);
 
-    supportsDeleteFileCors = supportsAjaxFileUploading;
+    supportsDeleteFileCorsXhr = isCrossOriginXhrSupported();
+
+    supportsDeleteFileXdr = isXdrSupported();
+
+    supportsDeleteFileCors = isCrossOriginAjaxSupported();
 
 
     return {
@@ -72,6 +105,8 @@ qq.supportedFeatures = (function() {
         uploadViaPaste: supportsUploadViaPaste,
         progressBar: supportsAjaxFileUploading,
         uploadCors: supportsUploadCors,
+        deleteFileCorsXhr: supportsDeleteFileCorsXhr,
+        deleteFileCorsXdr: supportsDeleteFileXdr, //NOTE: will also return true in IE10, where XDR is also supported
         deleteFileCors: supportsDeleteFileCors,
         canDetermineSize: supportsAjaxFileUploading
     }

@@ -6,6 +6,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChanged, logCal
     var options = o,
         inputs = [],
         uuids = [],
+        newNames = [],
         detachLoadEvents = {},
         postMessageCallbackTimers = {},
         uploadComplete = uploadCompleteCallback,
@@ -191,6 +192,10 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChanged, logCal
 
         params[options.uuidParamName] = uuids[id];
 
+        if (newNames[id] !== undefined) {
+            params[options.filenameParam] = newNames[id];
+        }
+
         if (!options.paramsInBody) {
             url = qq.obj2url(params, endpoint);
         }
@@ -254,7 +259,10 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChanged, logCal
         getName: function(id) {
             /*jslint regexp: true*/
 
-            if (api.isValid(id)) {
+            if (newNames[id] !== undefined) {
+                return newNames[id];
+            }
+            else if (api.isValid(id)) {
                 // get input value and remove path to normalize
                 return inputs[id].value.replace(/.*(\/|\\)/, "");
             }
@@ -262,12 +270,16 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChanged, logCal
                 log(id + " is not a valid item ID.", "error");
             }
         },
+        setName: function(id, newName) {
+            newNames[id] = newName;
+        },
         isValid: function(id) {
             return inputs[id] !== undefined;
         },
         reset: function() {
             inputs = [];
             uuids = [];
+            newNames = [];
             detachLoadEvents = {};
             formHandlerInstanceId = qq.getUniqueId();
         },

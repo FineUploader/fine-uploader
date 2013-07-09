@@ -1,0 +1,55 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+## Documentation
+
+Welcome to FineUploader's documentation. This documentation is divided into different parts. It's recommended that you start at the [Users' guide](#users-guide) and afterwards head over to [Quickstart](#quickstart). If you’d rather dive into the internals of FineUploader, check out the [API documentation](#api-reference). Common server-side examples are found in the [server examples repository](#server-side).
+
+### User's Guide
+
+This area of the documentation is mostly prose and examples. It is meant to be human-readable and accessible to those looking to get started with FineUploader. For experts, or developers looking to view more technical documentation, refer to the [API docs](#api-reference).
+
+#### Quickstart
+
+1. [Getting Stared with FineUploader](integrating/quickstart/index.html)
+2. [Setting FineUploader options](integrating/quickstart/setting_options.html)
+3. [Setting up a simple server to handle uploads](integrating/quickstart/setting_up_server.html)
+
+#### Modes
+
+* [FineUploaderBasic](integrating/modes/fineuploaderbasic.html)
+* [FineUploader](integrating/modes/fineuploader.html)
+* [jQuery & FineUploaderBasic](integrating/modes/jquery-fineuploaderbasic.html)
+* [jQuery & FineUploader](integrating/modes/jquery-fineuploader.html)
+
+#### Options
+
+* [FineUploaderBasic](integrating/options/fineuploaderbasic.html)
+* [FineUploader](integrating/options/fineuploader.html)
+* [Styling Fine Uploader](integrating/styling.html)
+    * [Templates](integrating/styling.html#templates)
+    * [Classes](integrating/styling.html#classes)
+    * [Dialogs](integrating/styling.html#dialogs)
+
+#### Server-side
+
+* [Server-side guidelines](integrating/server/index.html)
+* [Server-side examples](https://github.com/Widen/fine-uploader-server)
+
+#### Browser Support
+
+* [IE Limitations](integrating/limitations-ie.html)
+
+### API Reference
+
+The API reference is primarily for experienced integrators who are looking for more advanced features and details about FineUploader. That being said, these docs should be viewed by all who are looking to use FineUploader as some of the information is integral.
+
+* [FineUploaderBasic mode](api/fineuploaderbasic.html)
+* [FineUploader mode](api/fineuploader.html)
+* [Drag and Drop standalone module](api/drag-and-drop.html)
+* [Callbacks](api/callbacks.html)
+* [Promises](api/promise.html)
+* [Utility functions](api/qquery.html)
+* [Feature Detection module](api/feature-detection.html)
+{% endmarkdown %}
+{% endblock %}

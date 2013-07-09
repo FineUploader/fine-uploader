@@ -1,0 +1,23 @@
+---
+language: node_js
+node_js:
+- '0.10'
+before_install:
+- sudo apt-get update -qq
+- npm install -g grunt-cli
+- git submodule update --init --recursive
+before_script:
+- grunt prepare
+- grunt build
+script:
+- grunt travis
+env:
+  global:
+  - secure: |-
+      gHDpZQb3YZtwxHnYCwP/mMeqNDU1OCptFtZ/2wfY/R81Of5JXnwO4nvk3ZT+
+      9TmUexNxC7pgM4sU5MPYBPVcUJ1jKXp/DifgFmLzdygMkMHkQNji0Ey53W/7
+      9Rs6+kIGSez+S5RbR9itYuZ3NTBM54o+YdUHhz7fERyOjHaCPvY=
+  - secure: |-
+      ItUbCE5lEEhfjbRw2xcG8F8L4T7JriFXCphlNV26ZzrRTGNGXKi2D7TDv2S5
+      rwbV6veaxef5UrKDyR5vbRuyXcKg7B05snD3jvKhp/Jwn3cU9NbddwFqffej
+      EFukvU9VidYA2iyLTB4UTVBh7AhZU05hLo5P4npKKcpObvSAL/8=

@@ -30,6 +30,14 @@ var qq = function(element) {
         },
 
         contains: function(descendant) {
+            // The [W3C spec](http://www.w3.org/TR/domcore/#dom-node-contains)
+            // says a `null` (or ostensibly `undefined`) parameter
+            // passed into `Node.contains` should result in a false return value.
+            // IE7 throws an exception if the parameter is `undefined` though.
+            if (!descendant) {
+                return false;
+            }
+
             // compareposition returns false in this case
             if (element === descendant) {
                 return true;
@@ -178,6 +186,21 @@ qq.trimStr = function(string) {
     }
 
     return string.replace(/^\s+|\s+$/g,'');
+};
+
+
+// Returns a string, swapping argument values with the associated occurrence of {} in the passed string.
+qq.format = function(str) {
+    "use strict";
+
+    var args =  Array.prototype.slice.call(arguments, 1),
+        newStr = str;
+
+    qq.each(args, function(idx, val) {
+        newStr = newStr.replace(/{}/, val);
+    });
+
+    return newStr;
 };
 
 qq.isFile = function(maybeFile) {

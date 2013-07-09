@@ -1,0 +1,89 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    <li><a class="brand" href="http://fineuploader.com/"><img style="margin-top: -13px; height: 24px" src="http://fineuploader.com/img/FineUploader_logo.png"></img></a></li>
+                    <li><a href="{{ URL_ROOT }}">Home</li></a>
+                    <li><a href="http://blog.fineuploader.com/">Blog</li></a>
+                    <li><a href="{{ URL_ROOT }}/overview">Overview</li></a>
+                    <li class="divider-vertical"></li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Integrating <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <ul><a href="{{ URL_ROOT }}/integrating/quickstart/">Quickstart</a></ul>
+                            <li class="divider"></li>
+                            <ul><b>Modes</b></ul>
+                            <ul><a href="{{ URL_ROOT }}/integrating/modes/fineuploader.html">FineUploader</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/integrating/modes/fineuploaderbasic.html">FineUploader Basic</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/integrating/modes/jquery-fineuploader.html">jQuery FineUploader</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/integrating/modes/jquery-fineuploaderbasic.html">jQuery FineUploader Basic</a></ul>
+                            <li class="divider"></li>
+                            <ul><b>Options</b></ul>
+                            <ul><a href="{{ URL_ROOT }}/integrating/options/fineuploader.html">FineUploader</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/integrating/options/fineuploaderbasic.html">FineUploader Basic</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/integrating/options/overriding.html">Overriding</a></ul>
+                            <li class="divider"></li>
+                            <ul><b>Extras</b></ul>
+                            <ul><a href="{{ URL_ROOT }}/integrating/styling.html">Styling</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/integrating/server">Server</a></ul>
+                        </ul>
+                    </li>
+                    
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">API <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <ul><a href="{{ URL_ROOT }}/api/callbacks.html">Callbacks</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/api/drag-and-drop.html">Drag 'n' Drop</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/api/feature-detection.html">Feature Detection</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/api/fineuploader.html">FineUploader</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/api/fineuploaderbasic.html">FineUploader Basic</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/api/promise.html">Promises</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/api/qquery.html">QQuery</a></ul>
+                        </ul>
+                    </li>
+
+                    <li><a href="{{ URL_ROOT }}/overview/support.html">Support</li></a>
+
+                    {% set version_bar = [
+                        ('/branch/master', 'master', 'Newest'),
+                        ('/branch/develop', 'develop', 'In Progress'),
+                        ] -%}
+
+                    {# {% set active_page = active_page|default('{{ GIT_REF_VAL }}') -%} #}
+                    {% set active_page = 'master' %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version <b class="caret"></b>
+                        <ul class="dropdown-menu">
+                            {% for href, id, caption in version_bar %}
+                                <li{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <!--
+                    <li class="dropdown pull-right">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Current {{ GIT_REF_TYPE|capitalize }}: {{ GIT_REF_VAL }} <b class="caret"></b>
+                        <ul class="dropdown-menu">
+                        {% for ref_folder in ALL_GIT_REFS|dictsort %}
+                            <li><a href="/{{ ref_folder[0] }}">{{ ref_folder[0]|title }}</a></li>
+                            {% for ref in ref_folder[1].refs %}
+                                <ul><a href="/{{ ref_folder[0] }}/{{ ref.ref_val|replace("_", "/") }}">{{ ref.ref_val|title }}</a></ul>
+                            {% endfor %}
+                        {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+                -->
+            </div><!--/.nav-collapse -->
+        </div>
+    </div>
+</div>
+
+

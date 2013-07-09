@@ -1,0 +1,83 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+### Getting Started with FineUploader
+
+This tutorial will serve as a walkthrough for getting starting with FineUploader. It is geared towards those who have minimal experience with Javascript, server-side concepts, or the web.
+
+#### Download
+
+You can get FineUploader in the [downloads](http://fineuploader.com/downloads.html) section.
+
+#### Enabling FineUploader on your site
+
+Once you have the FineUploader source files, you can being to set up your website to use FineUploader. At its most basic, FineUploader requires one `div` tag with which to place its UI. In your main project root, create an index.html page with the following contents:
+
+```html
+<html>
+  <head>
+      <!-- FineUploader CSS -->
+      <link href="fineuploader-3.6.3.min.css" type="text/css">
+  </head>
+  <body>
+    <div id="fine-uploader">
+        <noscript>
+            <p>Please enable JavaScript to use Fine Uploader.</p>
+            <!-- or put a simple form for upload here -->
+        </noscript>
+    </div>
+  </body>
+</html>
+```
+
+Fine Uploader does NOT depend on jQuery, and you don't have to use the jQuery plug-in if you don't want to. The same features are available without the jQuery plug-in.
+
+To proceed, choose whether you would like to use the [vanilla version](#without-jquery) or the [jQuery version](#with-jquery).
+
+##### without jQuery ...
+
+To use Fine Uploader with "plain 'ole" Javascript, include the uploader Javascript file and, optionally, the css file along with any images provided into your page. If you are only making use of FineUploaderBasic, you can omit the css and image(s) file(s).
+
+Initialize uploader when the DOM is ready. Change the endpoint option to the endpoint specified by your backend server. A walkthrough on setting up your first server is on the next part of this guide. For more detailed guidelines on how to set up your upload server, check the [server-side docs]({{ URL_ROOT }}/integrating/server).
+
+```html
+<script src="fineuploader.js" type="text/javascript"></script>
+<script>
+window.onload = function () {
+	var uploader = new qq.FineUploader({
+
+	        // pass the DOM node (ex. $(selector)[0] for jQuery users)
+	        element: document.getElementById('fine-uploader'),
+
+	        request: {
+	              // path to server-side upload URI
+		        endpoint: '/uploads'
+	        }
+	});
+});
+</script>
+```
+
+##### with jQuery …
+
+A jQuery plug-in exists that wraps the native Fine Uploader code.  If you would like to reap all of the benefits that a jQuery plug-in offers, such as use of jQuery Events, specifying elements using the jQuery object/jQuery selectors, easy integration into your otherwise jQuery project: look no further!
+
+To use the jQuery plug-in, ensure you include the proper Fine Uploader source files on your page…
+
+```html
+<script src="jquery.fineuploader.min.js" type="text/javascript"></script>
+```
+… and instantiate it like so:
+
+```html
+<script>
+$('#fineUploaderElementId').fineUploader({
+	request: {
+		endpoint: '/uploads'
+	}
+});
+</script>
+```
+[Next](setting_options.html), let's check out some of FineUploader's options.
+{% endmarkdown %}
+{% endblock %}
