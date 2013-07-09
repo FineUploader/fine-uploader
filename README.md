@@ -2,7 +2,7 @@
 
 Version: 3.7.0 (Released July 9, 2013)
 
-[![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=develop) | [![Selenium Test Status](https://saucelabs.com/buildstatus/feltnerm)](https://saucelabs.com/u/fineuploader) | ![Semver badge](http://calm-shore-6115.herokuapp.com/?label=semver&value=2.0.0&color=green)
+[![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=master) | [![Selenium Test Status](https://saucelabs.com/buildstatus/feltnerm)](https://saucelabs.com/u/fineuploader) | ![Semver badge](http://calm-shore-6115.herokuapp.com/?label=semver&value=2.0.0&color=green)
 
 [**Download**](http://fineuploader.com/downloads.html) |
 [**Documentation**](http://docs.fineuploader.com) |
