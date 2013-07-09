@@ -2,7 +2,7 @@
 {% block content %}
 {% markdown %}
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
-Version: 3.7.0 (Scheduled: Early July 2013)
+Version: {{ PKG['version'] }}
 [**Examples**](http://fineuploader.com/#demo) | [**Changelog**](http://blog.fineuploader.com/2013/05/fine-uploader-36.html)
 Fine Uploader aims to make file-uploading on the web possible in every browser and mobile device.
 It is **cross-browser**, **dependency-free**, and **100% Javascript**.
@@ -13,13 +13,8 @@ It is **cross-browser**, **dependency-free**, and **100% Javascript**.
 
 You only need to include one JavaScript file. There are absolutely no other dependencies.
 ```html
-{% if TAG is not sameas ''  %}
-<link href="fineuploader-{{ TAG }}.css" rel="stylesheet" type="text/css"/>
-<script src="fineuploader-{{ TAG }}.js" type="text/javascript"></script>
-{% else %}
-<link href="fineuploader-{ VERSION }.css" rel="stylesheet" type="text/css"/>
-<script src="fineuploader-{ VERSION }.js" type="text/javascript"></script>
-{% endif %}
+<link href="fineuploader-{{ PKG['version']|e }}.css" rel="stylesheet" type="text/css"/>
+<script src="fineuploader-{{ PKG['version']|e }}.js" type="text/javascript"></script>
 
 <!-- The element which will contain Fine Uploader -->
 <div id="fine-uploader"></div>
