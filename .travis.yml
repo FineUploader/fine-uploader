@@ -11,6 +11,12 @@ before_script:
 - grunt build
 script:
 - grunt travis
+branches:
+    only:
+        - master
+        - develop
+        - /^feature*$/
+        - /^hotfix*$/
 env:
   global:
   - secure: |-
