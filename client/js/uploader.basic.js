@@ -262,22 +262,20 @@ qq.FineUploaderBasic.prototype = {
     },
     addFiles: function(filesOrInputs, params, endpoint) {
         var self = this,
-            verifiedFilesOrInputs = [],
-            fileOrInputIndex, fileOrInput, fileIndex;
+            verifiedFilesOrInputs = [];
 
         if (filesOrInputs) {
             if (!qq.isFileList(filesOrInputs)) {
                 filesOrInputs = [].concat(filesOrInputs);
             }
 
-            for (fileOrInputIndex = 0; fileOrInputIndex < filesOrInputs.length; fileOrInputIndex+=1) {
-                fileOrInput = filesOrInputs[fileOrInputIndex];
-
+            qq.each(filesOrInputs, function(idx, fileOrInput) {
                 if (qq.isFileOrInput(fileOrInput)) {
                     if (qq.isInput(fileOrInput) && qq.supportedFeatures.ajaxUploading) {
-                        for (fileIndex = 0; fileIndex < fileOrInput.files.length; fileIndex++) {
-                            verifiedFilesOrInputs.push(fileOrInput.files[fileIndex]);
-                        }
+
+                        qq.each(fileOrInput.files, function(idx, file) {
+                            verifiedFilesOrInputs.push(file);
+                        });
                     }
                     else {
                         verifiedFilesOrInputs.push(fileOrInput);
@@ -286,7 +284,7 @@ qq.FineUploaderBasic.prototype = {
                 else {
                     self.log(fileOrInput + ' is not a File or INPUT element!  Ignoring!', 'warn');
                 }
-            }
+            });
 
             this.log('Received ' + verifiedFilesOrInputs.length + ' files or inputs.');
             this._prepareItemsForUpload(verifiedFilesOrInputs, params, endpoint);
@@ -1005,16 +1003,11 @@ qq.FineUploaderBasic.prototype = {
             }
         };
 
-        for (var prop in this._options.callbacks) {
-            (function() {
-                var callbackName, callbackFunc;
-                callbackName = prop;
-                callbackFunc = self._options.callbacks[callbackName];
-                self._options.callbacks[callbackName] = function() {
-                    return safeCallback(callbackName, callbackFunc, arguments);
-                };
-            }());
-        }
+        qq.each(this._options.callbacks, function(callbackName, callbackFunc) {
+            self._options.callbacks[callbackName] = function() {
+                return safeCallback(callbackName, callbackFunc, arguments);
+            };
+        });
     },
     _parseFileOrBlobDataName: function(fileOrBlobData) {
         var name;
