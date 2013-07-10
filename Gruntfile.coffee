@@ -25,9 +25,13 @@ module.exports = (grunt) ->
         './client/js/button.js',
         './client/js/paste.js',
         './client/js/upload-data.js',
+        './client/js/uploader.basic.api.js',
         './client/js/uploader.basic.js',
+        './client/js/uploader.basic.s3.js',
         './client/js/dnd.js',
+        './client/js/uploader.api.js',
         './client/js/uploader.js',
+        './client/js/uploader.s3.js',
         './client/js/ajax.requester.js',
         './client/js/deletefile.ajax.requester.js',
         './client/js/window.receive.message.js',
@@ -197,13 +201,9 @@ module.exports = (grunt) ->
         # --------
         concat:
             core:
-                options:
-                    separator: ';'
                 src: core
                 dest: './build/<%= pkg.name %>.js'
             jquery:
-                options:
-                    separator: ';'
                 src: jquery
                 dest: './build/jquery.<%= pkg.name %>.js'
             css:
@@ -443,7 +443,9 @@ module.exports = (grunt) ->
                 files: ['./client/js/*.js']
                 tasks: [
                     'build'
-                    'test'
+                    'copy:test'
+                    'connect:test_server'
+                    'mocha'
                 ]
             test:
                 files: ['./test/unit/*.js']
@@ -453,7 +455,11 @@ module.exports = (grunt) ->
                 ]
             grunt:
                 files: ['./Gruntfile.coffee']
-                tasks: ['coffeelint:grunt']
+                tasks: [
+                    'coffeelint:grunt'
+                    'build'
+                    'test'
+                ]
 
         # Increment version with semver
         # ----------
