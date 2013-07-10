@@ -11,8 +11,6 @@ qq.FineUploaderS3 = function(o) {
 
     // Replace any default options with user defined ones
     qq.extend(this._options, o, true);
-
-    console.log(this._options);
 };
 
 // Inherit the API methods from FineUploaderBasicS3
