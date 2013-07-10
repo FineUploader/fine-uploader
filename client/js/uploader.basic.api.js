@@ -265,77 +265,84 @@ qq.basePrivateApi = {
         this._disposeSupport.addDisposer(function() { button.dispose(); });
         return button;
     },
-    _createUploadHandler: function(){
-        var self = this;
+    _createUploadHandler: function(additionalOptions, handlerType) {
+        var self = this,
+            options = {
+                debug: this._options.debug,
+                forceMultipart: this._options.request.forceMultipart,
+                maxConnections: this._options.maxConnections,
+                customHeaders: this._options.request.customHeaders,
+                inputName: this._options.request.inputName,
+                uuidParamName: this._options.request.uuidName,
+                filenameParam: this._options.request.filenameParam,
+                totalFileSizeParamName: this._options.request.totalFileSizeName,
+                cors: this._options.cors,
+                demoMode: this._options.demoMode,
+                paramsInBody: this._options.request.paramsInBody,
+                paramsStore: this._paramsStore,
+                endpointStore: this._endpointStore,
+                chunking: this._options.chunking,
+                resume: this._options.resume,
+                blobs: this._options.blobs,
+                log: function(str, level) {
+                    self.log(str, level);
+                },
+                onProgress: function(id, name, loaded, total){
+                    self._onProgress(id, name, loaded, total);
+                    self._options.callbacks.onProgress(id, name, loaded, total);
+                },
+                onComplete: function(id, name, result, xhr){
+                    self._onComplete(id, name, result, xhr);
+                    self._options.callbacks.onComplete(id, name, result, xhr);
+                },
+                onCancel: function(id, name) {
+                    return self._handleCheckedCallback({
+                        name: "onCancel",
+                        callback: qq.bind(self._options.callbacks.onCancel, self, id, name),
+                        onSuccess: qq.bind(self._onCancel, self, id, name),
+                        identifier: id
+                    });
+                },
+                onUpload: function(id, name){
+                    self._onUpload(id, name);
+                    self._options.callbacks.onUpload(id, name);
+                },
+                onUploadChunk: function(id, name, chunkData){
+                    self._options.callbacks.onUploadChunk(id, name, chunkData);
+                },
+                onResume: function(id, name, chunkData) {
+                    return self._options.callbacks.onResume(id, name, chunkData);
+                },
+                onAutoRetry: function(id, name, responseJSON, xhr) {
+                    self._preventRetries[id] = responseJSON[self._options.retry.preventRetryResponseProperty];
 
-        return new qq.UploadHandler({
-            debug: this._options.debug,
-            forceMultipart: this._options.request.forceMultipart,
-            maxConnections: this._options.maxConnections,
-            customHeaders: this._options.request.customHeaders,
-            inputName: this._options.request.inputName,
-            uuidParamName: this._options.request.uuidName,
-            filenameParam: this._options.request.filenameParam,
-            totalFileSizeParamName: this._options.request.totalFileSizeName,
-            cors: this._options.cors,
-            demoMode: this._options.demoMode,
-            paramsInBody: this._options.request.paramsInBody,
-            paramsStore: this._paramsStore,
-            endpointStore: this._endpointStore,
-            chunking: this._options.chunking,
-            resume: this._options.resume,
-            blobs: this._options.blobs,
-            log: function(str, level) {
-                self.log(str, level);
-            },
-            onProgress: function(id, name, loaded, total){
-                self._onProgress(id, name, loaded, total);
-                self._options.callbacks.onProgress(id, name, loaded, total);
-            },
-            onComplete: function(id, name, result, xhr){
-                self._onComplete(id, name, result, xhr);
-                self._options.callbacks.onComplete(id, name, result, xhr);
-            },
-            onCancel: function(id, name) {
-                return self._handleCheckedCallback({
-                    name: "onCancel",
-                    callback: qq.bind(self._options.callbacks.onCancel, self, id, name),
-                    onSuccess: qq.bind(self._onCancel, self, id, name),
-                    identifier: id
-                });
-            },
-            onUpload: function(id, name){
-                self._onUpload(id, name);
-                self._options.callbacks.onUpload(id, name);
-            },
-            onUploadChunk: function(id, name, chunkData){
-                self._options.callbacks.onUploadChunk(id, name, chunkData);
-            },
-            onResume: function(id, name, chunkData) {
-                return self._options.callbacks.onResume(id, name, chunkData);
-            },
-            onAutoRetry: function(id, name, responseJSON, xhr) {
-                self._preventRetries[id] = responseJSON[self._options.retry.preventRetryResponseProperty];
+                    if (self._shouldAutoRetry(id, name, responseJSON)) {
+                        self._maybeParseAndSendUploadError(id, name, responseJSON, xhr);
+                        self._options.callbacks.onAutoRetry(id, name, self._autoRetries[id] + 1);
+                        self._onBeforeAutoRetry(id, name);
 
-                if (self._shouldAutoRetry(id, name, responseJSON)) {
-                    self._maybeParseAndSendUploadError(id, name, responseJSON, xhr);
-                    self._options.callbacks.onAutoRetry(id, name, self._autoRetries[id] + 1);
-                    self._onBeforeAutoRetry(id, name);
+                        self._retryTimeouts[id] = setTimeout(function() {
+                            self._onAutoRetry(id, name, responseJSON)
+                        }, self._options.retry.autoAttemptDelay * 1000);
 
-                    self._retryTimeouts[id] = setTimeout(function() {
-                        self._onAutoRetry(id, name, responseJSON)
-                    }, self._options.retry.autoAttemptDelay * 1000);
-
-                    return true;
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                },
+                onUuidChanged: function(id, newUuid) {
+                    self._uploadData.uuidChanged(id, newUuid);
                 }
-                else {
-                    return false;
-                }
-            },
-            onUuidChanged: function(id, newUuid) {
-                self._uploadData.uuidChanged(id, newUuid);
-            }
-        });
+            };
+
+        if (additionalOptions) {
+            qq.each(additionalOptions, function(key, val) {
+                options[key] = val;
+            });
+        }
+
+        return new qq.UploadHandler(options, handlerType);
     },
     _createDeleteHandler: function() {
         var self = this;

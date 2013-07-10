@@ -1,8 +1,11 @@
-/**
- * Class for uploading files, uploading itself is handled by child classes
- */
 /*globals qq*/
-qq.UploadHandler = function(o) {
+/**
+ * Base upload handler module.  Delegates to more specific handlers.
+ *
+ * @param o Options.  Passed along to the specific handler submodule as well.
+ * @param specialHandlerType [optional] A name that describes the handler type.  The convention is: qq.UploadHandler{specialHandlerType}[Xhr|Form].
+ */
+qq.UploadHandler = function(o, specialHandlerType) {
     "use strict";
 
     var queue = [],
@@ -75,17 +78,22 @@ qq.UploadHandler = function(o) {
         }
     };
 
-    if (qq.supportedFeatures.ajaxUploading) {
-        handlerImpl = new qq.UploadHandlerXhr(options, dequeue, options.onUuidChanged, log);
-    }
-    else {
-        handlerImpl = new qq.UploadHandlerForm(options, dequeue, options.onUuidChanged, log);
-    }
-
     function cancelSuccess(id) {
         log('Cancelling ' + id);
         options.paramsStore.remove(id);
         dequeue(id);
+    }
+
+    function determineHandlerImpl() {
+        var handlerType = specialHandlerType || "",
+            handlerModuleType = "UploadHandler" + handlerType,
+            handlerModuleSubtype = "Form";
+
+        if (qq.supportedFeatures.ajaxUploading) {
+            handlerModuleSubtype = "Xhr";
+        }
+
+        handlerImpl = new qq[handlerModuleType + handlerModuleSubtype](options, dequeue, options.onUuidChanged, log);
     }
 
 
@@ -198,6 +206,8 @@ qq.UploadHandler = function(o) {
             return [];
         }
     };
+
+    determineHandlerImpl();
 
     return api;
 };
