@@ -37,20 +37,24 @@ qq.extend(qq.FineUploaderBasicS3.prototype, {
     },
     _onUpload: function(id, name) {
         var promise = new qq.Promise(),
-            keynameLogic = this._s3BasicOptions.s3.keynameLogic;
+            keynameLogic = this._s3BasicOptions.s3.keynameLogic,
+            superFunc = qq.bind(qq.FineUploaderBasic.prototype._onUpload, this, id, name);
 
-        if (keynameLogic === 'uuid') {
-            promise.success(this.getUuid(id));
-        }
-        else if (keynameLogic === 'filename') {
-            promise.success(name);
-        }
-        else if (keynameLogic === 'dynamic') {
-            //TODO ajax call to retrieve key name from server
-        }
-        else {
-            this.log(keynameLogic + " is not a valid value for s3.keynameLogic!", "error");
-            promise.failure();
+        switch(keynameLogic) {
+            case 'uuid':
+                superFunc();
+                promise.success(this.getUuid(id));
+                break;
+            case 'filename':
+                superFunc();
+                promise.success(name);
+                break;
+            case 'dynamic':
+                //TODO ajax call to retrieve key name from server
+                break;
+            default:
+                this.log(keynameLogic + " is not a valid value for s3.keynameLogic!", "error");
+                promise.failure();
         }
 
         return promise;
