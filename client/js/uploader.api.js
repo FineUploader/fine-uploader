@@ -316,9 +316,11 @@ qq.uiPrivateApi = {
         }
     },
     _onUpload: function(id, name){
-        qq[this._parent].prototype._onUpload.apply(this, arguments);
+        var parentRetVal = qq[this._parent].prototype._onUpload.apply(this, arguments);
 
         this._showSpinner(id);
+
+        return parentRetVal;
     },
     _onCancel: function(id, name) {
         qq[this._parent].prototype._onCancel.apply(this, arguments);

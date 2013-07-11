@@ -303,8 +303,24 @@ qq.basePrivateApi = {
                         identifier: id
                     });
                 },
-                onUpload: function(id, name){
-                    self._onUpload(id, name);
+                //TODO allow promissory onUpload callbacks
+                onUpload: function(id, name) {
+                    var promise = new qq.Promise(),
+                        _onUploadRetVal = self._onUpload(id, name);
+
+                    // The internal onUpload handler may be async.
+                    if (qq.isPromise(_onUploadRetVal)) {
+                        _onUploadRetVal.then(function(key) {
+                            self._options.callbacks.onUpload(id, name);
+                            promise.success(key);
+                        },
+                        function() {
+                            promise.failure();
+                        });
+
+                        return promise;
+                    }
+
                     self._options.callbacks.onUpload(id, name);
                 },
                 onUploadChunk: function(id, name, chunkData){

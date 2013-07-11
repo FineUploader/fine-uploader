@@ -33,6 +33,26 @@ qq.extend(qq.FineUploaderBasicS3.prototype, qq.basePrivateApi);
 // Define public & private API methods for this module.
 qq.extend(qq.FineUploaderBasicS3.prototype, {
     _createUploadHandler: function() {
-        qq.FineUploaderBasic.prototype._createUploadHandler.call(this, this._s3BasicOptions, "S3");
+        return qq.FineUploaderBasic.prototype._createUploadHandler.call(this, this._s3BasicOptions, "S3");
+    },
+    _onUpload: function(id, name) {
+        var promise = new qq.Promise(),
+            keynameLogic = this._s3BasicOptions.s3.keynameLogic;
+
+        if (keynameLogic === 'uuid') {
+            promise.success(this.getUuid(id));
+        }
+        else if (keynameLogic === 'filename') {
+            promise.success(name);
+        }
+        else if (keynameLogic === 'dynamic') {
+            //TODO ajax call to retrieve key name from server
+        }
+        else {
+            this.log(keynameLogic + " is not a valid value for s3.keynameLogic!", "error");
+            promise.failure();
+        }
+
+        return promise;
     }
 });
