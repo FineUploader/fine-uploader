@@ -78,6 +78,8 @@
                 return $callbackEl.triggerHandler(name, args);
             };
         });
+
+        newUploaderInstance._options.callbacks = callbacks;
     };
 
     //transform jQuery objects into HTMLElements, and pass along all other option properties
