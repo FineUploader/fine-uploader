@@ -34,6 +34,7 @@ module.exports = (grunt) ->
         './client/js/uploader.s3.js',
         './client/js/ajax.requester.js',
         './client/js/deletefile.ajax.requester.js',
+        './client/js/s3.policysignature.ajax.requester.js',
         './client/js/window.receive.message.js',
         './client/js/handler.base.js',
         './client/js/handler.form.js',
@@ -349,6 +350,13 @@ module.exports = (grunt) ->
                 flatten: true
                 src: ['./build/*']
                 dest: './test/temp'
+            images:
+                files: [
+                    expand: true
+                    cwd: './client/'
+                    src: ['*.gif']
+                    dest: './build/'
+                ]
 
 
         # Compress
@@ -461,6 +469,11 @@ module.exports = (grunt) ->
                     'coffeelint:grunt'
                     'build'
                     'test'
+                ]
+            images:
+                files: ['./client/*.gif']
+                tasks: [
+                    'copy:images'
                 ]
 
         # Increment version with semver
@@ -633,6 +646,7 @@ module.exports = (grunt) ->
         'concat'
         'minify'
         'usebanner'
+        'copy:images'
     ]
 
     # Prepare
