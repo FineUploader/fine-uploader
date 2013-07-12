@@ -141,10 +141,12 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
             conditions = [],
             bucket = getBucket(id),
             key = fileState[id].key,
-            type = fileState[id].type;
+            type = fileState[id].type,
+            expirationDate = new Date();
 
-        //TODO set this to one day from now?
-        policy.expiration = "2013-12-01T12:00:00Z";
+        // Is this going to be a problem if we encounter this moments before 2 AM just before daylight savings time ends?
+        expirationDate.setMinutes(expirationDate.getMinutes() + 5);
+        policy.expiration = expirationDate.toISOString();
 
         conditions.push({acl: options.s3.acl});
         conditions.push({bucket: bucket});
