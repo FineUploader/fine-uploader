@@ -320,12 +320,19 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
             var name = this.getName(id);
 
             if (this.isValid(id)) {
-                // The S3 uploader module will either calculate the key or ask the server for it
-                // and will call us back once it is known.
-                options.onUpload(id, name).then(function(key) {
-                    fileState[id].key = key;
+                if (fileState[id].key) {
+                    options.onUpload(id, name);
                     handleUpload(id);
-                });
+                }
+                else {
+                    // The S3 uploader module will either calculate the key or ask the server for it
+                    // and will call us back once it is known.
+                    options.s3.onGetKeyName(id, name).then(function(key) {
+                        fileState[id].key = key;
+                        options.onUpload(id, name);
+                        handleUpload(id);
+                    });
+                }
             }
         },
 
