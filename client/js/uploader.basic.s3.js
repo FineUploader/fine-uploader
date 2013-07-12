@@ -26,6 +26,8 @@ qq.FineUploaderBasicS3 = function(o) {
 
     // Call base module
     qq.FineUploaderBasic.call(this, options);
+
+    this._keyNames = [];
 };
 
 // Inherit basic public & private API methods.
@@ -34,6 +36,23 @@ qq.extend(qq.FineUploaderBasicS3.prototype, qq.basePrivateApi);
 
 // Define public & private API methods for this module.
 qq.extend(qq.FineUploaderBasicS3.prototype, {
+    /**
+     * @param id File ID
+     * @returns {*} Key name associated w/ the file, if one exists
+     */
+    getKey: function(id) {
+        return this._keyNames[id];
+    },
+
+    /**
+     * Override the parent's reset function to cleanup various S3-related items.
+     */
+    reset: function() {
+        qq.FineUploaderBasic.prototype.reset.call(this);
+
+        this._keyNames = [];
+    },
+
     /**
      * Ensures the parent's upload handler creator passes the S3-specific options the handler as well as information
      * required to instantiate the specific handler based on the current browser's capabilities.
@@ -59,17 +78,20 @@ qq.extend(qq.FineUploaderBasicS3.prototype, {
      * @private
      */
     _determineKeyName: function(id, filename) {
-        var promise = new qq.Promise(),
+        var self = this,
+            promise = new qq.Promise(),
             keynameLogic = this._s3BasicOptions.s3.keyname,
             extension = qq.getExtension(filename),
             onGetKeynameFailure = promise.failure,
             onGetKeynameSuccess = function(keyname) {
                 if (keyname) {
-                    promise.success(keyname + "." + extension);
+                    self._keyNames[id] = keyname + "." + extension;
                 }
                 else {
-                    promise.success(filename);
+                    self._keyNames[id] = filename;
                 }
+
+                promise.success(self._keyNames[id]);
             };
 
         switch(keynameLogic) {
