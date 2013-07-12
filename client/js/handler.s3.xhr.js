@@ -10,7 +10,8 @@
 qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged, log) {
     "use strict";
 
-    var fileState = [],
+    var AWS_PARAM_PREFIX = "x-amz-meta-",
+        fileState = [],
         pendingSignatures = [],
         expectedStatus = 200,
         getSignatureAjaxRequester = new qq.S3PolicySignatureAjaxRequestor({
@@ -105,6 +106,11 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
         params.acl = options.s3.acl;
         params.success_action_status = expectedStatus;
 
+        qq.each(options.paramsStore.getParams(id), function(name, val) {
+            var awsParamName = AWS_PARAM_PREFIX + name;
+            params[awsParamName] = getAwsEncodedStr(val);
+        });
+
         signPolicy(id, policyJson).then(function(policyAndSignature) {
             params.policy = policyAndSignature.policy;
             params.signature = policyAndSignature.signature;
@@ -154,6 +160,14 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
         conditions.push({success_action_status: new String(expectedStatus)});
         conditions.push({key: key});
 
+        qq.each(options.paramsStore.getParams(id), function(name, val) {
+            var awsParamName = AWS_PARAM_PREFIX + name,
+                param = {};
+
+            param[awsParamName] = getAwsEncodedStr(val);
+            conditions.push(param);
+        });
+
         policy.conditions = conditions;
 
         return policy;
@@ -177,6 +191,34 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
         else {
             promise.success(policyAndSignature);
         }
+    }
+
+    /**
+     * Escape characters per [AWS guidelines](http://docs.aws.amazon.com/AmazonS3/latest/dev/HTTPPOSTForms.html#HTTPPOSTEscaping).
+     *
+     * @param original Non-escaped string
+     * @returns {string} Escaped string
+     */
+    function getAwsEncodedStr(original) {
+        var encoded = "";
+
+        qq.each(original, function(idx, char) {
+            var encodedChar = char;
+
+            if (char.charCodeAt(0) > 255) {
+                encodedChar = escape(char).replace('%', '\\');
+            }
+            else if (char === '$') {
+                encodedChar = "\\$";
+            }
+            else if (char === '\\') {
+                encodedChar = '\\\\';
+            }
+
+            encoded += encodedChar;
+        });
+
+        return encoded;
     }
 
     function getBucket(id) {
