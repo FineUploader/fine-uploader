@@ -621,6 +621,20 @@ qq.parseJson = function(json) {
 };
 
 /**
+ * Retrieve the extension of a file, if it exists.
+ *
+ * @param filename
+ * @returns {string || undefined}
+ */
+qq.getExtension = function(filename) {
+    var extIdx = filename.lastIndexOf('.');
+
+    if (extIdx > 0) {
+        return filename.substr(extIdx, filename.length - extIdx);
+    }
+}
+
+/**
  * A generic module which supports object disposing in dispose() method.
  * */
 qq.DisposeSupport = function() {

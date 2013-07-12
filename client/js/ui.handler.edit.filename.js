@@ -29,12 +29,8 @@ qq.FilenameEditHandler = function(s, inheritedInternalApi) {
     }
 
     function getOriginalExtension(fileId) {
-        var origName = spec.onGetName(fileId),
-            extIdx = origName.lastIndexOf('.');
-
-        if (extIdx > 0) {
-            return origName.substr(extIdx, origName.length - extIdx);
-        }
+        var origName = spec.onGetName(fileId);
+        return qq.getExtension(origName);
     }
 
     // Callback iff the name has been changed
