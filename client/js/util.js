@@ -393,28 +393,36 @@ qq.toElement = (function(){
     };
 }());
 
-//key and value are passed to callback for each item in the object or array
-qq.each = function(objOrArray, callback) {
+//key and value are passed to callback for each item in the object, array, or string
+qq.each = function(objArrayOrStr, callback) {
     "use strict";
     var keyOrIndex, retVal;
-    if (objOrArray) {
+    if (objArrayOrStr) {
         // `DataTransferItemList` objects are array-like and should be treated as arrays when iterating over items inside the object.
-        if (qq.isArray(objOrArray) || qq.isItemList(objOrArray)) {
-            for (keyOrIndex = 0; keyOrIndex < objOrArray.length; keyOrIndex++) {
-                retVal = callback(keyOrIndex, objOrArray[keyOrIndex]);
+        if (qq.isArray(objArrayOrStr) || qq.isItemList(objArrayOrStr)) {
+            for (keyOrIndex = 0; keyOrIndex < objArrayOrStr.length; keyOrIndex++) {
+                retVal = callback(keyOrIndex, objArrayOrStr[keyOrIndex]);
                 if (retVal === false) {
                     break;
                 }
             }
         }
         else {
-            for (keyOrIndex in objOrArray) {
-                if (Object.prototype.hasOwnProperty.call(objOrArray, keyOrIndex)) {
-                    retVal = callback(keyOrIndex, objOrArray[keyOrIndex]);
+            for (keyOrIndex in objArrayOrStr) {
+                if (Object.prototype.hasOwnProperty.call(objArrayOrStr, keyOrIndex)) {
+                    retVal = callback(keyOrIndex, objArrayOrStr[keyOrIndex]);
                     if (retVal === false) {
                         break;
                     }
                 }
+            }
+        }
+    }
+    else if (qq.isString(objArrayOrStr)) {
+        for (keyOrIndex = 0; keyOrIndex < objArrayOrStr.length(); keyOrIndex++) {
+            retVal = callback(keyOrIndex, objArrayOrStr.charAt(keyOrIndex));
+            if (retVal === false) {
+                break;
             }
         }
     }
