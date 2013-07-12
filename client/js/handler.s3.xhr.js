@@ -89,7 +89,13 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
         return promise;
     }
 
-    //TODO turn any params specified by integrator into x-amz-meta headers
+    /**
+     * Generates all parameters to be passed along with the request.  This includes asking the server for a
+     * policy document signature.
+     *
+     * @param id file ID
+     * @returns {qq.Promise} Promise that will be fulfilled once all parameters have been determined.
+     */
     function generateAwsParams(id) {
         var params = {},
             promise = new qq.Promise(),
@@ -107,15 +113,18 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
             params[awsParamName] = getAwsEncodedStr(val);
         });
 
-        signPolicy(id, policyJson).then(function(policyAndSignature) {
-            params.policy = policyAndSignature.policy;
-            params.signature = policyAndSignature.signature;
-            promise.success(params);
-        },
-        function() {
-            options.log("Can't continue further with request to S3 as we did not receive " +
-                "a valid signature and policy from the server.", "error");
-        });
+        // Ask the server to sign the policy doc, which will happen asynchronously.
+        signPolicy(id, policyJson).then(
+            function(policyAndSignature) {
+                params.policy = policyAndSignature.policy;
+                params.signature = policyAndSignature.signature;
+                promise.success(params);
+            },
+            function() {
+                options.log("Can't continue further with request to S3 as we did not receive " +
+                    "a valid signature and policy from the server.", "error");
+            }
+        );
 
         return promise;
     }
