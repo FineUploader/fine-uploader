@@ -426,10 +426,11 @@ qq.bind = function(oldFunc, context) {
         var args =  Array.prototype.slice.call(arguments, 2);
 
         return function() {
+            var newArgs = qq.extend([], args);
             if (arguments.length) {
-                args = args.concat(Array.prototype.slice.call(arguments))
+                newArgs = newArgs.concat(Array.prototype.slice.call(arguments))
             }
-            return oldFunc.apply(context, args);
+            return oldFunc.apply(context, newArgs);
         };
     }
 
