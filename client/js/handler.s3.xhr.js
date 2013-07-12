@@ -72,10 +72,6 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
         var formData = new FormData(),
             endpoint = options.endpointStore.getEndpoint(id),
             url = endpoint,
-            name = api.getName(id),
-            size = api.getSize(id),
-            blobData = fileState[id].blobData,
-            newName = fileState[id].newName,
             xhr = fileState[id].xhr,
             promise = new qq.Promise();
 
