@@ -42,7 +42,7 @@ qq.FilenameEditHandler = function(s, inheritedInternalApi) {
             origExtension = getOriginalExtension(fileId);
 
             if (origExtension !== undefined) {
-                newName = newName + getOriginalExtension(fileId);
+                newName = newName + "." + origExtension;
             }
 
             spec.onSetName(fileId, newName);

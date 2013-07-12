@@ -628,12 +628,12 @@ qq.parseJson = function(json) {
  * @returns {string || undefined}
  */
 qq.getExtension = function(filename) {
-    var extIdx = filename.lastIndexOf('.');
+    var extIdx = filename.lastIndexOf('.') + 1;
 
     if (extIdx > 0) {
         return filename.substr(extIdx, filename.length - extIdx);
     }
-}
+};
 
 /**
  * A generic module which supports object disposing in dispose() method.
