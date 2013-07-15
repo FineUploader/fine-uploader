@@ -66,9 +66,12 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     }
 
     function generateAwsParams(id) {
+        var customParams = options.paramsStore.getParams(id);
+        customParams[options.filenameParam] = api.getName(id);
+
         return qq.s3.util.generateAwsParams({
                 endpoint: options.endpointStore.getEndpoint(id),
-                params: options.paramsStore.getParams(id),
+                params: customParams,
                 type: fileState[id].type,
                 key: fileState[id].key,
                 accessKey: options.accessKey,
