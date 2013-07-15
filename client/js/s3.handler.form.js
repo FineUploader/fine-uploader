@@ -8,6 +8,6 @@
  * @param onUuidChanged Callback to invoke when the associated items UUID has changed by order of the server.
  * @param logCallback Used to posting log messages.
  */
-qq.UploadHandlerS3Form = function(o, uploadCompleteCallback, onUuidChanged, logCallback) {
+qq.s3.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChanged, logCallback) {
     "use strict";
 };

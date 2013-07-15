@@ -7,14 +7,13 @@
  * @param onUuidChanged Callback to invoke when the associated items UUID has changed by order of the server.
  * @param logCallback Used to posting log messages.
  */
-qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged, log) {
+qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, log) {
     "use strict";
 
-    var AWS_PARAM_PREFIX = "x-amz-meta-",
-        fileState = [],
+    var fileState = [],
         pendingSignatures = [],
         expectedStatus = 200,
-        getSignatureAjaxRequester = new qq.S3PolicySignatureAjaxRequestor({
+        getSignatureAjaxRequester = new qq.s3.PolicySignatureAjaxRequestor({
             endpoint: options.signatureEndpoint,
             cors: options.cors,
             log: log,
@@ -109,7 +108,7 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
         params.success_action_status = expectedStatus;
 
         qq.each(options.paramsStore.getParams(id), function(name, val) {
-            var awsParamName = AWS_PARAM_PREFIX + name;
+            var awsParamName = qq.s3.util.AWS_PARAM_PREFIX + name;
             params[awsParamName] = getAwsEncodedStr(val);
         });
 
@@ -166,7 +165,7 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
         conditions.push({key: key});
 
         qq.each(options.paramsStore.getParams(id), function(name, val) {
-            var awsParamName = AWS_PARAM_PREFIX + name,
+            var awsParamName = qq.s3.util.AWS_PARAM_PREFIX + name,
                 param = {};
 
             param[awsParamName] = getAwsEncodedStr(val);

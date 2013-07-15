@@ -3,9 +3,9 @@
  * Base upload handler module.  Delegates to more specific handlers.
  *
  * @param o Options.  Passed along to the specific handler submodule as well.
- * @param specialHandlerType [optional] A name that describes the handler type.  The convention is: qq.UploadHandler{specialHandlerType}[Xhr|Form].
+ * @param namespace [optional] Namespace for the specific handler.
  */
-qq.UploadHandler = function(o, specialHandlerType) {
+qq.UploadHandler = function(o, namespace) {
     "use strict";
 
     var queue = [],
@@ -85,15 +85,10 @@ qq.UploadHandler = function(o, specialHandlerType) {
     }
 
     function determineHandlerImpl() {
-        var handlerType = specialHandlerType || "",
-            handlerModuleType = "UploadHandler" + handlerType,
-            handlerModuleSubtype = "Form";
+        var handlerType = namespace ? qq[namespace] : qq,
+            handlerModuleSubtype = qq.supportedFeatures.ajaxUploading ? "Xhr" : "Form";
 
-        if (qq.supportedFeatures.ajaxUploading) {
-            handlerModuleSubtype = "Xhr";
-        }
-
-        handlerImpl = new qq[handlerModuleType + handlerModuleSubtype](options, dequeue, options.onUuidChanged, log);
+        handlerImpl = new handlerType["UploadHandler" + handlerModuleSubtype](options, dequeue, options.onUuidChanged, log);
     }
 
 

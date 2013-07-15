@@ -1,5 +1,5 @@
 /*globals qq, XMLHttpRequest*/
-qq.S3PolicySignatureAjaxRequestor = function(o) {
+qq.s3.PolicySignatureAjaxRequestor = function(o) {
     "use strict";
 
     var requestor,

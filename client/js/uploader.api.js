@@ -3,7 +3,7 @@
  */
 qq.uiPublicApi = {
     clearStoredFiles: function() {
-        qq[this._parent].prototype.clearStoredFiles.apply(this, arguments);
+        this._parent.prototype.clearStoredFiles.apply(this, arguments);
         this._listElement.innerHTML = "";
     },
     addExtraDropzone: function(element){
@@ -23,7 +23,7 @@ qq.uiPublicApi = {
         }
     },
     reset: function() {
-        qq[this._parent].prototype.reset.apply(this, arguments);
+        this._parent.prototype.reset.apply(this, arguments);
         this._element.innerHTML = this._options.template;
         this._listElement = this._options.listElement || this._find(this._element, 'list');
         if (!this._options.button) {
@@ -211,7 +211,7 @@ qq.uiPrivateApi = {
             || (qq.firefox() && !e.relatedTarget); // null e.relatedTarget for Firefox
     },
     _storeForLater: function(id) {
-        qq[this._parent].prototype._storeForLater.apply(this, arguments);
+        this._parent.prototype._storeForLater.apply(this, arguments);
         var item = this.getItemByFileId(id);
         qq(this._find(item, 'spinner')).hide();
     },
@@ -227,7 +227,7 @@ qq.uiPrivateApi = {
         return element;
     },
     _onSubmit: function(id, name) {
-        qq[this._parent].prototype._onSubmit.apply(this, arguments);
+        this._parent.prototype._onSubmit.apply(this, arguments);
         this._addToList(id, name);
     },
     // The file item has been added to the DOM.
@@ -250,7 +250,7 @@ qq.uiPrivateApi = {
     },
     // Update the progress bar & percentage as the file is uploaded
     _onProgress: function(id, name, loaded, total){
-        qq[this._parent].prototype._onProgress.apply(this, arguments);
+        this._parent.prototype._onProgress.apply(this, arguments);
 
         var item, progressBar, percent, cancelLink;
 
@@ -279,7 +279,7 @@ qq.uiPrivateApi = {
         qq(progressBar).css({width: percent + '%'});
     },
     _onComplete: function(id, name, result, xhr){
-        qq[this._parent].prototype._onComplete.apply(this, arguments);
+        this._parent.prototype._onComplete.apply(this, arguments);
 
         var item = this.getItemByFileId(id);
 
@@ -316,20 +316,20 @@ qq.uiPrivateApi = {
         }
     },
     _onUpload: function(id, name){
-        var parentRetVal = qq[this._parent].prototype._onUpload.apply(this, arguments);
+        var parentRetVal = this._parent.prototype._onUpload.apply(this, arguments);
 
         this._showSpinner(id);
 
         return parentRetVal;
     },
     _onCancel: function(id, name) {
-        qq[this._parent].prototype._onCancel.apply(this, arguments);
+        this._parent.prototype._onCancel.apply(this, arguments);
         this._removeFileItem(id);
     },
     _onBeforeAutoRetry: function(id) {
         var item, progressBar, failTextEl, retryNumForDisplay, maxAuto, retryNote;
 
-        qq[this._parent].prototype._onBeforeAutoRetry.apply(this, arguments);
+        this._parent.prototype._onBeforeAutoRetry.apply(this, arguments);
 
         item = this.getItemByFileId(id);
         progressBar = this._find(item, 'progressBar');
@@ -356,7 +356,7 @@ qq.uiPrivateApi = {
     _onBeforeManualRetry: function(id) {
         var item = this.getItemByFileId(id);
 
-        if (qq[this._parent].prototype._onBeforeManualRetry.apply(this, arguments)) {
+        if (this._parent.prototype._onBeforeManualRetry.apply(this, arguments)) {
             this._find(item, 'progressBar').style.width = 0;
             qq(item).removeClass(this._classes.fail);
             qq(this._find(item, 'statusText')).clearText();
@@ -372,7 +372,7 @@ qq.uiPrivateApi = {
     _onSubmitDelete: function(id) {
         var onSuccessCallback = qq.bind(this._onSubmitDeleteSuccess, this, id);
 
-        qq[this._parent].prototype._onSubmitDelete.call(this, id, onSuccessCallback);
+        this._parent.prototype._onSubmitDelete.call(this, id, onSuccessCallback);
     },
     _onSubmitDeleteSuccess: function(id) {
         if (this._options.deleteFile.forceConfirm) {
@@ -383,7 +383,7 @@ qq.uiPrivateApi = {
         }
     },
     _onDeleteComplete: function(id, xhr, isError) {
-        qq[this._parent].prototype._onDeleteComplete.apply(this, arguments);
+        this._parent.prototype._onDeleteComplete.apply(this, arguments);
 
         var item = this.getItemByFileId(id),
             spinnerEl = this._find(item, 'spinner'),
@@ -539,11 +539,11 @@ qq.uiPrivateApi = {
         qq(deleteLink).css({display: 'inline'});
     },
     _itemError: function(code, name){
-        var message = qq[this._parent].prototype._itemError.apply(this, arguments);
+        var message = this._parent.prototype._itemError.apply(this, arguments);
         this._options.showMessage(message);
     },
     _batchError: function(message) {
-        qq[this._parent].prototype._batchError.apply(this, arguments);
+        this._parent.prototype._batchError.apply(this, arguments);
         this._options.showMessage(message);
     },
     _setupPastePrompt: function() {
@@ -558,11 +558,11 @@ qq.uiPrivateApi = {
     },
     _fileOrBlobRejected: function(id, name) {
         this._totalFilesInBatch -= 1;
-        qq[this._parent].prototype._fileOrBlobRejected.apply(this, arguments);
+        this._parent.prototype._fileOrBlobRejected.apply(this, arguments);
     },
     _prepareItemsForUpload: function(items, params, endpoint) {
         this._totalFilesInBatch = items.length;
         this._filesInBatchAddedToUi = 0;
-        qq[this._parent].prototype._prepareItemsForUpload.apply(this, arguments);
+        this._parent.prototype._prepareItemsForUpload.apply(this, arguments);
     }
 };

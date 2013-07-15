@@ -3,7 +3,7 @@
  * functionality of Fine Uploader Basic as well as code to handle uploads directly to S3.
  * Some inherited options and API methods have a special meaning in the context of the S3 uploader.
  */
-qq.FineUploaderBasicS3 = function(o) {
+qq.s3.FineUploaderBasic = function(o) {
     var options = {
         request: {
             signatureEndpoint: null,
@@ -24,11 +24,11 @@ qq.FineUploaderBasicS3 = function(o) {
 };
 
 // Inherit basic public & private API methods.
-qq.extend(qq.FineUploaderBasicS3.prototype, qq.basePublicApi);
-qq.extend(qq.FineUploaderBasicS3.prototype, qq.basePrivateApi);
+qq.extend(qq.s3.FineUploaderBasic.prototype, qq.basePublicApi);
+qq.extend(qq.s3.FineUploaderBasic.prototype, qq.basePrivateApi);
 
 // Define public & private API methods for this module.
-qq.extend(qq.FineUploaderBasicS3.prototype, {
+qq.extend(qq.s3.FineUploaderBasic.prototype, {
     /**
      * @param id File ID
      * @returns {*} Key name associated w/ the file, if one exists
@@ -58,7 +58,7 @@ qq.extend(qq.FineUploaderBasicS3.prototype, {
             getKeyName: qq.bind(this._determineKeyName, this)
         };
 
-        return qq.FineUploaderBasic.prototype._createUploadHandler.call(this, additionalOptions, "S3");
+        return qq.FineUploaderBasic.prototype._createUploadHandler.call(this, additionalOptions, "s3");
     },
 
     /**

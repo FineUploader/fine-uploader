@@ -265,7 +265,7 @@ qq.basePrivateApi = {
         this._disposeSupport.addDisposer(function() { button.dispose(); });
         return button;
     },
-    _createUploadHandler: function(additionalOptions, handlerType) {
+    _createUploadHandler: function(additionalOptions, namespace) {
         var self = this,
             options = {
                 debug: this._options.debug,
@@ -340,7 +340,7 @@ qq.basePrivateApi = {
             });
         }
 
-        return new qq.UploadHandler(options, handlerType);
+        return new qq.UploadHandler(options, namespace);
     },
     _createDeleteHandler: function() {
         var self = this;

@@ -2,12 +2,11 @@
 (function($) {
     "use strict";
     var $el,
-        pluginOptions = ['uploaderType'];
+        pluginOptions = ['uploaderType', 'endpointType'];
 
     function init(options) {
         if (options) {
             var xformedOpts = transformVariables(options),
-                uploaderType = pluginOption('uploaderType'),
                 newUploaderInstance = getNewUploaderInstance(xformedOpts);
 
             uploader(newUploaderInstance);
@@ -18,17 +17,27 @@
     };
 
     function getNewUploaderInstance(params) {
-        var uploaderType = pluginOption('uploaderType');
+        var uploaderType = pluginOption('uploaderType'),
+            namespace = pluginOption('endpointType');
 
         // If the integrator has defined a specific type of uploader to load, use that, otherwise assume `qq.FineUploader`
         if (uploaderType) {
             // We can determine the correct constructor function to invoke by combining "FineUploader"
             // with the upper camel cased `uploaderType` value.
             uploaderType = uploaderType.charAt(0).toUpperCase() + uploaderType.slice(1).toLowerCase();
+
+            if (namespace) {
+                return new qq[namespace]["FineUploader" + uploaderType](params);
+            }
+
             return new qq["FineUploader" + uploaderType](params);
         }
         else {
-            return new qq.FineUploader(params)
+            if (namespace) {
+                return new qq[namespace]["FineUploader"](params);
+            }
+
+            return new qq.FineUploader(params);
         }
     }
 

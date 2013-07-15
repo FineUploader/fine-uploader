@@ -5,20 +5,20 @@
  * specific to the upload-to-S3 workflow.  Some inherited options and API methods have a special meaning
  * in the context of the S3 uploader.
  */
-qq.FineUploaderS3 = function(o) {
-    // Inherit instance data from FineUploader, which should in turn inherit from FineUploaderBasicS3.
-    qq.FineUploader.call(this, o, "FineUploaderBasicS3");
+qq.s3.FineUploader = function(o) {
+    // Inherit instance data from FineUploader, which should in turn inherit from s3.FineUploaderBasic.
+    qq.FineUploader.call(this, o, "s3");
 
     // Replace any default options with user defined ones
     qq.extend(this._options, o, true);
 };
 
 // Inherit the API methods from FineUploaderBasicS3
-qq.extend(qq.FineUploaderS3.prototype, qq.FineUploaderBasicS3.prototype);
+qq.extend(qq.s3.FineUploader.prototype, qq.s3.FineUploaderBasic.prototype);
 
 // Inherit public and private API methods related to UI
-qq.extend(qq.FineUploaderS3.prototype, qq.uiPublicApi);
-qq.extend(qq.FineUploaderS3.prototype, qq.uiPrivateApi);
+qq.extend(qq.s3.FineUploader.prototype, qq.uiPublicApi);
+qq.extend(qq.s3.FineUploader.prototype, qq.uiPrivateApi);
 
 // Define public & private API methods for this module.
-qq.extend(qq.FineUploaderS3.prototype, {});
+qq.extend(qq.s3.FineUploader.prototype, {});
