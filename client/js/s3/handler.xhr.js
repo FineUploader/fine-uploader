@@ -113,12 +113,25 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             if (xhr.status === expectedStatus) {
                 response.success = true;
             }
+            else {
+                response.error = parseError(xhr.responseText);
+            }
         }
         catch(error) {
             log('Error when attempting to parse xhr response text (' + error + ')', 'error');
         }
 
         return response;
+    }
+
+    function parseError(awsResponseXml) {
+        var parser = new DOMParser(),
+            parsedDoc = parser.parseFromString(awsResponseXml, "application/xml"),
+            messageElements = parsedDoc.getElementsByTagName("Message");
+
+        if (messageElements.length > 0) {
+            return messageElements[0].textContent;
+        }
     }
 
     function uploadCompleted(id) {

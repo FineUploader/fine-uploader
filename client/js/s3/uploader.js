@@ -6,11 +6,20 @@
  * in the context of the S3 uploader.
  */
 qq.s3.FineUploader = function(o) {
-    // Inherit instance data from FineUploader, which should in turn inherit from s3.FineUploaderBasic.
-    qq.FineUploader.call(this, o, "s3");
+    var options = {
+        failedUploadTextDisplay: {
+            mode: 'custom'
+        }
+    };
 
     // Replace any default options with user defined ones
-    qq.extend(this._options, o, true);
+    qq.extend(options, o, true);
+
+    // Inherit instance data from FineUploader, which should in turn inherit from s3.FineUploaderBasic.
+    qq.FineUploader.call(this, options, "s3");
+
+    // Replace any default options with user defined ones
+    qq.extend(this._options, options, true);
 };
 
 // Inherit the API methods from FineUploaderBasicS3
