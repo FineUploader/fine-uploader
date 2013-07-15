@@ -4,9 +4,17 @@ $ ->
 
     $('#basicUploadSuccessExample').fineUploader(
         debug: true
+        endpointType: 's3'
+        blah: 'ho'
         request:
-            endpoint: "/upload/receiver"
-            paramsInBody: true
+            endpoint: "http://fineuploadertest.s3.amazonaws.com"
+            accessKey: 'AKIAJLRYC5FTY3VRRTDA'
+            signatureEndpoint: '/upload/s3signer'
+#            keyname: (id) ->
+#                promise = new qq.Promise()
+#                getkey = -> promise.success('blahblah' + qq.getUniqueId())
+#                setTimeout getkey, 5000
+#                return promise
         chunking:
             enabled: true
         resume:
@@ -27,7 +35,9 @@ $ ->
     )
         .on('error', errorHandler)
         .on "upload", (event, id, filename) ->
-            $(this).fineUploader 'setParams', {"hey": "ho"}, id
+            $(this).fineUploader 'setParams', {"hey": "hi ɛ $ hmm \\ hi"}, id
+        .on 'statusChange', (event, id, oldS, newS) ->
+            qq.log "id: #{id} #{newS}"
 
 
     $('#manualUploadModeExample').fineUploader(
