@@ -4,6 +4,7 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
 
     var requestor,
         validMethods = ["POST"],
+        pendingSignatures = [],
         options = {
             method: "POST",
             endpoint: null,
@@ -14,8 +15,7 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
                 expected: false,
                 sendCredentials: false
             },
-            log: function(str, level) {},
-            onSignatureReceived: function(id, policyAndSignature, isError) {}
+            log: function(str, level) {}
         };
 
     qq.extend(options, o);
@@ -31,7 +31,10 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
     function handleSignatureReceived(id, xhrOrXdr, isError) {
         var responseJson = xhrOrXdr.responseText,
             errorMessage = "S3 policy signature request failed!",
+            promise = pendingSignatures[id],
             response;
+
+        delete pendingSignatures[id];
 
         // React if the UA indicates failure, either via status or error callback.
         if (isError) {
@@ -60,7 +63,13 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
             options.log("Received an empty response from the server!", "error");
         }
 
-        options.onSignatureReceived(id, response || responseJson, isError);
+
+        if (isError) {
+            promise.failure()
+        }
+        else {
+            promise.success(response);
+        }
     }
 
     requestor = new qq.AjaxRequestor({
@@ -84,10 +93,24 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
 
 
     return {
+        /**
+         * On success, an object containing the parsed JSON response (w/ policy and signature properties)
+         * will be passed into the associated handler.
+         *
+         * @param id File ID.
+         * @param policy Object containing the AWS policy associated with the file to be uploaded.
+         * @returns {qq.Promise} A promise that is fulfilled when the response has been received.
+         */
         getSignature: function(id, policy) {
-            var params = policy;
+            var params = policy,
+                promise = new qq.Promise();
+
             options.log("Submitting S3 signature request for " + id);
+
             requestor.send(id, null, params);
+            pendingSignatures[id] = promise;
+
+            return promise;
         }
     };
 };

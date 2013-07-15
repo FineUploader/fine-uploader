@@ -11,13 +11,11 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     "use strict";
 
     var fileState = [],
-        pendingSignatures = [],
         expectedStatus = 200,
         getSignatureAjaxRequester = new qq.s3.PolicySignatureAjaxRequestor({
             endpoint: options.signatureEndpoint,
             cors: options.cors,
-            log: log,
-            onSignatureReceived: handleSignatureReceived
+            log: log
         }),
         api;
 
@@ -50,7 +48,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
         xhr.onreadystatechange = getReadyStateChangeHandler(id);
 
-        prepareForSend(id, params, fileOrBlob).then(function(toSend) {
+        prepareForSend(id, fileOrBlob).then(function(toSend) {
             log('Sending upload request for ' + id);
             xhr.send(toSend);
         });
@@ -67,7 +65,21 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         };
     }
 
-    function prepareForSend(id, params, fileOrBlob) {
+    function generateAwsParams(id) {
+        return qq.s3.util.generateAwsParams({
+                endpoint: options.endpointStore.getEndpoint(id),
+                params: options.paramsStore.getParams(id),
+                type: fileState[id].type,
+                key: fileState[id].key,
+                accessKey: options.accessKey,
+                acl: options.acl,
+                expectedStatus: expectedStatus,
+                log: log
+            },
+            qq.bind(getSignatureAjaxRequester.getSignature, this, id));
+    }
+
+    function prepareForSend(id, fileOrBlob) {
         var formData = new FormData(),
             endpoint = options.endpointStore.getEndpoint(id),
             url = endpoint,
@@ -88,46 +100,6 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         return promise;
     }
 
-    /**
-     * Generates all parameters to be passed along with the request.  This includes asking the server for a
-     * policy document signature.
-     *
-     * @param id file ID
-     * @returns {qq.Promise} Promise that will be fulfilled once all parameters have been determined.
-     */
-    function generateAwsParams(id) {
-        var params = {},
-            promise = new qq.Promise(),
-            policyJson = getPolicy(id),
-            type = fileState[id].type;
-
-        params.key = fileState[id].key;
-        params.AWSAccessKeyId = options.accessKey;
-        params["Content-Type"] = type;
-        params.acl = options.acl;
-        params.success_action_status = expectedStatus;
-
-        qq.each(options.paramsStore.getParams(id), function(name, val) {
-            var awsParamName = qq.s3.util.AWS_PARAM_PREFIX + name;
-            params[awsParamName] = getAwsEncodedStr(val);
-        });
-
-        // Ask the server to sign the policy doc, which will happen asynchronously.
-        signPolicy(id, policyJson).then(
-            function(policyAndSignature) {
-                params.policy = policyAndSignature.policy;
-                params.signature = policyAndSignature.signature;
-                promise.success(params);
-            },
-            function() {
-                options.log("Can't continue further with request to S3 as we did not receive " +
-                    "a valid signature and policy from the server.", "error");
-            }
-        );
-
-        return promise;
-    }
-
     function parseResponse(id) {
         var xhr = fileState[id].xhr,
             response = {};
@@ -144,94 +116,6 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         }
 
         return response;
-    }
-
-    function getPolicy(id) {
-        var policy = {},
-            conditions = [],
-            bucket = getBucket(id),
-            key = fileState[id].key,
-            type = fileState[id].type,
-            expirationDate = new Date();
-
-        // Is this going to be a problem if we encounter this moments before 2 AM just before daylight savings time ends?
-        expirationDate.setMinutes(expirationDate.getMinutes() + 5);
-        policy.expiration = expirationDate.toISOString();
-
-        conditions.push({acl: options.acl});
-        conditions.push({bucket: bucket});
-        conditions.push({"Content-Type": type});
-        conditions.push({success_action_status: new String(expectedStatus)});
-        conditions.push({key: key});
-
-        qq.each(options.paramsStore.getParams(id), function(name, val) {
-            var awsParamName = qq.s3.util.AWS_PARAM_PREFIX + name,
-                param = {};
-
-            param[awsParamName] = getAwsEncodedStr(val);
-            conditions.push(param);
-        });
-
-        policy.conditions = conditions;
-
-        return policy;
-    }
-
-    function signPolicy(id, policy) {
-        var promise = new qq.Promise();
-        pendingSignatures[id] = promise;
-        getSignatureAjaxRequester.getSignature(id, policy);
-        return promise;
-    }
-
-    function handleSignatureReceived(id, policyAndSignature, isError) {
-        var promise = pendingSignatures[id];
-
-        delete pendingSignatures[id];
-
-        if (isError) {
-            promise.failure()
-        }
-        else {
-            promise.success(policyAndSignature);
-        }
-    }
-
-    /**
-     * Escape characters per [AWS guidelines](http://docs.aws.amazon.com/AmazonS3/latest/dev/HTTPPOSTForms.html#HTTPPOSTEscaping).
-     *
-     * @param original Non-escaped string
-     * @returns {string} Escaped string
-     */
-    function getAwsEncodedStr(original) {
-        var encoded = "";
-
-        qq.each(original, function(idx, char) {
-            var encodedChar = char;
-
-            if (char.charCodeAt(0) > 255) {
-                encodedChar = escape(char).replace('%', '\\');
-            }
-            else if (char === '$') {
-                encodedChar = "\\$";
-            }
-            else if (char === '\\') {
-                encodedChar = '\\\\';
-            }
-
-            encoded += encodedChar;
-        });
-
-        return encoded;
-    }
-
-    function getBucket(id) {
-        var endpoint = options.endpointStore.getEndpoint(id),
-            match = /^https?:\/\/([a-z0-9]+)\.s3\.amazonaws\.com/i.exec(endpoint);
-
-        if (match) {
-            return match[1];
-        }
     }
 
     function uploadCompleted(id) {
