@@ -84,11 +84,13 @@ qq.extend(qq.FineUploaderBasicS3.prototype, {
             extension = qq.getExtension(filename),
             onGetKeynameFailure = promise.failure,
             onGetKeynameSuccess = function(keyname) {
-                if (keyname) {
-                    self._keyNames[id] = keyname + "." + extension;
+                var keynameToUse = keyname || filename;
+
+                if (keyname && extension !== undefined) {
+                    self._keyNames[id] = keynameToUse + "." + extension;
                 }
                 else {
-                    self._keyNames[id] = filename;
+                    self._keyNames[id] = keynameToUse;
                 }
 
                 promise.success(self._keyNames[id]);
