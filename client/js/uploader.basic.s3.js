@@ -5,29 +5,22 @@
  */
 qq.FineUploaderBasicS3 = function(o) {
     var options = {
-        s3: {
-            // required
+        request: {
+            signatureEndpoint: null,
             accessKey: null,
-            acl: 'private',
-            // required
-            getSignatureEndpoint: null,
             // 'uuid', 'filename', or a function, which may be promissory
-            keyname: 'uuid'
+            key: 'uuid',
+            acl: 'private'
         }
     };
 
     // Replace any default options with user defined ones
     qq.extend(options, o, true);
 
-    // These are additional options that must be passed to the upload handler
-    this._s3BasicOptions = {
-        s3: options.s3
-    };
-
     // Call base module
     qq.FineUploaderBasic.call(this, options);
 
-    this._keyNames = [];
+    this.keys = [];
 };
 
 // Inherit basic public & private API methods.
@@ -41,7 +34,7 @@ qq.extend(qq.FineUploaderBasicS3.prototype, {
      * @returns {*} Key name associated w/ the file, if one exists
      */
     getKey: function(id) {
-        return this._keyNames[id];
+        return this.keys[id];
     },
 
     /**
@@ -50,19 +43,20 @@ qq.extend(qq.FineUploaderBasicS3.prototype, {
     reset: function() {
         qq.FineUploaderBasic.prototype.reset.call(this);
 
-        this._keyNames = [];
+        this.keys = [];
     },
 
     /**
-     * Ensures the parent's upload handler creator passes the S3-specific options the handler as well as information
-     * required to instantiate the specific handler based on the current browser's capabilities.
+     * Ensures the parent's upload handler creator passes any additional S3-specific options to the handler as well
+     * as information required to instantiate the specific handler based on the current browser's capabilities.
      *
      * @returns {qq.UploadHandler}
      * @private
      */
     _createUploadHandler: function() {
-        var additionalOptions = qq.extend({}, this._s3BasicOptions);
-        additionalOptions.s3.onGetKeyName = qq.bind(this._determineKeyName, this);
+        var additionalOptions = {
+            getKeyName: qq.bind(this._determineKeyName, this)
+        };
 
         return qq.FineUploaderBasic.prototype._createUploadHandler.call(this, additionalOptions, "S3");
     },
@@ -80,20 +74,20 @@ qq.extend(qq.FineUploaderBasicS3.prototype, {
     _determineKeyName: function(id, filename) {
         var self = this,
             promise = new qq.Promise(),
-            keynameLogic = this._s3BasicOptions.s3.keyname,
+            keynameLogic = this._options.request.key,
             extension = qq.getExtension(filename),
             onGetKeynameFailure = promise.failure,
             onGetKeynameSuccess = function(keyname) {
                 var keynameToUse = keyname || filename;
 
                 if (keyname && extension !== undefined) {
-                    self._keyNames[id] = keynameToUse + "." + extension;
+                    self.keys[id] = keynameToUse + "." + extension;
                 }
                 else {
-                    self._keyNames[id] = keynameToUse;
+                    self.keys[id] = keynameToUse;
                 }
 
-                promise.success(self._keyNames[id]);
+                promise.success(self.keys[id]);
             };
 
         switch(keynameLogic) {

@@ -15,7 +15,7 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
         pendingSignatures = [],
         expectedStatus = 200,
         getSignatureAjaxRequester = new qq.S3PolicySignatureAjaxRequestor({
-            endpoint: options.s3.getSignatureEndpoint,
+            endpoint: options.signatureEndpoint,
             cors: options.cors,
             log: log,
             onSignatureReceived: handleSignatureReceived
@@ -103,9 +103,9 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
             type = fileState[id].type;
 
         params.key = fileState[id].key;
-        params.AWSAccessKeyId = options.s3.accessKey;
+        params.AWSAccessKeyId = options.accessKey;
         params["Content-Type"] = type;
-        params.acl = options.s3.acl;
+        params.acl = options.acl;
         params.success_action_status = expectedStatus;
 
         qq.each(options.paramsStore.getParams(id), function(name, val) {
@@ -159,7 +159,7 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
         expirationDate.setMinutes(expirationDate.getMinutes() + 5);
         policy.expiration = expirationDate.toISOString();
 
-        conditions.push({acl: options.s3.acl});
+        conditions.push({acl: options.acl});
         conditions.push({bucket: bucket});
         conditions.push({"Content-Type": type});
         conditions.push({success_action_status: new String(expectedStatus)});
@@ -228,7 +228,7 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
 
     function getBucket(id) {
         var endpoint = options.endpointStore.getEndpoint(id),
-            match = /^https?:\/\/([a-z0-9]+)\./i.exec(endpoint);
+            match = /^https?:\/\/([a-z0-9]+)\.s3\.amazonaws\.com/i.exec(endpoint);
 
         if (match) {
             return match[1];
@@ -376,7 +376,7 @@ qq.UploadHandlerS3Xhr = function(options, uploadCompleteCallback, onUuidChanged,
                 else {
                     // The S3 uploader module will either calculate the key or ask the server for it
                     // and will call us back once it is known.
-                    options.s3.onGetKeyName(id, name).then(function(key) {
+                    options.getKeyName(id, name).then(function(key) {
                         fileState[id].key = key;
                         options.onUpload(id, name);
                         handleUpload(id);

@@ -24,8 +24,8 @@ qq.UploadHandler = function(o, specialHandlerType) {
             sendCredentials: false
         },
         maxConnections: 3, // maximum number of concurrent uploads
-        uuidParamName: 'qquuid',
-        totalFileSizeParamName: 'qqtotalfilesize',
+        uuidParam: 'qquuid',
+        totalFileSizeParam: 'qqtotalfilesize',
         chunking: {
             enabled: false,
             partSize: 2000000, //bytes

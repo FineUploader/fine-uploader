@@ -22,7 +22,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
         params[options.chunking.paramNames.partByteOffset] = chunkData.start;
         params[options.chunking.paramNames.chunkSize] = chunkData.size;
         params[options.chunking.paramNames.totalParts] = chunkData.count;
-        params[options.totalFileSizeParamName] = size;
+        params[options.totalFileSizeParam] = size;
 
         /**
          * When a Blob is sent in a multipart request, the filename value in the content-disposition header is either "blob"
@@ -92,10 +92,10 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
             blobData = fileState[id].blobData,
             newName = fileState[id].newName;
 
-        params[options.uuidParamName] = fileState[id].uuid;
+        params[options.uuidParam] = fileState[id].uuid;
 
         if (multipart) {
-            params[options.totalFileSizeParamName] = size;
+            params[options.totalFileSizeParam] = size;
 
             if (blobData) {
                 /**

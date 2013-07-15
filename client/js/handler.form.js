@@ -190,7 +190,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChanged, logCal
             endpoint = options.endpointStore.getEndpoint(id),
             url = endpoint;
 
-        params[options.uuidParamName] = uuids[id];
+        params[options.uuidParam] = uuids[id];
 
         if (newNames[id] !== undefined) {
             params[options.filenameParam] = newNames[id];

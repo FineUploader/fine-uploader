@@ -269,16 +269,10 @@ qq.basePrivateApi = {
         var self = this,
             options = {
                 debug: this._options.debug,
-                forceMultipart: this._options.request.forceMultipart,
                 maxConnections: this._options.maxConnections,
-                customHeaders: this._options.request.customHeaders,
                 inputName: this._options.request.inputName,
-                uuidParamName: this._options.request.uuidName,
-                filenameParam: this._options.request.filenameParam,
-                totalFileSizeParamName: this._options.request.totalFileSizeName,
                 cors: this._options.cors,
                 demoMode: this._options.demoMode,
-                paramsInBody: this._options.request.paramsInBody,
                 paramsStore: this._paramsStore,
                 endpointStore: this._endpointStore,
                 chunking: this._options.chunking,
@@ -335,6 +329,10 @@ qq.basePrivateApi = {
                     self._uploadData.uuidChanged(id, newUuid);
                 }
             };
+
+        qq.each(this._options.request, function(prop, val) {
+            options[prop] = val;
+        });
 
         if (additionalOptions) {
             qq.each(additionalOptions, function(key, val) {
