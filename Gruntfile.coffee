@@ -580,7 +580,7 @@ module.exports = (grunt) ->
                 interrupt: true
                 debounceDelay: 250
             js:
-                files: ['./client/js/*.js']
+                files: ['./client/js/*.js', './client/js/s3/*.js']
                 tasks: [
                     'build'
                     'copy:test'
