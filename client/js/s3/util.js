@@ -47,7 +47,7 @@ qq.s3.util = qq.s3.util || (function() {
         /**
          * Create a policy document to be signed and sent along with the S3 upload request.
          *
-         * @param spec Object with properties: `endpoint`, `key`, `acl`, `type`, `expectedStatus`, and `params`.
+         * @param spec Object with properties: `endpoint`, `key`, `acl`, `type`, `expectedStatus`, `params`, `minFileSize`, and `maxFileSize`.
          * @returns {Object} Policy doc.
          */
         getPolicy: function(spec) {
@@ -59,7 +59,9 @@ qq.s3.util = qq.s3.util || (function() {
                 type = spec.type,
                 expirationDate = new Date(),
                 expectedStatus = spec.expectedStatus,
-                params = spec.params;
+                params = spec.params,
+                minFileSize = spec.minFileSize,
+                maxFileSize = spec.maxFileSize;
 
             // Is this going to be a problem if we encounter this moments before 2 AM just before daylight savings time ends?
             expirationDate.setMinutes(expirationDate.getMinutes() + 5);
@@ -68,7 +70,7 @@ qq.s3.util = qq.s3.util || (function() {
             conditions.push({acl: acl});
             conditions.push({bucket: bucket});
             conditions.push({"Content-Type": type});
-            conditions.push({success_action_status: new String(expectedStatus)});
+            conditions.push({success_action_status: expectedStatus.toString()});
             conditions.push({key: key});
 
             qq.each(params, function(name, val) {
@@ -81,12 +83,17 @@ qq.s3.util = qq.s3.util || (function() {
 
             policy.conditions = conditions;
 
+            qq.s3.util.enforceSizeLimits(policy, minFileSize, maxFileSize);
+
             return policy;
         },
 
         /**
          * Generates all parameters to be passed along with the S3 upload request.  This includes invoking a callback
-         * that is expected to asynchronously retrieve a signature for the policy document.
+         * that is expected to asynchronously retrieve a signature for the policy document.  Note that the server
+         * signing the request should reject a "tainted" policy document that includes unexpected values, since it is
+         * still possible for a malicious user to tamper with these values during policy document generation, b
+         * before it is sent to the server for signing.
          *
          * @param spec Object with properties: `params`, `type`, `key`, `accessKey`, `acl`, `expectedStatus`,
          * and `log()`, along with any options associated with `qq.s3.util.getPolicy()`.
@@ -118,6 +125,7 @@ qq.s3.util = qq.s3.util || (function() {
 
             // Invoke a promissory callback that should provide us with a base64-encoded policy doc and an
             // HMAC signature for the policy doc.
+            // TODO handle rejection of "tainted" policy docs by the signing server
             signPolicyCallback(policyJson).then(
                 function(policyAndSignature) {
                     awsParams.policy = policyAndSignature.policy;
@@ -131,6 +139,25 @@ qq.s3.util = qq.s3.util || (function() {
             );
 
             return promise;
+        },
+
+        /**
+         * Add a condition to an existing S3 upload request policy document used to ensure AWS enforces any size
+         * restrictions placed on files server-side.  This is important to do, in case users mess with the client-side
+         * checks already in place.
+         *
+         * @param policy Policy document as an `Object`, with a `conditions` property already attached
+         * @param minSize Minimum acceptable size, in bytes
+         * @param maxSize Maximum acceptable size, in bytes (0 = unlimited)
+         */
+        enforceSizeLimits: function(policy, minSize, maxSize) {
+            var adjustedMinSize = minSize < 0 ? 0 : minSize,
+                // Adjust a maxSize of 0 to the largest possible integer, since we must specify a high and a low in the request
+                adjustedMaxSize = maxSize <= 0 ? 9007199254740992 : maxSize;
+
+            if (minSize > 0 || maxSize > 0) {
+                policy.conditions.push(['content-length-range', adjustedMinSize.toString(), adjustedMaxSize.toString()]);
+            }
         }
     };
 }());

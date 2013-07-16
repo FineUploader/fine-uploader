@@ -55,7 +55,12 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
      */
     _createUploadHandler: function() {
         var additionalOptions = {
-            getKeyName: qq.bind(this._determineKeyName, this)
+            getKeyName: qq.bind(this._determineKeyName, this),
+            // pass size limit validation values to include in the request so AWS enforces this server-side
+            validation: {
+                minSizeLimit: this._options.validation.minSizeLimit,
+                maxSizeLimit: this._options.validation.sizeLimit
+            }
         };
 
         return qq.FineUploaderBasic.prototype._createUploadHandler.call(this, additionalOptions, "s3");

@@ -12,6 +12,16 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
     var fileState = [],
         expectedStatus = 200,
+        onProgress = options.onProgress,
+        onComplete = options.onComplete,
+        onUpload = options.onUpload,
+        onGetKeyName = options.getKeyName,
+        filenameParam = options.filenameParam,
+        paramsStore = options.paramsStore,
+        endpointStore = options.endpointStore,
+        accessKey = options.accessKey,
+        acl = options.acl,
+        validation = options.validation,
         getSignatureAjaxRequester = new qq.s3.PolicySignatureAjaxRequestor({
             endpoint: options.signatureEndpoint,
             cors: options.cors,
@@ -42,7 +52,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         xhr.upload.onprogress = function(e){
             if (e.lengthComputable){
                 fileState[id].loaded = e.loaded;
-                options.onProgress(id, name, e.loaded, e.total);
+                onProgress(id, name, e.loaded, e.total);
             }
         };
 
@@ -66,17 +76,19 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     }
 
     function generateAwsParams(id) {
-        var customParams = options.paramsStore.getParams(id);
-        customParams[options.filenameParam] = api.getName(id);
+        var customParams = paramsStore.getParams(id);
+        customParams[filenameParam] = api.getName(id);
 
         return qq.s3.util.generateAwsParams({
-                endpoint: options.endpointStore.getEndpoint(id),
+                endpoint: endpointStore.getEndpoint(id),
                 params: customParams,
                 type: fileState[id].type,
                 key: fileState[id].key,
-                accessKey: options.accessKey,
-                acl: options.acl,
+                accessKey: accessKey,
+                acl: acl,
                 expectedStatus: expectedStatus,
+                minFileSize: validation.minSizeLimit,
+                maxFileSize: validation.maxSizeLimit,
                 log: log
             },
             qq.bind(getSignatureAjaxRequester.getSignature, this, id));
@@ -84,7 +96,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
     function prepareForSend(id, fileOrBlob) {
         var formData = new FormData(),
-            endpoint = options.endpointStore.getEndpoint(id),
+            endpoint = endpointStore.getEndpoint(id),
             url = endpoint,
             xhr = fileState[id].xhr,
             promise = new qq.Promise();
@@ -143,8 +155,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         //TODO better logging here
         qq.log('COMPLETE!');
 
-        options.onProgress(id, name, size, size);
-        options.onComplete(id, name, response, xhr);
+        onProgress(id, name, size, size);
+        onComplete(id, name, response, xhr);
 
         if (fileState[id]) {
             delete fileState[id].xhr;
@@ -269,15 +281,15 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
             if (this.isValid(id)) {
                 if (fileState[id].key) {
-                    options.onUpload(id, name);
+                    onUpload(id, name);
                     handleUpload(id);
                 }
                 else {
                     // The S3 uploader module will either calculate the key or ask the server for it
                     // and will call us back once it is known.
-                    options.getKeyName(id, name).then(function(key) {
+                    onGetKeyName(id, name).then(function(key) {
                         fileState[id].key = key;
-                        options.onUpload(id, name);
+                        onUpload(id, name);
                         handleUpload(id);
                     });
                 }
