@@ -10,11 +10,7 @@ $ ->
             endpoint: "http://fineuploadertest.s3.amazonaws.com"
             accessKey: 'AKIAJLRYC5FTY3VRRTDA'
             signatureEndpoint: '/upload/s3signer'
-#            keyname: (id) ->
-#                promise = new qq.Promise()
-#                getkey = -> promise.success('blahblah' + qq.getUniqueId())
-#                setTimeout getkey, 5000
-#                return promise
+            successEndpoint: '/upload/s3success'
         chunking:
             enabled: true
         resume:
@@ -24,7 +20,7 @@ $ ->
             showButton: true
         deleteFile:
             enabled: true
-            endpoint: '/upload/receiver'
+            endpoint: '/upload/s3delete'
             forceConfirm: true
             params:
                 foo: "bar"
