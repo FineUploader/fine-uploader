@@ -21,6 +21,11 @@
         <servlet-class>fineuploader.S3Success</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>S3Delete</servlet-name>
+        <servlet-class>fineuploader.S3Delete</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>UploadReceiver</servlet-name>
         <url-pattern>/upload/receiver/*</url-pattern>
@@ -34,5 +39,10 @@
     <servlet-mapping>
         <servlet-name>S3Success</servlet-name>
         <url-pattern>/upload/s3success/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>S3Delete</servlet-name>
+        <url-pattern>/upload/s3delete/*</url-pattern>
     </servlet-mapping>
 </web-app>

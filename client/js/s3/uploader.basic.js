@@ -185,5 +185,15 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
         }
 
         return success;
+    },
+
+    // Hooks into the base internal `_onSubmitDelete` to add key and bucket params to the delete file request.
+    _onSubmitDelete: function(id, onSuccessCallback) {
+        var additionalMandatedParams = {
+            key: this.getKey(id),
+            bucket: qq.s3.util.getBucket(this._endpointStore.getEndpoint(id))
+        };
+
+        qq.FineUploaderBasic.prototype._onSubmitDelete.call(this, id, onSuccessCallback, additionalMandatedParams);
     }
 });

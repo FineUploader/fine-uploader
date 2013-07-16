@@ -370,16 +370,16 @@ qq.uiPrivateApi = {
         }
     },
     _onSubmitDelete: function(id) {
-        var onSuccessCallback = qq.bind(this._onSubmitDeleteSuccess, this, id);
+        var onSuccessCallback = qq.bind(this._onSubmitDeleteSuccess, this);
 
         this._parent.prototype._onSubmitDelete.call(this, id, onSuccessCallback);
     },
-    _onSubmitDeleteSuccess: function(id) {
+    _onSubmitDeleteSuccess: function(id, uuid, additionalMandatedParams) {
         if (this._options.deleteFile.forceConfirm) {
-            this._showDeleteConfirm(id);
+            this._showDeleteConfirm.apply(this, arguments);
         }
         else {
-            this._sendDeleteRequest(id);
+            this._sendDeleteRequest.apply(this, arguments);
         }
     },
     _onDeleteComplete: function(id, xhr, isError) {
@@ -399,7 +399,7 @@ qq.uiPrivateApi = {
             this._removeFileItem(id);
         }
     },
-    _sendDeleteRequest: function(id) {
+    _sendDeleteRequest: function(id, uuid, additionalMandatedParams) {
         var item = this.getItemByFileId(id),
             deleteLink = this._find(item, 'deleteButton'),
             statusTextEl = this._find(item, 'statusText');
@@ -407,16 +407,17 @@ qq.uiPrivateApi = {
         qq(deleteLink).hide();
         this._showSpinner(id);
         qq(statusTextEl).setText(this._options.deleteFile.deletingStatusText);
-        this._deleteHandler.sendDelete(id, this.getUuid(id));
+        this._deleteHandler.sendDelete.apply(this, arguments);
     },
-    _showDeleteConfirm: function(id) {
+    _showDeleteConfirm: function(id, uuid, mandatedParams) {
         var fileName = this._handler.getName(id),
             confirmMessage = this._options.deleteFile.confirmMessage.replace(/\{filename\}/g, fileName),
             uuid = this.getUuid(id),
+            deleteRequestArgs = arguments,
             self = this;
 
         this._options.showConfirm(confirmMessage, function() {
-            self._sendDeleteRequest(id);
+            self._sendDeleteRequest.apply(self, deleteRequestArgs);
         });
     },
     _addToList: function(id, name){

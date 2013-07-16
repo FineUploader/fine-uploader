@@ -497,12 +497,20 @@ qq.basePrivateApi = {
 
         return true;
     },
-    _onSubmitDelete: function(id, onSuccessCallback) {
+    _onSubmitDelete: function(id, onSuccessCallback, additionalMandatedParams) {
+        var uuid = this.getUuid(id),
+            adjustedOnSuccessCallback;
+
+        if (onSuccessCallback) {
+            adjustedOnSuccessCallback = qq.bind(onSuccessCallback, this, id, uuid, additionalMandatedParams);
+        }
+
         if (this._isDeletePossible()) {
             return this._handleCheckedCallback({
                 name: "onSubmitDelete",
                 callback: qq.bind(this._options.callbacks.onSubmitDelete, this, id),
-                onSuccess: onSuccessCallback || qq.bind(this._deleteHandler.sendDelete, this, id, this.getUuid(id)),
+                onSuccess: adjustedOnSuccessCallback ||
+                    qq.bind(this._deleteHandler.sendDelete, this, id, uuid, additionalMandatedParams),
                 identifier: id
             });
         }
