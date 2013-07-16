@@ -30,42 +30,43 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
 
     function handleSignatureReceived(id, xhrOrXdr, isError) {
         var responseJson = xhrOrXdr.responseText,
-            errorMessage = "S3 policy signature request failed!",
             promise = pendingSignatures[id],
-            response;
+            errorMessage, response;
 
         delete pendingSignatures[id];
 
-        // React if the UA indicates failure, either via status or error callback.
-        if (isError) {
-            // If this is an XDR request, the status will not be available.
-            if (xhrOrXdr.status !== undefined) {
-                errorMessage = qq.format("{}  Received response code of {}.", errorMessage, xhrOrXdr.status);
-            }
-
-            options.log(errorMessage, "error");
+        // Attempt to parse what we would expect to be a JSON response
+        if (responseJson) {
+            response = qq.parseJson(responseJson);
         }
 
-        else if (responseJson) {
-            response = qq.parseJson(responseJson);
-
+        // If we have received a parsable response, and it has a `badPolicy` property,
+        // the policy document may have been tampered with client-side.
+        if (response && response.badPolicy) {
+            isError = true;
+            errorMessage = "Invalid policy document!";
+        }
+        // Make sure the response contains policy & signature properties
+        else if (response) {
             if (!response.policy) {
                 isError = true;
-                options.log("Response does not include the base64 encoded policy!", "error");
+                errorMessage = "Response does not include the base64 encoded policy!";
             }
             else if (!response.signature) {
                 isError = true;
-                options.log("Response does not include the base64 encoded signed policy!", "error");
+                errorMessage = "Response does not include the base64 encoded signed policy!";
             }
         }
+        // Something unknown went wrong
         else {
             isError = true;
-            options.log("Received an empty response from the server!", "error");
+            errorMessage = "Received an empty or invalid response from the server!";
         }
 
 
         if (isError) {
-            promise.failure()
+            options.log(errorMessage, "error");
+            promise.failure(errorMessage);
         }
         else {
             promise.success(response);

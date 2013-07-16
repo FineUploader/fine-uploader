@@ -110,6 +110,10 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             formData.append("file", fileOrBlob);
 
             promise.success(formData);
+        },
+        function(errorMessage) {
+            promise.failure(errorMessage);
+            uploadCompleted(id, {error: errorMessage});
         });
 
         return promise;
@@ -146,11 +150,11 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         }
     }
 
-    function uploadCompleted(id) {
+    function uploadCompleted(id, errorDetails) {
         var xhr = fileState[id].xhr,
             name = api.getName(id),
             size = api.getSize(id),
-            response = parseResponse(id);
+            response = errorDetails || parseResponse(id);
 
         //TODO better logging here
         qq.log('COMPLETE!');

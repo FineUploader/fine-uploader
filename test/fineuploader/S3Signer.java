@@ -39,6 +39,7 @@ public class S3Signer extends HttpServlet
             String signedPolicy = getSignedPolicy(base64Policy);
 
             JsonObject response = new JsonObject();
+//            response.addProperty("badPolicy", true);
             response.addProperty("policy", base64Policy);
             response.addProperty("signature", signedPolicy);
 

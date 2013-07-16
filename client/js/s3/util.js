@@ -125,16 +125,18 @@ qq.s3.util = qq.s3.util || (function() {
 
             // Invoke a promissory callback that should provide us with a base64-encoded policy doc and an
             // HMAC signature for the policy doc.
-            // TODO handle rejection of "tainted" policy docs by the signing server
             signPolicyCallback(policyJson).then(
                 function(policyAndSignature) {
                     awsParams.policy = policyAndSignature.policy;
                     awsParams.signature = policyAndSignature.signature;
                     promise.success(awsParams);
                 },
-                function() {
-                    log("Can't continue further with request to S3 as we did not receive " +
-                        "a valid signature and policy from the server.", "error");
+                function(errorMessage) {
+                    errorMessage = errorMessage || "Can't continue further with request to S3 as we did not receive " +
+                                                   "a valid signature and policy from the server."
+
+                    log("Policy signing failed.  " + errorMessage, "error");
+                    promise.failure(errorMessage);
                 }
             );
 
