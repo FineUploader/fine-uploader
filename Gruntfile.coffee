@@ -499,9 +499,10 @@ module.exports = (grunt) ->
                     tunneled: true
                     concurrency: 3
                     identifier: process.env.TRAVIS_JOB_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()
-                    tags: [ process.env.TRAVIS_BRANCH || "local :: " + process.env.SAUCE_USERNAME ]
+                    tags: [ process.env.SAUCE_USERNAME+"@"+process.env.TRAVIS_BRANCH || process.env.SAUCE_USERNAME+"@local"]
                     testname: 'Unit Tests'
                     detailedError: false
+                    build: process.env.TRAVIS_BUILD_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()
                     browsers: browsers
                     ## onTestComplete: (status, page, config, browser) ->
                     ##     done = @async()
@@ -511,7 +512,7 @@ module.exports = (grunt) ->
                     ##         res = JSON.parse res
                     ##         res.browser = config
 
-                    ##         grunt.log.debug '[%s] Results: %j', config.prefix, res 
+                    ##         grunt.log.debug '[%s] Results: %j', config.prefix, res
 
                     ##         data =
                     ##             'custom-data':
@@ -578,7 +579,7 @@ module.exports = (grunt) ->
             Details on contributing pull requests found here: \n
             https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md\n
             '''
-    
+
     # Travis' own test
     # ----------
     grunt.registerTask 'travis-sauce', 'Run tests on Saucelabs', [
@@ -617,7 +618,7 @@ module.exports = (grunt) ->
         'connect:root_server'
     ]
 
-    
+
     # Build
     # ----------
     # @verify
