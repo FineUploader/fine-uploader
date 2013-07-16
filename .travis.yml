@@ -15,8 +15,8 @@ branches:
     only:
         - master
         - develop
-        - /^feature*$/
-        - /^hotfix*$/
+        - /^feature.*$/
+        - /^hotfix.*$/
 env:
   global:
   - secure: |-
