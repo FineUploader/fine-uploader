@@ -1,8 +1,16 @@
 /*globals qq, XMLHttpRequest*/
+/**
+ * Sends a POST request to the server in an attempt to solicit a signature for the S3 upload request policy document.
+ * This module also parses the response and attempts to determine if the effort was successful.
+ *
+ * @param o Options associated with all such requests
+ * @returns {{getSignature: Function}} API method used to initiate the signature request.
+ * @constructor
+ */
 qq.s3.PolicySignatureAjaxRequestor = function(o) {
     "use strict";
 
-    var requestor,
+    var requester,
         validMethods = ["POST"],
         pendingSignatures = [],
         options = {
@@ -73,7 +81,7 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
         }
     }
 
-    requestor = new qq.AjaxRequestor({
+    requester = new qq.AjaxRequestor({
         method: getNormalizedMethod(),
         contentType: "application/json; charset=utf-8",
         endpointStore: {
@@ -108,7 +116,7 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
 
             options.log("Submitting S3 signature request for " + id);
 
-            requestor.send(id, null, params);
+            requester.send(id, null, params);
             pendingSignatures[id] = promise;
 
             return promise;

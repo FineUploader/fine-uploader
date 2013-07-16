@@ -16,6 +16,11 @@
         <servlet-class>fineuploader.S3Signer</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>S3Success</servlet-name>
+        <servlet-class>fineuploader.S3Success</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>UploadReceiver</servlet-name>
         <url-pattern>/upload/receiver/*</url-pattern>
@@ -24,5 +29,10 @@
     <servlet-mapping>
         <servlet-name>S3Signer</servlet-name>
         <url-pattern>/upload/s3signer/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>S3Success</servlet-name>
+        <url-pattern>/upload/s3success/*</url-pattern>
     </servlet-mapping>
 </web-app>

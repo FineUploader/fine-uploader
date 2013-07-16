@@ -7,10 +7,12 @@ qq.s3.FineUploaderBasic = function(o) {
     var options = {
         request: {
             signatureEndpoint: null,
+            successEndpoint: null,
             accessKey: null,
+            acl: 'private',
+
             // 'uuid', 'filename', or a function, which may be promissory
-            key: 'uuid',
-            acl: 'private'
+            key: 'uuid'
         }
     };
 
@@ -146,5 +148,42 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
         else {
             onSuccess(keyname)
         }
+    },
+
+    /**
+     * When the upload has completed, if it is successful, send a request to the `successEndpoint` (if defined).
+     *
+     * @param id ID of the completed upload
+     * @param name Name of the associated item
+     * @param result Object created from the server's parsed JSON response.
+     * @param xhr Associated XmlHttpRequest, if this was used to send the request.
+     * @returns {boolean} true if the upload was successful
+     * @private
+     */
+    _onComplete: function(id, name, result, xhr) {
+        var success = qq.FineUploaderBasic.prototype._onComplete.apply(this, arguments),
+            key = this.getKey(id),
+            successEndpoint = this._options.request.successEndpoint,
+            cors = this._options.cors.expected,
+            uuid = this.getUuid(id),
+            bucket = qq.s3.util.getBucket(this._endpointStore.getEndpoint(id)),
+            successAjaxRequestor;
+
+        if (success && successEndpoint) {
+            successAjaxRequestor = new qq.s3.UploadSuccessAjaxRequester({
+                endpoint: successEndpoint,
+                cors: cors,
+                log: qq.bind(this.log, this)
+            });
+
+            successAjaxRequestor.sendSuccessRequest(id, {
+                key: key,
+                uuid: uuid,
+                name: name,
+                bucket: bucket
+            });
+        }
+
+        return success;
     }
 });

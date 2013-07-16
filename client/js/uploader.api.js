@@ -278,8 +278,8 @@ qq.uiPrivateApi = {
         // Update progress bar element
         qq(progressBar).css({width: percent + '%'});
     },
-    _onComplete: function(id, name, result, xhr){
-        this._parent.prototype._onComplete.apply(this, arguments);
+    _onComplete: function(id, name, result, xhr) {
+        var success = this._parent.prototype._onComplete.apply(this, arguments);
 
         var item = this.getItemByFileId(id);
 
@@ -293,7 +293,7 @@ qq.uiPrivateApi = {
         }
         qq(this._find(item, 'spinner')).hide();
 
-        if (result.success) {
+        if (success) {
             if (this._isDeletePossible()) {
                 this._showDeleteLink(id);
             }
