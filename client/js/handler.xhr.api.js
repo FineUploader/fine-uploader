@@ -25,8 +25,6 @@ qq.UploadHandlerXhrApi = function(fileState, onUpload, log) {
 
     api = {
         /**
-         * TODO eliminate duplication w/ handler.xhr.js
-         *
          * Adds File or Blob to the queue
          * Returns id to use with upload, cancel
          **/
