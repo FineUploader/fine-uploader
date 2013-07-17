@@ -462,7 +462,7 @@ qq.basePrivateApi = {
         this._removeFromFilesInProgress(id);
         this._maybeParseAndSendUploadError(id, name, result, xhr);
 
-        return result.success === true;
+        return result.success ? true : false;
     },
     _onCancel: function(id, name) {
         this._netUploadedOrQueued--;
