@@ -35,6 +35,7 @@ module.exports = (grunt) ->
         './client/js/window.receive.message.js',
         './client/js/handler.base.js',
         './client/js/handler.form.js',
+        './client/js/handler.xhr.api.js',
         './client/js/handler.xhr.js',
         './client/js/ui.handler.events.js',
         './client/js/ui.handler.click.drc.js',

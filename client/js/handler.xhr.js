@@ -546,27 +546,27 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
         xhr.send(toSend);
     }
 
-    function expungeItem(id) {
-        var xhr = fileState[id].xhr;
+    function handleUploadSignal(id, retry) {
+        var name = api.getName(id);
 
-        if (xhr) {
-            xhr.onreadystatechange = null;
-            xhr.abort();
+        if (api.isValid(id)) {
+            options.onUpload(id, name);
+
+            if (chunkFiles) {
+                handleFileChunkingUpload(id, retry);
+            }
+            else {
+                handleStandardFileUpload(id);
+            }
         }
-
-        if (resumeEnabled) {
-            deletePersistedChunkData(id);
-        }
-
-        delete fileState[id];
     }
 
-    api = {
-        /**
-         * Adds File or Blob to the queue
-         * Returns id to use with upload, cancel
-         **/
-        add: function(fileOrBlobData){
+
+    api = new qq.UploadHandlerXhrApi(fileState, handleUploadSignal, log);
+
+    // Base XHR API overrides
+    qq.extend(api, {
+        add: function(fileOrBlobData) {
             var id, persistedChunkData,
                 uuid = qq.getUniqueId();
 
@@ -592,91 +592,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
 
             return id;
         },
-        getName: function(id) {
-            if (api.isValid(id)) {
-                var file = fileState[id].file,
-                    blobData = fileState[id].blobData,
-                    newName = fileState[id].newName;
 
-                if (newName !== undefined) {
-                    return newName;
-                }
-                else if (file) {
-                    // fix missing name in Safari 4
-                    //NOTE: fixed missing name firefox 11.0a2 file.fileName is actually undefined
-                    return (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
-                }
-                else {
-                    return blobData.name;
-                }
-            }
-            else {
-                log(id + " is not a valid item ID.", "error");
-            }
-        },
-        setName: function(id, newName) {
-            fileState[id].newName = newName;
-        },
-        getSize: function(id) {
-            /*jshint eqnull: true*/
-            var fileOrBlob = fileState[id].file || fileState[id].blobData.blob;
-
-            if (qq.isFileOrInput(fileOrBlob)) {
-                return fileOrBlob.fileSize != null ? fileOrBlob.fileSize : fileOrBlob.size;
-            }
-            else {
-                return fileOrBlob.size;
-            }
-        },
-        getFile: function(id) {
-            if (fileState[id]) {
-                return fileState[id].file || fileState[id].blobData.blob;
-            }
-        },
-        isValid: function(id) {
-            return fileState[id] !== undefined;
-        },
-        reset: function() {
-            fileState = [];
-        },
-        expunge: function(id) {
-            return expungeItem(id);
-        },
-        getUuid: function(id) {
-            return fileState[id].uuid;
-        },
-        /**
-         * Sends the file identified by id to the server
-         */
-        upload: function(id, retry) {
-            var name = this.getName(id);
-
-            if (this.isValid(id)) {
-                options.onUpload(id, name);
-
-                if (chunkFiles) {
-                    handleFileChunkingUpload(id, retry);
-                }
-                else {
-                    handleStandardFileUpload(id);
-                }
-            }
-        },
-        cancel: function(id) {
-            var onCancelRetVal = options.onCancel(id, this.getName(id));
-
-            if (qq.isPromise(onCancelRetVal)) {
-                return onCancelRetVal.then(function() {
-                    expungeItem(id);
-                });
-            }
-            else if (onCancelRetVal !== false) {
-                expungeItem(id);
-                return true;
-            }
-
-            return false;
-        },
         getResumableFilesData: function() {
             var matchingCookieNames = [],
                 resumableFilesData = [];
@@ -707,8 +623,23 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
                 return resumableFilesData;
             }
             return [];
+        },
+
+        expungeItem: function(id) {
+            var xhr = fileState[id].xhr;
+
+            if (xhr) {
+                xhr.onreadystatechange = null;
+                xhr.abort();
+            }
+
+            if (resumeEnabled) {
+                deletePersistedChunkData(id);
+            }
+
+            delete fileState[id];
         }
-    };
+    });
 
     return api;
 };

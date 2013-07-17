@@ -42,7 +42,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     function handleUpload(id) {
         var fileOrBlob = fileState[id].file || fileState[id].blobData.blob,
             name = api.getName(id),
-            xhr, params, toSend;
+            xhr;
 
         fileState[id].loaded = 0;
         fileState[id].type = fileOrBlob.type;
@@ -169,154 +169,28 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         uploadCompleteCallback(id);
     }
 
-    // TODO eliminate duplication w/ handler.xhr.js
-    function expungeItem(id) {
-        var xhr = fileState[id].xhr;
+    function handleStartUploadSignal(id, retry) {
+        var name = api.getName(id);
 
-        if (xhr) {
-            xhr.onreadystatechange = null;
-            xhr.abort();
+        if (api.isValid(id)) {
+            if (fileState[id].key) {
+                onUpload(id, name);
+                handleUpload(id);
+            }
+            else {
+                // The S3 uploader module will either calculate the key or ask the server for it
+                // and will call us back once it is known.
+                onGetKeyName(id, name).then(function(key) {
+                    fileState[id].key = key;
+                    onUpload(id, name);
+                    handleUpload(id);
+                });
+            }
         }
-
-        delete fileState[id];
     }
 
 
-    api = {
-        /**
-         * TODO eliminate duplication w/ handler.xhr.js
-         *
-         * Adds File or Blob to the queue
-         * Returns id to use with upload, cancel
-         **/
-        add: function(fileOrBlobData){
-            var id,
-                uuid = qq.getUniqueId();
-
-            if (qq.isFile(fileOrBlobData)) {
-                id = fileState.push({file: fileOrBlobData}) - 1;
-            }
-            else if (qq.isBlob(fileOrBlobData.blob)) {
-                id = fileState.push({blobData: fileOrBlobData}) - 1;
-            }
-            else {
-                throw new Error('Passed obj in not a File or BlobData (in qq.UploadHandlerXhr)');
-            }
-
-            fileState[id].uuid = uuid;
-
-            return id;
-        },
-
-        // TODO eliminate duplication w/ handler.xhr.js
-        getName: function(id) {
-            if (api.isValid(id)) {
-                var file = fileState[id].file,
-                    blobData = fileState[id].blobData,
-                    newName = fileState[id].newName;
-
-                if (newName !== undefined) {
-                    return newName;
-                }
-                else if (file) {
-                    // fix missing name in Safari 4
-                    //NOTE: fixed missing name firefox 11.0a2 file.fileName is actually undefined
-                    return (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
-                }
-                else {
-                    return blobData.name;
-                }
-            }
-            else {
-                log(id + " is not a valid item ID.", "error");
-            }
-        },
-
-        // TODO eliminate duplication w/ handler.xhr.js
-        setName: function(id, newName) {
-            fileState[id].newName = newName;
-        },
-
-        // TODO eliminate duplication w/ handler.xhr.js
-        getSize: function(id) {
-            /*jshint eqnull: true*/
-            var fileOrBlob = fileState[id].file || fileState[id].blobData.blob;
-
-            if (qq.isFileOrInput(fileOrBlob)) {
-                return fileOrBlob.fileSize != null ? fileOrBlob.fileSize : fileOrBlob.size;
-            }
-            else {
-                return fileOrBlob.size;
-            }
-        },
-
-        // TODO eliminate duplication w/ handler.xhr.js
-        getFile: function(id) {
-            if (fileState[id]) {
-                return fileState[id].file || fileState[id].blobData.blob;
-            }
-        },
-
-        // TODO eliminate duplication w/ handler.xhr.js
-        isValid: function(id) {
-            return fileState[id] !== undefined;
-        },
-
-        // TODO eliminate duplication w/ handler.xhr.js
-        reset: function() {
-            fileState = [];
-        },
-
-        // TODO eliminate duplication w/ handler.xhr.js
-        expunge: function(id) {
-            return expungeItem(id);
-        },
-
-        // TODO eliminate duplication w/ handler.xhr.js
-        getUuid: function(id) {
-            return fileState[id].uuid;
-        },
-
-        /**
-         * Sends the file identified by id to the server
-         */
-        upload: function(id, retry) {
-            var name = this.getName(id);
-
-            if (this.isValid(id)) {
-                if (fileState[id].key) {
-                    onUpload(id, name);
-                    handleUpload(id);
-                }
-                else {
-                    // The S3 uploader module will either calculate the key or ask the server for it
-                    // and will call us back once it is known.
-                    onGetKeyName(id, name).then(function(key) {
-                        fileState[id].key = key;
-                        onUpload(id, name);
-                        handleUpload(id);
-                    });
-                }
-            }
-        },
-
-        // TODO eliminate duplication w/ handler.xhr.js
-        cancel: function(id) {
-            var onCancelRetVal = options.onCancel(id, this.getName(id));
-
-            if (qq.isPromise(onCancelRetVal)) {
-                return onCancelRetVal.then(function() {
-                    expungeItem(id);
-                });
-            }
-            else if (onCancelRetVal !== false) {
-                expungeItem(id);
-                return true;
-            }
-
-            return false;
-        }
-    };
+    api = new qq.UploadHandlerXhrApi(fileState, handleStartUploadSignal, log);
 
     return api;
 };
