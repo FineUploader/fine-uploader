@@ -45,7 +45,12 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
 
         // Attempt to parse what we would expect to be a JSON response
         if (responseJson) {
-            response = qq.parseJson(responseJson);
+            try {
+                response = qq.parseJson(responseJson);
+            }
+            catch (error) {
+                options.log('Error attempting to parse signature response: ' + error, "error");
+            }
         }
 
         // If we have received a parsable response, and it has a `badPolicy` property,
