@@ -1,0 +1,43 @@
+# .htaccess file for docs.fineuploader.com
+#
+# The plan:
+# * the directory structure of the docs is liek so:
+#       ~/docs.fineuploader.com/<branch_or_tag>/<branch_or_tag_value>/{html,assets}/<path>
+# We simply want to make requets for root foward to the 'master' branch and we want 
+# to strip out `html` in all the paths.
+
+SetEnvIf Request_URI ^(?!/hook.php) no_require_auth=true
+
+AuthType Basic
+AuthName "Password protected"
+AuthUserFile /home/fineuploaderdocs/docs.fineuploader.com/.htpasswd
+Require valid-user
+
+Order Deny,Allow
+Deny from all
+Satisfy any
+Require valid-user
+Allow from env=no_require_auth
+
+Options +FollowSymLinks
+RewriteEngine On
+RewriteBase /
+
+# enable hook.php
+RewriteRule ^hook.php$ hook.php [L]
+# set master branch as root 
+RewriteRule ^(?!branch/)(.*)$ branch/master/$1 [PT,L]
+
+# Strip '.html' from pages
+#RewriteRule (.*).html$ /$1 [PT,N]
+
+# forward other branches/tags to their html pages 
+#RewriteRule ^(branch|tag)/([\w\d-_.]+)/?$ /$1/$2/html/index.html [PT,N]
+#RewriteRule ^(branch|tag)/([\w\d-_.]+)(?!/html)/([\w\d-_.^/]+)/?$ /$1/$2/html/$3 [PT,N]
+#RewriteRule ^(branch|tag)/([\w\d-_.]+)(?!/html)/([\w\d-_.^/]+)(.*)$ /$1/$2/html/$3/$4 [PT,N]
+#RewriteRule ^(branch|tag)/([\w\d-_.]+)(?!/html)/([\w\d-_.^/]+)(.*)\.html$ /$1/$2/html/$3/$4.html [PT,N]
+#RewriteRule ^(\w+)(?:/)? $1 [PT,L]
+#RewriteRule ^(\w+)/([\w\d_-])+(?:/)?$ $1/$2/html/ [PT,L]
+#RewriteRule ^(\w+)/([\w\d\-_.]+)(?:/(?:html(?:/)?)?)?$ $1/$2/html [PT,L]
+#RewriteRule ^(\w+)/([\w\d\-_.]+)(?:/(.*)$ $1/$2/html/$3.html [PT,L]
+#RewriteRule ^(\w+)/([\w\d\-_.]+)(?:/)?$ $1/$2/html/ [PT,L]
