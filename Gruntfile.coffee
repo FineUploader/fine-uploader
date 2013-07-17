@@ -589,7 +589,7 @@ module.exports = (grunt) ->
                     'mocha'
                 ]
             test:
-                files: ['./test/unit/*.js']
+                files: ['./test/unit/*.js', './test/unit/s3/*.js']
                 tasks: [
                     'jshint:tests'
                     'test'

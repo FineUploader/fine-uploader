@@ -9,39 +9,11 @@ qq.s3.util = qq.s3.util || (function() {
          * @returns {String || undefined} The bucket name, or undefined if the URL cannot be parsed.
          */
         getBucket: function(endpoint) {
-            var match = /^https?:\/\/([a-z0-9]+)\.s3\.amazonaws\.com/i.exec(endpoint);
+            var match = /^https?:\/\/([a-z0-9.\-]+)\.s3\.amazonaws\.com/i.exec(endpoint);
 
             if (match) {
                 return match[1];
             }
-        },
-
-        /**
-         * Escape characters per [AWS guidelines](http://docs.aws.amazon.com/AmazonS3/latest/dev/HTTPPOSTForms.html#HTTPPOSTEscaping).
-         *
-         * @param original Non-escaped string
-         * @returns {string} Escaped string
-         */
-        getAwsEncodedStr: function(original) {
-            var encoded = "";
-
-            qq.each(original, function(idx, char) {
-                var encodedChar = char;
-
-                if (char.charCodeAt(0) > 255) {
-                    encodedChar = escape(char).replace('%', '\\');
-                }
-                else if (char === '$') {
-                    encodedChar = "\\$";
-                }
-                else if (char === '\\') {
-                    encodedChar = '\\\\';
-                }
-
-                encoded += encodedChar;
-            });
-
-            return encoded;
         },
 
         /**
@@ -77,7 +49,7 @@ qq.s3.util = qq.s3.util || (function() {
                 var awsParamName = qq.s3.util.AWS_PARAM_PREFIX + name,
                     param = {};
 
-                param[awsParamName] = qq.s3.util.getAwsEncodedStr(val);
+                param[awsParamName] = val;
                 conditions.push(param);
             });
 
@@ -120,7 +92,7 @@ qq.s3.util = qq.s3.util || (function() {
             // Custom (user-supplied) params must be prefixed with the value of `qq.s3.util.AWS_PARAM_PREFIX`.
             qq.each(customParams, function(name, val) {
                 var awsParamName = qq.s3.util.AWS_PARAM_PREFIX + name;
-                awsParams[awsParamName] = qq.s3.util.getAwsEncodedStr(val);
+                awsParams[awsParamName] = val;
             });
 
             // Invoke a promissory callback that should provide us with a base64-encoded policy doc and an
