@@ -1,9 +1,8 @@
 /*globals qq, File, XMLHttpRequest, FormData, Blob*/
-qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCallback) {
+qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, logCallback) {
     "use strict";
     
-    var options = o,
-        uploadComplete = uploadCompleteCallback,
+    var uploadComplete = uploadCompleteCallback,
         log = logCallback,
         fileState = [],
         cookieItemDelimiter = "|",
@@ -276,9 +275,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
             response = qq.parseJson(xhr.responseText);
 
             if (response.newUuid !== undefined) {
-                log("Server requested UUID change from '" + fileState[id].uuid + "' to '" + response.newUuid + "'");
-                fileState[id].uuid = response.newUuid;
-                onUuidChanged(id, response.newUuid);
+                api.setUuid(id, response.newUuid);
             }
         }
         catch(error) {
@@ -562,7 +559,7 @@ qq.UploadHandlerXhr = function(o, uploadCompleteCallback, onUuidChanged, logCall
     }
 
 
-    api = new qq.UploadHandlerXhrApi(fileState, handleUploadSignal, log);
+    api = new qq.UploadHandlerXhrApi(fileState, handleUploadSignal, options.onCancel, onUuidChanged, log);
 
     // Base XHR API overrides
     qq.extend(api, {

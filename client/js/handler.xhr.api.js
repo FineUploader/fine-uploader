@@ -4,11 +4,13 @@
  *
  * @param fileState An array containing objects that describe files tracked by the XHR upload handler.
  * @param onUpload Used to call the specific XHR upload handler when an upload has been request.
+ * @param onCancel Invoked when a request is handled to cancel an in-progress upload.  Invoked before the upload is actually cancelled.
+ * @param onUuidChanged Callback to be invoked when the internal UUID is altered.
  * @param log Method used to send messages to the log.
  * @returns Various methods
  * @constructor
  */
-qq.UploadHandlerXhrApi = function(fileState, onUpload, log) {
+qq.UploadHandlerXhrApi = function(fileState, onUpload, onCancel, onUuidChanged, log) {
     var api;
 
     function expungeItem(id) {
@@ -116,7 +118,7 @@ qq.UploadHandlerXhrApi = function(fileState, onUpload, log) {
         },
 
         cancel: function(id) {
-            var onCancelRetVal = options.onCancel(id, api.getName(id));
+            var onCancelRetVal = onCancel(id, api.getName(id));
 
             if (qq.isPromise(onCancelRetVal)) {
                 return onCancelRetVal.then(function() {
@@ -129,6 +131,12 @@ qq.UploadHandlerXhrApi = function(fileState, onUpload, log) {
             }
 
             return false;
+        },
+
+        setUuid: function(id, newUuid) {
+            log("Server requested UUID change from '" + fileState[id].uuid + "' to '" + newUuid + "'");
+            fileState[id].uuid = newUuid;
+            onUuidChanged(id, newUuid);
         }
     };
 

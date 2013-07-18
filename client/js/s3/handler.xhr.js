@@ -190,7 +190,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     }
 
 
-    api = new qq.UploadHandlerXhrApi(fileState, handleStartUploadSignal, log);
+    api = new qq.UploadHandlerXhrApi(fileState, handleStartUploadSignal, options.onCancel, onUuidChanged, log);
 
     return api;
 };

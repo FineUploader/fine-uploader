@@ -146,9 +146,7 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChanged, logCal
             response = qq.parseJson(innerHtmlOrMessage);
 
             if (response.newUuid !== undefined) {
-                log("Server requested UUID change from '" + uuids[id] + "' to '" + response.newUuid + "'");
-                uuids[id] = response.newUuid;
-                onUuidChanged(id, response.newUuid);
+                api.setUuid(id, response.newUuid);
             }
         }
         catch(error) {
@@ -344,6 +342,12 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChanged, logCal
             log('Sending upload request for ' + id);
             form.submit();
             qq(form).remove();
+        },
+
+        setUuid: function(id, newUuid) {
+            log("Server requested UUID change from '" + uuids[id] + "' to '" + newUuid + "'");
+            uuids[id] = newUuid;
+            onUuidChanged(id, newUuid);
         }
     };
 

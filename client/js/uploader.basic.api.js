@@ -168,6 +168,9 @@ qq.basePublicApi = {
     getUuid: function(id) {
         return this._handler.getUuid(id);
     },
+    setUuid: function(id, newUuid) {
+        return this._handler.setUuid(id, newUuid);
+    },
     getResumableFilesData: function() {
         return this._handler.getResumableFilesData();
     },

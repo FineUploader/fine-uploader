@@ -84,10 +84,10 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
             keynameLogic = this._options.request.key,
             extension = qq.getExtension(filename),
             onGetKeynameFailure = promise.failure,
-            onGetKeynameSuccess = function(keyname) {
-                var keynameToUse = keyname || filename;
+            onGetKeynameSuccess = function(keyname, extension) {
+                var keynameToUse = keyname;
 
-                if (keyname && extension !== undefined) {
+                if (extension !== undefined) {
                     self.keys[id] = keynameToUse + "." + extension;
                 }
                 else {
@@ -99,10 +99,10 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
 
         switch(keynameLogic) {
             case 'uuid':
-                onGetKeynameSuccess(this.getUuid(id));
+                onGetKeynameSuccess(this.getUuid(id), extension);
                 break;
             case 'filename':
-                onGetKeynameSuccess();
+                onGetKeynameSuccess(filename);
                 break;
             default:
                 if (qq.isFunction(keynameLogic)) {

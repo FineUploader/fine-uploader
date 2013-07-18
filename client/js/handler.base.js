@@ -188,6 +188,9 @@ qq.UploadHandler = function(o, namespace) {
         getUuid: function(id) {
             return handlerImpl.getUuid(id);
         },
+        setUuid: function(id, newUuid) {
+            return handlerImpl.setUuid(id, newUuid);
+        },
         /**
          * Determine if the file exists.
          */
