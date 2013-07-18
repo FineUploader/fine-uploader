@@ -140,7 +140,7 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
 
 
         if (qq.isPromise(keyname)) {
-            keynameFunc(id).then(onSuccess, onFailure);
+            keyname.then(onSuccess, onFailure);
         }
         else if (keyname == null) {
             onFailure();
