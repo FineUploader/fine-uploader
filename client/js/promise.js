@@ -33,7 +33,7 @@ qq.Promise = function() {
                 doneCallbacks.push(callback);
             }
             else {
-                callback();
+                callback(failureValue === undefined ? successValue : failureValue);
             }
 
             return this;
@@ -51,7 +51,7 @@ qq.Promise = function() {
 
             if(doneCallbacks.length) {
                 qq.each(doneCallbacks, function(idx, callback) {
-                    callback();
+                    callback(val);
                 })
             }
 
@@ -70,7 +70,7 @@ qq.Promise = function() {
 
             if(doneCallbacks.length) {
                 qq.each(doneCallbacks, function(idx, callback) {
-                    callback();
+                    callback(val);
                 })
             }
 
