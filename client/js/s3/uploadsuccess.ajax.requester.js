@@ -40,6 +40,8 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
     function handleSuccessResponse(id, xhrOrXdr, isError) {
         var promise = pendingRequests[id],
             responseJson = xhrOrXdr.responseText,
+            successIndicator = {success: true},
+            failureIndicator = {success: false},
             parsedResponse;
 
         delete pendingRequests[id];
@@ -51,22 +53,22 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
 
             if (isError) {
                 options.log('Upload success request was rejected by the server.', 'error');
-                promise.failure(parsedResponse);
+                promise.failure(qq.extend(parsedResponse, failureIndicator));
             }
             else {
                 options.log('Upload success was acknowledged by the server.');
-                promise.success(parsedResponse);
+                promise.success(qq.extend(parsedResponse, successIndicator));
             }
         }
         catch (error) {
             // This will be executed if a JSON response is not present.  This is not mandatory, so account for this properly.
             if (isError) {
                 options.log(qq.format('Your server indicated failure in its AWS upload success request response for id {}!', id), 'error');
-                promise.failure({success: false});
+                promise.failure(failureIndicator);
             }
             else {
                 options.log('Upload success was acknowledged by the server.');
-                promise.success({success: true});
+                promise.success(successIndicator);
             }
         }
     }
