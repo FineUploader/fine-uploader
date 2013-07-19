@@ -156,8 +156,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             size = api.getSize(id),
             response = errorDetails || parseResponse(id);
 
-        //TODO better logging here
-        qq.log('COMPLETE!');
+        qq.log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
 
         onProgress(id, name, size, size);
         onComplete(id, name, response, xhr);
