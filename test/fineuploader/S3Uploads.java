@@ -19,11 +19,18 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * Servlet used to handle various requests sent by Fine Uploader when using the "upload directly to S3" module.
+ */
 public class S3Uploads extends HttpServlet
 {
+    // This assumes your secret key is available in an environment variable.
+    // It is needed to sign policy documents.
     final String AWS_SECRET_KEY = System.getenv("AWS_SECRET_KEY");
 
 
+    // Main entry point for POST requests from Fine Uploader.  This currently assumes delete file requests use the
+    // default method of DELETE, but that can be adjusted.
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         if (req.getServletPath().endsWith("s3/signature"))
@@ -36,6 +43,7 @@ public class S3Uploads extends HttpServlet
         }
     }
 
+    // Main entry point for DELETE requests sent by Fine Uploader.
     @Override
     public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
@@ -49,6 +57,9 @@ public class S3Uploads extends HttpServlet
         s3Client.deleteObject(bucket, key);
     }
 
+    // Called by the main POST request handler if Fine Uploader has asked for a policy document to be signed.
+    // After validating the policy document, this will base-64 encode the policy document, sign it,
+    // and then return the base-64 policy document and the signed policy document as properties in a JSON response.
     private void handleSignatureRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         resp.setContentType("application/json");
@@ -63,7 +74,11 @@ public class S3Uploads extends HttpServlet
             String signedPolicy = getSignedPolicy(base64Policy);
 
             JsonObject response = new JsonObject();
+
+            // Validate the policy document to ensure the client hasn't tampered with it.
+            // If it has been tampered with, set this property on the response and set the status to a non-200 value.
 //            response.addProperty("badPolicy", true);
+
             response.addProperty("policy", base64Policy);
             response.addProperty("signature", signedPolicy);
 
@@ -75,6 +90,9 @@ public class S3Uploads extends HttpServlet
         }
     }
 
+    // Called by the main POST request handler if Fine Uploader has indicated that the file has been
+    // successfully sent to S3.  You have the opportunity here to examine the file in S3 and "fail" the upload
+    // if something in not correct.
     private void handleUploadSuccessRequest(HttpServletRequest req, HttpServletResponse resp)
     {
         String key = req.getParameter("key");
