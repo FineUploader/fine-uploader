@@ -289,8 +289,18 @@ qq.basePrivateApi = {
                     self._options.callbacks.onProgress(id, name, loaded, total);
                 },
                 onComplete: function(id, name, result, xhr){
-                    self._onComplete(id, name, result, xhr);
-                    self._options.callbacks.onComplete(id, name, result, xhr);
+                    var retVal = self._onComplete(id, name, result, xhr);
+
+                    // If the internal `_onComplete` handler returns a promise, don't invoke the `onComplete` callback
+                    // until the promise has been fulfilled.
+                    if (qq.isPromise(retVal)) {
+                        retVal.done(function() {
+                            self._options.callbacks.onComplete(id, name, result, xhr);
+                        });
+                    }
+                    else {
+                        self._options.callbacks.onComplete(id, name, result, xhr);
+                    }
                 },
                 onCancel: function(id, name) {
                     return self._handleCheckedCallback({

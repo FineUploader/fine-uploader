@@ -279,41 +279,58 @@ qq.uiPrivateApi = {
         qq(progressBar).css({width: percent + '%'});
     },
     _onComplete: function(id, name, result, xhr) {
-        var success = this._parent.prototype._onComplete.apply(this, arguments);
+        var parentRetVal = this._parent.prototype._onComplete.apply(this, arguments),
+            self = this;
 
-        var item = this.getItemByFileId(id);
+        function completeUpload(result) {
+            var item = self.getItemByFileId(id);
 
-        qq(this._find(item, 'statusText')).clearText();
+            qq(self._find(item, 'statusText')).clearText();
 
-        qq(item).removeClass(this._classes.retrying);
-        qq(this._find(item, 'progressBar')).hide();
+            qq(item).removeClass(self._classes.retrying);
+            qq(self._find(item, 'progressBar')).hide();
 
-        if (!this._options.disableCancelForFormUploads || qq.supportedFeatures.ajaxUploading) {
-            qq(this._find(item, 'cancel')).hide();
+            if (!self._options.disableCancelForFormUploads || qq.supportedFeatures.ajaxUploading) {
+                qq(self._find(item, 'cancel')).hide();
+            }
+            qq(self._find(item, 'spinner')).hide();
+
+            if (result.success) {
+                if (self._isDeletePossible()) {
+                    self._showDeleteLink(id);
+                }
+
+                qq(item).addClass(self._classes.success);
+                if (self._classes.successIcon) {
+                    self._find(item, 'finished').style.display = "inline-block";
+                    qq(item).addClass(self._classes.successIcon);
+                }
+            }
+            else {
+                qq(item).addClass(self._classes.fail);
+                if (self._classes.failIcon) {
+                    self._find(item, 'finished').style.display = "inline-block";
+                    qq(item).addClass(self._classes.failIcon);
+                }
+                if (self._options.retry.showButton && !self._preventRetries[id]) {
+                    qq(item).addClass(self._classes.retryable);
+                }
+                self._controlFailureTextDisplay(item, result);
+            }
         }
-        qq(this._find(item, 'spinner')).hide();
 
-        if (success) {
-            if (this._isDeletePossible()) {
-                this._showDeleteLink(id);
-            }
+        // The parent may need to perform some async operation before we can accurately determine the status of the upload.
+        if (qq.isPromise(parentRetVal)) {
+            parentRetVal.done(function(newResult) {
+                completeUpload(newResult);
+            });
 
-            qq(item).addClass(this._classes.success);
-            if (this._classes.successIcon) {
-                this._find(item, 'finished').style.display = "inline-block";
-                qq(item).addClass(this._classes.successIcon);
-            }
-        } else {
-            qq(item).addClass(this._classes.fail);
-            if (this._classes.failIcon) {
-                this._find(item, 'finished').style.display = "inline-block";
-                qq(item).addClass(this._classes.failIcon);
-            }
-            if (this._options.retry.showButton && !this._preventRetries[id]) {
-                qq(item).addClass(this._classes.retryable);
-            }
-            this._controlFailureTextDisplay(item, result);
         }
+        else {
+            completeUpload(result);
+        }
+
+        return parentRetVal;
     },
     _onUpload: function(id, name){
         var parentRetVal = this._parent.prototype._onUpload.apply(this, arguments);

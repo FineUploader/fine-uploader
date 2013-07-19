@@ -152,23 +152,46 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
 
     /**
      * When the upload has completed, if it is successful, send a request to the `successEndpoint` (if defined).
+     * This will hold up the call to the `onComplete` callback until we have determined success of the upload to S3
+     * according to the local server, if a `successEndpoint` has been defined by the integrator.
      *
      * @param id ID of the completed upload
      * @param name Name of the associated item
      * @param result Object created from the server's parsed JSON response.
      * @param xhr Associated XmlHttpRequest, if this was used to send the request.
-     * @returns {boolean} true if the upload was successful
+     * @returns {boolean || qq.Promise} true/false if success can be determined immediately, otherwise a `qq.Promise`
+     * if we need to ask the server.
      * @private
      */
     _onComplete: function(id, name, result, xhr) {
-        var success = qq.FineUploaderBasic.prototype._onComplete.apply(this, arguments),
+        var success = result.success ? true : false,
+            self = this,
+            onCompleteArgs = arguments,
             key = this.getKey(id),
             successEndpoint = this._options.request.successEndpoint,
             cors = this._options.cors.expected,
             uuid = this.getUuid(id),
             bucket = qq.s3.util.getBucket(this._endpointStore.getEndpoint(id)),
+            promise = new qq.Promise(),
+
+            // If we are waiting for confirmation from the local server, and have received it,
+            // include properties from the local server response in the `response` parameter
+            // sent to the `onComplete` callback, delegate to the parent `_onComplete`, and
+            // fulfill the associated promise.
+            onSuccessFromServer = function(awsSuccessRequestResult) {
+                qq.extend(result, awsSuccessRequestResult);
+                qq.FineUploaderBasic.prototype._onComplete.apply(self, onCompleteArgs);
+                promise.success(awsSuccessRequestResult);
+            },
+            onFailureFromServer = function(awsSuccessRequestResult) {
+                qq.extend(result, awsSuccessRequestResult);
+                qq.FineUploaderBasic.prototype._onComplete.apply(self, onCompleteArgs);
+                promise.failure(awsSuccessRequestResult);
+            },
+
             successAjaxRequestor;
 
+        // Ask the local server if the file sent to S3 is ok.
         if (success && successEndpoint) {
             successAjaxRequestor = new qq.s3.UploadSuccessAjaxRequester({
                 endpoint: successEndpoint,
@@ -181,10 +204,14 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
                 uuid: uuid,
                 name: name,
                 bucket: bucket
-            });
+            })
+                .then(onSuccessFromServer, onFailureFromServer);
+
+            return promise;
         }
 
-        return success;
+        // If we are not asking the local server about the file in S3, just delegate to the parent `_onComplete`.
+        return qq.FineUploaderBasic.prototype._onComplete.apply(this, arguments);
     },
 
     // Hooks into the base internal `_onSubmitDelete` to add key and bucket params to the delete file request.

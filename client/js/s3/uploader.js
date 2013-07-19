@@ -30,4 +30,29 @@ qq.extend(qq.s3.FineUploader.prototype, qq.uiPublicApi);
 qq.extend(qq.s3.FineUploader.prototype, qq.uiPrivateApi);
 
 // Define public & private API methods for this module.
-qq.extend(qq.s3.FineUploader.prototype, {});
+qq.extend(qq.s3.FineUploader.prototype, {
+    /**
+     * When the upload has completed, change the visible status to "processing" if we are expecting an async operation to
+     * determine status of the file in S3.
+     *
+     * @param id ID of the completed upload
+     * @param name Name of the associated item
+     * @param result Object created from the server's parsed JSON response.
+     * @param xhr Associated XmlHttpRequest, if this was used to send the request.
+     * @returns {boolean || qq.Promise} true/false if success can be determined immediately, otherwise a `qq.Promise`
+     * if we need to ask the server.
+     * @private
+     */
+    _onComplete: function(id, name, result, xhr) {
+        var parentRetVal = qq.FineUploader.prototype._onComplete.apply(this, arguments),
+            item = this.getItemByFileId(id),
+            progressBar = this._find(item, 'progressBar');
+
+        if (qq.isPromise(parentRetVal)) {
+            qq(progressBar).hide();
+            qq(this._find(item, 'statusText')).setText(this._options.text.waitingForResponse);
+        }
+
+        return parentRetVal;
+    }
+});
