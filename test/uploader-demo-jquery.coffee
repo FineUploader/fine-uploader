@@ -42,6 +42,12 @@ $ ->
         uploadButtonText: "Select Files"
         request:
             endpoint: "/upload/receiver"
+        deleteFile:
+            enabled: true
+            endpoint: '/upload/receiver'
+            forceConfirm: true
+            params:
+                foo: "bar"
         display:
             fileSizeOnSubmit: true
     )
