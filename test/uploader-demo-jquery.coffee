@@ -9,8 +9,8 @@ $ ->
         request:
             endpoint: "http://fineuploadertest.s3.amazonaws.com"
             accessKey: 'AKIAJLRYC5FTY3VRRTDA'
-            signatureEndpoint: '/upload/s3signer'
-            successEndpoint: '/upload/s3success'
+            signatureEndpoint: '/upload/s3/signature'
+            successEndpoint: '/upload/s3/success'
         chunking:
             enabled: true
         resume:
@@ -20,7 +20,7 @@ $ ->
             showButton: true
         deleteFile:
             enabled: true
-            endpoint: '/upload/s3delete'
+            endpoint: '/upload/s3/files'
             forceConfirm: true
             params:
                 foo: "bar"
