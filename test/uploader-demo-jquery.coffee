@@ -24,6 +24,8 @@ $ ->
             forceConfirm: true
             params:
                 foo: "bar"
+        failedUploadTextDisplay:
+            mode: 'custom'
         display:
             fileSizeOnSubmit: true
         paste:
