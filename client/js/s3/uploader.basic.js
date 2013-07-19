@@ -185,6 +185,12 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
             },
             onFailureFromServer = function(awsSuccessRequestResult) {
                 qq.extend(result, awsSuccessRequestResult);
+
+                // The server might not want the user to be able to re-send the file.
+                if (result[self._options.retry.preventRetryResponseProperty]) {
+                    self._preventRetries[id] = true;
+                }
+
                 qq.FineUploaderBasic.prototype._onComplete.apply(self, onCompleteArgs);
                 promise.failure(awsSuccessRequestResult);
             },
