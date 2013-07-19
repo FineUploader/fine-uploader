@@ -20,13 +20,17 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Servlet used to handle various requests sent by Fine Uploader when using the "upload directly to S3" module.
+ * Servlet used to handle various requests sent by Fine Uploader when using the "upload directly to S3" module.  The
+ * delete file handler depends on the AWS Java SDK.
  */
 public class S3Uploads extends HttpServlet
 {
     // This assumes your secret key is available in an environment variable.
     // It is needed to sign policy documents.
-    final String AWS_SECRET_KEY = System.getenv("AWS_SECRET_KEY");
+    final static String AWS_SECRET_KEY = System.getenv("AWS_SECRET_KEY");
+
+    // You will need to use your own public key here.
+    final static String AWS_PUBLIC_KEY = "AKIAJLRYC5FTY3VRRTDA";
 
 
     // Main entry point for POST requests from Fine Uploader.  This currently assumes delete file requests use the
@@ -52,7 +56,7 @@ public class S3Uploads extends HttpServlet
 
         resp.setStatus(200);
 
-        AWSCredentials myCredentials = new BasicAWSCredentials("AKIAJLRYC5FTY3VRRTDA", AWS_SECRET_KEY);
+        AWSCredentials myCredentials = new BasicAWSCredentials(AWS_PUBLIC_KEY, AWS_SECRET_KEY);
         AmazonS3 s3Client = new AmazonS3Client(myCredentials);
         s3Client.deleteObject(bucket, key);
     }
