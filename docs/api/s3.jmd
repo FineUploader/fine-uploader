@@ -18,8 +18,11 @@ When retrieving the associated file later, via a GET request, this parameter wil
 "x-amz-meta-foo" HEADER in in the response.  Note: You do not have to specify the "x-amz-meta" prefix or modify the
 policy doucment yourself.  Fine Uploader does all of this for you.
 
-* `setEndpoint(String endpointPath, [optional] Number id)` - Modify the location,  after initializing the uploader, where upload requests should be directed.
-You can either change the endpoint for a specific file or `Blob`, or for all files and `Blob`s.  To do the latter, simply omit the `id` parameter.
+* `setEndpoint(String bucketPath, [optional] Number id)` - Modify the bucket,  after initializing the uploader,
+where upload requests should be directed.  You can either change the endpoint for a specific file or `Blob`, or for
+all files and `Blob`s.  To do the latter, simply omit the `id` parameter.  Note that the `bucketPath` must be the
+fully qualified URL for an S3 bucket, for example: "http://foobar.s3.amazonaws.com", where the bucket is "foobar".
+All paths must end with "s3.amazonaws.com".
 
 * `uploadStoredFiles()` - If `!autoUpload`, this will begin uploading all queued files and `Blob`s.
 If there are no items to upload, this will result in "no files" error.
@@ -59,32 +62,30 @@ note that your `Blob` objects must be `Blob` objects, but not `File` objects.  I
 acceptable.  If you would like to upload `File` objects via the API, do so via the `addFiles` function.  Note that you
 can also pass parameters and/or an endpoint to associate with the passed `Blob` object(s).
 
-* `getResumableFilesData()` - Returns an array of objects, each describing a file that is potentially resumable by this uploader instance.
-If a `resume.id` property has been set, this is taken into consideration.  Each resumable file is represented by an object with the
-following properties: `name` - filename, `size` - file size, `uuid` - unique ID associated w/ the file, `partIdx` - index of the part where
-the resume will start.
-
-* `getSize(id)` - Returns the size of the `File` or `Blob` represented by the passed ID.  Undefined if the file size cannot be determined, such as
-if the user agent does not support the File API.
+* `getSize(id)` - Returns the size of the `File` or `Blob` represented by the passed ID.  Undefined if the file size
+cannot be determined, such as if the user agent does not support the File API.
 
 * `getName(id)` - Returns the name of the file or `Blob` represented by the passed ID.
 
-* `setName(id, newName)` - Provide an alternate/new name for the associated file or blob.
-This will be sent along with the upload request, by default, as the value of a "qqfilename" parameter.
-You should only call this method before the upload request has been sent.  Read
-[the blog post about the edit filename feature](http://blog.fineuploader.com/2013/06/23/3-7-edit-override-file-names/)
-in both FineUploader and FineUploaderBasic for more details.
+* `setName(id, newName)` - Provide an alternate/new name for the associated file or `Blob`.
+This will be sent to S3 along with the upload request, by default, as the value of an "x-amz-meta-qqfilename" parameter.
 
-* `getFile(id)` - Returns the `File` or `Blob` object associated with the passed ID.  Undefined if the underlying `File` or `Blob` cannot be found,
-or if the user agent does not support the File API.  For more info on the `File` and `Blob` objects, please see
-[the File entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file) and [the Blob entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-Blob), respectively.
+* `getFile(id)` - Returns the `File` or `Blob` object associated with the passed ID.  Undefined if the underlying
+`File` or `Blob` cannot be found, or if the user agent does not support the File API.  For more info on the
+`File` and `Blob` objects, please see [the File entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-file)
+and [the Blob entry in the W3C spec](http://www.w3.org/TR/FileAPI/#dfn-Blob), respectively.
 
-* `deleteFile(id)` - This allows you to programmatically order Fine Uploader to send a DELETE request for a specific file or `Blob`.
-Fine Uploader actually uses the API call internally when a user clicks the delete link in FineUploader mode.
+* `deleteFile(id)` - This allows you to programmatically order Fine Uploader to send a delete file request for a
+specific file or `Blob`.  Fine Uploader actually uses the API call internally when a user clicks the delete link
+in FineUploader mode.
 
-* `setDeleteFileEndpoint(String endpointPath, [optional] Number id)` - Same as the `setEndpoint` function except this applies only to the `deleteFile` option endpoint(s).
+* `setDeleteFileEndpoint(String endpointPath, [optional] Number id)` - Change the endpoint where delete file requests
+should be sent.  Note that delete file requests cannot be sent directly to Amazon via the S3 API.  You are expected to
+handle delete file requests on your own local server and remove the associated file from S3 yourself.
 
-* `setDeleteFileParams(Object newParams, [optional] Number id)` - Same as the `setParams` function except this applies only to the `deleteFile` option parameters.
+* `setDeleteFileParams(Object newParams, [optional] Number id)` - This applies only to the `deleteFile` option parameters,
+though the concept is the same as the `setParams` method (minus the Amazon-related items, since delete file requests
+are sent to your server and not S3).
 
 * `getUuid(id)` - Retrieves the UUID associated with a file or `Blob`, given a current session file or `Blob` ID.
 
