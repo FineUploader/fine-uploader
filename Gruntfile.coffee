@@ -53,6 +53,7 @@ module.exports = (grunt) ->
         './client/js/s3/uploadsuccess.ajax.requester.js',
         './client/js/s3/handler.xhr.js',
         './client/js/s3/handler.form.js'
+        './client/js/s3/jquery-plugin.js'
     ]
 
     # jQuery plugin modules

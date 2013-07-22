@@ -2,9 +2,8 @@ $ ->
     errorHandler = (event, id, fileName, reason, xhr) ->
         qq.log "id: #{id}, fileName: #{fileName}, reason: #{reason}"
 
-    $('#basicUploadSuccessExample').fineUploader(
+    $('#basicUploadSuccessExample').fineUploaderS3(
         debug: true
-        endpointType: 's3'
         blah: 'ho'
         request:
             endpoint: "http://fineuploadertest.s3.amazonaws.com"
