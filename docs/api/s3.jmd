@@ -11,12 +11,12 @@
 after initializing the uploader.  You can either change the parameters for a specific file or `Blob`, or for all files
 and `Blob`s.  To do the latter, simply omit the `id` parameter.  See this [blog post explaining parameters](http://blog.fineuploader.com/2012/12/05/include-params-in-the-request-body-or-the-query-string/)
 as well as [this one explaining how this function works in 3.1 and later versions](http://blog.fineuploader.com/2012/12/09/setparams-is-now-much-more-useful-in-3-1/).
-Note that parameters are send along with the file in the POST request to S3 via specially named parameters.  For example,
+Note that parameters are sent along with the file in the POST request to S3 via specially named parameters.  For example,
 if you specify a parameter of "foo" with a value of "bar", the POST request to S3 will include a "x-amz-meta-foo" parameter
 with a value of "var".  This parameter will be accounted for by Fine Uploader in the generated policy document as well.
 When retrieving the associated file later, via a GET request, this parameter will be included by Amazon as a
 "x-amz-meta-foo" HEADER in in the response.  Note: You do not have to specify the "x-amz-meta" prefix or modify the
-policy doucment yourself.  Fine Uploader does all of this for you.
+policy document yourself.  Fine Uploader does all of this for you.
 
 * `setEndpoint(String bucketPath, [optional] Number id)` - Modify the bucket,  after initializing the uploader,
 where upload requests should be directed.  You can either change the endpoint for a specific file or `Blob`, or for
