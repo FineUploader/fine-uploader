@@ -6,7 +6,9 @@ This document described all available callbacks when using Fine Uploader's Amazo
 
 For jQuery plug-in users, adhere to the following syntax:
 ```javascript
-$('#myUploader')
+$('#myUploader').fineUploaderS3({
+    ...
+})
     .on('complete', function(event, id, name, response) {
         ...
     })
