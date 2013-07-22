@@ -1,28 +1,47 @@
 /*globals jQuery, qq*/
 (function($) {
     "use strict";
-    var uploader, $el, init, dataStore, pluginOption, pluginOptions, addCallbacks, transformVariables, isValidCommand,
-        delegateCommand;
+    var $el,
+        pluginOptions = ['uploaderType', 'endpointType'];
 
-    pluginOptions = ['uploaderType'];
-
-    init = function (options) {
+    function init(options) {
         if (options) {
-            var xformedOpts = transformVariables(options);
-            addCallbacks(xformedOpts);
+            var xformedOpts = transformVariables(options),
+                newUploaderInstance = getNewUploaderInstance(xformedOpts);
 
-            if (pluginOption('uploaderType') === 'basic') {
-                uploader(new qq.FineUploaderBasic(xformedOpts));
-            }
-            else {
-                uploader(new qq.FineUploader(xformedOpts));
-            }
+            uploader(newUploaderInstance);
+            addCallbacks(xformedOpts, newUploaderInstance);
         }
 
         return $el;
     };
 
-    dataStore = function(key, val) {
+    function getNewUploaderInstance(params) {
+        var uploaderType = pluginOption('uploaderType'),
+            namespace = pluginOption('endpointType');
+
+        // If the integrator has defined a specific type of uploader to load, use that, otherwise assume `qq.FineUploader`
+        if (uploaderType) {
+            // We can determine the correct constructor function to invoke by combining "FineUploader"
+            // with the upper camel cased `uploaderType` value.
+            uploaderType = uploaderType.charAt(0).toUpperCase() + uploaderType.slice(1).toLowerCase();
+
+            if (namespace) {
+                return new qq[namespace]["FineUploader" + uploaderType](params);
+            }
+
+            return new qq["FineUploader" + uploaderType](params);
+        }
+        else {
+            if (namespace) {
+                return new qq[namespace]["FineUploader"](params);
+            }
+
+            return new qq.FineUploader(params);
+        }
+    }
+
+    function dataStore(key, val) {
         var data = $el.data('fineuploader');
 
         if (val) {
@@ -42,21 +61,20 @@
 
     //the underlying Fine Uploader instance is stored in jQuery's data stored, associated with the element
     // tied to this instance of the plug-in
-    uploader = function(instanceToStore) {
+    function uploader(instanceToStore) {
         return dataStore('uploader', instanceToStore);
     };
 
-    pluginOption = function(option, optionVal) {
+    function pluginOption(option, optionVal) {
         return dataStore(option, optionVal);
     };
 
-    //implement all callbacks defined in Fine Uploader as functions that trigger appropriately names events and
+    // Implement all callbacks defined in Fine Uploader as functions that trigger appropriately names events and
     // return the result of executing the bound handler back to Fine Uploader
-    addCallbacks = function(transformedOpts) {
-        var callbacks = transformedOpts.callbacks = {},
-            uploaderInst = new qq.FineUploaderBasic();
+    function addCallbacks(transformedOpts, newUploaderInstance) {
+        var callbacks = transformedOpts.callbacks = {};
 
-        $.each(uploaderInst._options.callbacks, function(prop, func) {
+        $.each(newUploaderInstance._options.callbacks, function(prop, func) {
             var name, $callbackEl;
 
             name = /^on(\w+)/.exec(prop)[1];
@@ -69,10 +87,12 @@
                 return $callbackEl.triggerHandler(name, args);
             };
         });
+
+        newUploaderInstance._options.callbacks = callbacks;
     };
 
     //transform jQuery objects into HTMLElements, and pass along all other option properties
-    transformVariables = function(source, dest) {
+    function transformVariables(source, dest) {
         var xformed, arrayVals;
 
         if (dest === undefined) {
@@ -120,15 +140,15 @@
         }
     };
 
-    isValidCommand = function(command) {
+    function isValidCommand(command) {
         return $.type(command) === "string" &&
             !command.match(/^_/) && //enforce private methods convention
             uploader()[command] !== undefined;
     };
 
-    //assuming we have already verified that this is a valid command, call the associated function in the underlying
+    // Assuming we have already verified that this is a valid command, call the associated function in the underlying
     // Fine Uploader instance (passing along the arguments from the caller) and return the result of the call back to the caller
-    delegateCommand = function(command) {
+    function delegateCommand(command) {
         var xformedArgs = [],
             origArgs = Array.prototype.slice.call(arguments, 1),
             retVal;

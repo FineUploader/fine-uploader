@@ -2,11 +2,14 @@ $ ->
     errorHandler = (event, id, fileName, reason, xhr) ->
         qq.log "id: #{id}, fileName: #{fileName}, reason: #{reason}"
 
-    $('#basicUploadSuccessExample').fineUploader(
+    $('#basicUploadSuccessExample').fineUploaderS3(
         debug: true
+        blah: 'ho'
         request:
-            endpoint: "/upload/receiver"
-            paramsInBody: true
+            endpoint: "http://fineuploadertest.s3.amazonaws.com"
+            accessKey: 'AKIAJLRYC5FTY3VRRTDA'
+            signatureEndpoint: '/upload/s3/signature'
+            successEndpoint: '/upload/s3/success'
         chunking:
             enabled: true
         resume:
@@ -16,10 +19,12 @@ $ ->
             showButton: true
         deleteFile:
             enabled: true
-            endpoint: '/upload/receiver'
+            endpoint: '/upload/s3/files'
             forceConfirm: true
             params:
                 foo: "bar"
+        failedUploadTextDisplay:
+            mode: 'custom'
         display:
             fileSizeOnSubmit: true
         paste:
@@ -27,7 +32,9 @@ $ ->
     )
         .on('error', errorHandler)
         .on "upload", (event, id, filename) ->
-            $(this).fineUploader 'setParams', {"hey": "ho"}, id
+            $(this).fineUploader 'setParams', {"hey": "hi ɛ $ hmm \\ hi"}, id
+        .on 'statusChange', (event, id, oldS, newS) ->
+            qq.log "id: #{id} #{newS}"
 
 
     $('#manualUploadModeExample').fineUploader(
@@ -36,6 +43,12 @@ $ ->
         uploadButtonText: "Select Files"
         request:
             endpoint: "/upload/receiver"
+        deleteFile:
+            enabled: true
+            endpoint: '/upload/receiver'
+            forceConfirm: true
+            params:
+                foo: "bar"
         display:
             fileSizeOnSubmit: true
     )

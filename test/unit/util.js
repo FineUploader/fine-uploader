@@ -464,10 +464,26 @@ describe('util.js', function () {
             assert.equal(answers.join(', '), '1, 2, 3');
         });
 
+        it('allows iterating over arrays', function () {
+            var answers = [];
+            var arr = ["one", "two", "three"];
+
+            qq.each(arr, function (key, value) { answers.push(value); });
+            assert.equal(answers.join(', '), 'one, two, three');
+        });
+
         it('handles a null properly', function () {
             var answers = 0;
             qq.each(null, function () { ++answers; });
             assert.equal(0, answers);
+        });
+
+        it('handle strings properly', function() {
+            var answers = [];
+            var str = "hello!";
+
+            qq.each(str, function (key, value) { answers.push(value); });
+            assert.equal(answers.join(', '), 'h, e, l, l, o, !');
         });
     }); // each
 
@@ -743,6 +759,18 @@ describe('util.js', function () {
             }
         });
     }); //
+
+    describe('getExtension', function() {
+        it('extract extension from file when an extension exists', function() {
+            var filename = "foo.bar.txt";
+            assert.equal(qq.getExtension(filename), 'txt');
+        });
+
+        it('extract extension from file when an extension does not exist', function() {
+            var filename = "foo";
+            assert.equal(qq.getExtension(filename), undefined);
+        });
+    });
 
     describe('DisposeSupport', function () {
         it("adds disposers and dispose of them", function () {

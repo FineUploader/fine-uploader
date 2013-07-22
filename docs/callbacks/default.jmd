@@ -49,7 +49,8 @@ to the DOM immediately before this callback is invoked.
 * `onComplete(String id, String name, Object responseJSON, XMLHttpRequest xhr)` - called when the file or `Blob` upload has finished.
 A successful upload will always have a `success` property in the `responseJSON` object with a value of `true`.  The
 `responseJSON` parameter will also contain any other elements of the JSON response returned by the server.  Note that
-the last parameter, xhr, will only be included if the upload is related to a request initiated by XMLHttpRequest.
+the last parameter, xhr, will only be included if the upload is related to a request initiated by XMLHttpRequest (mostly
+all browsers except for IE9 and older).
 
 * `onCancel(String id, String name)` - called when the file or `Blob` upload has been cancelled.  You may return "false" to
 prevent the upload from being cancelled.  You may also return a [`qq.Promise`](promise.html) if non-blocking work is required
@@ -89,7 +90,6 @@ items in the associated batch, will be deferred until the promise is fulfilled. 
 is done to ensure the `stopOnFirstInvalidFile` property of the `validation` option is respected.  If a promise is returned,
 a call to `failure` is the same as returning "false".
 
-
 * `onValidateBatch(Array fileOrBlobDataArray)` - This callback is invoked once for each batch of files or `Blob`s selected, dropped, or submitted
 via the `addFiles` or `addBlobs`  API functions.  A FileOrBlobData array is passed in representing all files or `Blob`s selected or dropped at once.  This allows
 you to prevent the entire batch from being uploaded, if desired, by returning false.  If your handler does not return false,
@@ -106,7 +106,7 @@ promise is fulfilled.  If a promise is returned, a call to `failure` is the same
 
 * `onDelete(id)` - Called just before a delete request is sent for the associated file or `Blob`.  The parameter is the ID.
 
-* `onDeleteComplete(id, xhr, isError)` - Called after receiving a response from the server for a DELETE request.  The associated
+* `onDeleteComplete(id, xhr, isError)` - Called after receiving a response from the server for a delete file request.  The associated
 ID, along with the request's XMLHttpRequest object and a boolean indicating whether the response succeeded or not (based on the response code)
 are sent along as parameters.
 

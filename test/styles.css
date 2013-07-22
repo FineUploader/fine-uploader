@@ -35,7 +35,7 @@ DIV.example {
 }
 
 DIV.example ul {
-    width: 500px;
+    width: 650px;
 }
 
 A {
@@ -44,10 +44,4 @@ A {
 
 A.decorate {
     text-decoration: underline;
-}
-
-#disqus_thread {
-    margin: 10px;
-    padding: 20px;
-    background: #fff;
 }

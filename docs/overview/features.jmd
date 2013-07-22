@@ -32,6 +32,7 @@
 * [Upload images directly from a mobile device's camera](http://blog.fineuploader.com/2013/05/09/upload-directly-via-a-camera-on-mobile-devices/)
 * [Retrieve statistics for uploaded files and receive callbacks on status changes](http://blog.fineuploader.com/2013/05/24/query-fine-uploader-for-upload-stats/)
 * [Edit / override filenames](http://blog.fineuploader.com/2013/06/23/3-7-edit-override-file-names/)
+* Upload directly to an Amazon S3 bucket.
 * And many more!
 {% endmarkdown %}
 {% endblock %}

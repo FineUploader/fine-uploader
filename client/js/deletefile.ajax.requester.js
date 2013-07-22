@@ -58,13 +58,13 @@ qq.DeleteFileAjaxRequestor = function(o) {
 
 
     return {
-        sendDelete: function(id, uuid) {
-            var additionalOptions = {};
+        sendDelete: function(id, uuid, additionalMandatedParams) {
+            var additionalOptions = additionalMandatedParams || {};
 
             options.log("Submitting delete file request for " + id);
 
             if (getNormalizedMethod() === "DELETE") {
-                requestor.send(id, uuid);
+                requestor.send(id, uuid, additionalOptions);
             }
             else {
                 additionalOptions[options.uuidParamName] = uuid;

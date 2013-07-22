@@ -17,6 +17,7 @@ This area of the documentation is mostly prose and examples. It is meant to be h
 
 #### Modes
 
+* [Upload to Amazon S3](integrating/modes/s3.html)
 * [FineUploaderBasic](integrating/modes/fineuploaderbasic.html)
 * [FineUploader](integrating/modes/fineuploader.html)
 * [jQuery & FineUploaderBasic](integrating/modes/jquery-fineuploaderbasic.html)
@@ -24,6 +25,7 @@ This area of the documentation is mostly prose and examples. It is meant to be h
 
 #### Options
 
+* [Upload to Amazon S3](integrating/options/s3.html)
 * [FineUploaderBasic](integrating/options/fineuploaderbasic.html)
 * [FineUploader](integrating/options/fineuploader.html)
 * [Styling Fine Uploader](integrating/styling.html)
@@ -33,7 +35,8 @@ This area of the documentation is mostly prose and examples. It is meant to be h
 
 #### Server-side
 
-* [Server-side guidelines](integrating/server/index.html)
+* [Amazon S3 Uploader Server-side guidelines](server/s3.html)
+* [Traditional Uploader Server-side guidelines](server/default.html)
 * [Server-side examples](https://github.com/Widen/fine-uploader-server)
 
 #### Browser Support
@@ -44,12 +47,17 @@ This area of the documentation is mostly prose and examples. It is meant to be h
 
 The API reference is primarily for experienced integrators who are looking for more advanced features and details about FineUploader. That being said, these docs should be viewed by all who are looking to use FineUploader as some of the information is integral.
 
+* [Amazon S3 Uploader mode](api/s3.html)
 * [FineUploaderBasic mode](api/fineuploaderbasic.html)
 * [FineUploader mode](api/fineuploader.html)
 * [Drag and Drop standalone module](api/drag-and-drop.html)
-* [Callbacks](api/callbacks.html)
 * [Promises](api/promise.html)
 * [Utility functions](api/qquery.html)
 * [Feature Detection module](api/feature-detection.html)
+
+### Callbacks
+
+* [Amazon S3 Uploader](callbacks/s3.html)
+* [Traditional Uploader](callbacks/default.html)
 {% endmarkdown %}
 {% endblock %}

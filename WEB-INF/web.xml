@@ -11,9 +11,20 @@
         <servlet-class>fineuploader.UploadReceiver</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>S3Uploads</servlet-name>
+        <servlet-class>fineuploader.S3Uploads</servlet-class>
+    </servlet>
+
     <servlet-mapping>
         <servlet-name>UploadReceiver</servlet-name>
         <url-pattern>/upload/receiver/*</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>S3Uploads</servlet-name>
+        <url-pattern>/upload/s3/signature</url-pattern>
+        <url-pattern>/upload/s3/files/*</url-pattern>
+        <url-pattern>/upload/s3/success</url-pattern>
+    </servlet-mapping>
 </web-app>

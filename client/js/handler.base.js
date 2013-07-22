@@ -1,8 +1,11 @@
-/**
- * Class for uploading files, uploading itself is handled by child classes
- */
 /*globals qq*/
-qq.UploadHandler = function(o) {
+/**
+ * Base upload handler module.  Delegates to more specific handlers.
+ *
+ * @param o Options.  Passed along to the specific handler submodule as well.
+ * @param namespace [optional] Namespace for the specific handler.
+ */
+qq.UploadHandler = function(o, namespace) {
     "use strict";
 
     var queue = [],
@@ -21,8 +24,8 @@ qq.UploadHandler = function(o) {
             sendCredentials: false
         },
         maxConnections: 3, // maximum number of concurrent uploads
-        uuidParamName: 'qquuid',
-        totalFileSizeParamName: 'qqtotalfilesize',
+        uuidParam: 'qquuid',
+        totalFileSizeParam: 'qqtotalfilesize',
         chunking: {
             enabled: false,
             partSize: 2000000, //bytes
@@ -75,17 +78,17 @@ qq.UploadHandler = function(o) {
         }
     };
 
-    if (qq.supportedFeatures.ajaxUploading) {
-        handlerImpl = new qq.UploadHandlerXhr(options, dequeue, options.onUuidChanged, log);
-    }
-    else {
-        handlerImpl = new qq.UploadHandlerForm(options, dequeue, options.onUuidChanged, log);
-    }
-
     function cancelSuccess(id) {
         log('Cancelling ' + id);
         options.paramsStore.remove(id);
         dequeue(id);
+    }
+
+    function determineHandlerImpl() {
+        var handlerType = namespace ? qq[namespace] : qq,
+            handlerModuleSubtype = qq.supportedFeatures.ajaxUploading ? "Xhr" : "Form";
+
+        handlerImpl = new handlerType["UploadHandler" + handlerModuleSubtype](options, dequeue, options.onUuidChanged, log);
     }
 
 
@@ -185,6 +188,9 @@ qq.UploadHandler = function(o) {
         getUuid: function(id) {
             return handlerImpl.getUuid(id);
         },
+        setUuid: function(id, newUuid) {
+            return handlerImpl.setUuid(id, newUuid);
+        },
         /**
          * Determine if the file exists.
          */
@@ -198,6 +204,8 @@ qq.UploadHandler = function(o) {
             return [];
         }
     };
+
+    determineHandlerImpl();
 
     return api;
 };

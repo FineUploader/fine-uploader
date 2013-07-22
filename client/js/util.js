@@ -393,24 +393,33 @@ qq.toElement = (function(){
     };
 }());
 
-//key and value are passed to callback for each item in the object or array
-qq.each = function(objOrArray, callback) {
+//key and value are passed to callback for each item in the object, array, or string
+qq.each = function(objArrayOrStr, callback) {
     "use strict";
     var keyOrIndex, retVal;
-    if (objOrArray) {
+
+    if (objArrayOrStr) {
         // `DataTransferItemList` objects are array-like and should be treated as arrays when iterating over items inside the object.
-        if (qq.isArray(objOrArray) || qq.isItemList(objOrArray)) {
-            for (keyOrIndex = 0; keyOrIndex < objOrArray.length; keyOrIndex++) {
-                retVal = callback(keyOrIndex, objOrArray[keyOrIndex]);
+        if (qq.isArray(objArrayOrStr) || qq.isItemList(objArrayOrStr)) {
+            for (keyOrIndex = 0; keyOrIndex < objArrayOrStr.length; keyOrIndex++) {
+                retVal = callback(keyOrIndex, objArrayOrStr[keyOrIndex]);
+                if (retVal === false) {
+                    break;
+                }
+            }
+        }
+        else if (qq.isString(objArrayOrStr)) {
+            for (keyOrIndex = 0; keyOrIndex < objArrayOrStr.length; keyOrIndex++) {
+                retVal = callback(keyOrIndex, objArrayOrStr.charAt(keyOrIndex));
                 if (retVal === false) {
                     break;
                 }
             }
         }
         else {
-            for (keyOrIndex in objOrArray) {
-                if (Object.prototype.hasOwnProperty.call(objOrArray, keyOrIndex)) {
-                    retVal = callback(keyOrIndex, objOrArray[keyOrIndex]);
+            for (keyOrIndex in objArrayOrStr) {
+                if (Object.prototype.hasOwnProperty.call(objArrayOrStr, keyOrIndex)) {
+                    retVal = callback(keyOrIndex, objArrayOrStr[keyOrIndex]);
                     if (retVal === false) {
                         break;
                     }
@@ -426,10 +435,11 @@ qq.bind = function(oldFunc, context) {
         var args =  Array.prototype.slice.call(arguments, 2);
 
         return function() {
+            var newArgs = qq.extend([], args);
             if (arguments.length) {
-                args = args.concat(Array.prototype.slice.call(arguments))
+                newArgs = newArgs.concat(Array.prototype.slice.call(arguments))
             }
-            return oldFunc.apply(context, args);
+            return oldFunc.apply(context, newArgs);
         };
     }
 
@@ -617,6 +627,20 @@ qq.parseJson = function(json) {
         return JSON.parse(json);
     } else {
         return eval("(" + json + ")");
+    }
+};
+
+/**
+ * Retrieve the extension of a file, if it exists.
+ *
+ * @param filename
+ * @returns {string || undefined}
+ */
+qq.getExtension = function(filename) {
+    var extIdx = filename.lastIndexOf('.') + 1;
+
+    if (extIdx > 0) {
+        return filename.substr(extIdx, filename.length - extIdx);
     }
 };
 

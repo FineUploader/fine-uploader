@@ -8,6 +8,7 @@ qq.AjaxRequestor = function (o) {
         requestState = [],
         options = {
             method: 'POST',
+            contentType: "application/x-www-form-urlencoded",
             maxConnections: 3,
             customHeaders: {},
             endpointStore: {},
@@ -181,11 +182,17 @@ qq.AjaxRequestor = function (o) {
         setHeaders(id);
 
         log('Sending ' + method + " request for " + id);
-        if (!shouldParamsBeInQueryString && params) {
+        if (shouldParamsBeInQueryString) {
+            xhr.send();
+        }
+        else if (params && options.contentType.toLowerCase().indexOf("application/x-www-form-urlencoded") >= 0) {
             xhr.send(qq.obj2url(params, ""));
         }
+        else if (params && options.contentType.toLowerCase().indexOf("application/json") >= 0) {
+            xhr.send(JSON.stringify(params));
+        }
         else {
-            xhr.send();
+            xhr.send(params);
         }
     }
 
@@ -246,11 +253,10 @@ qq.AjaxRequestor = function (o) {
             }
         }
 
-        // Assuming that all POST and PUT requests will need to be URL encoded.
-        // The payload of a POST `XDomainRequest` also needs to be URL encoded, but we
-        // can't set the Content-Type when using this transport.
+        // Note that we can't set the Content-Type when using this transport XDR, and it is
+        // not relevant unless we will be including the params in the payload.
         if ((options.method === "POST" || options.method === "PUT") && !isXdr(xhr)) {
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader("Content-Type", options.contentType);
         }
 
         // `XDomainRequest` doesn't allow you to set any headers.

@@ -25,14 +25,17 @@ module.exports = (grunt) ->
         './client/js/button.js',
         './client/js/paste.js',
         './client/js/upload-data.js',
+        './client/js/uploader.basic.api.js',
         './client/js/uploader.basic.js',
         './client/js/dnd.js',
+        './client/js/uploader.api.js',
         './client/js/uploader.js',
         './client/js/ajax.requester.js',
         './client/js/deletefile.ajax.requester.js',
         './client/js/window.receive.message.js',
         './client/js/handler.base.js',
         './client/js/handler.form.js',
+        './client/js/handler.xhr.api.js',
         './client/js/handler.xhr.js',
         './client/js/ui.handler.events.js',
         './client/js/ui.handler.click.drc.js',
@@ -40,6 +43,17 @@ module.exports = (grunt) ->
         './client/js/ui.handler.click.filename.js',
         './client/js/ui.handler.focusin.filenameinput.js',
         './client/js/ui.handler.focus.filenameinput.js'
+    ]
+
+    s3 = [
+        './client/js/s3/util.js',
+        './client/js/s3/uploader.basic.js',
+        './client/js/s3/uploader.js',
+        './client/js/s3/policysignature.ajax.requester.js',
+        './client/js/s3/uploadsuccess.ajax.requester.js',
+        './client/js/s3/handler.xhr.js',
+        './client/js/s3/handler.form.js'
+        './client/js/s3/jquery-plugin.js'
     ]
 
     # jQuery plugin modules
@@ -197,15 +211,17 @@ module.exports = (grunt) ->
         # --------
         concat:
             core:
-                options:
-                    separator: ';'
                 src: core
                 dest: './build/<%= pkg.name %>.js'
+            coreS3:
+                src: core.concat s3
+                dest: './build/s3.<%= pkg.name %>.js'
             jquery:
-                options:
-                    separator: ';'
                 src: jquery
                 dest: './build/jquery.<%= pkg.name %>.js'
+            jqueryS3:
+                src: jquery.concat s3
+                dest: './build/s3.jquery.<%= pkg.name %>.js'
             css:
                 src: ['./client/*.css']
                 dest: './build/<%= pkg.name %>.css'
@@ -225,6 +241,12 @@ module.exports = (grunt) ->
             jquery:
                 src: ['<%= concat.jquery.dest %>']
                 dest: './build/jquery.<%= pkg.name %>.min.js'
+            coreS3:
+                src: ['<%= concat.coreS3.dest %>']
+                dest: './build/s3.<%= pkg.name %>.min.js'
+            jqueryS3:
+                src: ['<%= concat.jqueryS3.dest %>']
+                dest: './build/s3.jquery.<%= pkg.name %>.min.js'
 
         # Copy
         # ----------
@@ -235,23 +257,44 @@ module.exports = (grunt) ->
                     {
                         expand: true
                         cwd: './build/'
-                        src: ['*.js', '!*.min.js', '!jquery*', '!*iframe*']
+                        src: ['*.js', '!s3.*', '!*.min.js', '!jquery*', '!*iframe*']
                         dest: './dist/<%= pkg.name %>-<%= pkg.version %>/'
                         ext: '-<%= pkg.version %>.js'
                     }
                     {
                         expand: true
                         cwd: './build/'
-                        src: ['*.min.js', '!jquery*']
+                        src: ['s3.*.js', '!*.min.js', '!s3.jquery*', '!*iframe*']
+                        dest: './dist/s3.<%= pkg.name %>-<%= pkg.version %>/'
+                        ext: '.<%= pkg.name %>-<%= pkg.version %>.js'
+                    }
+                    {
+                        expand: true
+                        cwd: './build/'
+                        src: ['*.min.js', '!s3.*', '!jquery*']
                         dest: './dist/<%= pkg.name %>-<%= pkg.version %>/'
                         ext: '-<%= pkg.version %>.min.js'
                     }
                     {
                         expand: true
                         cwd: './build/'
-                        src: ['jquery*js', '!*.min.js']
+                        src: ['s3.*.min.js', '!s3.jquery*']
+                        dest: './dist/s3.<%= pkg.name %>-<%= pkg.version %>/'
+                        ext: '.<%= pkg.name %>-<%= pkg.version %>.min.js'
+                    }
+                    {
+                        expand: true
+                        cwd: './build/'
+                        src: ['jquery*js', '!s3.*', '!*.min.js']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
                         ext: '.<%= pkg.name %>-<%= pkg.version %>.js'
+                    },
+                    {
+                        expand: true
+                        cwd: './build/'
+                        src: ['s3.jquery*js', '!*.min.js']
+                        dest: './dist/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/'
+                        ext: '.jquery.<%= pkg.name %>-<%= pkg.version %>.js'
                     },
                     {
                         expand: true
@@ -262,6 +305,13 @@ module.exports = (grunt) ->
                     }
                     {
                         expand: true
+                        cwd: './build/'
+                        src: ['s3.jquery*min.js']
+                        dest: './dist/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/'
+                        ext: '.jquery.<%= pkg.name %>-<%= pkg.version %>.min.js'
+                    }
+                    {
+                        expand: true
                         cwd: './client/js/'
                         src: ['iframe.xss.response.js']
                         dest: './dist/<%= pkg.name %>-<%= pkg.version %>/'
@@ -271,7 +321,21 @@ module.exports = (grunt) ->
                         expand: true
                         cwd: './client/js/'
                         src: ['iframe.xss.response.js']
+                        dest: './dist/s3.<%= pkg.name %>-<%= pkg.version %>/'
+                        ext: '.xss.response-<%= pkg.version %>.js'
+                    }
+                    {
+                        expand: true
+                        cwd: './client/js/'
+                        src: ['iframe.xss.response.js']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
+                        ext: '.xss.response-<%= pkg.version %>.js'
+                    }
+                    {
+                        expand: true
+                        cwd: './client/js/'
+                        src: ['iframe.xss.response.js']
+                        dest: './dist/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/'
                         ext: '.xss.response-<%= pkg.version %>.js'
                     }
                     {
@@ -284,7 +348,19 @@ module.exports = (grunt) ->
                         expand: true
                         cwd: './client/'
                         src: ['*.gif']
+                        dest: './dist/s3.<%= pkg.name %>-<%= pkg.version %>/'
+                    }
+                    {
+                        expand: true
+                        cwd: './client/'
+                        src: ['*.gif']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
+                    }
+                    {
+                        expand: true
+                        cwd: './client/'
+                        src: ['*.gif']
+                        dest: './dist/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/'
                     }
                     {
                         expand: true
@@ -296,13 +372,32 @@ module.exports = (grunt) ->
                         expand: true
                         cwd: './'
                         src: ['LICENSE']
+                        dest: './dist/s3.<%= pkg.name %>-<%= pkg.version %>/'
+                    }
+                    {
+                        expand: true
+                        cwd: './'
+                        src: ['LICENSE']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>/'
+                    }
+                    {
+                        expand: true
+                        cwd: './'
+                        src: ['LICENSE']
+                        dest: './dist/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/'
                     }
                     {
                         expand: true
                         cwd: './build'
                         src: ['*.min.css']
                         dest: './dist/<%= pkg.name %>-<%= pkg.version %>'
+                        ext: '-<%= pkg.version %>.min.css'
+                    }
+                    {
+                        expand: true
+                        cwd: './build'
+                        src: ['*.min.css']
+                        dest: './dist/s3.<%= pkg.name %>-<%= pkg.version %>'
                         ext: '-<%= pkg.version %>.min.css'
                     }
                     {
@@ -315,6 +410,13 @@ module.exports = (grunt) ->
                     {
                         expand: true
                         cwd: './build'
+                        src: ['*.css', '!*.min.css']
+                        dest: './dist/s3.<%= pkg.name %>-<%= pkg.version %>'
+                        ext: '-<%= pkg.version %>.css'
+                    }
+                    {
+                        expand: true
+                        cwd: './build'
                         src: ['*.min.css']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>'
                         ext: '-<%= pkg.version %>.min.css'
@@ -322,8 +424,22 @@ module.exports = (grunt) ->
                     {
                         expand: true
                         cwd: './build'
+                        src: ['*.min.css']
+                        dest: './dist/s3.jquery.<%= pkg.name %>-<%= pkg.version %>'
+                        ext: '-<%= pkg.version %>.min.css'
+                    }
+                    {
+                        expand: true
+                        cwd: './build'
                         src: ['*.css', '!*.min.css']
                         dest: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>'
+                        ext: '-<%= pkg.version %>.css'
+                    }
+                    {
+                        expand: true
+                        cwd: './build'
+                        src: ['*.css', '!*.min.css']
+                        dest: './dist/s3.jquery.<%= pkg.name %>-<%= pkg.version %>'
                         ext: '-<%= pkg.version %>.css'
                     }
                 ]
@@ -347,6 +463,13 @@ module.exports = (grunt) ->
                 flatten: true
                 src: ['./build/*']
                 dest: './test/temp'
+            images:
+                files: [
+                    expand: true
+                    cwd: './client/'
+                    src: ['*.gif']
+                    dest: './build/'
+                ]
 
 
         # Compress
@@ -362,7 +485,17 @@ module.exports = (grunt) ->
                         src: './<%= pkg.name %>-<%= pkg.version %>/*'
                     }
                 ]
-            jquery:
+            coreS3:
+                options:
+                    archive: './dist/s3.<%= pkg.name %>-<%= pkg.version %>.zip'
+                files: [
+                    {
+                        expand: true
+                        cwd: 'dist/'
+                        src: './s3.<%= pkg.name %>-<%= pkg.version %>/*'
+                    }
+                ]
+           jquery:
                 options:
                     archive: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>.zip'
                 files: [
@@ -372,6 +505,16 @@ module.exports = (grunt) ->
                         src: './jquery.<%= pkg.name %>-<%= pkg.version %>/*'
                     }
                 ]
+            jqueryS3:
+                 options:
+                     archive: './dist/s3.jquery.<%= pkg.name %>-<%= pkg.version %>.zip'
+                 files: [
+                     {
+                         expand: true
+                         cwd: 'dist/'
+                         src: './s3.jquery.<%= pkg.name %>-<%= pkg.version %>/*'
+                     }
+                 ]
 
         # cssmin
         # ---------
@@ -440,20 +583,31 @@ module.exports = (grunt) ->
                 interrupt: true
                 debounceDelay: 250
             js:
-                files: ['./client/js/*.js']
+                files: ['./client/js/*.js', './client/js/s3/*.js']
                 tasks: [
                     'build'
-                    'test'
+                    'copy:test'
+                    'connect:test_server'
+                    'mocha'
                 ]
             test:
-                files: ['./test/unit/*.js']
+                files: ['./test/unit/*.js', './test/unit/s3/*.js']
                 tasks: [
                     'jshint:tests'
                     'test'
                 ]
             grunt:
                 files: ['./Gruntfile.coffee']
-                tasks: ['coffeelint:grunt']
+                tasks: [
+                    'coffeelint:grunt'
+                    'build'
+                    'test'
+                ]
+            images:
+                files: ['./client/*.gif']
+                tasks: [
+                    'copy:images'
+                ]
 
         # Increment version with semver
         # ----------
@@ -626,6 +780,7 @@ module.exports = (grunt) ->
         'concat'
         'minify'
         'usebanner'
+        'copy:images'
     ]
 
     # Prepare

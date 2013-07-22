@@ -24,28 +24,30 @@ describe('promise.js', function () {
             var promise = new qq.Promise(); 
             promise.then(null, function(value){
                 assert.ok(value);
-                finish()
+                finish();
             });
 
             promise.failure(true);
         });
 
-        it("expects `done` to be callback", function (finish) {
+        it("success: expects `done` to be callback", function (finish) {
             var promise = new qq.Promise();
             promise.done(function (value) {
-                assert.ok(true);
-                finish()
+                assert.ok(value);
+                finish();
             });
 
-            promise.success();
+            promise.success(true);
         });
 
-      it.skip("expects done to be called", function(finish){
-          var promise = new qq.Promise(); 
-          promise.done(function(value){
-              assert.ok(true);
-              finish();
-          });
-      });
+        it("failure: expects `done` to be callback", function (finish) {
+            var promise = new qq.Promise();
+            promise.done(function (value) {
+                assert.ok(value);
+                finish();
+            });
+
+            promise.failure(true);
+        });
     });
 });
