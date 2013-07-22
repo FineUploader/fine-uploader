@@ -85,70 +85,30 @@
         <tr>
             <td>endpoint</td>
             <td>string (path)</td>
-            <td>/server/upload</td>
-            <td>The is the endpoint used by both the form and ajax uploader.  In the case of the form uploader, it is part of the
-            form's action attribute value along with all parameters.  In the case of the ajax uplaoder, it is makes up part of the URL
-            of the XHR request (again, along with the parameters).</td>
+            <td><code>null</code></td>
+            <td>This is the fully qualified URL for an S3 bucket, for example: "http://foobar.s3.amazonaws.com",
+            where the bucket is "foobar".  All paths must end with "s3.amazonaws.com".</td>
         </tr>
         <tr>
             <td>params</td>
             <td>object</td>
             <td>{}</td>
-            <td>These parameters are sent with the request to the endpoint specified in the action option.  An individual parameter value
-            may be a number, string, another object, or a function that returns a number or string.  See the <a href="http://blog.fineuploader.com/2012/12/05/include-params-in-the-request-body-or-the-query-string/">associated blog post</a>
-            for more details.</td>
-        </tr>
-        <tr>
-            <td>paramsInBody</td>
-            <td>boolean</td>
-            <td>true</td>
-            <td>Set this to <code>true</code> if you want all parameters to be sent in the request body.  Note that setting this option
-            to <code>true</code> will force all requests to be multipart encoded.  If the value is <code>false</code> all params will be
-            included in the query string.   See the <a href="http://blog.fineuploader.com/2012/12/05/include-params-in-the-request-body-or-the-query-string/">associated blog post</a>
-            for more details.</td>
-        </tr>
-        <tr>
-            <td>customHeaders</td>
-            <td>object</td>
-            <td>{}</td>
-            <td>Additional headers sent along with the XHR POST request.  Note that is option is only relevant to the ajax/XHR uploader.</td>
-        </tr>
-        <tr>
-            <td>forceMultipart</td>
-            <td>boolean</td>
-            <td>true</td>
-            <td>While form-based uploads will always be multipart requests, this forces XHR uploads to send files or `Blob` objects using
-            multipart requests as well.</td>
-        </tr>
-        <tr>
-            <td>inputName</td>
-            <td>string</td>
-            <td>qqfile</td>
-            <td>This usually only useful with the ajax uploader, which sends the name of the file or `Blob` as a parameter, using a key name
-            equal to the value of this options.  In the case of the form uploader, this is simply the value of the name attribute
-            of the file's associated input element.</td>
-        </tr>
-        <tr>
-            <td>uuidName</td>
-            <td>string</td>
-            <td>qquuid</td>
-            <td>The name of the parameter, sent along with each request, that uniquely identifies the associated file or `Blob`.  The value of
-            this parameter is a version 4 UUID.</td>
-        <tr>
-            <td>totalFileSizeName</td>
-            <td>string</td>
-            <td>qqtotalfilesize</td>
-            <td>Name of the parameter passed with a multipart encoded request that specifies the total size in bytes of the associated file or `Blob`.
-            Note that this is only passed with MPE requests that originate from the XHR uploader, since there is no way to
-            determine file size client-side when using the form uploader.</td>
+            <td>Set the parameters sent along with all upload requests to S3.  Parameters are sent along with the file
+            in the POST request to S3 via specially named parameters.  For example, if you specify a parameter of
+            "foo" with a value of "bar", the POST request to S3 will include a "x-amz-meta-foo" parameter with a value
+            of "var".  This parameter will be accounted for by Fine Uploader in the generated policy document as well.
+            When retrieving the associated file later, via a GET request, this parameter will be included by Amazon as a
+            "x-amz-meta-foo" HEADER in in the response.  Note: You do not have to specify the "x-amz-meta" prefix
+            or modify the policy document yourself.  Fine Uploader does all of this for you.</td>
         </tr>
         <tr>
             <td>filenameParam</td>
             <td>string</td>
             <td>qqfilename</td>
-            <td>Name of the parameter passed if the original file name has been edited/overridden or if the entity being sent
-            is a <code>Blob</code>.  Note that <code>Blob</code>s are always sent if a call to
-            <code>qq.supportedFeatures.ajaxUploading</code> returns true and chunking is enabled.</td>
+            <td>Part of the parameter name, sent with the upload request to S3, that contains the name of the associated
+            file, which may differ from the key name.  Note that this parameter name has a "x-amz-meta-" prefix added
+            by Fine Uploader, which is required for custom parameters.  See the params option or API method for more
+            details regarding parameters.</td>
         </tr>
     </tbody>
 </table>
@@ -186,13 +146,15 @@
             <td>sizeLimit</td>
             <td>integer</td>
             <td>0 (no limit)</td>
-            <td>Maximum allowable size, in bytes, for a file or `Blob`.</td>
+            <td>Maximum allowable size, in bytes, for a file or `Blob`.  Fine Uploader will ask Amazon to enforce this
+            as well (server-side) by including it in the generated policy document.</td>
         </tr>
         <tr>
             <td>minSizeLimit</td>
             <td>integer</td>
             <td>0 (no limit)</td>
-            <td>Minimum allowable size, in bytes, for a file or `Blob`.</td>
+            <td>Minimum allowable size, in bytes, for a file or `Blob`.Fine Uploader will ask Amazon to enforce this
+            as well (server-side) by including it in the generated policy document.</td>
         </tr>
         <tr>
             <td>itemLimit</td>
@@ -317,140 +279,6 @@
     </tbody>
 </table>
 
-### `chunking` option properties:
-
-For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/28/file-chunkingpartitioning-is-now-available-in-3-2/).
-on the topic.
-
-<table class='table table-bordered table-striped'>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Default</th>
-            <th>Note</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>enabled</td>
-            <td>boolean</td>
-            <td>false</td>
-            <td>If set to <code>true</code>, each file or `Blob` will be split up into parts.  Each part will be sent in a separate request.
-            The size of the part is determined by the <code>partSize</code> option value.  See the server-side readme for more details.</td>
-        </tr>
-        <tr>
-            <td>partSize</td>
-            <td>number</td>
-            <td>2000000</td>
-            <td>The maximum size of each part, in bytes.</td>
-        </tr>
-    </tbody>
-</table>
-
-### `chunking.paramNames` option properties:
-
-For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/28/file-chunkingpartitioning-is-now-available-in-3-2/).
-on the topic.
-
-<table class='table table-bordered table-striped'>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Default</th>
-            <th>Note</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>partIndex</td>
-            <td>string</td>
-            <td>qqpartindex</td>
-            <td>Name of the parameter passed with a chunked request that specifies the index of the associated partition.</td>
-        </tr>
-        <tr>
-            <td>partByteOffset</td>
-            <td>string</td>
-            <td>qqpartbyteoffset</td>
-            <td>Name of the parameter passed with a chunked request that specifies the starting byte of the associated chunk.</td>
-        </tr>
-        <tr>
-            <td>chunkSize</td>
-            <td>string</td>
-            <td>qqchunksize</td>
-            <td>Name of the parameter passed with a chunked request that specifies the size in bytes of the associated chunk.</td>
-        </tr>
-        <tr>
-            <td>totalParts</td>
-            <td>string</td>
-            <td>qqtotalparts</td>
-            <td>Name of the parameter passed with a chunked request that specifies the total number of chunks associated with the underlying file or `Blob`.</td>
-        </tr>
-    </tbody>
-</table>
-
-### `resume` option properties:
-
-For more details, please read the [blog post on the file resume feature](http://blog.fineuploader.com/2013/01/01/resume-uploads-from-previous-sessions-in-3-2/).
-
-<table class='table table-bordered table-striped'>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Default</th>
-            <th>Note</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>enabled</td>
-            <td>boolean</td>
-            <td>false</td>
-            <td>If set to <code>true</code>, the ability to resume a failed/stopped chunked upload will be possible.  See the server-side readme for more details.</td>
-        </tr>
-        <tr>
-            <td>id</td>
-            <td>number, string, or boolean</td>
-            <td>null</td>
-            <td>If this value is not defined or if the value does not fit into one of the acceptable types, the cookie
-            name used to identify a file chunk will be composed of the filename, file size, and max partition/chunk size.
-            If this value IS defined and DOES fit into one of the acceptable types, it will be added as an additional
-            component of the cookie name.</td>
-        </tr>
-        <tr>
-            <td>cookiesExpireIn</td>
-            <td>number</td>
-            <td>7</td>
-            <td>The number of days before a persistent resume cookie will expire.</td>
-        </tr>
-    </tbody>
-</table>
-
-### `resume.paramNames` option properties:
-
-For more details, please read the [blog post on the file resume feature](http://blog.fineuploader.com/2013/01/01/resume-uploads-from-previous-sessions-in-3-2/).
-
-<table class='table table-bordered table-striped'>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Default</th>
-            <th>Note</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>resuming</td>
-            <td>string</td>
-            <td>qqresume</td>
-            <td>Sent with the first request of the resume, with a value of true.</td>
-        </tr>
-    </tbody>
-</table>
-
 ### `text` option properties:
 
 <table class='table table-bordered table-striped'>
@@ -484,6 +312,7 @@ For more details, please read the [blog post on the file resume feature](http://
 For more information on the Delete File feature, please read the [associated blog post](http://blog.fineuploader.com/2013/01/25/delete-an-uploaded-file-in-3-3/) and
 check out the server-side readme.  If you want to support this feature in IE9 and IE8 for cross-origin environments, please
 read about the [changes that occurred in 3.7 that optionally allow this](http://blog.fineuploader.com/2013/06/09/3-7-cross-origin-delete-file-support-for-ie9-and-ie8/).
+Please note that the S3 bucket name and the associated key name will also be passed as parameters along with this request.
 
 <table class='table table-bordered table-striped'>
     <thead>
@@ -540,7 +369,9 @@ read about the [changes that occurred in 3.7 that optionally allow this](http://
 ### `cors` option properties:
 
 For more information on CORS support, please read the [associated blog post](http://blog.fineuploader.com/2013/01/31/cors-support-in-3-3/) and
-check out the server-side readme.
+check out the server-side readme.  Note that this only applies to requests between Fine Uploader and your server(s)
+(not S3), as all requests to S3 are ALWAYS cross-origin.  If you are not expected any CORS requests between Fine Uploader
+and your servers, you can ignore this option entirely.
 
 <table class='table table-bordered table-striped'>
     <thead>
@@ -556,8 +387,7 @@ check out the server-side readme.
             <td>expected</td>
             <td>boolean</td>
             <td>false</td>
-            <td>Set this to true if all requests will be cross-domain requests.  If this is set to true, all iframe-initiated requests
-            must include responses that follow the convention described in the CORS support blog post.</td>
+            <td>Set this to true if all requests will be cross-domain requests.</td>
         </tr>
         <tr>
             <td>sendCredentials</td>
