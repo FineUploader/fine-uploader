@@ -397,11 +397,20 @@ qq.toElement = (function(){
 qq.each = function(objArrayOrStr, callback) {
     "use strict";
     var keyOrIndex, retVal;
+
     if (objArrayOrStr) {
         // `DataTransferItemList` objects are array-like and should be treated as arrays when iterating over items inside the object.
         if (qq.isArray(objArrayOrStr) || qq.isItemList(objArrayOrStr)) {
             for (keyOrIndex = 0; keyOrIndex < objArrayOrStr.length; keyOrIndex++) {
                 retVal = callback(keyOrIndex, objArrayOrStr[keyOrIndex]);
+                if (retVal === false) {
+                    break;
+                }
+            }
+        }
+        else if (qq.isString(objArrayOrStr)) {
+            for (keyOrIndex = 0; keyOrIndex < objArrayOrStr.length; keyOrIndex++) {
+                retVal = callback(keyOrIndex, objArrayOrStr.charAt(keyOrIndex));
                 if (retVal === false) {
                     break;
                 }
@@ -415,14 +424,6 @@ qq.each = function(objArrayOrStr, callback) {
                         break;
                     }
                 }
-            }
-        }
-    }
-    else if (qq.isString(objArrayOrStr)) {
-        for (keyOrIndex = 0; keyOrIndex < objArrayOrStr.length(); keyOrIndex++) {
-            retVal = callback(keyOrIndex, objArrayOrStr.charAt(keyOrIndex));
-            if (retVal === false) {
-                break;
             }
         }
     }
