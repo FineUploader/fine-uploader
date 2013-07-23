@@ -32,17 +32,27 @@ qq.s3.util = qq.s3.util || (function() {
                 expirationDate = new Date(),
                 expectedStatus = spec.expectedStatus,
                 params = spec.params,
+                successRedirectUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl(spec.successRedirectUrl),
                 minFileSize = spec.minFileSize,
                 maxFileSize = spec.maxFileSize;
 
-            // Is this going to be a problem if we encounter this moments before 2 AM just before daylight savings time ends?
-            expirationDate.setMinutes(expirationDate.getMinutes() + 5);
-            policy.expiration = expirationDate.toISOString();
+            policy.expiration = qq.s3.util.getPolicyExpirationDate(expirationDate);
 
             conditions.push({acl: acl});
             conditions.push({bucket: bucket});
-            conditions.push({"Content-Type": type});
-            conditions.push({success_action_status: expectedStatus.toString()});
+
+            if (type) {
+                conditions.push({"Content-Type": type});
+            }
+
+            if (expectedStatus) {
+                conditions.push({success_action_status: expectedStatus.toString()});
+            }
+
+            if (successRedirectUrl) {
+                conditions.push({success_action_redirect: successRedirectUrl});
+            }
+
             conditions.push({key: key});
 
             qq.each(params, function(name, val) {
@@ -67,7 +77,7 @@ qq.s3.util = qq.s3.util || (function() {
          * still possible for a malicious user to tamper with these values during policy document generation, b
          * before it is sent to the server for signing.
          *
-         * @param spec Object with properties: `params`, `type`, `key`, `accessKey`, `acl`, `expectedStatus`,
+         * @param spec Object with properties: `params`, `type`, `key`, `accessKey`, `acl`, `expectedStatus`, `successRedirectUrl`,
          * and `log()`, along with any options associated with `qq.s3.util.getPolicy()`.
          * @returns {qq.Promise} Promise that will be fulfilled once all parameters have been determined.
          */
@@ -81,13 +91,25 @@ qq.s3.util = qq.s3.util || (function() {
                 accessKey = spec.accessKey,
                 acl = spec.acl,
                 expectedStatus = spec.expectedStatus,
+                successRedirectUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl(spec.successRedirectUrl),
                 log = spec.log;
 
             awsParams.key = key;
             awsParams.AWSAccessKeyId = accessKey;
-            awsParams["Content-Type"] = type;
+
+            if (type) {
+                awsParams["Content-Type"] = type;
+            }
+
+            if (expectedStatus) {
+                awsParams.success_action_status = expectedStatus;
+            }
+
+            if (successRedirectUrl) {
+                awsParams["success_action_redirect"] = successRedirectUrl;
+            }
+
             awsParams.acl = acl;
-            awsParams.success_action_status = expectedStatus;
 
             // Custom (user-supplied) params must be prefixed with the value of `qq.s3.util.AWS_PARAM_PREFIX`.
             qq.each(customParams, function(name, val) {
@@ -131,6 +153,78 @@ qq.s3.util = qq.s3.util || (function() {
 
             if (minSize > 0 || maxSize > 0) {
                 policy.conditions.push(['content-length-range', adjustedMinSize.toString(), adjustedMaxSize.toString()]);
+            }
+        },
+
+        getPolicyExpirationDate: function(date) {
+            // Is this going to be a problem if we encounter this moments before 2 AM just before daylight savings time ends?
+            date.setMinutes(date.getMinutes() + 5);
+
+            if (Date.prototype.toISOString) {
+                return date.toISOString();
+            }
+            else {
+                function padZeros(n) {
+                    return n < 10 ? '0' + n : n
+                }
+
+                return         date.getUTCFullYear() + '-'
+                    + padZeros(date.getUTCMonth() + 1) + '-'
+                    + padZeros(date.getUTCDate()) + 'T'
+                    + padZeros(date.getUTCHours()) + ':'
+                    + padZeros(date.getUTCMinutes()) + ':'
+                    + padZeros(date.getUTCSeconds()) + 'Z';
+            }
+        },
+
+        /**
+         * Looks at a response from S3 contained in an iframe and parses the query string in an attempt to identify
+         * the associated resource.
+         *
+         * @param iframe Iframe containing response
+         * @returns {{bucket: *, key: *, etag: *}}
+         */
+        parseIframeResponse: function(iframe) {
+            var doc = iframe.contentDocument || iframe.contentWindow.document,
+                queryString = doc.location.search,
+                match = /bucket=(.+)&key=(.+)&etag=(.+)/.exec(queryString);
+
+            if (match) {
+                return {
+                    bucket: match[1],
+                    key: match[2],
+                    etag: match[3]
+                };
+            }
+        },
+
+        /**
+         * @param successRedirectUrl Relative or absolute location of success redirect page
+         * @returns {*|string} undefined if the parameter is undefined, otherwise the absolute location of the success redirect page
+         */
+        getSuccessRedirectAbsoluteUrl: function(successRedirectUrl) {
+            if (successRedirectUrl) {
+                var targetAnchorContainer = document.createElement('div'),
+                    targetAnchor;
+
+                if (qq.ie7()) {
+                    // Note that we must make use of `innerHTML` for IE7 only instead of simply creating an anchor via
+                    // `document.createElement('a')` and setting the `href` attribute.  The latter approach does not allow us to
+                    // obtain an absolute URL in IE7 if the `endpoint` is a relative URL.
+                    targetAnchorContainer.innerHTML = '<a href="' + successRedirectUrl + '"></a>';
+                    targetAnchor = targetAnchorContainer.firstChild;
+                    return targetAnchor.href;
+                }
+                else {
+                    // IE8 and IE9 do not seem to derive an absolute URL from a relative URL using the `innerHTML`
+                    // approach above, so we'll just create an anchor this way and set it's `href` attribute.
+                    // Due to yet another quirk in IE8 and IE9, we have to set the `href` equal to itself
+                    // in order to ensure relative URLs will be properly parsed.
+                    targetAnchor = document.createElement('a');
+                    targetAnchor.href = successRedirectUrl;
+                    targetAnchor.href = targetAnchor.href;
+                    return targetAnchor.href;
+                }
             }
         }
     };
