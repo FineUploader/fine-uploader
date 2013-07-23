@@ -157,25 +157,10 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChanged, logCal
         return response;
     }
 
-    /**
-     * Creates iframe with unique name
-     */
     function createIframe(id) {
-        // We can't use following code as the name attribute
-        // won't be properly registered in IE6, and new window
-        // on form submit will open
-        // var iframe = document.createElement('iframe');
-        // iframe.setAttribute('name', id);
+        var iframeName = getIframeName(id);
 
-        var iframeName = getIframeName(id),
-            iframe = qq.toElement('<iframe src="javascript:false;" name="' + iframeName + '" />');
-
-        iframe.setAttribute('id', iframeName);
-
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-
-        return iframe;
+        return qq.initIframeForUpload(iframeName);
     }
 
     /**
@@ -183,30 +168,19 @@ qq.UploadHandlerForm = function(o, uploadCompleteCallback, onUuidChanged, logCal
      */
     function createForm(id, iframe){
         var params = options.paramsStore.getParams(id),
-            protocol = options.demoMode ? "GET" : "POST",
-            form = qq.toElement('<form method="' + protocol + '" enctype="multipart/form-data"></form>'),
-            endpoint = options.endpointStore.getEndpoint(id),
-            url = endpoint;
+            method = options.demoMode ? "GET" : "POST",
+            endpoint = options.endpointStore.getEndpoint(id);
 
         params[options.uuidParam] = uuids[id];
+        params[options.filenameParam] = newNames[id];
 
-        if (newNames[id] !== undefined) {
-            params[options.filenameParam] = newNames[id];
-        }
-
-        if (!options.paramsInBody) {
-            url = qq.obj2url(params, endpoint);
-        }
-        else {
-            qq.obj2Inputs(params, form);
-        }
-
-        form.setAttribute('action', url);
-        form.setAttribute('target', iframe.name);
-        form.style.display = 'none';
-        document.body.appendChild(form);
-
-        return form;
+        return qq.initFormForUpload({
+            method: method,
+            endpoint: endpoint,
+            params: params,
+            paramsInBody: options.paramsInBody,
+            targetName: iframe.name
+        });
     }
 
     function expungeFile(id) {
