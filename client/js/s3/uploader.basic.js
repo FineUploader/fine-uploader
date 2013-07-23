@@ -11,6 +11,9 @@ qq.s3.FineUploaderBasic = function(o) {
             accessKey: null,
             acl: 'private',
 
+            // required if non-File-API browsers, such as IE9 and older, are used
+            successRedirectEndpoint: null,
+
             // 'uuid', 'filename', or a function, which may be promissory
             key: 'uuid'
         }
