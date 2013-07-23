@@ -23,26 +23,42 @@ module.exports = (grunt) ->
         './client/js/features.js',
         './client/js/promise.js',
         './client/js/button.js',
+
+        # TODO tied to the upload via paste feature and can be omitted or included in the combined file based on integrator prefs (#846)
         './client/js/paste.js',
+
         './client/js/upload-data.js',
         './client/js/uploader.basic.api.js',
         './client/js/uploader.basic.js',
+
+        # TODO tied to the DnD feature and can be omitted or included in the combined file based on integrator prefs (#846)
         './client/js/dnd.js',
+
         './client/js/uploader.api.js',
         './client/js/uploader.js',
         './client/js/ajax.requester.js',
+
+        # TODO tied to the delete file feature and can be omitted or included in the combined file based on integrator prefs (#846)
         './client/js/deletefile.ajax.requester.js',
+
+        # TODO tied to the CORS feature and can be omitted or included in the combined file based on integrator prefs (#846)
         './client/js/window.receive.message.js',
+
         './client/js/handler.base.js',
-        './client/js/handler.form.js',
         './client/js/handler.xhr.api.js',
-        './client/js/handler.xhr.js',
+
+        # TODO tied to the edit filename feature and can be omitted or included in the combined file based on integrator prefs (#846)
         './client/js/ui.handler.events.js',
         './client/js/ui.handler.click.drc.js',
         './client/js/ui.handler.edit.filename.js',
         './client/js/ui.handler.click.filename.js',
         './client/js/ui.handler.focusin.filenameinput.js',
         './client/js/ui.handler.focus.filenameinput.js'
+    ]
+
+    traditional = [
+        './client/js/handler.form.js',
+        './client/js/handler.xhr.js'
     ]
 
     s3 = [
@@ -52,14 +68,17 @@ module.exports = (grunt) ->
         './client/js/s3/policysignature.ajax.requester.js',
         './client/js/s3/uploadsuccess.ajax.requester.js',
         './client/js/s3/handler.xhr.js',
-        './client/js/s3/handler.form.js'
+        './client/js/s3/handler.form.js',
         './client/js/s3/jquery-plugin.js'
     ]
 
     # jQuery plugin modules
     jquery = core.concat './client/js/jquery-plugin.js',
+
+                         # TODO tied to the DnD feature and can be omitted or included in the combined file based on integrator prefs (#846)
                          './client/js/jquery-dnd.js'
 
+    all = jquery.concat (traditional.concat s3)
 
     extra = [
         './client/js/iframe.xss.response.js'
@@ -211,17 +230,20 @@ module.exports = (grunt) ->
         # --------
         concat:
             core:
-                src: core
+                src: core.concat traditional
                 dest: './build/<%= pkg.name %>.js'
             coreS3:
                 src: core.concat s3
                 dest: './build/s3.<%= pkg.name %>.js'
             jquery:
-                src: jquery
+                src: jquery.concat traditional
                 dest: './build/jquery.<%= pkg.name %>.js'
             jqueryS3:
                 src: jquery.concat s3
                 dest: './build/s3.jquery.<%= pkg.name %>.js'
+            all:
+                src: all
+                dest: './build/all.<%= pkg.name %>.js'
             css:
                 src: ['./client/*.css']
                 dest: './build/<%= pkg.name %>.css'
@@ -247,6 +269,9 @@ module.exports = (grunt) ->
             jqueryS3:
                 src: ['<%= concat.jqueryS3.dest %>']
                 dest: './build/s3.jquery.<%= pkg.name %>.min.js'
+            all:
+                src: ['<%= concat.all.dest %>']
+                dest: './build/all.<%= pkg.name %>.min.js'
 
         # Copy
         # ----------
