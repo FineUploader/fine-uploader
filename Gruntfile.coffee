@@ -46,6 +46,7 @@ module.exports = (grunt) ->
 
         './client/js/handler.base.js',
         './client/js/handler.xhr.api.js',
+        './client/js/handler.form.api.js',
 
         # TODO tied to the edit filename feature and can be omitted or included in the combined file based on integrator prefs (#846)
         './client/js/ui.handler.events.js',

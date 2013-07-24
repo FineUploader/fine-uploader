@@ -13,14 +13,9 @@
 qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, logCallback) {
     "use strict";
 
-    var inputs = [],
-        uuids = [],
-        newNames = [],
-        keys = [],
-        detachLoadEvents = {},
+    var fileState = [],
         uploadComplete = uploadCompleteCallback,
         log = logCallback,
-        formHandlerInstanceId = qq.getUniqueId(),
         onComplete = options.onComplete,
         onUpload = options.onUpload,
         onGetKeyName = options.getKeyName,
@@ -36,50 +31,9 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
             cors: options.cors,
             log: log
         }),
-        api;
+        internalApi = {},
+        publicApi;
 
-
-    function detachLoadEvent(id) {
-        if (detachLoadEvents[id] !== undefined) {
-            detachLoadEvents[id]();
-            delete detachLoadEvents[id];
-        }
-    }
-
-    function attachLoadEvent(iframe, callback) {
-        /*jslint eqeq: true*/
-
-        detachLoadEvents[iframe.id] = qq(iframe).attach('load', function(){
-            log('Received response for ' + iframe.id);
-
-            // when we remove iframe from dom
-            // the request stops, but in IE load
-            // event fires
-            if (!iframe.parentNode){
-                return;
-            }
-
-            try {
-                // fixing Opera 10.53
-                if (iframe.contentDocument &&
-                    iframe.contentDocument.body &&
-                    iframe.contentDocument.body.innerHTML == "false"){
-                    // In Opera event is fired second time
-                    // when body.innerHTML changed from false
-                    // to server response approx. after 1 sec
-                    // when we upload file with iframe
-                    return;
-                }
-            }
-            catch (error) {
-                //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
-                log('Error when attempting to access iframe during handling of upload response (' + error + ")", 'error');
-                callback(false);
-            }
-
-            callback(isValidResponse(iframe.id, iframe));
-        });
-    }
 
     /**
      * Attempt to parse the contents of an iframe after receiving a response from the server.  If the contents cannot be
@@ -94,8 +48,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         var response,
             endpoint = options.endpointStore.getEndpoint(id),
             bucket = qq.s3.util.getBucket(endpoint),
-            iframeName = iframe.id,
-            fileId = getFileIdForIframeName(iframeName);
+            iframeName = iframe.id;
 
 
         //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
@@ -105,9 +58,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
                 innerHtml = doc.body.innerHTML;
 
             var responseData = qq.s3.util.parseIframeResponse(iframe);
-            if (responseData.bucket === bucket
-                && responseData.key === keys[fileId]
-                && responseData.etag !== undefined) {
+            if (responseData.bucket === bucket && responseData.key === fileState[id].key) {
 
                 return true;
             }
@@ -119,21 +70,15 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         return false;
     }
 
-    function createIframe(id) {
-        var iframeName = getIframeName(id);
-
-        return qq.initIframeForUpload(iframeName);
-    }
-
     function generateAwsParams(id) {
         var customParams = paramsStore.getParams(id);
 
-        customParams[filenameParam] = api.getName(id);
+        customParams[filenameParam] = publicApi.getName(id);
 
         return qq.s3.util.generateAwsParams({
                 endpoint: endpointStore.getEndpoint(id),
                 params: customParams,
-                key: keys[id],
+                key: fileState[id].key,
                 accessKey: accessKey,
                 acl: acl,
                 minFileSize: validation.minSizeLimit,
@@ -154,7 +99,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
 
         // TODO handle failure?
         generateAwsParams(id).then(function(params) {
-            var form = qq.initFormForUpload({
+            var form = internalApi.initFormForUpload({
                 method: method,
                 endpoint: endpoint,
                 params: params,
@@ -168,34 +113,10 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         return promise;
     }
 
-    function expungeFile(id) {
-        delete inputs[id];
-        delete uuids[id];
-        delete detachLoadEvents[id];
-
-        var iframe = document.getElementById(getIframeName(id));
-        if (iframe) {
-            // to cancel request set src to something else
-            // we use src="javascript:false;" because it doesn't
-            // trigger ie6 prompt on https
-            iframe.setAttribute('src', 'java' + String.fromCharCode(115) + 'cript:false;'); //deal with "JSLint: javascript URL" warning, which apparently cannot be turned off
-
-            qq(iframe).remove();
-        }
-    }
-
-    function getFileIdForIframeName(iframeName) {
-        return iframeName.split("_")[0];
-    }
-
-    function getIframeName(fileId) {
-        return fileId + "_" + formHandlerInstanceId;
-    }
-
     function handleUpload(id) {
-        var fileName = api.getName(id),
-            iframe = createIframe(id),
-            input = inputs[id];
+        var fileName = publicApi.getName(id),
+            iframe = internalApi.createIframe(id),
+            input = fileState[id].input;
 
         // TODO handle failure?
         createForm(id, iframe).then(function(form) {
@@ -203,16 +124,15 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
 
             form.appendChild(input);
 
-            attachLoadEvent(iframe, function(wasSuccessful){
-                var response = {success: false};
-
+            internalApi.attachLoadEvent(iframe, function(response) {
                 log('iframe loaded');
+                var wasSuccessful = response ? response.success : isValidResponse(id, iframe);
 
-                if (wasSuccessful === true || isValidResponse(id, iframe)) {
+                if (wasSuccessful === true) {
                     response = {success: true};
                 }
 
-                detachLoadEvent(id);
+                internalApi.detachLoadEvent(id);
 
                 qq(iframe).remove();
 
@@ -231,104 +151,32 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         });
     }
 
-    function handleStartUploadSignal(id) {
-        var name = api.getName(id);
+    publicApi = new qq.UploadHandlerFormApi(internalApi, fileState, false, "file", options.onCancel, onUuidChanged, log);
 
-        if (api.isValid(id)) {
-            if (keys[id]) {
-                handleUpload(id);
-            }
-            else {
-                // The S3 uploader module will either calculate the key or ask the server for it
-                // and will call us back once it is known.
-                onGetKeyName(id, name).then(function(key) {
-                    keys[id] = key;
-                    handleUpload(id);
-                });
-            }
-        }
-    }
-
-    api = {
-        add: function(fileInput) {
-            // AWS requires the file field be named "file".
-            fileInput.setAttribute('name', "file");
-
-            var id = inputs.push(fileInput) - 1;
-            uuids[id] = qq.getUniqueId();
-
-            // remove file input from DOM
-            if (fileInput.parentNode){
-                qq(fileInput).remove();
-            }
-
-            return id;
-        },
-        getName: function(id) {
-            /*jslint regexp: true*/
-
-            if (newNames[id] !== undefined) {
-                return newNames[id];
-            }
-            else if (api.isValid(id)) {
-                // get input value and remove path to normalize
-                return inputs[id].value.replace(/.*(\/|\\)/, "");
-            }
-            else {
-                log(id + " is not a valid item ID.", "error");
-            }
-        },
-        setName: function(id, newName) {
-            newNames[id] = newName;
-        },
-        isValid: function(id) {
-            return inputs[id] !== undefined;
-        },
-        reset: function() {
-            inputs = [];
-            uuids = [];
-            newNames = [];
-            detachLoadEvents = {};
-            formHandlerInstanceId = qq.getUniqueId();
-        },
-        expunge: function(id) {
-            return expungeFile(id);
-        },
-        getUuid: function(id) {
-            return uuids[id];
-        },
-        cancel: function(id) {
-            var onCancelRetVal = options.onCancel(id, api.getName(id));
-
-            if (qq.isPromise(onCancelRetVal)) {
-                return onCancelRetVal.then(function() {
-                    expungeFile(id);
-                });
-            }
-            else if (onCancelRetVal !== false) {
-                expungeFile(id);
-                return true;
-            }
-
-            return false;
-        },
-
+    qq.extend(publicApi, {
         upload: function(id) {
-            var input = inputs[id];
+            var input = fileState[id].input,
+                name = publicApi.getName(id);
 
             if (!input){
                 throw new Error('file with passed id was not added, or already uploaded or cancelled');
             }
 
-            handleStartUploadSignal(id);
-        },
-
-        setUuid: function(id, newUuid) {
-            log("Server requested UUID change from '" + uuids[id] + "' to '" + newUuid + "'");
-            uuids[id] = newUuid;
-            onUuidChanged(id, newUuid);
+            if (publicApi.isValid(id)) {
+                if (fileState[id].key) {
+                    handleUpload(id);
+                }
+                else {
+                    // The S3 uploader module will either calculate the key or ask the server for it
+                    // and will call us back once it is known.
+                    onGetKeyName(id, name).then(function(key) {
+                        fileState[id].key = key;
+                        handleUpload(id);
+                    });
+                }
+            }
         }
-    };
+    });
 
-    return api;
+    return publicApi;
 };

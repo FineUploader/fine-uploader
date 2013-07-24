@@ -451,57 +451,6 @@ qq.bind = function(oldFunc, context) {
 };
 
 /**
- * Generates an iframe to be used as a target for upload-related form submits.  This also adds the iframe
- * to the current `document`.  Note that the iframe is hidden from view.
- *
- * @param name Name of the iframe.
- * @returns {HTMLIFrameElement} The created iframe
- */
-qq.initIframeForUpload = function(name) {
-    var iframe = qq.toElement('<iframe src="javascript:false;" name="' + name + '" />');
-
-    iframe.setAttribute('id', name);
-
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-
-    return iframe;
-};
-
-/**
- * Generates a form element and appends it to the `document`.  When the form is submitted, a specific iframe is targeted.
- * The name of the iframe is passed in as a property of the spec parameter, and must be unique in the `document`.  Note
- * that the form is hidden from view.
- *
- * @param spec An object containing various properties to be used when constructing the form.  Required properties are
- * currently: `method`, `endpoint`, `params`, `paramsInBody`, and `targetName`.
- * @returns {HTMLFormElement} The created form
- */
-qq.initFormForUpload = function(spec) {
-    var method = spec.method,
-        endpoint = spec.endpoint,
-        params = spec.params,
-        paramsInBody = spec.paramsInBody,
-        targetName = spec.targetName,
-        form = qq.toElement('<form method="' + method + '" enctype="multipart/form-data"></form>'),
-        url = endpoint;
-
-    if (paramsInBody) {
-        qq.obj2Inputs(params, form);
-    }
-    else {
-        url = qq.obj2url(params, endpoint);
-    }
-
-    form.setAttribute('action', url);
-    form.setAttribute('target', targetName);
-    form.style.display = 'none';
-    document.body.appendChild(form);
-
-    return form;
-};
-
-/**
  * obj2url() takes a json-object as argument and generates
  * a querystring. pretty much like jQuery.param()
  *
