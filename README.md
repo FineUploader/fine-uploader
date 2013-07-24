@@ -8,12 +8,12 @@ Version: 3.8.0
 [**Documentation**](http://docs.fineuploader.com) |
 [**Examples**](http://fineuploader.com) |
 [**Support**](http://fineuploader.com/support.html) |
-[**Blog**](http://blog.fineuploader.com/) | 
+[**Blog**](http://blog.fineuploader.com/) |
 [**Changelog**](http://blog.fineuploader.com/category/changelog/)
 
 ---
 
-Fine Uploader aims to make file-uploading on the web possible in every browser and mobile device. It is **cross-browser**, **dependency-free**, and **100% Javascript**. 
+Fine Uploader aims to make file-uploading on the web possible in every browser and mobile device. It is **cross-browser**, **dependency-free**, and **100% Javascript**.
 
 FineUploader is simple to use. You only need to include one JavaScript file. There are absolutely no other dependencies.
 For more information, please see the [**documentation**](http://docs.fineuploader.com).
@@ -25,4 +25,4 @@ comfortable with the GPL v3 license) please see the [documentation](http://docs.
 your own version-stamped copy of the library.
 
 
-*Fine Uploader is an open-source component of [Widen Enterprises, Inc.](http://www.widen.com/)* 
+*Fine Uploader is an open-source component of [Widen Enterprises, Inc.](http://www.widen.com/)*

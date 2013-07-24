@@ -145,6 +145,7 @@ INPUT.qq-edit-filename {
     position: absolute;
     opacity: 0;
     filter: alpha(opacity=0);
+    z-index: -1;
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 }
 
