@@ -63,6 +63,11 @@ h3
 {
     background:none;
 }
+.navbar-inverse .nav .active > a:hover,
+.navbar-inverse .nav .active > a:focus {
+    color:#005580;
+    text-decoration:underline;
+}
 .navbar-inverse .navbar-inner
 {
     background: #66ccdd;

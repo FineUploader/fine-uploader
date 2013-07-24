@@ -9,7 +9,7 @@
 
             <div class="nav-collapse collapse">
                 <ul class="nav">
-                    <li><a class="brand" href="http://fineuploader.com/"><img style="margin-top: -13px; height: 24px" src="http://fineuploader.com/img/FineUploader_logo.png"></img></a></li>
+                    <li><a class="brand" href="http://fineuploader.com/"><img style="margin-top: -10px; height: 20px" src="http://fineuploader.com/img/FineUploader_logo.png"></img></a></li>
                     <li><a href="{{ URL_ROOT }}">Home</li></a>
                     <li><a href="http://blog.fineuploader.com/">Blog</li></a>
                     <li><a href="{{ URL_ROOT }}/overview">Overview</li></a>
@@ -79,7 +79,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version <b class="caret"></b>
                         <ul class="dropdown-menu">
                             {% for href, id, caption in version_bar %}
-                                <li{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                                <ul{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{{ caption|e }}</a></ul>
                             {% endfor %}
                         </ul>
                     </li>
