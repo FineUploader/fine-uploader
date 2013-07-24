@@ -224,6 +224,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
          */
         attachLoadEvent: function(iframe, callback) {
             /*jslint eqeq: true*/
+            var responseDescriptor;
 
             if (isCors) {
                 registerPostMessageCallback(iframe, callback);
@@ -254,10 +255,10 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
                     catch (error) {
                         //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
                         log('Error when attempting to access iframe during handling of upload response (' + error + ")", 'error');
-                        callback({success: false});
+                        responseDescriptor = {success: false};
                     }
 
-                    callback();
+                    callback(responseDescriptor);
                 });
             }
         },

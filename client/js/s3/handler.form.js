@@ -1,6 +1,4 @@
 /**
- * TODO eliminate duplication between this and traditional form upload handler.
- *
  * Upload handler used by the upload to S3 module that assumes the current user agent does not have any support for the
  * File API, and, therefore, makes use of iframes and forms to submit the files directly to S3 buckets via the associated
  * AWS API.
@@ -14,9 +12,9 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
     "use strict";
 
     var fileState = [],
-        uploadComplete = uploadCompleteCallback,
+        uploadCompleteCallback = uploadCompleteCallback,
         log = logCallback,
-        onComplete = options.onComplete,
+        onCompleteCallback = options.onComplete,
         onUpload = options.onUpload,
         onGetKeyName = options.getKeyName,
         filenameParam = options.filenameParam,
@@ -95,9 +93,9 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
     function createForm(id, iframe) {
         var promise = new qq.Promise(),
             method = options.demoMode ? "GET" : "POST",
-            endpoint = options.endpointStore.getEndpoint(id);
+            endpoint = options.endpointStore.getEndpoint(id),
+            fileName = publicApi.getName(id);
 
-        // TODO handle failure?
         generateAwsParams(id).then(function(params) {
             var form = internalApi.initFormForUpload({
                 method: method,
@@ -108,6 +106,9 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
             });
 
             promise.success(form);
+        }, function(errorMessage) {
+            promise.failure(errorMessage);
+            handleFinishedUpload(id, iframe, fileName, {error: errorMessage});
         });
 
         return promise;
@@ -118,37 +119,54 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
             iframe = internalApi.createIframe(id),
             input = fileState[id].input;
 
-        // TODO handle failure?
         createForm(id, iframe).then(function(form) {
             onUpload(id, fileName);
 
             form.appendChild(input);
 
+            // Register a callback when the response comes in from S3
             internalApi.attachLoadEvent(iframe, function(response) {
                 log('iframe loaded');
-                var wasSuccessful = response ? response.success : isValidResponse(id, iframe);
 
-                if (wasSuccessful === true) {
-                    response = {success: true};
-                }
-
-                internalApi.detachLoadEvent(id);
-
-                qq(iframe).remove();
-
-                if (!response.success) {
-                    if (options.onAutoRetry(id, fileName, response)) {
-                        return;
+                // If the common response handler has determined success or failure immediately
+                if (response) {
+                    // If there is something fundamentally wrong with the response (such as iframe content is not accessible)
+                    if (response.success === false) {
+                        log('Amazon likely rejected the upload request', 'error');
                     }
                 }
-                onComplete(id, fileName, response);
-                uploadComplete(id);
+                // The generic response (iframe onload) handler was not able to make a determination regarding the success of the request
+                else {
+                    response = {};
+                    response.success = isValidResponse(id, iframe);
+
+                    // If the more specific response handle detected a problem with the response from S3
+                    if (response.success === false) {
+                        log('A success response was received by Amazon, but it was invalid in some way.', 'error');
+                    }
+                }
+
+                handleFinishedUpload(id, iframe, fileName, response);
             });
 
             log('Sending upload request for ' + id);
             form.submit();
             qq(form).remove();
         });
+    }
+
+    function handleFinishedUpload(id, iframe, fileName, response) {
+        internalApi.detachLoadEvent(id);
+
+        qq(iframe).remove();
+
+        if (!response.success) {
+            if (options.onAutoRetry(id, fileName, response)) {
+                return;
+            }
+        }
+        onCompleteCallback(id, fileName, response);
+        uploadCompleteCallback(id);
     }
 
     publicApi = new qq.UploadHandlerFormApi(internalApi, fileState, false, "file", options.onCancel, onUuidChanged, log);
