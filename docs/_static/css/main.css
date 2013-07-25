@@ -28,7 +28,9 @@ h3
 {
     color: #00ABC7;
 }
-.navbar-inverse .brand, .navbar-inverse .nav > li > a
+.navbar-inverse .brand, .navbar-inverse .nav > li > a,
+.navbar-inverse .nav-collapse .nav > li > a,
+.navbar-inverse .nav-collapse .dropdown-menu a
 {
     color: #6C6C6C;
     text-shadow:none;
