@@ -1,8 +1,9 @@
 {% extends "_templates/base.html" %}
 {% block content %}
 {% markdown %}
+# TODO: Include inherited UI-mode specific options, allow toggle buttons to dictate which options are displayed
+
 ## Amazon S3 mode options
-##### TODO Toggle button that displays all options or simply the core/non-UI options, depending on the selection
 
 <table class='table table-bordered table-striped'>
     <thead>
@@ -88,6 +89,15 @@
             <td><code>null</code></td>
             <td>This is the fully qualified URL for an S3 bucket, for example: "http://foobar.s3.amazonaws.com",
             where the bucket is "foobar".  All paths must end with "s3.amazonaws.com".</td>
+        </tr>
+        <tr>
+            <td>successRedirectEndpoint</td>
+            <td>string (path)</td>
+            <td><code>null</code></td>
+            <td>This is required if you plan on supporting browsers that do not implement the File API, such as IE9 and older.
+            This must point to a page on the same origin/domain as the page hosting Fine Uploader. A simple, static,
+            blank html file is all that is needed here.  If you have a blank page named "blank.html" in the root of your
+            web server, you would simply set the value of this option to "/blank.html".</td>
         </tr>
         <tr>
             <td>params</td>
