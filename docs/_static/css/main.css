@@ -3,24 +3,40 @@
 /* ==========================================================================
    Author's custom styles
    ========================================================================== */
-body {
+body
+{
     margin-top: 25px;
     color: #525252;
     background-color: #FCFCFA;
     font-family:'Maven Pro', sans-serif !important;
 }
-
-@media (max-width: 979px) { body { padding-top: 0px; }}
-pre {
+@media (max-width: 979px)
+{
+    body
+    {
+        padding-top: 0px;
+    }
+}
+pre
+{
     overflow: -moz-scrollbars-vertical;
     overflow: scroll;
     word-wrap: normal !important;
     white-space: pre !important;
 }
-.nav > .brand > img { margin-top: -13px; }
-.dropdown-menu { min-width: 220px; }
-
-h2#documentation
+.nav > .brand > img
+{
+    margin-top: -13px;
+}
+.dropdown-menu
+{
+    min-width: 220px;
+}
+h1, h2, h3
+{
+    margin: 20px 0;
+}
+h2
 {
     color:#F87436;
 }
@@ -48,6 +64,13 @@ h3
 {
     background-color:#525252;
 }
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus
+{
+    background-color: #66ccdd;
+    background-image:linear-gradient(to bottom, #66ccdd, #66ccdd);
+}
 .navbar-inverse .btn-navbar
 {
     background-color:#F87436;
@@ -64,6 +87,7 @@ h3
 .navbar-inverse .nav-collapse .dropdown-menu a:hover
 {
     background:none;
+    color:#F87436;
 }
 .navbar-inverse .nav .active > a:hover,
 .navbar-inverse .nav .active > a:focus {
@@ -89,6 +113,12 @@ h3
     box-shadow: inset 0 1px 5px rgba(100,100,100,.2), inset 0 -1px 7px rgba(100,100,100,.2);
     border:none;
 }
-a:visited, .widget-area .widget a:visited, .comments-link a:visited, .entry-meta a:visited, .template-home .widget-area .widget li a:visited, .entry-content a:visited {
+a:hover {
+    -webkit-transition: all .15s ease-in-out;
+    -moz-transition: all .15s ease-in-out;
+    transition: all .15s ease-in-out;
+}
+a:visited
+{
     color: #0088CC;
 }
