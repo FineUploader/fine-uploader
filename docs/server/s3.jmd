@@ -102,3 +102,5 @@ to set the `expected` property of the `cors` option when setting up your Fine Up
 appropriate headers in your server-response, and possibly handle OPTIONS (pre-flight) requests sent by the browser.  Please
 read the blog post on CORS support](http://blog.fineuploader.com/2013/01/31/cors-support-in-3-3/) for details.  Note that
 you can ignore the "Handling iframe CORS upload requests server-side" section.
+{% endmarkdown %}
+{% endblock %}
