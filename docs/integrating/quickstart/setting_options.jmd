@@ -1,6 +1,8 @@
 {% extends "_templates/base.html" %}
 {% block content %}
 {% markdown %}
+# TODO Consider removing the "required options" section since it doesn't necessarily apply to all modules.
+
 ### Setting FineUploader Options
 
 At this point in the tutorial you should have an index.html page with a FineUploader instance. This section will go over setting some of the more common options of FineUploader.
@@ -37,11 +39,10 @@ retry: {
 }
 ```
 
-Now, user's have 5 attempts to retry their upload.
-
 #### Deleting Files
 
-If a user has uploaded a file, but realized it was a mistake before aborting, then FineUploder can also help them delete files. FineUploader supports deleting files via POST and across origins.
+If a user has uploaded a file, but realized it was a mistake before aborting, then FineUploder can also help them delete files.
+FineUploader supports deleting files via POST, DELETE, and across origins.
 
 You can use the `deleteFile` option properties to control this feature:
 
@@ -53,9 +54,11 @@ deleteFile: {
 }
 ```
 
-A file is eligible for deletion only after it has been successfully uploaded. In FineUploader mode, if this feature is enabled, a customizable delete link will appear next to the file after it has successfully uploaded.
+A file is eligible for deletion only after it has been successfully uploaded. In FineUploader mode, if this feature is
+enabled, a customizable delete link will appear next to the file after it has successfully uploaded.
 
-Upon clicking the delete link, the `onSubmitDelete` callback is invoked, and a customizable confirmation dialog is presented to the user (if `forceConfirm` is set to `true`).
+Upon clicking the delete link, the `onSubmitDelete` callback is invoked, and a customizable confirmation dialog is
+presented to the user (if `forceConfirm` is set to `true`) and the default UI (`FineUploader`) mode is in use.
 
 In FineUploaderBasic mode, you can send a delete request via the `deleteFile` API method.
 

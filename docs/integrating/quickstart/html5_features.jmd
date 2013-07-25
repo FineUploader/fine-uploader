@@ -1,6 +1,8 @@
 {% extends "_templates/base.html" %}
 {% block content %}
 {% markdown %}
+# TODO: Breakdown for traditional and S3 uploading modes.
+
 ### HTML5 Feature Support
 
 At this point, you should have a fully functional FineUploader instance and a working Node.js server for saving files to your local machine
@@ -10,7 +12,10 @@ FineUploader contains first-class support for the latest HTML5 features includin
 All the HTML5 features can be configured via the options object that is passed into the initial FineUploader instance.
 
 #### File Chunking
-File chunking is a feature made possible by the HTML5 File API. Chunking is currently possibly is Chrome, Firefox, Safari in iOS6 and OS X, and Internet Explorer 10. Chunking is required for the auto-retry and auto-resume features. Not much has to be changed in FineUploader to handle chunking, simply set the options:
+File chunking is a feature made possible by the HTML5 File API.  Chunking is currently possible in Chrome, Firefox,
+Safari in iOS6 and OS X, Internet Explorer 10, and the stock browser on Android 2.4+.
+Chunking is required for the auto-retry and auto-resume features.
+Not much has to be changed in FineUploader to handle chunking, simply set the options:
 
     chunking: {
         enabled: true

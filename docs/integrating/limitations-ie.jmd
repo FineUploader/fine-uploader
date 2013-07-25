@@ -1,6 +1,8 @@
 {% extends "_templates/base.html" %}
 {% block content %}
 {% markdown %}
+# TODO: CORS-related stuff
+
 ## Internet Explorer Limitations ##
 IE continues to lag _far_ behind all other browsers in terms of features.  IE10 is supposed to, finally, start to compete
 with existing modern browsers.  For those of you with customers suffering with IE9 and older, here are some of the limitations

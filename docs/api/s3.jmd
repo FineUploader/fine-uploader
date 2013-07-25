@@ -1,8 +1,9 @@
 {% extends "_templates/base.html" %}
 {% block content %}
 {% markdown %}
+# TODO: Include inherited UI-mode specific API methods, allow toggle buttons to dictate which methods are displayed
+
 ## Upload To S3 mode API methods ##
-##### TODO Toggle button that displays all API methods or simply the core/non-UI API methods, depending on the selection
 
 * `getKey(fileId)` - Retrieve the S3 object key associated with the file, according to Fine Uploader.
 
