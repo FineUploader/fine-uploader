@@ -47,5 +47,61 @@ describe('s3/util.js', function () {
         });
     });
 
+    describe('getSuccessRedirectAbsoluteUrl', function() {
+        var purlUrl, protocol, host, dir;
+
+        beforeEach(function() {
+            purlUrl = purl(window.location.href);
+            protocol = purlUrl.attr('protocol');
+            host = purlUrl.attr('host') + ':' + purlUrl.attr('port');
+            dir = purlUrl.attr('directory');
+        });
+
+        it('relative url input', function() {
+            var derivedAbsoluteUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl("server/upload");
+            assert.equal(protocol + "://" + host + dir + "server/upload", derivedAbsoluteUrl);
+        });
+
+        it('relative url input - root', function() {
+            var derivedAbsoluteUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl("/server/upload");
+            assert.equal(protocol + "://" + host + "/server/upload", derivedAbsoluteUrl);
+        });
+
+        it ('absolute url input', function() {
+            assert.equal("http://1.2.3.4:8080/foo/bar", qq.s3.util.getSuccessRedirectAbsoluteUrl("http://1.2.3.4:8080/foo/bar"));
+        })
+    });
+
+    describe('parseIframeResponse', function() {
+        it('invalid iframe location', function() {
+            var fakeIframe = {
+                contentDocument: {
+                    location: {
+                        search: "foo=bar"
+                    }
+                }
+            };
+
+            assert.ok(qq.s3.util.parseIframeResponse(fakeIframe) === undefined);
+        });
+
+        it('valid iframe location', function() {
+            var fakeIframe = {
+                    contentDocument: {
+                        location: {
+                            search: "bucket=123&key=456&etag=789"
+                        }
+                    }
+                },
+                response;
+
+            response = qq.s3.util.parseIframeResponse(fakeIframe);
+
+            assert.equal("123", response.bucket);
+            assert.equal("456", response.key);
+            assert.equal("789", response.etag);
+        });
+    });
+
 });
 

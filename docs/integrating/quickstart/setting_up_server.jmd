@@ -1,6 +1,8 @@
 {% extends "_templates/base.html" %}
 {% block content %}
 {% markdown %}
+# TODO: Reference the server-side docs for S3 and traditional environments.  Be clear that this example does not apply to S3.
+
 ### Setting up a server
 
 For this tutorial we are going to use [Node.js](http://nodejs.org/) to develop a simple server which will accept uploads from our FineUploader instance. If you don't have Node.js, now's the time to [get it](http://nodejs.org/download/).

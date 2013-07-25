@@ -11,6 +11,8 @@
  * @constructor
  */
 qq.UploadHandlerXhrApi = function(fileState, onUpload, onCancel, onUuidChanged, log) {
+    "use strict";
+
     var api;
 
     function expungeItem(id) {

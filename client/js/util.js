@@ -335,6 +335,10 @@ qq.ie       = function(){
     "use strict";
     return navigator.userAgent.indexOf('MSIE') !== -1;
 };
+qq.ie7      = function(){
+    "use strict";
+    return navigator.userAgent.indexOf('MSIE 7') !== -1;
+};
 qq.ie10     = function(){
     "use strict";
     return navigator.userAgent.indexOf('MSIE 10') !== -1;

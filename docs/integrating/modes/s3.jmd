@@ -1,3 +1,9 @@
-## S3 Uploader Guide ##
-TODO create this during final documentation.  Perhaps we should combine these guides into one page with some buttons
-or checkboxes that determine the information presented, as we plan on doing elsehwhere in the docs.
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+# TODO: create this during final documentation.  Perhaps we should combine these guides into one page with some buttons
+or checkboxes that determine the information presented, as we plan on doing elsewhere in the docs.
+
+## S3 Uploader Guide
+{% endmarkdown %}
+{% endblock %}

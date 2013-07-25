@@ -78,7 +78,10 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
 
 
         if (isError) {
-            options.log(errorMessage, "error");
+            if (errorMessage) {
+                options.log(errorMessage, "error");
+            }
+
             promise.failure(errorMessage);
         }
         else {
