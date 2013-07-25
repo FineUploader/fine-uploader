@@ -17,7 +17,7 @@ Once you have the FineUploader source files, you can being to set up your websit
 <html>
   <head>
       <!-- FineUploader CSS -->
-      <link href="fineuploader-3.6.3.min.css" type="text/css">
+      <link href="fineuploader-{{ PKG['version']|e }}.css" rel="stylesheet" type="text/css"/>
   </head>
   <body>
     <div id="fine-uploader">
