@@ -5,6 +5,8 @@
    ========================================================================== */
 body
 {
+    padding-top: 60px;
+    padding-bottom: 40px;
     color: #525252;
     background-color: #FCFCFA;
     font-family:'Maven Pro', sans-serif !important;
