@@ -61,9 +61,8 @@ public class S3Uploads extends HttpServlet
         s3Client.deleteObject(bucket, key);
     }
 
-    // Called by the main POST request handler if Fine Uploader has asked for a policy document to be signed.
-    // After validating the policy document, this will base-64 encode the policy document, sign it,
-    // and then return the base-64 policy document and the signed policy document as properties in a JSON response.
+    // Called by the main POST request handler if Fine Uploader has asked for an item to be signed.  The item may be a
+    // policy document or a string that represents multipart upload request headers.
     private void handleSignatureRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         resp.setContentType("application/json");
@@ -71,21 +70,37 @@ public class S3Uploads extends HttpServlet
 
         JsonParser jsonParser = new JsonParser();
         JsonElement contentJson = jsonParser.parse(req.getReader());
+        JsonObject jsonObject = contentJson.getAsJsonObject();
+        JsonElement multipartHeaders = jsonObject.get("multipartHeaders");
+        JsonObject response = new JsonObject();
+        String signature;
 
         try
         {
-            String base64Policy = getBase64Policy(contentJson);
-            String signedPolicy = getSignedPolicy(base64Policy);
+            // If this is not a multipart upload-related request, Fine Uploader will send a policy document
+            // as the value of a "policy" property in the request.  In that case, we must base-64 encode
+            // the policy document and then sign it. The will include the base-64 encoded policy and the signed policy document.
+            if (multipartHeaders == null)
+            {
+                String base64Policy = base64EncodePolicy(contentJson);
+                signature = sign(base64Policy);
 
-            JsonObject response = new JsonObject();
+                // Validate the policy document to ensure the client hasn't tampered with it.
+                // If it has been tampered with, set this property on the response and set the status to a non-200 value.
+//                response.addProperty("badPolicy", true);
 
-            // Validate the policy document to ensure the client hasn't tampered with it.
-            // If it has been tampered with, set this property on the response and set the status to a non-200 value.
-//            response.addProperty("badPolicy", true);
+                response.addProperty("policy", base64Policy);
+            }
 
-            response.addProperty("policy", base64Policy);
-            response.addProperty("signature", signedPolicy);
+            // If this is a request to sign a multipart upload-related request, we only need to sign the headers,
+            // which are passed as the value of a "multipartHeaders" property from Fine Uploader.  In this case,
+            // we only need to return the signed value.
+            else
+            {
+               signature = sign(multipartHeaders.getAsString());
+            }
 
+            response.addProperty("signature", signature);
             resp.getWriter().write(response.toString());
         }
         catch (Exception e)
@@ -110,21 +125,19 @@ public class S3Uploads extends HttpServlet
                 bucket, key, uuid, name));
     }
 
-    private String getBase64Policy(JsonElement policyJson) throws UnsupportedEncodingException
+    private String base64EncodePolicy(JsonElement jsonElement) throws UnsupportedEncodingException
     {
-        String policyJsonStr = policyJson.toString();
-        String base64Encoded = (new BASE64Encoder()).encode(policyJsonStr.getBytes("UTF-8")).replaceAll("\n","").replaceAll("\r","");
+        String policyJsonStr = jsonElement.toString();
+        String base64Encoded = (new BASE64Encoder()).encode(policyJsonStr.getBytes("UTF-8")).replaceAll("\n","").replaceAll("\r", "");
 
         return base64Encoded;
     }
 
-    private String getSignedPolicy(String base64Policy) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException
+    private String sign(String toSign) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException
     {
         Mac hmac = Mac.getInstance("HmacSHA1");
-
         hmac.init(new SecretKeySpec(AWS_SECRET_KEY.getBytes("UTF-8"), "HmacSHA1"));
-
-        String signature = (new BASE64Encoder()).encode(hmac.doFinal(base64Policy.getBytes("UTF-8"))).replaceAll("\n", "");
+        String signature = (new BASE64Encoder()).encode(hmac.doFinal(toSign.getBytes("UTF-8"))).replaceAll("\n", "");
 
         return signature;
     }
