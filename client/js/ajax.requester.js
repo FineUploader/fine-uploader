@@ -128,22 +128,24 @@ qq.AjaxRequestor = function (o) {
     }
 
     function getParams(id) {
-        var params = {},
-            additionalParams = requestState[id].additionalParams,
-            mandatedParams = options.mandatedParams;
+        var onDemandParams = requestState[id].onDemandParams,
+            mandatedParams = options.mandatedParams,
+            params;
 
         if (options.paramsStore.getParams) {
             params = options.paramsStore.getParams(id);
         }
 
-        if (additionalParams) {
-            qq.each(additionalParams, function (name, val) {
+        if (onDemandParams) {
+            qq.each(onDemandParams, function (name, val) {
+                params = params || {};
                 params[name] = val;
             });
         }
 
         if (mandatedParams) {
             qq.each(mandatedParams, function (name, val) {
+                params = params || {};
                 params[name] = val;
             });
         }
@@ -182,7 +184,7 @@ qq.AjaxRequestor = function (o) {
         setHeaders(id);
 
         log('Sending ' + method + " request for " + id);
-        if (shouldParamsBeInQueryString) {
+        if (shouldParamsBeInQueryString || !params) {
             xhr.send();
         }
         else if (params && options.contentType.toLowerCase().indexOf("application/x-www-form-urlencoded") >= 0) {
@@ -240,7 +242,9 @@ qq.AjaxRequestor = function (o) {
 
     function setHeaders(id) {
         var xhr = getXhrOrXdr(id),
-            customHeaders = options.customHeaders;
+            customHeaders = options.customHeaders,
+            onDemandHeaders = requestState[id].additionalHeaders || {},
+            allHeaders = {};
 
         // If this is a CORS request and a simple method with simple headers are used
         // on an `XMLHttpRequest`, exclude these specific non-simple headers
@@ -255,13 +259,16 @@ qq.AjaxRequestor = function (o) {
 
         // Note that we can't set the Content-Type when using this transport XDR, and it is
         // not relevant unless we will be including the params in the payload.
-        if ((options.method === "POST" || options.method === "PUT") && !isXdr(xhr)) {
+        if (options.contentType && (options.method === "POST" || options.method === "PUT") && !isXdr(xhr)) {
             xhr.setRequestHeader("Content-Type", options.contentType);
         }
 
         // `XDomainRequest` doesn't allow you to set any headers.
         if (!isXdr(xhr)) {
-            qq.each(customHeaders, function (name, val) {
+            qq.extend(allHeaders, customHeaders);
+            qq.extend(allHeaders, onDemandHeaders);
+
+            qq.each(allHeaders, function (name, val) {
                 xhr.setRequestHeader(name, val);
             });
         }
@@ -299,10 +306,11 @@ qq.AjaxRequestor = function (o) {
     }
 
     return {
-        send: function (id, addToPath, additionalParams) {
+        send: function (id, addToPath, onDemandParams, onDemandHeaders) {
             requestState[id] = {
                 addToPath: addToPath,
-                additionalParams: additionalParams
+                onDemandParams: onDemandParams,
+                additionalHeaders: onDemandHeaders
             };
 
             var len = queue.push(id);
