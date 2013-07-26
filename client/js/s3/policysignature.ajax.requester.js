@@ -1,4 +1,4 @@
-/*globals qq, XMLHttpRequest*/
+/*globals qq*/
 /**
  * Sends a POST request to the server in an attempt to solicit a signature for the S3 upload request policy document.
  * This module also parses the response and attempts to determine if the effort was successful.
