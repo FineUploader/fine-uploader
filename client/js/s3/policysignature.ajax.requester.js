@@ -1,6 +1,7 @@
 /*globals qq*/
 /**
- * Sends a POST request to the server in an attempt to solicit a signature for the S3 upload request policy document.
+ * Sends a POST request to the server in an attempt to solicit signatures for various S3-related requests.  This include
+ * (but are not limited to) HTML Form Upload requests and Multipart Uploader requests (via the S3 REST API).
  * This module also parses the response and attempts to determine if the effort was successful.
  *
  * @param o Options associated with all such requests
@@ -14,6 +15,7 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
         validMethods = ["POST"],
         pendingSignatures = [],
         options = {
+            expectingPolicy: false,
             method: "POST",
             endpoint: null,
             maxConnections: 3,
@@ -38,7 +40,9 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
 
     function handleSignatureReceived(id, xhrOrXdr, isError) {
         var responseJson = xhrOrXdr.responseText,
-            promise = pendingSignatures[id],
+            pendingSignatureData = pendingSignatures[id],
+            expectingPolicy = pendingSignatureData.expectingPolicy,
+            promise = pendingSignatureData.promise,
             errorMessage, response;
 
         delete pendingSignatures[id];
@@ -61,13 +65,13 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
         }
         // Make sure the response contains policy & signature properties
         else if (response) {
-            if (!response.policy) {
+            if (expectingPolicy && !response.policy) {
                 isError = true;
                 errorMessage = "Response does not include the base64 encoded policy!";
             }
             else if (!response.signature) {
                 isError = true;
-                errorMessage = "Response does not include the base64 encoded signed policy!";
+                errorMessage = "Response does not include the signature!";
             }
         }
         // Something unknown went wrong
@@ -75,7 +79,6 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
             isError = true;
             errorMessage = "Received an empty or invalid response from the server!";
         }
-
 
         if (isError) {
             if (errorMessage) {
@@ -111,21 +114,24 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
 
     return {
         /**
-         * On success, an object containing the parsed JSON response (w/ policy and signature properties)
-         * will be passed into the associated handler.
+         * On success, an object containing the parsed JSON response will be passed into the success handler if the
+         * request succeeds.  Otherwise an error message will be passed into the failure method.
          *
          * @param id File ID.
-         * @param policy Object containing the AWS policy associated with the file to be uploaded.
+         * @param toBeSigned an Object that holds the item(s) to be signed
          * @returns {qq.Promise} A promise that is fulfilled when the response has been received.
          */
-        getSignature: function(id, policy) {
-            var params = policy,
+        getSignature: function(id, toBeSigned) {
+            var params = toBeSigned,
                 promise = new qq.Promise();
 
             options.log("Submitting S3 signature request for " + id);
 
             requester.send(id, null, params);
-            pendingSignatures[id] = promise;
+            pendingSignatures[id] = {
+                promise: promise,
+                expectingPolicy: options.expectingPolicy
+            };
 
             return promise;
         }
