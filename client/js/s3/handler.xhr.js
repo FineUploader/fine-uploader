@@ -22,14 +22,31 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         accessKey = options.accessKey,
         acl = options.acl,
         validation = options.validation,
+        chunkingPossible = options.chunking.enabled && qq.supportedFeatures.chunking,
         getSignatureAjaxRequester = new qq.s3.PolicySignatureAjaxRequestor({
+            expectingPolicy: true,
             endpoint: options.signatureEndpoint,
             cors: options.cors,
             log: log
         }),
+        initiateMultipartRequester = new qq.s3.InitiateMultipartAjaxRequester({
+            endpointStore: endpointStore,
+            paramsStore: paramsStore,
+            signatureEndpoint: options.signatureEndpoint,
+            accessKey: options.accessKey,
+            acl: options.acl,
+            cors: options.cors,
+            getKey: function(id) {
+                return fileState[id].key;
+            },
+            getContentType: function(id) {
+                return api.getFile(id).type;
+            },
+            log: log
+        }),
         api;
 
-    //TODO eliminate duplication w/ handler.xhr.js
+    //TODO eliminate duplication w/ traditional handler.xhr.js
     function createXhr(id) {
         var xhr = new XMLHttpRequest();
 
@@ -38,7 +55,42 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         return xhr;
     }
 
-    //TODO eliminate duplication w/ handler.xhr.js
+    /**
+     * Determine if the associated file should be chunked.
+     *
+     * @param id ID of the associated file
+     * @returns {*} true if chunking is enabled, possible, and the file can be split into more than 1 part
+     */
+    function shouldChunkThisFile(id) {
+        if (fileState[id].chunked === undefined) {
+            if (chunkingPossible && getTotalChunks(id) > 1) {
+                fileState[id].chunked = true;
+            }
+            else {
+                fileState[id].chunked = false;
+            }
+        }
+
+        return fileState[id].chunked;
+    }
+
+    //TODO eliminate duplication w/ traditional handler.xhr.js
+    /**
+     * @param id ID of the associated file
+     * @returns {number} Number of parts this file can be divided into
+     */
+    function getTotalChunks(id) {
+        var fileSize = api.getSize(id),
+            chunkSize = options.chunking.partSize;
+
+        return Math.ceil(fileSize / chunkSize);
+    }
+
+    /**
+     * Initiate the upload process and possibly delegate to a more specific handler if chunking is required.
+     *
+     * @param id Associated file ID
+     */
     function handleUpload(id) {
         var fileOrBlob = fileState[id].file || fileState[id].blobData.blob,
             name = api.getName(id),
@@ -49,22 +101,55 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
         xhr = createXhr(id);
 
-        xhr.upload.onprogress = function(e){
-            if (e.lengthComputable){
-                fileState[id].loaded = e.loaded;
-                onProgress(id, name, e.loaded, e.total);
-            }
-        };
+        if (shouldChunkThisFile(id)) {
+            handleChunkedUpload(id);
+        }
+        else {
+            xhr.upload.onprogress = function(e){
+                if (e.lengthComputable){
+                    fileState[id].loaded = e.loaded;
+                    onProgress(id, name, e.loaded, e.total);
+                }
+            };
 
-        xhr.onreadystatechange = getReadyStateChangeHandler(id);
+            xhr.onreadystatechange = getReadyStateChangeHandler(id);
 
-        prepareForSend(id, fileOrBlob).then(function(toSend) {
-            log('Sending upload request for ' + id);
-            xhr.send(toSend);
+            prepareForSend(id, fileOrBlob).then(function(toSend) {
+                log('Sending upload request for ' + id);
+                xhr.send(toSend);
+            });
+        }
+    }
+
+    // TODO comments
+    function handleChunkedUpload(id) {
+        // TODO handle failure?
+        maybeInitiateMultipart(id).then(function() {
+            // TODO start sending chunks
+        }, function(errorMessage) {
+            uploadCompleted(id, {error: errorMessage});
         });
     }
 
-    //TODO eliminate duplication w/ handler.xhr.js
+    /**
+     * Sends an "Initiate Multipart Upload" request to S3 via the REST API, but only if the MPU has not already been
+     * initiated.
+     *
+     * @param id Associated file ID
+     * @returns {qq.Promise} A promise that is fulfilled when the initiate request has been sent and the response has been parsed.
+     */
+    function maybeInitiateMultipart(id) {
+        if (!fileState[id].initiated) {
+            return initiateMultipartRequester.send(id, fileState[id].key).then(function() {
+                fileState[id].initiated = true;
+            });
+        }
+        else {
+            return new qq.Promise().success();
+        }
+    }
+
+    //TODO eliminate duplication w/ traditional handler.xhr.js
     function getReadyStateChangeHandler(id) {
         var xhr = fileState[id].xhr;
 
