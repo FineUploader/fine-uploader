@@ -13,7 +13,7 @@ qq.s3.PolicySignatureAjaxRequestor = function(o) {
 
     var requester,
         validMethods = ["POST"],
-        pendingSignatures = [],
+        pendingSignatures = {},
         options = {
             expectingPolicy: false,
             method: "POST",
