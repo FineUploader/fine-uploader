@@ -123,8 +123,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
     // TODO comments
     function handleChunkedUpload(id) {
-        // TODO handle failure?
-        maybeInitiateMultipart(id).then(function() {
+        maybeInitiateMultipart(id).then(function(uploadId) {
             // TODO start sending chunks
         }, function(errorMessage) {
             uploadCompleted(id, {error: errorMessage});
@@ -139,13 +138,13 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
      * @returns {qq.Promise} A promise that is fulfilled when the initiate request has been sent and the response has been parsed.
      */
     function maybeInitiateMultipart(id) {
-        if (!fileState[id].initiated) {
-            return initiateMultipartRequester.send(id, fileState[id].key).then(function() {
-                fileState[id].initiated = true;
+        if (!fileState[id].uploadId) {
+            return initiateMultipartRequester.send(id, fileState[id].key).then(function(uploadId) {
+                fileState[id].uploadId = uploadId;
             });
         }
         else {
-            return new qq.Promise().success();
+            return new qq.Promise().success(fileState[id].uploadId);
         }
     }
 

@@ -1,9 +1,17 @@
 /*globals qq*/
-// TODO comments
+/**
+ * Ajax requester used to send an ["Initiate Multipart Upload"](http://docs.aws.amazon.com/AmazonS3/latest/API/mpUploadInitiate.html)
+ * request to S3 via the REST API.
+ *
+ * @param o Options from the caller - will override the defaults.
+ * @returns {{send: Function}}
+ * @constructor
+ */
 qq.s3.InitiateMultipartAjaxRequester = function(o) {
     "use strict";
 
     var requester,
+        pendingInitiateRequests = {},
         validMethods = ["POST"],
         options = {
             method: "POST",
@@ -38,7 +46,16 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         return options.method.toUpperCase();
     }
 
-    // TODO comments
+    /**
+     * Determine all headers for the "Initiate MPU" request, including the "Authorization" header, which must be determined
+     * by the local server.  This is a promissory function.  If the server responds with a signature, the headers
+     * (including the Authorization header) will be passed into the success method of the promise.  Otherwise, the failure
+     * method on the promise will be called.
+     *
+     * @param id Associated file ID
+     * @param key S3 object name
+     * @returns {qq.Promise}
+     */
     function getHeaders(id, key) {
         var bucket = qq.s3.util.getBucket(options.endpointStore.getEndpoint(id)),
             headers = {},
@@ -55,7 +72,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
 
         toSign = {multipartHeaders: getStringToSign(headers, bucket, key)};
 
-        // TODO handle failure?
+        // Ask the local server to sign the request.  Use this signature to form the Authorization header.
         getSignatureAjaxRequester.getSignature(id, toSign).then(function(response) {
             headers.Authorization = "AWS " + options.accessKey + ":" + response.signature;
             promise.success(headers);
@@ -90,9 +107,57 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
     }
 
 
+    /**
+     * Called by the base ajax requester when the response has been received.  We definitively determine here if the
+     * "Initiate MPU" request has been a success or not.
+     *
+     * @param id ID associated with the file.
+     * @param xhr `XMLHttpRequest` object containing the response, among other things.
+     * @param isError A boolean indicating success or failure according to the base ajax requester (primarily based on status code).
+     */
     function handleInitiateRequestComplete(id, xhr, isError) {
-        //TODO handle the result of the "Initiate MPU" request
-        qq.log(xhr.responseText);
+        var promise = pendingInitiateRequests[id],
+            domParser = new DOMParser(),
+            responseDoc = domParser.parseFromString(xhr.responseText, "application/xml"),
+            uploadIdElements, messageElements, uploadId, errorMessage, status;
+
+        delete pendingInitiateRequests[id];
+
+        // The base ajax requester may declare the request to be a failure based on status code.
+        if (isError) {
+            status = xhr.status;
+
+            messageElements = responseDoc.getElementsByTagName("Message");
+            if (messageElements.length > 0) {
+                errorMessage = messageElements[0].textContent;
+            }
+        }
+        // If the base ajax requester has not declared this a failure, make sure we can retrieve the uploadId from the response.
+        else {
+            uploadIdElements = responseDoc.getElementsByTagName("UploadId");
+            if (uploadIdElements.length > 0) {
+                uploadId = uploadIdElements[0].textContent;
+            }
+            else {
+                errorMessage = "Upload ID missing from request";
+            }
+        }
+
+        // Either fail the promise (passing a descriptive error message) or declare it a success (passing the upload ID)
+        if (uploadId === undefined) {
+            if (errorMessage) {
+                options.log(qq.format("Specific problem detected initiating multipart upload request for {}: '{}'.", id, errorMessage), "error");
+            }
+            else {
+                options.log(qq.format("Unexplained error with initiate multipart upload request for {}.  Status code {}.", id, status), "error");
+            }
+
+            promise.failure("Problem initiating upload request with Amazon.");
+        }
+        else {
+            options.log(qq.format("Initiate multipart upload request successful for {}.  Upload ID is {}", id, uploadId));
+            promise.success(uploadId);
+        }
     }
 
     requester = new qq.AjaxRequestor({
@@ -109,15 +174,23 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
 
 
     return {
-        // TODO comments
+        /**
+         * Sends the "Initiate MPU" request to AWS via the REST API.  First, though, we must get a signature from the
+         * local server for the request.  If all is successful, the uploadId from AWS will be passed into the promise's
+         * success handler. Otherwise, an error message will ultimately be passed into the failure method.
+         *
+         * @param id The ID associated with the file
+         * @param key S3 object name for the associated file
+         * @returns {qq.Promise}
+         */
         send: function(id, key) {
             var promise = new qq.Promise(),
                 addToPath = key + "?uploads";
 
-            // TODO handle failure?
             getHeaders(id, key).then(function(headers) {
                 options.log("Submitting S3 initiate multipart upload request for " + id);
 
+                pendingInitiateRequests[id] = promise;
                 requester.send(id, addToPath, null, headers);
             }, promise.failure);
 
