@@ -5,7 +5,7 @@ qq.AjaxRequestor = function (o) {
 
     var log, shouldParamsBeInQueryString,
         queue = [],
-        requestState = [],
+        requestData = [],
         options = {
             method: 'POST',
             contentType: "application/x-www-form-urlencoded",
@@ -78,7 +78,7 @@ qq.AjaxRequestor = function (o) {
 
     // Returns either a new XHR/XDR instance, or an existing one for the associated `File` or `Blob`.
     function getXhrOrXdr(id, dontCreateIfNotExist) {
-        var xhrOrXdr = requestState[id].xhr;
+        var xhrOrXdr = requestData[id].xhr;
 
         if (!xhrOrXdr && !dontCreateIfNotExist) {
             if (options.cors.expected) {
@@ -88,7 +88,7 @@ qq.AjaxRequestor = function (o) {
                 xhrOrXdr = new XMLHttpRequest();
             }
 
-            requestState[id].xhr = xhrOrXdr;
+            requestData[id].xhr = xhrOrXdr;
         }
 
         return xhrOrXdr;
@@ -100,7 +100,7 @@ qq.AjaxRequestor = function (o) {
             max = options.maxConnections,
             nextId;
 
-        delete requestState[id];
+        delete requestData[id];
         queue.splice(i, 1);
 
         if (queue.length >= max && i < max) {
@@ -128,7 +128,7 @@ qq.AjaxRequestor = function (o) {
     }
 
     function getParams(id) {
-        var onDemandParams = requestState[id].onDemandParams,
+        var onDemandParams = requestData[id].onDemandParams,
             mandatedParams = options.mandatedParams,
             params;
 
@@ -157,6 +157,7 @@ qq.AjaxRequestor = function (o) {
         var xhr = getXhrOrXdr(id),
             method = options.method,
             params = getParams(id),
+            body = requestData[id].body,
             url;
 
         options.onSend(id);
@@ -184,7 +185,11 @@ qq.AjaxRequestor = function (o) {
         setHeaders(id);
 
         log('Sending ' + method + " request for " + id);
-        if (shouldParamsBeInQueryString || !params) {
+
+        if (body) {
+            xhr.send(body)
+        }
+        else if (shouldParamsBeInQueryString || !params) {
             xhr.send();
         }
         else if (params && options.contentType.toLowerCase().indexOf("application/x-www-form-urlencoded") >= 0) {
@@ -200,7 +205,7 @@ qq.AjaxRequestor = function (o) {
 
     function createUrl(id, params) {
         var endpoint = options.endpointStore.getEndpoint(id),
-            addToPath = requestState[id].addToPath;
+            addToPath = requestData[id].addToPath;
 
         if (addToPath != undefined) {
             endpoint += "/" + addToPath;
@@ -243,7 +248,7 @@ qq.AjaxRequestor = function (o) {
     function setHeaders(id) {
         var xhr = getXhrOrXdr(id),
             customHeaders = options.customHeaders,
-            onDemandHeaders = requestState[id].additionalHeaders || {},
+            onDemandHeaders = requestData[id].additionalHeaders || {},
             allHeaders = {};
 
         // If this is a CORS request and a simple method with simple headers are used
@@ -306,11 +311,12 @@ qq.AjaxRequestor = function (o) {
     }
 
     return {
-        send: function (id, addToPath, onDemandParams, onDemandHeaders) {
-            requestState[id] = {
+        send: function (id, addToPath, onDemandParams, onDemandHeaders, body) {
+            requestData[id] = {
                 addToPath: addToPath,
                 onDemandParams: onDemandParams,
-                additionalHeaders: onDemandHeaders
+                additionalHeaders: onDemandHeaders,
+                body: body
             };
 
             var len = queue.push(id);
