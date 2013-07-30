@@ -66,9 +66,11 @@ module.exports = (grunt) ->
         './client/js/s3/util.js',
         './client/js/s3/uploader.basic.js',
         './client/js/s3/uploader.js',
-        './client/js/s3/policysignature.ajax.requester.js',
+        './client/js/s3/signature.ajax.requester.js',
         './client/js/s3/uploadsuccess.ajax.requester.js',
         './client/js/s3/multipart.initiate.ajax.requester.js',
+        './client/js/s3/multipart.complete.ajax.requester.js',
+        './client/js/s3/multipart.abort.ajax.requester.js',
         './client/js/s3/handler.xhr.js',
         './client/js/s3/handler.form.js',
         './client/js/s3/jquery-plugin.js'
