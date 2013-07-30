@@ -12,7 +12,6 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
     "use strict";
 
     var requester,
-        validMethods = ["POST"],
         pendingRequests = [],
         options = {
             method: "POST",
@@ -28,14 +27,6 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
         };
 
     qq.extend(options, o);
-
-    if (qq.indexOf(validMethods, getNormalizedMethod()) < 0) {
-        throw new Error("'" + getNormalizedMethod() + "' is not a supported method for S3 Upload Success requests!");
-    }
-
-    function getNormalizedMethod() {
-        return options.method.toUpperCase();
-    }
 
     function handleSuccessResponse(id, xhrOrXdr, isError) {
         var promise = pendingRequests[id],
@@ -74,7 +65,7 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
     }
 
     requester = new qq.AjaxRequestor({
-        method: getNormalizedMethod(),
+        method: options.method,
         endpointStore: {
             getEndpoint: function() {
                 return options.endpoint;

@@ -1,9 +1,17 @@
+/*globals qq*/
+/**
+ * Ajax requester used to send an ["Complete Multipart Upload"](http://docs.aws.amazon.com/AmazonS3/latest/API/mpUploadComplete.html)
+ * request to S3 via the REST API.
+ *
+ * @param o Options passed by the creator, to overwrite any default option values.
+ * @returns {{send: Function}} Used to send the request.
+ * @constructor
+ */
 qq.s3.CompleteMultipartAjaxRequester = function(o) {
     "use strict";
 
     var requester,
         pendingCompleteRequests = {},
-        validMethods = ["POST"],
         options = {
             method: "POST",
             endpointStore: null,
@@ -17,22 +25,12 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
 
     qq.extend(options, o);
 
+    // Transport for requesting signatures (for the "Complete" requests) from the local server
     getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequestor({
         endpoint: options.signatureEndpoint,
         cors: options.cors,
         log: options.log
     });
-
-
-    // TODO remove code duplication among all ajax requesters
-    if (qq.indexOf(validMethods, getNormalizedMethod()) < 0) {
-        throw new Error("'" + getNormalizedMethod() + "' is not a supported method for S3 Initiate Multipart Upload requests!");
-    }
-
-    // TODO remove code duplication among all ajax requesters
-    function getNormalizedMethod() {
-        return options.method.toUpperCase();
-    }
 
     function getHeaders(id, uploadId) {
         var headers = {},
@@ -136,7 +134,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
     }
 
     requester = new qq.AjaxRequestor({
-        method: getNormalizedMethod(),
+        method: options.method,
         contentType: "application/xml",
         endpointStore: options.endpointStore,
         maxConnections: options.maxConnections,

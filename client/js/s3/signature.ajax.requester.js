@@ -12,7 +12,6 @@ qq.s3.SignatureAjaxRequestor = function(o) {
     "use strict";
 
     var requester,
-        validMethods = ["POST"],
         pendingSignatures = {},
         options = {
             expectingPolicy: false,
@@ -29,14 +28,6 @@ qq.s3.SignatureAjaxRequestor = function(o) {
         };
 
     qq.extend(options, o);
-
-    if (qq.indexOf(validMethods, getNormalizedMethod()) < 0) {
-        throw new Error("'" + getNormalizedMethod() + "' is not a supported method for S3 signature requests!");
-    }
-
-    function getNormalizedMethod() {
-        return options.method.toUpperCase();
-    }
 
     function handleSignatureReceived(id, xhrOrXdr, isError) {
         var responseJson = xhrOrXdr.responseText,
@@ -93,7 +84,7 @@ qq.s3.SignatureAjaxRequestor = function(o) {
     }
 
     requester = new qq.AjaxRequestor({
-        method: getNormalizedMethod(),
+        method: options.method,
         contentType: "application/json; charset=utf-8",
         endpointStore: {
             getEndpoint: function() {

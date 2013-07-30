@@ -12,7 +12,6 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
 
     var requester,
         pendingInitiateRequests = {},
-        validMethods = ["POST"],
         options = {
             method: "POST",
             endpointStore: null,
@@ -35,16 +34,6 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         log: options.log
     });
 
-
-    // TODO remove code duplication among all ajax requesters
-    if (qq.indexOf(validMethods, getNormalizedMethod()) < 0) {
-        throw new Error("'" + getNormalizedMethod() + "' is not a supported method for S3 Initiate Multipart Upload requests!");
-    }
-
-    // TODO remove code duplication among all ajax requesters
-    function getNormalizedMethod() {
-        return options.method.toUpperCase();
-    }
 
     /**
      * Determine all headers for the "Initiate MPU" request, including the "Authorization" header, which must be determined
@@ -161,7 +150,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
     }
 
     requester = new qq.AjaxRequestor({
-        method: getNormalizedMethod(),
+        method: options.method,
         contentType: null,
         endpointStore: options.endpointStore,
         maxConnections: options.maxConnections,

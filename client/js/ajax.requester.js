@@ -4,6 +4,7 @@ qq.AjaxRequestor = function (o) {
     "use strict";
 
     var log, shouldParamsBeInQueryString,
+        validMethods = ['POST'],
         queue = [],
         requestData = [],
         options = {
@@ -30,14 +31,22 @@ qq.AjaxRequestor = function (o) {
 
     qq.extend(options, o);
     log = options.log;
-    shouldParamsBeInQueryString = options.method === 'GET' || options.method === 'DELETE';
 
+        // TODO remove code duplication among all ajax requesters
+    if (qq.indexOf(validMethods, getNormalizedMethod()) < 0) {
+        throw new Error("'" + getNormalizedMethod() + "' is not a supported method for this type of request!");
+    }
+
+    // TODO remove code duplication among all ajax requesters
+    function getNormalizedMethod() {
+        return options.method.toUpperCase();
+    }
 
     // [Simple methods](http://www.w3.org/TR/cors/#simple-method)
     // are defined by the W3C in the CORS spec as a list of methods that, in part,
     // make a CORS request eligible to be exempt from preflighting.
     function isSimpleMethod() {
-        return qq.indexOf(["GET", "POST", "HEAD"], options.method) >= 0;
+        return qq.indexOf(["GET", "POST", "HEAD"], getNormalizedMethod()) >= 0;
     }
 
     // [Simple headers](http://www.w3.org/TR/cors/#simple-header)
@@ -111,7 +120,7 @@ qq.AjaxRequestor = function (o) {
 
     function onComplete(id, xdrError) {
         var xhr = getXhrOrXdr(id),
-            method = options.method,
+            method = getNormalizedMethod(),
             isError = xdrError === false;
 
         dequeue(id);
@@ -155,7 +164,7 @@ qq.AjaxRequestor = function (o) {
 
     function sendRequest(id) {
         var xhr = getXhrOrXdr(id),
-            method = options.method,
+            method = getNormalizedMethod(),
             params = getParams(id),
             body = requestData[id].body,
             url;
@@ -249,6 +258,7 @@ qq.AjaxRequestor = function (o) {
         var xhr = getXhrOrXdr(id),
             customHeaders = options.customHeaders,
             onDemandHeaders = requestData[id].additionalHeaders || {},
+            method = getNormalizedMethod(),
             allHeaders = {};
 
         // If this is a CORS request and a simple method with simple headers are used
@@ -264,7 +274,7 @@ qq.AjaxRequestor = function (o) {
 
         // Note that we can't set the Content-Type when using this transport XDR, and it is
         // not relevant unless we will be including the params in the payload.
-        if (options.contentType && (options.method === "POST" || options.method === "PUT") && !isXdr(xhr)) {
+        if (options.contentType && (method === "POST" || method === "PUT") && !isXdr(xhr)) {
             xhr.setRequestHeader("Content-Type", options.contentType);
         }
 
@@ -281,7 +291,7 @@ qq.AjaxRequestor = function (o) {
 
     function cancelRequest(id) {
         var xhr = getXhrOrXdr(id, true),
-            method = options.method;
+            method = getNormalizedMethod();
 
         if (xhr) {
             // The event handlers we remove/unregister is dependant on whether we are
@@ -307,8 +317,10 @@ qq.AjaxRequestor = function (o) {
     }
 
     function isResponseSuccessful(responseCode) {
-        return qq.indexOf(options.successfulResponseCodes[options.method], responseCode) >= 0;
+        return qq.indexOf(options.successfulResponseCodes[getNormalizedMethod()], responseCode) >= 0;
     }
+
+    shouldParamsBeInQueryString = getNormalizedMethod() === 'GET' || getNormalizedMethod() === 'DELETE';
 
     return {
         send: function (id, addToPath, onDemandParams, onDemandHeaders, body) {
@@ -326,8 +338,13 @@ qq.AjaxRequestor = function (o) {
                 sendRequest(id);
             }
         },
+
         cancel: function (id) {
             return cancelRequest(id);
+        },
+
+        getMethod: function() {
+            return getNormalizedMethod();
         }
     };
 };
