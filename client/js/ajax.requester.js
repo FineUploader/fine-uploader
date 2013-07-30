@@ -4,10 +4,10 @@ qq.AjaxRequestor = function (o) {
     "use strict";
 
     var log, shouldParamsBeInQueryString,
-        validMethods = ['POST'],
         queue = [],
         requestData = [],
         options = {
+            validMethods: ['POST'],
             method: 'POST',
             contentType: "application/x-www-form-urlencoded",
             maxConnections: 3,
@@ -33,7 +33,7 @@ qq.AjaxRequestor = function (o) {
     log = options.log;
 
         // TODO remove code duplication among all ajax requesters
-    if (qq.indexOf(validMethods, getNormalizedMethod()) < 0) {
+    if (qq.indexOf(options.validMethods, getNormalizedMethod()) < 0) {
         throw new Error("'" + getNormalizedMethod() + "' is not a supported method for this type of request!");
     }
 
