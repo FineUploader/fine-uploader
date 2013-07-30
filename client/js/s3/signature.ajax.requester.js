@@ -8,7 +8,7 @@
  * @returns {{getSignature: Function}} API method used to initiate the signature request.
  * @constructor
  */
-qq.s3.PolicySignatureAjaxRequestor = function(o) {
+qq.s3.SignatureAjaxRequestor = function(o) {
     "use strict";
 
     var requester,
