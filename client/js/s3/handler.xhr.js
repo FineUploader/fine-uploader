@@ -2,6 +2,10 @@
  * Upload handler used by the upload to S3 module that depends on File API support, and, therefore, makes use of
  * `XMLHttpRequest` level 2 to upload `File`s and `Blob`s directly to S3 buckets via the associated AWS API.
  *
+ * If chunking is supported and enabled, the S3 Multipart Upload REST API is utilized.
+ *
+ * TODO Auto-retries are not properly supported yet.
+ *
  * @param options Options passed from the base handler
  * @param uploadCompleteCallback Callback to invoke when the upload has completed, regardless of success.
  * @param onUuidChanged Callback to invoke when the associated items UUID has changed by order of the server.
@@ -23,6 +27,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         acl = options.acl,
         validation = options.validation,
         chunkingPossible = options.chunking.enabled && qq.supportedFeatures.chunking,
+        api,
         policySignatureRequester = new qq.s3.SignatureAjaxRequestor({
             expectingPolicy: true,
             endpoint: options.signatureEndpoint,
@@ -58,8 +63,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             getKey: function(id) {
                 return fileState[id].key;
             }
-        }),
-        api;
+        });
+
 
     //TODO eliminate duplication w/ traditional handler.xhr.js
     function createXhr(id) {
@@ -156,57 +161,84 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
      * @param id Associated file ID
      */
     function handleUpload(id) {
-        var fileOrBlob = api.getFile(id),
-            name = api.getName(id),
-            xhr;
+        var fileOrBlob = api.getFile(id);
 
         fileState[id].loaded = 0;
         fileState[id].type = fileOrBlob.type;
 
-        xhr = createXhr(id);
+        createXhr(id);
 
         if (shouldChunkThisFile(id)) {
             handleChunkedUpload(id);
         }
         else {
-            xhr.upload.onprogress = function(e){
-                if (e.lengthComputable){
-                    fileState[id].loaded = e.loaded;
-                    onProgress(id, name, e.loaded, e.total);
-                }
-            };
-
-            xhr.onreadystatechange = getReadyStateChangeHandler(id);
-
-            prepareForSend(id, fileOrBlob).then(function(toSend) {
-                log('Sending upload request for ' + id);
-                xhr.send(toSend);
-            });
+            handleSimpleUpload(id);
         }
     }
 
-    // TODO comments
+    // Starting point for incoming requests for chunked uploads.
     function handleChunkedUpload(id) {
-        maybeInitiateMultipart(id).then(function(uploadId) {
-            maybeUploadNextChunk(id);
-        },
-            function(errorMessage) {
-                uploadCompleted(id, {error: errorMessage});
+        maybeInitiateMultipart(id).then(
+            // The "Initiate" request succeeded.  We are ready to send the first chunk.
+            function(uploadId, xhr) {
+                maybeUploadNextChunk(id);
+            },
+
+            // We were unable to initiate the chunked upload process.
+            function(errorMessage, xhr) {
+                uploadCompleted(id, {error: errorMessage}, xhr);
+            }
+        );
+    }
+
+    // Starting point for incoming requests for simple (non-chunked) uploads.
+    function handleSimpleUpload(id) {
+        var xhr = fileState[id].xhr,
+            name = api.getName(id),
+            fileOrBlob = api.getFile(id);
+
+        xhr.upload.onprogress = function(e){
+            if (e.lengthComputable){
+                fileState[id].loaded = e.loaded;
+                onProgress(id, name, e.loaded, e.total);
+            }
+        };
+
+        xhr.onreadystatechange = getReadyStateChangeHandler(id);
+
+        // Delegate to a function the sets up the XHR request and notifies us when it is ready to be sent, along w/ the payload.
+        prepareForSend(id, fileOrBlob).then(function(toSend) {
+            log('Sending upload request for ' + id);
+            xhr.send(toSend);
         });
     }
 
+    /**
+     * Retrieves the 0-based index of the next chunk to send.  Note that AWS uses 1-based indexing.
+     *
+     * @param id File ID
+     * @returns {number} The 0-based index of the next file chunk to be sent to S3
+     */
     function getNextPartIdxToSend(id) {
         return fileState[id].chunking.lastSent >= 0 ? fileState[id].chunking.lastSent + 1 : 0
     }
 
+    /**
+     * @param id File ID
+     * @returns {string} The query string portion of the URL used to direct multipart upload requests
+     */
     function getNextChunkUrlParams(id) {
-        //Amazon part indexing starts at 1
+        // Amazon part indexing starts at 1
         var idx = getNextPartIdxToSend(id) + 1,
             uploadId = fileState[id].uploadId;
 
         return qq.format("?partNumber={}&uploadId={}", idx, uploadId);
     }
 
+    /**
+     * @param id File ID
+     * @returns {string} The entire URL to use when sending a multipart upload PUT request for the next chunk to be sent
+     */
     function getNextChunkUrl(id) {
         var domain = options.endpointStore.getEndpoint(id),
             urlParams = getNextChunkUrlParams(id),
@@ -215,6 +247,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         return qq.format("{}/{}{}", domain, key, urlParams);
     }
 
+    // Either initiate an upload for the next chunk for an associated file, or initiate a
+    // "Complete Multipart Upload" request if there are no more parts to be sent.
     function maybeUploadNextChunk(id) {
         var totalParts = fileState[id].chunking.parts,
             nextPartIdx = getNextPartIdxToSend(id);
@@ -227,16 +261,26 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         }
     }
 
+    // Sends a "Complete Multipart Upload" request and then signals completion of the upload
+    // when the response to this request has been parsed.
     function completeMultipart(id) {
         var uploadId = fileState[id].uploadId,
             etagMap = fileState[id].chunking.etags;
 
-        // TODO handle error?
-        completeMultipartRequester.send(id, uploadId, etagMap).then(function() {
-            uploadCompleted(id);
-        });
+        completeMultipartRequester.send(id, uploadId, etagMap).then(
+            // Successfully completed
+            function(xhr) {
+                uploadCompleted(id, null, xhr);
+            },
+
+            // Complete request failed
+            function(errorMsg, xhr) {
+                uploadCompleted(id, {error: errorMsg}, xhr);
+            }
+        );
     }
 
+    // Initiate the process to send the next chunk for a file.  This assumes there IS a "next" chunk.
     function uploadNextChunk(id) {
         var idx = getNextPartIdxToSend(id),
             name = api.getName(id),
@@ -245,6 +289,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             totalFileSize = api.getSize(id),
             chunkData = getChunkData(id, idx);
 
+        // Add appropriate headers to the multipart upload request.
+        // Once these have been determined (asynchronously) attach the headers and send the chunk.
         addChunkedHeaders(id).then(function(headers) {
             options.onUploadChunk(id, name, getChunkDataForCallback(chunkData));
 
@@ -260,7 +306,6 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
             xhr.open("PUT", url, true);
 
-
             qq.each(headers, function(name, val) {
                 xhr.setRequestHeader(name, val);
             });
@@ -270,6 +315,16 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         });
     }
 
+    /**
+     * Determines headers that must be attached to the chunked (Multipart Upload) request.  One of these headers is an
+     * Authorization value, which must be determined by asking the local server to sign the request first.  So, this
+     * function returns a promise.  Once all headers are determined, the `success` method of the promise is called with
+     * the headers object.  If there was some problem determining the headers, we delegate to the caller's `failure`
+     * callback.
+     *
+     * @param id File ID
+     * @returns {qq.Promise}
+     */
     function addChunkedHeaders(id) {
         var headers = {},
             endpoint = options.endpointStore.getEndpoint(id),
@@ -302,9 +357,11 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
      */
     function maybeInitiateMultipart(id) {
         if (!fileState[id].uploadId) {
-            return initiateMultipartRequester.send(id, fileState[id].key).then(function(uploadId) {
-                fileState[id].uploadId = uploadId;
-            });
+            return initiateMultipartRequester.send(id, fileState[id].key).then(
+                function(uploadId) {
+                    fileState[id].uploadId = uploadId;
+                }
+            );
         }
         else {
             return new qq.Promise().success(fileState[id].uploadId);
@@ -327,6 +384,15 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         };
     }
 
+    /**
+     * Used for simple (non-chunked) uploads to determine the parameters to send along with the request.  Part of this
+     * process involves asking the local server to sign the request, so this function returns a promise.  The promise
+     * is fulfilled when all parameters are determined, or when we determine that all parameters cannnot be calculated
+     * due to some error.
+     *
+     * @param id File ID
+     * @returns {qq.Promise}
+     */
     function generateAwsParams(id) {
         var customParams = paramsStore.getParams(id);
         customParams[filenameParam] = api.getName(id);
@@ -346,6 +412,18 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             qq.bind(policySignatureRequester.getSignature, this, id));
     }
 
+    /**
+     * Starts the upload process by delegating to an async function that determine parameters to be attached to the
+     * request.  If all params can be determined, we are called back with the params and the caller of this function is
+     * informed by invoking the `success` method on the promise returned by this function, passing the payload of the
+     * request.  If some error occurs here, we delegate to a function that signals a failure for this upload attempt.
+     *
+     * Note that this is only used by the simple (non-chunked) upload process.
+     *
+     * @param id File ID
+     * @param fileOrBlob `File` or `Blob` to send
+     * @returns {qq.Promise}
+     */
     function prepareForSend(id, fileOrBlob) {
         var formData = new FormData(),
             endpoint = endpointStore.getEndpoint(id),
@@ -353,24 +431,33 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             xhr = fileState[id].xhr,
             promise = new qq.Promise();
 
-        generateAwsParams(id).then(function(awsParams) {
-            xhr.open("POST", url, true);
+        generateAwsParams(id).then(
+            // Success - all params determined
+            function(awsParams) {
+                xhr.open("POST", url, true);
 
-            qq.obj2FormData(awsParams, formData);
+                qq.obj2FormData(awsParams, formData);
 
-            // AWS requires the file field be named "file".
-            formData.append("file", fileOrBlob);
+                // AWS requires the file field be named "file".
+                formData.append("file", fileOrBlob);
 
-            promise.success(formData);
-        },
-        function(errorMessage) {
-            promise.failure(errorMessage);
-            uploadCompleted(id, {error: errorMessage});
-        });
+                promise.success(formData);
+            },
+
+            // Failure - we couldn't determine some params (likely the signature)
+            function(errorMessage) {
+                promise.failure(errorMessage);
+                uploadCompleted(id, {error: errorMessage});
+            }
+        );
 
         return promise;
     }
 
+    /**
+     * @param id File ID
+     * @returns {object} Object containing the parsed response, or perhaps some error data injected into an `error` property
+     */
     function parseResponse(id) {
         var xhr = fileState[id].xhr,
             response = {};
@@ -392,6 +479,12 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         return response;
     }
 
+    /**
+     * This parses an XML response by extracting the "Message" element the accompanies error responses.
+     *
+     * @param awsResponseXml XML response from AWS
+     * @returns {string} "Message" element text, or undefined if we couldn't find this element in the XML document.
+     */
     function parseError(awsResponseXml) {
         var parser = new DOMParser(),
             parsedDoc = parser.parseFromString(awsResponseXml, "application/xml"),
@@ -402,6 +495,10 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         }
     }
 
+    // The (usually) last step in handling a chunked upload.  This is called after each chunk has been sent.
+    // The request may be successful, or not.  If it was successful, we must extract the "ETag" element
+    // in the XML response and store that along with the associated part number.
+    // We need these items to "Complete" the multipart upload after all chunks have been successfully sent.
     function uploadChunkCompleted(id) {
         var idxSent = getNextPartIdxToSend(id),
             xhr = fileState[id].xhr,
@@ -418,18 +515,21 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             }
             fileState[id].chunking.etags.push({part: idxSent+1, etag: etag});
 
+            // Update the bytes loaded counter to reflect all bytes successfully transferred in the associated chunked request
             fileState[id].loaded += chunkData.size;
-            qq.log(etag);
+
+            // We might not be done with this file...
             maybeUploadNextChunk(id);
         }
+        // TODO we probably need to facilitate auto-reties here
         else if (response.error) {
             qq.log(response.error, "error");
         }
     }
 
     // TODO should the XHR passed to the handlers be the LAST xhr used (i.e. complete multipart request xhr if applicable)?
-    function uploadCompleted(id, errorDetails) {
-        var xhr = fileState[id].xhr,
+    function uploadCompleted(id, errorDetails, requestXhr) {
+        var xhr = requestXhr || fileState[id].xhr,
             name = api.getName(id),
             size = api.getSize(id),
             response = errorDetails || parseResponse(id);
