@@ -32,6 +32,15 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         log: options.log
     });
 
+    /**
+     * Attach all required headers (including Authorization) to the "Complete" request.  This is a promissory function
+     * that will fulfill the associated promise once all headers have been attached or when an error has occurred that
+     * prevents headers from being attached.
+     *
+     * @param id Associated file ID
+     * @param uploadId ID of the associated upload, according to AWS
+     * @returns {qq.Promise}
+     */
     function getHeaders(id, uploadId) {
         var headers = {},
             promise = new qq.Promise(),
@@ -50,16 +59,29 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         return promise;
     }
 
+    /**
+     * @param id Associated file ID
+     * @param uploadId ID of the associated upload, according to AWS
+     * @param utcDateStr The date, formatted as a UTC string
+     * @returns {string} A string that must be signed by the local server in order to send the associated "Complete" request.
+     */
     function getStringToSign(id, uploadId, utcDateStr) {
         var endpoint = options.endpointStore.getEndpoint(id),
-            bucket = qq.s3.util.getBucket(endpoint);
+            bucket = qq.s3.util.getBucket(endpoint),
+            endOfUrl = getEndOfUrl(id, uploadId);
 
-        return "POST\n\napplication/xml\n\nx-amz-date:" + utcDateStr + "\n/" + bucket + "/" + getEndOfUrl(id, uploadId);
+        return "POST" +
+            "\n\n" +
+            "application/xml" +
+            "\n\n" +
+            "x-amz-date:" + utcDateStr +
+            "\n" +
+            "/" + bucket + "/" + endOfUrl;
     }
 
     /**
      * Called by the base ajax requester when the response has been received.  We definitively determine here if the
-     * "Initiate MPU" request has been a success or not.
+     * "Complete MPU" request has been a success or not.
      *
      * @param id ID associated with the file.
      * @param xhr `XMLHttpRequest` object containing the response, among other things.
@@ -79,10 +101,12 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
 
         qq.log(qq.format("Complete response status {}, body = {}", xhr.status, xhr.responseText));
 
+        // If the base requester has determine this a failure, give up.
         if (isError) {
             qq.log(qq.format("Complete Multipart Upload request for {} failed with status {}.", id, xhr.status), "error");
         }
         else {
+            // Make sure the correct bucket and key has been specified in the XML response from AWS.
             if (bucketEls.length && keyEls.length) {
                 if (bucketEls[0].textContent !== bucket) {
                     isError = true;
@@ -107,14 +131,24 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         }
     }
 
+    /**
+     * @param id Associated file ID
+     * @param uploadId ID of the associated upload, according to AWS
+     * @returns {String} The last part of the URL where we will send this request.  Includes the resource (key) and any params.
+     */
     function getEndOfUrl(id, uploadId) {
         return qq.format("{}?uploadId={}", options.getKey(id), uploadId);
     }
 
-    function getCompleteRequestBody(etagMap) {
+    /**
+     * @param etagEntries Array of objects containing `etag` values and their associated `part` numbers.
+     * @returns {string} XML string containing the body to send with the "Complete" request
+     */
+    function getCompleteRequestBody(etagEntries) {
         var doc = document.implementation.createDocument(null, "CompleteMultipartUpload", null);
 
-        qq.each(etagMap, function(idx, etagEntry) {
+        // Construct an XML document for each pair of etag/part values that correspond to part uploads.
+        qq.each(etagEntries, function(idx, etagEntry) {
             var part = etagEntry.part,
                 etag = etagEntry.etag,
                 partEl = doc.createElement("Part"),
@@ -130,6 +164,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
             qq(doc).children()[0].appendChild(partEl);
         });
 
+        // Turn the resulting XML document into a string fit for transport.
         return new XMLSerializer().serializeToString(doc);
     }
 
@@ -147,16 +182,23 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
 
 
     return {
-        send: function(id, uploadId, etagMap) {
+        /**
+         * Sends the "Complete" request and fulfills the returned promise when the success of this request is known.
+         *
+         * @param id ID associated with the file.
+         * @param xhr `XMLHttpRequest` object containing the response, among other things.
+         * @param etagEntries Array of objects containing `etag` values and their associated `part` numbers.
+         * @returns {qq.Promise}
+         */
+        send: function(id, uploadId, etagEntries) {
             var promise = new qq.Promise();
 
             getHeaders(id, uploadId).then(function(headers) {
-                var body = getCompleteRequestBody(etagMap);
+                var body = getCompleteRequestBody(etagEntries);
 
                 options.log("Submitting S3 complete multipart upload request for " + id);
 
                 pendingCompleteRequests[id] = promise;
-                qq.log(body);
                 requester.send(id, getEndOfUrl(id, uploadId), null, headers, body);
             }, promise.failure);
 
