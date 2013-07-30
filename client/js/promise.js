@@ -2,7 +2,7 @@
 qq.Promise = function() {
     "use strict";
 
-    var successValue, failureValue,
+    var successArgs, failureArgs,
         successCallbacks = [],
         failureCallbacks = [],
         doneCallbacks = [],
@@ -19,10 +19,10 @@ qq.Promise = function() {
                 }
             }
             else if (state === -1 && onFailure) {
-                onFailure(failureValue);
+                onFailure.apply(null, failureArgs);
             }
             else if (onSuccess) {
-                onSuccess(successValue);
+                onSuccess.apply(null,successArgs);
             }
 
             return this;
@@ -33,44 +33,44 @@ qq.Promise = function() {
                 doneCallbacks.push(callback);
             }
             else {
-                callback(failureValue === undefined ? successValue : failureValue);
+                callback.apply(null, failureArgs === undefined ? successArgs : failureArgs);
             }
 
             return this;
         },
 
-        success: function(val) {
+        success: function() {
             state = 1;
-            successValue = val;
+            successArgs = arguments;
 
             if (successCallbacks.length) {
                 qq.each(successCallbacks, function(idx, callback) {
-                    callback(val);
+                    callback.apply(null, successArgs)
                 })
             }
 
             if(doneCallbacks.length) {
                 qq.each(doneCallbacks, function(idx, callback) {
-                    callback(val);
+                    callback.apply(null, successArgs)
                 })
             }
 
             return this;
         },
 
-        failure: function(val) {
+        failure: function() {
             state = -1;
-            failureValue = val;
+            failureArgs = arguments;
 
             if (failureCallbacks.length) {
                 qq.each(failureCallbacks, function(idx, callback) {
-                    callback(val);
+                    callback.apply(null, failureArgs);
                 })
             }
 
             if(doneCallbacks.length) {
                 qq.each(doneCallbacks, function(idx, callback) {
-                    callback(val);
+                    callback.apply(null, failureArgs);
                 })
             }
 

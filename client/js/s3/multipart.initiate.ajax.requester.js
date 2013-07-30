@@ -141,11 +141,11 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
                 options.log(qq.format("Unexplained error with initiate multipart upload request for {}.  Status code {}.", id, status), "error");
             }
 
-            promise.failure("Problem initiating upload request with Amazon.");
+            promise.failure("Problem initiating upload request with Amazon.", xhr);
         }
         else {
             options.log(qq.format("Initiate multipart upload request successful for {}.  Upload ID is {}", id, uploadId));
-            promise.success(uploadId);
+            promise.success(uploadId, xhr);
         }
     }
 
