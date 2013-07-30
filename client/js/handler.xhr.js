@@ -36,7 +36,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
         params[options.resume.paramNames.resuming] = true;
     }
 
-     function getChunk(fileOrBlob, startByte, endByte) {
+    function getChunk(fileOrBlob, startByte, endByte) {
         if (fileOrBlob.slice) {
             return fileOrBlob.slice(startByte, endByte);
         }
