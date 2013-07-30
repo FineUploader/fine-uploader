@@ -23,8 +23,13 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         acl = options.acl,
         validation = options.validation,
         chunkingPossible = options.chunking.enabled && qq.supportedFeatures.chunking,
-        getSignatureAjaxRequester = new qq.s3.PolicySignatureAjaxRequestor({
+        policySignatureRequester = new qq.s3.SignatureAjaxRequestor({
             expectingPolicy: true,
+            endpoint: options.signatureEndpoint,
+            cors: options.cors,
+            log: log
+        }),
+        restSignatureRequester = new qq.s3.SignatureAjaxRequestor({
             endpoint: options.signatureEndpoint,
             cors: options.cors,
             log: log
@@ -36,13 +41,23 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             accessKey: options.accessKey,
             acl: options.acl,
             cors: options.cors,
+            log: log,
             getKey: function(id) {
                 return fileState[id].key;
             },
             getContentType: function(id) {
                 return api.getFile(id).type;
-            },
-            log: log
+            }
+        }),
+        completeMultipartRequester = new qq.s3.CompleteMultipartAjaxRequester({
+            endpointStore: endpointStore,
+            signatureEndpoint: options.signatureEndpoint,
+            accessKey: options.accessKey,
+            cors: options.cors,
+            log: log,
+            getKey: function(id) {
+                return fileState[id].key;
+            }
         }),
         api;
 
@@ -62,28 +77,77 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
      * @returns {*} true if chunking is enabled, possible, and the file can be split into more than 1 part
      */
     function shouldChunkThisFile(id) {
-        if (fileState[id].chunked === undefined) {
-            if (chunkingPossible && getTotalChunks(id) > 1) {
-                fileState[id].chunked = true;
+        var totalChunks;
+
+        if (!fileState[id].chunking) {
+            fileState[id].chunking = {};
+            totalChunks = getTotalChunks(id);
+            if (totalChunks > 1) {
+                fileState[id].chunking.enabled = true;
+                fileState[id].chunking.parts = totalChunks;
             }
             else {
-                fileState[id].chunked = false;
+                fileState[id].chunking.enabled = false;
             }
         }
 
-        return fileState[id].chunked;
+        return fileState[id].chunking.enabled;
     }
 
     //TODO eliminate duplication w/ traditional handler.xhr.js
     /**
      * @param id ID of the associated file
-     * @returns {number} Number of parts this file can be divided into
+     * @returns {number} Number of parts this file can be divided into, or undefined if chunking is not supported in this UA
      */
     function getTotalChunks(id) {
         var fileSize = api.getSize(id),
             chunkSize = options.chunking.partSize;
 
-        return Math.ceil(fileSize / chunkSize);
+        if (chunkingPossible) {
+            return Math.ceil(fileSize / chunkSize);
+        }
+    }
+
+    //TODO eliminate duplication w/ traditional handler.xhr.js
+    function getChunk(fileOrBlob, startByte, endByte) {
+        if (fileOrBlob.slice) {
+            return fileOrBlob.slice(startByte, endByte);
+        }
+        else if (fileOrBlob.mozSlice) {
+            return fileOrBlob.mozSlice(startByte, endByte);
+        }
+        else if (fileOrBlob.webkitSlice) {
+            return fileOrBlob.webkitSlice(startByte, endByte);
+        }
+    }
+
+    //TODO eliminate duplication w/ traditional handler.xhr.js
+    function getChunkData(id, chunkIndex) {
+        var chunkSize = options.chunking.partSize,
+            fileSize = api.getSize(id),
+            fileOrBlob = api.getFile(id),
+            startBytes = chunkSize * chunkIndex,
+            endBytes = startBytes+chunkSize >= fileSize ? fileSize : startBytes+chunkSize,
+            totalChunks = getTotalChunks(id);
+
+        return {
+            part: chunkIndex,
+            start: startBytes,
+            end: endBytes,
+            count: totalChunks,
+            blob: getChunk(fileOrBlob, startBytes, endBytes),
+            size: endBytes - startBytes
+        };
+    }
+
+    //TODO eliminate duplication w/ traditional handler.xhr.js
+    function getChunkDataForCallback(chunkData) {
+        return {
+            partIndex: chunkData.part,
+            startByte: chunkData.start + 1,
+            endByte: chunkData.end,
+            totalParts: chunkData.count
+        };
     }
 
     /**
@@ -92,7 +156,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
      * @param id Associated file ID
      */
     function handleUpload(id) {
-        var fileOrBlob = fileState[id].file || fileState[id].blobData.blob,
+        var fileOrBlob = api.getFile(id),
             name = api.getName(id),
             xhr;
 
@@ -124,10 +188,109 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     // TODO comments
     function handleChunkedUpload(id) {
         maybeInitiateMultipart(id).then(function(uploadId) {
-            // TODO start sending chunks
-        }, function(errorMessage) {
-            uploadCompleted(id, {error: errorMessage});
+            maybeUploadNextChunk(id);
+        },
+            function(errorMessage) {
+                uploadCompleted(id, {error: errorMessage});
         });
+    }
+
+    function getNextPartIdxToSend(id) {
+        return fileState[id].chunking.lastSent >= 0 ? fileState[id].chunking.lastSent + 1 : 0
+    }
+
+    function getNextChunkUrlParams(id) {
+        //Amazon part indexing starts at 1
+        var idx = getNextPartIdxToSend(id) + 1,
+            uploadId = fileState[id].uploadId;
+
+        return qq.format("?partNumber={}&uploadId={}", idx, uploadId);
+    }
+
+    function getNextChunkUrl(id) {
+        var domain = options.endpointStore.getEndpoint(id),
+            urlParams = getNextChunkUrlParams(id),
+            key = fileState[id].key;
+
+        return qq.format("{}/{}{}", domain, key, urlParams);
+    }
+
+    function maybeUploadNextChunk(id) {
+        var totalParts = fileState[id].chunking.parts,
+            nextPartIdx = getNextPartIdxToSend(id);
+
+        if (nextPartIdx < totalParts) {
+            uploadNextChunk(id);
+        }
+        else {
+            completeMultipart(id);
+        }
+    }
+
+    function completeMultipart(id) {
+        var uploadId = fileState[id].uploadId,
+            etagMap = fileState[id].chunking.etags;
+
+        // TODO handle error?
+        completeMultipartRequester.send(id, uploadId, etagMap).then(function() {
+            uploadCompleted(id);
+        });
+    }
+
+    function uploadNextChunk(id) {
+        var idx = getNextPartIdxToSend(id),
+            name = api.getName(id),
+            xhr = fileState[id].xhr,
+            url = getNextChunkUrl(id),
+            totalFileSize = api.getSize(id),
+            chunkData = getChunkData(id, idx);
+
+        addChunkedHeaders(id).then(function(headers) {
+            options.onUploadChunk(id, name, getChunkDataForCallback(chunkData));
+
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    var totalLoaded = e.loaded + fileState[id].loaded;
+
+                    options.onProgress(id, name, totalLoaded, totalFileSize);
+                }
+            };
+
+            xhr.onreadystatechange = getReadyStateChangeHandler(id);
+
+            xhr.open("PUT", url, true);
+
+
+            qq.each(headers, function(name, val) {
+                xhr.setRequestHeader(name, val);
+            });
+
+            qq.log(qq.format("Sending part {} of {} for file ID {} - {} ({} bytes)", chunkData.part+1, chunkData.count, id, name, chunkData.size));
+            xhr.send(chunkData.blob);
+        });
+    }
+
+    function addChunkedHeaders(id) {
+        var headers = {},
+            endpoint = options.endpointStore.getEndpoint(id),
+            bucket = qq.s3.util.getBucket(endpoint),
+            key = fileState[id].key,
+            date = new Date().toUTCString(),
+            queryString = getNextChunkUrlParams(id),
+            promise = new qq.Promise(),
+            toSign;
+
+        headers["x-amz-date"] = date;
+
+        toSign = {multipartHeaders: "PUT\n\n\n\n" + "x-amz-date:" + date + "\n" + "/" + bucket + "/" + key + queryString};
+
+        // Ask the local server to sign the request.  Use this signature to form the Authorization header.
+        restSignatureRequester.getSignature(id, toSign).then(function(response) {
+            headers.Authorization = "AWS " + options.accessKey + ":" + response.signature;
+            promise.success(headers);
+        }, promise.failure);
+
+        return promise;
     }
 
     /**
@@ -154,7 +317,12 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
         return function() {
             if (xhr.readyState === 4) {
-                uploadCompleted(id);
+                if (fileState[id].chunking.enabled) {
+                    uploadChunkCompleted(id);
+                }
+                else {
+                    uploadCompleted(id);
+                }
             }
         };
     }
@@ -175,7 +343,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
                 maxFileSize: validation.maxSizeLimit,
                 log: log
             },
-            qq.bind(getSignatureAjaxRequester.getSignature, this, id));
+            qq.bind(policySignatureRequester.getSignature, this, id));
     }
 
     function prepareForSend(id, fileOrBlob) {
@@ -234,6 +402,32 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         }
     }
 
+    function uploadChunkCompleted(id) {
+        var idxSent = getNextPartIdxToSend(id),
+            xhr = fileState[id].xhr,
+            response = parseResponse(id),
+            chunkData = getChunkData(id, idxSent),
+            etag;
+
+        if (response.success) {
+            fileState[id].chunking.lastSent = idxSent;
+            etag = xhr.getResponseHeader("ETag");
+
+            if (!fileState[id].chunking.etags) {
+                fileState[id].chunking.etags = [];
+            }
+            fileState[id].chunking.etags.push({part: idxSent+1, etag: etag});
+
+            fileState[id].loaded += chunkData.size;
+            qq.log(etag);
+            maybeUploadNextChunk(id);
+        }
+        else if (response.error) {
+            qq.log(response.error, "error");
+        }
+    }
+
+    // TODO should the XHR passed to the handlers be the LAST xhr used (i.e. complete multipart request xhr if applicable)?
     function uploadCompleted(id, errorDetails) {
         var xhr = fileState[id].xhr,
             name = api.getName(id),
