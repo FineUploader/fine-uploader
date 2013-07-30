@@ -29,7 +29,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
 
     qq.extend(options, o);
 
-    getSignatureAjaxRequester = new qq.s3.PolicySignatureAjaxRequestor({
+    getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequestor({
         endpoint: options.signatureEndpoint,
         cors: options.cors,
         log: options.log
