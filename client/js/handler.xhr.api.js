@@ -2,7 +2,9 @@
  * Common API exposed to creators of XHR handlers.  This is reused and possibly overriding in some cases by specific
  * XHR upload handlers.
  *
+ * @param internalApi Object that will be filled with internal API methods
  * @param fileState An array containing objects that describe files tracked by the XHR upload handler.
+ * @param chunking Properties that describe chunking option values.  Null if chunking is not enabled or possible.
  * @param onUpload Used to call the specific XHR upload handler when an upload has been request.
  * @param onCancel Invoked when a request is handled to cancel an in-progress upload.  Invoked before the upload is actually cancelled.
  * @param onUuidChanged Callback to be invoked when the internal UUID is altered.
@@ -10,24 +12,81 @@
  * @returns Various methods
  * @constructor
  */
-qq.UploadHandlerXhrApi = function(fileState, onUpload, onCancel, onUuidChanged, log) {
+qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, onCancel, onUuidChanged, log) {
     "use strict";
 
-    var api;
+    var publicApi;
 
-    function expungeItem(id) {
-        var xhr = fileState[id].xhr;
 
-        if (xhr) {
-            xhr.onreadystatechange = null;
-            xhr.abort();
+    function getChunk(fileOrBlob, startByte, endByte) {
+        if (fileOrBlob.slice) {
+            return fileOrBlob.slice(startByte, endByte);
         }
-
-        delete fileState[id];
+        else if (fileOrBlob.mozSlice) {
+            return fileOrBlob.mozSlice(startByte, endByte);
+        }
+        else if (fileOrBlob.webkitSlice) {
+            return fileOrBlob.webkitSlice(startByte, endByte);
+        }
     }
 
+    qq.extend(internalApi, {
+        /**
+         * Creates an XHR instance for this file and stores it in the fileState.
+         *
+         * @param id File ID
+         * @returns {XMLHttpRequest}
+         */
+        createXhr: function(id) {
+            var xhr = new XMLHttpRequest();
 
-    api = {
+            fileState[id].xhr = xhr;
+
+            return xhr;
+        },
+
+        /**
+         * @param id ID of the associated file
+         * @returns {number} Number of parts this file can be divided into, or undefined if chunking is not supported in this UA
+         */
+        getTotalChunks: function(id) {
+            if (chunking) {
+                var fileSize = publicApi.getSize(id),
+                    chunkSize = chunking.partSize;
+
+                return Math.ceil(fileSize / chunkSize);
+            }
+        },
+
+        getChunkData: function(id, chunkIndex) {
+            var chunkSize = chunking.partSize,
+                fileSize = publicApi.getSize(id),
+                fileOrBlob = publicApi.getFile(id),
+                startBytes = chunkSize * chunkIndex,
+                endBytes = startBytes+chunkSize >= fileSize ? fileSize : startBytes+chunkSize,
+                totalChunks = internalApi.getTotalChunks(id);
+
+            return {
+                part: chunkIndex,
+                start: startBytes,
+                end: endBytes,
+                count: totalChunks,
+                blob: getChunk(fileOrBlob, startBytes, endBytes),
+                size: endBytes - startBytes
+            };
+        },
+
+        getChunkDataForCallback: function(chunkData) {
+            return {
+                partIndex: chunkData.part,
+                startByte: chunkData.start + 1,
+                endByte: chunkData.end,
+                totalParts: chunkData.count
+            };
+        }
+    });
+
+    publicApi = {
         /**
          * Adds File or Blob to the queue
          * Returns id to use with upload, cancel
@@ -52,7 +111,7 @@ qq.UploadHandlerXhrApi = function(fileState, onUpload, onCancel, onUuidChanged, 
         },
 
         getName: function(id) {
-            if (api.isValid(id)) {
+            if (publicApi.isValid(id)) {
                 var file = fileState[id].file,
                     blobData = fileState[id].blobData,
                     newName = fileState[id].newName;
@@ -105,7 +164,14 @@ qq.UploadHandlerXhrApi = function(fileState, onUpload, onCancel, onUuidChanged, 
         },
 
         expunge: function(id) {
-            return expungeItem(id);
+            var xhr = fileState[id].xhr;
+
+            if (xhr) {
+                xhr.onreadystatechange = null;
+                xhr.abort();
+            }
+
+            delete fileState[id];
         },
 
         getUuid: function(id) {
@@ -120,15 +186,15 @@ qq.UploadHandlerXhrApi = function(fileState, onUpload, onCancel, onUuidChanged, 
         },
 
         cancel: function(id) {
-            var onCancelRetVal = onCancel(id, api.getName(id));
+            var onCancelRetVal = onCancel(id, publicApi.getName(id));
 
             if (qq.isPromise(onCancelRetVal)) {
                 return onCancelRetVal.then(function() {
-                    api.expunge(id);
+                    publicApi.expunge(id);
                 });
             }
             else if (onCancelRetVal !== false) {
-                api.expunge(id);
+                publicApi.expunge(id);
                 return true;
             }
 
@@ -142,5 +208,5 @@ qq.UploadHandlerXhrApi = function(fileState, onUpload, onCancel, onUuidChanged, 
         }
     };
 
-    return api;
+    return publicApi;
 };
