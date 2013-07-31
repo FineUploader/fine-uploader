@@ -624,7 +624,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
             return [];
         },
 
-        expungeItem: function(id) {
+        expunge: function(id) {
             var xhr = fileState[id].xhr;
 
             if (xhr) {
