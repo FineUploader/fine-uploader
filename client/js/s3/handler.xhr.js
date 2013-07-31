@@ -64,6 +64,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         });
 
 
+// Shared
+
     //TODO eliminate duplication w/ traditional handler.xhr.js
     function createXhr(id) {
         var xhr = new XMLHttpRequest();
@@ -72,6 +74,280 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
         return xhr;
     }
+
+    /**
+     * Initiate the upload process and possibly delegate to a more specific handler if chunking is required.
+     *
+     * @param id Associated file ID
+     */
+    function handleUpload(id) {
+        var fileOrBlob = api.getFile(id);
+
+        fileState[id].type = fileOrBlob.type;
+
+        createXhr(id);
+
+        if (shouldChunkThisFile(id)) {
+            // We might be retrying a failed in-progress upload, so it's important that we
+            // don't reset this value so we don't wipe out the record of all successfully
+            // uploaded chunks for this file.
+            if (fileState[id].loaded === undefined) {
+                fileState[id].loaded = 0;
+            }
+
+            handleChunkedUpload(id);
+        }
+        else {
+            fileState[id].loaded = 0;
+            handleSimpleUpload(id);
+        }
+    }
+
+    //TODO eliminate duplication w/ traditional handler.xhr.js
+    function getReadyStateChangeHandler(id) {
+        var xhr = fileState[id].xhr;
+
+        return function() {
+            if (xhr.readyState === 4) {
+                if (fileState[id].chunking.enabled) {
+                    uploadChunkCompleted(id);
+                }
+                else {
+                    uploadCompleted(id);
+                }
+            }
+        };
+    }
+
+    // Determine if the upload should be restarted on the next retry attempt
+    // based on the error code returned in the response from AWS.
+    function shouldResetOnRetry(errorCode) {
+        return errorCode === "EntityTooSmall"
+            || errorCode === "InvalidPart"
+            || errorCode === "InvalidPartOrder"
+            || errorCode === "NoSuchUpload";
+    }
+
+    /**
+     * Note that this is called when an upload has reached a termination point,
+     * regardless of success/failure.  For example, it is called when we have
+     * encountered an error during the upload or when the file may have uploaded successfully.
+     *
+     * @param id file ID
+     * @param errorDetails Any error details associated with the upload.  Format: {error: message}.
+     * @param requestXhr The XHR object associated with the call, if the upload XHR is not appropriate.
+     */
+    function uploadCompleted(id, errorDetails, requestXhr) {
+        var xhr = requestXhr || fileState[id].xhr,
+            name = api.getName(id),
+            size = api.getSize(id),
+            // This is the response we will use internally to determine if we need to do something special in case of a failure
+            responseToExamine = parseResponse(id, requestXhr),
+            // This is the response we plan on passing to external callbacks
+            responseToBubble = errorDetails || parseResponse(id);
+
+        // If this upload failed, we might want to completely start the upload over on retry in some cases.
+        if (!responseToExamine.success) {
+            if (shouldResetOnRetry(responseToExamine.code)) {
+                qq.log('This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.', 'error');
+                delete fileState[id].loaded;
+                delete fileState[id].chunking;
+            }
+        }
+
+        // If this upload failed AND we are expecting an auto-retry, we are not done yet.
+        if (responseToExamine.success || !options.onAutoRetry(id, name, responseToBubble, xhr)) {
+            qq.log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
+
+            onProgress(id, name, size, size);
+            onComplete(id, name, responseToBubble, xhr);
+
+            if (fileState[id]) {
+                delete fileState[id].xhr;
+            }
+
+            uploadCompleteCallback(id);
+        }
+    }
+
+    /**
+     * @param id File ID
+     * @param requestXhr The XHR object associated with the call, if the upload XHR is not appropriate.
+     * @returns {object} Object containing the parsed response, or perhaps some error data injected in `error` and `code` properties
+     */
+    function parseResponse(id, requestXhr) {
+        var xhr = requestXhr || fileState[id].xhr,
+            response = {},
+            parsedErrorProps;
+
+        try {
+            log(qq.format("Received response status {} with body: {}", xhr.status, xhr.responseText));
+
+            if (xhr.status === expectedStatus) {
+                response.success = true;
+            }
+            else {
+                parsedErrorProps = parseError(xhr.responseText);
+
+                if (parsedErrorProps) {
+                    response.error = parsedErrorProps.message;
+                    response.code = parsedErrorProps.code;
+                }
+            }
+        }
+        catch(error) {
+            log('Error when attempting to parse xhr response text (' + error + ')', 'error');
+        }
+
+        return response;
+    }
+
+    /**
+     * This parses an XML response by extracting the "Message" and "Code" elements that accompany AWS error responses.
+     *
+     * @param awsResponseXml XML response from AWS
+     * @returns {object} Object w/ `code` and `message` properties, or undefined if we couldn't find error info in the XML document.
+     */
+    function parseError(awsResponseXml) {
+        var parser = new DOMParser(),
+            parsedDoc = parser.parseFromString(awsResponseXml, "application/xml"),
+            errorEls = parsedDoc.getElementsByTagName("Error"),
+            errorDetails = {},
+            codeEls, messageEls;
+
+        if (errorEls.length) {
+            codeEls = parsedDoc.getElementsByTagName("Code");
+            messageEls = parsedDoc.getElementsByTagName("Message");
+
+            if (messageEls.length) {
+                errorDetails.message = messageEls[0].textContent;
+            }
+
+            if (codeEls.length) {
+                errorDetails.code = codeEls[0].textContent;
+            }
+
+            return errorDetails;
+        }
+    }
+
+    function handleStartUploadSignal(id, retry) {
+        var name = api.getName(id);
+
+        if (api.isValid(id)) {
+            if (fileState[id].key) {
+                onUpload(id, name);
+                handleUpload(id);
+            }
+            else {
+                // The S3 uploader module will either calculate the key or ask the server for it
+                // and will call us back once it is known.
+                onGetKeyName(id, name).then(function(key) {
+                    fileState[id].key = key;
+                    onUpload(id, name);
+                    handleUpload(id);
+                });
+            }
+        }
+    }
+
+
+// Simple Uploads
+
+    // Starting point for incoming requests for simple (non-chunked) uploads.
+    function handleSimpleUpload(id) {
+        var xhr = fileState[id].xhr,
+            name = api.getName(id),
+            fileOrBlob = api.getFile(id);
+
+        xhr.upload.onprogress = function(e){
+            if (e.lengthComputable){
+                fileState[id].loaded = e.loaded;
+                onProgress(id, name, e.loaded, e.total);
+            }
+        };
+
+        xhr.onreadystatechange = getReadyStateChangeHandler(id);
+
+        // Delegate to a function the sets up the XHR request and notifies us when it is ready to be sent, along w/ the payload.
+        prepareForSend(id, fileOrBlob).then(function(toSend) {
+            log('Sending upload request for ' + id);
+            xhr.send(toSend);
+        });
+    }
+
+    /**
+     * Used for simple (non-chunked) uploads to determine the parameters to send along with the request.  Part of this
+     * process involves asking the local server to sign the request, so this function returns a promise.  The promise
+     * is fulfilled when all parameters are determined, or when we determine that all parameters cannnot be calculated
+     * due to some error.
+     *
+     * @param id File ID
+     * @returns {qq.Promise}
+     */
+    function generateAwsParams(id) {
+        var customParams = paramsStore.getParams(id);
+        customParams[filenameParam] = api.getName(id);
+
+        return qq.s3.util.generateAwsParams({
+                endpoint: endpointStore.getEndpoint(id),
+                params: customParams,
+                type: fileState[id].type,
+                key: fileState[id].key,
+                accessKey: accessKey,
+                acl: acl,
+                expectedStatus: expectedStatus,
+                minFileSize: validation.minSizeLimit,
+                maxFileSize: validation.maxSizeLimit,
+                log: log
+            },
+            qq.bind(policySignatureRequester.getSignature, this, id));
+    }
+
+    /**
+     * Starts the upload process by delegating to an async function that determine parameters to be attached to the
+     * request.  If all params can be determined, we are called back with the params and the caller of this function is
+     * informed by invoking the `success` method on the promise returned by this function, passing the payload of the
+     * request.  If some error occurs here, we delegate to a function that signals a failure for this upload attempt.
+     *
+     * Note that this is only used by the simple (non-chunked) upload process.
+     *
+     * @param id File ID
+     * @param fileOrBlob `File` or `Blob` to send
+     * @returns {qq.Promise}
+     */
+    function prepareForSend(id, fileOrBlob) {
+        var formData = new FormData(),
+            endpoint = endpointStore.getEndpoint(id),
+            url = endpoint,
+            xhr = fileState[id].xhr,
+            promise = new qq.Promise();
+
+        generateAwsParams(id).then(
+            // Success - all params determined
+            function(awsParams) {
+                xhr.open("POST", url, true);
+
+                qq.obj2FormData(awsParams, formData);
+
+                // AWS requires the file field be named "file".
+                formData.append("file", fileOrBlob);
+
+                promise.success(formData);
+            },
+
+            // Failure - we couldn't determine some params (likely the signature)
+            function(errorMessage) {
+                promise.failure(errorMessage);
+                uploadCompleted(id, {error: errorMessage});
+            }
+        );
+
+        return promise;
+    }
+
+
+// Chunked Uploads
 
     /**
      * Determine if the associated file should be chunked.
@@ -153,34 +429,6 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         };
     }
 
-    /**
-     * Initiate the upload process and possibly delegate to a more specific handler if chunking is required.
-     *
-     * @param id Associated file ID
-     */
-    function handleUpload(id) {
-        var fileOrBlob = api.getFile(id);
-
-        fileState[id].type = fileOrBlob.type;
-
-        createXhr(id);
-
-        if (shouldChunkThisFile(id)) {
-            // We might be retrying a failed in-progress upload, so it's important that we
-            // don't reset this value so we don't wipe out the record of all successfully
-            // uploaded chunks for this file.
-            if (fileState[id].loaded === undefined) {
-                fileState[id].loaded = 0;
-            }
-
-            handleChunkedUpload(id);
-        }
-        else {
-            fileState[id].loaded = 0;
-            handleSimpleUpload(id);
-        }
-    }
-
     // Starting point for incoming requests for chunked uploads.
     function handleChunkedUpload(id) {
         maybeInitiateMultipart(id).then(
@@ -194,28 +442,6 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
                 uploadCompleted(id, {error: errorMessage}, xhr);
             }
         );
-    }
-
-    // Starting point for incoming requests for simple (non-chunked) uploads.
-    function handleSimpleUpload(id) {
-        var xhr = fileState[id].xhr,
-            name = api.getName(id),
-            fileOrBlob = api.getFile(id);
-
-        xhr.upload.onprogress = function(e){
-            if (e.lengthComputable){
-                fileState[id].loaded = e.loaded;
-                onProgress(id, name, e.loaded, e.total);
-            }
-        };
-
-        xhr.onreadystatechange = getReadyStateChangeHandler(id);
-
-        // Delegate to a function the sets up the XHR request and notifies us when it is ready to be sent, along w/ the payload.
-        prepareForSend(id, fileOrBlob).then(function(toSend) {
-            log('Sending upload request for ' + id);
-            xhr.send(toSend);
-        });
     }
 
     /**
@@ -373,153 +599,6 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         }
     }
 
-    //TODO eliminate duplication w/ traditional handler.xhr.js
-    function getReadyStateChangeHandler(id) {
-        var xhr = fileState[id].xhr;
-
-        return function() {
-            if (xhr.readyState === 4) {
-                if (fileState[id].chunking.enabled) {
-                    uploadChunkCompleted(id);
-                }
-                else {
-                    uploadCompleted(id);
-                }
-            }
-        };
-    }
-
-    /**
-     * Used for simple (non-chunked) uploads to determine the parameters to send along with the request.  Part of this
-     * process involves asking the local server to sign the request, so this function returns a promise.  The promise
-     * is fulfilled when all parameters are determined, or when we determine that all parameters cannnot be calculated
-     * due to some error.
-     *
-     * @param id File ID
-     * @returns {qq.Promise}
-     */
-    function generateAwsParams(id) {
-        var customParams = paramsStore.getParams(id);
-        customParams[filenameParam] = api.getName(id);
-
-        return qq.s3.util.generateAwsParams({
-                endpoint: endpointStore.getEndpoint(id),
-                params: customParams,
-                type: fileState[id].type,
-                key: fileState[id].key,
-                accessKey: accessKey,
-                acl: acl,
-                expectedStatus: expectedStatus,
-                minFileSize: validation.minSizeLimit,
-                maxFileSize: validation.maxSizeLimit,
-                log: log
-            },
-            qq.bind(policySignatureRequester.getSignature, this, id));
-    }
-
-    /**
-     * Starts the upload process by delegating to an async function that determine parameters to be attached to the
-     * request.  If all params can be determined, we are called back with the params and the caller of this function is
-     * informed by invoking the `success` method on the promise returned by this function, passing the payload of the
-     * request.  If some error occurs here, we delegate to a function that signals a failure for this upload attempt.
-     *
-     * Note that this is only used by the simple (non-chunked) upload process.
-     *
-     * @param id File ID
-     * @param fileOrBlob `File` or `Blob` to send
-     * @returns {qq.Promise}
-     */
-    function prepareForSend(id, fileOrBlob) {
-        var formData = new FormData(),
-            endpoint = endpointStore.getEndpoint(id),
-            url = endpoint,
-            xhr = fileState[id].xhr,
-            promise = new qq.Promise();
-
-        generateAwsParams(id).then(
-            // Success - all params determined
-            function(awsParams) {
-                xhr.open("POST", url, true);
-
-                qq.obj2FormData(awsParams, formData);
-
-                // AWS requires the file field be named "file".
-                formData.append("file", fileOrBlob);
-
-                promise.success(formData);
-            },
-
-            // Failure - we couldn't determine some params (likely the signature)
-            function(errorMessage) {
-                promise.failure(errorMessage);
-                uploadCompleted(id, {error: errorMessage});
-            }
-        );
-
-        return promise;
-    }
-
-    /**
-     * @param id File ID
-     * @param requestXhr The XHR object associated with the call, if the upload XHR is not appropriate.
-     * @returns {object} Object containing the parsed response, or perhaps some error data injected in `error` and `code` properties
-     */
-    function parseResponse(id, requestXhr) {
-        var xhr = requestXhr || fileState[id].xhr,
-            response = {},
-            parsedErrorProps;
-
-        try {
-            log(qq.format("Received response status {} with body: {}", xhr.status, xhr.responseText));
-
-            if (xhr.status === expectedStatus) {
-                response.success = true;
-            }
-            else {
-                parsedErrorProps = parseError(xhr.responseText);
-
-                if (parsedErrorProps) {
-                    response.error = parsedErrorProps.message;
-                    response.code = parsedErrorProps.code;
-                }
-            }
-        }
-        catch(error) {
-            log('Error when attempting to parse xhr response text (' + error + ')', 'error');
-        }
-
-        return response;
-    }
-
-    /**
-     * This parses an XML response by extracting the "Message" and "Code" elements that accompany AWS error responses.
-     *
-     * @param awsResponseXml XML response from AWS
-     * @returns {object} Object w/ `code` and `message` properties, or undefined if we couldn't find error info in the XML document.
-     */
-    function parseError(awsResponseXml) {
-        var parser = new DOMParser(),
-            parsedDoc = parser.parseFromString(awsResponseXml, "application/xml"),
-            errorEls = parsedDoc.getElementsByTagName("Error"),
-            errorDetails = {},
-            codeEls, messageEls;
-
-        if (errorEls.length) {
-            codeEls = parsedDoc.getElementsByTagName("Code");
-            messageEls = parsedDoc.getElementsByTagName("Message");
-
-            if (messageEls.length) {
-                errorDetails.message = messageEls[0].textContent;
-            }
-
-            if (codeEls.length) {
-                errorDetails.code = codeEls[0].textContent;
-            }
-
-            return errorDetails;
-        }
-    }
-
     // The (usually) last step in handling a chunked upload.  This is called after each chunk has been sent.
     // The request may be successful, or not.  If it was successful, we must extract the "ETag" element
     // in the XML response and store that along with the associated part number.
@@ -552,77 +631,6 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             }
 
             uploadCompleted(id);
-        }
-    }
-
-    // Determine if the upload should be restarted on the next retry attempt
-    // based on the error code returned in the response from AWS.
-    function shouldResetOnRetry(errorCode) {
-        return errorCode === "EntityTooSmall"
-            || errorCode === "InvalidPart"
-            || errorCode === "InvalidPartOrder"
-            || errorCode === "NoSuchUpload";
-    }
-
-    /**
-     * Note that this is called when an upload has reached a termination point,
-     * regardless of success/failure.  For example, it is called when we have
-     * encountered an error during the upload or when the file may have uploaded successfully.
-     *
-     * @param id file ID
-     * @param errorDetails Any error details associated with the upload.  Format: {error: message}.
-     * @param requestXhr The XHR object associated with the call, if the upload XHR is not appropriate.
-     */
-    function uploadCompleted(id, errorDetails, requestXhr) {
-        var xhr = requestXhr || fileState[id].xhr,
-            name = api.getName(id),
-            size = api.getSize(id),
-            // This is the response we will use internally to determine if we need to do something special in case of a failure
-            responseToExamine = parseResponse(id, requestXhr),
-            // This is the response we plan on passing to external callbacks
-            responseToBubble = errorDetails || parseResponse(id);
-
-        // If this upload failed, we might want to completely start the upload over on retry in some cases.
-        if (!responseToExamine.success) {
-            if (shouldResetOnRetry(responseToExamine.code)) {
-                qq.log('This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.', 'error');
-                delete fileState[id].loaded;
-                delete fileState[id].chunking;
-            }
-        }
-
-        // If this upload failed AND we are expecting an auto-retry, we are not done yet.
-        if (responseToExamine.success || !options.onAutoRetry(id, name, responseToBubble, xhr)) {
-            qq.log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
-
-            onProgress(id, name, size, size);
-            onComplete(id, name, responseToBubble, xhr);
-
-            if (fileState[id]) {
-                delete fileState[id].xhr;
-            }
-
-            uploadCompleteCallback(id);
-        }
-    }
-
-    function handleStartUploadSignal(id, retry) {
-        var name = api.getName(id);
-
-        if (api.isValid(id)) {
-            if (fileState[id].key) {
-                onUpload(id, name);
-                handleUpload(id);
-            }
-            else {
-                // The S3 uploader module will either calculate the key or ask the server for it
-                // and will call us back once it is known.
-                onGetKeyName(id, name).then(function(key) {
-                    fileState[id].key = key;
-                    onUpload(id, name);
-                    handleUpload(id);
-                });
-            }
         }
     }
 
