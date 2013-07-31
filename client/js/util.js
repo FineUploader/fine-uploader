@@ -276,7 +276,7 @@ qq.isFileChunkingSupported = function() {
         (File.prototype.slice !== undefined || File.prototype.webkitSlice !== undefined || File.prototype.mozSlice !== undefined);
 };
 
-qq.extend = function (first, second, extendNested) {
+qq.extend = function(first, second, extendNested) {
     "use strict";
 
     qq.each(second, function(prop, val) {
@@ -292,6 +292,31 @@ qq.extend = function (first, second, extendNested) {
     });
 
     return first;
+};
+
+/**
+ * Allow properties in one object to override properties in another,
+ * keeping track of the original values from the target object.
+ *
+ * Note that the pre-overriden properties to be overriden by the source will be passed into the `sourceFn` when it is invoked.
+ *
+ * @param target Update properties in this object from some source
+ * @param sourceFn A function that, when invoked, will return properties that will replace properties with the same name in the target.
+ * @returns {object} The target object
+ */
+qq.override = function(target, sourceFn) {
+    var super_ = {},
+        source = sourceFn(super_);
+
+    qq.each(source, function(srcPropName, srcPropVal) {
+        if (target[srcPropName] !== undefined) {
+            super_[srcPropName] = target[srcPropName];
+        }
+
+        target[srcPropName] = srcPropVal;
+    });
+
+    return target;
 };
 
 /**
