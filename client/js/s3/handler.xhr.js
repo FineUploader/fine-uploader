@@ -4,8 +4,6 @@
  *
  * If chunking is supported and enabled, the S3 Multipart Upload REST API is utilized.
  *
- * TODO Auto-retries are not properly supported yet.
- *
  * @param options Options passed from the base handler
  * @param uploadCompleteCallback Callback to invoke when the upload has completed, regardless of success.
  * @param onUuidChanged Callback to invoke when the associated items UUID has changed by order of the server.
@@ -163,15 +161,22 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     function handleUpload(id) {
         var fileOrBlob = api.getFile(id);
 
-        fileState[id].loaded = 0;
         fileState[id].type = fileOrBlob.type;
 
         createXhr(id);
 
         if (shouldChunkThisFile(id)) {
+            // We might be retrying a failed in-progress upload, so it's important that we
+            // don't reset this value so we don't wipe out the record of all successfully
+            // uploaded chunks for this file.
+            if (fileState[id].loaded === undefined) {
+                fileState[id].loaded = 0;
+            }
+
             handleChunkedUpload(id);
         }
         else {
+            fileState[id].loaded = 0;
             handleSimpleUpload(id);
         }
     }
@@ -521,29 +526,43 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             // We might not be done with this file...
             maybeUploadNextChunk(id);
         }
-        // TODO we probably need to facilitate auto-reties here
-        else if (response.error) {
-            qq.log(response.error, "error");
+        else {
+            if (response.error) {
+                qq.log(response.error, "error");
+            }
+
+            uploadCompleted(id);
         }
     }
 
-    // TODO should the XHR passed to the handlers be the LAST xhr used (i.e. complete multipart request xhr if applicable)?
+    /**
+     * Note that this is called when an upload has reached a termination point,
+     * regardless of success/failure.  For example, it is called when we have
+     * encountered an error during the upload or when the file may have uploaded successfully.
+     *
+     * @param id file ID
+     * @param errorDetails Any error details associated with the upload.  Format: {error: message}.
+     * @param requestXhr The XHR object associated with the call, if the upload XHR is not appropriate.
+     */
     function uploadCompleted(id, errorDetails, requestXhr) {
         var xhr = requestXhr || fileState[id].xhr,
             name = api.getName(id),
             size = api.getSize(id),
             response = errorDetails || parseResponse(id);
 
-        qq.log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
+        // If this upload failed AND we are expecting an auto-retry, we are not done yet.
+        if (response.success || !options.onAutoRetry(id, name, response, xhr)) {
+            qq.log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
 
-        onProgress(id, name, size, size);
-        onComplete(id, name, response, xhr);
+            onProgress(id, name, size, size);
+            onComplete(id, name, response, xhr);
 
-        if (fileState[id]) {
-            delete fileState[id].xhr;
+            if (fileState[id]) {
+                delete fileState[id].xhr;
+            }
+
+            uploadCompleteCallback(id);
         }
-
-        uploadCompleteCallback(id);
     }
 
     function handleStartUploadSignal(id, retry) {
