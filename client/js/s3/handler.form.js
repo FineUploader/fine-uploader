@@ -193,6 +193,10 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
                     });
                 }
             }
+        },
+
+        getThirdPartyFileId: function(id) {
+            return fileState[id].key;
         }
     });
 

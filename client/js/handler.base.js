@@ -202,6 +202,19 @@ qq.UploadHandler = function(o, namespace) {
                 return handlerImpl.getResumableFilesData();
             }
             return [];
+        },
+        /**
+         * This may or may not be implemented, depending on the handler.  For handlers where a third-party ID is
+         * available (such as the "key" for Amazon S3), this will return that value.  Otherwise, the return value
+         * will be undefined.
+         *
+         * @param id Internal file ID
+         * @returns {*} Some identifier used by a 3rd-party service involved in the upload process
+         */
+        getThirdPartyFileId: function(id) {
+            if (handlerImpl.getThirdPartyFileId && api.isValid(id)) {
+                return handlerImpl.getThirdPartyFileId(id);
+            }
         }
     };
 
