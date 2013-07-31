@@ -124,11 +124,11 @@ qq.UploadHandlerXhrApi = function(fileState, onUpload, onCancel, onUuidChanged, 
 
             if (qq.isPromise(onCancelRetVal)) {
                 return onCancelRetVal.then(function() {
-                    expungeItem(id);
+                    api.expunge(id);
                 });
             }
             else if (onCancelRetVal !== false) {
-                expungeItem(id);
+                api.expunge(id);
                 return true;
             }
 
