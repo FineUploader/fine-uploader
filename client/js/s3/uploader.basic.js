@@ -18,7 +18,7 @@ qq.s3.FineUploaderBasic = function(o) {
             key: 'uuid'
         },
         chunking: {
-            // minimum part size is 5MB when uploading to S3
+            // minimum part size is 5 MiB when uploading to S3
             partSize: 5242880
         }
     };
