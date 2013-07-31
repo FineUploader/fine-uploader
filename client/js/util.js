@@ -195,7 +195,10 @@ qq.trimStr = function(string) {
 };
 
 
-// Returns a string, swapping argument values with the associated occurrence of {} in the passed string.
+/**
+ * @param str String to format.
+ * @returns {string} A string, swapping argument values with the associated occurrence of {} in the passed string.
+ */
 qq.format = function(str) {
     "use strict";
 
@@ -397,33 +400,42 @@ qq.toElement = (function(){
     };
 }());
 
-//key and value are passed to callback for each item in the object, array, or string
-qq.each = function(objArrayOrStr, callback) {
+//key and value are passed to callback for each entry in the iterable item
+qq.each = function(iterableItem, callback) {
     "use strict";
     var keyOrIndex, retVal;
 
-    if (objArrayOrStr) {
-        // `DataTransferItemList` objects are array-like and should be treated as arrays when iterating over items inside the object.
-        if (qq.isArray(objArrayOrStr) || qq.isItemList(objArrayOrStr)) {
-            for (keyOrIndex = 0; keyOrIndex < objArrayOrStr.length; keyOrIndex++) {
-                retVal = callback(keyOrIndex, objArrayOrStr[keyOrIndex]);
+    if (iterableItem) {
+        // Iterate through [`Storage`](http://www.w3.org/TR/webstorage/#the-storage-interface) items
+        if (iterableItem.constructor === window.Storage) {
+            for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
+                retVal = callback(iterableItem.key(keyOrIndex), iterableItem.getItem(iterableItem.key(keyOrIndex)));
                 if (retVal === false) {
                     break;
                 }
             }
         }
-        else if (qq.isString(objArrayOrStr)) {
-            for (keyOrIndex = 0; keyOrIndex < objArrayOrStr.length; keyOrIndex++) {
-                retVal = callback(keyOrIndex, objArrayOrStr.charAt(keyOrIndex));
+        // `DataTransferItemList` objects are array-like and should be treated as arrays when iterating over items inside the object.
+        else if (qq.isArray(iterableItem) || qq.isItemList(iterableItem)) {
+            for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
+                retVal = callback(keyOrIndex, iterableItem[keyOrIndex]);
+                if (retVal === false) {
+                    break;
+                }
+            }
+        }
+        else if (qq.isString(iterableItem)) {
+            for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
+                retVal = callback(keyOrIndex, iterableItem.charAt(keyOrIndex));
                 if (retVal === false) {
                     break;
                 }
             }
         }
         else {
-            for (keyOrIndex in objArrayOrStr) {
-                if (Object.prototype.hasOwnProperty.call(objArrayOrStr, keyOrIndex)) {
-                    retVal = callback(keyOrIndex, objArrayOrStr[keyOrIndex]);
+            for (keyOrIndex in iterableItem) {
+                if (Object.prototype.hasOwnProperty.call(iterableItem, keyOrIndex)) {
+                    retVal = callback(keyOrIndex, iterableItem[keyOrIndex]);
                     if (retVal === false) {
                         break;
                     }

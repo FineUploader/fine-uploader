@@ -66,7 +66,10 @@ The following element-related functions are available on the `qq(...)` function.
 
 * `qq.toElement()` - Creates and returns a new DIV element.
 
-* `qq.each(objArrayOrStr, callback)` - Iterates through an object, array, or characters in a string, passing your callback the key and value for each element in the object.  `return false;` to stop iteration.
+* `qq.each(iterableItem, callback)` - Iterates through an object, array, characters in a string,
+items in a [`FileList`](http://www.w3.org/TR/FileAPI/#dfn-filelist), or items in [`Storage`](http://www.w3.org/TR/webstorage/#the-storage-interface)
+(passing your callback the key and value for each element in the object).
+`return false;` to stop iteration.
 
 * `qq.bind(oldFunc, context)` - Same concept as `Function.prototype.bind`, but this will function in all browsers.  Pass comma-separated
 values after the `context` parameter for all arguments to be passed to the new function (when invoked).  This is an alterative to
