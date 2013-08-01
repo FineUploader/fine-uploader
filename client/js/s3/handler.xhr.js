@@ -25,7 +25,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         acl = options.acl,
         validation = options.validation,
         chunkingPossible = options.chunking.enabled && qq.supportedFeatures.chunking,
-        resumeEnabled = options.resume.enabled && chunkingPossible && qq.supportedFeatures.resume,
+        resumeEnabled = options.resume.enabled && chunkingPossible && qq.supportedFeatures.resume && window.localStorage,
         internalApi = {},
         publicApi,
         policySignatureRequester = new qq.s3.SignatureAjaxRequestor({
@@ -66,7 +66,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         });
 
 
-// Shared
+// ************************** Shared ******************************
 
     /**
      * Initiate the upload process and possibly delegate to a more specific handler if chunking is required.
@@ -141,7 +141,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         // If this upload failed, we might want to completely start the upload over on retry in some cases.
         if (!responseToExamine.success) {
             if (shouldResetOnRetry(responseToExamine.code)) {
-                qq.log('This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.', 'error');
+                log('This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.', 'error');
                 delete fileState[id].loaded;
                 delete fileState[id].chunking;
                 maybeDeletePersistedChunkData(id);
@@ -150,7 +150,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
         // If this upload failed AND we are expecting an auto-retry, we are not done yet.
         if (responseToExamine.success || !options.onAutoRetry(id, name, responseToBubble, xhr)) {
-            qq.log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
+            log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
 
             onProgress(id, name, size, size);
             onComplete(id, name, responseToBubble, xhr);
@@ -251,7 +251,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     }
 
 
-// Simple Uploads
+// ************************** Simple Uploads ******************************
 
     // Starting point for incoming requests for simple (non-chunked) uploads.
     function handleSimpleUpload(id) {
@@ -346,7 +346,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     }
 
 
-// Chunked Uploads
+// ************************** Chunked Uploads ******************************
+
 
     // If this is a resumable upload, grab the relevant data from storage and items in memory that track this upload
     // so we can pick up from where we left off.
@@ -356,23 +357,19 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         // Resume is enabled and possible and this is the first time we've tried to upload this file in this session,
         // so prepare for a resume attempt.
         if (resumeEnabled && fileState[id].key === undefined) {
+            localStorageId = getLocalStorageId(id);
+            persistedData = localStorage.getItem(localStorageId);
 
-            // If the user agent doesn't support local storage, give up
-            if (window.localStorage) {
-                localStorageId = getLocalStorageId(id);
-                persistedData = localStorage.getItem(localStorageId);
+            // If we haven't found this item in local storage, give up
+            if (persistedData) {
+                log(qq.format("Identified file with ID {} and name of {} as resumable.", id, publicApi.getName(id)));
 
-                // If we haven't found this item in local storage, give up
-                if (persistedData) {
-                    qq.log(qq.format("Identified file with ID {} and name of {} as resumable.", id, publicApi.getName(id)));
+                persistedData = JSON.parse(persistedData);
 
-                    persistedData = JSON.parse(persistedData);
-
-                    fileState[id].uuid = persistedData.uuid;
-                    fileState[id].key = persistedData.key;
-                    fileState[id].loaded = persistedData.loaded;
-                    fileState[id].chunking = persistedData.chunking;
-                }
+                fileState[id].uuid = persistedData.uuid;
+                fileState[id].key = persistedData.key;
+                fileState[id].loaded = persistedData.loaded;
+                fileState[id].chunking = persistedData.chunking;
             }
         }
     }
@@ -382,7 +379,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         var localStorageId, persistedData;
 
         // If local storage isn't supported by the browser, or if resume isn't enabled or possible, give up
-        if (window.localStorage && resumeEnabled) {
+        if (resumeEnabled) {
             localStorageId = getLocalStorageId(id);
 
             persistedData = {
@@ -391,7 +388,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
                 uuid: publicApi.getUuid(id),
                 key: fileState[id].key,
                 loaded: fileState[id].loaded,
-                chunking: fileState[id].chunking
+                chunking: fileState[id].chunking,
+                lastUpdated: Date.now()
             };
 
             localStorage.setItem(localStorageId, JSON.stringify(persistedData));
@@ -402,13 +400,63 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     function maybeDeletePersistedChunkData(id) {
         var localStorageId;
 
-        if (window.localStorage && resumeEnabled) {
+        if (resumeEnabled) {
             localStorageId = getLocalStorageId(id);
 
             if (localStorageId) {
                 localStorage.removeItem(localStorageId);
             }
         }
+    }
+
+    // Iterates through all S3 XHR handler-created resume records (in local storage),
+    // invoking the passed callback and passing in the key and value of each local storage record.
+    function iterateResumeRecords(callback) {
+        if (resumeEnabled) {
+            qq.each(localStorage, function(key, item) {
+                if (key.indexOf("qqs3resume-") === 0) {
+                    var uploadData = JSON.parse(item);
+                    callback(key, uploadData);
+                }
+            });
+        }
+    }
+
+    /**
+     * @returns {Array} Array of objects containing properties useful to integrators
+     * when it is important to determine which files are potentially resumable.
+     */
+    function getResumableFilesData() {
+        var resumableFilesData = [];
+
+        iterateResumeRecords(function(key, uploadData) {
+            resumableFilesData.push({
+                name: uploadData.name,
+                size: uploadData.size,
+                uuid: uploadData.uuid,
+                partIdx: uploadData.chunking.lastSent + 1,
+                key: uploadData.key
+            });
+        });
+
+        return resumableFilesData;
+    }
+
+    // Deletes any local storage records that are "expired".
+    function removeExpiredChunkingRecords() {
+        var expirationDays = options.resume.cookiesExpireIn;
+
+        iterateResumeRecords(function(key, uploadData) {
+            var expirationDate = new Date(uploadData.lastUpdated);
+
+            // transform updated date into expiration date
+            expirationDate.setDate(expirationDate.getDate() + expirationDays);
+
+            if (expirationDate.getTime() <= Date.now()) {
+                log("Removing expired resume record with key " + key);
+                localStorage.removeItem(key);
+            }
+        });
     }
 
     /**
@@ -561,7 +609,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
                 xhr.setRequestHeader(name, val);
             });
 
-            qq.log(qq.format("Sending part {} of {} for file ID {} - {} ({} bytes)", chunkData.part+1, chunkData.count, id, name, chunkData.size));
+            log(qq.format("Sending part {} of {} for file ID {} - {} ({} bytes)", chunkData.part+1, chunkData.count, id, name, chunkData.size));
             xhr.send(chunkData.blob);
         });
     }
@@ -649,7 +697,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         }
         else {
             if (response.error) {
-                qq.log(response.error, "error");
+                log(response.error, "error");
             }
 
             uploadCompleted(id);
@@ -667,6 +715,10 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         log
     );
 
+
+    removeExpiredChunkingRecords();
+
+
     // Base XHR API overrides
     return qq.override(publicApi, function(super_) {
         return {
@@ -681,26 +733,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             },
 
             getResumableFilesData: function() {
-                var resumableFilesData = [],
-                    uploadData;
-
-                if (resumeEnabled && window.localStorage) {
-                    qq.each(localStorage, function(key, item) {
-                        if (key.indexOf("qqs3resume-") === 0) {
-                            uploadData = JSON.parse(item);
-
-                            resumableFilesData.push({
-                                name: uploadData.name,
-                                size: uploadData.size,
-                                uuid: uploadData.uuid,
-                                partIdx: uploadData.chunking.lastSent + 1,
-                                key: uploadData.key
-                            });
-                        }
-                    });
-                }
-
-                return resumableFilesData;
+                return getResumableFilesData();
             },
 
             expunge: function(id) {
