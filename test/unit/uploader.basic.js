@@ -10,7 +10,7 @@ describe('uploader.basic.js', function () {
 
         beforeEach(function () {
             fineuploader = new qq.FineUploaderBasic({
-                element: $uploader[0], 
+                element: $uploader[0]
             });
         });
 
