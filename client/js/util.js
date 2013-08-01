@@ -1,4 +1,4 @@
-/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest, Blob*/
+/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest, Blob, Storage*/
 var qq = function(element) {
     "use strict";
 
@@ -432,7 +432,7 @@ qq.each = function(iterableItem, callback) {
 
     if (iterableItem) {
         // Iterate through [`Storage`](http://www.w3.org/TR/webstorage/#the-storage-interface) items
-        if (iterableItem.constructor === window.Storage) {
+        if (window.Storage && iterableItem.constructor === window.Storage) {
             for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
                 retVal = callback(iterableItem.key(keyOrIndex), iterableItem.getItem(iterableItem.key(keyOrIndex)));
                 if (retVal === false) {
