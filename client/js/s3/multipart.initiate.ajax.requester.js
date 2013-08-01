@@ -13,6 +13,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
     var requester,
         pendingInitiateRequests = {},
         options = {
+            filenameParam: "qqfilename",
             method: "POST",
             endpointStore: null,
             paramsStore: null,
@@ -22,6 +23,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             maxConnections: 3,
             getContentType: function(id) {},
             getKey: function(id) {},
+            getName: function(id) {},
             log: function(str, level) {}
         },
         getSignatureAjaxRequester;
@@ -42,21 +44,22 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
      * method on the promise will be called.
      *
      * @param id Associated file ID
-     * @param key S3 object name
      * @returns {qq.Promise}
      */
-    function getHeaders(id, key) {
+    function getHeaders(id) {
         var bucket = qq.s3.util.getBucket(options.endpointStore.getEndpoint(id)),
             headers = {},
             promise = new qq.Promise(),
+            key = options.getKey(id),
             toSign;
 
         headers["x-amz-date"] = new Date().toUTCString();
         headers["Content-Type"] = options.getContentType(id);
         headers["x-amz-acl"] = options.acl;
+        headers[qq.s3.util.AWS_PARAM_PREFIX + options.filenameParam] = encodeURIComponent(options.getName(id));
 
         qq.each(options.paramsStore.getParams(id), function(name, val) {
-            headers[qq.s3.util.AWS_PARAM_PREFIX + name] = val;
+            headers[qq.s3.util.AWS_PARAM_PREFIX + name] = encodeURIComponent(val);
         });
 
         toSign = {multipartHeaders: getStringToSign(headers, bucket, key)};
@@ -169,14 +172,13 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
          * success handler. Otherwise, an error message will ultimately be passed into the failure method.
          *
          * @param id The ID associated with the file
-         * @param key S3 object name for the associated file
          * @returns {qq.Promise}
          */
-        send: function(id, key) {
+        send: function(id) {
             var promise = new qq.Promise(),
-                addToPath = key + "?uploads";
+                addToPath = options.getKey(id) + "?uploads";
 
-            getHeaders(id, key).then(function(headers) {
+            getHeaders(id).then(function(headers) {
                 options.log("Submitting S3 initiate multipart upload request for " + id);
 
                 pendingInitiateRequests[id] = promise;

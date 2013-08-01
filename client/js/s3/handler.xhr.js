@@ -40,6 +40,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             log: log
         }),
         initiateMultipartRequester = new qq.s3.InitiateMultipartAjaxRequester({
+            filenameParam: filenameParam,
             endpointStore: endpointStore,
             paramsStore: paramsStore,
             signatureEndpoint: options.signatureEndpoint,
@@ -47,11 +48,14 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             acl: options.acl,
             cors: options.cors,
             log: log,
-            getKey: function(id) {
-                return fileState[id].key;
-            },
             getContentType: function(id) {
                 return publicApi.getFile(id).type;
+            },
+            getKey: function(id) {
+                return getUrlSafeKey(id);
+            },
+            getName: function(id) {
+                return publicApi.getName(id);
             }
         }),
         completeMultipartRequester = new qq.s3.CompleteMultipartAjaxRequester({
@@ -61,7 +65,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             cors: options.cors,
             log: log,
             getKey: function(id) {
-                return fileState[id].key;
+                return getUrlSafeKey(id);
             }
         }),
         abortMultipartRequester = new qq.s3.AbortMultipartAjaxRequester({
@@ -71,12 +75,24 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             cors: options.cors,
             log: log,
             getKey: function(id) {
-                return fileState[id].key;
+                return getUrlSafeKey(id);
             }
         });
 
 
 // ************************** Shared ******************************
+
+    function getUrlSafeKey(id) {
+        return encodeURIComponent(getActualKey(id));
+    }
+
+    function getActualKey(id) {
+        return fileState[id].key;
+    }
+
+    function setKey(id, key) {
+        fileState[id].key = key;
+    }
 
     /**
      * Initiate the upload process and possibly delegate to a more specific handler if chunking is required.
@@ -248,7 +264,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         if (publicApi.isValid(id)) {
             maybePrepareForResume(id);
 
-            if (fileState[id].key) {
+            if (getActualKey(id) !== undefined) {
                 onUpload(id, name);
                 handleUpload(id);
             }
@@ -256,7 +272,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
                 // The S3 uploader module will either calculate the key or ask the server for it
                 // and will call us back once it is known.
                 onGetKeyName(id, name).then(function(key) {
-                    fileState[id].key = key;
+                    setKey(id, key);
                     onUpload(id, name);
                     handleUpload(id);
                 });
@@ -306,7 +322,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
                 endpoint: endpointStore.getEndpoint(id),
                 params: customParams,
                 type: fileState[id].type,
-                key: fileState[id].key,
+                key: getActualKey(id),
                 accessKey: accessKey,
                 acl: acl,
                 expectedStatus: expectedStatus,
@@ -370,7 +386,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
         // Resume is enabled and possible and this is the first time we've tried to upload this file in this session,
         // so prepare for a resume attempt.
-        if (resumeEnabled && fileState[id].key === undefined) {
+        if (resumeEnabled && getActualKey(id) === undefined) {
             localStorageId = getLocalStorageId(id);
             persistedData = localStorage.getItem(localStorageId);
 
@@ -381,7 +397,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
                 persistedData = JSON.parse(persistedData);
 
                 fileState[id].uuid = persistedData.uuid;
-                fileState[id].key = persistedData.key;
+                setKey(id, persistedData.key);
                 fileState[id].loaded = persistedData.loaded;
                 fileState[id].chunking = persistedData.chunking;
             }
@@ -400,7 +416,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
                 name: publicApi.getName(id),
                 size: publicApi.getSize(id),
                 uuid: publicApi.getUuid(id),
-                key: fileState[id].key,
+                key: getActualKey(id),
                 loaded: fileState[id].loaded,
                 chunking: fileState[id].chunking,
                 lastUpdated: Date.now()
@@ -555,7 +571,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     function getNextChunkUrl(id) {
         var domain = options.endpointStore.getEndpoint(id),
             urlParams = getNextChunkUrlParams(id),
-            key = fileState[id].key;
+            key = getUrlSafeKey(id);
 
         return qq.format("{}/{}{}", domain, key, urlParams);
     }
@@ -642,7 +658,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         var headers = {},
             endpoint = options.endpointStore.getEndpoint(id),
             bucket = qq.s3.util.getBucket(endpoint),
-            key = fileState[id].key,
+            key = getUrlSafeKey(id),
             date = new Date().toUTCString(),
             queryString = getNextChunkUrlParams(id),
             promise = new qq.Promise(),
@@ -670,7 +686,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
      */
     function maybeInitiateMultipart(id) {
         if (!fileState[id].chunking.uploadId) {
-            return initiateMultipartRequester.send(id, fileState[id].key).then(
+            return initiateMultipartRequester.send(id).then(
                 function(uploadId) {
                     fileState[id].chunking.uploadId = uploadId;
                 }
@@ -763,7 +779,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             },
 
             getThirdPartyFileId: function(id) {
-                return fileState[id].key;
+                return getActualKey(id);
             }
         };
     });

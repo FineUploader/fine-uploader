@@ -55,11 +55,12 @@ qq.s3.util = qq.s3.util || (function() {
 
             conditions.push({key: key});
 
+            // user metadata
             qq.each(params, function(name, val) {
                 var awsParamName = qq.s3.util.AWS_PARAM_PREFIX + name,
                     param = {};
 
-                param[awsParamName] = val;
+                param[awsParamName] = encodeURIComponent(val);
                 conditions.push(param);
             });
 
@@ -112,9 +113,10 @@ qq.s3.util = qq.s3.util || (function() {
             awsParams.acl = acl;
 
             // Custom (user-supplied) params must be prefixed with the value of `qq.s3.util.AWS_PARAM_PREFIX`.
+            // Custom param values will be URI encoded as well.
             qq.each(customParams, function(name, val) {
                 var awsParamName = qq.s3.util.AWS_PARAM_PREFIX + name;
-                awsParams[awsParamName] = val;
+                awsParams[awsParamName] = encodeURIComponent(val);
             });
 
             // Invoke a promissory callback that should provide us with a base64-encoded policy doc and an
