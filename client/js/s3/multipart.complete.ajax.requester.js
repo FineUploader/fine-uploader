@@ -186,7 +186,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
          * Sends the "Complete" request and fulfills the returned promise when the success of this request is known.
          *
          * @param id ID associated with the file.
-         * @param xhr `XMLHttpRequest` object containing the response, among other things.
+         * @param uploadId AWS uploadId for this file
          * @param etagEntries Array of objects containing `etag` values and their associated `part` numbers.
          * @returns {qq.Promise}
          */
