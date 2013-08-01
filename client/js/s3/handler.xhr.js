@@ -25,7 +25,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         acl = options.acl,
         validation = options.validation,
         chunkingPossible = options.chunking.enabled && qq.supportedFeatures.chunking,
-        resumeEnabled = options.resume.enabled && chunkingPossible && qq.supportedFeatures.resume && window.localStorage,
+        resumeEnabled = options.resume.enabled && chunkingPossible && qq.supportedFeatures.resume && window.localStorage !== undefined,
         internalApi = {},
         publicApi,
         policySignatureRequester = new qq.s3.SignatureAjaxRequestor({
