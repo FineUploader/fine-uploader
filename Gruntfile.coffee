@@ -58,8 +58,8 @@ module.exports = (grunt) ->
     ]
 
     traditional = [
-        './client/js/handler.form.js',
-        './client/js/handler.xhr.js'
+        './client/js/traditional/handler.form.js',
+        './client/js/traditional/handler.xhr.js'
     ]
 
     s3 = [
