@@ -28,8 +28,6 @@ qq.s3.FineUploaderBasic = function(o) {
 
     // Call base module
     qq.FineUploaderBasic.call(this, options);
-
-    this._keys = [];
 };
 
 // Inherit basic public & private API methods.
@@ -43,16 +41,7 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
      * @returns {*} Key name associated w/ the file, if one exists
      */
     getKey: function(id) {
-        var key = this._keys[id];
-
-        if (key === undefined) {
-            key = this._handler.getThirdPartyFileId(id);
-
-            if (key !== undefined) {
-                this._keys[id] = key;
-            }
-        }
-        return key;
+        return this._handler.getThirdPartyFileId(id);
     },
 
     /**
@@ -60,8 +49,6 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
      */
     reset: function() {
         qq.FineUploaderBasic.prototype.reset.call(this);
-
-        this._keys = [];
     },
 
     /**
@@ -104,13 +91,10 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
                 var keynameToUse = keyname;
 
                 if (extension !== undefined) {
-                    self._keys[id] = keynameToUse + "." + extension;
-                }
-                else {
-                    self._keys[id] = keynameToUse;
+                    keynameToUse += "." + extension;
                 }
 
-                promise.success(self._keys[id]);
+                promise.success(keynameToUse);
             };
 
         switch(keynameLogic) {
