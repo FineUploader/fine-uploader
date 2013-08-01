@@ -34,7 +34,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
 
 
     if (successRedirectUrl === undefined) {
-        throw new Error("successRedirectUrl MUST be defined if you intend to use browsers that do not support the File API!");
+        throw new Error("successRedirectEndpoint MUST be defined if you intend to use browsers that do not support the File API!");
     }
 
     /**
