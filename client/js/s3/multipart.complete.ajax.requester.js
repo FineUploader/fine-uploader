@@ -99,27 +99,27 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
 
         delete pendingCompleteRequests[id];
 
-        qq.log(qq.format("Complete response status {}, body = {}", xhr.status, xhr.responseText));
+        options.log(qq.format("Complete response status {}, body = {}", xhr.status, xhr.responseText));
 
         // If the base requester has determine this a failure, give up.
         if (isError) {
-            qq.log(qq.format("Complete Multipart Upload request for {} failed with status {}.", id, xhr.status), "error");
+            options.log(qq.format("Complete Multipart Upload request for {} failed with status {}.", id, xhr.status), "error");
         }
         else {
             // Make sure the correct bucket and key has been specified in the XML response from AWS.
             if (bucketEls.length && keyEls.length) {
                 if (bucketEls[0].textContent !== bucket) {
                     isError = true;
-                    qq.log(qq.format("Wrong bucket in response to Complete Multipart Upload request for {}.", id), "error");
+                    options.log(qq.format("Wrong bucket in response to Complete Multipart Upload request for {}.", id), "error");
                 }
                 if (keyEls[0].textContent !== key) {
                     isError = true;
-                    qq.log(qq.format("Wrong key in response to Complete Multipart Upload request for {}.", id), "error");
+                    options.log(qq.format("Wrong key in response to Complete Multipart Upload request for {}.", id), "error");
                 }
             }
             else {
                 isError = true;
-                qq.log(qq.format("Missing bucket and/or key in response to Complete Multipart Upload request for {}.", id), "error");
+                options.log(qq.format("Missing bucket and/or key in response to Complete Multipart Upload request for {}.", id), "error");
             }
         }
 
