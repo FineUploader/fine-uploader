@@ -72,7 +72,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
 
         return "POST" +
             "\n\n" +
-            "application/xml" +
+            "application/xml; charset=UTF-8" +
             "\n\n" +
             "x-amz-date:" + utcDateStr +
             "\n" +
@@ -170,7 +170,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
 
     requester = new qq.AjaxRequestor({
         method: options.method,
-        contentType: "application/xml",
+        contentType: "application/xml; charset=UTF-8",
         endpointStore: options.endpointStore,
         maxConnections: options.maxConnections,
         log: options.log,

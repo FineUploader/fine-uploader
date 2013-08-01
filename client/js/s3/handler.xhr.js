@@ -152,15 +152,19 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         if (!responseToExamine.success) {
             if (shouldResetOnRetry(responseToExamine.code)) {
                 log('This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.', 'error');
+                maybeDeletePersistedChunkData(id);
                 delete fileState[id].loaded;
                 delete fileState[id].chunking;
-                maybeDeletePersistedChunkData(id);
             }
         }
 
         // If this upload failed AND we are expecting an auto-retry, we are not done yet.
         if (responseToExamine.success || !options.onAutoRetry(id, name, responseToBubble, xhr)) {
             log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
+
+            if (responseToExamine.success) {
+                responseToBubble.success = true;
+            }
 
             onProgress(id, name, size, size);
             onComplete(id, name, responseToBubble, xhr);
