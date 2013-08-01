@@ -16,6 +16,10 @@ qq.s3.FineUploaderBasic = function(o) {
 
             // 'uuid', 'filename', or a function, which may be promissory
             key: 'uuid'
+        },
+        chunking: {
+            // minimum part size is 5 MiB when uploading to S3
+            partSize: 5242880
         }
     };
 
@@ -24,8 +28,6 @@ qq.s3.FineUploaderBasic = function(o) {
 
     // Call base module
     qq.FineUploaderBasic.call(this, options);
-
-    this.keys = [];
 };
 
 // Inherit basic public & private API methods.
@@ -39,7 +41,7 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
      * @returns {*} Key name associated w/ the file, if one exists
      */
     getKey: function(id) {
-        return this.keys[id];
+        return this._handler.getThirdPartyFileId(id);
     },
 
     /**
@@ -47,8 +49,6 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
      */
     reset: function() {
         qq.FineUploaderBasic.prototype.reset.call(this);
-
-        this.keys = [];
     },
 
     /**
@@ -91,13 +91,10 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
                 var keynameToUse = keyname;
 
                 if (extension !== undefined) {
-                    self.keys[id] = keynameToUse + "." + extension;
-                }
-                else {
-                    self.keys[id] = keynameToUse;
+                    keynameToUse += "." + extension;
                 }
 
-                promise.success(self.keys[id]);
+                promise.success(keynameToUse);
             };
 
         switch(keynameLogic) {

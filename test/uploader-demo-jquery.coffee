@@ -4,9 +4,8 @@ $ ->
 
     $('#basicUploadSuccessExample').fineUploaderS3(
         debug: true
-        blah: 'ho'
         request:
-            endpoint: "http://fineuploadertest.s3.amazonaws.com"
+            endpoint: "http://fineuploadertest2.s3.amazonaws.com"
             accessKey: 'AKIAJLRYC5FTY3VRRTDA'
             signatureEndpoint: '/upload/s3/signature'
             successEndpoint: '/upload/s3/success'
@@ -32,7 +31,7 @@ $ ->
     )
         .on('error', errorHandler)
         .on "upload", (event, id, filename) ->
-            $(this).fineUploader 'setParams', {"hey": "hi ɛ $ hmm \\ hi"}, id
+            $(this).fineUploader 'setParams', {"hey": "hi ɛ $ hmm \\ hi", "ho": "foobar"}, id
         .on 'statusChange', (event, id, oldS, newS) ->
             qq.log "id: #{id} #{newS}"
 

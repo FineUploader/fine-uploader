@@ -4,7 +4,6 @@ qq.DeleteFileAjaxRequestor = function(o) {
     "use strict";
 
     var requestor,
-        validMethods = ["POST", "DELETE"],
         options = {
             method: "DELETE",
             uuidParamName: "qquuid",
@@ -24,16 +23,8 @@ qq.DeleteFileAjaxRequestor = function(o) {
 
     qq.extend(options, o);
 
-    if (qq.indexOf(validMethods, getNormalizedMethod()) < 0) {
-        throw new Error("'" + getNormalizedMethod() + "' is not a supported method for delete file requests!");
-    }
-
-    function getNormalizedMethod() {
-        return options.method.toUpperCase();
-    }
-
     function getMandatedParams() {
-        if (getNormalizedMethod() === "POST") {
+        if (options.method.toUpperCase() === "POST") {
             return {
                 "_method": "DELETE"
             };
@@ -43,7 +34,8 @@ qq.DeleteFileAjaxRequestor = function(o) {
     }
 
     requestor = new qq.AjaxRequestor({
-        method: getNormalizedMethod(),
+        validMethods: ["POST", "DELETE"],
+        method: options.method,
         endpointStore: options.endpointStore,
         paramsStore: options.paramsStore,
         mandatedParams: getMandatedParams(),
@@ -63,7 +55,7 @@ qq.DeleteFileAjaxRequestor = function(o) {
 
             options.log("Submitting delete file request for " + id);
 
-            if (getNormalizedMethod() === "DELETE") {
+            if (requestor.getMethod() === "DELETE") {
                 requestor.send(id, uuid, additionalOptions);
             }
             else {

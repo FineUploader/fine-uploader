@@ -1,4 +1,4 @@
-/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest, Blob*/
+/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest, Blob, Storage*/
 var qq = function(element) {
     "use strict";
 
@@ -195,7 +195,10 @@ qq.trimStr = function(string) {
 };
 
 
-// Returns a string, swapping argument values with the associated occurrence of {} in the passed string.
+/**
+ * @param str String to format.
+ * @returns {string} A string, swapping argument values with the associated occurrence of {} in the passed string.
+ */
 qq.format = function(str) {
     "use strict";
 
@@ -273,7 +276,7 @@ qq.isFileChunkingSupported = function() {
         (File.prototype.slice !== undefined || File.prototype.webkitSlice !== undefined || File.prototype.mozSlice !== undefined);
 };
 
-qq.extend = function (first, second, extendNested) {
+qq.extend = function(first, second, extendNested) {
     "use strict";
 
     qq.each(second, function(prop, val) {
@@ -289,6 +292,31 @@ qq.extend = function (first, second, extendNested) {
     });
 
     return first;
+};
+
+/**
+ * Allow properties in one object to override properties in another,
+ * keeping track of the original values from the target object.
+ *
+ * Note that the pre-overriden properties to be overriden by the source will be passed into the `sourceFn` when it is invoked.
+ *
+ * @param target Update properties in this object from some source
+ * @param sourceFn A function that, when invoked, will return properties that will replace properties with the same name in the target.
+ * @returns {object} The target object
+ */
+qq.override = function(target, sourceFn) {
+    var super_ = {},
+        source = sourceFn(super_);
+
+    qq.each(source, function(srcPropName, srcPropVal) {
+        if (target[srcPropName] !== undefined) {
+            super_[srcPropName] = target[srcPropName];
+        }
+
+        target[srcPropName] = srcPropVal;
+    });
+
+    return target;
 };
 
 /**
@@ -397,33 +425,42 @@ qq.toElement = (function(){
     };
 }());
 
-//key and value are passed to callback for each item in the object, array, or string
-qq.each = function(objArrayOrStr, callback) {
+//key and value are passed to callback for each entry in the iterable item
+qq.each = function(iterableItem, callback) {
     "use strict";
     var keyOrIndex, retVal;
 
-    if (objArrayOrStr) {
-        // `DataTransferItemList` objects are array-like and should be treated as arrays when iterating over items inside the object.
-        if (qq.isArray(objArrayOrStr) || qq.isItemList(objArrayOrStr)) {
-            for (keyOrIndex = 0; keyOrIndex < objArrayOrStr.length; keyOrIndex++) {
-                retVal = callback(keyOrIndex, objArrayOrStr[keyOrIndex]);
+    if (iterableItem) {
+        // Iterate through [`Storage`](http://www.w3.org/TR/webstorage/#the-storage-interface) items
+        if (window.Storage && iterableItem.constructor === window.Storage) {
+            for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
+                retVal = callback(iterableItem.key(keyOrIndex), iterableItem.getItem(iterableItem.key(keyOrIndex)));
                 if (retVal === false) {
                     break;
                 }
             }
         }
-        else if (qq.isString(objArrayOrStr)) {
-            for (keyOrIndex = 0; keyOrIndex < objArrayOrStr.length; keyOrIndex++) {
-                retVal = callback(keyOrIndex, objArrayOrStr.charAt(keyOrIndex));
+        // `DataTransferItemList` objects are array-like and should be treated as arrays when iterating over items inside the object.
+        else if (qq.isArray(iterableItem) || qq.isItemList(iterableItem)) {
+            for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
+                retVal = callback(keyOrIndex, iterableItem[keyOrIndex]);
+                if (retVal === false) {
+                    break;
+                }
+            }
+        }
+        else if (qq.isString(iterableItem)) {
+            for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
+                retVal = callback(keyOrIndex, iterableItem.charAt(keyOrIndex));
                 if (retVal === false) {
                     break;
                 }
             }
         }
         else {
-            for (keyOrIndex in objArrayOrStr) {
-                if (Object.prototype.hasOwnProperty.call(objArrayOrStr, keyOrIndex)) {
-                    retVal = callback(keyOrIndex, objArrayOrStr[keyOrIndex]);
+            for (keyOrIndex in iterableItem) {
+                if (Object.prototype.hasOwnProperty.call(iterableItem, keyOrIndex)) {
+                    retVal = callback(keyOrIndex, iterableItem[keyOrIndex]);
                     if (retVal === false) {
                         break;
                     }

@@ -2,6 +2,7 @@
  * Common APIs exposed to creators of upload via form/iframe handlers.  This is reused and possibly overridden
  * in some cases by specific form upload handlers.
  *
+ * @param internalApi Object that will be filled with internal API methods
  * @param fileState An array containing objects that describe files tracked by the XHR upload handler.
  * @param isCors true if we should expect the response to come from a different origin.
  * @param inputName Name of the file input field/parameter.

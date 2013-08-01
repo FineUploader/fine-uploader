@@ -24,7 +24,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         acl = options.acl,
         validation = options.validation,
         successRedirectUrl = options.successRedirectEndpoint,
-        getSignatureAjaxRequester = new qq.s3.PolicySignatureAjaxRequestor({
+        getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequestor({
             endpoint: options.signatureEndpoint,
             cors: options.cors,
             log: log
@@ -193,6 +193,10 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
                     });
                 }
             }
+        },
+
+        getThirdPartyFileId: function(id) {
+            return fileState[id].key;
         }
     });
 

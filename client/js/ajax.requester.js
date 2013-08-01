@@ -5,8 +5,9 @@ qq.AjaxRequestor = function (o) {
 
     var log, shouldParamsBeInQueryString,
         queue = [],
-        requestState = [],
+        requestData = [],
         options = {
+            validMethods: ['POST'],
             method: 'POST',
             contentType: "application/x-www-form-urlencoded",
             maxConnections: 3,
@@ -30,14 +31,22 @@ qq.AjaxRequestor = function (o) {
 
     qq.extend(options, o);
     log = options.log;
-    shouldParamsBeInQueryString = options.method === 'GET' || options.method === 'DELETE';
 
+        // TODO remove code duplication among all ajax requesters
+    if (qq.indexOf(options.validMethods, getNormalizedMethod()) < 0) {
+        throw new Error("'" + getNormalizedMethod() + "' is not a supported method for this type of request!");
+    }
+
+    // TODO remove code duplication among all ajax requesters
+    function getNormalizedMethod() {
+        return options.method.toUpperCase();
+    }
 
     // [Simple methods](http://www.w3.org/TR/cors/#simple-method)
     // are defined by the W3C in the CORS spec as a list of methods that, in part,
     // make a CORS request eligible to be exempt from preflighting.
     function isSimpleMethod() {
-        return qq.indexOf(["GET", "POST", "HEAD"], options.method) >= 0;
+        return qq.indexOf(["GET", "POST", "HEAD"], getNormalizedMethod()) >= 0;
     }
 
     // [Simple headers](http://www.w3.org/TR/cors/#simple-header)
@@ -78,7 +87,7 @@ qq.AjaxRequestor = function (o) {
 
     // Returns either a new XHR/XDR instance, or an existing one for the associated `File` or `Blob`.
     function getXhrOrXdr(id, dontCreateIfNotExist) {
-        var xhrOrXdr = requestState[id].xhr;
+        var xhrOrXdr = requestData[id].xhr;
 
         if (!xhrOrXdr && !dontCreateIfNotExist) {
             if (options.cors.expected) {
@@ -88,7 +97,7 @@ qq.AjaxRequestor = function (o) {
                 xhrOrXdr = new XMLHttpRequest();
             }
 
-            requestState[id].xhr = xhrOrXdr;
+            requestData[id].xhr = xhrOrXdr;
         }
 
         return xhrOrXdr;
@@ -100,7 +109,7 @@ qq.AjaxRequestor = function (o) {
             max = options.maxConnections,
             nextId;
 
-        delete requestState[id];
+        delete requestData[id];
         queue.splice(i, 1);
 
         if (queue.length >= max && i < max) {
@@ -111,7 +120,7 @@ qq.AjaxRequestor = function (o) {
 
     function onComplete(id, xdrError) {
         var xhr = getXhrOrXdr(id),
-            method = options.method,
+            method = getNormalizedMethod(),
             isError = xdrError === false;
 
         dequeue(id);
@@ -128,22 +137,24 @@ qq.AjaxRequestor = function (o) {
     }
 
     function getParams(id) {
-        var params = {},
-            additionalParams = requestState[id].additionalParams,
-            mandatedParams = options.mandatedParams;
+        var onDemandParams = requestData[id].onDemandParams,
+            mandatedParams = options.mandatedParams,
+            params;
 
         if (options.paramsStore.getParams) {
             params = options.paramsStore.getParams(id);
         }
 
-        if (additionalParams) {
-            qq.each(additionalParams, function (name, val) {
+        if (onDemandParams) {
+            qq.each(onDemandParams, function (name, val) {
+                params = params || {};
                 params[name] = val;
             });
         }
 
         if (mandatedParams) {
             qq.each(mandatedParams, function (name, val) {
+                params = params || {};
                 params[name] = val;
             });
         }
@@ -153,8 +164,9 @@ qq.AjaxRequestor = function (o) {
 
     function sendRequest(id) {
         var xhr = getXhrOrXdr(id),
-            method = options.method,
+            method = getNormalizedMethod(),
             params = getParams(id),
+            body = requestData[id].body,
             url;
 
         options.onSend(id);
@@ -182,7 +194,11 @@ qq.AjaxRequestor = function (o) {
         setHeaders(id);
 
         log('Sending ' + method + " request for " + id);
-        if (shouldParamsBeInQueryString) {
+
+        if (body) {
+            xhr.send(body)
+        }
+        else if (shouldParamsBeInQueryString || !params) {
             xhr.send();
         }
         else if (params && options.contentType.toLowerCase().indexOf("application/x-www-form-urlencoded") >= 0) {
@@ -198,7 +214,7 @@ qq.AjaxRequestor = function (o) {
 
     function createUrl(id, params) {
         var endpoint = options.endpointStore.getEndpoint(id),
-            addToPath = requestState[id].addToPath;
+            addToPath = requestData[id].addToPath;
 
         if (addToPath != undefined) {
             endpoint += "/" + addToPath;
@@ -240,7 +256,10 @@ qq.AjaxRequestor = function (o) {
 
     function setHeaders(id) {
         var xhr = getXhrOrXdr(id),
-            customHeaders = options.customHeaders;
+            customHeaders = options.customHeaders,
+            onDemandHeaders = requestData[id].additionalHeaders || {},
+            method = getNormalizedMethod(),
+            allHeaders = {};
 
         // If this is a CORS request and a simple method with simple headers are used
         // on an `XMLHttpRequest`, exclude these specific non-simple headers
@@ -255,13 +274,16 @@ qq.AjaxRequestor = function (o) {
 
         // Note that we can't set the Content-Type when using this transport XDR, and it is
         // not relevant unless we will be including the params in the payload.
-        if ((options.method === "POST" || options.method === "PUT") && !isXdr(xhr)) {
+        if (options.contentType && (method === "POST" || method === "PUT") && !isXdr(xhr)) {
             xhr.setRequestHeader("Content-Type", options.contentType);
         }
 
         // `XDomainRequest` doesn't allow you to set any headers.
         if (!isXdr(xhr)) {
-            qq.each(customHeaders, function (name, val) {
+            qq.extend(allHeaders, customHeaders);
+            qq.extend(allHeaders, onDemandHeaders);
+
+            qq.each(allHeaders, function (name, val) {
                 xhr.setRequestHeader(name, val);
             });
         }
@@ -269,7 +291,7 @@ qq.AjaxRequestor = function (o) {
 
     function cancelRequest(id) {
         var xhr = getXhrOrXdr(id, true),
-            method = options.method;
+            method = getNormalizedMethod();
 
         if (xhr) {
             // The event handlers we remove/unregister is dependant on whether we are
@@ -295,14 +317,18 @@ qq.AjaxRequestor = function (o) {
     }
 
     function isResponseSuccessful(responseCode) {
-        return qq.indexOf(options.successfulResponseCodes[options.method], responseCode) >= 0;
+        return qq.indexOf(options.successfulResponseCodes[getNormalizedMethod()], responseCode) >= 0;
     }
 
+    shouldParamsBeInQueryString = getNormalizedMethod() === 'GET' || getNormalizedMethod() === 'DELETE';
+
     return {
-        send: function (id, addToPath, additionalParams) {
-            requestState[id] = {
+        send: function (id, addToPath, onDemandParams, onDemandHeaders, body) {
+            requestData[id] = {
                 addToPath: addToPath,
-                additionalParams: additionalParams
+                onDemandParams: onDemandParams,
+                additionalHeaders: onDemandHeaders,
+                body: body
             };
 
             var len = queue.push(id);
@@ -312,8 +338,13 @@ qq.AjaxRequestor = function (o) {
                 sendRequest(id);
             }
         },
+
         cancel: function (id) {
             return cancelRequest(id);
+        },
+
+        getMethod: function() {
+            return getNormalizedMethod();
         }
     };
 };

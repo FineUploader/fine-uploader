@@ -58,7 +58,7 @@ name supplied by the user.
             <td>(function)successCallback, (function)failureCallback</td>
             <td>promise instance</td>
             <td>Call this on a promise instance to register your callbacks for success and failure.  For each callback,
-            the value, if any, supplied by the creator of the promise will be passed into your callbacks.  If success or
+            the values, if any, supplied by the creator of the promise will be passed into your callbacks.  If success or
             failure has already ocurred before you register your callbacks, they will be called immediately after this
             call has executed.  Each call to <code>then</code> registers an additional set of callbacks.</td>
         </tr>
@@ -67,7 +67,7 @@ name supplied by the user.
             <td>(function)callback</td>
             <td>promise instance</td>
             <td>Call this on a promise instance to register your callbacks for success OR failure.  This callback will be
-            invoked when the promise is fulfilled, regardless of the result.  The value, if any, supplied by the creator
+            invoked when the promise is fulfilled, regardless of the result.  The values, if any, supplied by the creator
             of the promise will be passed into your callbacks.  Each call to <code>done</code> registers an additional
             set of callbacks.</td>
         </tr>
@@ -75,13 +75,13 @@ name supplied by the user.
             <td>success</td>
             <td>result</td>
             <td>promise instance</td>
-            <td>Call this on a promise instance to indicate success.  The parameter value will depend on the situation.</td>
+            <td>Call this on a promise instance to indicate success.  The parameter values will depend on the situation.</td>
         </tr>
         <tr>
             <td>failure</td>
             <td>result</td>
             <td>promise instance</td>
-            <td>Call this on a promise instance to indicate failure.  The parameter value will depend on the situation.
+            <td>Call this on a promise instance to indicate failure.  The parameter values will depend on the situation.
             In most cases, I would imagine that this would be a simple explanation of the failure.</td>
         </tr>
     </tbody>
