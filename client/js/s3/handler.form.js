@@ -33,6 +33,10 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         publicApi;
 
 
+    if (successRedirectUrl === undefined) {
+        throw new Error("successRedirectUrl MUST be defined if you intend to use browsers that do not support the File API!");
+    }
+
     /**
      * Attempt to parse the contents of an iframe after receiving a response from the server.  If the contents cannot be
      * read (perhaps due to a security error) it is safe to assume that the upload was not successful since Amazon should
@@ -45,8 +49,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
     function isValidResponse(id, iframe) {
         var response,
             endpoint = options.endpointStore.getEndpoint(id),
-            bucket = qq.s3.util.getBucket(endpoint),
-            iframeName = iframe.id;
+            bucket = qq.s3.util.getBucket(endpoint);
 
 
         //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases

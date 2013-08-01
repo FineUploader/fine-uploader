@@ -20,6 +20,11 @@ qq.s3.FineUploader = function(o) {
 
     // Replace any default options with user defined ones
     qq.extend(this._options, options, true);
+
+    if (!qq.supportedFeatures.ajaxUploading && options.request.successRedirectEndpoint === undefined) {
+        this._options.element.innerHTML = "<div>You MUST set the <code>successRedirectEndpoint</code> property " +
+            "of the <code>request</code> option since this browser does not support the File API!</div>"
+    }
 };
 
 // Inherit the API methods from FineUploaderBasicS3
