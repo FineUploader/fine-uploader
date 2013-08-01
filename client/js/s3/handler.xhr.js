@@ -63,6 +63,16 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             getKey: function(id) {
                 return fileState[id].key;
             }
+        }),
+        abortMultipartRequester = new qq.s3.AbortMultipartAjaxRequester({
+            endpointStore: endpointStore,
+            signatureEndpoint: options.signatureEndpoint,
+            accessKey: options.accessKey,
+            cors: options.cors,
+            log: log,
+            getKey: function(id) {
+                return fileState[id].key;
+            }
         });
 
 
@@ -737,7 +747,14 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             },
 
             expunge: function(id) {
+                var uploadId = fileState[id].chunking.uploadId;
+
                 maybeDeletePersistedChunkData(id);
+
+                if (uploadId !== undefined) {
+                    abortMultipartRequester.send(id, uploadId);
+                }
+
                 super_.expunge(id);
             },
 
