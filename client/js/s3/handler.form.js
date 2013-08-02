@@ -59,7 +59,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
                 innerHtml = doc.body.innerHTML;
 
             var responseData = qq.s3.util.parseIframeResponse(iframe);
-            if (responseData.bucket === bucket && responseData.key === fileState[id].key) {
+            if (responseData.bucket === bucket && responseData.key === encodeURIComponent(fileState[id].key)) {
 
                 return true;
             }
