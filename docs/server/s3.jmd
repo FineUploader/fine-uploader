@@ -31,6 +31,7 @@ would look like this:
 ```
 
 Some notes on the above configuration:
+
 * The POST method is required to allow HTML Form uploads by Fine Uploader, as well as other various REST API calls.  You
 will always need to include this.
 * The PUT method is required only if you enable the chunking feature in Fine Uploader.
