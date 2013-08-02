@@ -111,7 +111,7 @@
             of "var".  This parameter will be accounted for by Fine Uploader in the generated policy document as well.
             When retrieving the associated file later, via a GET request, this parameter will be included by Amazon as a
             "x-amz-meta-foo" HEADER in in the response.  Note: You do not have to specify the "x-amz-meta" prefix
-            or modify the policy document yourself.  Fine Uploader does all of this for you.</td>
+            yourself.  Fine Uploader handles all of this for you.</td>
         </tr>
         <tr>
             <td>filenameParam</td>
@@ -119,7 +119,7 @@
             <td>qqfilename</td>
             <td>Part of the parameter name, sent with the upload request to S3, that contains the name of the associated
             file, which may differ from the key name.  Note that this parameter name has a "x-amz-meta-" prefix added
-            by Fine Uploader, which is required for custom parameters.  See the params option or API method for more
+            by Fine Uploader, which is required for custom user metadata.  See the params option or API method for more
             details regarding parameters.</td>
         </tr>
     </tbody>
@@ -281,12 +281,68 @@
             <td>The number of seconds the uploader will wait in between automatic retry attempts.  Ignored if <code>enableAuto</code>
             is <code>false</code>.</td>
         </tr>
+    </tbody>
+</table>
+
+### `chunking` option properties:
+
+If enabled, Fine Uploader will make use of appropriate AWS S3 REST APIs to split large files up into multiple requests
+(wherever possible and appropriate).  Note that the minimum chunk size is 5 MiB.
+
+<table class='table table-bordered table-striped'>
+    <thead>
         <tr>
-            <td>preventRetryResponseProperty</td>
-            <td>string</td>
-            <td>preventRetry</td>
-            <td>If this property is present in the server response and contains a value of <code>true</code>, the uploader
-            will not allow any further retries of this file or `Blob` (manual or automatic).</td>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>enabled</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>If set to <code>true</code>, each file or `Blob` will be split up into parts.  Each part will be sent in a separate request.
+            The size of the part is determined by the <code>partSize</code> option value.</td>
+        </tr>
+        <tr>
+            <td>partSize</td>
+            <td>number</td>
+            <td>5242880</td>
+            <td>The maximum size of each part, in bytes.  Note that Amazon requires all parts (except for the last one)
+            to be at least 5 MiB.</td>
+        </tr>
+    </tbody>
+</table>
+
+### `resume` option properties:
+
+If enabled, Fine Uploader will allow your users to resume a failed or otherwise interrupted (not cancelled) upload in
+a future session simply by dropping or selecting the same file again.  Metadata regarding resumable files is persisted
+using [local storage](http://www.w3.org/TR/2013/REC-webstorage-20130730/#the-localstorage-attribute).
+
+<table class='table table-bordered table-striped'>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>enabled</td>
+            <td>boolean</td>
+            <td>false</td>
+            <td>If set to <code>true</code>, the ability to resume a failed/interrupted chunked upload will be possible.</td>
+        </tr>
+        <tr>
+            <td>recordsExpireIn</td>
+            <td>number</td>
+            <td>7</td>
+            <td>The number of days before persisted records will expire.</td>
         </tr>
     </tbody>
 </table>
@@ -415,30 +471,6 @@ and your servers, you can ignore this option entirely.
              <td>false</td>
              <td>Set this to true if you would like to allow Fine Uploader to send cross-origin requests
              from IE9 and older, where XDomainRequest must be used to handle these types of requests.</td>
-        </tr>
-    </tbody>
-</table>
-
-### `blobs` option properties:
-
-Options used when `Blob` objects are to be uploaded.
-
-<table class='table table-bordered table-striped'>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Default</th>
-            <th>Note</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>defaultName</td>
-            <td>string</td>
-            <td>Misc data</td>
-            <td>If you do not include a name along with the `Blob` submitted to the uploader (via a `BlobData` object) this
-            default name will be used.</td>
         </tr>
     </tbody>
 </table>
