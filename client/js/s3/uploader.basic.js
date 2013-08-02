@@ -20,6 +20,9 @@ qq.s3.FineUploaderBasic = function(o) {
         chunking: {
             // minimum part size is 5 MiB when uploading to S3
             partSize: 5242880
+        },
+        resume: {
+            recordsExpireIn: 7 // days
         }
     };
 

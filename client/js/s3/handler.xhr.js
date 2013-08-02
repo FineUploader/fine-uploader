@@ -474,7 +474,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
     // Deletes any local storage records that are "expired".
     function removeExpiredChunkingRecords() {
-        var expirationDays = options.resume.cookiesExpireIn;
+        var expirationDays = options.resume.recordsExpireIn;
 
         iterateResumeRecords(function(key, uploadData) {
             var expirationDate = new Date(uploadData.lastUpdated);
