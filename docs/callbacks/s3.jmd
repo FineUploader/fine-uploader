@@ -40,7 +40,7 @@ new qq.s3.FineUploader({
 
 * `onSubmit(String id, String name)` - called when the file or `Blob` is a candidate for uploading.
 Note that this does not mean the file upload will begin at this point.  Return `false` to prevent submission to the uploader.
-You may also return a [`qq.Promise`](promise.html) if non-blocking work is required here.  Processing of this item will be deferred
+You may also return a [`qq.Promise`]({{ URL_ROOT }}/api/promise.html) if non-blocking work is required here.  Processing of this item will be deferred
 until the promise is fulfilled.  If a promise is returned, a call to `failure` is the same as returning "false".
 
 * `onSubmitted(String id, String name)` - called when the file or `Blob` has been successfully submitted to the uploader.  The
@@ -59,7 +59,7 @@ The `responseJSON` parameter will include any values returned by the server in r
 request (unless `request.successEndpoint` is not set).
 
 * `onCancel(String id, String name)` - called when the file or `Blob` upload has been cancelled.  You may return "false" to
-prevent the upload from being cancelled.  You may also return a [`qq.Promise`](promise.html) if non-blocking work is required
+prevent the upload from being cancelled.  You may also return a [`qq.Promise`]({{ URL_ROOT }}/api/promise.html) if non-blocking work is required
 here.  Processing of this cancel request will be deferred until the promise is fulfilled.  Note that there is no way to "pause"
 the upload in progress while waiting for the promise to be fulfilled, so the upload may complete while waiting for the promise
 to be fulfilled.  If a promise is returned, a call to `failure` is the same as returning "false".
@@ -80,7 +80,7 @@ for each selected, dropped, or `addFiles` submitted file and for each `addBlobs`
 the `stopOnFirstInvalidFile` validation option is not set and a previous invocation of your `onValidate` callback in this batch has not returned false.
 This callback is always invoked before the default Fine Uploader validators execute.  Note that a `FileOrBlobData` object has two properties: `name`
 and `size`.  The `size` property will be undefined if the user agent does not support the File API.  You may also return
-a [`qq.Promise`](promise.html) if non-blocking work is required here.  Processing of this item, along with any additional
+a [`qq.Promise`]({{ URL_ROOT }}/api/promise.html) if non-blocking work is required here.  Processing of this item, along with any additional
 items in the associated batch, will be deferred until the promise is fulfilled.  Deferral of all other items in the batch
 is done to ensure the `stopOnFirstInvalidFile` property of the `validation` option is respected.  If a promise is returned,
 a call to `failure` is the same as returning "false".
@@ -91,12 +91,12 @@ you to prevent the entire batch from being uploaded, if desired, by returning fa
 the `onValidate` callback will be invoked once for each individual file or `Blob` submitted.  This callback is always invoked before
 the default Fine Uploader validators execute.  Note that a `FileOrBlobData` object has two properties: `name` and `size`.
 The `size` property will be undefined if the user agent does not support the File API.  You may also return a
-[`qq.Promise`](promise.html) if non-blocking work is required here.  Processing of this batch will be deferred until the
+[`qq.Promise`]({{ URL_ROOT }}/api/promise.html) if non-blocking work is required here.  Processing of this batch will be deferred until the
 promise is fulfilled.  If a promise is returned, a call to `failure` is the same as returning "false".
 
 * `onSubmitDelete(id)` - Called before a file or `Blob` that has been marked for deletion has been submitted to the uploader.
 You may return false from your handler if you want to ignore/stop the delete request.  You may also return a
-[`qq.Promise`](promise.html) if non-blocking work is required here.  Processing of this delete request will be deferred until the
+[`qq.Promise`]({{ URL_ROOT }}/api/promise.html) if non-blocking work is required here.  Processing of this delete request will be deferred until the
 promise is fulfilled.  If a promise is returned, a call to `failure` is the same as returning "false".
 
 * `onDelete(id)` - Called just before a delete request is sent for the associated file or `Blob`.  The parameter is the ID.
@@ -106,7 +106,7 @@ ID, along with the request's XMLHttpRequest object and a boolean indicating whet
 are sent along as parameters.
 
 * `onPasteReceived(blob)` - Called when a pasted image has been received (before uploading the image).  The pasted image is
-represented as a `Blob`.  You _may_ return a [`qq.Promise`](promise.html) in your callback handler.  If you do return a `qq.Promise`,
+represented as a `Blob`.  You _may_ return a [`qq.Promise`]({{ URL_ROOT }}/api/promise.html) in your callback handler.  If you do return a `qq.Promise`,
 the value of the success parameter must be the name to associate with the pasted image.  If the associated attempt is marked
 a `failure` it is wise to include a string explaining the failure in your `failure` callback.
 Note that the `promptForName` in FineUploader mode, if set to true, will effectively wipe out any custom implementation of this
