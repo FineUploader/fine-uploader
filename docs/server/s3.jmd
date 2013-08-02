@@ -9,16 +9,57 @@ server.  This document will outline both required and optional server-side tasks
 document, the Java server-side example includes a servlet that handles all possible server-side tasks when using the
 S3 module.  Other examples will be adapted in the future.
 
+#### Creating your S3 bucket's CORS configuration
+In order to use the upload-to-S3 feature, you MUST properly set the CORS configuration in your S3 bucket(s).  Fine Uploader
+must make cross-origin requests to S3 whenever it communicates with AWS.  You can [read more about CORS configuration on
+the AWS developer site](http://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html).  A simple and typical CORS configuration
+would look like this:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <CORSRule>
+        <AllowedOrigin>*</AllowedOrigin>
+        <AllowedMethod>POST</AllowedMethod>
+        <AllowedMethod>PUT</AllowedMethod>
+        <AllowedMethod>DELETE</AllowedMethod>
+        <MaxAgeSeconds>3000</MaxAgeSeconds>
+        <ExposeHeader>ETag</ExposeHeader>
+        <AllowedHeader>*</AllowedHeader>
+    </CORSRule>
+</CORSConfiguration>
+```
+
+Some notes on the above configuration:
+* The POST method is required to allow HTML Form uploads by Fine Uploader, as well as other various REST API calls.  You
+will always need to include this.
+* The PUT method is required only if you enable the chunking feature in Fine Uploader.
+* The DELETE method is required only if you plan on deleting files from your bucket server-side.  This would be critical
+if you enable Fine Uploader's delete file feature.
+* The ExposeHeader line is required only if you enable the chunking feature.
+* You can (and probably should) make the AllowedOrigin condition(s) a bit more restrictive.  If you know specifically what
+domains will host your Fine Uploader instance, include these in the AllowedOrigin tag value.
+* You can (and probably should) make the AllowedHeader condition(s) a bit more restrictive.  If you do, you will need to
+allow the following headers if you have the chunking feature enabled: "x-amz-acl", "x-amx-meta-qqfilename", "x-amz-date",
+"origin", "authorization", and "content-type".  If you have chunking enabled, you will also need to authorize headers
+for any custom parameters (user metadata) you want to attach to the object in S3.  All parameters are sent as headers
+in the "Initiate Multipart Upload" request sent by Fine Uploader with a prefix of "x-amz-meta-".  If you do not have
+the chunking feature enabled, you will only need to authorize the "content-type" and "origin" headers.
+
 #### Required server-side tasks: all browsers
-The only required server-side task for all browsers is an endpoint that signs the policy document.  This endpoint
-corresponds to the `signatureEndpoint` property of the `request` option.
+The only required server-side task for all browsers is an endpoint that signs the policy document (HTML form uploads) or
+a string that identifies the request (chunked uploads).  This endpoint corresponds to the `signatureEndpoint` property
+of the `request` option.
 
-Fine Uploader will construct a policy document (required for securely uploading the file to your S3 bucket)
-which then must be signed using your AWS secret key.  When Fine Uploader requires this signature, it will send a
-POST request to the endpoint specified in your `signatureEndpoint`, passing the JSON policy document in the
-request payload with a Content-Type of "application/json".  You can read more about [policy documents on Amazon's developer site](http://docs.aws.amazon.com/AmazonS3/latest/dev/HTTPPOSTForms.html#HTTPPOSTConstructPolicy).
+Fine Uploader will construct a policy document (HTML form uploads) or a string that represents the request (chunked uploads).
+This policy/string is required for securely uploading the file to your S3 bucket.  This policy document or string must
+be signed server-side using your AWS secret key.  When Fine Uploader requires this signature, it will send a
+POST request to the endpoint specified in your `signatureEndpoint`, passing the JSON policy document or
+request headers string in the request payload with a Content-Type of "application/json".
+You can read more about [policy documents on Amazon's developer site](http://docs.aws.amazon.com/AmazonS3/latest/dev/HTTPPOSTForms.html#HTTPPOSTConstructPolicy)
+or the strings that Fine Uploader constructs for chunked (multipart REST) requests [also on Amazon's developer site](http://s3.amazonaws.com/doc/s3-developer-guide/RESTAuthentication.html).
 
-##### Verifying the policy
+##### Verifying the policy (HTML Form uploads)
 When your server receives this policy document, it should first verify that the policy contains expected properties.
 If the policy document appears incorrect (due to client-side tampering), your server should immediately return a response
 with a status code of 500, a Content-Type of "application/json" and the following payload:
@@ -32,7 +73,7 @@ with a status code of 500, a Content-Type of "application/json" and the followin
 The above response will let Fine Uploader know that the policy document may have been tampered with client-side, and it
 will not attempt to send the file to S3.
 
-##### Signing the policy
+##### Signing the policy (HTML form uploads)
 If your server determines that the policy document is accurate, it should then base-64 encode the policy document,
 generate a base-64 encoded HMAC SHA1 of the policy document using your AWS secret key, and then return the base-64
 encoded policy document and the base-64 encoded signature in the response payload with a status of 200 and a Content-Type
@@ -49,6 +90,30 @@ It's quite simple to sign the policy document server-side.  As mentioned the Jav
 provides a working example.  Amazon's developer site also provides some [code in several languages illustrating how to do
 this](http://aws.amazon.com/articles/1434/#signyours3postform).
 
+
+##### Signing a REST request header string (chunked/multipart uploads)
+If you have the chunking feature enabled in Fine Uploader, your server will need to sign a string that represents the
+headers of EACH request to be sent to AWS.  Fortunately, this is quite simple for you to accomplish server-side.
+
+If Fine Uploader needs a request header string signed, it will send a POST request to your `signatureEndpoint`, with a
+Content-Type of "application/json".  The contents of this request will be, of course, JSON.  The string to sign will be the
+value of the "multipartHeaders" property.  It will look something like this:
+
+```javascript
+{
+    "multipartHeaders": "{string to sign}"
+}
+```
+
+Simply sign this string and return it in your response.  Your response should have a Content-Type of "application/json"
+and should include the signature as the value of a "signature" property in the response payload.  It should look
+something like this:
+
+```javascript
+{
+    "signature": "{signed string}"
+}
+```
 
 #### Required server-side tasks: IE9 (and older) and Android 2.3.x (and older) ONLY
 This isn't really a server-side task, but I'll mention it here anyway as it does minimally involve your server.
