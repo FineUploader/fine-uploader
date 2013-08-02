@@ -93,6 +93,45 @@
             should be set to "http://foobar.s3-ap-northeast-1.amazonaws.com".</td>
         </tr>
         <tr>
+            <td>signatureEndpoint</td>
+            <td>string (path)</td>
+            <td><code>null</code></td>
+            <td>An endpoint Fine Uploader can send policy documents (HTML form uploads) or other strings to sign
+            (REST requests) before sending requests to S3.  Fine Uploader will send a POST request with JSON content
+            and expects your server to return a response with JSON content containing either a base-64 encoded
+            policy document and a signed policy document (HTML form uploads) or a signature for the passed
+            multipart header string (REST API upload).  See the S3 server-side documentation for more details.</td>
+        </tr>
+        <tr>
+            <td>successEndpoint</td>
+            <td>string (path)</td>
+            <td><code>null</code></td>
+            <td>An endpoint that Fine Uploader should POST to when a file has been successfully uploaded to S3.  The
+            request parameters will include the key, name, UUID, and bucket associated with the uploaded file.
+            See the S3 server-side documentation for more details.</td>
+        </tr>
+        <tr>
+            <td>accessKey</td>
+            <td>string</td>
+            <td><code>null</code></td>
+            <td>This is your AWS public access key, NOT YOUR SECRET KEY.  Secret keys are NEVER needed by Fine Uploader.</td>
+        </tr>
+        <tr>
+            <td>acl</td>
+            <td>string</td>
+            <td>private</td>
+            <td>This value will correspond to a <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/ACLOverview.html#CannedACL">"canned acl"</a>.</td>
+        </tr>
+        <tr>
+            <td>key</td>
+            <td>string or function (may be promissory)</td>
+            <td>uuid</td>
+            <td>This describes the object key used to identify the file in your S3 bucket.  You can utilize one of the two
+            default values: "uuid" or "file".  You may also set this value to a function that either returns a key or a
+            [`qq.Promise`]({{ URL_ROOT }}/api/promise.html).  You may want to return a promise if you must contact your server for the key value.  If you do
+            return a promise, the success callback must include the key value as a parameter.</td>
+        </tr>
+        <tr>
             <td>successRedirectEndpoint</td>
             <td>string (path)</td>
             <td><code>null</code></td>
