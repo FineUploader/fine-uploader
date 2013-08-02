@@ -88,7 +88,9 @@
             <td>string (path)</td>
             <td><code>null</code></td>
             <td>This is the fully qualified URL for an S3 bucket, for example: "http://foobar.s3.amazonaws.com",
-            where the bucket is "foobar".  All paths must end with "s3.amazonaws.com".</td>
+            or "https://foobar.s3.amazonaws.com" where the bucket is "foobar".  You may also include a specific region
+            in your endpoint.  For example, if you have a bucket named "foobar" in the Tokyo region, your endpoint
+            should be set to "http://foobar.s3-ap-northeast-1.amazonaws.com".</td>
         </tr>
         <tr>
             <td>successRedirectEndpoint</td>

@@ -5,11 +5,19 @@ qq.s3.util = qq.s3.util || (function() {
         AWS_PARAM_PREFIX: "x-amz-meta-",
 
         /**
+         * This allows for the region to be specified in the bucket's endpoint URL, or not.
+         *
+         * Examples of some valid endpoints are:
+         * * http://foo.s3.amazonaws.com
+         * * https://foo.s3.amazonaws.com
+         * * http://foo.s3-ap-northeast-1.amazonaws.com
+         * ...etc
+         *
          * @param endpoint The bucket's fully-qualified URL.
          * @returns {String || undefined} The bucket name, or undefined if the URL cannot be parsed.
          */
         getBucket: function(endpoint) {
-            var match = /^https?:\/\/([a-z0-9.\-]+)\.s3\.amazonaws\.com/i.exec(endpoint);
+            var match = /^https?:\/\/([a-z0-9.\-]+)\.s3(?:-[a-z0-9\-]+)?\.amazonaws\.com/i.exec(endpoint);
 
             if (match) {
                 return match[1];

@@ -4,9 +4,13 @@ describe('s3/util.js', function () {
         it('extract bucket from an accepted S3 endpoint', function () {
             var endpointsAndBuckets = {
                 "http://foo.s3.amazonaws.com": "foo",
+                "http://foo.s3-ap-northeast-1.amazonaws.com": "foo",
                 "https://foo.s3.amazonaws.com": "foo",
+                "https://foo.s3-ap-northeast-1.amazonaws.com": "foo",
                 "http://foo-bar.s3.amazonaws.com": "foo-bar",
-                "http://foo.bar.s3.amazonaws.com": "foo.bar"
+                "http://foo-bar.s3-northeast-1.amazonaws.com": "foo-bar",
+                "http://foo.bar.s3.amazonaws.com": "foo.bar",
+                "http://foo.bar.s3-northeast-1.amazonaws.com": "foo.bar"
             };
 
             $.each(endpointsAndBuckets, function(endpoint, bucket) {
