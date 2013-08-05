@@ -35,8 +35,10 @@ Some notes on the above configuration:
 * The POST method is required to allow HTML Form uploads by Fine Uploader, as well as other various REST API calls.  You
 will always need to include this.
 * The PUT method is required only if you enable the chunking feature in Fine Uploader.
-* The DELETE method is required only if you plan on deleting files from your bucket server-side.  This would be critical
-if you enable Fine Uploader's delete file feature.
+* The DELETE method is if you plan on deleting files from your bucket server-side.  This would be critical
+if you enable Fine Uploader's delete file feature.  It is also required if you enable the chunking feature, as Fine Uploader
+sends a DELETE request to S3 when a user cancels an in-progress upload in order to ensure S3 removes all chunks associated
+with that upload present in your bucket.
 * The ExposeHeader line is required only if you enable the chunking feature.
 * You can (and probably should) make the AllowedOrigin condition(s) a bit more restrictive.  If you know specifically what
 domains will host your Fine Uploader instance, include these in the AllowedOrigin tag value.
