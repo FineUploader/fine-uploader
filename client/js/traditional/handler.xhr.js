@@ -523,8 +523,8 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
     publicApi = new qq.UploadHandlerXhrApi(
         internalApi,
         fileState,
-        handleUploadSignal,
         chunkFiles ? options.chunking : null,
+        handleUploadSignal,
         options.onCancel,
         onUuidChanged,
         log
