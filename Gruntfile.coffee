@@ -286,21 +286,21 @@ module.exports = (grunt) ->
                     {
                         expand: true
                         cwd: './build/'
-                        src: ['*.js', '!s3.*', '!*.min.js', '!jquery*', '!*iframe*']
+                        src: ['*.js', '!all.*', '!s3.*', '!*.min.js', '!jquery*', '!*iframe*']
                         dest: './dist/<%= pkg.name %>-<%= pkg.version %>/'
                         ext: '-<%= pkg.version %>.js'
                     }
                     {
                         expand: true
                         cwd: './build/'
-                        src: ['s3.*.js', '!*.min.js', '!s3.jquery*', '!*iframe*']
+                        src: [ '!all.*', 's3.*.js', '!*.min.js', '!s3.jquery*', '!*iframe*']
                         dest: './dist/s3.<%= pkg.name %>-<%= pkg.version %>/'
                         ext: '.<%= pkg.name %>-<%= pkg.version %>.js'
                     }
                     {
                         expand: true
                         cwd: './build/'
-                        src: ['*.min.js', '!s3.*', '!jquery*']
+                        src: ['*.min.js',  '!all.*', '!s3.*', '!jquery*']
                         dest: './dist/<%= pkg.name %>-<%= pkg.version %>/'
                         ext: '-<%= pkg.version %>.min.js'
                     }
