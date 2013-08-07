@@ -504,6 +504,26 @@ module.exports = (grunt) ->
         # Compress
         # ----------
         compress:
+            jquery:
+                 options:
+                     archive: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>.zip'
+                 files: [
+                     {
+                         expand: true
+                         cwd: 'dist/'
+                         src: './jquery.<%= pkg.name %>-<%= pkg.version %>/*'
+                     }
+                 ]
+             jqueryS3:
+                  options:
+                      archive: './dist/s3.jquery.<%= pkg.name %>-<%= pkg.version %>.zip'
+                  files: [
+                      {
+                          expand: true
+                          cwd: 'dist/'
+                          src: './s3.jquery.<%= pkg.name %>-<%= pkg.version %>/*'
+                      }
+                  ]
             core:
                 options:
                     archive: './dist/<%= pkg.name %>-<%= pkg.version %>.zip'
@@ -524,26 +544,6 @@ module.exports = (grunt) ->
                         src: './s3.<%= pkg.name %>-<%= pkg.version %>/*'
                     }
                 ]
-           jquery:
-                options:
-                    archive: './dist/jquery.<%= pkg.name %>-<%= pkg.version %>.zip'
-                files: [
-                    {
-                        expand: true
-                        cwd: 'dist/'
-                        src: './jquery.<%= pkg.name %>-<%= pkg.version %>/*'
-                    }
-                ]
-            jqueryS3:
-                 options:
-                     archive: './dist/s3.jquery.<%= pkg.name %>-<%= pkg.version %>.zip'
-                 files: [
-                     {
-                         expand: true
-                         cwd: 'dist/'
-                         src: './s3.jquery.<%= pkg.name %>-<%= pkg.version %>/*'
-                     }
-                 ]
 
         # cssmin
         # ---------
