@@ -65,7 +65,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
             }
         }
         catch(error) {
-            log('Error when attempting to parse form upload response (' + error + ")", 'error');
+            log('Error when attempting to parse form upload response (' + error.message + ")", 'error');
         }
 
         return false;

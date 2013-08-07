@@ -223,7 +223,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             }
         }
         catch(error) {
-            log('Error when attempting to parse xhr response text (' + error + ')', 'error');
+            log('Error when attempting to parse xhr response text (' + error.message + ')', 'error');
         }
 
         return response;

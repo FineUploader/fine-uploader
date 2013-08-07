@@ -33,7 +33,7 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
             response = internalApi.parseJsonResponse(id, innerHtml);
         }
         catch(error) {
-            log('Error when attempting to parse form upload response (' + error + ")", 'error');
+            log('Error when attempting to parse form upload response (' + error.message + ")", 'error');
             response = {success: false};
         }
 

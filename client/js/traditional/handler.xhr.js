@@ -249,7 +249,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
             }
         }
         catch(error) {
-            log('Error when attempting to parse xhr response text (' + error + ')', 'error');
+            log('Error when attempting to parse xhr response text (' + error.message + ')', 'error');
             response = {};
         }
 
