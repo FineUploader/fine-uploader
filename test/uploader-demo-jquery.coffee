@@ -9,6 +9,7 @@ $ ->
             accessKey: 'AKIAJLRYC5FTY3VRRTDA'
             signatureEndpoint: '/upload/s3/signature'
             successEndpoint: '/upload/s3/success'
+            successRedirectEndpoint: 'success.html'
         chunking:
             enabled: true
         resume:
