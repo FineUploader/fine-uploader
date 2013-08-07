@@ -6,6 +6,10 @@
 qq.s3.FineUploaderBasic = function(o) {
     var options = {
         request: {
+            // Making this configurable in the traditional uploader was probably a bad idea.
+            // Let's just set this to "uuid" in the S3 uploader and not document the fact that this can be changed.
+            uuidName: "uuid",
+
             signatureEndpoint: null,
             successEndpoint: null,
             accessKey: null,
