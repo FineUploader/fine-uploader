@@ -175,7 +175,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
                 }
             }
             catch(error) {
-                log('Error when attempting to parse iframe upload response (' + error + ')', 'error');
+                log('Error when attempting to parse iframe upload response (' + error.message + ')', 'error');
                 response = {};
             }
 
@@ -255,7 +255,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
                     }
                     catch (error) {
                         //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
-                        log('Error when attempting to access iframe during handling of upload response (' + error + ")", 'error');
+                        log('Error when attempting to access iframe during handling of upload response (' + error.message + ")", 'error');
                         responseDescriptor = {success: false};
                     }
 
