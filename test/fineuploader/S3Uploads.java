@@ -93,7 +93,7 @@ public class S3Uploads extends HttpServlet
             }
 
             // If this is a request to sign a multipart upload-related request, we only need to sign the headers,
-            // which are passed as the value of a "multipartHeaders" property from Fine Uploader.  In this case,
+            // which are passed as the value of a "headers" property from Fine Uploader.  In this case,
             // we only need to return the signed value.
             else
             {
