@@ -69,7 +69,7 @@ with a status code of 500, a Content-Type of "application/json" and the followin
 
 ```javascript
 {
-    "badPolicy": true
+    "invalid": true
 }
 ```
 

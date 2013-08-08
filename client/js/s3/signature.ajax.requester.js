@@ -48,11 +48,11 @@ qq.s3.SignatureAjaxRequestor = function(o) {
             }
         }
 
-        // If we have received a parsable response, and it has a `badPolicy` property,
-        // the policy document may have been tampered with client-side.
-        if (response && response.badPolicy) {
+        // If we have received a parsable response, and it has an `invalid` property,
+        // the policy document or request headers may have been tampered with client-side.
+        if (response && response.invalid) {
             isError = true;
-            errorMessage = "Invalid policy document!";
+            errorMessage = "Invalid policy document or request headers!";
         }
         // Make sure the response contains policy & signature properties
         else if (response) {
