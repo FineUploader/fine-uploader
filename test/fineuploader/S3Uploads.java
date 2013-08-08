@@ -27,10 +27,13 @@ public class S3Uploads extends HttpServlet
 {
     // This assumes your secret key is available in an environment variable.
     // It is needed to sign policy documents.
-    final static String AWS_SECRET_KEY = System.getenv("AWS_SECRET_KEY");
+    final static String AWS_SECRET_KEY_CLIENT = System.getenv("AWS_SECRET_KEY_CLIENT");
 
-    // You will need to use your own public key here.
-    final static String AWS_PUBLIC_KEY = "AKIAJLRYC5FTY3VRRTDA";
+    // Secret key for server-side use only, less restrictive
+    final static String AWS_SECRET_KEY_SERVER = System.getenv("AWS_SECRET_KEY_SERVER");
+
+    // Public key for server-side use only, less restrictive
+    final static String AWS_PUBLIC_KEY_SERVER = "AKIAIVSJT6ARGIAPRAQA";
 
 
     // Main entry point for POST requests from Fine Uploader.  This currently assumes delete file requests use the
@@ -56,7 +59,7 @@ public class S3Uploads extends HttpServlet
 
         resp.setStatus(200);
 
-        AWSCredentials myCredentials = new BasicAWSCredentials(AWS_PUBLIC_KEY, AWS_SECRET_KEY);
+        AWSCredentials myCredentials = new BasicAWSCredentials(AWS_PUBLIC_KEY_SERVER, AWS_SECRET_KEY_SERVER);
         AmazonS3 s3Client = new AmazonS3Client(myCredentials);
         s3Client.deleteObject(bucket, key);
     }
@@ -136,7 +139,7 @@ public class S3Uploads extends HttpServlet
     private String sign(String toSign) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException
     {
         Mac hmac = Mac.getInstance("HmacSHA1");
-        hmac.init(new SecretKeySpec(AWS_SECRET_KEY.getBytes("UTF-8"), "HmacSHA1"));
+        hmac.init(new SecretKeySpec(AWS_SECRET_KEY_CLIENT.getBytes("UTF-8"), "HmacSHA1"));
         String signature = (new BASE64Encoder()).encode(hmac.doFinal(toSign.getBytes("UTF-8"))).replaceAll("\n", "");
 
         return signature;

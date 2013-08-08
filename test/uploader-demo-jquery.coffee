@@ -6,7 +6,7 @@ $ ->
         debug: true
         request:
             endpoint: "http://fineuploadertest2.s3.amazonaws.com"
-            accessKey: 'AKIAJLRYC5FTY3VRRTDA'
+            accessKey: 'AKIAJEQ4NDFBCZAMWGUQ'
             signatureEndpoint: '/upload/s3/signature'
             successEndpoint: '/upload/s3/success'
             successRedirectEndpoint: 'success.html'
