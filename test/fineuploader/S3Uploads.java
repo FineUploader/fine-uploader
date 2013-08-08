@@ -71,7 +71,7 @@ public class S3Uploads extends HttpServlet
         JsonParser jsonParser = new JsonParser();
         JsonElement contentJson = jsonParser.parse(req.getReader());
         JsonObject jsonObject = contentJson.getAsJsonObject();
-        JsonElement multipartHeaders = jsonObject.get("headers");
+        JsonElement headers = jsonObject.get("headers");
         JsonObject response = new JsonObject();
         String signature;
 
@@ -80,7 +80,7 @@ public class S3Uploads extends HttpServlet
             // If this is not a multipart upload-related request, Fine Uploader will send a policy document
             // as the value of a "policy" property in the request.  In that case, we must base-64 encode
             // the policy document and then sign it. The will include the base-64 encoded policy and the signed policy document.
-            if (multipartHeaders == null)
+            if (headers == null)
             {
                 String base64Policy = base64EncodePolicy(contentJson);
                 signature = sign(base64Policy);
@@ -97,7 +97,7 @@ public class S3Uploads extends HttpServlet
             // we only need to return the signed value.
             else
             {
-               signature = sign(multipartHeaders.getAsString());
+               signature = sign(headers.getAsString());
             }
 
             response.addProperty("signature", signature);

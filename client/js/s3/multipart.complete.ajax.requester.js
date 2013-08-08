@@ -48,7 +48,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
 
         headers["x-amz-date"] = new Date().toUTCString();
 
-        toSign = {multipartHeaders: getStringToSign(id, uploadId, headers["x-amz-date"])};
+        toSign = {headers: getStringToSign(id, uploadId, headers["x-amz-date"])};
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
         getSignatureAjaxRequester.getSignature(id, toSign).then(function(response) {

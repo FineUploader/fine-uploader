@@ -100,11 +100,11 @@ headers of EACH request to be sent to AWS.  Fortunately, this is quite simple fo
 
 If Fine Uploader needs a request header string signed, it will send a POST request to your `signatureEndpoint`, with a
 Content-Type of "application/json".  The contents of this request will be, of course, JSON.  The string to sign will be the
-value of the "multipartHeaders" property.  It will look something like this:
+value of the "headers" property.  It will look something like this:
 
 ```javascript
 {
-    "multipartHeaders": "{string to sign}"
+    "headers": "{string to sign}"
 }
 ```
 

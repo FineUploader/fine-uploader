@@ -62,7 +62,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             headers[qq.s3.util.AWS_PARAM_PREFIX + name] = encodeURIComponent(val);
         });
 
-        toSign = {multipartHeaders: getStringToSign(headers, bucket, key)};
+        toSign = {headers: getStringToSign(headers, bucket, key)};
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
         getSignatureAjaxRequester.getSignature(id, toSign).then(function(response) {
