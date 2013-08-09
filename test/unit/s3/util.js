@@ -5,18 +5,44 @@ describe('s3/util.js', function () {
             var endpointsAndBuckets = {
                 "http://foo.s3.amazonaws.com": "foo",
                 "foo.s3.amazonaws.com": "foo",
+
                 "http://foo.s3-ap-northeast-1.amazonaws.com": "foo",
                 "foo.s3-ap-northeast-1.amazonaws.com": "foo",
+
                 "https://foo.s3.amazonaws.com": "foo",
                 "https://foo.s3-ap-northeast-1.amazonaws.com": "foo",
+
                 "http://foo-bar.s3.amazonaws.com": "foo-bar",
                 "foo-bar.s3.amazonaws.com": "foo-bar",
+
                 "http://foo-bar.s3-northeast-1.amazonaws.com": "foo-bar",
                 "foo-bar.s3-northeast-1.amazonaws.com": "foo-bar",
+
                 "http://foo.bar.s3.amazonaws.com": "foo.bar",
                 "foo.bar.s3.amazonaws.com": "foo.bar",
+
                 "http://foo.bar.s3-northeast-1.amazonaws.com": "foo.bar",
-                "foo.bar.s3-northeast-1.amazonaws.com": "foo.bar"
+                "foo.bar.s3-northeast-1.amazonaws.com": "foo.bar",
+
+                "http://s3.amazonaws.com/foo": "foo",
+                "https://s3.amazonaws.com/foo": "foo",
+                "s3.amazonaws.com/foo": "foo",
+
+                "http://s3.amazonaws.com/foo-bar": "foo-bar",
+                "https://s3.amazonaws.com/foo-bar": "foo-bar",
+                "s3.amazonaws.com/foo-bar": "foo-bar",
+
+                "http://s3.amazonaws.com/foo.bar.com": "foo.bar.com",
+                "https://s3.amazonaws.com/foo.bar.com": "foo.bar.com",
+                "s3.amazonaws.com/foo.bar.com": "foo.bar.com",
+
+                "http://foo.bar.com": "foo.bar.com",
+                "https://foo.bar.com": "foo.bar.com",
+                "foo.bar.com": "foo.bar.com",
+
+                "http://foo.bar.com/": "foo.bar.com",
+                "https://foo.bar.com/": "foo.bar.com",
+                "foo.bar.com/": "foo.bar.com"
             };
 
             $.each(endpointsAndBuckets, function(endpoint, bucket) {

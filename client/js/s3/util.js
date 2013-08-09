@@ -12,17 +12,34 @@ qq.s3.util = qq.s3.util || (function() {
          *     https://foo.s3.amazonaws.com
          *     http://foo.s3-ap-northeast-1.amazonaws.com
          *     foo.s3.amazonaws.com
+         *     http://foo.bar.com
+         *     http://s3.amazonaws.com/foo.bar.com
          * ...etc
          *
          * @param endpoint The bucket's URL.
          * @returns {String || undefined} The bucket name, or undefined if the URL cannot be parsed.
          */
         getBucket: function(endpoint) {
-            var match = /^(?:https?:\/\/)?([a-z0-9.\-]+)\.s3(?:-[a-z0-9\-]+)?\.amazonaws\.com/i.exec(endpoint);
+            var patterns = [
+                    //bucket in domain
+                    /^(?:https?:\/\/)?([a-z0-9.\-]+)\.s3(?:-[a-z0-9\-]+)?\.amazonaws\.com/i,
+                    //bucket in path
+                    /^(?:https?:\/\/)?s3(?:-[a-z0-9\-]+)?\.amazonaws\.com\/([a-z0-9.\-]+)/i,
+                    //custom domain
+                    /^(?:https?:\/\/)?([a-z0-9.\-]+)/i
+                ],
+                bucket;
 
-            if (match) {
-                return match[1];
-            }
+            qq.each(patterns, function(idx, pattern) {
+                var match = pattern.exec(endpoint);
+
+                if (match) {
+                    bucket = match[1];
+                    return false;
+                }
+            });
+
+            return bucket;
         },
 
         /**
