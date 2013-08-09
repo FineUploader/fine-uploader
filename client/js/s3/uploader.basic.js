@@ -75,6 +75,21 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
             }
         };
 
+        // We assume HTTP if it is missing from the start of the endpoint string.
+        qq.override(this._endpointStore, function(super_) {
+            return {
+                getEndpoint: function(id) {
+                    var endpoint = super_.getEndpoint(id);
+
+                    if (endpoint.indexOf("http") < 0) {
+                        return "http://" + endpoint;
+                    }
+
+                    return endpoint;
+                }
+            }
+        });
+
         return qq.FineUploaderBasic.prototype._createUploadHandler.call(this, additionalOptions, "s3");
     },
 
