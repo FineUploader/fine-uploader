@@ -121,7 +121,7 @@ qq.AjaxRequestor = function (o) {
     function onComplete(id, xdrError) {
         var xhr = getXhrOrXdr(id),
             method = getNormalizedMethod(),
-            isError = xdrError === false;
+            isError = xdrError === true;
 
         dequeue(id);
 
