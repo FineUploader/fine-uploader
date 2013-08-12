@@ -191,7 +191,7 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
             onCompleteArgs = arguments,
             key = this.getKey(id),
             successEndpoint = this._options.request.successEndpoint,
-            cors = this._options.cors.expected,
+            cors = this._options.cors,
             uuid = this.getUuid(id),
             bucket = qq.s3.util.getBucket(this._endpointStore.getEndpoint(id)),
             promise = new qq.Promise(),
