@@ -42,7 +42,11 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
         try {
             parsedResponse = qq.parseJson(responseJson);
 
-            if (isError) {
+            // If this is a cross-origin request, the server may return a 200 response w/ error or success properties
+            // in order to ensure any specific error message is picked up by Fine Uploader for all browsers,
+            // since XDomainRequest (used in IE9 and IE8) doesn't give you access to the
+            // response body for an "error" response.
+            if (isError || (parsedResponse && (parsedResponse.error || parsedResponse.success === false))) {
                 options.log('Upload success request was rejected by the server.', 'error');
                 promise.failure(qq.extend(parsedResponse, failureIndicator));
             }
