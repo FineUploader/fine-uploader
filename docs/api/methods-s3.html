@@ -1,0 +1,27 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+# Methods <small>S3</small>{: .page-header }
+
+## S3
+
+The S3 uploader provides many of the same API methods as the traditional
+uploader, but there are a few crucial differences to take into account.
+If you plan to use the S3 uploader, then use the following table as your API
+reference.
+
+{{ methods_table(
+(
+    ("clearStoredFiles", "", "", "Clears the internal list of stored items. Only applies with `autoUpload` is `false`"),
+    ("doesExist", "id", "`Boolean`", "True if the associated item is currently registered with the uploader"),
+    ("getInProgress", "", "", "Returns the number of items that are either currently uploading or queued"),
+    ("getKey", "fileId", "`String`", "Retreive the S3 object key with the associated id"),
+    ("getResumeableFilesData", "", "`Array`", "Returns the array of potentially resumable items"),
+    ("setEndpoint", "endpointPath[, id]", "", "Modify the location where upload requests should be directed. To change for a specific item pass in a value for the `id` parameter"),
+    ("setName", "id, newName", "", "Provide an alternative name for the associated item. Will also change the value of the `x-amz-meta-qqfilename` parameter."),
+    ("setParams", "newParams[, id]", "", "Set the parameters along with the upload request"),
+)
+) }}
+
+{% endmarkdown %}
+{% endblock %}

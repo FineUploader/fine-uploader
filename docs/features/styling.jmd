@@ -1,0 +1,26 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+
+# Styling {: .page-header }
+
+{{ options_table(
+    (
+        (),
+    )
+) }}
+
+{{ events_table(
+    (
+        (),
+    )
+) }}
+
+{{ methods_table(
+    (
+        (),
+    )
+) }}
+
+{% endmarkdown %}
+{% endblock %}

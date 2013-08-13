@@ -1,0 +1,130 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Getting Started" %}
+{% block content %}
+{% markdown %}
+# Getting Started with Fine Uploader {: .page-header }
+
+This tutorial will serve as a step-by-step walkthrough for getting starting with
+Fine Uploader. It is geared towards those who have minimal experience with
+Javascript, server-side concepts, or the web.
+
+The tutorial is not comprehensive or meant to cover all aspects of Fine Uploader.
+For more information, make sure to read through the list of features as well
+as the API documentation.
+
+### 1. Download
+
+You can get Fine Uploader in the [downloads](http://fineuploader.com/downloads.html)
+section. The download comes bundled with all required scripts and modules.
+
+### 2. Decide which Fine Uploader to use
+
+#### Modes
+Fine Uploader comes with two different modes pertaining to the user interface.
+
+##### [Core Mode]()
+The most basic Fine Uploader mode. Does little to no DOM
+manipulation. Core mode assumes that the developer will code the UI and
+UX for the uploader themselves. Core mode is suggested for advanced developers
+who wish for to customize their uploader's user interface. To use Core Mode:
+
+```javascript
+var uploader = new qq.FineUploaderBasic({/* options go here .... */});
+```
+
+##### [UI Mode]()
+An extension of Core mode. UI mode comes with a fully functional
+interface to the uploader including, but not limited to: a default upload button,
+progress bars, retry/cancel/delete buttons, proper display of error messages,
+and more. UI mode is recommended for beginning developers or for those who
+ are please with the default Fine Uploader interface. To use UI Mode:
+
+```javascript
+var uploader = new qq.FineUploader({/* options go here ... */});
+```
+
+#### Endpoint Handlers
+
+##### [Traditional]()
+To use the traditional endpoint handler, simply declare Fine Uploader as you
+normally would.
+
+##### [Amazon S3]()
+Amazon's S3 is one of the most popular cloud-storage services in existence.
+Fine Uploader comes with built in support, but integrators must make sure to use
+the S3 uploader:
+
+```javascript
+var uploader = new qq.FineUploaderS3({/* options go here ... */});
+```
+
+#### [jQuery]()
+
+Fine Uploader is also easily used as a jQuery plugin. This plugin gives you
+the ability to use either Core or UI mode.
+
+To use Core Mode with the jQuery plugin simply set the uploaderType to be
+'basic':
+
+```javascript
+$("#fine-uploader").fineUploader({uploaderType: 'basic' /* options go here... */});
+```
+
+To use UI Mode with the jQuery plugin:
+```javascript
+$("#fine-uploader").fineUploader({/* options go here... */});
+```
+
+### 3. Enabling FineUploader on your site
+
+Its time to add the selected mode of Fine Uploader to your page:
+
+{{ alert(
+"""Henceforth this walkthrough will utilize the jQuery plugin of Fine Uploader.
+This is because jQuery is more or less ubiquitous on the web, and its a safe bet
+to assume it is included somewhere on your page. If you are forced to use the
+non-jQuery version, then keep in mind that the syntax will be slightly different.""") }}
+
+```html
+<html>
+  <head>
+      <link href="fineuploader-{{ PKG['version']|e }}.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+
+    <!-- The element where Fine Uploader will exist.
+    ===== -->
+    <div id="fine-uploader">
+    </div>
+
+    <!-- jQuery version 1.10.x (if you are using the jQuery plugin
+    ===== -->
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
+
+    <!-- FineUploader-jQuery
+    ===== -->
+    <script src="jquery.fineuploader-{{ PKG['version']|e }}.min.js" type="text/javascript"></script>
+
+    <script>
+    // Wait until the DOM is 'ready'
+    $(document).ready(function () {
+        $('#fineUploaderElementId').fineUploader({
+            // The path to the server-side upload URI:
+            request: {
+                endpoint: '/uploads'
+            }
+        });
+    });
+    </script>
+
+  </body>
+</html>
+```
+
+When you load this page in a browser you should be able to see Fine Uploader's
+default UI present. Uploading will not work yet. That will be tackled in an
+upcoming section of this walkthrough.
+
+[Next](02-setting_options.html), let's check out some of FineUploader's options.
+{% endmarkdown %}
+{% endblock %}
