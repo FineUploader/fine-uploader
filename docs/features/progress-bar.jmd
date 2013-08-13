@@ -1,0 +1,27 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+
+# Progress Bars {: .page-header }
+
+{{ alert("This feature is only available in Chrome, Firefox, Safari, and IE10+ due to their support for chunked uploads.", "info", "Note:") }}
+
+Seeing the progression of uploads is a key way to let users know that their
+interaction with the uploader is succeeding.
+
+With Fine Uploader UI mode, a progress bar is included in the UI, and -- just
+like any other Fine Uploader UI feature -- it can be completely taken apart
+and customized in Core mode.
+
+## Events
+
+{{ events_table(
+    (
+        ("progress", "`String` id, `String` name, `String` uploadedBytes, `String` totalBytes", "Called during the upload, as it progresses. Only used by the XHR/AJAX uploader."),
+    )
+) }}
+
+**Note:** This feature is only available in Firefox, Chrome, Safari and Internet Explorer 10.
+
+{% endmarkdown %}
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+
+# Cross-Origin Resource Sharing (CORS) {: .page-header }
+
+[CORS](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS?redirectlocale=en-US&redirectslug=HTTP_access_control)
+or Cross-origin resource sharing allows client-side JavaScript to make AJAX requests to another domain.
+
+Fine Upload has support for uploading and sending requests via CORS, but there are a few
+caveats depending on which browser is being used.
+
+CORS is **not** supported in IE7 because IE7 ony allows GET and POST methods via CORS
+and does not allow client-side JavaScript to modify the request headers in any way.
+
+## Options
+
+### `cors` option
+
+{{ options_table(
+    (
+        ("allowXdr", "`Boolean`", "`false`", "Enable or disable cross-origin requests from IE9 and older where [XDomainRequest](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS#Note) must be used."),
+        ("expected", "`Boolean`", "`false`", "Enable or disable cross-domain requests."),
+        ("sendCredentials", "`Boolean`", "`false`", "Enable or disable sending credentials along with each cross-domain request. Ignored if `allowXdr` is `true` and IE9 is being used."),
+    )
+) }}
+
+{% endmarkdown %}
+{% endblock %}

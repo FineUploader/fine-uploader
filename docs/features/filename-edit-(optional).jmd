@@ -1,0 +1,27 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+
+# Filename Editing <small>(optional)</small> {: .page-header }
+
+Simply look for the `qqfilename` parameter in the request. If it exists, then
+be sure to use this when naming your file server-side.
+
+## Options
+
+#### `editFilename` option
+
+{{ options_table(
+    (
+        ("enabled", "boolean", "`false`", "If set to `true`, users are allowed to edit the name of a submitted files before upload."),
+    )
+) }}
+
+{{ methods_table(
+    (
+        (),
+    )
+) }}
+
+{% endmarkdown %}
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+
+# Retrying Uploads {: .page-header }
+
+## Automatic Retry
+
+Fine Uploader will automatically attempt to retry an upload if the `enableAuto` option is set to `true`:
+
+```javascript
+$("#fine-uploader").fineUploader({
+    // ..
+    retry: {
+        enableAuto: true
+    }
+}).on('autoRetry', function (event, id, name, attemptNumber) {
+
+});
+```
+
+## Manual Retry
+
+On the other hand, retrying could be controlled manually by setting `enableAuto` to `false`:
+
+```javascript
+$("#fine-uploader").fineUploader({
+    // ..
+    retry: {
+        enableAuto: false
+    }
+}).on('manualRetry', function (event, id, name) {
+
+});
+
+$("#retry-button").click( function (event) {
+    var id = getSpecificFileId(this);
+    $("#fine-uploader").fineUploader('retry', id);
+});
+```
+
+## Options
+
+### `retry` option
+
+{{ options_table(
+    (
+        ("autoAttemptsDelay", "`Number`", "`5`", "The number of seconds to wait between auto retry attempts."),
+        ("enableAuto", "`Boolean`", "`false`", "Enable or disable retrying uploads that receive any error or non-200 response."),
+        ("maxAutoAttempts", "`Number`", "`3`", "The maximum number of times to attempt to retry a failed upload."),
+        ("preventRetryResponseProperty", "`String`", "`'preventRetry'`", "This property will be looked for in the server response and, if found and `true`, will indicate that no more retries should be attempted for this item."),
+    )
+) }}
+
+## Events
+
+{{ events_table(
+    (
+        ("autoRetry", "`String` id, `String` name, `String` attemptNumber", "Called before each automatic retry attempt for a failed item."),
+        ("manualRetry", "`String` id, `String` name, `String` attemptNumber", "Called before each manual retry attempt for a failed item. Return `false` to prevent this and all future retry attempts associated with the item."),
+    )
+) }}
+
+## Methods
+
+{{ methods_table(
+    (
+        ("retry", "`String` id", "", "Try uploading the specific item again."),
+    )
+) }}
+
+{% endmarkdown %}
+{% endblock %}
