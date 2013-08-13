@@ -37,14 +37,15 @@ These are all required to give you the best possible experience.
 **Q:** Why isn't Opera supported?
 **A:** Market share for Opera is incredibly low, and I have found annoying bugs in Opera that have taken up an unnecessary amount of my
 time in the past.  For such a small minority of users, I have decided that it is not worth my time.  There are many better options as far
-as browsers are concerned.
+as browsers are concerned.  There are plans to support the newest version of Opera, based on Chromium.  See [issue #721](https://github.com/Widen/fine-uploader/issues/721)
+for more details.
 
 **Q:** Why isn't Safari for Windows supported?
 **A:** There is really no reason to use Safari for Windows.   Webkit is better represented on that platform in Chrome.
 Apple doesn't appear to be interested in maintaining Safari for Windows anymore either.  Switch to Chrome.
 
 **Q:** Why isn't IOS5 supported?
-**A:** IOS5 doesn't even support a file input element.
+**A:** IOS5 doesn't even support file input elements.
 
 **Q:** Why isn't folder drag & drop uploading supported in any browser other than Chrome 21+?
 **A:** Chrome 21 was the first browser version to implement the HTML5 Filesystem API.  This is required to handle dropped folders.
@@ -53,7 +54,8 @@ Currently, no other browsers support this API.
 **Q:** I have created a \<button\> element for my uploader button, but this doesn't seem to work in IE.  Why?
 **A:** In IE, the button element receives the click event, instead of the child input element.  Use a \<div\> or a \<span\> or an \<a\> instead.
 
-**Q:** Why do I only see a "Processing..." message next to a file (in FineUploader mode) in Chrome & Safari after the last byte has been sent but the server has yet to respond?
+**Q:** Why do I only see a "Processing..." message next to a file (in FineUploader mode for the traditional uploader)
+in Chrome & Safari after the last byte has been sent but the server has yet to respond?
 **A:** The implementation of the onProgress notification that tells us the status of the bytes sent to the server varies from browser to browser, unfortunately.
 Webkit browsers have elected to follow the "spirit" of the W3C spec, while Firefox, and (I beleive) IE10, obey the spec in the most strict sense.  I have discussed
 this in some detail [in the "processing" status message feature case](https://github.com/Widen/fine-uploader/issues/404#issuecomment-10124160).
