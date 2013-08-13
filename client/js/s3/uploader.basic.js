@@ -27,6 +27,9 @@ qq.s3.FineUploaderBasic = function(o) {
         },
         resume: {
             recordsExpireIn: 7 // days
+        },
+        cors: {
+            allowXdr: true
         }
     };
 
