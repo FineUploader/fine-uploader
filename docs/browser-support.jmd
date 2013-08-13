@@ -28,7 +28,6 @@ Currently, Fine Uploader supports the following browsers:
             <th>Non-MPE Requests</th>
             <th>Upload via Paste</th>
             <th>CORS</th>
-            <th>CORS Delete</th>
             <th>Item Validation</th>
             <th>Size Validation</th>
         </tr>
@@ -46,18 +45,16 @@ Currently, Fine Uploader supports the following browsers:
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>Firefox</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -66,69 +63,64 @@ Currently, Fine Uploader supports the following browsers:
             <td>IE 10</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>IE 9</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>IE 8</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>IE 7</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('X', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>Android
                 4</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -136,29 +128,27 @@ Currently, Fine Uploader supports the following browsers:
         <tr>
             <td>Android
                 2.3.x</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('y', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>iOS
                 6</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -168,27 +158,25 @@ Currently, Fine Uploader supports the following browsers:
                 6</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>Safari
-                5</td>
+                5.1</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -223,55 +211,20 @@ Feature     | Description
 `uploadViaPaste` | Is uploading via paste supported?
 `progressBar` | Are progress bars supported?
 `uploadCors` | Are cross-domain uploads supported?
-`deleteFileCors` | Are cross-domain delete requests supported?
-`deleteFileCorsXhr` | Are cross-domain XHR delete requests supported?
 `canDetermineSize` | Can file size be determined client-side?
-
-## Feature Detection Methods
-
-The `qq` utility class has a few methods that may prove useful if one would
-like to programmatically check which browser the client is using.
-Fine Uploader uses these functions internally to determine which features are
-available for the current client.
-
-For example, to determine whether the client supports folder dropping:
-
-```javascript
-window.onload = function () {
-    var folderDropSupported = qq.isFolderDropSupported();
-}
-```
-
-{{ methods_table(
-    (
-        ("android", "", "`boolean`", "`True` if current user-agent is running on Android."),
-        ("firefox", "", "`boolean`", "`True` if current user-agent is Firefox." ),
-        ("chrome", "", "`boolean`", "`True` if current user-agent is Chrome."),
-        ("ie10", "", "`boolean`", "`True` if current user-agent is IE10."),
-        ("ie", "", "`boolean`", "`True` if current user-agent is IE."),
-        ("safari", "", "`boolean`", "`True` if current user-agent is Safari."),
-        ("windows", "", "`boolean`", "`True` if current user-agent is running on Microsoft Windows."),
-        ("ios", "", "`boolean`", "`True` if current user-agent is running on iOS."),
-        ("areCookiesEnabled", "", "`boolean`", "`True` if cookies are enabled."),
-        ("isXhrUploadSupported", "", "`boolean`", "`True` if `XMLHttpRequest` is supported on this user-agent"),
-        ("isFolderDropSupported", "", "`boolean`", "`True` if folder drop is suppported."),
-        ("isFileChunkingSupported", "", "`boolean`", "`True` if file chunking is supported."),
-    )
-) }}
 
 ## Mobile Safari (iOS)
 
 Fine Uploader supports mobile Safari found on iOS 6+. One caveat to take into
 account is that iOS saves all image files on the camera roll is "image.jpg".
-This is apparenty to save memory and power consumption. Ensure that your server
-is saving files with some sort of unique identifier appended to the path
+Ensure that your server is saving files with some sort of unique identifier appended to the path
 because otherwise your iOS users will be overwriting each others' images.
 Fine Uploader automatically generates a Level 4 UUID per file and sends that
 UUID along with the request to the server in the `qquuid` parameter.
 
 ## Internet Explorer
 
-IE continues to lag far behind all other browsers in terms of features. IE10 is supposed to, finally, start to compete
+IE continues to lag far behind all other browsers in terms of features. IE10 finally competes
 with existing modern browsers. For those of you with customers suffering with IE9 and older, here are some of the limitations
 you may want to be aware of when using Fine Uploader. The limitations that are overcome
 by upgrading to IE10 are listed as well.
