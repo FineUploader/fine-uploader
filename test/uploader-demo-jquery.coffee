@@ -36,6 +36,12 @@ $ ->
         .on 'statusChange', (event, id, oldS, newS) ->
             qq.log "id: #{id} #{newS}"
 
+    $("#basicUploadSuccessExample > div > div > input[name='qqfile']").hover (event) ->
+        event.preventDefault()
+
+    $("#basicUploadSuccessExample > div > .qq-upload-button").hover (event) ->
+        event.preventDefault()
+
 
     $('#manualUploadModeExample').fineUploader(
         autoUpload: false

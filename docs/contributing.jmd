@@ -1,14 +1,15 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Contributing" %}
 {% block content %}
 {% markdown %}
-## Development
+# Contributing
 
-### Build status
+## Build status
 
-#### Selenium
+### Selenium
 [![Selenium Test Status](https://saucelabs.com/buildstatus/feltnerm)](https://saucelabs.com/u/fineuploader)
 
-#### Travis
+### Travis
 
 **Master**:
 [![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=master)
@@ -18,7 +19,7 @@
 
 _FineUploader is continuously integrated with [Travis-CI](https://www.travis-ci.org/)._
 
-### Coding
+## Coding
 
 Oh, you think you can code? Great!
 
@@ -34,13 +35,13 @@ To contribute to development [fork it](https://github.com/Widen/fine-uploader/fo
 
 Pull requests **MUST** be against the "develop" branch!
 
-### Testing
+## Testing
 
 If you're reading this, then good for you!
 
 You can run the test suite by forking or cloning the repo and running `grunt test` on your development machine.
 
-### Writing
+## Writing
 
 Like to write for people rather than computers?
 

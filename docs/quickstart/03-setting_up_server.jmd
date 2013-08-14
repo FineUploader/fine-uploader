@@ -1,13 +1,22 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Server Set-Up" %}
+
 {% block content %}
 {% markdown %}
-# TODO: Reference the server-side docs for S3 and traditional environments.  Be clear that this example does not apply to S3.
+# Server Set-Up {: .page-header}
 
-### Setting up a server
+{{ alert(
+"""This section of the tutorial is aimed at beginners looking to create their
+own upload server. Note that this example does not apply to S3 uploads. For
+more information on uploading to Amazon's S3, read the [S3 endpoint documentation](../endpoint_handlers/amazon-s3.html).""",
+"warn") }}
 
-For this tutorial we are going to use [Node.js](http://nodejs.org/) to develop a simple server which will accept uploads from our FineUploader instance. If you don't have Node.js, now's the time to [get it](http://nodejs.org/download/).
+For this tutorial we are going to use [Node.js](http://nodejs.org/) to develop
+a simple server which will accept uploads from our FineUploader instance. If
+you don't have Node.js, now's the time to [get it](http://nodejs.org/download/).
 
-If Node.js is not your style, then feel free to browser the other [server-side demos repository](http://github.com/Widen/fine-uploader-server).
+If Node.js is not your style, then feel free to browse the other
+[server-side demos repository](http://github.com/Widen/fine-uploader-server).
 
 #### Getting Started
 
@@ -97,6 +106,6 @@ Sweet! We can now upload files to our server. Just use node to run it:
 
 Make sure to set the request endpoint on your FineUploader instance to point to the corresponding URL on the express server. In this case, the endpoint is `/uploads`.
 
-Booyakosha! You are on the fast-track to upload nirvana. Contiue forth in your quest to learn to integrate FineUploader with your application by reviewing the rest of the [documentation]({{ URL_ROOT}}/docs/)
+Booyakosha! You are on the fast-track to upload nirvana. Continue forth in your quest to learn to integrate FineUploader with your application by reviewing the rest of the [documentation](../)
 {% endmarkdown %}
 {% endblock %}

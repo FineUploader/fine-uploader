@@ -1,0 +1,54 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "S3 Options" %}
+{% block content %}
+{% markdown %}
+# Options <small>S3</small> {: .page-header }
+
+If you are using the S3 uploader, all of Fine Uploader's options are still
+present, and most of them still function the same way. However, some of the
+options are slightly different. This page will list any new or different options
+for the S3 uploader. Any option not listed here can be assumed to have the same
+behavior for the Traditonal or S3 uploader.
+
+## Core Mode
+
+### `chunking` option
+
+{{ options_table(
+    (
+        ("partSize", "`Number`", "`5242880`", "The maximum size of each part, in bytes."),
+    )
+) }}
+
+{{
+alert("The `chunking.paramNames` option does **not** apply to S3.")
+}}
+
+
+### `request` option
+
+{{ options_table(
+    (
+        ("accessKey", "`String`", "`null`", "Your AWS public key. **NOT YOUR SECRET KEY**."),
+        ("acl", "`String`", "`'private'`", "This value corresponds to a [canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/ACLOverview.html#CannedACL)"),
+        ("endpoint", "`String`", "`null`", "The fully qualified URL for the S3 bucket."),
+        ("filenameParam", "`String`", "`'qqfilename'`", "Part of the parameter name that contains the name of the associated file which may differ from the key name. Prefixed with 'x-amz-meta-' by Fine Uploader."),
+        ("key", "`String` or `Function`", "`'uuid'`", "Describes the object key usde to identify the file in your S3 bucket."),
+        ("signatureEndpoint", "`String`", "`null`", "The endpoint that Fine Uploader can use to send policy documents (HTML form uploads) or other strings to sign (REST requests) before sending requests off to S3."),
+        ("successEndpoint", "`String`", "`null`", "An endpoint that Fine Uploader should POST to when a file
+has been succcessfully uploaded to S3. The parameters include the key, name, UUID, and bucket associated with the file."),
+        ("successRedirectEndpoint", "`String`", "`null`", "This must point to a page on the same origin/domain as the page hosting Fine Uploader. Required to use S3 uploads with browsers that do not implement the File API. Prefixed with 'x-amz-meta-' header by Fine Uploader."),
+    )
+) }}
+
+{{ alert("Valid S3 endpoints include: 'http://foobar.s3.amazonaws.com', 'https://foobar.s3.amazonaws.com', and 'http://foobar.s3-ap-northeast-1.amazonaws.com'") }}
+
+## UI Mode
+
+Note that the `failedUploadTextDisplay` option -- when using UI mode and the S3
+endpoint -- defaults to `'custom'` mode since Fine Uploader can expect an `error`
+property on the server's response and would prefer to use that instead of the
+default text.
+
+{% endmarkdown %}
+{% endblock %}

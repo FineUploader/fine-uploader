@@ -1,7 +1,8 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Styling" %}
 {% block content %}
 {% markdown %}
-## Styling FineUploader
+# Styling {: .page-header }
 
 ### Templates
 
@@ -87,6 +88,6 @@ may override this with something a bit nicer, if you choose.  The okCallback wil
 is a promissory callback**, meaning it requires a [`qq.Promise`](api/promise.html) to be returned.  The `qq.Promise` documentation
 includes a simple example that overrides this default implementation using bootbox.  The default implementation here simply
 uses `window.prompt`.
+
 {% endmarkdown %}
 {% endblock %}
-

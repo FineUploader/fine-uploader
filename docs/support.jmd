@@ -1,4 +1,5 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Support" %}
 {% block content %}
 {% markdown %}
 ## Support

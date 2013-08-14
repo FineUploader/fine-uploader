@@ -1,0 +1,43 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Paste to Upload" %}
+{% block content %}
+{% markdown %}
+
+# Paste to Upload {: .page-header }
+
+Before some of the latest HTML5 features came out, in order to upload an image
+from another web page, you must save the image to your local file system and
+then either drop it into an uploader instance or select it from the
+“choose files” dialog. Certainly copying and pasting is a much more efficient
+way to do this. Note that you can also use this feature to upload any image
+currently present in your clipboard. For example, suppose you take a screenshot
+and add it directly to your clipboard. You can then paste it into your Fine
+Uploader instance.
+
+{{ alert(
+"""This feature is only supported by browsers that feature the [Clipboard API](http://www.w3.org/TR/clipboard-apis/).
+Currently, only Chrome supports this completely.", "info", "Note:") }}
+
+
+## Options
+
+{{ options_table(
+    (
+       ("defaultName", "`String`", "`'pasted_image'`", "The default name given to pasted images."),
+       ("targetElement", "`HTMLElement`", "`null`", "Enable this feature by providing any `HTMLElement` here."),
+       ("showPrompt", "`Function` callback", "Run this callback when a file has been pasted. This callback takes a `message` to display the user and a `defaultValue` to assume."),
+    )
+) }}
+
+## Events
+
+{{ events_table(
+    (
+        ("pasteReceived", "`Blob` blob", "Called when a pasted image has been received, but before it is uploaded. [Promissory](async-tasks-and-promises.html)"),
+    )
+) }}
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2013/03/04/upload-an-image-via-paste-in-3-4/)
+
+{% endmarkdown %}
+{% endblock %}

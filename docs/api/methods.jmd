@@ -1,0 +1,81 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Methods" %}
+
+{% block title %}Methods - Fine Uploader Documentation{% endblock %}
+
+{% block sidebar %}
+<ul class="nav nav-tabs nav-stacked affix">
+    <li><a href="#core"><b>Core</b></a></li>
+    <li><a href="#ui"><b>UI</b></a></li>
+</ul>
+{% endblock %}
+
+{% block content %}
+{% markdown %}
+# Methods <small>Traditional</small> {: .page-header }
+
+## Core
+
+{{ methods_table(
+    (
+        ("addFiles", "filesOrInputs[, params[, endpoint]]", "", "Submit one or more `File` objects to the uploader. Accepts `File`s, `<input>` elements, or a collection of any of those two types."),
+        ("addBlobs", "blobDataArray[, params[, endpoint]]", "", "Submit `Blob` objects to the uploader. `blobDataArray` is expected to be an array of `BlobData` objects. See below for a spec of a `BlobData` object."),
+        ("cancel", "`String` id", "", "Cancel the queued or currently uploading item with the corresponding id"),
+        ("cancelAll", "", "", "Cancel all queued or currently uploading items"),
+        ("clearStoredFiles", "", "", "Clears the internal list of stored items. Only applies with `autoUpload` is `false`"),
+        ("deleteFile", "`String` id", "", "Delete the file with the corresponding id off the server"),
+        ("doesExist", "`String` id", "`Boolean`", "True if the associated item is currently registered with the uploader"),
+        ("getFile", "`String` id", "`File` or `Blob`", "Returns the item associated with the id. File API browsers only"),
+        ("getInProgress", "", "", "Returns the number of items that are either currently uploading or queued. If called inside of the 'cancel' event handler this method will return a value that includes the upload associated with the 'cancel' event handler. This is because the upload will not be cancelled until the event handler returns."),
+        ("getName", "`String` id", "`String`", "Returns the name of the item with the associated id"),
+        ("getNetUploads", "", "`Number`", "Returns the number of items that have both been successfully uploaded and not deleted."),
+        ("getResumeableFilesData", "", "`Array`", "Returns the array of potentially resumable items. If a `resume.id` property has been set, this is taken into consideration. Each resumable file is represented by an object with the following properties: `name`: filename, `size`: size, `uuid`: unique id, `partIdx`: index of the part where the resume will start from."),
+        ("getSize", "`String` id", "`String`", "Return the size of the item  with the associated id"),
+        ("getUploads", "`Function` [filter]", "`Array`", "Return information about all the items that have been submitted to the uploader. The objects being iterated over will have the following properties: `id`, `uuid`, `originalName`, `name`, and `size`."),
+        ("getUuid", "`String` id", "`String`", "Retrieve the UUID of the item with the associated id"),
+        ("log", "`String` message", "", "Output a message to the JavaScript console, if possible."),
+        ("reset", "", "", "Reset Fine Uploader"),
+        ("retry", "`String` id", "", "Try uploading a specific item again"),
+        ("setEndpoint", "`String` endpointPath[, `String` id]", "", "Modify the location where upload requests should be directed. To change for a specific item pass in a value for the `id` parameter"),
+        ("setDeleteFileEndpoint", "`String` endpointPath[, `String` id]", "", "Modify the location where upload requests should be directed. To change for a specific item pass in a value for the `id` parameter"),
+        ("setDeleteFileParams", "`String` newParams[, `String` id]", "", "Set the parameters for the dlete request"),
+        ("setName", "`String` id, `String` newName", "", "Provide an alternative name for the associated item"),
+        ("setParams", "`String` newParams[, `String` id]", "", "Set the parameters along with the upload request"),
+        ("setUuid", "`String` id, `String` newUuid", "", "Set the UUID for the item with the associated id."),
+        ("showMessage", "`String` message", "", "Called if the uploader receives an error."),
+        ("showConfirm", "`String` message", "", "Provide a function here to prompt the user to confirm deletion of a file."),
+        ("showPrompt", "`String` message", "", "Provide a function here to prompt the user for a filename when pasting file(s)."),
+        ("uploadStoredFiles", "", "", "Begin uploading all queued items. `NoFilesError` if there are no items to upload."),
+    )
+) }}
+
+### `blobData` objects
+
+These are simple JS objects that have the following properties:
+
+```javascript
+{
+    "name": "", /* The name of the blob */
+    "blob", "" /* The value of the bytes of the Blob object being uploaded */
+}
+```
+
+{{ alert(
+"""For more information on `File` and `Blob` objects, see the W3C's
+[File Specification](http://www.w3.org/TR/FileAPI/#dfn-file) and
+[Blob Specification](http://www.w3.org/TR/FileAPI/#dfn-Blob).""", "info", "Info:") }}
+
+## UI
+
+{{ methods_table(
+    (
+        ("addExtraDropzone", "`HTMLElement` element", "", "Used to mark an element as a drop zone."),
+        ("removeExtraDropzone", "`HTMLElement` element", "", "Used to un-mark an element as a drop zone."),
+        ("getItemByFileId", "`String` id", "`HTMLElement`", "Returns the element associated with the provided `id`."),
+    )
+) }}
+
+{% endmarkdown %}
+</div>
+{% endblock %}
+</div>

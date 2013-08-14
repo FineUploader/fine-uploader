@@ -1,0 +1,139 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Drag and Drop" %}
+{% block content %}
+{% markdown %}
+
+# Drag and Drop {: .page-header }
+
+{{ alert("Dragging and dropping of **folders** is currently only supported in Chrome >=21", "default", "Note") }}
+
+If you are integrating Fine Uploader and utilizing FineUploaderBasic mode,
+you are likely building you own UI entirely. In case you want to support drag
+and drop of folders and files, you probably don't want to re-invent the wheel, since
+Fine Uploader already has code to handle this in Fine Uploader mode.
+Fine Uploader's drag & drop code has been moved into a standalone module, so
+it can be easily integrated into your Fine Uploader Core mode app
+(or even any non-Fine Uploader app). This document will explain how to utilize
+this module.
+
+## `dragAndDrop` option
+
+{{ options_table(
+    (
+        ("disableDefaultDropzone", "boolean", "`false`", "Set to true if the default dropzone should be disabled."),
+        ("extraDropzones", "Array", "`[ ]`", "Designate additional dropzone elements."),
+        ("hideDropzones", "boolean", "`true`", "Designate dropzone elements to be hidden"),
+    )
+) }}
+
+## `callbacks` option
+
+{{ events_table(
+    (
+        ("processingDroppedFiles", "", "Invoked when the module has started processing the set of dropped files."),
+        ("processingDroppedFilesComplete", "Array of `Files`", "Invoked when the module has finished processing."),
+        ("dropError", "`String` errorCode, `String` errorRelatedData",  "Called when processing the drop fails for any reason."),
+        ("dropLog", "`String` message, `String` logLevel", "Invoked when a message is logged.")
+    )
+) }}
+
+## Methods
+
+{{ methods_table(
+    (
+        ("dispose", "", "", "Tears down all drop zones associated with the dnd instance."),
+        ("setupExtraDropzone", "`HTMLElement` element", "", "Call this to add an additional drop zone to the DnD instance. Not available if using the jQuery plug-in wrapper."),
+        ("removeDropzone", "`HTMLElement` element", "", "Call this to remove a drop zone from the DnD instance. Not available if using the jQuery plug-in wrapper."),
+    )
+) }}
+
+## Drag and Drop Module Options
+
+{{
+alert("This module is aimed at Fine Uploader Core mode integrators only. If
+you are running this in UI mode, then take a look at the `dragAndDrop` options defined above.", "info")
+}}
+
+{{ options_table(
+    (
+        ("allowMultipleItems", "boolean", "`true`", "Set to `false` if you would to prevent the user from dropping more than one item at once."),
+        ("dropZoneElements", "Array", "`[ ]`", "Specify all container elements that should be treated as drop zones."),
+        ("hideDropZonesBeforeEnter", "boolean", "`false`", "Set to `true` to ensure that the contents of all drop zones are only revealed when a file has entered the drop zone."),
+    )
+) }}
+
+#### `classes` option
+
+{{ options_table(
+    (
+        ("dropActive", "string", "`null`", "Specify a CSS class to apply to drop zone(s) when a file has entered it."),
+    )
+) }}
+
+## jQuery Example
+
+For jQuery users, a jQuery-wrapped DnD module is also available in the combined and minified Fine Uplpoader javascript file.
+This jQuery wrapper follows the same conventions as the jQuery plug-in that wraps the uploader library.  To read more
+about these conventions, please see the [Using jQuery plug-in]({{ URL_ROOT }}/integrating/modes/using-jquery-plugin.html) readme document.
+
+There are a couple things to be aware of when using the DnD standalone module via the jQuery plug-in wrapper:
+* The only API method available is `dispose`.  This restriction is in place since the other API functions don't really make sense in the context of a jQuery plug-in.
+* The target of your plug-in instance takes the place of the `dropZoneElements` option.  Do not pass a `dropZoneElements` option, it will be ignored.
+
+Here is the above example rewritten using the jQuery plug-in wrappers:
+
+```javascript
+$('#myDropZone').fineUploaderDnd({
+    classes: {
+        dropActive: "cssClassToAddToDropZoneOnEnter"
+    }
+})
+    .on('processingDroppedFiles', function(event) {
+        //TODO: display some sort of a "processing" or spinner graphic
+    })
+    .on('processingDroppedFilesComplete', function(event, files) {
+        //TODO: hide spinner/processing graphic
+
+        $('#fineUploaderBasicContainer').fineUploader('addFiles', files); //this submits the dropped files to Fine Uploader
+    });
+
+$('#fineUploaderBasicContainer').fineUploader({
+    request: {
+        endpoint: "server/uploadHandler"
+    }
+});
+```
+
+## Non-jQuery Example
+
+If you are not utilizing jQuery, you can use the plain javascript DnD module.  Here is a simple example:
+
+```javascript
+var dragAndDropModule = new qq.DragAndDrop({
+        dropZoneElements: [document.getElementById('myDropZone')],
+        classes: {
+          dropActive: "cssClassToAddToDropZoneOnEnter"
+        },
+        callbacks: {
+          processingDroppedFiles: function() {
+            //TODO: display some sort of a "processing" or spinner graphic
+          },
+          processingDroppedFilesComplete: function(files) {
+            //TODO: hide spinner/processing graphic
+
+            fineUploaderBasicInstance.addFiles(files); //this submits the dropped files to Fine Uploader
+          }
+        }
+      }),
+
+  fineUploaderBasicInstance = new qq.FineUploaderBasic({
+    request: {
+        endpoint: "server/uploadHandler"
+    }
+  });
+```
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2013/04/05/standalone-file-drag-drop-module-in-3-5/)
+
+{% endmarkdown %}
+{% endblock %}

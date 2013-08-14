@@ -1,0 +1,22 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "S3 Methods" %}
+{% block content %}
+{% markdown %}
+# Methods <small>S3</small>{: .page-header }
+
+## S3
+
+The S3 uploader provides many of the same API methods as the traditional
+uploader, but there are a few crucial differences to take into account.
+If you plan to use the S3 uploader, then use the following table as your API
+reference.
+
+{{ methods_table(
+(
+    ("getKey", "fileId", "`String`", "Retreive the S3 object key with the associated id"),
+    ("setEndpoint", "`String` bucketPath[, `Number` id]", "", "Modify the bucket where upload requests should be directed. The endpoint for a specific file or blob can be changed by passing in an optional `id` parameter. `bucketPath` must be the fully qualified URL for an S3 bucket such as: 'http://foobar.s3.amazonaws.com' where the bucket is 'foobar'.")
+)
+) }}
+
+{% endmarkdown %}
+{% endblock %}
