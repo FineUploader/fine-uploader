@@ -1,10 +1,14 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Deleting Files" %}
 {% block content %}
 {% markdown %}
 
 # Deleting Files {: .page-header }
 
 Enabling the deletion of files means your users can delete files after they have been uploaded.
+You can only delete files that have been uploaded during the current session.
+If you upload a file, leave the page, and come back then do not expect to be
+able to delete that file.
 
 A file is eligible for deletion only after it has been successfully uploaded.
 
@@ -21,6 +25,11 @@ A file is eligible for deletion only after it has been successfully uploaded.
         ("params", "`Object`", "`{}`", "Specify any additonal parameters to attach to all delete requests.")
     )
 ) }}
+
+{{
+alert("""The S3 uploader appends a `_delete` parameter to the request object when the HTTP method is POST instead of DELETE.
+This is for your benefit so your server knows what sort of request it is.""")
+}}
 
 ## Events
 
@@ -41,6 +50,8 @@ A file is eligible for deletion only after it has been successfully uploaded.
         ("setDeleteFileParams", "`String` newParams[, `String` id]", "", "Set the parameters for the delete file request.")
     )
 ) }}
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2013/01/25/delete-an-uploaded-file-in-3-3/)
 
 {% endmarkdown %}
 {% endblock %}

@@ -1,7 +1,5 @@
 {% extends "_templates/base.html" %}
-
-{% block title %}S3 Events - Fine Uploader Documentation{% endblock %}
-
+{% set page_title = "S3 Events" %}
 
 {% block sidebar %}
 <ul class="nav nav-tabs nav-stacked affix">

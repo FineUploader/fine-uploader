@@ -12,69 +12,69 @@
                     <li><a class="brand" href="http://fineuploader.com/"><img style="margin-top: -10px; height: 20px" src="http://fineuploader.com/img/FineUploader_logo.png"></img></a></li>
                     <li><a href="{{ URL_ROOT }}">Home</li></a>
                     <li><a href="http://blog.fineuploader.com/">Blog</li></a>
-                    <li><a href="{{ URL_ROOT }}/overview">Overview</li></a>
 
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Integrating <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features <b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <ul><a href="{{ URL_ROOT }}/integrating/quickstart/">Quickstart</a></ul>
-                            <li class="divider"></li>
-                            <ul><b>Modes</b></ul>
-                            <ul><a href="{{ URL_ROOT }}/integrating/modes/s3.html">Amazon S3 Uploader</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/integrating/modes/fineuploader.html">FineUploader</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/integrating/modes/fineuploaderbasic.html">FineUploader Basic</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/integrating/modes/jquery-fineuploader.html">jQuery FineUploader</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/integrating/modes/jquery-fineuploaderbasic.html">jQuery FineUploader Basic</a></ul>
-                            <li class="divider"></li>
-                            <ul><b>Options</b></ul>
-                            <ul><a href="{{ URL_ROOT }}/integrating/options/s3.html">Amazon S3 Uploader</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/integrating/options/fineuploader.html">FineUploader</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/integrating/options/fineuploaderbasic.html">FineUploader Basic</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/integrating/options/overriding.html">Overriding</a></ul>
-                            <li class="divider"></li>
-                            <ul><b>Extras</b></ul>
-                            <ul><a href="{{ URL_ROOT }}/integrating/styling.html">Styling</a></ul>
+                            <li><a href="{{ URL_ROOT }}features/async-tasks-and-promises.html">Async Tasks & Promises</a></li>
+                            <li><a href="{{ URL_ROOT }}features/cancellable-uploads.html">Cancelling</a></li>
+                            <li><a href="{{ URL_ROOT }}features/chunking.html">Chunking</a></li>
+                            <li><a href="{{ URL_ROOT }}features/CORS.html">CORS</a></li>
+                            <li><a href="{{ URL_ROOT }}features/delete.html">Delete</a></li>
+                            <li><a href="{{ URL_ROOT }}features/drag-and-drop.html">Drag and Drop</a></li>
+                            <li><a href="{{ URL_ROOT }}features/handling-errors.html">Error Handling</a></li>
+                            <li><a href="{{ URL_ROOT }}features/filename-edit.html">Filename Editing</a></li>
+                            <li><a href="{{ URL_ROOT }}features/paste-to-upload.html">Paste</a></li>
+                            <li><a href="{{ URL_ROOT }}features/request-parameters.html">Request</a></li>
+                            <li><a href="{{ URL_ROOT }}features/resume.html">Resuming</a></li>
+                            <li><a href="{{ URL_ROOT }}features/retry.html">Retrying</a></li>
+                            <li><a href="{{ URL_ROOT }}features/statistics-and-status-updates.html">Stats & Status'</a></li>
+                            <li><a href="{{ URL_ROOT }}features/styling.html">Styling</a></li>
+                            <li><a href="{{ URL_ROOT }}features/upload-files.html">Uploading</a></li>
+                            <li><a href="{{ URL_ROOT }}features/upload-from-mobile-camera.html">Upload via Mobile Camera</a></li>
+                            <li><a href="{{ URL_ROOT }}features/validation.html">Validation</a></li>
                         </ul>
                     </li>
-                    
+
+
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">API <b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <ul><a href="{{ URL_ROOT }}/api/s3.html">Amazon S3 Uploader</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/api/fineuploader.html">FineUploader</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/api/fineuploaderbasic.html">FineUploader Basic</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/api/drag-and-drop.html">Drag 'n' Drop</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/api/feature-detection.html">Feature Detection</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/api/promise.html">Promises</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/api/qquery.html">QQuery</a></ul>
+                            <ul><b>Options</b>
+                            <li><a href="{{ URL_ROOT }}api/options.html">Core</a></li>
+                            <li><a href="{{ URL_ROOT }}api/options-ui.html">UI</a></li>
+                            <li><a href="{{ URL_ROOT }}api/options-s3.html">S3</a></li>
+                            </ul>
+                            <ul><b>Methods</b>
+                            <li><a href="{{ URL_ROOT }}api/methods.html">Core & UI</a></li>
+                            <li><a href="{{ URL_ROOT }}api/methods-s3.html">S3</a></li>
+                            <li><a href="{{ URL_ROOT }}api/qq.html">qq</a></li>
+                            </ul>
+                            <ul><a href="{{ URL_ROOT }}api/events.html"><b>Events</b></a></ul>
                         </ul>
                     </li>
 
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Callbacks <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Servers <b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <ul><a href="{{ URL_ROOT }}/callbacks/s3.html">Amazon S3 Uploader</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/callbacks/default.html">Traditional Uploader</a></ul>
+                            <ul><a href="{{ URL_ROOT }}endpoint_handlers/traditional.html">Traditional</a></ul>
+                            <ul><a href="{{ URL_ROOT }}endpoint_handlers/amazon-s3.html">Amazon S3</a></ul>
                         </ul>
                     </li>
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Server <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <ul><a href="{{ URL_ROOT }}/server/s3.html">Amazon S3 Uploader</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/server/default.html">Traditional Uploader</a></ul>
-                        </ul>
-                    </li>
-
-                    <li><a href="{{ URL_ROOT }}/overview/support.html">Support</li></a>
+                    <li><a href="{{ URL_ROOT }}support.html">Support</li></a>
 
                     {% set version_bar = [
-                        ('/branch/master', 'master', 'Newest'),
+                        ('/branch/master', 'master', 'Stable'),
                         ('/branch/develop', 'develop', 'In Progress'),
                         ] -%}
 
-                    {# {% set active_page = active_page|default('{{ GIT_REF_VAL }}') -%} #}
-                    {% set active_page = 'master' %}
+                    {% if GIT_REF_VAL %}
+                        {% set active_page = GIT_REF_VAL %}
+                    {% else %}
+                        {% set active_page = "master" %}
+                    {% endif %}
+                    {% set active_page = GIT_REF_VAL %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version <b class="caret"></b>
                         <ul class="dropdown-menu">

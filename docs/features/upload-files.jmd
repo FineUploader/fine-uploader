@@ -1,4 +1,5 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Upload Files" %}
 {% block content %}
 {% markdown %}
 
@@ -7,44 +8,15 @@
 Assuming you already have a copy of Fine Uploader, first and foremost, you are
 going to want to make sure you've read the [Getting Started guide]().
 
-{{ alert(
-"""Before you delve in any further, note that this section is geared towards
-traditional endpoint users. The [API Reference](../#api-reference) has notes
-on how to use different options, methods, and events specific to Amazon S3.""", "warn") }}
-
 If you feel comfortable from there, we can begin explaining how Fine Uploader
 uploads files, as well as some of the basic options one can set to customize
 their uploads.
 
-## Options
-
-The `request` option holds all information pertaining strictly to upload requests.
-
-Fine Uploader requires the integrator to set the `endpoint` option of the
-`request` property.
-
-#### `request` options
-
-{{ options_table(
-    (
-        ("customHeaders", "`Object`", "`{}`", "Additional headers sent along with each POST request."),
-        ("endpoint", "`String`", "`'/server/upload'`", "The endpoint to send upload requests to."),
-        ("filenameParam", "`String`", "`'qqfilename'`", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent. Note that `Blob`s are always sent if AJAX uploading and chunking are supported."),
-        ("forceMultipart", "`Boolean`", "`true`", "Force all uploads to use multipart encoding"),
-        ("inputName", "`String`", "`'qqfile'`", "The attribute of the `<input>` element which will contain the file name. Not applicable to non AJAX uploads."),
-        ("params", "`Object`", "`{}`", "The parameters that shall be sent with each upload request."),
-        ("paramsInBody", "`Boolean`", "`true`", "Enable or disable sending parameters in the request body. If `false`, parameters are sent in the URL. If `true`, then parameters are in the body.."),
-        ("totalFileSizeName", "`String`", "`'qqtotalfilesize'`", "The name of the parameter passed that specifies the total file size in bytes. Only applicable to multipart requests from the XHR uploader."),
-        ("uuidName", "`String`", "`'qquuid'`", "The name of the parameter the uniquely identifies each associated item. The value is a version 4 UUID."),
-    )
-) }}
-
 {{ alert(
-"""The distinction between ID and UUID should be noted here. UUID is a [Level 4](http://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_.28random.29)
-**global** identifier and is unique per file. ID is simply a number assigned to
-the file internally by the uploader. The largest file ID is equivalent
-to the current number of files that have been submitted - 1.""", "info", "ID vs. UUID"
-) }}
+"""Before you delve any further, note that this section assumes you have a
+(working!) server to handle uploads. If not, then make sure to check out
+the server-side guidelines for either [traditional](../endpoint_handlers/traditional.html) or [Amazon S3](../endpoint_handlers/amazon-s3.html) upload
+endpoints.""", "warn") }}
 
 ## Events
 
@@ -62,13 +34,32 @@ to the current number of files that have been submitted - 1.""", "info", "ID vs.
     (
         ("addFiles", "filesOrInputs[, params[, endpoint]]", "", "Submit one or more `File` objects to the uploader"),
         ("addBlobs", "blobDataArray[, params[, endpoint]]", "", "Submit `Blob` objects to the uploader"),
-        ("addBlobs", "blobDataArray[, params[, endpoint]]", "", "Submit `Blob` objects to the uploader"),
         ("uploadStoredFiles", "", "", "Begin uploading all queued items. `NoFilesError` if there are no items to upload."),
     )
 ) }}
 
+{{
+alert("`addFiles` accepts `File`s, `input` elements, or a collection of any of these types
+ provdided the collection object contains an (integer) index property for each contained item.")
+}}
+
+### `BlobData` objects
+
+`BlobData` objects are just `Blobs` with names. Their properties:
+
+```javascript
+var blobData = {
+    name: '', /* Blob name goes here */
+    blob: [], /* Blob data goes here */
+}
+```
+
+### Successfully Uploading
+
 Upload success will occur when the server's response status is 200 and the
 request body is a JSON string `{ success: 'true' }`
+
+### Auto/Manual Uploading
 
 Fine Uploader can automatically upload files that are added to it, or wait until
 the user triggers an action to upload. Automatic uploads are turned on or off
@@ -76,9 +67,8 @@ via the `autoUpload` property of the main options object.
 
 By default `autoUpload` is enabled.
 
-### Automatic Upload
-
 ```javascript
+// Upload automatically
 $("#fine-uploader").fineUploader({
     request: {
         endpoint: '/server/upload'
@@ -86,12 +76,11 @@ $("#fine-uploader").fineUploader({
 });
 ```
 
-### Manual Upload
-
 If `autoUpload` is set to `false`, then items added to Fine Uploader will be queued until another time. Uploads can be triggered by calling the `uploadStoredFiles` method on an instance of Fine Uploader.
 
 <!-- http://stackoverflow.com/questions/16471503/fineuploader-uploads-the-same-file-multiple-times-at-the-same-time -->
 ```javascript
+// Manually upload
 $("#fine-uploader").fineUploader({
     autoUpload: false,
     request: {

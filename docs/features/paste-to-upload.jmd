@@ -1,4 +1,5 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Paste to Upload" %}
 {% block content %}
 {% markdown %}
 
@@ -22,7 +23,9 @@ Currently, only Chrome supports this completely.", "info", "Note:") }}
 
 {{ options_table(
     (
-        ("showPrompt", "`Function` callback", "Run this callback when a file has been pasted. This callback takes a `message` to display the user and a `defaultValue` to assume."),
+       ("defaultName", "`String`", "`'pasted_image'`", "The default name given to pasted images."),
+       ("targetElement", "`HTMLElement`", "`null`", "Enable this feature by providing any `HTMLElement` here."),
+       ("showPrompt", "`Function` callback", "Run this callback when a file has been pasted. This callback takes a `message` to display the user and a `defaultValue` to assume."),
     )
 ) }}
 
@@ -33,6 +36,8 @@ Currently, only Chrome supports this completely.", "info", "Note:") }}
         ("pasteReceived", "`Blob` blob", "Called when a pasted image has been received, but before it is uploaded. [Promissory](async-tasks-and-promises.html)"),
     )
 ) }}
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2013/03/04/upload-an-image-via-paste-in-3-4/)
 
 {% endmarkdown %}
 {% endblock %}

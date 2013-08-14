@@ -1,43 +1,9 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Retrying Uploads" %}
 {% block content %}
 {% markdown %}
 
 # Retrying Uploads {: .page-header }
-
-## Automatic Retry
-
-Fine Uploader will automatically attempt to retry an upload if the `enableAuto` option is set to `true`:
-
-```javascript
-$("#fine-uploader").fineUploader({
-    // ..
-    retry: {
-        enableAuto: true
-    }
-}).on('autoRetry', function (event, id, name, attemptNumber) {
-
-});
-```
-
-## Manual Retry
-
-On the other hand, retrying could be controlled manually by setting `enableAuto` to `false`:
-
-```javascript
-$("#fine-uploader").fineUploader({
-    // ..
-    retry: {
-        enableAuto: false
-    }
-}).on('manualRetry', function (event, id, name) {
-
-});
-
-$("#retry-button").click( function (event) {
-    var id = getSpecificFileId(this);
-    $("#fine-uploader").fineUploader('retry', id);
-});
-```
 
 ## Options
 
@@ -68,6 +34,44 @@ $("#retry-button").click( function (event) {
         ("retry", "`String` id", "", "Try uploading the specific item again."),
     )
 ) }}
+
+## Automatic Retry
+
+Fine Uploader will automatically attempt to retry an upload if the `enableAuto` option is set to `true`:
+
+```javascript
+$("#fine-uploader").fineUploader({
+    // ..
+    retry: {
+        enableAuto: true
+    }
+}).on('autoRetry', function (event, id, name, attemptNumber) {
+
+});
+```
+
+## Manual Retry
+
+On the other hand, retrying could be controlled manually by setting
+`enableAuto` to `false`, and programmatically retrying by using the
+`retry` API method.
+
+```javascript
+$("#fine-uploader").fineUploader({
+    // ..
+    retry: {
+        enableAuto: false
+    }
+}).on('manualRetry', function (event, id, name) {
+
+});
+
+$("#retry-button").click( function (event) {
+    var id = getSpecificFileId(this);
+    $("#fine-uploader").fineUploader('retry', id);
+});
+```
+
 
 {% endmarkdown %}
 {% endblock %}

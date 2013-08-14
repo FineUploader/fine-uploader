@@ -1,7 +1,6 @@
 {% extends "_templates/base.html" %}
-
+{% set page_title = "Events" %}
 {% block title %}Events - Fine Uploader Documentation{% endblock %}
-
 
 {% block sidebar %}
 <ul class="nav nav-tabs nav-stacked affix">
@@ -62,7 +61,7 @@ upload may actually complete until the promise has actually be fullfilled.
 
 **Parameters**: String id, String name, Object responseJSON, XMLHttpRequest xhr
 
-Called when teh item has finished uploading.
+Called when the item has finished uploading.
 
 The responseJSON will contain the raw response from the server including the
 "success" property which indicates whether the upload succeeded or not.

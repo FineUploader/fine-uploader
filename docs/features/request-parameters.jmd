@@ -1,4 +1,5 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Request Parameters" %}
 {% block content %}
 {% markdown %}
 
@@ -18,17 +19,36 @@ following options found in the `request` option:
     (
         ("endpoint", "`String`", "`'/server/upload'`", "The endpoint to send upload requests to."),
         ("params", "`Object`", "`{}`", "The parameters that shall be sent with each upload request."),
-        ("paramsInBody", "`Boolean`", "`true`", "Enable or disable sending parameters in the request body. If `false`, parameters are sent in the URL. If `true`, then all requests are multipart encoded."),
+        ("paramsInBody", "`Boolean`", "`true`", "Enable or disable sending parameters in the request body. If `false`, parameters are sent in the URL. Otherwise, parameters are sent in the request body."),
         ("customHeaders", "`Object`", "`{}`", "Additional headers sent along with each POST request."),
         ("forceMultipart", "`Boolean`", "`true`", "Force all uploads to use multipart encoding"),
-        ("inputName", "`String`", "`'qqfile'`", "The attribute of the `<input>` element which will contain the file name. Not applicable to non AJAX uploads."),
-        ("uuidName", "`String`", "`'qquuid'`", "The name of the parameter the uniquely identifies each associated item. The value is a version 4 UUID."),
-        ("totalFileSizeName", "`String`", "`'qqtotalfilesize'`", "The name of the parameter passed that specifies the total file size in bytes. Only applicable to multipart requests from the XHR uploader."),
-        ("filenameParam", "`String`", "`'qqfilename'`", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent. Note that `Blob`s are always sent if AJAX uploading and chunking are supported."),
+        ("inputName", "`String`", "`'qqfile'`", "The attribute of the input element which will contain the file name. Not applicable to non AJAX uploads."),
+        ("uuidName", "`String`", "`'qquuid'`", "The name of the parameter the uniquely identifies each associated item. The value is a [Level 4 UUID](http://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_.28random.29)."),
+        ("totalFileSizeName", "`String`", "`'qqtotalfilesize'`", "The name of the parameter passed that specifies the total file size in bytes."),
+        ("filenameParam", "`String`", "`'qqfilename'`", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent."),
     )
 ) }}
 
-{{ alert("Setting `paramsInBody` to `true` will force all requests to be multipart encoded.", "info", "Note") }}
+### S3 `request` option
+
+{{ options_table(
+    (
+        ("endpoint", "`String`", "`null`", "The fully qualified URL for the S3 bucket."),
+        ("signatureEndpoint", "`String`", "`null`", "The endpoint that Fine Uploader can use to send policy documents (HTML form uploads) or other strings to sign (REST requests) before sending requests off to S3."),
+        ("successEndpoint", "`String`", "`null`", "An endpoint that Fine Uploader should POST to when a file
+has been succcessfully uploaded to S3. The parameters include the key, name, UUID, and bucket associated with the file."),
+        ("accessKey", "`String`", "`null`", "Your AWS public key. **NOT YOUR SECRET KEY**."),
+        ("acl", "`String`", "`'private'`", "This value corresponds to a [canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/ACLOverview.html#CannedACL)"),
+        ("key", "`String` or `Function`", "`'uuid'`", "Describes the object key usde to identify the file in your S3 bucket."),
+        ("successRedirectEndpoint", "`String`", "`null`", "This must point to a page on the same origin/domain as the page hosting Fine Uploader. Required to use S3 uploads with browsers that do not implement the File API. Prefixed with 'x-amz-meta-' header by Fine Uploader."),
+        ("params", "`Object`", "`{}`", "Parameters passed along with each upload request."),
+        ("filenameParam", "`String`", "`'qqfilename'`", "Part of the parameter name that contains the name of the associated file which may differ from the key name. Prefixed with 'x-amz-meta-' by Fine Uploader."),
+    )
+) }}
+
+{{ alert("Valid S3 endpoints include: 'http://foobar.s3.amazonaws.com', 'https://foobar.s3.amazonaws.com', and 'http://foobar.s3-ap-northeast-1.amazonaws.com'") }}
+
+----
 
 The `params` option is used to define request parameters when you instantiate a
 new Fine Uploader instance. Parameters defined this way are set on the request
@@ -37,7 +57,7 @@ be set for DELETE requests. Simply modify the `params` property of the
 `deletFile` option. Either of these properties are capable of handling a
 variety of JavaScript objects.
 
-##### Simple Objects
+#### Simple Objects
 
 ```javascript
 params: {
@@ -46,7 +66,7 @@ params: {
 }
 ```
 
-##### Nested Objects
+#### Nested Objects
 
 ```javascript
 params: {
@@ -58,9 +78,9 @@ params: {
 }
 ```
 
-##### Functions
+#### Functions
 
-Yes, even functions! (They are first-class citizens after all)
+Yes, even functions! (They are first-class citizens in JS world)
 
 Each function will be evaluated **for each** file that is submitted. The following code snippet
 demonstrates how one would track the current number of uploaded files.
@@ -79,6 +99,8 @@ var fileNum = 0;
 ```
 
 {{ alert("Any params with a function value **must** return either a number or a string.", "info", "Note") }}
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2012/12/09/setparams-is-now-much-more-useful-in-3-1/)
 
 ## Methods
 
@@ -121,6 +143,7 @@ be sure to the meta tag in your HTML: `<meta charset='utf-8'>`""", "info", "Note
 Another option is sending extra parameters in the request body. Enable this
 feature by setting the `request.paramsInBody` option to `true`.
 
+[For more information, see the associated blog post](http://blog.fineuploader.com/2012/12/05/include-params-in-the-request-body-or-the-query-string/)
 
 {% endmarkdown %}
 {% endblock %}

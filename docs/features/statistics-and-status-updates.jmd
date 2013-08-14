@@ -1,4 +1,5 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Statistics and Status Updates" %}
 {% block content %}
 {% markdown %}
 
@@ -52,6 +53,25 @@ onStatusChange(id, oldStatus, newStatus). The concept is simple: this will be
 invoked whenever any submitted file changes state. The ID, old status, and the
 new status will be included in the callback parameters. Again, see qq.status
 for all valid status values.
+
+# Progress Bars {: .page-header }
+
+{{ alert("This feature is only available in Chrome, Firefox, Safari, and IE10+ due to their support for the `uploadProgress` method on the `XMLHttpRequest` object..") }}
+
+Seeing your uploads progress can be a satisfying feeling, especially when they
+finish. With Fine Uploader UI mode, a progress bar is included in the UI, and
+-- just like any other Fine Uploader UI feature -- it can be completely
+rebuilt and rebranded in Core mode.
+
+## Events
+
+{{ events_table(
+    (
+        ("progress", "`String` id, `String` name, `String` uploadedBytes, `String` totalBytes", "Called during the upload, as it progresses. Only used by the XHR/AJAX uploader."),
+    )
+) }}
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2013/05/24/query-fine-uploader-for-upload-stats/)
 
 {% endmarkdown %}
 {% endblock %}

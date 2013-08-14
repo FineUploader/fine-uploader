@@ -8,7 +8,10 @@
 </div>
 {%- endmacro %}
 
-{% macro code_table(headings, rows) -%}
+{% macro code_table(headings, rows, title=None) -%}
+{% if title %}
+<h2>{{ title }}</h2>
+{% endif %}
 <table class="table table-striped table-bordered">
     <thead>
     <tr>
@@ -30,14 +33,14 @@
 </table>
 {%- endmacro %}
 
-{% macro options_table(rows) -%}
-{{ code_table(("Option Name", "Type", "Default", "Description"), rows) }}
+{% macro options_table(rows, title=None) -%}
+{{ code_table(("Option Name", "Type", "Default", "Description"), rows, title) }}
 {%- endmacro %}
-{% macro events_table(rows) -%}
-{{ code_table(("Event", "Parameters", "Description"), rows) }}
+{% macro events_table(rows, title=None) -%}
+{{ code_table(("Event", "Parameters", "Description"), rows, title) }}
 {%- endmacro %}
-{% macro methods_table(rows) -%}
-{{ code_table(("Name", "Parameters", "Return", "Description"), rows) }}
+{% macro methods_table(rows, title=None) -%}
+{{ code_table(("Name", "Parameters", "Return", "Description"), rows, title) }}
 {%- endmacro %}
 
 {% macro snippet(options, element="#fine-uploader", endpoint="/server/upload", callbacks={}, modes=['Core', 'UI', 'jQuery Core', 'jQuery UI', 'S3']) -%}

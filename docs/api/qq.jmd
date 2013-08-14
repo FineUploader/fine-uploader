@@ -1,4 +1,5 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "qq API" %}
 {% block content %}
 {% markdown %}
 
@@ -56,9 +57,9 @@ sure to wrap any elements before calling these methods on them.
 
 {{ methods_table(
     (
+        ("clearText", "", "", "Clears all text for this element."),
         ("insertBefore", "element", "", "Inserts the element directly befor the passed element in the DOM."),
         ("remove", "element", "", "Removes this element from the DOM."),
-        ("clearText", "", "", "Clears all text for this element."),
         ("setText", "text", "", "Set the text for this element."),
     )
 ) }}
@@ -67,8 +68,8 @@ sure to wrap any elements before calling these methods on them.
 
 {{ methods_table(
     (
-        ("css", "styles", "", "Specify css styles for this element (e.g., `{ top: 0, right: 0 }`)"),
         ("addClass", "className", "", "Add a class to this element"),
+        ("css", "styles", "", "Specify css styles for this element (e.g., `{ top: 0, right: 0 }`)"),
         ("getByClass", "className", "`Array`", "Returns an array of all descendants of this element that contain the passed class name."),
         ("hasClass", "className", "`boolean`", "Returns true if the element has this class name"),
         ("removeClass", "className", "", "Remove the provided class from the element."),
@@ -105,14 +106,6 @@ sure to wrap any elements before calling these methods on them.
         ("setCookie", "name, value, daysTillExpiration", "", "Sets or updates a cookie."),
         ("deleteCookie", "name", "", "Deletes the cookie with the associated name."),
         ("getExtension", "filename", "`string`", "Return the extension for the filename, if any."),
-        ("ie10", "", "`boolean`", "`True` if current user-agent is IE10."),
-        ("ie", "", "`boolean`", "`True` if current user-agent is IE."),
-        ("safari", "", "`boolean`", "`True` if current user-agent is Safari."),
-        ("chrome", "", "`boolean`", "`True` if current user-agent is Chrome."),
-        ("firefox", "", "`boolean`", "`True` if current user-agent is Firefox." ),
-        ("windows", "", "`boolean`", "`True` if current user-agent is running on Microsoft Windows."),
-        ("android", "", "`boolean`", "`True` if current user-agent is running on Android."),
-        ("ios", "", "`boolean`", "`True` if current user-agent is running on iOS."),
         ("isXhrUploadSupported", "", "`boolean`", "`True` if `XMLHttpRequest` is supported on this user-agent"),
         ("isFolderDropSupported", "", "`boolean`", "`True` if folder drop is suppported."),
         ("isFileChunkingSupported", "", "`boolean`", "`True` if file chunking is supported."),

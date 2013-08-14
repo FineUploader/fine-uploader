@@ -1,4 +1,5 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "S3 Endpoint" %}
 {% block content %}
 {% markdown %}
 # S3 Server-Side Support {: .page-header }
@@ -92,7 +93,7 @@ Support for the delete file feature when using the S3 uploader is mostly the sam
 mode.  The S3 uploader does add "key" and "bucket" parameters with the request.  Otherwise, the request and the server-side
 code required to handle these requests in the same as when using the traditional uploader.  Fine Uploader expects your
 server-side code to delete the associated file in S3 via Amazon's S3 API, and then return a response to Fine Uploader's
-delete request when this has task has been handled.  See the [server-side documentation for the traditional uploader]({{ URL_ROOT }}/server/default.html#deleting-files)
+delete request when this has task has been handled.  See the [server-side documentation for the traditional uploader](../endpoint_handlers/traditional.html)
 for additional information on handling delete file requests.
 
 

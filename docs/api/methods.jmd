@@ -1,4 +1,5 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Methods" %}
 
 {% block title %}Methods - Fine Uploader Documentation{% endblock %}
 

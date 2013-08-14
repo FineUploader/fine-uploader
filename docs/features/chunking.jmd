@@ -1,4 +1,5 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Chunking" %}
 {% block content %}
 {% markdown %}
 
@@ -11,7 +12,7 @@ Fine Uploader. File chunking also provides a workaround for request size limits
 put in place in certain browsers (e.g., Firefox and Chrome limit upload request
 sizes to about 4GB).
 
-Chunking is made possible by the File API [^1], and is present in Chrome, Firefox,
+Chunking is made possible by the File API, and is present in Chrome, Firefox,
 Safari (iOS 6 and OS X), and Internet Explorer 10. Chunking is disabled in all
 Android browsers until its `Blob.prototype.slice` implementation is fixed.
 
@@ -84,7 +85,7 @@ next attempt (assuming auto or manual retry has been enabled).
     )
 ) }}
 
-{{ alert("The default chunk size for Fine Uploader S3 is 5 MiB. If your file is smaller than that size, the upload will be non-chunked.", "default","Amazon S3 Specific Note:") }}
+{{ alert("The default chunk size for Fine Uploader S3 is 5 MiB. If your file is smaller than that size, the upload will be non-chunked.", "default", "Amazon S3 Specific Note:") }}
 
 ## Events
 
@@ -103,7 +104,7 @@ The `chunkData` object, which is passed into the 'uploadChunk' event handler, ha
 * `endByte` - the last byte of the current chunk.
 * `totalParts` - the total number of partitions associated with the `File` or `Blob`.
 
-[^1]: (http://www.w3.org/TR/FileAPI/)[http://www.w3.org/TR/FileAPI/]
+[For more information, see the associated blog post](http://blog.fineuploader.com/2012/12/28/file-chunkingpartitioning-is-now-available-in-3-2/)
 
 {% endmarkdown %}
 {% endblock %}

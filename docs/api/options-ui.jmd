@@ -1,6 +1,5 @@
 {% extends "_templates/base.html" %}
-
-{% block title %}UI Options - Fine Uploader Documentation{% endblock %}
+{% set page_title = "UI Options" %}
 
 {% block sidebar %}
 <ul class="nav nav-tabs nav-stacked affix">

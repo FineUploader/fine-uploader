@@ -1,4 +1,5 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Options" %}
 
 {% block title %}Core Options - Fine Uploader Documentation{% endblock %}
 
@@ -60,7 +61,7 @@ mode you are in and keep that in mind when determining which options do what.
 
 {{ options_table(
     (
-        ("ios", "`Boolean`", "`false`", "Enable or disable camera access on iOS (iPod, iPhone, and iPad) devices. Npte: Enabling this will disable multiple file selection."),
+        ("ios", "`Boolean`", "`false`", "Enable or disable camera access on iOS (iPod, iPhone, and iPad) devices. Note: Enabling this will disable multiple file selection."),
     )
 ) }}
 
@@ -183,13 +184,13 @@ mode you are in and keep that in mind when determining which options do what.
     (
         ("endpoint", "`String`", "`'/server/upload'`", "The endpoint to send upload requests to."),
         ("params", "`Object`", "`{}`", "The parameters that shall be sent with each upload request."),
-        ("paramsInBody", "`Boolean`", "`true`", "Enable or disable sending parameters in the request body. If `false`, parameters are sent in the URL. If `true`, then all requests are multipart encoded."),
+        ("paramsInBody", "`Boolean`", "`true`", "Enable or disable sending parameters in the request body. If `false`, parameters are sent in the URL. Otherwise, parameters are sent in the request body."),
         ("customHeaders", "`Object`", "`{}`", "Additional headers sent along with each POST request."),
         ("forceMultipart", "`Boolean`", "`true`", "Force all uploads to use multipart encoding"),
-        ("inputName", "`String`", "`'qqfile'`", "The attribute of the `<input>` element which will contain the file name. Not applicable to non AJAX uploads."),
-        ("uuidName", "`String`", "`'qquuid'`", "The name of the parameter the uniquely identifies each associated item. The value is a version 4 UUID."),
-        ("totalFileSizeName", "`String`", "`'qqtotalfilesize'`", "The name of the parameter passed that specifies the total file size in bytes. Only applicable to multipart requests from the XHR uploader."),
-        ("filenameParam", "`String`", "`'qqfilename'`", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent. Note that `Blob`s are always sent if AJAX uploading and chunking are supported."),
+        ("inputName", "`String`", "`'qqfile'`", "The attribute of the input element which will contain the file name. Not applicable to non AJAX uploads."),
+        ("uuidName", "`String`", "`'qquuid'`", "The name of the parameter the uniquely identifies each associated item. The value is a [Level 4 UUID](http://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_.28random.29)."),
+        ("totalFileSizeName", "`String`", "`'qqtotalfilesize'`", "The name of the parameter passed that specifies the total file size in bytes."),
+        ("filenameParam", "`String`", "`'qqfilename'`", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent."),
     )
 ) }}
 

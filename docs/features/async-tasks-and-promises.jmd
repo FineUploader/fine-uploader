@@ -1,14 +1,15 @@
 {% extends "_templates/base.html" %}
+{% set page_title = "Async Tasks and Promises" %}
 {% block content %}
 {% markdown %}
 
 # Async Tasks and Promises {: .page-header }
 
-In some cases, Fine Uploader use of "promises", both internally and via the API.
-Promises are helpful when dealing with asynchronous patterns.
+In some cases, Fine Uploader uses "promises", both internally and via the API.
+Promises are a design pattern taken from the functional programming style and
+are extremely helpful when dealing with asynchronous patterns.
 
 Fine Uploader's support for promises is encapsulated in the `qq.Promise` class.
-
 
 For more informaton on promises in JavaScript, I'd like to suggest
 [Promises -- an alternative way to approach asynchronous JavaScript](http://12devs.co.uk/articles/promises-an-alternative-way-to-approach-asynchronous-javascript/).
@@ -28,6 +29,13 @@ promise instance:
 * `onSubmitDelete`
 * `onPasteReceived`
 
+You are not required to return a promise -- you can simply return `false` or
+`undefined`. However, there are some instances where you may want to perform
+some asynchronous work in your callback handler. A promise can be returned from
+any of the above callbacks if you need to execute  some non-blocking task,
+such as an AJAX request, or asking the user for input via a modal window that
+does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog box.
+
 ## qq.Promise API
 
 {{ methods_table(
@@ -40,14 +48,7 @@ promise instance:
 ) }}
 
 
-## Example
-
-You are not requried to return a promise -- you can simply return `false` or
-`undefined`. However, there are some instances where you may want to perform
-some asynchronous work in your callback handler. A promise can be returned from
-any of the above callbacks if you need to execute  some non-blocking task,
-such as an ajax request, or asking the user for input via a modal window that
-does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog box.
+### Example
 
 Suppose you are overriding a promissory function or callback.  For example,
 suppose you want to override the `showPrompt` option (function).  The default
@@ -83,6 +84,8 @@ from the user, of a pasted image.  In this case
 once the result has been updated on the promise instance, Fine Uploader will
 proceed to upload the pasted image using the
 name supplied by the user.
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2013/05/07/callbacks-that-permit-asynchronous-returns/)
 
 
 {% endmarkdown %}

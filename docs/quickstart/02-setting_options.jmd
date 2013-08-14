@@ -1,6 +1,5 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Setting Options" %}
-
 {% block content %}
 {% markdown %}
 # Setting FineUploader Options {: .page-header }
@@ -16,7 +15,7 @@ requires you to specify the URL where it should send uploads and server
 requests to. This endpoint can be an absolute path, relative path, and even
 a complete URI (as is the case with S3 uploader).
 
-More information on the [`request` option here]().
+More information on the [`request` option here](../api/options.html).
 
 ```javascript
 $("#fine-uploader").fineUploader({
@@ -45,7 +44,7 @@ This allows you to diagnose any application errors and it is recommended to
 have this mode on during development, be make sure to turn it off in
 production.
 
-More information on [debugging errors here]().
+More information on [debugging errors here](../features/handling-errors.html).
 
 ### Retrying Uploads
 
@@ -65,7 +64,7 @@ $("#fine-uploader").fineUploader({
 });
 ```
 
-More information on [retrying uploads here]().
+More information on [retrying uploads here](../features/retry.html).
 
 ### Deleting Files
 
@@ -79,7 +78,7 @@ link will appear next to the file after it has successfully uploaded.
 File deletion can be enabled in the Fine Uploader options.
 
 You can also send a delete request via the `deleteFile` API method.
-[More information on the `deleteFile` API method here.]().
+[More information on the `deleteFile` API method here.](../api/methods.html).
 
 ```javascript
 $("#fine-uploader").fineUploader({
@@ -99,7 +98,7 @@ $("#fine-uploader").fineUploader({
 });
 ```
 
-More information on [deleting files here]().
+More information on [deleting files here](../features/delete.html).
 
 ## Putting it together
 
