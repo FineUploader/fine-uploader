@@ -23,21 +23,21 @@ section. The download comes bundled with all required scripts and modules.
 Fine Uploader comes with two different modes pertaining to the user interface.
 
 ##### [Core Mode](../modes/core.html)
-The most basic Fine Uploader mode. Does little to no DOM
-manipulation. Core mode assumes that the developer will code the UI and
-UX for the uploader themselves. Core mode is suggested for advanced developers
-who wish for to customize their uploader's user interface. To use Core Mode:
+The most basic Fine Uploader mode.  Core mode assumes that the developer will code their own UI
+but still make use of Fine Uploader's API. Core mode is suggested for advanced developers
+who wish for to heavily customize the uploader's user interface. To use Core Mode:
 
 ```javascript
 var uploader = new qq.FineUploaderBasic({/* options go here .... */});
 ```
 
 ##### [UI Mode](../modes/ui.html)
-An extension of Core mode. UI mode comes with a fully functional
-interface to the uploader including, but not limited to: a default upload button,
+Inherits everything from Core mode. UI mode also comes with a fully functional
+user interface which includes, but is not limited to: a default upload button,
 progress bars, retry/cancel/delete buttons, proper display of error messages,
 and more. UI mode is recommended for beginning developers or for those who
- are please with the default Fine Uploader interface. To use UI Mode:
+are pleased with the default Fine Uploader interface or can customize the default Fine Uploader
+UI via CSS. To use UI Mode:
 
 ```javascript
 var uploader = new qq.FineUploader({/* options go here ... */});
@@ -50,12 +50,12 @@ To use the traditional endpoint handler, simply declare Fine Uploader as you
 normally would.
 
 ##### [Amazon S3](../endpoint_handlers/amazon-s3.html)
-Amazon's S3 is one of the most popular cloud-storage services in existence.
-Fine Uploader comes with built in support, but integrators must make sure to use
-the S3 uploader:
+Amazon's S3 is currently the most popular cloud service.
+Fine Uploader comes with built in support that allows all files to be uploaded directly to S3 via the browser.
+To make use of Fine Uploader S3:
 
 ```javascript
-var uploader = new qq.FineUploaderS3({/* options go here ... */});
+var uploader = new qq.s3.FineUploader({/* options go here ... */});
 ```
 
 #### [jQuery](../integrating/jquery.html)
@@ -73,6 +73,11 @@ $("#fine-uploader").fineUploader({uploaderType: 'basic' /* options go here... */
 To use UI Mode with the jQuery plugin:
 ```javascript
 $("#fine-uploader").fineUploader({/* options go here... */});
+```
+
+To use Fine Uploader S3 with the jQuery plugin:
+```javascript
+$("#fine-uploader").fineUploaderS3({/* options go here... */});
 ```
 
 ### 3. Enabling FineUploader on your site
