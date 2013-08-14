@@ -4,7 +4,7 @@
 {% markdown %}
 # Documentation Overview {: .page-header }
 
-Welcome to FineUploader's documentation. This documentation is divided into
+Welcome to Fine Uploader's documentation. This documentation is divided into
 different parts. It's recommended that you first check out the
 [quickstart](#quickstart) for Fine Uploader. If you’d rather dive into the
 internals of Fine Uploader, check out the exhaustive
@@ -15,14 +15,14 @@ the [server-side](#endpoint-handlers_2).
 ### Getting Started
 
 This area of the documentation is mostly prose and examples. It is meant to be
-human-readable and accessible to those looking to get started with FineUploader.
+human-readable and accessible to those looking to get started with Fine Uploader.
 For experts, or developers looking to view more technical documentation, refer
 to the [API docs](#api-reference).
 
 #### Quickstart
 
-1. [Getting Stared with FineUploader](quickstart/01-getting-started.html)
-2. [Setting FineUploader options](quickstart/02-setting_options.html)
+1. [Getting Stared with Fine Uploader](quickstart/01-getting-started.html)
+2. [Setting Fine Uploader options](quickstart/02-setting_options.html)
 3. [Creating an upload server](quickstart/03-setting_up_server.html)
     * [Traditional](quickstart/03-setting_up_server.html)
     * [Amazon S3](quickstart/03-setting_up_server-s3.html)
@@ -76,8 +76,8 @@ be documented.
 ### API Reference
 
 The API reference is primarily for experienced integrators who are looking for
-more advanced features and details about FineUploader. That being said, these
-docs should be viewed by all who are looking to use FineUploader as some of the
+more advanced features and details about Fine Uploader. That being said, these
+docs should be viewed by all who are looking to use Fine Uploader as some of the
 information is integral.
 
 {% endmarkdown %}

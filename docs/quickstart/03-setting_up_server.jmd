@@ -8,7 +8,8 @@
 {{ alert(
 """This section of the tutorial is aimed at beginners looking to create their
 own upload server. Note that this example does not apply to S3 uploads. For
-more information on uploading to Amazon's S3, read the [S3 endpoint documentation](../endpoint_handlers/amazon-s3.html).""",
+more information on uploading to Amazon's Simple Storage Service,
+read the [Fine Uploader S3 server documentation](../endpoint_handlers/amazon-s3.html).""",
 "warn") }}
 
 For this tutorial we are going to use [Node.js](http://nodejs.org/) to develop
@@ -16,7 +17,9 @@ a simple server which will accept uploads from our FineUploader instance. If
 you don't have Node.js, now's the time to [get it](http://nodejs.org/download/).
 
 If Node.js is not your style, then feel free to browse the other
-[server-side demos repository](http://github.com/Widen/fine-uploader-server).
+[server-side demos repository](http://github.com/Widen/fine-uploader-server).  **It's quite important for you to read
+the [traditional server-side integration instructions](../endpoint_handlers/traditional.html) before you do any of this,
+though**.
 
 #### Getting Started
 
