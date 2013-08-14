@@ -26,7 +26,6 @@ Note: Any features not listed here are supported in all browsers.
             <th>File Drop</th>
             <th>Folder Drop</th>
             <th>Chunking / Resume</th>
-            <th>Resuming</th>
             <th>Non-MPE Requests</th>
             <th>Upload via Paste</th>
             <th>CORS</th>
