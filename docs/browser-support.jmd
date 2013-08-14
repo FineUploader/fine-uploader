@@ -15,6 +15,8 @@ Currently, Fine Uploader supports the following browsers:
 
 ## Feature Support Matrix
 
+Note: Any features not listed here are supported in all browsers.
+
 <table class='table table-condensed table-hover table-striped'>
     <thead>
         <tr>
@@ -23,20 +25,17 @@ Currently, Fine Uploader supports the following browsers:
             <th>XHR2</th>
             <th>File Drop</th>
             <th>Folder Drop</th>
-            <th>Chunking</th>
+            <th>Chunking / Resume</th>
             <th>Resuming</th>
             <th>Non-MPE Requests</th>
             <th>Upload via Paste</th>
             <th>CORS</th>
-            <th>Item Validation</th>
             <th>Size Validation</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>Chrome</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -53,9 +52,7 @@ Currently, Fine Uploader supports the following browsers:
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
         </tr>
@@ -66,9 +63,7 @@ Currently, Fine Uploader supports the following browsers:
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
         </tr>
@@ -80,8 +75,6 @@ Currently, Fine Uploader supports the following browsers:
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
         </tr>
@@ -93,8 +86,6 @@ Currently, Fine Uploader supports the following browsers:
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
         </tr>
@@ -108,8 +99,6 @@ Currently, Fine Uploader supports the following browsers:
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>Android
@@ -118,10 +107,8 @@ Currently, Fine Uploader supports the following browsers:
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
         </tr>
@@ -134,9 +121,7 @@ Currently, Fine Uploader supports the following browsers:
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
             <td>{{ label('y', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
@@ -147,9 +132,7 @@ Currently, Fine Uploader supports the following browsers:
             <td>{{ label('x', "") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
         </tr>
@@ -161,9 +144,7 @@ Currently, Fine Uploader supports the following browsers:
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
         </tr>
@@ -175,9 +156,7 @@ Currently, Fine Uploader supports the following browsers:
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
         </tr>
