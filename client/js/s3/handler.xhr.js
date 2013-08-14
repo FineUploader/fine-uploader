@@ -427,16 +427,20 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     }
 
     // Removes a chunked upload record from local storage, if possible.
+    // Returns true if the item was removed, false otherwise.
     function maybeDeletePersistedChunkData(id) {
         var localStorageId;
 
         if (resumeEnabled) {
             localStorageId = getLocalStorageId(id);
 
-            if (localStorageId) {
+            if (localStorageId && localStorage.getItem(localStorageId)) {
                 localStorage.removeItem(localStorageId);
+                return true;
             }
         }
+
+        return false;
     }
 
     // Iterates through all S3 XHR handler-created resume records (in local storage),
@@ -767,11 +771,10 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             },
 
             expunge: function(id) {
-                var uploadId = fileState[id].chunking.uploadId;
+                var uploadId = fileState[id].chunking.uploadId,
+                    existedInLocalStorage = maybeDeletePersistedChunkData(id);
 
-                maybeDeletePersistedChunkData(id);
-
-                if (uploadId !== undefined) {
+                if (uploadId !== undefined && existedInLocalStorage) {
                     abortMultipartRequester.send(id, uploadId);
                 }
 
