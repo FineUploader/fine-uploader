@@ -37,7 +37,7 @@ alert("""These options are not applicable to the S3 uploader.""")
 
 {{ options_table(
     (
-        ("resuming", "`String`", "`'qqresume'`", "Sent with the first request of the resume with a value of `true`."),
+        ("resuming", "`String`", "'qqresume'", "Sent with the first request of the resume with a value of `true`."),
     )
 ) }}
 
