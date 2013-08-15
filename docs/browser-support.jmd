@@ -6,12 +6,20 @@
 
 Currently, Fine Uploader supports the following browsers:
 
-* Internet Explorer >=7 (11 not yet officially supported)
+* Internet Explorer >=7
 * Firefox
 * Chrome
 * Android >=2.3.x
 * iOS >=6.0
 * Safari >=5 (OS X)
+
+We plan on supporting the following browsers/OSes in the very near future:
+* Mobile versions of Chrome and Firefox (these probably already work now)
+* Internet Explorer 11
+* Opera
+* Opera Mini
+* Firefox OS
+* Dolphin
 
 ## Feature Support Matrix
 
@@ -110,8 +118,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>Android
                 4</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "") }}</td>
+            <td>{{ label('N/A', "") }}</td>
+            <td>{{ label('N/A', "") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -123,8 +131,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>Android
                 2.3.x</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "") }}</td>
+            <td>{{ label('N/A', "") }}</td>
+            <td>{{ label('N/A', "") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -136,8 +144,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>iOS
                 6</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "") }}</td>
+            <td>{{ label('N/A', "") }}</td>
+            <td>{{ label('N/A', "") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
