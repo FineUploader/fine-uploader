@@ -9,6 +9,7 @@
 <table class='table table-condensed'>
     <thead>
         <tr>
+            <th></th>
             <th>Travis</th>
             <th>Seleniun</th>
         </tr>
