@@ -36,7 +36,8 @@ This is for your benefit so your server knows what sort of request it is.""")
     (
         ("delete", "`Integer` id", "Called just before a delete request is sent for the associated item."),
         ("deleteComplete", "`Integer` id, `XMLHttpRequest` or `XDomainRequest` xhrOrXdr, `Boolean` isError", "Called just after receiving a request from the server for a delete file request."),
-        ("submitDelete", "`Integer` id", "Called just before an item that has been marked for deletion has been submitted to the uploader. [Promissory](async-tasks-and-promises.html)"),
+        ("submitDelete", "`Integer` id", "Called just before an item that has been marked for deletion has been submitted to the uploader. You may return false to prevent the delete.
+        You may also return a [`qq.Promise`](async-tasks-and-promises.html)."),
     )
 ) }}
 

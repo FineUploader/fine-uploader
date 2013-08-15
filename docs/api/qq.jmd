@@ -76,7 +76,7 @@ sure to wrap any elements before calling these methods on them.
     )
 )}}
 
-## Event Attaching and Detaching
+### Event Attaching and Detaching
 
 {{ methods_table(
     (
@@ -85,7 +85,7 @@ sure to wrap any elements before calling these methods on them.
     )
 ) }}
 
-## qq
+## Utility Functions
 
 {{ methods_table(
     (
@@ -106,9 +106,6 @@ sure to wrap any elements before calling these methods on them.
         ("setCookie", "name, value, daysTillExpiration", "", "Sets or updates a cookie."),
         ("deleteCookie", "name", "", "Deletes the cookie with the associated name."),
         ("getExtension", "filename", "`string`", "Return the extension for the filename, if any."),
-        ("isXhrUploadSupported", "", "`boolean`", "`True` if `XMLHttpRequest` is supported on this user-agent"),
-        ("isFolderDropSupported", "", "`boolean`", "`True` if folder drop is suppported."),
-        ("isFileChunkingSupported", "", "`boolean`", "`True` if file chunking is supported."),
     )
 ) }}
 

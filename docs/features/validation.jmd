@@ -25,9 +25,11 @@ what sorts of files can and can not be uploaded.
 {{ events_table(
     (
         ("validate", "`File` or `BlobData` fileOrBlobData", "Called once for each selection, dropped, or `addFiles`
-        submitted file and for each `addBlobs` submitted `Blob`. [**Promissory**]()" ),
+        submitted file and for each `addBlobs` submitted `Blob`. You may return false to prevent the file from being
+        submitted.  You may also return a [`qq.Promise`](async-tasks-and-promises.html)." ),
         ("validateBatch", "`Array` fileOrBlobDataArray", "Called once for each batch of selected, dropped or `addFiles`
-        submitted files and for each `addBlobs` submitted `Blob`s. [**Promissory**]()"),
+        submitted files and for each `addBlobs` submitted `Blob`s. You may return false to prevent all files in the
+        batch from being submitted.  You may also return a [`qq.Promise`](async-tasks-and-promises.html)."),
     )
 ) }}
 

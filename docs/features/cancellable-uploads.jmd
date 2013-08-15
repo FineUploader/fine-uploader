@@ -28,7 +28,8 @@ The 'cancel' event allows integrators to assign an action to be completed eeach 
 
 {{ events_table(
     (
-        ("cancel", "`Integer` id, `String` name", "Called when the item has been cancelled. Promissory. You may return `false` to prevent the upload from being cancelled."),
+        ("cancel", "`Integer` id, `String` name", "Called when the item has been cancelled.
+        You may return `false` to prevent the upload from being cancelled.  You may also return a [`qq.Promise`](async-tasks-and-promises.html)."),
     )
 ) }}
 
