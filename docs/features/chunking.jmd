@@ -7,23 +7,23 @@
 
 With the advent of the File API, modern browsers now are capable of dividing
 files into "chunks" (also referred to as partitions). This feature is a crucial
-component to the [resume](resume.html) and [retry](retry.html) features found in
-Fine Uploader. File chunking also provides a workaround for request size limits
-put in place in certain browsers (e.g., Firefox and Chrome limit upload request
+component to the [resume](resume.html) feature, and makes the [retry](retry.html) feature
+more useful.  File chunking also provides a workaround for request size limits
+put in place by browsers (e.g., Firefox and Chrome limit upload request
 sizes to about 4GB).
 
-Chunking is made possible by the File API, and is present in Chrome, Firefox,
+Chunking is made possible by the File API, and is supported in Chrome, Firefox,
 Safari (iOS 6 and OS X), and Internet Explorer 10. Chunking is disabled in all
 Android browsers until its `Blob.prototype.slice` implementation is fixed.
 
 Each chunk is sent in order and as a separate request, and each chunked request
- should be acknowledged much as you would for a non-chunked request because
+should be acknowledged much as you would for a non-chunked request because
 the response to each chunk-request is checked to determine success. If the
 server responds with a failure message, the uploader will attempt to retry
 sending the file starting with the last failed chunk if the `autoRetry` option
 is enabled.
 
-A chunked request will look much like this:
+The parameters on a chunked request will contain the following information:
 
 ```json
 {
@@ -67,6 +67,8 @@ next attempt (assuming auto or manual retry has been enabled).
 
 ### `chunking` option
 
+{{ alert("The default chunk size for Fine Uploader S3 is 5 MiB. If your file is smaller than that size, the upload will be non-chunked.", "default", "Amazon S3 Specific Note:") }}
+
 {{ options_table(
     (
         ("enabled", "`Boolean`", "`false`", "Enable or disable splitting the file separate parts. Each part is sent in a separate request."),
@@ -75,6 +77,8 @@ next attempt (assuming auto or manual retry has been enabled).
 ) }}
 
 ### `chunking.paramNames` option
+
+{{ alert("These options do not apply to the S3 uploader", "default", "Amazon S3 Specific Note:") }}
 
 {{ options_table(
     (
@@ -85,13 +89,11 @@ next attempt (assuming auto or manual retry has been enabled).
     )
 ) }}
 
-{{ alert("The default chunk size for Fine Uploader S3 is 5 MiB. If your file is smaller than that size, the upload will be non-chunked.", "default", "Amazon S3 Specific Note:") }}
-
 ## Events
 
 {{ events_table(
     (
-        ("uploadChunk", "`String` id, `String` name, `Object` chunkData", "Called just before a chunk request is sent."),
+        ("uploadChunk", "`Integer` id, `String` name, `Object` chunkData", "Called just before a chunk request is sent."),
     )
 ) }}
 
