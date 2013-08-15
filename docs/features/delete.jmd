@@ -26,7 +26,7 @@ A file is eligible for deletion only after it has been successfully uploaded.
 ) }}
 
 {{
-alert("""The S3 uploader appends a `_delete` parameter to the request object when the HTTP method is POST instead of DELETE.
+alert("""Fine Uploader appends a `_delete` parameter to the request object when the HTTP method is POST instead of DELETE.
 This is for your benefit so your server knows what sort of request it is.""")
 }}
 
