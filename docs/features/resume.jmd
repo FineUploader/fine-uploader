@@ -38,15 +38,15 @@ Note that resuming is disabled by default, and the cookie or local storage objec
 ### `resume.paramNames` option
 
 {{
+    alert("These options are not applicable to the S3 uploader.")
+}}
+
+{{
 options_table(
     (
         ("resuming", "`String`", "`'qqresume'`", "Sent with the first request of the resume with a value of `true`."),
     )
 )
-}}
-
-{{
-    alert("These options are not applicable to the S3 uploader.")
 }}
 
 ## Methods
