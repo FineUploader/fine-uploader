@@ -14,11 +14,10 @@ clicks a file that they have submitted to the uploader the text will become
 an input element that they can use to change the name.
 
 The filename will then be sent with the request as the `qqfilename` parameter.
-Be sure to use this when naming your file server-side.
+Be sure to read this parameter when naming your file server-side.
 
 {{
-alert("You are probably going to want to have `autoUpload` disabled to give your
-users time to edit the filename before it gets uploaded")
+alert("You will want to have `autoUpload` disabled when using the edit filename feature.")
 }}
 
 ## `editFilename` option
@@ -33,8 +32,8 @@ users time to edit the filename before it gets uploaded")
 
 {{ methods_table(
     (
-        ("getName", "`String` id", "`String`", "Returns the name of the item with the associated id"),
-        ("setName", "`String` id, `String` newName", "", "Provide an alternative name for the associated item"),
+        ("getName", "`Integer` id", "`String`", "Returns the name of the item with the associated id"),
+        ("setName", "`Integer` id, `String` newName", "", "Provide an alternative name for the associated item"),
     )
 ) }}
 
