@@ -33,7 +33,7 @@ Dragging and dropping of _folders_ is currently only supported in Chrome >=21", 
 
 
 
-## Drag and Drop Module
+## Drag and Drop Standalone Module
 
 If you are integrating Fine Uploader and utilizing FineUploaderBasic mode,
 you are likely building you own UI entirely. In case you want to support drag
@@ -79,8 +79,6 @@ you are running this in UI mode, then take a look at the `dragAndDrop` options d
 ) }}
 
 ### Methods
-
-## Methods
 
 {{ methods_table(
     (
