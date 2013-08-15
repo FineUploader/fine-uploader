@@ -10,12 +10,12 @@ and status updates on your uploads.
 
 {{ events_table(
     (
-        ("statusChange", "`String` id, `String` oldStatus, `String` newStatus", "Invoked whenever the status changes for any item submitted to the upload."),
+        ("statusChange", "`Integer` id, `String` oldStatus, `String` newStatus", "Invoked whenever the status changes for any item submitted to the upload."),
     )
 ) }}
 
 The status values correspond to those found in the `qq.status` object.
-For reference, the status':
+For reference, here are valid status values:
 
 * `SUBMITTED`
 * `QUEUED`
@@ -51,12 +51,12 @@ Along the same lines, we can register a callback that allows us to be notified
 when any submitted item changes status. This callback, as mentioned earlier, is
 onStatusChange(id, oldStatus, newStatus). The concept is simple: this will be
 invoked whenever any submitted file changes state. The ID, old status, and the
-new status will be included in the callback parameters. Again, see qq.status
+new status will be included in the callback parameters. Again, see `qq.status`
 for all valid status values.
 
 # Progress Bars {: .page-header }
 
-{{ alert("This feature is only available in Chrome, Firefox, Safari, and IE10+ due to their support for the `uploadProgress` method on the `XMLHttpRequest` object..") }}
+{{ alert("This feature is only available in Chrome, Firefox, Safari, and IE10+ due to their support for the `uploadProgress` events.") }}
 
 Seeing your uploads progress can be a satisfying feeling, especially when they
 finish. With Fine Uploader UI mode, a progress bar is included in the UI, and
