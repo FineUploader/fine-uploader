@@ -22,10 +22,6 @@
 ### `retry` option (UI mode)
 Note that all core mode options are also available.
 
-            showAutoRetryNote: true,
-            autoRetryNote: "Retrying {retryNum}/{maxAuto}...",
-            showButton: false
-
 {{ options_table(
     (
         ("showAutoRetryNote", "`Boolean`", "true", "If set to true, a status message will appear next to the file or `Blob` during automatic retry attempts."),
