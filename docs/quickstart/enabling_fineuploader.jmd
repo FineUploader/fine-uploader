@@ -1,7 +1,7 @@
 {% extends "_templates/base.html" %}
 {% block content %}
 {% markdown %}
-### Enabling FineUploader
+### Enabling Fine Uploader
 
 Fine Uploader does NOT depend on jQuery, and you don't have to use the jQuery plug-in if you don't want to.The same features are available without the jQuery plug-in.  To use Fine Uploader with "plain 'ole" Javascript, include the uploader Javascript file and, optionally, the css file along with any images provided into your page. If you are only making use of FineUploaderBasic, you can omit the css and image(s) file(s).
 

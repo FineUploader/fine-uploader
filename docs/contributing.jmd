@@ -17,7 +17,7 @@
 **Develop**:
 [![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=develop)
 
-_FineUploader is continuously integrated with [Travis-CI](https://www.travis-ci.org/)._
+_Fine Uploader is continuously integrated with [Travis-CI](https://www.travis-ci.org/)._
 
 ## Coding
 
@@ -45,7 +45,7 @@ You can run the test suite by forking or cloning the repo and running `grunt tes
 
 Like to write for people rather than computers?
 
-FineUploader could always use better documentation, examples, tutorials, and demos. Feel free to answer questions on the support forum, discuss issues on GitHub, write tutorials on your blog, posts screencasts on YouTube, … anything that can help the developers spend more time creating new features always helps!
+Fine Uploader could always use better documentation, examples, tutorials, and demos. Feel free to answer questions on the support forum, discuss issues on GitHub, write tutorials on your blog, posts screencasts on YouTube, … anything that can help the developers spend more time creating new features always helps!
 
 ![Semver badge](http://calm-shore-6115.herokuapp.com/?label=semver&value=2.0.0&color=green)
 

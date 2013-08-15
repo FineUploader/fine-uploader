@@ -80,7 +80,7 @@ To use Fine Uploader S3 with the jQuery plugin:
 $("#fine-uploader").fineUploaderS3({/* options go here... */});
 ```
 
-### 3. Enabling FineUploader on your site
+### 3. Enabling Fine Uploader on your site
 
 Its time to add the selected mode of Fine Uploader to your page:
 
@@ -106,7 +106,7 @@ non-jQuery version, then keep in mind that the syntax will be slightly different
     ===== -->
     <script src="http://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
 
-    <!-- FineUploader-jQuery
+    <!-- Fine Uploader-jQuery
     ===== -->
     <script src="jquery.fineuploader-{{ PKG['version']|e }}.min.js" type="text/javascript"></script>
 
@@ -130,6 +130,6 @@ When you load this page in a browser you should be able to see Fine Uploader's
 default UI present. Uploading will not work yet. That will be tackled in an
 upcoming section of this walkthrough.
 
-[Next](02-setting_options.html), let's check out some of FineUploader's options.
+[Next](02-setting_options.html), let's check out some of Fine Uploader's options.
 {% endmarkdown %}
 {% endblock %}
