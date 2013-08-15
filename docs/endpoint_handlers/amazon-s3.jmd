@@ -2,13 +2,13 @@
 {% set page_title = "S3 Endpoint" %}
 {% block content %}
 {% markdown %}
-# S3 Server-Side Support {: .page-header }
+# S3 Server-Side Notes & Requirements {: .page-header }
 
 Using the direct-to-S3 uploader module means that most of the server-side work required to parse upload requests is
 handled by Amazon for you.  However, there is some minimal communication required between Fine Uploader and your local
 server.  This document will outline both required and optional server-side tasks.  Note that, at the writing of this
-document, the Java server-side example includes a servlet that handles all possible server-side tasks when using the
-S3 module.  Other examples will be adapted in the future.
+document, Fine Uploader developers have provided fully functional [server-side examples](https://github.com/Widen/fine-uploader-server)
+in PHP, node.js, Python, and Java.  Other examples will be created in the future.
 
 ### Required server-side tasks: all browsers
 The only required server-side task for all browsers is an endpoint that signs the policy document.  This endpoint
@@ -19,19 +19,19 @@ which then must be signed using your AWS secret key.  When Fine Uploader require
 POST request to the endpoint specified in your `signatureEndpoint`, passing the JSON policy document in the
 request payload with a Content-Type of "application/json".  You can read more about [policy documents on Amazon's developer site](http://docs.aws.amazon.com/AmazonS3/latest/dev/HTTPPOSTForms.html#HTTPPOSTConstructPolicy).
 
-##### Verifying the policy
+#### Verifying the policy
 When your server receives this policy document, it should first verify that the policy contains expected properties.
 If the policy document appears incorrect (due to client-side tampering), your server should immediately return a response
 with a status code of 500, a Content-Type of "application/json" and the following payload:
 
 ```javascript
 {
-    "badPolicy": true
+    "invalid": true
 }
 ```
 
 The above response will let Fine Uploader know that the policy document may have been tampered with client-side, and it
-will not attempt to send the file to S3.
+will not send the file to S3 until the issue is addressed.
 
 #### Signing the policy
 If your server determines that the policy document is accurate, it should then base-64 encode the policy document,
@@ -46,9 +46,8 @@ of "application/json".  Your response payload should follow this format:
 }
 ```
 
-It's quite simple to sign the policy document server-side.  As mentioned the Java example in Widen/fine-uploader-server
-provides a working example.  Amazon's developer site also provides some [code in several languages illustrating how to do
-this](http://aws.amazon.com/articles/1434/#signyours3postform).
+It's quite simple to sign the policy document server-side.  Amazon's developer site also provides some
+[code in several languages illustrating how to do this](http://aws.amazon.com/articles/1434/#signyours3postform).
 
 
 ### Required server-side tasks: IE9 (and older) and Android 2.3.x (and older) ONLY
@@ -64,7 +63,7 @@ Your `successRedirectEndpoint` must point to a page on your server.  It can (and
 but it MUST reside on the same origin/domain as the one hosting your upload page.
 
 
-#### Optional server-side tasks: all browsers
+### Optional server-side tasks: all browsers
 If you would like Fine Uploader to notify your server when any file has been successfully uploaded to S3, you should
 set the `successEndpoint` property of the `request` option.  If this is set, Fine Uploader will send a POST request
 to your server with a Content-Type of "application/x-www-form-urlencoded".  The payload of this request, by default,
@@ -101,7 +100,7 @@ for additional information on handling delete file requests.
 Support for CORS exists for the requests sent by the `signatureEndpoint` `successEndpoint` POST requests.  You will need
 to set the `expected` property of the `cors` option when setting up your Fine Uploader instance.  You must also include
 appropriate headers in your server-response, and possibly handle OPTIONS (pre-flight) requests sent by the browser.  Please
-read the blog post on CORS support](http://blog.fineuploader.com/2013/01/31/cors-support-in-3-3/) for details.  Note that
+read the [blog post on CORS support](http://blog.fineuploader.com/2013/01/31/cors-support-in-3-3/) for details.  Note that
 you can ignore the "Handling iframe CORS upload requests server-side" section.
 {% endmarkdown %}
 {% endblock %}
