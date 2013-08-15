@@ -10,17 +10,6 @@ Fine Uploader has a wealth of ways to respond to error messages.
 By default, Fine Uploader asssumes an error when the server response does not
 have a key of `success` set to `true`.
 
-Successful responses include:
-
-* `{ "success": true }`
-* `{ "foo": "bar", "success": true }`
-
-Unsuccessful responses include:
-
-* `{ "success": false }`
-* `{ "error": true }`
-* `{ "success": false, "error": "Server could not process file" }`
-
 If any error is thrown, then the `onError` callback will be called.
 
 ## Debugging Errors
@@ -46,7 +35,7 @@ event of an error.
 ```javascript
 $("#fine-uploader").fineUploader({
    // ...
-}).on('error', function (event, id, name, errorReason, xhr) {
+}).on('error', function (event, id, name, errorReason, xhrOrXdr) {
     alert("Error on file number " + id + " - " + name ". Reason: " + errorReason);
 });
 ```
@@ -121,10 +110,13 @@ text when an upload fails.
 
 ```javascript
 $("#fine-uploader").fineUploader({
-    mode: 'default',
-    maxChars: 50,
-    responseProperty: 'error',
-    enableTooltip: true
+    // These are all the DEFAULT values...
+    failedUploadTextDisplay: {
+        mode: 'default',
+        maxChars: 50,
+        responseProperty: 'error',
+        enableTooltip: true
+    }
 });
 ```
 
