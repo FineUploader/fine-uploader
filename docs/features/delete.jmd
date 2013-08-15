@@ -7,8 +7,7 @@
 
 Enabling the deletion of files means your users can delete files after they have been uploaded.
 You can only delete files that have been uploaded during the current session.
-If you upload a file, leave the page, and come back then do not expect to be
-able to delete that file.
+If you upload a file, leave the page, and come back then you cannot delete that file though Fine Uploader.
 
 A file is eligible for deletion only after it has been successfully uploaded.
 
@@ -19,7 +18,7 @@ A file is eligible for deletion only after it has been successfully uploaded.
 {{ options_table(
     (
         ("enabled", "`Boolean`", "`false`", "Set to `true` if users should be able to delete files."),
-        ("method", "`String`", "`'DELETE'`", "Set the HTTP method to use for delete. Use POST to disable preflighted requests."),
+        ("method", "`String`", "`'DELETE'`", "Set the HTTP method to use for delete. You may also set this to POST"),
         ("endpoint", "`String`", "`'/server/upload'`", "The endpoint where the delete request is sent."),
         ("customHeaders", "`Object`", "`{}`", "Specify any additional headers to attach to all delete requests."),
         ("params", "`Object`", "`{}`", "Specify any additonal parameters to attach to all delete requests.")
@@ -35,9 +34,9 @@ This is for your benefit so your server knows what sort of request it is.""")
 
 {{ events_table(
     (
-        ("delete", "`String` id", "Called just before a delete request is sent for the associated item."),
-        ("deleteComplete", "`String` id, `XMLHttpRequest` xhr, `Boolean` isError", "Called just after receiving a request from the server for a delete file request."),
-        ("submitDelete", "`String` id", "Called just before an item that has been marked for deletion has been submitted to the uploader. [Promissory](async-tasks-and-promises.html)"),
+        ("delete", "`Integer` id", "Called just before a delete request is sent for the associated item."),
+        ("deleteComplete", "`Integer` id, `XMLHttpRequest` or `XDomainRequest` xhrOrXdr, `Boolean` isError", "Called just after receiving a request from the server for a delete file request."),
+        ("submitDelete", "`Integer` id", "Called just before an item that has been marked for deletion has been submitted to the uploader. [Promissory](async-tasks-and-promises.html)"),
     )
 ) }}
 
@@ -45,9 +44,9 @@ This is for your benefit so your server knows what sort of request it is.""")
 
 {{ methods_table(
     (
-        ("deleteFile", "`String` id", "", "Delete the file with the corresponding ID off the server."),
-        ("setDeleteFileEndpoint", "`String` endpointPath[, `String` id]", "", "Modify the location where the upload request should be directed. Pass in a value for the `id` parameter to change for a specific item."),
-        ("setDeleteFileParams", "`String` newParams[, `String` id]", "", "Set the parameters for the delete file request.")
+        ("deleteFile", "`Integer` id", "", "Delete the file with the corresponding ID off the server."),
+        ("setDeleteFileEndpoint", "`String` endpointPath[, `Integer` id]", "", "Modify the location where the upload request should be directed. Pass in a value for the `id` parameter to change for a specific item."),
+        ("setDeleteFileParams", "`String` newParams[, `Integer` id]", "", "Set the parameters for the delete file request.")
     )
 ) }}
 
