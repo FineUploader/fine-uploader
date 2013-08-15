@@ -8,13 +8,11 @@
 Fine Uploader allows for the cancellation of in-progress uploads.
 
 Uploads can be cancelled programmatically by calling the `cancel` or `cancelAll`
-API methods, or automatically based on [validation](validation.html) rules.
-
-The 'cancel' event will be fired and handled by a callback whenever
+API methods.  The 'cancel' event will be fired and handled by a callback whenever
 an item is cancelled.
 
 In Fine Uploader UI mode, cancelling an upload will remove that element from
-the DOM.
+the DOM as well.
 
 ## Options
 
