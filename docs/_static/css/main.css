@@ -33,7 +33,7 @@ pre
 {
     min-width: 220px;
 }
-.dropdown-menu .api
+.dropdown-menu.api
 {
     padding-left: 20px;
 }
