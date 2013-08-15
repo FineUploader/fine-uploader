@@ -1,9 +1,9 @@
 {% extends "_templates/base.html" %}
-{% set page_title = "Server Set-Up" %}
+{% set page_title = "Server Set-Upi S3" %}
 
 {% block content %}
 {% markdown %}
-# Server Set-Up {: .page-header}
+# Server Set-Up <small>Amazon S3</small>{: .page-header}
 
 {{ alert(
 """This section of the tutorial is aimed at beginners looking to create their
