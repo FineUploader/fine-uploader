@@ -67,7 +67,7 @@ rebuilt and rebranded in Core mode.
 
 {{ events_table(
     (
-        ("progress", "`String` id, `String` name, `String` uploadedBytes, `String` totalBytes", "Called during the upload, as it progresses. Only used by the XHR/AJAX uploader."),
+        ("progress", "`Integer` id, `String` name, `Number` uploadedBytes, `Number` totalBytes", "Called during the upload, as it progresses. Only used by the XHR/AJAX uploader."),
     )
 ) }}
 
