@@ -41,7 +41,7 @@ fileTemplate: '<li>' +
     '</li>'
 ```
 
-### Classes
+### `classes` option
 
 Finally, a `classes` option allows you to change the default class names for these elements.  Be sure the values in `classes`
 match the class names used in the corresponding template elements (where appropriate).  The following `classes` option properties
