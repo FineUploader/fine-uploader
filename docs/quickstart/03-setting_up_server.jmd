@@ -30,17 +30,17 @@ Let's rock! First, download express:
 Coooool. Create a new file in your text editor called `server.js`. Time to code the first part of the server:
 
 ```javascript
-var express = require('express')
-  , fs = require('fs')
-  , http = require('http')
-  , express = express();
-var settings = {
-   port: 3000,
-   paths: {
-       static: __dirname + '/static',
-       uploads: __dirname + '/uploads',
-   }
-};
+var express = require('express'),
+    fs = require('fs'),
+    http = require('http'),
+    express = express(),
+    settings = {
+        port: 3000,
+        paths: {
+            static: __dirname + '/static',
+            uploads: __dirname + '/uploads',
+        }
+    };
 
 // Configure express to parse multipart form and URL encoded requests and set the upload path.
 app.configure(function () {
