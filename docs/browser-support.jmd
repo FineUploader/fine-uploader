@@ -14,6 +14,7 @@ Currently, Fine Uploader supports the following browsers:
 * Safari >=5 (OS X)
 
 We plan on supporting the following browsers/OSes in the very near future:
+
 * Mobile versions of Chrome and Firefox (these probably already work now)
 * Internet Explorer 11
 * Opera
@@ -118,8 +119,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>Android
                 4</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('N/A', "") }}</td>
-            <td>{{ label('N/A', "") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -131,8 +132,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>Android
                 2.3.x</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('N/A', "") }}</td>
-            <td>{{ label('N/A', "") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -144,8 +145,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>iOS
                 6</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('N/A', "") }}</td>
-            <td>{{ label('N/A', "") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -322,7 +323,7 @@ by upgrading to IE10 are listed as well.
             <td>Content-size header field value does not match the actual file size
             </td>
             <td>
-                <span class="label label-default">N/A</span>
+                <span class="label label-default">x</span>
             </td>
             <td>This isn’t technically an IE issue, but I’m going to call it one since
                 we are forced to use multipart request in IE. The content-size for
