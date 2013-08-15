@@ -29,26 +29,52 @@ alert("The `chunking.paramNames` option does **not** apply to S3.")
 
 {{ options_table(
     (
-        ("accessKey", "`String`", "`null`", "Your AWS public key. **NOT YOUR SECRET KEY**."),
-        ("acl", "`String`", "`'private'`", "This value corresponds to a [canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/ACLOverview.html#CannedACL)"),
-        ("endpoint", "`String`", "`null`", "The fully qualified URL for the S3 bucket."),
-        ("filenameParam", "`String`", "`'qqfilename'`", "Part of the parameter name that contains the name of the associated file which may differ from the key name. Prefixed with 'x-amz-meta-' by Fine Uploader."),
-        ("key", "`String` or `Function`", "`'uuid'`", "Describes the object key usde to identify the file in your S3 bucket."),
+        ("endpoint", "`String`", "`null`", "URL for your S3 bucket.  All valid bucket URLs documented by Amazon are supported, including custom domains.  SSL is also supported."),
         ("signatureEndpoint", "`String`", "`null`", "The endpoint that Fine Uploader can use to send policy documents (HTML form uploads) or other strings to sign (REST requests) before sending requests off to S3."),
         ("successEndpoint", "`String`", "`null`", "An endpoint that Fine Uploader should POST to when a file
 has been succcessfully uploaded to S3. The parameters include the key, name, UUID, and bucket associated with the file."),
-        ("successRedirectEndpoint", "`String`", "`null`", "This must point to a page on the same origin/domain as the page hosting Fine Uploader. Required to use S3 uploads with browsers that do not implement the File API. Prefixed with 'x-amz-meta-' header by Fine Uploader."),
+        ("accessKey", "`String`", "`null`", "Your AWS public key. **NOT YOUR SECRET KEY**."),
+        ("acl", "`String`", "`'private'`", "This value corresponds to a [canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/ACLOverview.html#CannedACL)"),
+        ("key", "`String` or `Function`", "`'uuid'`", "Describes the object key used to identify the file in your S3 bucket.
+        Possible values are 'uuid', 'filename' or a function "),
+        ("successRedirectEndpoint", "`String`", "`null`", "This is required if you plan on supporting browsers that do not implement the File API, such as IE9 and older.  This must point to a blank page on the same origin/domain as the page hosting Fine Uploader."),
+        ("params", "`Object`", "`{}`", "Parameters passed along with each upload request."),
+        ("filenameParam", "`String`", "`'qqfilename'`", "Part of the parameter name that contains the name of the associated file which may differ from the key name. Prefixed with 'x-amz-meta-' by Fine Uploader."),
     )
 ) }}
 
-{{ alert("Valid S3 endpoints include: 'http://foobar.s3.amazonaws.com', 'https://foobar.s3.amazonaws.com', and 'http://foobar.s3-ap-northeast-1.amazonaws.com'") }}
+### `resume` option
+
+{{ options_table(
+    (
+        ("recordsExpireIn", "`Integer`", "7", "Number of days before resumable file records expire."),
+    )
+) }}
+
+{{
+alert("The `resume.paramNames` option does **not** apply to S3.")
+}}
+
+
+### `cors` option
+
+{{ options_table(
+    (
+        ("allowXdr", "`Boolean`", "true", "Enables or disables cross-domain ajax calls (if `expected` property is true) in IE9 and older."),
+    )
+) }}
+
 
 ## UI Mode
 
-Note that the `failedUploadTextDisplay` option -- when using UI mode and the S3
-endpoint -- defaults to `'custom'` mode since Fine Uploader can expect an `error`
-property on the server's response and would prefer to use that instead of the
-default text.
+### `failedUploadTextDisplay` option
+
+{{ options_table(
+    (
+        ("mode", "`String`", "custom", "You will most likely want to keep this at the default value of 'custom'.
+        See the UI options documentation for more info on this option."),
+    )
+) }}
 
 {% endmarkdown %}
 {% endblock %}
