@@ -30,7 +30,7 @@ The 'cancel' event allows integrators to assign an action to be completed eeach 
 
 {{ events_table(
     (
-        ("cancel", "`String` id, `String` name", "Called when the item has been cancelled. Promissory. You may return `false` to prevent the upload from being cancelled."),
+        ("cancel", "`Integer` id, `String` name", "Called when the item has been cancelled. Promissory. You may return `false` to prevent the upload from being cancelled."),
     )
 ) }}
 
@@ -40,7 +40,7 @@ The Fine Uploader API provides two methods to cancel uploads: `cancel` and `canc
 
 {{ methods_table(
    (
-       ("cancel", "`String` id", "", "Cancels a queued or currently uploading item."),
+       ("cancel", "`Integer` id", "", "Cancels a queued or currently uploading item."),
        ("cancelAll", "", "", "Cancels all queued or currently uploading items.")
    )
 ) }}
