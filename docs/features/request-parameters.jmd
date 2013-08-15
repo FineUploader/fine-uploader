@@ -14,6 +14,7 @@ Request parameters can be modified foremost by changing the values of the
 following options found in the `request` option:
 
 ### `request` option
+These deal specifically with the traditional (non-S3) uploader.
 
 {{ options_table(
     (
@@ -29,31 +30,31 @@ following options found in the `request` option:
     )
 ) }}
 
-### S3 `request` option
+### Fine Uploader S3's `request` option
+The request option properties are a bit different if you are using Fine Uploader S3.
 
 {{ options_table(
     (
-        ("endpoint", "`String`", "`null`", "The fully qualified URL for the S3 bucket."),
+        ("endpoint", "`String`", "`null`", "URL for your S3 bucket.  All valid bucket URLs documented by Amazon are supported, including custom domains.  SSL is also supported."),
         ("signatureEndpoint", "`String`", "`null`", "The endpoint that Fine Uploader can use to send policy documents (HTML form uploads) or other strings to sign (REST requests) before sending requests off to S3."),
         ("successEndpoint", "`String`", "`null`", "An endpoint that Fine Uploader should POST to when a file
 has been succcessfully uploaded to S3. The parameters include the key, name, UUID, and bucket associated with the file."),
         ("accessKey", "`String`", "`null`", "Your AWS public key. **NOT YOUR SECRET KEY**."),
         ("acl", "`String`", "`'private'`", "This value corresponds to a [canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/ACLOverview.html#CannedACL)"),
-        ("key", "`String` or `Function`", "`'uuid'`", "Describes the object key usde to identify the file in your S3 bucket."),
-        ("successRedirectEndpoint", "`String`", "`null`", "This must point to a page on the same origin/domain as the page hosting Fine Uploader. Required to use S3 uploads with browsers that do not implement the File API. Prefixed with 'x-amz-meta-' header by Fine Uploader."),
+        ("key", "`String` or `Function`", "`'uuid'`", "Describes the object key used to identify the file in your S3 bucket.
+        Possible values are 'uuid', 'filename' or a function "),
+        ("successRedirectEndpoint", "`String`", "`null`", "This is required if you plan on supporting browsers that do not implement the File API, such as IE9 and older.  This must point to a blank page on the same origin/domain as the page hosting Fine Uploader."),
         ("params", "`Object`", "`{}`", "Parameters passed along with each upload request."),
         ("filenameParam", "`String`", "`'qqfilename'`", "Part of the parameter name that contains the name of the associated file which may differ from the key name. Prefixed with 'x-amz-meta-' by Fine Uploader."),
     )
 ) }}
-
-{{ alert("Valid S3 endpoints include: 'http://foobar.s3.amazonaws.com', 'https://foobar.s3.amazonaws.com', and 'http://foobar.s3-ap-northeast-1.amazonaws.com'") }}
 
 ----
 
 The `params` option is used to define request parameters when you instantiate a
 new Fine Uploader instance. Parameters defined this way are set on the request
 at the very last minute before it is sent to the server. Parameters can also
-be set for DELETE requests. Simply modify the `params` property of the
+be set for delete file requests. Simply modify the `params` property of the
 `deletFile` option. Either of these properties are capable of handling a
 variety of JavaScript objects.
 
@@ -72,8 +73,8 @@ params: {
 params: {
     user: {
         username: 'mark',
-        name_first: 'Mark',
-        name_last: 'Twain'
+        firstName: 'Mark',
+        lastName: 'Twain'
     }
 }
 ```
@@ -137,11 +138,6 @@ This means that you must decode the parameter keys and values server-side. JavaS
 uses the UTF-8 encoding scheme so make sure that your server is using the same encoding. Lastly,
 be sure to the meta tag in your HTML: `<meta charset='utf-8'>`""", "info", "Note") }}
 
-
-## Request Body Parameters
-
-Another option is sending extra parameters in the request body. Enable this
-feature by setting the `request.paramsInBody` option to `true`.
 
 [For more information, see the associated blog post](http://blog.fineuploader.com/2012/12/05/include-params-in-the-request-body-or-the-query-string/)
 
