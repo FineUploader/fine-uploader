@@ -22,14 +22,14 @@ endpoints.""", "warn") }}
 
 {{ events_table(
     (
-        ("submit", "`String` id, `String` name", "Called whenever an item has been submitted to the uploader is now a candidate for uploading."),
-        ("submitted", "`String` id, `String` name", "Called whenever an item has been accepted by the uploader.
+        ("submit", "`Integer` id, `String` name", "Called whenever an item has been submitted to the uploader is now a candidate for uploading."),
+        ("submitted", "`Integer` id, `String` name", "Called whenever an item has been accepted by the uploader.
         This occurs after all validation checks have passed.  When using Fine Uploader UI mode, this also occurs
         AFTER the associated file item has been adde to the DOM."),
-        ("complete", "`String` id, `String` name, `String` reponseJSON, `String` xhr", "Called whenever attempt to
+        ("complete", "`Integer` id, `String` name, `String` reponseJSON, `String` xhr", "Called whenever attempt to
         upload an item have completed.  The `success` property on `responseJSON` will allow you to determine
         if the attempt was successful or not."),
-        ("upload", "`String` id, `String` name", "Called just _before_ an upload begins on an item."),
+        ("upload", "`Integer` id, `String` name", "Called just _before_ an upload begins on an item."),
     )
 ) }}
 
