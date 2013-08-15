@@ -25,7 +25,7 @@ Currently, only Chrome supports this completely.", "info", "Note:") }}
 
 {{ options_table(
     (
-       ("defaultName", "`String`", "`'pasted_image'`", "The default name given to pasted images."),
+       ("defaultName", "`String`", "'pasted_image'", "The default name given to pasted images."),
        ("targetElement", "`HTMLElement`", "`null`", "Enable this feature by providing any `HTMLElement` here.")
     )
 ) }}
@@ -33,15 +33,12 @@ Currently, only Chrome supports this completely.", "info", "Note:") }}
 ### `paste` option (UI mode only)
 Note that all core mode options are also available.
 
-            promptForName: false,
-            namePromptMessage: "Please name this image"
-
 {{ options_table(
     (
        ("promptForName", "`Boolean`", "`false`", "If set to true, the `showPrompt` function will be called in an attempt
        to ask the user to provide a name for the associated pasted image. See the styling documentation for more
        details on overriding `showPrompt`."),
-       ("namePromptMessage", "`String`", "Please name this image", "Text that will appear in the `showPrompt` dialog,
+       ("namePromptMessage", "`String`", "'Please name this image'", "Text that will appear in the `showPrompt` dialog,
        asking the user to name the pasted image. Note that an appropriate extension will always been appended to the
        name supplied by the user automatically. If you override the `pasteReceived` event handler AND set this option to
        true, your callback will be ignored.")
