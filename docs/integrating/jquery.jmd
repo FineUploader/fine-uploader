@@ -15,24 +15,24 @@ Fortunately, Fine Uploader provides wrapper code that integrates with jQuery
 while still allowing the integrator to choose between Core and UI modes.
 The Fine Uploader jQuery plugin has a couple of syntactical differences than
 the regular Fine Uploader plugin. Also, some of the options are defined
-differently.
+differently.  Note that all conventions commonly associated with jQuery plug-ins are followed faithfully here, so
+if you have worked with jQuery plug-ins before, this should all be quite intuitive.
 
 ## DOM elements
 
-With the Fine Uploader jQuery plugin there is no need to specify an `element`
-in the options properties. Instead, using the jQuery plugin syntax,
-you provide the element to the constructor like so:
-
+With the Fine Uploader jQuery plugin there is no need to specify the `element` option. Instead,
+using the jQuery plugin syntax, you provide the element or elements you would like to associate with your
+Fine Uploader instance like so:
 ```javascript
-// This will instantiate an instance of Fine Uploader on the element with an id
-// of `fine-uploader`
+// This will instantiate an instance of Fine Uploader on the element
+// with an id of "fine-uploader"
 $("#fine-uploader").fineUploader({
     /* options go here */
 });
 ```
 
 Also, Fine Uploader is smart enough to know you are using jQuery and allows you to
-pass in jQuery objects instead of `HTMLElements`.
+pass in `jQuery` objects instead of `HTMLElement`s or `Node`s.
 
 For example, if you specify the `button` option, the value can be `$("#myButton")`
 rather than `$("#myButton")[0]` or `document.getElementById("button")`.
@@ -48,7 +48,9 @@ the plugin will pass all three elements to the native Fine Uploader.
 $("#fine-uploader").fineUploader({
     /* ... */
     button: $("#button"),
-    extraDropzones: [$(".dropzones")]
+    dragAndDrop: {
+        extraDropzones: [$(".dropzones")]
+    }
 });
 ```
 
@@ -73,7 +75,7 @@ All callbacks defined in Fine Uploader are still avaiable to jQuery plugin users
 
 {{ alert(
 """When using the jQuery plugin, **all** events pass an extra `event` parameter
-to the callback functions.""", "info", "Note:") }}
+ as the <strong>first</strong> parameter to your callback functions.""", "info", "Note:") }}
 
 ```javascript
 $("#fine-uploader").fineUploader({
@@ -98,7 +100,7 @@ var files = $("#fine-uploader").fineUploader('getStoredFiles'):
 
 $("#cancel-button").click(function (event) {
     // Trivial example to check if the 1st file registered with the uploader
-    var exists = $("#fine-uploader").fineUploader('doesExist', 1);
+    var exists = $("#fine-uploader").fineUploader('doesExist', 0);
 });
 ```
 
@@ -106,7 +108,7 @@ $("#cancel-button").click(function (event) {
 
 The jQuery plugin cares not about what your endpoint is, but if you plan to use
 the S3 uploader rather than the traditional uploader, ensure that you are using
-the right constructor:
+the right plugin name:
 
 ```javascript
 $("#s3-fine-uploader").fineUploaderS3({ /* options ... */ });
