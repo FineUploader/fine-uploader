@@ -49,7 +49,8 @@ Note that all core mode options are also available.
 
 {{ events_table(
     (
-        ("pasteReceived", "`Blob` blob", "Called when a pasted image has been received, but before it is uploaded. [Promissory](async-tasks-and-promises.html)"),
+        ("pasteReceived", "`Blob` blob", "Called when a pasted image has been received, but before it is uploaded. You
+        may return false to prevent the paste from being processed.  You may also return a [`qq.Promise`](async-tasks-and-promises.html)."),
     )
 ) }}
 
