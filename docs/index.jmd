@@ -21,11 +21,17 @@ to the [API docs](#api-reference).
 
 #### Quickstart
 
+##### Traditional Uploader
+
 1. [Getting Stared with Fine Uploader](quickstart/01-getting-started.html)
 2. [Setting Fine Uploader options](quickstart/02-setting_options.html)
 3. [Creating an upload server](quickstart/03-setting_up_server.html)
-    * [Traditional](quickstart/03-setting_up_server.html)
-    * [Amazon S3](quickstart/03-setting_up_server-s3.html)
+
+##### Amazon S3 Uploader
+
+1. [Getting Stared with Fine Uploader](quickstart/01-getting-started.html)
+2. [Setting Fine Uploader options](quickstart/02-setting_options.html)
+3. [Creating an upload server](quickstart/03-setting_up_server-s3.html)
 
 #### Fine Uploader Modes
 
