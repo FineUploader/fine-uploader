@@ -13,7 +13,7 @@ reference.
 
 {{ methods_table(
 (
-    ("getKey", "fileId", "`String`", "Retreive the S3 object key with the associated id"),
+    ("getKey", "`Integer` fileId", "`String`", "Retreive the S3 object key with the associated id"),
     ("setEndpoint", "`String` bucketPath[, `Number` id]", "", "Modify the bucket where upload requests should be directed. The endpoint for a specific file or blob can be changed by passing in an optional `id` parameter. `bucketPath` must be the fully qualified URL for an S3 bucket such as: 'http://foobar.s3.amazonaws.com' where the bucket is 'foobar'.")
 )
 ) }}
