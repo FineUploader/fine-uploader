@@ -24,8 +24,10 @@ what sorts of files can and can not be uploaded.
 ## Events
 {{ events_table(
     (
-        ("validate", "`FileOrBlobData` fileOrBlobData", "Called once for each selection, dropped, or `addFiles` submitted file and for each `addBlobs` submitted `Blob`. [**Promissory**]()" ),
-        ("validateBatch", "`Array` fileOrBlobDataArray", "Called once for each batch of selected, dropped or `addFiles` submitted files and for each `addBlobs` submitted `Blob`s. [**Promissory**]()"),
+        ("validate", "`File` or `BlobData` fileOrBlobData", "Called once for each selection, dropped, or `addFiles`
+        submitted file and for each `addBlobs` submitted `Blob`. [**Promissory**]()" ),
+        ("validateBatch", "`Array` fileOrBlobDataArray", "Called once for each batch of selected, dropped or `addFiles`
+        submitted files and for each `addBlobs` submitted `Blob`s. [**Promissory**]()"),
     )
 ) }}
 
@@ -60,15 +62,9 @@ as documented above. The most important options are: `allowedExtensions` and
 Size validation is available in File API browsers only. Size can be restricted
 via the `sizeLimit` or `minSizeLimit` options in the `validation` settings.
 
-{{ alert(
-"""If you are using chunking in conjuction with the S3 uploader then size
-validation will only be possible via a response from your server since
-the S3 servers cannot check the full file-size until the entire file has been
-uploaded and saved in the S3 bucket.""", "default", "Amazon S3 Specific Note:") }}
-
 ## Validation on Type
 
-Validation on type is not *yet* possible in Fine Uploader. However,
+Definitive validation on file type is not *yet* possible in Fine Uploader. However,
 client-side file identification is in the works for future releases.
 
 
