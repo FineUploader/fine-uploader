@@ -8,16 +8,18 @@
     <li><a href="#core_1"><b>Core</b></a></li>
     <li><a href="#blobs-option">blobs</a></li>
     <li><a href="#camera-option">camera</a></li>
-    <li><a href="#chunking-option_2">chunking</a></li>
+    <li><a href="#chunking-option_1">chunking</a></li>
+    <li><a href="#chunkingparamnames-option">chunking.paramNames</a></li>
     <li><a href="#cors-option">cors</a></li>
     <li><a href="#deletefile-option_1">deleteFile</a></li>
-    <li><a href="#messages-option_2">messages</a></li>
+    <li><a href="#messages-option_1">messages</a></li>
     <li><a href="#paste-option_1">paste</a></li>
-    <li><a href="#resume-option_1">resume</a></li>
+    <li><a href="#resume-option">resume</a></li>
+    <li><a href="#resumeparamnames-option">resume.paramNames</a></li>
     <li><a href="#retry-option_1">retry</a></li>
-    <li><a href="#request-option_2">request</a></li>
+    <li><a href="#request-option_1">request</a></li>
     <li><a href="#text-option_1">text</a></li>
-    <li><a href="#validation-option_1">validation</a></li>
+    <li><a href="#validation-option">validation</a></li>
 </ul>
 {% endblock %}
 
