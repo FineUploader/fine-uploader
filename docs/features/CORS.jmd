@@ -28,9 +28,9 @@ programmatically rather than relying on the framework to do it for you.
 
 {{ options_table(
     (
-        ("allowXdr", "`Boolean`", "`false`", "Enable or disable cross-origin requests from IE9 and older where [XDomainRequest](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS#Note) must be used."),
         ("expected", "`Boolean`", "`false`", "Enable or disable cross-domain requests."),
-        ("sendCredentials", "`Boolean`", "`false`", "Enable or disable sending credentials along with each cross-domain request. Ignored if `allowXdr` is `true` and IE9 is being used."),
+        ("sendCredentials", "`Boolean`", "`false`", "Enable or disable sending credentials along with each cross-domain request. Ignored if `allowXdr` is `true` and IE9 or older is being used."),
+        ("allowXdr", "`Boolean`", "`false`", "Enable or disable cross-origin requests from IE9 and older where [XDomainRequest](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS#Note) must be used."),
     )
 ) }}
 
