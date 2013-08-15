@@ -5,12 +5,13 @@
 # Contributing
 
 ## Build status
-                   [![Selenium Test Status](https://saucelabs.com/buildstatus/fineuploader)](https://saucelabs.com/u/fineuploader) | [![Semver badge](http://calm-shore-6115.herokuapp.com/?label=SemVer&value=2.0.0&color=green)](http://semver.org/spec/v2.0.0.html)
 
-<table class='table'>
+<table class='table table-condensed'>
     <thead>
-        <tr>Travis</tr>
-        <tr>Seleniun</tr>
+        <tr>
+            <th>Travis</th>
+            <th>Seleniun</th>
+        </tr>
     </thead>
     <tbody>
         <tr>
@@ -25,16 +26,6 @@
         </tr>
     </tbody>
 </table>
-### Selenium
-[![Selenium Test Status](https://saucelabs.com/buildstatus/feltnerm)](https://saucelabs.com/u/fineuploader)
-
-### Travis
-
-**Master**:
-[![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=master)
-
-**Develop**:
-[![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=develop)
 
 ## Coding
 
