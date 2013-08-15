@@ -35,9 +35,9 @@ alert("""The `id` property is not applicable to the S3 uploader.""")
 }}
 ### `resume.paramNames` option
 {{
-alert("""These options are not applicable to the S3 uploader.""")
-}}
-{{ options_table(
+alert("""These options are not applicable to the S3 uploader."""),
+
+options_table(
     (
         ("resuming", "`String`", "'qqresume'", "Sent with the first request of the resume with a value of `true`.")
     )
