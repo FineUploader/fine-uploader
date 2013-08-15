@@ -28,21 +28,25 @@ Note that resuming is disabled by default, and the cookie or local storage objec
 ) }}
 
 {{
-alert("""The `cookiesExpireIn` property is not applicable to the S3 uploader.  Instead, use `recordsExpireIn`.""")
+    alert("The `cookiesExpireIn` property is not applicable to the S3 uploader.  Instead, use `recordsExpireIn`.")
 }}
+
 {{
-alert("""The `id` property is not applicable to the S3 uploader.""")
+    alert("The `id` property is not applicable to the S3 uploader.")
 }}
+
 ### `resume.paramNames` option
+
 {{
 options_table(
     (
-        ("resuming", "`String`", "'qqresume'", "Sent with the first request of the resume with a value of `true`.")
+        ("resuming", "`String`", "`'qqresume'`", "Sent with the first request of the resume with a value of `true`."),
     )
-) }}
+)
+}}
 
 {{
-alert("""These options are not applicable to the S3 uploader."""),
+    alert("These options are not applicable to the S3 uploader.")
 }}
 
 ## Methods
@@ -51,7 +55,8 @@ alert("""These options are not applicable to the S3 uploader."""),
     (
         ("getResumableFilesData", "", "`Array`", "Returns an array of potentially resumable items."),
     )
-) }}
+)
+}}
 
 [For more information, see the associated blog post](http://blog.fineuploader.com/2013/01/01/resume-uploads-from-previous-sessions-in-3-2/)
 
