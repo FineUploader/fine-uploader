@@ -30,7 +30,7 @@ Currently, only Chrome supports this completely.", "info", "Note:") }}
     )
 ) }}
 
-### `paste` option (UI mode only)
+### `paste` option (UI mode)
 Note that all core mode options are also available.
 
 {{ options_table(
