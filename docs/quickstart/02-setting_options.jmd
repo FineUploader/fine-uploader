@@ -12,8 +12,10 @@ the more common options of Fine Uploader.
 
 Fine Uploader comes with a wealth of options. Most importantly, Fine Uploader
 requires you to specify the URL where it should send uploads and server
-requests to. This endpoint can be an absolute path, relative path, and even
-a complete URI (as is the case with S3 uploader).
+requests to. This endpoint can be an absolute path or a relative path.  The meaning of this
+endpoint varies depending on the endpoint handler.  If you are using the traditional uploader,
+this is the path endpoint on your server that will handle upload requests.  If you are using
+Fine Uploader S3, the endpoint should point to your S3 bucket.
 
 More information on the [`request` option here](../api/options.html).
 
@@ -41,8 +43,7 @@ $("#fine-uploader").fineUploader({
 
 With debug mode on, Fine Uploader will spit out log messages to the console.
 This allows you to diagnose any application errors and it is recommended to
-have this mode on during development, be make sure to turn it off in
-production.
+have this mode on during development.
 
 More information on [debugging errors here](../features/handling-errors.html).
 
@@ -53,13 +54,11 @@ ability to retry. The `retry` option can be set to enable this:
 
 ```javascript
 $("#fine-uploader").fineUploader({
-    retry: {
-       enableAuto: true, // defaults to false
-       maxAutoAttempts: 5
-    }
-    debug: true,
     request: {
         endpoint: '/uploads'
+    },
+    retry: {
+       enableAuto: true // defaults to false
     }
 });
 ```
@@ -69,31 +68,23 @@ More information on [retrying uploads here](../features/retry.html).
 ### Deleting Files
 
 If a user has uploaded a file, but realized it was a mistake before aborting, then FineUploder can also help them delete files.
-Fine Uploader supports deleting files via POST, DELETE, and across origins.
+Fine Uploader supports deleting files via POST, DELETE, and across origins/domains.
 
 A file is eligible for deletion only after it has been successfully uploaded.
 In Fine Uploader UI mode, if this feature is enabled, a customizable delete
-link will appear next to the file after it has successfully uploaded.
+link will appear next to the file after it has successfully uploaded.  File deletion can be enabled in the Fine Uploader
+options.
 
-File deletion can be enabled in the Fine Uploader options.
-
-You can also send a delete request via the `deleteFile` API method.
-[More information on the `deleteFile` API method here.](../api/methods.html).
+You can also send a delete request via the `deleteFile` [API method](../api/methods.html).
 
 ```javascript
 $("#fine-uploader").fineUploader({
-    deleteFile: {
-        enabled: true, // defaults to false
-        forceConfirm: true,
-        endpoint: '/uploads'
-    },
-    retry: {
-       enableAuto: true, // defaults to false
-       maxAutoAttempts: 5
-    }
-    debug: true,
     request: {
         endpoint: '/uploads'
+    },
+    deleteFile: {
+        enabled: true, // defaults to false
+        endpoint: '/my/delete/endpoint'
     }
 });
 ```
@@ -111,35 +102,30 @@ Now our Fine Uploader page should look something like this:
   </head>
   <body>
 
-    <!-- The element where Fine Uploader will exist.
-    ===== -->
+    <!-- The element where Fine Uploader will exist. -->
     <div id="fine-uploader">
     </div>
 
-    <!-- jQuery version 1.10.x (if you are using the jQuery plugin
-    ===== -->
+    <!-- jQuery version 1.10.x (if you are using the jQuery plugin -->
     <script src="http://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
 
-    <!-- Fine Uploader-jQuery
-    ===== -->
+    <!-- Fine Uploader-jQuery -->
     <script src="jquery.fineuploader-{{ PKG['version']|e }}.min.js" type="text/javascript"></script>
 
     <script>
     // Wait until the DOM is 'ready'
     $(document).ready(function () {
         $("#fine-uploader").fineUploader({
-            deleteFile: {
-                enabled: true, // defaults to false
-                forceConfirm: true,
-                endpoint: '/uploads'
-            },
-            retry: {
-               enableAuto: true, // defaults to false
-               maxAutoAttempts: 5
-            }
             debug: true,
             request: {
                 endpoint: '/uploads'
+            },
+            deleteFile: {
+                enabled: true,
+                endpoint: '/uploads'
+            },
+            retry: {
+               enableAuto: true
             }
         });
     });
