@@ -41,9 +41,14 @@ h1, h2, h3
 {
     margin: 20px 0;
 }
+h1 {
+    font-size: 30px;
+    color: #00abc7;
+}
 h2
 {
-    color:#F87436;
+    size: 24px;
+    color: #00abc7 blue;
 }
 h3
 {
@@ -54,6 +59,9 @@ h1, h2, h3, h4, h5
     margin-top: -40px !important;
     padding-top: 40px !important;
 }
+
+code { color: #ff87436; }
+
 .navbar-inverse .brand, .navbar-inverse .nav > li > a,
 .navbar-inverse .nav-collapse .nav > li > a,
 .navbar-inverse .nav-collapse .dropdown-menu a
@@ -123,6 +131,9 @@ h1, h2, h3, h4, h5
     box-shadow: inset 0 1px 5px rgba(100,100,100,.2), inset 0 -1px 7px rgba(100,100,100,.2);
     border:none;
 }
+
+.content { width: 80%; max-width: 960px; }
+
 a:hover {
     -webkit-transition: all .15s ease-in-out;
     -moz-transition: all .15s ease-in-out;
