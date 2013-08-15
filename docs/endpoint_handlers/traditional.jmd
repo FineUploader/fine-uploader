@@ -2,7 +2,7 @@
 {% set page_title = "Traditional Endpoint" %}
 {% block content %}
 {% markdown %}
-# Server-Side Notes & Requirements {: .page-header }
+# Traditional Uploader Server-Side Notes & Requirements {: .page-header }
 
 In the server folder you will find some examples for different platforms. If
 you can't find the one you need, please read up on the server-side guidelines
