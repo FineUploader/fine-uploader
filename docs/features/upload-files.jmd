@@ -6,7 +6,7 @@
 # Uploading Files {: .page-header }
 
 Assuming you already have a copy of Fine Uploader, first and foremost, you are
-going to want to make sure you've read the [Getting Started guide]().
+going to want to make sure you've read the [Getting Started guide](../quickstart/01-getting-started.html).
 
 If you feel comfortable from there, we can begin explaining how Fine Uploader
 uploads files, as well as some of the basic options one can set to customize
@@ -23,7 +23,12 @@ endpoints.""", "warn") }}
 {{ events_table(
     (
         ("submit", "`String` id, `String` name", "Called whenever an item has been submitted to the uploader is now a candidate for uploading."),
-        ("complete", "`String` id, `String` name, `String` reponseJSON, `String` xhr", "Called whenever an item has been successfully uploaded."),
+        ("submitted", "`String` id, `String` name", "Called whenever an item has been accepted by the uploader.
+        This occurs after all validation checks have passed.  When using Fine Uploader UI mode, this also occurs
+        AFTER the associated file item has been adde to the DOM."),
+        ("complete", "`String` id, `String` name, `String` reponseJSON, `String` xhr", "Called whenever attempt to
+        upload an item have completed.  The `success` property on `responseJSON` will allow you to determine
+        if the attempt was successful or not."),
         ("upload", "`String` id, `String` name", "Called just _before_ an upload begins on an item."),
     )
 ) }}
@@ -33,7 +38,7 @@ endpoints.""", "warn") }}
 {{ methods_table(
     (
         ("addFiles", "filesOrInputs[, params[, endpoint]]", "", "Submit one or more `File` objects to the uploader"),
-        ("addBlobs", "blobDataArray[, params[, endpoint]]", "", "Submit `Blob` objects to the uploader"),
+        ("addBlobs", "blobDataArray[, params[, endpoint]]", "", "Submit `Blob` or `BlobData` objects to the uploader"),
         ("uploadStoredFiles", "", "", "Begin uploading all queued items. `NoFilesError` if there are no items to upload."),
     )
 ) }}
@@ -49,15 +54,15 @@ alert("`addFiles` accepts `File`s, `input` elements, or a collection of any of t
 
 ```javascript
 var blobData = {
-    name: '', /* Blob name goes here */
-    blob: [], /* Blob data goes here */
+    name: /* Blob name goes here */
+    blob: /* Blob goes here */
 }
 ```
 
 ### Successfully Uploading
 
 Upload success will occur when the server's response status is 200 and the
-request body is a JSON string `{ success: 'true' }`
+request body is a JSON string `{ "success": "true" }`
 
 ### Auto/Manual Uploading
 
@@ -76,7 +81,8 @@ $("#fine-uploader").fineUploader({
 });
 ```
 
-If `autoUpload` is set to `false`, then items added to Fine Uploader will be queued until another time. Uploads can be triggered by calling the `uploadStoredFiles` method on an instance of Fine Uploader.
+If `autoUpload` is set to `false`, then items added to Fine Uploader will be queued until you explicitly trigger
+the uploads via the API time. Uploads can be triggered by calling the `uploadStoredFiles` method on an instance of Fine Uploader.
 
 <!-- http://stackoverflow.com/questions/16471503/fineuploader-uploads-the-same-file-multiple-times-at-the-same-time -->
 ```javascript
