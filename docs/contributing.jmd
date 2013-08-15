@@ -5,7 +5,26 @@
 # Contributing
 
 ## Build status
+                   [![Selenium Test Status](https://saucelabs.com/buildstatus/fineuploader)](https://saucelabs.com/u/fineuploader) | [![Semver badge](http://calm-shore-6115.herokuapp.com/?label=SemVer&value=2.0.0&color=green)](http://semver.org/spec/v2.0.0.html)
 
+<table class='table'>
+    <thead>
+        <tr>Travis</tr>
+        <tr>Seleniun</tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Master branch</td>
+            <td><a href="https://www.travis-ci.org/Widen/fine-uploader"><img src="https://www.travis-ci.org/Widen/fine-uploader.png?branch=master"></a></td>
+            <td><a href="https://saucelabs.com/u/fineuploader"><img src="https://saucelabs.com/buildstatus/fineuploader"></a></td>
+        </tr>
+        <tr>
+            <td>Develop branch</td>
+            <td><a href="https://www.travis-ci.org/Widen/fine-uploader"><img src="https://www.travis-ci.org/Widen/fine-uploader.png?branch=develop"></a></td>
+            <td><a href="https://saucelabs.com/u/fineuploader"><img src="https://saucelabs.com/buildstatus/fineuploader"></a></td>
+        </tr>
+    </tbody>
+</table>
 ### Selenium
 [![Selenium Test Status](https://saucelabs.com/buildstatus/feltnerm)](https://saucelabs.com/u/fineuploader)
 
@@ -16,8 +35,6 @@
 
 **Develop**:
 [![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png)](https://www.travis-ci.org/Widen/fine-uploader?branch=develop)
-
-_Fine Uploader is continuously integrated with [Travis-CI](https://www.travis-ci.org/)._
 
 ## Coding
 
@@ -46,8 +63,6 @@ You can run the test suite by forking or cloning the repo and running `grunt tes
 Like to write for people rather than computers?
 
 Fine Uploader could always use better documentation, examples, tutorials, and demos. Feel free to answer questions on the support forum, discuss issues on GitHub, write tutorials on your blog, posts screencasts on YouTube, … anything that can help the developers spend more time creating new features always helps!
-
-![Semver badge](http://calm-shore-6115.herokuapp.com/?label=semver&value=2.0.0&color=green)
 
 {% endmarkdown %}
 {% endblock %}
