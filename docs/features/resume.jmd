@@ -23,21 +23,23 @@ Note that resuming is disabled by default, and the cookie or local storage objec
     (
         ("cookiesExpireIn", "`Number`", "`7`", "The number of days before a persistent resume cookie will expire."),
         ("enabled", "`Boolean`", "`false`", "Enable or disable the ability to resume failed or stopped chunked uploads."),
-        ("id", "`Number` or `String`", "`null`", "An additional component of the cookie name used to store the current upload session."),
+        ("id", "`Number` or `String`", "`null`", "An additional component of the cookie name used to store the current upload session.")
     )
 ) }}
 
 {{
 alert("""The `cookiesExpireIn` property is not applicable to the S3 uploader.  Instead, use `recordsExpireIn`.""")
+}}
+{{
 alert("""The `id` property is not applicable to the S3 uploader.""")
 }}
-
 ### `resume.paramNames` option
+{{
 alert("""These options are not applicable to the S3 uploader.""")
-
+}}
 {{ options_table(
     (
-        ("resuming", "`String`", "'qqresume'", "Sent with the first request of the resume with a value of `true`."),
+        ("resuming", "`String`", "'qqresume'", "Sent with the first request of the resume with a value of `true`.")
     )
 ) }}
 
