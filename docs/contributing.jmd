@@ -6,22 +6,22 @@
 
 ## Build status
 
-<table class='table table-condensed'>
+<table class='table table-condensed' style="width: 300px;">
     <thead>
         <tr>
-            <th></th>
+            <th>Branch</th>
             <th>Travis</th>
             <th>Seleniun</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td>Master branch</td>
+            <td>Master</td>
             <td><a href="https://www.travis-ci.org/Widen/fine-uploader"><img src="https://www.travis-ci.org/Widen/fine-uploader.png?branch=master"></a></td>
             <td><a href="https://saucelabs.com/u/fineuploader"><img src="https://saucelabs.com/buildstatus/fineuploader"></a></td>
         </tr>
         <tr>
-            <td>Develop branch</td>
+            <td>Develop</td>
             <td><a href="https://www.travis-ci.org/Widen/fine-uploader"><img src="https://www.travis-ci.org/Widen/fine-uploader.png?branch=develop"></a></td>
             <td><a href="https://saucelabs.com/u/fineuploader"><img src="https://saucelabs.com/buildstatus/fineuploader"></a></td>
         </tr>
