@@ -3,10 +3,12 @@
 {% block content %}
 {% markdown %}
 
-# Upload from Mobile Device {: .page-header }
+# Upload from Mobile Device Cameras {: .page-header }
 
 {{
-alert("iOS devices only! Note that due to limitations related to camera access in iOS, setting this to true will prevent you from selecting multiple files at once.")
+alert("While uploads are possible from all mobile cameras, this option is relevant for iOS devices only!
+Note that due to limitations related to camera access in iOS, setting this to true will prevent you from selecting
+multiple files at once.")
 }}
 
 {{ options_table(
