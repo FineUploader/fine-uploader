@@ -7,11 +7,11 @@
 
 In some cases, Fine Uploader uses "promises", both internally and via the API.
 Promises are a design pattern taken from the functional programming style and
-are extremely helpful when dealing with asynchronous patterns.
+are extremely helpful when dealing with asynchronous operations.
 
-Fine Uploader's support for promises is encapsulated in the `qq.Promise` class.
+Fine Uploader's support for promises is encapsulated in the `qq.Promise` module.
 
-For more informaton on promises in JavaScript, I'd like to suggest
+For more informaton on promises in JavaScript, have a look at
 [Promises -- an alternative way to approach asynchronous JavaScript](http://12devs.co.uk/articles/promises-an-alternative-way-to-approach-asynchronous-javascript/).
 
 ## Promissory Callbacks
@@ -29,18 +29,18 @@ promise instance:
 * `onSubmitDelete`
 * `onPasteReceived`
 
-You are not required to return a promise -- you can simply return `false` or
-`undefined`. However, there are some instances where you may want to perform
+You are not required to return a promise -- you can simply return `false` (or nothing).
+However, there are some instances where you may want to perform
 some asynchronous work in your callback handler. A promise can be returned from
 any of the above callbacks if you need to execute  some non-blocking task,
 such as an AJAX request, or asking the user for input via a modal window that
-does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog box.
+does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog box).
 
 ## qq.Promise API
 
 {{ methods_table(
     (
-        ("then", "`Function` successCallback, `Function` failureCallback", "`qq.promise` instance", "Register success and failure callbacks. The creator of the promise will pass any values into the provided callbacks. If success of failure has occurred before you register your callbacks, then they will be called immediately after this call has executed. Each call to then registers an additional set of callbacks."),
+        ("then", "`Function` successCallback, `Function` failureCallback", "`qq.promise` instance", "Register success and failure callbacks. The creator of the promise will pass any values into the provided callbacks. If success of failure has occurred before you register your callbacks, then they will be called immediately after this call has executed. Each call to `then` registers an additional set of callbacks."),
         ("done", "`Function` callback", "`qq.promise` instance", "Register callbacks for successs OR failure. Invoked when the promise is fullfilled, regardless of result. The creator of the promise will pass any values into the provided callback. Each call to `done` registers an additional set of callbacks."),
         ("success", "`Function` callback", "`qq.promise` instance", "Call this on a promise to indicate success. The parameter values will depend on the situation. "),
         ("failure", "`Function` callback", "`qq.promise` instance", "Call this on a promise to indicate failure. The parameter values will depend on the situation. "),
