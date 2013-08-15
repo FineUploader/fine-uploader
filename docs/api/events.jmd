@@ -3,7 +3,7 @@
 {% block title %}Events - Fine Uploader Documentation{% endblock %}
 
 {% block sidebar %}
-<ul class="nav nav-tabs nav-stacked affix">
+<ul class="nav nav-tabs nav-stacked">
     <li><a href="#autoretry">autoRetry</a></li>
     <li><a href="#cancel">cancel</a></li>
     <li><a href="#complete">complete</a></li>

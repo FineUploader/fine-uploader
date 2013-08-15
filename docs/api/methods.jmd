@@ -4,7 +4,7 @@
 {% block title %}Methods - Fine Uploader Documentation{% endblock %}
 
 {% block sidebar %}
-<ul class="nav nav-tabs nav-stacked affix">
+<ul class="nav nav-tabs nav-stacked">
     <li><a href="#core"><b>Core</b></a></li>
     <li><a href="#ui"><b>UI</b></a></li>
 </ul>

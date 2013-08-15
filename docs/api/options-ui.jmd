@@ -2,7 +2,7 @@
 {% set page_title = "UI Options" %}
 
 {% block sidebar %}
-<ul class="nav nav-tabs nav-stacked affix">
+<ul class="nav nav-tabs nav-stacked">
     <li><a href="#ui_1"><b>UI</b></a></li>
     <li><a href="#deletefile-option_2">deleteFile</a></li>
     <li><a href="#display-option">display</a></li>
