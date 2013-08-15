@@ -13,11 +13,13 @@
     <li><a href="#manualretry">manualRetry</a></li>
     <li><a href="#pastereceived">pasteReceived</a></li>
     <li><a href="#progress">progress</a></li>
+    <li><a href="#resume">resume</a></li>
     <li><a href="#statuschange">statusChange</a></li>
     <li><a href="#submit">submit</a></li>
     <li><a href="#submitdelete">submitDelete</a></li>
     <li><a href="#submitted">submitted</a></li>
     <li><a href="#upload">upload</a></li>
+    <li><a href="#uploadchunk">uploadChunk</a></li>
     <li><a href="#validate">validate</a></li>
     <li><a href="#validatebatch">validateBatch</a></li>
 </ul>
@@ -26,7 +28,7 @@
 {% block content %}
 {% markdown %}
 
-# Events <small>Traditional</small> {: .page-header }
+# Events <small>Traditional & S3</small> {: .page-header }
 
 Fine Uploader's event system enables integrators to execute any operations at
 almost any point in the upload process. Knowing how these callbacks work, and
@@ -35,7 +37,7 @@ Fine Uploader.
 
 #### autoRetry
 
-**Parameters**: String id, String name, String attemptNumber
+**Parameters**: Integer id, String name, String attemptNumber
 
 Called before each automatic retry attempt for a failed item.
 
@@ -43,7 +45,7 @@ Called before each automatic retry attempt for a failed item.
 
 #### cancel
 
-**Parameters**: String id, String name
+**Parameters**: Integer id, String name
 
 Called when the item has been cancelled.
 
@@ -59,7 +61,7 @@ upload may actually complete until the promise has actually be fullfilled.
 
 #### complete
 
-**Parameters**: String id, String name, Object responseJSON, XMLHttpRequest xhr
+**Parameters**: Integer id, String name, Object responseJSON, XMLHttpRequest xhr
 
 Called when the item has finished uploading.
 
@@ -74,7 +76,7 @@ an `XMLHttpRequest` (see [Browser Support](../browser-support.html)).""", "info"
 
 #### delete
 
-**Parameters**: String id
+**Parameters**: Integer id
 
 Called just before a delete request is sent for the associated item.
 
@@ -82,7 +84,7 @@ Called just before a delete request is sent for the associated item.
 
 #### deleteComplete
 
-**Parameters**: String id, XMLHttpRequest xhr, Boolean isError
+**Parameters**: Integer id, XMLHttpRequest xhr, Boolean isError
 
 Called just after receiving a response from the server for a delete file
 request.
@@ -96,7 +98,7 @@ the `xhr` parameter will be an `XDomainRequest` instead.""", "failure", "Note") 
 
 #### error
 
-**Parameters**: String id, String name, String errorReason, XMLHttpRequest xhr
+**Parameters**: Integer id, String name, String errorReason, XMLHttpRequest xhr
 
 Called whenever an exceptional condition occurs (see [Handling Errors](../features/handling-errors.html))
 
@@ -108,7 +110,7 @@ an `XMLHttpRequest` (see [Browser Support](../browser-support.html)).""", "info"
 
 #### manualRetry
 
-**Parameters**: String id, String name
+**Parameters**: Integer id, String name
 
 Called before each manual retry attempt.
 
@@ -135,7 +137,7 @@ to associate with the pasted image. If the associated attempt is marked a
 
 #### progress
 
-**Parameters**: String id, String name, int uploadedBytes, int totalBytes
+**Parameters**: Integer id, String name, int uploadedBytes, int totalBytes
 
 Called during the upload, as it progresses.
 
@@ -145,9 +147,17 @@ Only used by the AJAX uploader.
 
 ----
 
+#### resume
+
+**Parameters**: Integer id, String name, Object chunkData
+
+Called just before a file upload is resumed.  See the `uploadChunk` event for more info on the `ChunkData` object.  
+
+----
+
 #### statusChange
 
-**Parameters**: String id, String oldStatus, String newStatus
+**Parameters**: Integer id, String oldStatus, String newStatus
 
 Invoked whenever the status changes for any item submitted to the uploader.
 
@@ -170,7 +180,7 @@ For reference, the status':
 
 #### submit
 
-**Parameters**: String id, String name
+**Parameters**: Integer id, String name
 
 Called when the item has been selected and is a candidate for uploading.
 
@@ -184,7 +194,7 @@ If a promise is returned, a call to `failure` is the same as returning `false`.
 
 #### submitDelete
 
-**Parameters**: String id
+**Parameters**: Integer id
 
 Called before an item has been marked for deletion has been submitted to the
 uploader.
@@ -197,7 +207,7 @@ If a promise is returned, a call to `failure` is the same as returning `false`.
 
 #### submitted
 
-**Parameters**: String id, String name
+**Parameters**: Integer id, String name
 
 Called when the item has been successfully submitted to the uploader.
 
@@ -214,7 +224,7 @@ been added to the DOM immediately before this callback is invoked.
 
 #### upload
 
-**Parameters**: String id, String name
+**Parameters**: Integer id, String name
 
 Called just before an item beings uploading to the server.
 
@@ -222,7 +232,7 @@ Called just before an item beings uploading to the server.
 
 #### uploadChunk
 
-**Parameters:** String id, String name, Object chunkData
+**Parameters:** Integer id, String name, Object chunkData
 
 Called just before a chunk requset is sent.
 

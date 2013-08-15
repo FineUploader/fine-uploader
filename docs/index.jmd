@@ -101,8 +101,7 @@ information is integral.
     <div class="span4">
 {% markdown %}
 #### Events
-* [Traditional](api/events.html)
-* [S3](api/events-s3.html)
+* [Traditional & S3](api/events.html)
 {% endmarkdown %}
     </div>
 </div>
