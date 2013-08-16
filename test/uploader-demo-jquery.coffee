@@ -5,11 +5,14 @@ $ ->
     $('#basicUploadSuccessExample').fineUploaderS3(
         debug: true
         request:
-            endpoint: "http://fineuploadertest2.s3.amazonaws.com"
+            endpoint: "http://fineuploadertest.s3.amazonaws.com"
             accessKey: 'AKIAJEQ4NDFBCZAMWGUQ'
-            signatureEndpoint: '/upload/s3/signature'
-            successEndpoint: '/upload/s3/success'
-            successRedirectEndpoint: 'success.html'
+        signature:
+            endpoint: '/upload/s3/signature'
+        uploadSuccess:
+            endpoint: '/upload/s3/success'
+        iframeSupport:
+            localBlankPagePath: 'success.html'
         chunking:
             enabled: true
         resume:

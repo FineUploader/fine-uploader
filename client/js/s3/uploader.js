@@ -18,9 +18,9 @@ qq.s3.FineUploader = function(o) {
     // Inherit instance data from FineUploader, which should in turn inherit from s3.FineUploaderBasic.
     qq.FineUploader.call(this, options, "s3");
 
-    if (!qq.supportedFeatures.ajaxUploading && options.request.successRedirectEndpoint === undefined) {
-        this._options.element.innerHTML = "<div>You MUST set the <code>successRedirectEndpoint</code> property " +
-            "of the <code>request</code> option since this browser does not support the File API!</div>"
+    if (!qq.supportedFeatures.ajaxUploading && options.iframeSupport.localBlankPagePath === undefined) {
+        this._options.element.innerHTML = "<div>You MUST set the <code>localBlankPagePath</code> property " +
+            "of the <code>iframeSupport</code> option since this browser does not support the File API!</div>"
     }
 };
 

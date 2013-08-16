@@ -12,6 +12,53 @@ behavior for the Traditonal or S3 uploader.
 
 ## Core Mode
 
+### `request` option
+
+{{ options_table(
+    (
+        ("endpoint", "`String`", "`null`", "URL for your S3 bucket.  All valid bucket URLs documented by Amazon are supported, including custom domains.  SSL is also supported."),
+        ("accessKey", "`String`", "`null`", "Your AWS public key. **NOT YOUR SECRET KEY**."),
+        ("params", "`Object`", "`{}`", "Parameters passed along with each upload request."),
+        ("filenameParam", "`String`", "`'qqfilename'`", "Part of the parameter name that contains the name of the associated file which may differ from the key name. Prefixed with 'x-amz-meta-' by Fine Uploader."),
+    )
+) }}
+
+### `objectProperties` option
+
+{{ options_table(
+    (
+        ("acl", "`String`", "`'private'`", "This value corresponds to a [canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/ACLOverview.html#CannedACL)"),
+        ("key", "`String` or `Function`", "`'uuid'`", "Describes the object key used to identify the file in your S3 bucket.
+        Possible values are 'uuid', 'filename' or a function "),
+    )
+) }}
+
+### `signature` option
+
+{{ options_table(
+    (
+        ("endpoint", "`String`", "`null`", "The endpoint that Fine Uploader can use to send policy documents
+        (HTML form uploads) or other strings to sign (REST requests) before sending requests off to S3."),
+    )
+) }}
+
+### `uploadSuccess` option
+
+{{ options_table(
+    (
+        ("endpoint", "`String`", "`null`", "An endpoint that Fine Uploader should POST to when a file
+has been succcessfully uploaded to S3. The parameters include the key, name, UUID, and bucket associated with the file."),
+    )
+) }}
+
+### `iframeSupport` option
+
+{{ options_table(
+    (
+        ("localBlankPagePath", "`String`", "`null`", "This is required if you plan on supporting browsers that do not implement the File API, such as IE9 and older.  This must point to a blank page on the same origin/domain as the page hosting Fine Uploader."),
+    )
+) }}
+
 ### `chunking` option
 
 {{ options_table(
@@ -23,25 +70,6 @@ behavior for the Traditonal or S3 uploader.
 {{
 alert("The `chunking.paramNames` option does **not** apply to S3.")
 }}
-
-
-### `request` option
-
-{{ options_table(
-    (
-        ("endpoint", "`String`", "`null`", "URL for your S3 bucket.  All valid bucket URLs documented by Amazon are supported, including custom domains.  SSL is also supported."),
-        ("signatureEndpoint", "`String`", "`null`", "The endpoint that Fine Uploader can use to send policy documents (HTML form uploads) or other strings to sign (REST requests) before sending requests off to S3."),
-        ("successEndpoint", "`String`", "`null`", "An endpoint that Fine Uploader should POST to when a file
-has been succcessfully uploaded to S3. The parameters include the key, name, UUID, and bucket associated with the file."),
-        ("accessKey", "`String`", "`null`", "Your AWS public key. **NOT YOUR SECRET KEY**."),
-        ("acl", "`String`", "`'private'`", "This value corresponds to a [canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/ACLOverview.html#CannedACL)"),
-        ("key", "`String` or `Function`", "`'uuid'`", "Describes the object key used to identify the file in your S3 bucket.
-        Possible values are 'uuid', 'filename' or a function "),
-        ("successRedirectEndpoint", "`String`", "`null`", "This is required if you plan on supporting browsers that do not implement the File API, such as IE9 and older.  This must point to a blank page on the same origin/domain as the page hosting Fine Uploader."),
-        ("params", "`Object`", "`{}`", "Parameters passed along with each upload request."),
-        ("filenameParam", "`String`", "`'qqfilename'`", "Part of the parameter name that contains the name of the associated file which may differ from the key name. Prefixed with 'x-amz-meta-' by Fine Uploader."),
-    )
-) }}
 
 ### `resume` option
 

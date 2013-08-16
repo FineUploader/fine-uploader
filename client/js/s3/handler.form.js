@@ -21,11 +21,12 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         paramsStore = options.paramsStore,
         endpointStore = options.endpointStore,
         accessKey = options.accessKey,
-        acl = options.acl,
+        acl = options.objectProperties.acl,
         validation = options.validation,
-        successRedirectUrl = options.successRedirectEndpoint,
+        signature = options.signature,
+        successRedirectUrl = options.iframeSupport.localBlankPagePath,
         getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequestor({
-            endpoint: options.signatureEndpoint,
+            endpoint: signature.endpoint,
             cors: options.cors,
             log: log
         }),

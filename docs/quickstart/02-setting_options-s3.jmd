@@ -21,11 +21,17 @@ More information on the [`request` option here](../api/options.html).
 ```javascript
 $("#fine-uploader").fineUploaderS3({
     request: {
-        endpoint: 'http://{ YOUR_BUCKET_NAME }.s3.amazonaws.com'
-        accessKey: '{ YOUR_ACCESS_KEY }',
-        signatureEndpoint: '/s3/signature',
-        successEndpoint: '/s3/success',
-        successRedirectEndpoint: '/success.html'
+        endpoint: '{ YOUR_BUCKET_NAME }.s3.amazonaws.com'
+        accessKey: '{ YOUR_ACCESS_KEY }'
+    },
+    signature: {
+        endpoint: '/s3/signature'
+    },
+    uploadSuccess: {
+        endpoint: '/s3/success'
+    },
+    iframeSupport: {
+        localBlankPagePath: '/success.html'
     }
 });
 ```
@@ -38,13 +44,7 @@ be enabled in the options of Fine Uploader:
 ```javascript
 $("#fine-uploader").fineUploaderS3({
     debug: true,
-    request: {
-        endpoint: 'http://{ YOUR_BUCKET_NAME }.s3.amazonaws.com'
-        accessKey: '{ YOUR_ACCESS_KEY }',
-        signatureEndpoint: '/s3/signature',
-        successEndpoint: '/s3/success',
-        successRedirectEndpoint: '/success.html'
-    }
+    /* ...other options... */
 });
 ```
 
@@ -61,14 +61,7 @@ ability to retry. The `retry` option can be set to enable this:
 
 ```javascript
 $("#fine-uploader").fineUploaderS3({
-    debug: true,
-    request: {
-        endpoint: 'http://{ YOUR_BUCKET_NAME }.s3.amazonaws.com'
-        accessKey: '{ YOUR_ACCESS_KEY }',
-        signatureEndpoint: '/s3handler',
-        successEndpoint: '/s3handler',
-        successRedirectEndpoint: '/success.html'
-    },
+    /* ...other options... */
     retry: {
        enableAuto: true // defaults to false
     }
@@ -90,19 +83,9 @@ You can also send a delete request via the `deleteFile` [API method](../api/meth
 
 ```javascript
 $("#fine-uploader").fineUploaderS3({
-    debug: true,
-    request: {
-        endpoint: 'http://{ YOUR_BUCKET_NAME }.s3.amazonaws.com'
-        accessKey: '{ YOUR_ACCESS_KEY }',
-        signatureEndpoint: '/s3handler',
-        successEndpoint: '/s3handler',
-        successRedirectEndpoint: '/success.html'
-    },
-    retry: {
-       enableAuto: true // defaults to false
-    },
+    /* ...other options... */
     deleteFile: {
-        enabled: true,
+        enabled: true, // defaults to false
         endpoint: '/s3handler'
     }
 });
@@ -137,11 +120,17 @@ Now our Fine Uploader page should look something like this:
         $("#fine-uploader").fineUploaderS3({
             debug: true,
             request: {
-                endpoint: 'http://{ YOUR_BUCKET_NAME }.s3.amazonaws.com'
-                accessKey: '{ YOUR_ACCESS_KEY }',
-                signatureEndpoint: '/s3handler',
-                successEndpoint: '/s3handler',
-                successRedirectEndpoint: '/success.html'
+                endpoint: '{ YOUR_BUCKET_NAME }.s3.amazonaws.com'
+                accessKey: '{ YOUR_ACCESS_KEY }'
+            },
+            signature: {
+                endpoint: '/s3/signature'
+            },
+            uploadSuccess: {
+                endpoint: '/s3/success'
+            },
+            iframeSupport: {
+                localBlankPagePath: '/success.html'
             },
             retry: {
                enableAuto: true // defaults to false

@@ -6,28 +6,40 @@
 qq.s3.FineUploaderBasic = function(o) {
     var options = {
         request: {
+            accessKey: null,
             // Making this configurable in the traditional uploader was probably a bad idea.
             // Let's just set this to "uuid" in the S3 uploader and not document the fact that this can be changed.
-            uuidName: "uuid",
+            uuidName: "uuid"
+        },
 
-            signatureEndpoint: null,
-            successEndpoint: null,
-            accessKey: null,
+        objectProperties: {
             acl: 'private',
-
-            // required if non-File-API browsers, such as IE9 and older, are used
-            successRedirectEndpoint: null,
-
             // 'uuid', 'filename', or a function, which may be promissory
             key: 'uuid'
         },
+
+        signature: {
+            endpoint: null
+        },
+
+        uploadSuccess: {
+            endpoint: null
+        },
+
+        // required if non-File-API browsers, such as IE9 and older, are used
+        iframeSupport: {
+            localBlankPagePath: null
+        },
+
         chunking: {
             // minimum part size is 5 MiB when uploading to S3
             partSize: 5242880
         },
+
         resume: {
             recordsExpireIn: 7 // days
         },
+
         cors: {
             allowXdr: true
         }
@@ -70,6 +82,9 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
      */
     _createUploadHandler: function() {
         var additionalOptions = {
+            objectProperties: this._options.objectProperties,
+            signature: this._options.signature,
+            iframeSupport: this._options.iframeSupport,
             getKeyName: qq.bind(this._determineKeyName, this),
             // pass size limit validation values to include in the request so AWS enforces this server-side
             validation: {
@@ -109,7 +124,7 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
     _determineKeyName: function(id, filename) {
         var self = this,
             promise = new qq.Promise(),
-            keynameLogic = this._options.request.key,
+            keynameLogic = this._options.objectProperties.key,
             extension = qq.getExtension(filename),
             onGetKeynameFailure = promise.failure,
             onGetKeynameSuccess = function(keyname, extension) {
@@ -193,7 +208,7 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
             self = this,
             onCompleteArgs = arguments,
             key = this.getKey(id),
-            successEndpoint = this._options.request.successEndpoint,
+            successEndpoint = this._options.uploadSuccess.endpoint,
             cors = this._options.cors,
             uuid = this.getUuid(id),
             bucket = qq.s3.util.getBucket(this._endpointStore.getEndpoint(id)),

@@ -22,20 +22,21 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         paramsStore = options.paramsStore,
         endpointStore = options.endpointStore,
         accessKey = options.accessKey,
-        acl = options.acl,
+        acl = options.objectProperties.acl,
         validation = options.validation,
+        signature = options.signature,
         chunkingPossible = options.chunking.enabled && qq.supportedFeatures.chunking,
         resumeEnabled = options.resume.enabled && chunkingPossible && qq.supportedFeatures.resume && window.localStorage !== undefined,
         internalApi = {},
         publicApi,
         policySignatureRequester = new qq.s3.SignatureAjaxRequestor({
             expectingPolicy: true,
-            endpoint: options.signatureEndpoint,
+            endpoint: signature.endpoint,
             cors: options.cors,
             log: log
         }),
         restSignatureRequester = new qq.s3.SignatureAjaxRequestor({
-            endpoint: options.signatureEndpoint,
+            endpoint: signature.endpoint,
             cors: options.cors,
             log: log
         }),
@@ -43,9 +44,9 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             filenameParam: filenameParam,
             endpointStore: endpointStore,
             paramsStore: paramsStore,
-            signatureEndpoint: options.signatureEndpoint,
+            signatureEndpoint: signature.endpoint,
             accessKey: options.accessKey,
-            acl: options.acl,
+            acl: acl,
             cors: options.cors,
             log: log,
             getContentType: function(id) {
@@ -60,7 +61,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         }),
         completeMultipartRequester = new qq.s3.CompleteMultipartAjaxRequester({
             endpointStore: endpointStore,
-            signatureEndpoint: options.signatureEndpoint,
+            signatureEndpoint: signature.endpoint,
             accessKey: options.accessKey,
             cors: options.cors,
             log: log,
@@ -70,7 +71,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         }),
         abortMultipartRequester = new qq.s3.AbortMultipartAjaxRequester({
             endpointStore: endpointStore,
-            signatureEndpoint: options.signatureEndpoint,
+            signatureEndpoint: signature.endpoint,
             accessKey: options.accessKey,
             cors: options.cors,
             log: log,

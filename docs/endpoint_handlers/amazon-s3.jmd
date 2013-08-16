@@ -12,11 +12,11 @@ in PHP, node.js, Python, and Java.  Other examples will be created in the future
 
 ### Required server-side tasks: all browsers
 The only required server-side task for all browsers is an endpoint that signs the policy document.  This endpoint
-corresponds to the `signatureEndpoint` property of the `request` option.
+corresponds to the `signature.endpoint` property.
 
 Fine Uploader will construct a policy document (required for securely uploading the file to your S3 bucket)
 which then must be signed using your AWS secret key.  When Fine Uploader requires this signature, it will send a
-POST request to the endpoint specified in your `signatureEndpoint`, passing the JSON policy document in the
+POST request to the endpoint specified in your `signature.endpoint` option, passing the JSON policy document in the
 request payload with a Content-Type of "application/json".  You can read more about [policy documents on Amazon's developer site](http://docs.aws.amazon.com/AmazonS3/latest/dev/HTTPPOSTForms.html#HTTPPOSTConstructPolicy).
 
 #### Verifying the policy
@@ -56,16 +56,16 @@ This isn't really a server-side task, but I'll mention it here anyway as it does
 For browsers that do not support the File API, Fine Uploader must submit selected files inside of form, targeting a specific
 dynamically-generated iframe.  When the response comes in, Fine Uploader will not be able to determine if the upload was
 successful since the response originated from a domain other than the one hosting the uploader.  To get around this,
-we can ask Amazon to redirect the response, on success, to an endpoint of our choice.  This is where the `successRedirectEndpoint`
-property of the `request` option comes into play.
+we can ask Amazon to redirect the response, on success, to an endpoint of our choice.  This is where the `iframeSupport`
+option comes into play.
 
-Your `successRedirectEndpoint` must point to a page on your server.  It can (and probably should) be an empty HTML page,
+Your `iframeSupport.localBlankPagePath` value must point to a page on your server.  It can (and probably should) be an empty HTML page,
 but it MUST reside on the same origin/domain as the one hosting your upload page.
 
 
 ### Optional server-side tasks: all browsers
 If you would like Fine Uploader to notify your server when any file has been successfully uploaded to S3, you should
-set the `successEndpoint` property of the `request` option.  If this is set, Fine Uploader will send a POST request
+set the `uploadSuccess.endpoint` property.  If this is set, Fine Uploader will send a POST request
 to your server with a Content-Type of "application/x-www-form-urlencoded".  The payload of this request, by default,
 will contain the following information:
 
@@ -97,7 +97,7 @@ for additional information on handling delete file requests.
 
 
 ## CORS support
-Support for CORS exists for the requests sent by the `signatureEndpoint` `successEndpoint` POST requests.  You will need
+Support for CORS exists for the requests sent to the `signature.endpoint` `uploadSuccess.endpoint` paths.  You will need
 to set the `expected` property of the `cors` option when setting up your Fine Uploader instance.  You must also include
 appropriate headers in your server-response, and possibly handle OPTIONS (pre-flight) requests sent by the browser.  Please
 read the [blog post on CORS support](http://blog.fineuploader.com/2013/01/31/cors-support-in-3-3/) for details.  Note that
