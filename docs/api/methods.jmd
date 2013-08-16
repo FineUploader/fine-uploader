@@ -29,7 +29,7 @@
         ("getInProgress", "", "", "Returns the number of items that are either currently uploading or queued. If called inside of the 'cancel' event handler this method will return a value that includes the upload associated with the 'cancel' event handler. This is because the upload will not be cancelled until the event handler returns."),
         ("getName", "`Integer` id", "`String`", "Returns the name of the item with the associated id"),
         ("getNetUploads", "", "`Number`", "Returns the number of items that have both been successfully uploaded and not deleted."),
-        ("getResumeableFilesData", "", "`Array`", "Returns the array of potentially resumable items. If a `resume.id` property has been set, this is taken into consideration. Each resumable file is represented by an object with the following properties: `name`: filename, `size`: size, `uuid`: unique id, `partIdx`: index of the part where the resume will start from."),
+        ("getResumableFilesData", "", "`Array`", "Returns the array of potentially resumable items. Each resumable file is represented by an object with the following properties: `name`: filename, `size`: size, `uuid`: unique id, `partIdx`: index of the part where the resume will start from."),
         ("getSize", "`Integer` id", "`String`", "Return the size of the item  with the associated id"),
         ("getUploads", "`Function` [filter]", "`Array`", "Return information about all the items that have been submitted to the uploader. The objects being iterated over will have the following properties: `id`, `uuid`, `originalName`, `name`, and `size`."),
         ("getUuid", "`Integer` id", "`String`", "Retrieve the UUID of the item with the associated id"),

@@ -80,6 +80,7 @@ be documented.
 * [Filename Editing](features/filename-edit.html)
 * [Handling Errors](features/handling-errors.html)
 * [Paste to Upload](features/paste-to-upload.html)
+* [Progress Bars](features/progress-bars.html)
 * [Request Parameters](features/request-parameters.html)
 * [Resuming Uploads](features/resume.html)
 * [Retrying](features/retry.html)

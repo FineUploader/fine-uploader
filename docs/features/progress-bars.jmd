@@ -1,0 +1,25 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Progress Bars" %}
+{% block content %}
+{% markdown %}
+
+# Progress Bars {: .page-header }
+
+{{ alert("This feature is only available in Chrome, Firefox, Safari, and IE10+ due to their support for the
+[`ProgressEvent` interface](https://dvcs.w3.org/hg/progress/raw-file/tip/Overview.html#interface-progressevent).") }}
+
+Seeing your uploads progress can be a satisfying feeling, especially when they
+finish. With Fine Uploader UI mode, a progress bar is included in the UI, and
+-- just like any other Fine Uploader UI feature -- it can be completely
+rebuilt and rebranded in Core mode.
+
+## Events
+
+{{ events_table(
+    (
+        ("progress", "`Integer` id, `String` name, `Number` uploadedBytes, `Number` totalBytes", "Called during the upload, as it progresses. Only used by the XHR/AJAX uploader."),
+    )
+) }}
+
+{% endmarkdown %}
+{% endblock %}
