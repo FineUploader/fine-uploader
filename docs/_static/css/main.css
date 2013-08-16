@@ -145,3 +145,4 @@ a:visited
     color: #0088CC;
 }
 .reference-table thead { font-weight: bold; } 
+.dropdown-menu .divider { margin-right: 20px; }
