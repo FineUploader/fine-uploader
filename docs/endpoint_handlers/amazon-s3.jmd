@@ -10,6 +10,46 @@ server.  This document will outline both required and optional server-side tasks
 document, Fine Uploader developers have provided fully functional [server-side examples](https://github.com/Widen/fine-uploader-server)
 in PHP, node.js, Python, and Java.  Other examples will be created in the future.
 
+#### Creating your S3 bucket's CORS configuration
+In order to use the upload-to-S3 feature, you MUST properly set the CORS configuration in your S3 bucket(s).  Fine Uploader
+must make cross-origin requests to S3 whenever it communicates with AWS.  You can [read more about CORS configuration on
+the AWS developer site](http://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html).  A simple and typical CORS configuration
+would look like this:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <CORSRule>
+        <AllowedOrigin>*</AllowedOrigin>
+        <AllowedMethod>POST</AllowedMethod>
+        <AllowedMethod>PUT</AllowedMethod>
+        <AllowedMethod>DELETE</AllowedMethod>
+        <MaxAgeSeconds>3000</MaxAgeSeconds>
+        <ExposeHeader>ETag</ExposeHeader>
+        <AllowedHeader>*</AllowedHeader>
+    </CORSRule>
+</CORSConfiguration>
+```
+
+Some notes on the above configuration:
+
+* The POST method is required to allow HTML Form uploads by Fine Uploader, as well as other various REST API calls.  You
+will always need to include this.
+* The PUT method is required only if you enable the chunking feature in Fine Uploader.
+* The DELETE method is if you plan on deleting files from your bucket server-side.  This would be critical
+if you enable Fine Uploader's delete file feature.  It is also required if you enable the chunking feature, as Fine Uploader
+sends a DELETE request to S3 when a user cancels an in-progress upload in order to ensure S3 removes all chunks associated
+with that upload present in your bucket.
+* The ExposeHeader line is required only if you enable the chunking feature.
+* You can (and probably should) make the AllowedOrigin condition(s) a bit more restrictive.  If you know specifically what
+domains will host your Fine Uploader instance, include these in the AllowedOrigin tag value.
+* You can (and probably should) make the AllowedHeader condition(s) a bit more restrictive.  If you do, you will always
+need to allow the following headers: "origin" and "content-type".  If you have the chunking feature enabled, you will also
+need to include: "x-amz-acl", "x-amx-meta-qqfilename", "x-amz-date", and "authorization".  If you have chunking enabled,
+you will also need to authorize headers for any custom parameters (user metadata) you want to attach to the object in S3.
+All parameters are sent as headers in the "Initiate Multipart Upload" request sent by Fine Uploader with a prefix of
+"x-amz-meta-".
+
 ### Required server-side tasks: all browsers
 The only required server-side task for all browsers is an endpoint that signs the policy document.  This endpoint
 corresponds to the `signature.endpoint` property.
