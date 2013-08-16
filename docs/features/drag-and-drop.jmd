@@ -18,7 +18,7 @@ Dragging and dropping of _folders_ is currently only supported in Chrome >=21", 
     (
         ("disableDefaultDropzone", "boolean", "`false`", "Set to true if the default dropzone should be disabled."),
         ("extraDropzones", "Array", "`[ ]`", "Designate additional dropzone elements."),
-        ("hideDropzones", "boolean", "`true`", "Designate dropzone elements to be hidden"),
+        ("hideDropzones", "boolean", "`false`", "Designate dropzone elements to be hidden"),
     )
 ) }}
 
