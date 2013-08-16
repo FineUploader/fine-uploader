@@ -50,10 +50,19 @@ to the [API docs](#api-reference).
 
 #### Additional Information
 
-* [Feature Detection & Browser Support](browser-support.html)
+* [Browser Support](browser-support.html)
 * [Contributing](contributing.html)
 * [Changelog](http://blog.fineuploader.com/category/changelog/)
+* [Support](support.html)
 * [FAQ](faq.html)
+
+#### Links
+
+* [Official Site](http://fineuploader.com/index.html)
+* [Blog](http://blog.fineuploader.com/)
+* [Issue Tracker](https://github.com/Widen/fine-uploader/issues)
+* [Support Forum](http://stackoverflow.com/questions/tagged/fine-uploader)
+* [Browse source](https://github.com/Widen/fine-uploader)
 
 ### Features
 
