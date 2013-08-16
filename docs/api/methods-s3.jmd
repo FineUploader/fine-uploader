@@ -9,7 +9,8 @@
 The S3 uploader provides many of the same API methods as the traditional
 uploader, but there are a few crucial differences to take into account.
 If you plan to use the S3 uploader, then use the following table as your API
-reference.
+reference.  All methods outlined in the core or UI documentation are also available
+in Fine Uploader S3, unless otherwise noted here.
 
 {{ methods_table(
 (
