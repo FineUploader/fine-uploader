@@ -75,6 +75,7 @@ be documented.
 * [Resuming Uploads](features/resume.html)
 * [Retrying](features/retry.html)
 * [Statistics & Status Updates](features/statistics-and-status-updates.html)
+* [Progress Bars](features/progress-bars.html)
 * [Styling](features/styling.html)
 * [Upload via Mobile Device Camera](features/upload-from-mobile-camera.html)
 * [Validation](features/validation.html)
