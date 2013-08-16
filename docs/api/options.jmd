@@ -1,8 +1,5 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Core Options" %}
-
-{% block title %}Core Options - Fine Uploader Documentation{% endblock %}
-
 {% block sidebar %}
 <ul class="nav nav-tabs nav-stacked">
     <li><a href="#core_1"><b>Core</b></a></li>
