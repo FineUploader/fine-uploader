@@ -8,7 +8,7 @@
     <li><a href="#display-option">display</a></li>
     <li><a href="#draganddrop-option">dragAndDrop</a></li>
     <li><a href="#editfilename-option">editFilename</a></li>
-    <li><a href="#faileduploadtextdisplay-option">failedUploadTextDisplay</a></li>
+    <li><a href="#faileduploadtextdisplay-option_1">failedUploadTextDisplay</a></li>
     <li><a href="#messages-option">messages</a></li>
     <li><a href="#retry-option">retry</a></li>
     <li><a href="#paste-option">paste</a></li>
