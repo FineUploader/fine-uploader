@@ -149,3 +149,4 @@ read the [blog post on CORS support](http://blog.fineuploader.com/2013/01/31/cor
 you can ignore the "Handling iframe CORS upload requests server-side" section.
 {% endmarkdown %}
 {% endblock %}
+
