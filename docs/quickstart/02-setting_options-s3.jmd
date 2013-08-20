@@ -16,7 +16,7 @@ requests to. This endpoint can be an absolute path or a relative path.  The mean
 endpoint varies depending on the endpoint handler. If you are using
 Fine Uploader S3, the endpoint should point to your S3 bucket.
 
-More information on the [`request` option here](../api/options.html).
+More information on the [`request` option here](../api/options-s3.html#request-option).
 
 ```javascript
 $("#fine-uploader").fineUploaderS3({
