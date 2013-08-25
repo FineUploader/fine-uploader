@@ -160,4 +160,122 @@ describe('uploader.basic.api.js', function () {
             assert.ok(!fineuploader._isAllowedExtension("png"));
         });
     });
+
+    describe("_handleCheckedCallback", function() {
+        beforeEach(function () {
+            fineuploader = new qq.FineUploaderBasic();
+        });
+
+        it("handles successful non-promissory callbacks (undefined return value)", function() {
+            var callback = function() {},
+                spec = {
+                    callback: callback,
+                    onSuccess: function(callbackRetVal) {
+                        assert.deepEqual(callbackRetVal, undefined);
+                    },
+                    onFailure: function() {
+                        assert.failure();
+                    }
+                };
+
+            fineuploader._handleCheckedCallback(spec);
+        });
+
+        it("handles successful non-promissory callbacks (defined return value)", function() {
+            var callback = function() {
+                    return "foobar";
+                },
+                spec = {
+                    callback: callback,
+                    onSuccess: function(callbackRetVal) {
+                        assert.deepEqual(callbackRetVal, "foobar");
+                    }
+                };
+
+            assert.deepEqual(fineuploader._handleCheckedCallback(spec), "foobar");
+        });
+
+        it("handles failed non-promissory callbacks (defined onFailure)", function(done) {
+            var callback = function() {
+                    return false;
+                },
+                spec = {
+                    callback: callback,
+                    onSuccess: function() {
+                        assert.fail();
+                        done();
+                    },
+                    onFailure: function() {
+                        done();
+                    }
+                };
+
+            fineuploader._handleCheckedCallback(spec);
+        });
+
+        it("handles failed non-promissory callbacks (undefined onFailure)", function(done) {
+            var callback = function() {
+                    return false;
+                },
+                spec = {
+                    callback: callback,
+                    onSuccess: function() {
+                        assert.fail();
+                    }
+                };
+
+            fineuploader._handleCheckedCallback(spec);
+            done();
+        });
+
+        it ("handles successful promissory callbacks", function(done) {
+            var callback = function() {
+                    var promise = new qq.Promise();
+
+                    setTimeout(function() {
+                        promise.success("foobar");
+                    }, 100);
+
+                    return promise;
+                },
+                spec = {
+                    callback: callback,
+                    onSuccess: function(passedVal) {
+                        assert.deepEqual(passedVal, "foobar");
+                        done();
+                    },
+                    onFailure: function() {
+                        assert.fail();
+                        done();
+                    }
+                };
+
+                assert.ok(qq.isPromise(fineuploader._handleCheckedCallback(spec)));
+        });
+
+        it ("handles failed promissory callbacks", function(done) {
+            var callback = function() {
+                    var promise = new qq.Promise();
+
+                    setTimeout(function() {
+                        promise.failure();
+                    }, 100);
+
+                    return promise;
+                },
+                spec = {
+                    callback: callback,
+                    onSuccess: function() {
+                        assert.fail();
+                        done();
+                    },
+                    onFailure: function() {
+                        done();
+                    }
+                };
+
+            assert.ok(qq.isPromise(fineuploader._handleCheckedCallback(spec)));
+        });
+    });
+
 });
