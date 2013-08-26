@@ -110,57 +110,7 @@ module.exports = (grunt) ->
         "README.md"
     ]
 
-    browsers = [
-        #{
-        #    browserName: 'android'
-        #    platform: 'Linux'
-        #    version: '4.0'
-        #}
-        {
-            browserName: 'iphone'
-            platform: 'OS X 10.8'
-            version: '6'
-        }
-        {
-            browserName: 'safari'
-            platform: 'OS X 10.8'
-            version: '6'
-        }
-        {
-            browserName: 'safari'
-            platform: 'OS X 10.6'
-            version: '5'
-        }
-        {
-            browserName: 'internet explorer'
-            platform: 'Windows 8'
-            version: '10'
-        }
-        {
-            browserName: 'internet explorer'
-            platform: 'Windows 7'
-            version: '9'
-        }
-        {
-            browserName: 'internet explorer'
-            platform: 'Windows 7'
-            version: '8'
-        }
-        {
-            browserName: 'internet explorer'
-            platform: 'Windows XP'
-            version: '7'
-        }
-        {
-            browserName: 'chrome'
-            platform: 'Windows 7'
-        }
-        {
-            browserName: 'firefox'
-            platform: 'Windows 7'
-            version: '21'
-        }
-    ]
+    browsers = require "#{paths.test}/browsers.json"
 
     # Configuration
     # ==========
@@ -697,7 +647,7 @@ module.exports = (grunt) ->
                     testname: 'Unit Tests'
                     detailedError: false
                     build: process.env.TRAVIS_BUILD_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()
-                    browsers: browsers
+                    browsers: browsers.unit
                     ## onTestComplete: (status, page, config, browser) ->
                     ##     done = @async()
                     ##     browser.eval 'JSON.stringify(window.mochaResults)', (err, res) ->
@@ -748,8 +698,7 @@ module.exports = (grunt) ->
 
     # Docs
     # ----------
-    # @todo
-    grunt.registerTask 'docs', 'IN THE WORKS: Generate documentation', []
+    #grunt.registerTask 'docs', 'IN THE WORKS: Generate documentation', []
 
 
     # Watcher
