@@ -78,14 +78,14 @@ $("#fine-uploader").fineUploader({
 
 {{ options_table(
     (
-        ("typeError", "`String`", "`{file} has an invalid extension. Valid extension(s): {extensions}.`", "Displayed when an invalid file type is submitted according to the validation settings."),
-        ("sizeError", "`String`", "`file} is too large, maximum file size is {sizeLimit}.`", "Displayed when the submitted item is too large according to the validation settings."),
-        ("minSizeError", "`String`", "`{file} is too small, minimum file size is {minSizeLimit}.`", "Displayed when the submitted item is too small according to the validation settings."),
-        ("emptyError", "`String`", "`{file} is empty, please select files again without it.`", "Displayed if the submitted item is a zero-sized file."),
-        ("noFileError", "`String`", "`No files to upload.`", "Displayed if an empty array of items is submitted."),
-        ("onLeave", "`String`", "`The files are being uploaded, if you leave now the upload will be cancelled. `", "Message to display to the user if they attempt to leave the page before the upload(s) is finished."),
-        ("tooManyFilesError", "`String`", "`You may only drop one file. `", "Displayed when multiple is false and more than one upload is dropped at once."),
-        ("unsupportedBrowser", "`String`", "`Unrecoverable error - this browser does not permit file uploading of any kind. `", "Displayed in place of the uploader when the current browser does not support uploads."),
+        ("emptyError", "`String`", "'{file} is empty, please select files again without it.'", "Text passed to the error event handler if a submitted item is zero bits."),
+        ("sizeError", "`String`", "'{file} is too large, maximum file size is {sizeLimit}.'", "Text passed to the error event handler if a submitted item is too large."),
+        ("typeError", "`String`", "'{file} has an invalid extension. Valid extension(s): {extensions}.'", "Text passed to the error event handler if an invalid file type is detected."),
+        ("minSizeError", "`String`", "'{file} is too small, minimum file size is {minSizeLimit}.'", "Text passed to the error event handler if the item is too small."),
+        ("noFilesError", "`String`", "'No files to upload.'", "Text passed to the error event handler if any empty array of items is submitted."),
+        ("onLeave", "`String`", "'The files are being uploaded, if you leave now the upload will be cancelled.'", "Text displayed to the user when they attempt to leave the page while uploads are still in progress."),
+        ("retryFailTooManyItemsError", "`String`", "'Retry failed - you have reached your file limit.'", "Text passed to the error event handler if a retry attempt is declared a failed due to a violation of the `validation.itemLimit` rule."),
+        ("tooManyItemsError", "`String`", "'Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.'", "Text passed to the error event handler if a submit is ignored due to a violation of the `validation.itemLimit` rules."),
     )
 ) }}
 

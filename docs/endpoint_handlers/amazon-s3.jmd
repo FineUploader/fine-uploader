@@ -126,6 +126,11 @@ appropriate (non-200) status code.  Furthermore, you can include a message to be
 and passed to your `onError` callback handler via an `error` property in the payload of your response.  In this case,
 the response payload must be valid JSON.
 
+You can also pass any data to your Fine Uploader [`complete` event handler](../api/events.html), client-side,
+by including it in a valid JSON response to the `uploadSuccess.endpoint` POST request.  In fact, the S3 demo server-side
+code on FineUploader.com is passing a signed URL to the `complete` handler which allows you to view the file you've
+uploaded.
+
 
 ## Delete File support
 Support for the delete file feature when using the S3 uploader is mostly the same as when using the traditional upload
@@ -144,3 +149,4 @@ read the [blog post on CORS support](http://blog.fineuploader.com/2013/01/31/cor
 you can ignore the "Handling iframe CORS upload requests server-side" section.
 {% endmarkdown %}
 {% endblock %}
+
