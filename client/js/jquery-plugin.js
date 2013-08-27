@@ -121,8 +121,14 @@
             else if ($.isArray(val)) {
                 arrayVals = [];
                 $.each(val, function(idx, arrayVal) {
+                    var arrayObjDest = {};
+
                     if (arrayVal instanceof $) {
                         $.merge(arrayVals, arrayVal);
+                    }
+                    else if ($.isPlainObject(arrayVal)) {
+                        transformVariables(arrayVal, arrayObjDest);
+                        arrayVals.push(arrayObjDest);
                     }
                     else {
                         arrayVals.push(arrayVal);

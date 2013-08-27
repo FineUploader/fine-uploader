@@ -26,8 +26,9 @@ qq.uiPublicApi = {
         this._parent.prototype.reset.apply(this, arguments);
         this._element.innerHTML = this._options.template;
         this._listElement = this._options.listElement || this._find(this._element, 'list');
+
         if (!this._options.button) {
-            this._button = this._createUploadButton(this._find(this._element, 'button'));
+            this._buttons.push(this._createUploadButton(this._find(this._element, 'button')));
         }
 
         this._dnd.dispose();
@@ -72,16 +73,10 @@ qq.uiPrivateApi = {
             },
             callbacks: {
                 processingDroppedFiles: function() {
-                    var input = self._button.getInput();
-
                     qq(dropProcessingEl).css({display: 'block'});
-                    qq(input).attach('click', preventSelectFiles);
                 },
                 processingDroppedFilesComplete: function(files) {
-                    var input = self._button.getInput();
-
                     qq(dropProcessingEl).hide();
-                    qq(input).detach('click', preventSelectFiles);
 
                     if (files) {
                         self.addFiles(files);

@@ -95,7 +95,11 @@ qq.basePublicApi = {
         this._autoRetries = [];
         this._retryTimeouts = [];
         this._preventRetries = [];
-        this._button.reset();
+
+        qq.each(this._buttons, function(idx, button) {
+            button.reset();
+        });
+
         this._paramsStore.reset();
         this._endpointStore.reset();
         this._netUploadedOrQueued = 0;
@@ -214,6 +218,43 @@ qq.basePublicApi = {
  * Defines the private (internal) API for FineUploaderBasic mode.
  */
 qq.basePrivateApi = {
+    _normalizeExtraButtons: function() {
+        var self = this;
+
+        qq.each(this._options.extraButtons, function(idx, extraButtonSpec) {
+            var inputName = extraButtonSpec.inputName || self._options.request.inputName,
+                multiple = extraButtonSpec.multiple,
+                endpoint = extraButtonSpec.endpoint || self._options.request.endpoint,
+                params = extraButtonSpec.params || self._options.request.params,
+                validation = qq.extend({}, self._options.validation, true);
+
+            if (multiple === undefined) {
+                multiple = self._options.multiple;
+            }
+
+            if (extraButtonSpec.validation) {
+                qq.extend(validation, extraButtonSpec.validation, true);
+            }
+
+            qq.extend(extraButtonSpec, {
+                inputName: inputName,
+                multiple: multiple,
+                endpoint: endpoint,
+                params: params,
+                validation: validation
+            }, true);
+        });
+    },
+    _initExtraButtons: function() {
+        var self = this;
+
+        qq.each(this._options.extraButtons, function(idx, extraButtonSpec) {
+            var button = self._createUploadButton(extraButtonSpec.element, extraButtonSpec.inputName,
+                extraButtonSpec.multiple, extraButtonSpec.validation.acceptFiles);
+
+            self._buttons.push(button);
+        });
+    },
     _handleCheckedCallback: function(details) {
         var self = this,
             callbackRetVal = details.callback();
@@ -251,21 +292,28 @@ qq.basePrivateApi = {
 
         return callbackRetVal;
     },
-    _createUploadButton: function(element){
-        var self = this;
+    _createUploadButton: function(element, inputName, isMultiple, acceptFiles) {
+        var self = this,
+            inputName = inputName || this._options.request.inputName,
+            isMultiple = isMultiple === undefined ? this._options.multiple : isMultiple,
+            acceptFiles = acceptFiles || this._options.validation.acceptFiles;
 
         var button = new qq.UploadButton({
             element: element,
-            multiple: this._options.multiple && qq.supportedFeatures.ajaxUploading,
-            acceptFiles: this._options.validation.acceptFiles,
-            onChange: function(input){
+            name: inputName,
+            multiple: isMultiple && qq.supportedFeatures.ajaxUploading,
+            acceptFiles: acceptFiles,
+            onChange: function(input) {
                 self._onInputChange(input);
             },
             hoverClass: this._options.classes.buttonHover,
             focusClass: this._options.classes.buttonFocus
         });
 
-        this._disposeSupport.addDisposer(function() { button.dispose(); });
+        this._disposeSupport.addDisposer(function() {
+            button.dispose();
+        });
+
         return button;
     },
     _createUploadHandler: function(additionalOptions, namespace) {
@@ -569,7 +617,7 @@ qq.basePrivateApi = {
     _onUpload: function(id, name) {
         this._uploadData.setStatus(id, qq.status.UPLOADING);
     },
-    _onInputChange: function(input){
+    _onInputChange: function(input) {
         if (qq.supportedFeatures.ajaxUploading) {
             this.addFiles(input.files);
         }
@@ -577,7 +625,9 @@ qq.basePrivateApi = {
             this.addFiles(input);
         }
 
-        this._button.reset();
+        qq.each(this._buttons, function(idx, button) {
+            button.reset();
+        });
     },
     _onBeforeAutoRetry: function(id, name) {
         this.log("Waiting " + this._options.retry.autoAttemptDelay + " seconds before retrying " + name + "...");

@@ -168,8 +168,8 @@ qq.FineUploader = function(o, namespace) {
 
         this._classes = this._options.classes;
 
-        if (!this._button) {
-            this._button = this._createUploadButton(this._find(this._element, 'button'));
+        if (!this._options.button) {
+            this._buttons.push(this._createUploadButton(this._find(this._element, 'button')));
         }
 
         this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
