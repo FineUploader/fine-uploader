@@ -264,7 +264,7 @@ Processing of this item is deferred until the promise is fullfilled.
 If a promise is returned, a call to `failure` is the same as returning `false`.
 
 {{ alert(
-"""The FileOrBlobData object has two properties: `name` and `size`. The `size`
+"""The `BlobData` object has two properties: `name` and `size`. The `size`
 property will be undefined for browsers without File API support.""", "info", "Note") }}
 
 ----

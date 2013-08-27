@@ -19,7 +19,7 @@
 {{ methods_table(
     (
         ("addFiles", "filesOrInputs[, params[, endpoint]]", "", "Submit one or more `File` objects to the uploader. Accepts `File`s, `<input>` elements, or a collection of any of those two types."),
-        ("addBlobs", "blobDataArray[, params[, endpoint]]", "", "Submit `Blob` objects to the uploader. `blobDataArray` is expected to be an array of `BlobData` objects. See below for a spec of a `BlobData` object."),
+        ("addBlobs", "blobDataArray[, params[, endpoint]]", "", "Submit on or more `Blob` or `BlobData` objects to the uploader. See below for a spec of a `BlobData` object."),
         ("cancel", "`Integer` id", "", "Cancel the queued or currently uploading item with the corresponding id"),
         ("cancelAll", "", "", "Cancel all queued or currently uploading items"),
         ("clearStoredFiles", "", "", "Clears the internal list of stored items. Only applies with `autoUpload` is `false`"),
