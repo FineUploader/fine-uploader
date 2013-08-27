@@ -5,10 +5,12 @@
 # the 'wrapper' function
 module.exports = (grunt) ->
 
+    require('time-grunt')(grunt)
+    fs = require 'fs'
+
     # Utilities
     # ==========
     path = require 'path'
-    request = require 'request'
 
     # Package
     # ==========
@@ -23,94 +25,13 @@ module.exports = (grunt) ->
         'docs': './docs'
         'test': './test'
 
+    # Browsers
+    # ==========
+    browsers = require "#{paths.test}/browsers"
+
     # Modules
     # ==========
-    # Core modules
-    core = [
-        "#{paths.src}/js/util.js",
-        "#{paths.src}/js/version.js",
-        "#{paths.src}/js/features.js",
-        "#{paths.src}/js/promise.js",
-        "#{paths.src}/js/button.js",
-
-        # TODO tied to the upload via paste feature and can be omitted or included in the combined file based on integrator prefs (#846)
-        "#{paths.src}/js/paste.js",
-
-        "#{paths.src}/js/upload-data.js",
-        "#{paths.src}/js/uploader.basic.api.js",
-        "#{paths.src}/js/uploader.basic.js",
-
-        # TODO tied to the DnD feature and can be omitted or included in the combined file based on integrator prefs (#846)
-        "#{paths.src}/js/dnd.js",
-
-        "#{paths.src}/js/uploader.api.js",
-        "#{paths.src}/js/uploader.js",
-        "#{paths.src}/js/ajax.requester.js",
-
-        # TODO tied to the delete file feature and can be omitted or included in the combined file based on integrator prefs (#846)
-        "#{paths.src}/js/deletefile.ajax.requester.js",
-
-        # TODO tied to the CORS feature and can be omitted or included in the combined file based on integrator prefs (#846)
-        "#{paths.src}/js/window.receive.message.js",
-
-        "#{paths.src}/js/handler.base.js",
-        "#{paths.src}/js/handler.xhr.api.js",
-        "#{paths.src}/js/handler.form.api.js",
-
-        # TODO tied to the edit filename feature and can be omitted or included in the combined file based on integrator prefs (#846)
-        "#{paths.src}/js/ui.handler.events.js",
-        "#{paths.src}/js/ui.handler.click.drc.js",
-        "#{paths.src}/js/ui.handler.edit.filename.js",
-        "#{paths.src}/js/ui.handler.click.filename.js",
-        "#{paths.src}/js/ui.handler.focusin.filenameinput.js",
-        "#{paths.src}/js/ui.handler.focus.filenameinput.js"
-    ]
-
-    traditional = [
-        "#{paths.src}/js/traditional/handler.form.js",
-        "#{paths.src}/js/traditional/handler.xhr.js"
-    ]
-
-    s3 = [
-        "#{paths.src}/js/s3/util.js",
-        "#{paths.src}/js/s3/uploader.basic.js",
-        "#{paths.src}/js/s3/uploader.js",
-        "#{paths.src}/js/s3/signature.ajax.requester.js",
-        "#{paths.src}/js/s3/uploadsuccess.ajax.requester.js",
-        "#{paths.src}/js/s3/multipart.initiate.ajax.requester.js",
-        "#{paths.src}/js/s3/multipart.complete.ajax.requester.js",
-        "#{paths.src}/js/s3/multipart.abort.ajax.requester.js",
-        "#{paths.src}/js/s3/handler.xhr.js",
-        "#{paths.src}/js/s3/handler.form.js",
-        "#{paths.src}/js/s3/jquery-plugin.js"
-    ]
-
-    # jQuery plugin modules
-    jquery = core.concat "#{paths.src}/js/jquery-plugin.js",
-
-                         # TODO tied to the DnD feature and can be omitted or included in the combined file based on integrator prefs (#846)
-                         "#{paths.src}/js/jquery-dnd.js"
-
-    all = jquery.concat (traditional.concat s3)
-
-    extra = [
-        "#{paths.src}/js/iframe.xss.response.js"
-        "#{paths.src}/loading.gif",
-        "#{paths.src}/processing.gif",
-        "#{paths.src}/edit.gif",
-        "./README.md",
-        "./LICENSE"
-    ]
-
-    versioned = [
-        "package.json",
-        "fineuploader.jquery.json",
-        "#{paths.src}/js/version.js",
-        "bower.json",
-        "README.md"
-    ]
-
-    browsers = require "#{paths.test}/browsers.json"
+    fineUploaderModules = require './lib/fineuploader.modules'
 
     # Configuration
     # ==========
@@ -119,8 +40,6 @@ module.exports = (grunt) ->
         # Package
         # --------
         pkg: pkg
-        extra: extra
-        paths: paths
 
 
         # Modules
@@ -195,19 +114,19 @@ module.exports = (grunt) ->
         # --------
         concat:
             core:
-                src: core.concat traditional
+                src: fineUploaderModules.mergeModules 'core', 'traditional'
                 dest: "#{paths.build}/<%= pkg.name %>.js"
             coreS3:
-                src: core.concat s3
+                src: fineUploaderModules.mergeModules 'core', 's3'
                 dest: "#{paths.build}/s3.<%= pkg.name %>.js"
             jquery:
-                src: jquery.concat traditional
+                src: fineUploaderModules.mergeModules 'jquery', 'traditional'
                 dest: "#{paths.build}/jquery.<%= pkg.name %>.js"
             jqueryS3:
-                src: jquery.concat s3
+                src: fineUploaderModules.mergeModules 'jquery', 's3'
                 dest: "#{paths.build}/s3.jquery.<%= pkg.name %>.js"
             all:
-                src: all
+                src: fineUploaderModules.mergeModules 'all'
                 dest: paths.build + "/all.<%= pkg.name %>.js"
             css:
                 src: ["#{paths.src}/*.css"]
@@ -564,6 +483,27 @@ module.exports = (grunt) ->
                     base: "test"
                     hostname: "0.0.0.0"
                     port: 9001
+
+        version:
+            options:
+                pkg: pkg,
+                prefix: '[^\\-][Vv]ersion[\'"]?\\s*[:=]\\s*[\'"]?'
+            major:
+                options:
+                    release: 'major'
+                src: fineUploaderModules.modules.versioned
+            minor:
+                options:
+                    release: 'minor'
+                src: fineUploaderModules.modules.versioned
+            hotfix:
+                options:
+                    release: 'patch'
+                src: fineUploaderModules.modules.versioned
+            build:
+                options:
+                    release: 'build'
+                src: fineUploaderModules.modules.versioned
 
         # Watching for changes
         # ----------
