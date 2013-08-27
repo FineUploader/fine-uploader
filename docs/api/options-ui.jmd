@@ -72,7 +72,7 @@ options for `deleteFile`""", "info", "Note:") }}
     (
         ("extraDropzones", "`Array`", "`[]`", "Designate additional drop zones for file input."),
         ("hideDropzones", "`Boolean`", "`true`", "Use if you would like dropzone elements to be hidden or not."),
-        ("disableDefaultDropzone", "`Boolean`", "`true`", "Use if you are contributing your own dropzone(s) that is/are not the default one."),
+        ("disableDefaultDropzone", "`Boolean`", "`false`", "Use if you are contributing your own dropzone(s) that is/are not the default one."),
     )
 ) }}
 
