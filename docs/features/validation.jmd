@@ -40,7 +40,7 @@ If the `validation.stopOnFirstInvalidFile` option is enabled, then neither of
 these events will be thrown preceding a file being invalid (i.e., one of these
 callbacks returned `false`).
 
-Also note that a `FileOrBlobData` object has two properties:
+Also note that a `BlobData` object has two properties:
 
 ```javascript
 {
