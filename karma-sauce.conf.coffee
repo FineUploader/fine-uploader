@@ -32,7 +32,7 @@ module.exports = (config) ->
       autoWatch: false
       sauceLabs:
         username: process.env.SAUCE_USERNAME || ''
-        accessKey: process.env.SAUCE_ACCESS_KEY || ''
+        accessKey: process.env.SAUCE_ACCESSKEY || ''
         startConnect: false
         tags: [ process.env.SAUCE_USERNAME+"@"+process.env.TRAVIS_BRANCH || process.env.SAUCE_USERNAME+"@local"]
         build: process.env.TRAVIS_BUILD_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()

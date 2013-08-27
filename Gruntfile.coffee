@@ -396,11 +396,6 @@ module.exports = (grunt) ->
         expr: true
         asi: true
 
-    open:
-      test:
-        path: 'http://localhost:9000'
-        app: 'Google Chrome'
-
     uglify:
       options:
         mangle: true
@@ -499,7 +494,7 @@ module.exports = (grunt) ->
         ]
       karma:
         files: ["#{paths.src}/js/**/*.js"]
-        tasks: ["karma:unit:run"]
+        tasks: ["karma:ci:run"]
 
     mochaWebdriver:
       options:
@@ -522,24 +517,32 @@ module.exports = (grunt) ->
       dev:
         configFile: './karma-local.conf.coffee'
         autoWatch: true
+        singleRun: false
         background: false
         reporters: 'dots'
       unit:
         configFile: './karma-local.conf.coffee'
         autoWatch: false
-        background: true
+        background: false
+        singleRun: true
+        reporters: 'dots'
+      ci:
+        configFile: './karma-local.conf.coffee'
+        autoWatch: false
+        singleRun: false
+        bakcground: true
         reporters: 'dots'
       sauce:
         configFile: './karma-sauce.conf.coffee'
+        singleRun: true
 
     shell:
       sauce_connect:
         command: 'cat ./lib/sauce/sauce_connect_setup.sh | bash'
-        options:
-          stdout: true
-          stderr: true
       karma:
         command: 'karma start & sleep 5 && karma run karma-modules.conf.coffee '
+      karma_sauce:
+        command: 'karma start & sleep 5 && karma run karma-sauce.conf.coffee '
 
   # Dependencies
   # ==========
@@ -561,10 +564,6 @@ module.exports = (grunt) ->
     'concurrent:minify'
   ]
 
-  grunt.registerTask 'sauce', 'Run tests on SauceLabs', [
-    #'shell:sauce_connect'
-    'karma:sauce'
-  ]
 
   # Testing Tasks
   # ----------
@@ -583,42 +582,33 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'test-watch', 'Run headless unit-tests and re-run on file changes', [
     'prepare-test'
-    'connect:test_server'
-    'open:test'
     'watch'
   ]
 
   grunt.registerTask 'test-unit', 'Run headless unit tests', [
     'prepare-test'
-    'connect:test_server'
     'karma:unit'
   ]
 
   grunt.registerTask 'test-unit-sauce', 'Run tests on SauceLabs', [
     'prepare-test'
-    'connect:test_server'
-    'karma:sauce_0'
-    'karma:sauce_1'
-    'karma:sauce_2'
-    'karma:sauce_3'
+    'shell:sauce_connect'
+    'karma:sauce'
   ]
 
   grunt.registerTask 'test-unit-forever', 'Run a local server for indefinite unit testing', [
     'prepare-test'
-    'connect:root_server'
     'karma:dev'
   ]
 
   grunt.registerTask 'test-functional', 'ITW: Run functional tests', [
     'prepare-test'
-    'connect:test_server'
-    'mocha:functional'
+    'mochaWebdriver:sauce'
   ]
 
   grunt.registerTask 'test-functional-sauce', 'ITW: Run functional tests (SauceLabs)', [
     'prepare-test'
-    'connect:test_server'
-    'mocha-sauce:functional'
+    'mochaWebdriver:sauce'
   ]
 
   # Building Tasks

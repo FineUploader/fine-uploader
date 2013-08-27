@@ -19,12 +19,11 @@ CONNECT_DOWNLOAD="Sauce_Connect.zip"
 if [[ -z "${LOGS_DIR}" ]]; then
   LOGS_DIR="/tmp"
 fi
+
 CONNECT_LOG="$LOGS_DIR/sauce-connect.log"
 CONNECT_STDOUT="$LOGS_DIR/sauce-connect.stdout"
 CONNECT_STDERR="$LOGS_DIR/sauce-connect.stderr"
-#CONNECT_LOG="./sauce-connect.log"
-#CONNECT_STDOUT="./sauce-connect.stdout"
-#CONNECT_STDERR="./sauce-connect.stderr"
+CONNECT_READYFILE="$LOGS_DIR/sauce-connect.ready-$RANDOM"
 
 # Get Connect and start it
 mkdir -p $CONNECT_DIR
@@ -51,5 +50,14 @@ echo "  $CONNECT_LOG"
 echo "  $CONNECT_STDOUT"
 echo "  $CONNECT_STDERR"
 
-java -jar Sauce-Connect.jar $ARGS $SAUCE_USERNAME $SAUCE_ACCESS_KEY \
-  --logfile $CONNECT_LOG 2> $CONNECT_STDERR 1> $CONNECT_STDOUT &
+#2> $CONNECT_STDERR 1> $CONNECT_STDOUT &
+
+java -jar Sauce-Connect.jar \
+  $SAUCE_USERNAME $SAUCE_ACCESS_KEY \
+  $ARGS \
+  --logfile $CONNECT_LOG \
+  --readyfile $CONNECT_READYFILE 2> $CONNECT_STDERR 1> $CONNECT_STDOUT &
+
+while [[ ! -f $CONNECT_READYFILE ]]; do
+  sleep .5
+done
