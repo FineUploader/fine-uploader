@@ -14,16 +14,18 @@ qq.s3.FineUploaderBasic = function(o) {
 
         objectProperties: {
             acl: 'private',
-            // 'uuid', 'filename', or a function, which may be promissory
+            // 'uuid', 'filename', or a function which may be promissory
             key: 'uuid'
         },
 
         signature: {
-            endpoint: null
+            endpoint: null,
+            customHeaders: {}
         },
 
         uploadSuccess: {
-            endpoint: null
+            endpoint: null,
+            customHeaders: {}
         },
 
         // required if non-File-API browsers, such as IE9 and older, are used
@@ -122,8 +124,7 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
      * @private
      */
     _determineKeyName: function(id, filename) {
-        var self = this,
-            promise = new qq.Promise(),
+        var promise = new qq.Promise(),
             keynameLogic = this._options.objectProperties.key,
             extension = qq.getExtension(filename),
             onGetKeynameFailure = promise.failure,
@@ -209,6 +210,7 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
             onCompleteArgs = arguments,
             key = this.getKey(id),
             successEndpoint = this._options.uploadSuccess.endpoint,
+            successCustomHeaders = this._options.uploadSuccess.customHeaders,
             cors = this._options.cors,
             uuid = this.getUuid(id),
             bucket = qq.s3.util.getBucket(this._endpointStore.getEndpoint(id)),
@@ -241,6 +243,7 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
         if (success && successEndpoint) {
             successAjaxRequestor = new qq.s3.UploadSuccessAjaxRequester({
                 endpoint: successEndpoint,
+                customHeaders: successCustomHeaders,
                 cors: cors,
                 log: qq.bind(this.log, this)
             });

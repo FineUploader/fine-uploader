@@ -15,7 +15,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         options = {
             method: "POST",
             endpointStore: null,
-            signatureEndpoint: null,
+            signatureSpec: null,
             accessKey: null,
             maxConnections: 3,
             getKey: function(id) {},
@@ -27,7 +27,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
 
     // Transport for requesting signatures (for the "Complete" requests) from the local server
     getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequestor({
-        endpoint: options.signatureEndpoint,
+        signatureSpec: options.signatureSpec,
         cors: options.cors,
         log: options.log
     });
