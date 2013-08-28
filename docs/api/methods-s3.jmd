@@ -20,7 +20,7 @@ in Fine Uploader S3, unless otherwise noted here.
     ("setEndpoint", "`String` bucketPath[, `Number` id]", "", "Modify the bucket where upload requests should be directed.
     The endpoint for a specific file or blob can be changed by passing in an optional `id` parameter.
     All valid bucket URLs documented by Amazon are supported, including custom domains. SSL is also supported."),
-    ("setUploadSuccessParams", "`String` newParams[, `Integer` id]", "", "Set additional the parameters for the upload
+    ("setUploadSuccessParams", "`Object` newParams[, `Integer` id]", "", "Set additional the parameters for the upload
     success request.  Note that Fine Uploader will still send the bucket, key, filename, and UUID as well."),
 )
 ) }}
