@@ -25,6 +25,10 @@ qq.s3.FineUploaderBasic = function(o) {
 
         uploadSuccess: {
             endpoint: null,
+
+            // In addition to the default params sent by Fine Uploader
+            params: {},
+
             customHeaders: {}
         },
 
@@ -52,6 +56,8 @@ qq.s3.FineUploaderBasic = function(o) {
 
     // Call base module
     qq.FineUploaderBasic.call(this, options);
+
+    this._uploadSuccessParamsStore = this._createParamsStore("uploadSuccess");
 };
 
 // Inherit basic public & private API methods.
@@ -73,6 +79,16 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
      */
     reset: function() {
         qq.FineUploaderBasic.prototype.reset.call(this);
+    },
+
+    setUploadSuccessParams: function(params, id) {
+        /*jshint eqeqeq: true, eqnull: true*/
+        if (id == null) {
+            this._options.uploadSuccess.params = params;
+        }
+        else {
+            this._uploadSuccessParamsStore.setParams(params, id);
+        }
     },
 
     /**
@@ -215,6 +231,7 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
             uuid = this.getUuid(id),
             bucket = qq.s3.util.getBucket(this._endpointStore.getEndpoint(id)),
             promise = new qq.Promise(),
+            uploadSuccessParams = this._uploadSuccessParamsStore.getParams(id),
 
             // If we are waiting for confirmation from the local server, and have received it,
             // include properties from the local server response in the `response` parameter
@@ -248,12 +265,16 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
                 log: qq.bind(this.log, this)
             });
 
-            successAjaxRequestor.sendSuccessRequest(id, {
+
+            // combine custom params and default params
+            qq.extend(uploadSuccessParams, {
                 key: key,
                 uuid: uuid,
                 name: name,
                 bucket: bucket
-            })
+            }, true);
+
+            successAjaxRequestor.sendSuccessRequest(id, uploadSuccessParams)
                 .then(onSuccessFromServer, onFailureFromServer);
 
             return promise;
