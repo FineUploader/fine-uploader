@@ -40,7 +40,7 @@ does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog 
 
 {{ methods_table(
     (
-        ("then", "`Function` successCallback, `Function` failureCallback", "`qq.promise` instance", "Register success and failure callbacks. The creator of the promise will pass any values into the provided callbacks. If success of failure has occurred before you register your callbacks, then they will be called immediately after this call has executed. Each call to `then` registers an additional set of callbacks."),
+        ("then", "`Function` successCallback, `Function` failureCallback", "`qq.promise` instance", "Register success and failure callbacks. The creator of the promise will pass any values into the provided callbacks. If success or failure has occurred before you register your callbacks, then they will be called immediately after this call has executed. Each call to `then` registers an additional set of callbacks."),
         ("done", "`Function` callback", "`qq.promise` instance", "Register callbacks for successs OR failure. Invoked when the promise is fullfilled, regardless of result. The creator of the promise will pass any values into the provided callback. Each call to `done` registers an additional set of callbacks."),
         ("success", "`Function` callback", "`qq.promise` instance", "Call this on a promise to indicate success. The parameter values will depend on the situation. "),
         ("failure", "`Function` callback", "`qq.promise` instance", "Call this on a promise to indicate failure. The parameter values will depend on the situation. "),
