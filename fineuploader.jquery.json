@@ -6,7 +6,13 @@
     "upload",
     "file",
     "chunking",
-    "file-uploader"
+    "file-uploader",
+    "s3",
+    "aws",
+    "amazon",
+    "input",
+    "form",
+    "ui"
   ],
   "version": "3.8.1",
   "author": {
