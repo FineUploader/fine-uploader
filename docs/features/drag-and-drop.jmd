@@ -124,6 +124,8 @@ $('#fineUploaderBasicContainer').fineUploader({
 });
 ```
 
+{{ alert("jQuery 1.7+ is required to use the `on` function.") }}
+
 ### Non-jQuery Example
 
 If you are not utilizing jQuery, you can use the plain javascript DnD module.  Here is a simple example:
