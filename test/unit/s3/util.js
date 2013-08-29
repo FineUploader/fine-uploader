@@ -139,5 +139,16 @@ describe('s3/util.js', function () {
         });
     });
 
+    describe("encodeQueryStringParam", function() {
+        it("handles params with spaces correctly", function() {
+            assert.equal(qq.s3.util.encodeQueryStringParam("one two three"), "one+two+three");
+            assert.equal(qq.s3.util.encodeQueryStringParam("&hi, how are you?"), "%26hi%2C+how+are+you%3F");
+        });
+
+        it("handles params without spaces correctly", function() {
+            assert.equal(qq.s3.util.encodeQueryStringParam("onetwothree"), "onetwothree");
+            assert.equal(qq.s3.util.encodeQueryStringParam("&hi,howareyou?"), "%26hi%2Chowareyou%3F");
+        });
+    });
 });
 
