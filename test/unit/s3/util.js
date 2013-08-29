@@ -47,7 +47,7 @@ describe('s3/util.js', function () {
 
             $.each(endpointsAndBuckets, function(endpoint, bucket) {
                 var extractedBucket = qq.s3.util.getBucket(endpoint);
-                assert.equal(bucket, extractedBucket, "Failed to extract bucket from " + endpoint);
+                assert.equal(extractedBucket, bucket, "Failed to extract bucket from " + endpoint);
             });
         });
     });
@@ -66,20 +66,20 @@ describe('s3/util.js', function () {
 
         it('non-zero min and max', function () {
             qq.s3.util.enforceSizeLimits(policy, 100, 102);
-            assert.equal("100", policy.conditions[0][1]);
-            assert.equal("102", policy.conditions[0][2]);
+            assert.equal(policy.conditions[0][1], "100");
+            assert.equal(policy.conditions[0][2], "102");
         });
 
         it('zero min, non-zero max', function () {
             qq.s3.util.enforceSizeLimits(policy, 0, 100);
-            assert.equal("0", policy.conditions[0][1]);
-            assert.equal("100", policy.conditions[0][2]);
+            assert.equal(policy.conditions[0][1], "0");
+            assert.equal(policy.conditions[0][2], "100");
         });
 
         it('non-zero min, zero max', function () {
             qq.s3.util.enforceSizeLimits(policy, 100, 0);
-            assert.equal("100", policy.conditions[0][1]);
-            assert.equal("9007199254740992", policy.conditions[0][2]);
+            assert.equal(policy.conditions[0][1], "100");
+            assert.equal(policy.conditions[0][2], "9007199254740992");
         });
     });
 
@@ -95,16 +95,16 @@ describe('s3/util.js', function () {
 
         it('relative url input', function() {
             var derivedAbsoluteUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl("server/upload");
-            assert.equal(protocol + "://" + host + dir + "server/upload", derivedAbsoluteUrl);
+            assert.equal(derivedAbsoluteUrl, protocol + "://" + host + dir + "server/upload");
         });
 
         it('relative url input - root', function() {
             var derivedAbsoluteUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl("/server/upload");
-            assert.equal(protocol + "://" + host + "/server/upload", derivedAbsoluteUrl);
+            assert.equal(derivedAbsoluteUrl, protocol + "://" + host + "/server/upload");
         });
 
         it ('absolute url input', function() {
-            assert.equal("http://1.2.3.4:8080/foo/bar", qq.s3.util.getSuccessRedirectAbsoluteUrl("http://1.2.3.4:8080/foo/bar"));
+            assert.equal(qq.s3.util.getSuccessRedirectAbsoluteUrl("http://1.2.3.4:8080/foo/bar"), "http://1.2.3.4:8080/foo/bar");
         })
     });
 
@@ -133,9 +133,9 @@ describe('s3/util.js', function () {
 
             response = qq.s3.util.parseIframeResponse(fakeIframe);
 
-            assert.equal("123", response.bucket);
-            assert.equal("456", response.key);
-            assert.equal("789", response.etag);
+            assert.equal(response.bucket, "123");
+            assert.equal(response.key, "456");
+            assert.equal(response.etag, "789");
         });
     });
 
