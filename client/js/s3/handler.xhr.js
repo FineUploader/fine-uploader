@@ -163,10 +163,11 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             // This is the response we will use internally to determine if we need to do something special in case of a failure
             responseToExamine = parseResponse(id, requestXhr),
             // This is the response we plan on passing to external callbacks
-            responseToBubble = errorDetails || parseResponse(id);
+            responseToBubble = errorDetails || parseResponse(id),
+            isError = errorDetails !== undefined || responseToExamine.success !== true;
 
         // If this upload failed, we might want to completely start the upload over on retry in some cases.
-        if (!responseToExamine.success) {
+        if (isError) {
             if (shouldResetOnRetry(responseToExamine.code)) {
                 log('This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.', 'error');
                 maybeDeletePersistedChunkData(id);
@@ -175,11 +176,12 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             }
         }
 
-        // If this upload failed AND we are expecting an auto-retry, we are not done yet.
-        if (responseToExamine.success || !options.onAutoRetry(id, name, responseToBubble, xhr)) {
+        // If this upload failed AND we are expecting an auto-retry, we are not done yet.  Otherwise, we are done.
+        if (!isError || !options.onAutoRetry(id, name, responseToBubble, xhr)) {
             log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
 
-            if (responseToExamine.success) {
+            // Code outside of the upload handlers looks for this to determine if the upload succeeded
+            if (!isError) {
                 responseToBubble.success = true;
             }
 
