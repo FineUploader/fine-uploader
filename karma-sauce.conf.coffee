@@ -25,18 +25,18 @@ module.exports = (config) ->
         testName: '[sauce] FineUploader: modules'
         logFile: 'fineuploader-modules.log'
 
+    testRunnerId = if process.env.TRAVIS_BRANCH? then "travis #{process.env.TRAVIS_BRANCH}" else "#{process.env.SAUCE_USERNAME}@local"
+
     config.set
       customLaunchers: sauceBrowsers
       browsers: sauceBrowserKeys[0..2]
       singleRun: true
       autoWatch: false
       sauceLabs:
-        username: process.env.SAUCE_USERNAME || ''
-        accessKey: process.env.SAUCE_ACCESSKEY || ''
+        username: process.env.SAUCE_USERNAME || process.env.SAUCE_USER_NAME || ''
+        accessKey: process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_ACCESSKEY || ''
         startConnect: false
-        tags: [ process.env.SAUCE_USERNAME+"@"+process.env.TRAVIS_BRANCH || process.env.SAUCE_USERNAME+"@local"]
+        tags: [ testRunnerId ]
         build: process.env.TRAVIS_BUILD_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()
         identifer: process.env.TRAVIS_JOB_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()
         recordVideo: false
-        recordScreenshots: false
-
