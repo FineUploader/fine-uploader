@@ -164,7 +164,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             responseToExamine = parseResponse(id, requestXhr),
             // This is the response we plan on passing to external callbacks
             responseToBubble = errorDetails || parseResponse(id),
-            isError = errorDetails !== undefined || responseToExamine.success !== true;
+            isError = errorDetails != null || responseToExamine.success !== true;
 
         // If this upload failed, we might want to completely start the upload over on retry in some cases.
         if (isError) {
