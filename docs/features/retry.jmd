@@ -63,5 +63,8 @@ $("#fine-uploader").fineUploader({
 });
 ```
 
+{{ alert("jQuery 1.7+ is required to use the `on` function.") }}
+
+
 {% endmarkdown %}
 {% endblock %}

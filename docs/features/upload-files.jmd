@@ -99,5 +99,7 @@ $("#upload-button").on('click', function () {
 });
 ```
 
+{{ alert("jQuery 1.7+ is required to use the `on` function.") }}
+
 {% endmarkdown %}
 {% endblock %}

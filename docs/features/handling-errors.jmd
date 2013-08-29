@@ -32,6 +32,7 @@ parameter.
 
 The following code snippet shows how one might display a custom alert on the
 event of an error.
+
 ```javascript
 $("#fine-uploader").fineUploader({
    // ...
@@ -39,6 +40,8 @@ $("#fine-uploader").fineUploader({
     alert("Error on file number " + id + " - " + name ". Reason: " + errorReason);
 });
 ```
+
+{{ alert("jQuery 1.7+ is required to use the `on` function.") }}
 
 ## The `error` Response Property
 
