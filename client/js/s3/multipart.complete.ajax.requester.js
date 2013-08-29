@@ -112,10 +112,8 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
                     isError = true;
                     options.log(qq.format("Wrong bucket in response to Complete Multipart Upload request for {}.", id), "error");
                 }
-                if (keyEls[0].textContent !== key) {
-                    isError = true;
-                    options.log(qq.format("Wrong key in response to Complete Multipart Upload request for {}.", id), "error");
-                }
+
+                // TODO Compare key name from response w/ expected key name if AWS ever fixes the encoding of key names in this response.
             }
             else {
                 isError = true;
