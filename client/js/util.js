@@ -261,7 +261,22 @@ qq.isXhrUploadSupported = function() {
         input.multiple !== undefined &&
             typeof File !== "undefined" &&
             typeof FormData !== "undefined" &&
-            typeof (new XMLHttpRequest()).upload !== "undefined" );
+            typeof (qq.createXhrInstance()).upload !== "undefined" );
+};
+
+// Fall back to ActiveX is native XHR is disabled (possible in any version of IE).
+qq.createXhrInstance = function() {
+    if (window.XMLHttpRequest) {
+        return new XMLHttpRequest();
+    }
+
+    try {
+        return new ActiveXObject("MSXML2.XMLHTTP.3.0");
+    }
+    catch(error) {
+        qq.log("Neither XHR or ActiveX are supported!", "error");
+        return null;
+    }
 };
 
 qq.isFolderDropSupported = function(dataTransfer) {
