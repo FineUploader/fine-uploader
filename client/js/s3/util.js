@@ -261,6 +261,13 @@ qq.s3.util = qq.s3.util || (function() {
                     return targetAnchor.href;
                 }
             }
+        },
+
+        // AWS replaces spaces in response query strings with pluses (+) instead of %20.
+        encodeQueryStringParam: function(param) {
+            var percentEncoded = encodeURIComponent(param);
+
+            return percentEncoded.replace(/%20/g, "+");
         }
     };
 }());

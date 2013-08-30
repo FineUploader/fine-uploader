@@ -73,6 +73,10 @@ $("#fine-uploader").fineUploader({
 The biggest syntactical difference between the jQuery and non-jQuery plugin is the callback syntax.
 All callbacks defined in Fine Uploader are still avaiable to jQuery plugin users.
 
+{{
+    alert("Use of the `on` function is not possible until jQuery >=1.7")
+}}
+
 {{ alert(
 """When using the jQuery plugin, **all** events pass an extra `event` parameter
  as the <strong>first</strong> parameter to your callback functions.""", "info", "Note:") }}
