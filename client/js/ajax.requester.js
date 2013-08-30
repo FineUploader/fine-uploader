@@ -75,7 +75,7 @@ qq.AjaxRequestor = function (o) {
         var xhrOrXdr;
 
         if (window.XMLHttpRequest) {
-            xhrOrXdr = new XMLHttpRequest();
+            xhrOrXdr = qq.createXhrInstance();
 
             if (xhrOrXdr.withCredentials === undefined) {
                 xhrOrXdr = new XDomainRequest();
@@ -94,7 +94,7 @@ qq.AjaxRequestor = function (o) {
                 xhrOrXdr = getCorsAjaxTransport();
             }
             else {
-                xhrOrXdr = new XMLHttpRequest();
+                xhrOrXdr = qq.createXhrInstance();
             }
 
             requestData[id].xhr = xhrOrXdr;
