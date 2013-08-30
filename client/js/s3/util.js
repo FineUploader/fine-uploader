@@ -263,10 +263,19 @@ qq.s3.util = qq.s3.util || (function() {
             }
         },
 
-        // AWS replaces spaces in response query strings with pluses (+) instead of %20.
+        // AWS employs a strict interpretation of [RFC 3986](http://tools.ietf.org/html/rfc3986#page-12).
+        // So, we must ensure all reserved characters listed in the spec are percent-encoded,
+        // and spaces are replaced with "+".
         encodeQueryStringParam: function(param) {
             var percentEncoded = encodeURIComponent(param);
 
+            // %-encode characters not handled by `encodeURIComponent` (to follow RFC 3986)
+            percentEncoded = percentEncoded.replace(/[!'()]/g, escape);
+
+            // %-encode characters not handled by `escape` (to follow RFC 3986)
+            percentEncoded = percentEncoded.replace(/\*/g, "%2A");
+
+            // replace percent-encoded spaces with a "+"
             return percentEncoded.replace(/%20/g, "+");
         }
     };

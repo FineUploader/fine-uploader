@@ -149,6 +149,11 @@ describe('s3/util.js', function () {
             assert.equal(qq.s3.util.encodeQueryStringParam("onetwothree"), "onetwothree");
             assert.equal(qq.s3.util.encodeQueryStringParam("&hi,howareyou?"), "%26hi%2Chowareyou%3F");
         });
+
+        it("follows RFC 3986 exactly", function() {
+            assert.equal(qq.s3.util.encodeQueryStringParam("Are you 'Ray'?  If so, back to work (*now*)!"),
+            "Are+you+%27Ray%27%3F++If+so%2C+back+to+work+%28%2Anow%2A%29%21")
+        });
     });
 });
 
