@@ -76,7 +76,7 @@ qq.UploadHandler = function(o, namespace) {
                 handlerImpl.upload(nextId);
             }
         }
-    };
+    }
 
     function cancelSuccess(id) {
         log('Cancelling ' + id);
@@ -174,6 +174,11 @@ qq.UploadHandler = function(o, namespace) {
         getFile: function(id) {
             if (handlerImpl.getFile) {
                 return handlerImpl.getFile(id);
+            }
+        },
+        getInput: function(id) {
+            if (handlerImpl.getInput) {
+                return handlerImpl.getInput(id);
             }
         },
         reset: function() {

@@ -14,13 +14,15 @@
 qq.UploadButton = function(o) {
     "use strict";
 
-    var input,
-       // Used to detach all event handlers created at once for this instance
-        disposeSupport = new qq.DisposeSupport(),
+
+    var disposeSupport = new qq.DisposeSupport(),
 
         options = {
             // "Container" element
             element: null,
+
+            // If not the default button for an uploader, we will need to tag it
+            isExtraButton: false,
 
             // If true adds `multiple` attribute to `<input type="file">`
             multiple: false,
@@ -39,17 +41,25 @@ qq.UploadButton = function(o) {
             hoverClass: 'qq-upload-button-hover',
 
             focusClass: 'qq-upload-button-focus'
-        };
+        },
+        input, extraButtonId;
 
     // Overrides any of the default option values with any option values passed in during construction.
     qq.extend(options, o);
 
+    if (options.isExtraButton) {
+        extraButtonId = qq.getUniqueId();
+    }
 
     // Embed an opaque `<input type="file">` element as a child of `options.element`.
     function createInput() {
         var input = document.createElement("input");
 
-        if (options.multiple){
+        if (extraButtonId) {
+            input.setAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME, extraButtonId);
+        }
+
+        if (options.multiple) {
             input.setAttribute("multiple", "multiple");
         }
 
@@ -120,8 +130,12 @@ qq.UploadButton = function(o) {
 
     // Exposed API
     return {
-        getInput: function(){
+        getInput: function() {
             return input;
+        },
+
+        getExtraButtonId: function() {
+            return extraButtonId;
         },
 
         reset: function(){
@@ -134,3 +148,5 @@ qq.UploadButton = function(o) {
         }
     };
 };
+
+qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME = "qq-button-id";

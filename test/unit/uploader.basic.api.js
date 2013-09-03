@@ -96,32 +96,74 @@ describe('uploader.basic.api.js', function () {
     });
 
     describe('setEndpoint', function () {
+        var defaultEndpoint = "a/b/c";
 
         beforeEach(function () {
+
+            $fixture.append("<div id='extraButton1'></div>")
+            $fixture.append("<div id='extraButton2'></div>")
+
             fineuploader = new qq.FineUploaderBasic({ 
-                element: $uploader[0]
+                element: $uploader[0],
+                request: {
+                    endpoint: defaultEndpoint
+                },
+                extraButtons: [
+                    {element: document.getElementById('extraButton1')},
+                    {element: document.getElementById('extraButton2')}
+                ]
             });
         });
 
         it('resets', function () {
             var endpoint = '/endpoint';
-            fineuploader.setEndpoint(endpoint, 'foo');
-            var ep = fineuploader._endpointStore.getEndpoint('foo');
+            fineuploader.setEndpoint(endpoint, 0);
+            var ep = fineuploader._endpointStore.getEndpoint(0);
             assert.deepEqual(ep,
                 endpoint,
                 "the endpoint should be set"); 
             fineuploader._endpointStore.reset();
-            ep = fineuploader._endpointStore.getEndpoint('foo'); 
+            ep = fineuploader._endpointStore.getEndpoint(0);
             assert.deepEqual(ep, fineuploader._options.request.endpoint, "the endpoint should be reset");
         });
 
         it('set a new endpoint', function () {
             var endpoint = '/endpoint'; 
-            fineuploader.setEndpoint(endpoint, 'foo');
-            var ep = fineuploader._endpointStore.getEndpoint('foo');
-            assert.deepEqual(ep, endpoint, "the endpoint should be set"); 
+            fineuploader.setEndpoint(endpoint, 0);
+            var ep = fineuploader._endpointStore.getEndpoint(0);
+
+            assert.deepEqual(ep, endpoint, "the endpoint should be set");
+
+            qq.each(fineuploader._extraButtonSpecs, function(id, spec) {
+                assert.equal(spec.endpoint, defaultEndpoint, "endpoint for extra button was changed unexpectedly!");
+            })
         });
 
+        it("updates the endpoint for all extra button specs if an ID is not specified", function() {
+            var endpoint = '/endpoint';
+            fineuploader.setEndpoint(endpoint);
+
+            qq.each(fineuploader._extraButtonSpecs, function(id, spec) {
+                assert.equal(spec.endpoint, endpoint);
+            });
+        });
+
+        it("updates the endpoint for a specific button given the button container element", function() {
+            var newButtonEndpoint = "/new/button/endpoint",
+                buttonContainer = document.getElementById("extraButton2"),
+                buttonId = buttonContainer.getElementsByTagName("input")[0].getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME);
+
+            fineuploader.setEndpoint(newButtonEndpoint, buttonContainer);
+
+            qq.each(fineuploader._extraButtonSpecs, function(id, spec) {
+                if (id === buttonId) {
+                    assert.equal(spec.endpoint, newButtonEndpoint);
+                }
+                else {
+                    assert.equal(spec.endpoint, defaultEndpoint);
+                }
+            });
+        });
     });
 
     describe("_isAllowedExtension", function() {

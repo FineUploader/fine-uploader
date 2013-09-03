@@ -114,6 +114,28 @@ mode you are in and keep that in mind when determining which options do what.
 
 ----
 
+### `extraButtons` option
+
+This must contain an array of objects.  Each object will describe an "extra" button that Fine Uploader will track
+along with the default upload button.  Each button object can contain the following properties:
+
+{{ options_table(
+    (
+        ("element", "`HTMLElement`", "`undefined`", "REQUIRED: The container element for the upload button."),
+        ("inputName", "`String`", "`request.inputName`", "Specify an input name for this button that differs
+        from the default.  If not specified, the value of `request.inputName` is used."),
+        ("multiple", "`Boolean`", "`multiple'`", "Specify to override the default `multiple` value."),
+        ("endpoint", "`String`", "``request.endpoint`", "Specify to override the default `request.endpoint` value for this button."),
+        ("params", "`Object`", "`request.params`", "Specify to override the default `request.params` for this button."),
+        ("validation", "`Object`", "`validation`", "Specify to override the default `validation` option specified.
+        Any `validation` properties not specified will be inherited from the default `validation` option.
+        If an `itemLimit` property is specified here, the specified item limit will be tracked independent
+        of all other upload buttons."),
+    )
+) }}
+
+----
+
 ### `messages` option
 
 {{ options_table(

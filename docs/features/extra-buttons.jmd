@@ -1,0 +1,11 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Editing Filenames" %}
+{% block content %}
+{% markdown %}
+
+# Multiple Upload Buttons {: .page-header }
+
+TODO
+
+{% endmarkdown %}
+{% endblock %}

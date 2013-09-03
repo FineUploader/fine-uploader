@@ -11,6 +11,7 @@ qq.basePublicApi = {
 
         }
     },
+
     setParams: function(params, id) {
         /*jshint eqeqeq: true, eqnull: true*/
         if (id == null) {
@@ -20,6 +21,7 @@ qq.basePublicApi = {
             this._paramsStore.setParams(params, id);
         }
     },
+
     setDeleteFileParams: function(params, id) {
         /*jshint eqeqeq: true, eqnull: true*/
         if (id == null) {
@@ -29,21 +31,27 @@ qq.basePublicApi = {
             this._deleteFileParamsStore.setParams(params, id);
         }
     },
-    setEndpoint: function(endpoint, id) {
+
+    // Re-sets the default endpoint, an endpoint for a specific file, or an endpoint for a specific button
+    setEndpoint: function(endpoint, idOrButton) {
         /*jshint eqeqeq: true, eqnull: true*/
-        if (id == null) {
+        if (idOrButton == null) {
             this._options.request.endpoint = endpoint;
+            this._updateExtraButtonSpecs(null, endpoint)
         }
         else {
-            this._endpointStore.setEndpoint(endpoint, id);
+            this._endpointStore.setEndpoint(endpoint, idOrButton);
         }
     },
+
     getInProgress: function() {
         return this._filesInProgress.length;
     },
+
     getNetUploads: function() {
         return this._netUploaded;
     },
+
     uploadStoredFiles: function() {
         var idToUpload;
 
@@ -58,9 +66,11 @@ qq.basePublicApi = {
             }
         }
     },
+
     clearStoredFiles: function(){
         this._storedIds = [];
     },
+
     retry: function(id) {
         if (this._onBeforeManualRetry(id)) {
             this._netUploadedOrQueued++;
@@ -72,9 +82,11 @@ qq.basePublicApi = {
             return false;
         }
     },
+
     cancel: function(id) {
         this._handler.cancel(id);
     },
+
     cancelAll: function() {
         var storedIdsCopy = [],
             self = this;
@@ -86,6 +98,7 @@ qq.basePublicApi = {
 
         this._handler.cancelAll();
     },
+
     reset: function() {
         this.log("Resetting uploader...");
 
@@ -110,6 +123,7 @@ qq.basePublicApi = {
             this._pasteHandler.reset();
         }
     },
+
     addFiles: function(filesOrInputs, params, endpoint) {
         var self = this,
             verifiedFilesOrInputs = [],
@@ -142,6 +156,7 @@ qq.basePublicApi = {
             this._prepareItemsForUpload(verifiedFilesOrInputs, params, endpoint);
         }
     },
+
     addBlobs: function(blobDataOrArray, params, endpoint) {
         if (blobDataOrArray) {
             var blobDataArray = [].concat(blobDataOrArray),
@@ -169,31 +184,40 @@ qq.basePublicApi = {
             this.log("undefined or non-array parameter passed into addBlobs", "error");
         }
     },
+
     getUuid: function(id) {
         return this._handler.getUuid(id);
     },
+
     setUuid: function(id, newUuid) {
         return this._handler.setUuid(id, newUuid);
     },
+
     getResumableFilesData: function() {
         return this._handler.getResumableFilesData();
     },
+
     getSize: function(id) {
         return this._handler.getSize(id);
     },
+
     getName: function(id) {
         return this._handler.getName(id);
     },
+
     setName: function(id, newName) {
         this._handler.setName(id, newName);
         this._uploadData.nameChanged(id, newName);
     },
+
     getFile: function(fileOrBlobId) {
         return this._handler.getFile(fileOrBlobId);
     },
+
     deleteFile: function(id) {
         this._onSubmitDelete(id);
     },
+
     setDeleteFileEndpoint: function(endpoint, id) {
         /*jshint eqeqeq: true, eqnull: true*/
         if (id == null) {
@@ -203,9 +227,11 @@ qq.basePublicApi = {
             this._deleteFileEndpointStore.setEndpoint(endpoint, id);
         }
     },
+
     doesExist: function(fileOrBlobId) {
         return this._handler.isValid(fileOrBlobId);
     },
+
     getUploads: function(optionalFilter) {
         return this._uploadData.retrieve(optionalFilter);
     }
@@ -218,22 +244,27 @@ qq.basePublicApi = {
  * Defines the private (internal) API for FineUploaderBasic mode.
  */
 qq.basePrivateApi = {
-    _normalizeExtraButtons: function() {
+    // Creates an internal object that tracks various properties of each extra button,
+    // and then actually creates the extra button.
+    _generateExtraButtonSpecs: function() {
         var self = this;
 
-        qq.each(this._options.extraButtons, function(idx, extraButtonSpec) {
-            var inputName = extraButtonSpec.inputName || self._options.request.inputName,
-                multiple = extraButtonSpec.multiple,
-                endpoint = extraButtonSpec.endpoint || self._options.request.endpoint,
-                params = extraButtonSpec.params || self._options.request.params,
-                validation = qq.extend({}, self._options.validation, true);
+        this._extraButtonSpecs = {};
+
+        qq.each(this._options.extraButtons, function(idx, extraButtonOptionEntry) {
+            var inputName = extraButtonOptionEntry.inputName || self._options.request.inputName,
+                multiple = extraButtonOptionEntry.multiple,
+                endpoint = extraButtonOptionEntry.endpoint || self._options.request.endpoint,
+                params = extraButtonOptionEntry.params || self._options.request.params,
+                validation = qq.extend({}, self._options.validation, true),
+                extraButtonSpec = qq.extend({}, extraButtonOptionEntry);
 
             if (multiple === undefined) {
                 multiple = self._options.multiple;
             }
 
             if (extraButtonSpec.validation) {
-                qq.extend(validation, extraButtonSpec.validation, true);
+                qq.extend(validation, extraButtonOptionEntry.validation, true);
             }
 
             qq.extend(extraButtonSpec, {
@@ -243,18 +274,66 @@ qq.basePrivateApi = {
                 params: params,
                 validation: validation
             }, true);
+
+            self._initExtraButton(extraButtonSpec);
         });
     },
-    _initExtraButtons: function() {
-        var self = this;
 
-        qq.each(this._options.extraButtons, function(idx, extraButtonSpec) {
-            var button = self._createUploadButton(extraButtonSpec.element, extraButtonSpec.inputName,
-                extraButtonSpec.multiple, extraButtonSpec.validation.acceptFiles);
+    // Creates an extra button element
+    _initExtraButton: function(spec) {
+        var button = this._createUploadButton(spec.element, spec.inputName,
+            spec.multiple, spec.validation.acceptFiles, true);
 
-            self._buttons.push(button);
-        });
+        this._extraButtonSpecs[button.getExtraButtonId()] = spec;
     },
+
+    // Gets the internally used tracking ID for a button.  Undefined if not an "extra" button.
+    // You can pass in the file input or the input's container element.
+    _getExtraButtonId: function(buttonOrFileInput) {
+        var inputs, fileInput;
+
+        if (buttonOrFileInput.tagName.toLowerCase() === "input" && buttonOrFileInput.type.toLowerCase() === "file") {
+            return buttonOrFileInput.getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME);
+        }
+
+        inputs = buttonOrFileInput.getElementsByTagName("input");
+
+        qq.each(inputs, function(idx, input) {
+            if (input.getAttribute("type") === "file") {
+                fileInput = input;
+                return false;
+            }
+        });
+
+        if (fileInput) {
+            return fileInput.getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME);
+        }
+    },
+
+    // Adjusts the endpoint for either a specific extra button or all extra buttons.
+    _updateExtraButtonSpecs: function(button, endpoint) {
+        var buttonId;
+
+        if (button) {
+            buttonId = this._getExtraButtonId(button);
+        }
+
+        if (buttonId) {
+            this._extraButtonSpecs[buttonId].endpoint = endpoint;
+        }
+        else {
+            qq.each(this._extraButtonSpecs, function(id, spec) {
+                spec.endpoint = endpoint;
+            })
+        }
+    },
+
+    _annotateWithButtonId: function(file, associatedInput) {
+        if (qq.isFile(file)) {
+            file.qqButtonId = this._getExtraButtonId(associatedInput);
+        }
+    },
+
     _handleCheckedCallback: function(details) {
         var self = this,
             callbackRetVal = details.callback();
@@ -292,7 +371,8 @@ qq.basePrivateApi = {
 
         return callbackRetVal;
     },
-    _createUploadButton: function(element, inputName, isMultiple, acceptFiles) {
+
+    _createUploadButton: function(element, inputName, isMultiple, acceptFiles, isExtraButton) {
         var self = this,
             inputName = inputName || this._options.request.inputName,
             isMultiple = isMultiple === undefined ? this._options.multiple : isMultiple,
@@ -300,6 +380,7 @@ qq.basePrivateApi = {
 
         var button = new qq.UploadButton({
             element: element,
+            isExtraButton: isExtraButton,
             name: inputName,
             multiple: isMultiple && qq.supportedFeatures.ajaxUploading,
             acceptFiles: acceptFiles,
@@ -314,8 +395,11 @@ qq.basePrivateApi = {
             button.dispose();
         });
 
+        self._buttons.push(button);
+
         return button;
     },
+
     _createUploadHandler: function(additionalOptions, namespace) {
         var self = this,
             options = {
@@ -403,6 +487,7 @@ qq.basePrivateApi = {
 
         return new qq.UploadHandler(options, namespace);
     },
+
     _createDeleteHandler: function() {
         var self = this;
 
@@ -429,6 +514,7 @@ qq.basePrivateApi = {
 
         });
     },
+
     _createPasteHandler: function() {
         var self = this;
 
@@ -449,6 +535,7 @@ qq.basePrivateApi = {
             }
         });
     },
+
     _createUploadDataTracker: function() {
         var self = this;
 
@@ -468,9 +555,11 @@ qq.basePrivateApi = {
             }
         });
     },
+
     _onUploadStatusChange: function(id, oldStatus, newStatus) {
         //nothing to do in the basic uploader
     },
+
     _handlePasteSuccess: function(blob, extSuppliedName) {
         var extension = blob.type.split("/")[1],
             name = extSuppliedName;
@@ -487,6 +576,7 @@ qq.basePrivateApi = {
             blob: blob
         });
     },
+
     _preventLeaveInProgress: function(){
         var self = this;
 
@@ -500,6 +590,7 @@ qq.basePrivateApi = {
             return self._options.messages.onLeave;
         });
     },
+
     _onSubmit: function(id, name) {
         this._netUploadedOrQueued++;
 
@@ -507,9 +598,11 @@ qq.basePrivateApi = {
             this._filesInProgress.push(id);
         }
     },
+
     _onProgress: function(id, name, loaded, total) {
         //nothing to do yet in core uploader
     },
+
     _onComplete: function(id, name, result, xhr) {
         if (!result.success) {
             this._netUploadedOrQueued--;
@@ -525,6 +618,7 @@ qq.basePrivateApi = {
 
         return result.success ? true : false;
     },
+
     _onCancel: function(id, name) {
         this._netUploadedOrQueued--;
 
@@ -539,6 +633,7 @@ qq.basePrivateApi = {
 
         this._uploadData.setStatus(id, qq.status.CANCELED);
     },
+
     _isDeletePossible: function() {
         if (!this._options.deleteFile.enabled) {
             return false;
@@ -558,6 +653,7 @@ qq.basePrivateApi = {
 
         return true;
     },
+
     _onSubmitDelete: function(id, onSuccessCallback, additionalMandatedParams) {
         var uuid = this.getUuid(id),
             adjustedOnSuccessCallback;
@@ -581,9 +677,11 @@ qq.basePrivateApi = {
             return false;
         }
     },
+
     _onDelete: function(id) {
         this._uploadData.setStatus(id, qq.status.DELETING);
     },
+
     _onDeleteComplete: function(id, xhrOrXdr, isError) {
         var name = this._handler.getName(id);
 
@@ -608,17 +706,26 @@ qq.basePrivateApi = {
             this.log("Delete request for '" + name + "' has succeeded.");
         }
     },
+
     _removeFromFilesInProgress: function(id) {
         var index = qq.indexOf(this._filesInProgress, id);
         if (index >= 0) {
             this._filesInProgress.splice(index, 1);
         }
     },
+
     _onUpload: function(id, name) {
         this._uploadData.setStatus(id, qq.status.UPLOADING);
     },
+
     _onInputChange: function(input) {
+        var fileIndex;
+
         if (qq.supportedFeatures.ajaxUploading) {
+            for (fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
+                this._annotateWithButtonId(input.files[fileIndex], input);
+            }
+
             this.addFiles(input.files);
         }
         else {
@@ -629,15 +736,18 @@ qq.basePrivateApi = {
             button.reset();
         });
     },
+
     _onBeforeAutoRetry: function(id, name) {
         this.log("Waiting " + this._options.retry.autoAttemptDelay + " seconds before retrying " + name + "...");
     },
+
     _onAutoRetry: function(id, name, responseJSON) {
         this.log("Retrying " + name + "...");
         this._autoRetries[id]++;
         this._uploadData.setStatus(id, qq.status.UPLOAD_RETRYING);
         this._handler.retry(id);
     },
+
     _shouldAutoRetry: function(id, name, responseJSON) {
         if (!this._preventRetries[id] && this._options.retry.enableAuto) {
             if (this._autoRetries[id] === undefined) {
@@ -649,6 +759,7 @@ qq.basePrivateApi = {
 
         return false;
     },
+
     //return false if we should not attempt the requested retry
     _onBeforeManualRetry: function(id) {
         var itemLimit = this._options.validation.itemLimit;
@@ -678,6 +789,7 @@ qq.basePrivateApi = {
             return false;
         }
     },
+
     _maybeParseAndSendUploadError: function(id, name, response, xhr) {
         //assuming no one will actually set the response code to something other than 200 and still set 'success' to true
         if (!response.success){
@@ -690,6 +802,7 @@ qq.basePrivateApi = {
             }
         }
     },
+
     _prepareItemsForUpload: function(items, params, endpoint) {
         var validationDescriptors = this._getValidationDescriptors(items);
 
@@ -700,6 +813,7 @@ qq.basePrivateApi = {
             identifier: "batch validation"
         });
     },
+
     _upload: function(blobOrFileContainer, params, endpoint) {
         var id = this._handler.add(blobOrFileContainer),
             name = this._handler.getName(id);
@@ -722,8 +836,22 @@ qq.basePrivateApi = {
             identifier: id
         });
     },
+
     _onSubmitCallbackSuccess: function(id, name) {
+        var buttonId;
+
         this._uploadData.setStatus(id, qq.status.SUBMITTED);
+
+        if (qq.supportedFeatures.ajaxUploading) {
+            buttonId = this._handler.getFile(id).qqButtonId;
+        }
+        else {
+            buttonId = this._getExtraButtonId(this._handler.getInput(id));
+        }
+
+        if (buttonId) {
+            this._buttonSpecsByFileId[id] = this._extraButtonSpecs[buttonId];
+        }
 
         this._onSubmit.apply(this, arguments);
         this._onSubmitted.apply(this, arguments);
@@ -738,12 +866,15 @@ qq.basePrivateApi = {
             this._storeForLater(id);
         }
     },
+
     _onSubmitted: function(id) {
         //nothing to do in the base uploader
     },
+
     _storeForLater: function(id) {
         this._storedIds.push(id);
     },
+
     _onValidateBatchCallbackSuccess: function(validationDescriptors, items, params, endpoint) {
         var errorMessage,
             itemLimit = this._options.validation.itemLimit,
@@ -770,6 +901,7 @@ qq.basePrivateApi = {
             this._batchError(errorMessage);
         }
     },
+
     _onValidateCallbackSuccess: function(items, index, params, endpoint) {
         var nextIndex = index+1,
             validationDescriptor = this._getValidationDescriptor(items[index]),
@@ -782,6 +914,7 @@ qq.basePrivateApi = {
 
         this._maybeProcessNextItemAfterOnValidateCallback(validItem, items, nextIndex, params, endpoint);
     },
+
     _onValidateCallbackFailure: function(items, index, params, endpoint) {
         var nextIndex = index+ 1;
 
@@ -789,6 +922,7 @@ qq.basePrivateApi = {
 
         this._maybeProcessNextItemAfterOnValidateCallback(false, items, nextIndex, params, endpoint);
     },
+
     _maybeProcessNextItemAfterOnValidateCallback: function(validItem, items, index, params, endpoint) {
         var self = this;
 
@@ -809,6 +943,7 @@ qq.basePrivateApi = {
             }
         }
     },
+
     _validateFileOrBlobData: function(item, validationDescriptor) {
         var name = validationDescriptor.name,
             size = validationDescriptor.size,
@@ -844,11 +979,13 @@ qq.basePrivateApi = {
 
         return valid;
     },
+
     _fileOrBlobRejected: function(id, name) {
         if (id !== undefined) {
             this._uploadData.setStatus(id, qq.status.REJECTED);
         }
     },
+
     _itemError: function(code, maybeNameOrNames) {
         var message = this._options.messages[code],
             allowedExtensions = [],
@@ -886,9 +1023,11 @@ qq.basePrivateApi = {
 
         return message;
     },
+
     _batchError: function(message) {
         this._options.callbacks.onError(null, null, message, undefined);
     },
+
     _isAllowedExtension: function(fileName){
         var allowed = this._options.validation.allowedExtensions,
             valid = false;
@@ -915,6 +1054,7 @@ qq.basePrivateApi = {
 
         return valid;
     },
+
     _formatSize: function(bytes){
         var i = -1;
         do {
@@ -924,6 +1064,7 @@ qq.basePrivateApi = {
 
         return Math.max(bytes, 0.1).toFixed(1) + this._options.text.sizeSymbols[i];
     },
+
     _wrapCallbacks: function() {
         var self, safeCallback;
 
@@ -949,6 +1090,7 @@ qq.basePrivateApi = {
             }());
         }
     },
+
     _parseFileOrBlobDataName: function(fileOrBlobData) {
         var name;
 
@@ -968,6 +1110,7 @@ qq.basePrivateApi = {
 
         return name;
     },
+
     _parseFileOrBlobDataSize: function(fileOrBlobData) {
         var size;
 
@@ -983,6 +1126,7 @@ qq.basePrivateApi = {
 
         return size;
     },
+
     _getValidationDescriptor: function(fileOrBlobData) {
         var name, size, fileDescriptor;
 
@@ -997,6 +1141,7 @@ qq.basePrivateApi = {
 
         return fileDescriptor;
     },
+
     _getValidationDescriptors: function(files) {
         var self = this,
             fileDescriptors = [];
@@ -1007,6 +1152,7 @@ qq.basePrivateApi = {
 
         return fileDescriptors;
     },
+
     _createParamsStore: function(type) {
         var paramsStore = {},
             self = this;
@@ -1041,19 +1187,41 @@ qq.basePrivateApi = {
             }
         };
     },
+
     _createEndpointStore: function(type) {
         var endpointStore = {},
         self = this;
 
         return {
-            setEndpoint: function(endpoint, id) {
-                endpointStore[id] = endpoint;
+            // Allows an endpoint to be adjusted for a specific ID or button.
+            setEndpoint: function(endpoint, idOrInput) {
+                if (typeof idOrInput === "number") {
+                    endpointStore[idOrInput] = endpoint;
+                }
+                else {
+                    self._updateExtraButtonSpecs(idOrInput, endpoint);
+                }
             },
 
+            // Retrieves the endpoint for a file first by determining if the file has a specific endpoint
+            // associated with it.  If not, and if this is an upload request endpoint, the endpoint
+            // associated with the button is returned.  The button endpoint is either stored internally
+            // as part of a "button spec" if the button is an "extra" button, or, for a default button,
+            // the `request.endpoint` option value is used.
             getEndpoint: function(id) {
+                var buttonSpec;
+
                 /*jshint eqeqeq: true, eqnull: true*/
                 if (id != null && endpointStore[id]) {
                     return endpointStore[id];
+                }
+                else if (type === "request") {
+                    buttonSpec = self._buttonSpecsByFileId[id];
+                    if (buttonSpec) {
+                        return buttonSpec.endpoint;
+                    }
+
+                    return self._options.request.endpoint;
                 }
 
                 return self._options[type].endpoint;
@@ -1068,6 +1236,7 @@ qq.basePrivateApi = {
             }
         };
     },
+
     _handleCameraAccess: function() {
         if (this._options.camera.ios && qq.ios()) {
             this._options.multiple = false;

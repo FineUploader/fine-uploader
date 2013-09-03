@@ -1,18 +1,16 @@
 describe('button.js', function () {
-    var $input, input, button;
-
     it('constructor works', function () {
         $fixture.append("<div id='foo'></div>");
         
-        button = new qq.UploadButton({
+        var button = new qq.UploadButton({
             element: $fixture.find("#foo")[0],
             multiple: true,
             acceptFiles: "image/*,video/*,.test",
             name: "testFile"
         });
 
-        input = button.getInput();
-        $input = $(input);
+        var input = button.getInput();
+        var $input = $(input);
 
         assert.notEqual(input, null, 
             'a newed up upload button should have a non-null input element');
@@ -27,23 +25,51 @@ describe('button.js', function () {
     it('reset works', function () {
         $fixture.append("<div id='foo'></div>");
 
-        button = new qq.UploadButton({
+        var button = new qq.UploadButton({
             element: $fixture.find("#foo")[0]
         });
 
-        input = button.getInput();
-        $input = $(input);
+        var input = button.getInput();
+        var $input = $(input);
 
         button.reset();
         assert.notEqual($input[0], button.getInput(), 
                'resetting the button should clear the element from the DOM');
     });
 
-    
+    it("doesn't add an internal tracker ID to the input if it is not an 'extra' button", function() {
+        $fixture.append("<div id='foo'></div>");
+
+        var button = new qq.UploadButton({
+            element: $fixture.find("#foo")[0]
+        });
+
+        assert.equal(button.getExtraButtonId(), undefined);
+        assert.equal(button.getInput().getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME), undefined);
+    });
+
+    it("does add an internal tracker ID to the input if it is not an 'extra' button, and re-adds it on reset", function() {
+        $fixture.append("<div id='foo'></div>");
+
+        var button = new qq.UploadButton({
+            element: $fixture.find("#foo")[0],
+            isExtraButton: true
+        }),
+            buttonId = button.getExtraButtonId();
+
+        assert.ok(buttonId != null);
+        assert.equal(button.getInput().getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME), buttonId);
+
+        button.reset();
+        buttonId = button.getExtraButtonId();
+        assert.ok(buttonId != null);
+        assert.equal(button.getInput().getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME), buttonId);
+    });
+
     it.skip('onChange callback', function () {
         $fixture.append("<div id='foo'></div>");
 
-        button = new qq.UploadButton({
+        var button = new qq.UploadButton({
             element: $fixture.find("#foo")[0],
             onChange: function (input) {
                 ok(true); 

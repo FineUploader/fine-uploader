@@ -131,6 +131,8 @@ qq.FineUploaderBasic = function(o) {
     qq.extend(this._options, o, true);
 
     this._buttons = [];
+    this._extraButtonSpecs = {};
+    this._buttonSpecsByFileId = [];
 
     this._handleCameraAccess();
 
@@ -157,11 +159,10 @@ qq.FineUploaderBasic = function(o) {
     this._deleteHandler = this._createDeleteHandler();
 
     if (this._options.button) {
-        this._buttons.push(this._createUploadButton(this._options.button));
+        this._createUploadButton(this._options.button);
     }
 
-    this._normalizeExtraButtons();
-    this._initExtraButtons();
+    this._generateExtraButtonSpecs();
 
     if (this._options.paste.targetElement) {
         this._pasteHandler = this._createPasteHandler();
