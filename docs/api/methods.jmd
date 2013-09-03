@@ -39,7 +39,7 @@
         ("setEndpoint", "`String` endpointPath[, `Number || HTMLElement ` idOrButton]", "", "Modify the location where
         upload requests should be directed. he endpoint for a specific file or blob can be changed by passing in an
         optional `id` or `button` parameter.  An id will always be a number and refers to a specific file.  A button will
-        always be an `HTMLElement` and refers to a specific 'extra' button element contributed via the options.),
+        always be an `HTMLElement` and refers to a specific 'extra' button element contributed via the options."),
         ("setDeleteFileEndpoint", "`String` endpointPath[, `Integer` id]", "", "Modify the location where upload requests should be directed. To change for a specific item pass in a value for the `id` parameter"),
         ("setDeleteFileParams", "`Object` newParams[, `Integer` id]", "", "Set the parameters for the delete request"),
         ("setName", "`Integer` id, `String` newName", "", "Provide an alternative name for the associated item"),
