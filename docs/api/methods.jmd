@@ -42,9 +42,6 @@
         ("setName", "`Integer` id, `String` newName", "", "Provide an alternative name for the associated item"),
         ("setParams", "`Object` newParams[, `Integer` id]", "", "Set the parameters along with the upload request"),
         ("setUuid", "`Integer` id, `String` newUuid", "", "Set the UUID for the item with the associated id."),
-        ("showMessage", "`String` message", "", "Called if the uploader receives an error."),
-        ("showConfirm", "`String` message", "", "Provide a function here to prompt the user to confirm deletion of a file."),
-        ("showPrompt", "`String` message", "", "Provide a function here to prompt the user for a filename when pasting file(s)."),
         ("uploadStoredFiles", "", "", "Begin uploading all queued items. `NoFilesError` if there are no items to upload."),
     )
 ) }}
