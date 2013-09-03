@@ -151,7 +151,7 @@ Only used by the AJAX uploader.
 
 **Parameters**: Integer id, String name, Object chunkData
 
-Called just before a file upload is resumed.  See the `uploadChunk` event for more info on the `ChunkData` object.  
+Called just before a file upload is resumed.  See the `uploadChunk` event for more info on the `ChunkData` object.
 
 ----
 
@@ -226,7 +226,7 @@ been added to the DOM immediately before this callback is invoked.
 
 **Parameters**: Integer id, String name
 
-Called just before an item beings uploading to the server.
+Called just before an item begins uploading to the server.
 
 ----
 
