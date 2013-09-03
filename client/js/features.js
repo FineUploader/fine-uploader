@@ -46,7 +46,7 @@ qq.supportedFeatures = (function () {
     //Ensure we can send cross-origin `XMLHttpRequest`s
     function isCrossOriginXhrSupported() {
         if (window.XMLHttpRequest) {
-            var xhr = new XMLHttpRequest();
+            var xhr = qq.createXhrInstance();
 
             //Commonly accepted test for XHR CORS support.
             return xhr.withCredentials !== undefined;

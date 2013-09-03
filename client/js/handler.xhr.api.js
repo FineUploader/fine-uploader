@@ -38,7 +38,7 @@ qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, on
          * @returns {XMLHttpRequest}
          */
         createXhr: function(id) {
-            var xhr = new XMLHttpRequest();
+            var xhr = qq.createXhrInstance();
 
             fileState[id].xhr = xhr;
 
