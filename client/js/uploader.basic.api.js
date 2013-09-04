@@ -274,7 +274,7 @@ qq.basePrivateApi = {
 
     // Creates an extra button element
     _initExtraButton: function(spec) {
-        var button = this._createUploadButton(spec.element, spec.inputName,
+        var button = this._createUploadButton(spec.element, this._options.request.inputName,
             spec.multiple, spec.validation.acceptFiles, true);
 
         this._extraButtonSpecs[button.getExtraButtonId()] = spec;
