@@ -121,18 +121,7 @@ qq.FineUploader = function(o, namespace) {
             return window.confirm(message);
         },
         showPrompt: function(message, defaultValue) {
-            var promise = new qq.Promise(),
-                retVal = window.prompt(message, defaultValue);
-
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (retVal != null && qq.trimStr(retVal).length > 0) {
-                promise.success(retVal);
-            }
-            else {
-                promise.failure("Undefined or invalid user-supplied value.");
-            }
-
-            return promise;
+            return window.prompt(message, defaultValue);
         }
     }, true);
 
