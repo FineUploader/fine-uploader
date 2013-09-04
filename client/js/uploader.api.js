@@ -431,11 +431,20 @@ qq.uiPrivateApi = {
             confirmMessage = this._options.deleteFile.confirmMessage.replace(/\{filename\}/g, fileName),
             uuid = this.getUuid(id),
             deleteRequestArgs = arguments,
-            self = this;
+            self = this,
+            retVal;
 
-        this._options.showConfirm(confirmMessage, function() {
-            self._sendDeleteRequest.apply(self, deleteRequestArgs);
-        });
+        retVal = this._options.showConfirm(confirmMessage);
+
+        if (qq.isPromise(retVal)) {
+            retVal.then(function () {
+                self._sendDeleteRequest.apply(self, deleteRequestArgs);
+            });
+        } else {
+            if (retVal !== false) {
+                self._sendDeleteRequest.apply(self, deleteRequestArgs);
+            }
+        }
     },
     _addToList: function(id, name){
         var item = qq.toElement(this._options.fileTemplate);
