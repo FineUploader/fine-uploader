@@ -490,7 +490,7 @@ module.exports = (grunt) ->
             test:
                 expand: true
                 flatten: true
-                src: ['./build/*']
+                src: ['./build/*', './client/js/iframe.xss.response.js']
                 dest: './test/temp'
             images:
                 files: [
