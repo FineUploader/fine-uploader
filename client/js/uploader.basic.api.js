@@ -233,6 +233,19 @@ qq.basePublicApi = {
 
     getUploads: function(optionalFilter) {
         return this._uploadData.retrieve(optionalFilter);
+    },
+
+    getButton: function(fileId) {
+        qq.log("File ID: " + fileId);
+        var buttonId = this._buttonIdsForFileIds[fileId],
+            extraButtonsSpec = this._extraButtonSpecs[buttonId];
+
+        if (extraButtonsSpec) {
+            return extraButtonsSpec.element;
+        }
+        else if (buttonId === this._defaultButtonId) {
+            return this._options.button;
+        }
     }
 };
 
@@ -278,22 +291,21 @@ qq.basePrivateApi = {
             element: spec.element,
             multiple: spec.multiple,
             accept: spec.validation.acceptFiles,
-            folders: spec.folders,
-            isExtraButton: true
+            folders: spec.folders
         });
 
-        this._extraButtonSpecs[button.getExtraButtonId()] = spec;
+        this._extraButtonSpecs[button.getButtonId()] = spec;
     },
 
     // Gets the internally used tracking ID for a button.  Undefined if not an "extra" button.
     // You can pass in the file input or the input's container element.
-    _getExtraButtonId: function(buttonOrFileInput) {
+    _getButtonId: function(buttonOrFileInput) {
         var inputs, fileInput;
 
         if (buttonOrFileInput.tagName.toLowerCase() === "input" &&
             buttonOrFileInput.type.toLowerCase() === "file") {
 
-            return buttonOrFileInput.getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME);
+            return buttonOrFileInput.getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME);
         }
 
         inputs = buttonOrFileInput.getElementsByTagName("input");
@@ -306,13 +318,13 @@ qq.basePrivateApi = {
         });
 
         if (fileInput) {
-            return fileInput.getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME);
+            return fileInput.getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME);
         }
     },
 
     _annotateWithButtonId: function(file, associatedInput) {
         if (qq.isFile(file)) {
-            file.qqButtonId = this._getExtraButtonId(associatedInput);
+            file.qqButtonId = this._getButtonId(associatedInput);
         }
     },
 
@@ -358,7 +370,7 @@ qq.basePrivateApi = {
      * Generate a tracked upload button.
      *
      * @param spec Object containing a required `element` property
-     * along with optional `multiple`, `accept`, `isExtraButton`, and `folders`.
+     * along with optional `multiple`, `accept`, and `folders`.
      * @returns {qq.UploadButton}
      * @private
      */
@@ -370,7 +382,6 @@ qq.basePrivateApi = {
         var button = new qq.UploadButton({
             element: spec.element,
             folders: spec.folders,
-            isExtraButton: spec.isExtraButton,
             name: this._options.request.inputName,
             multiple: isMultiple && qq.supportedFeatures.ajaxUploading,
             acceptFiles: acceptFiles,
@@ -836,11 +847,12 @@ qq.basePrivateApi = {
             buttonId = this._handler.getFile(id).qqButtonId;
         }
         else {
-            buttonId = this._getExtraButtonId(this._handler.getInput(id));
+            buttonId = this._getButtonId(this._handler.getInput(id));
         }
 
         if (buttonId) {
-            this._buttonSpecsByFileId[id] = this._extraButtonSpecs[buttonId];
+            qq.log("BUTTON ID: " + buttonId);
+            this._buttonIdsForFileIds[id] = buttonId;
         }
 
         this._onSubmit.apply(this, arguments);
@@ -1211,8 +1223,8 @@ qq.basePrivateApi = {
         if (this._options.camera.ios && qq.ios()) {
             var acceptIosCamera = "image/*;capture=camera",
                 button = this._options.camera.button,
-                extraButtonId = button ? this._getExtraButtonId(button) : undefined,
-                optionRoot = extraButtonId ? this._extraButtonSpecs[extraButtonId] : this._options;
+                buttonId = button ? this._getButtonId(button) : this._defaultButtonId,
+                optionRoot = buttonId ? this._extraButtonSpecs[buttonId] : this._options;
 
             // Camera access won't work in iOS if the `multiple` attribute is present on the file input
             optionRoot.multiple = false;
@@ -1227,7 +1239,7 @@ qq.basePrivateApi = {
 
             // update the already-created button
             qq.each(this._buttons, function(idx, button) {
-                if (button.getExtraButtonId() === extraButtonId) {
+                if (button.getButtonId() === buttonId) {
                     button.setMultiple(optionRoot.multiple);
                     button.setAcceptFiles(optionRoot.acceptFiles);
 

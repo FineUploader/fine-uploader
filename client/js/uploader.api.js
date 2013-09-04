@@ -6,12 +6,15 @@ qq.uiPublicApi = {
         this._parent.prototype.clearStoredFiles.apply(this, arguments);
         this._listElement.innerHTML = "";
     },
+
     addExtraDropzone: function(element){
         this._dnd.setupExtraDropzone(element);
     },
+
     removeExtraDropzone: function(element){
         return this._dnd.removeDropzone(element);
     },
+
     getItemByFileId: function(id){
         var item = this._listElement.firstChild;
 
@@ -22,13 +25,14 @@ qq.uiPublicApi = {
             item = item.nextSibling;
         }
     },
+
     reset: function() {
         this._parent.prototype.reset.apply(this, arguments);
         this._element.innerHTML = this._options.template;
         this._listElement = this._options.listElement || this._find(this._element, 'list');
 
         if (!this._options.button) {
-            this._createUploadButton({element: this._find(this._element, 'button')});
+            this._defaultButtonId = this._createUploadButton({element: this._find(this._element, 'button')}).getButtonId();
         }
 
         this._dnd.dispose();
@@ -36,6 +40,20 @@ qq.uiPublicApi = {
 
         this._totalFilesInBatch = 0;
         this._filesInBatchAddedToUi = 0;
+    },
+
+    getButton: function(fileId) {
+        var button = this._parent.prototype.getButton.apply(this, arguments);
+
+        if (!button) {
+            var buttonId = this._buttonIdsForFileIds[fileId];
+
+            if (buttonId === this._defaultButtonId) {
+                button = this._find(this._element, "button");
+            }
+        }
+
+        return button;
     }
 };
 

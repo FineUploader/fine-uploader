@@ -37,33 +37,21 @@ describe('button.js', function () {
                'resetting the button should clear the element from the DOM');
     });
 
-    it("doesn't add an internal tracker ID to the input if it is not an 'extra' button", function() {
+    it("does add an internal tracker ID to the input button, and re-adds it on reset", function() {
         $fixture.append("<div id='foo'></div>");
 
         var button = new qq.UploadButton({
             element: $fixture.find("#foo")[0]
-        });
-
-        assert.equal(button.getExtraButtonId(), undefined);
-        assert.equal(button.getInput().getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME), undefined);
-    });
-
-    it("does add an internal tracker ID to the input if it is not an 'extra' button, and re-adds it on reset", function() {
-        $fixture.append("<div id='foo'></div>");
-
-        var button = new qq.UploadButton({
-            element: $fixture.find("#foo")[0],
-            isExtraButton: true
         }),
-            buttonId = button.getExtraButtonId();
+            buttonId = button.getButtonId();
 
         assert.ok(buttonId != null);
-        assert.equal(button.getInput().getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME), buttonId);
+        assert.equal(button.getInput().getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME), buttonId);
 
         button.reset();
-        buttonId = button.getExtraButtonId();
+        buttonId = button.getButtonId();
         assert.ok(buttonId != null);
-        assert.equal(button.getInput().getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME), buttonId);
+        assert.equal(button.getInput().getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME), buttonId);
     });
 
     it.skip('onChange callback', function () {

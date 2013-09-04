@@ -25,6 +25,8 @@
         ("clearStoredFiles", "", "", "Clears the internal list of stored items. Only applies with `autoUpload` is `false`"),
         ("deleteFile", "`Integer` id", "", "Delete the file with the corresponding id off the server"),
         ("doesExist", "`Integer` id", "`Boolean`", "True if the associated item is currently registered with the uploader"),
+        ("getButton", "`Integer` id", "`HTMLElement`", "Returns the button container element associated with a file,
+        or undefined if the file was not submitted via a Fine Uploader controller upload button."),
         ("getFile", "`Integer` id", "`File` or `Blob`", "Returns the item associated with the id. File API browsers only"),
         ("getInProgress", "", "", "Returns the number of items that are either currently uploading or queued. If called inside of the 'cancel' event handler this method will return a value that includes the upload associated with the 'cancel' event handler. This is because the upload will not be cancelled until the event handler returns."),
         ("getName", "`Integer` id", "`String`", "Returns the name of the item with the associated id"),

@@ -135,7 +135,7 @@ qq.FineUploaderBasic = function(o) {
 
     this._buttons = [];
     this._extraButtonSpecs = {};
-    this._buttonSpecsByFileId = [];
+    this._buttonIdsForFileIds = [];
 
     this._wrapCallbacks();
     this._disposeSupport =  new qq.DisposeSupport();
@@ -160,7 +160,7 @@ qq.FineUploaderBasic = function(o) {
     this._deleteHandler = this._createDeleteHandler();
 
     if (this._options.button) {
-        this._createUploadButton({element: this._options.button});
+        this._defaultButtonId = this._createUploadButton({element: this._options.button}).getButtonId();
     }
 
     this._generateExtraButtonSpecs();
