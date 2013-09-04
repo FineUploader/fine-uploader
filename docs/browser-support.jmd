@@ -29,11 +29,11 @@ Note: Any features not listed here are supported in all browsers.
 <table class='table table-condensed table-hover table-striped'>
     <thead>
         <tr>
-            <th><strong>Browser</strong>
-            </th>
+            <th><strong>Browser</strong></th>
             <th>XHR2</th>
             <th>File Drop</th>
             <th>Folder Drop</th>
+            <th>Folder Selection</th>
             <th>Chunking / Resume</th>
             <th>Non-MPE Requests</th>
             <th>Upload via Paste</th>
@@ -54,11 +54,13 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>Firefox</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -71,6 +73,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>IE 10</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -87,12 +90,14 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>IE 8</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -114,6 +119,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>Android
@@ -121,6 +127,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -137,6 +144,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('y', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -145,6 +153,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>iOS
                 6</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -159,6 +168,7 @@ Note: Any features not listed here are supported in all browsers.
                 6</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -172,6 +182,7 @@ Note: Any features not listed here are supported in all browsers.
                 5.1</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -202,6 +213,7 @@ Feature     | Description
 `ajaxUploading` | Is uploading via XHR2 supported? Indicates File API support
 `fileDrop` | Is dragging and dropping files supported?
 `folderDrop` | Is drag and dropping folders supported?
+`folderSelection` | Can folders be selected via a file dialog?
 `chunking` | Is chunking supported?
 `resume` | Is the auto-resume feature supported?
 `uploadCustomHeaders` | Are custom headers allowed to be sent along with the upload request?

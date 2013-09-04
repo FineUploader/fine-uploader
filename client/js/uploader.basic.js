@@ -122,7 +122,8 @@ qq.FineUploaderBasic = function(o) {
         // Each element is an object, containing `element` as the only required
         // property.  The `element` must be a container that will ultimately
         // contain an invisible `<input type="file">` created by Fine Uploader.
-        // Optional properties of each object include `multiple` and `validation`.
+        // Optional properties of each object include `multiple`, `validation`,
+        // and `folders`.
         extraButtons: []
     };
 
@@ -158,7 +159,7 @@ qq.FineUploaderBasic = function(o) {
     this._deleteHandler = this._createDeleteHandler();
 
     if (this._options.button) {
-        this._createUploadButton(this._options.button);
+        this._createUploadButton({element: this._options.button});
     }
 
     this._generateExtraButtonSpecs();

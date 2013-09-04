@@ -28,7 +28,7 @@ qq.uiPublicApi = {
         this._listElement = this._options.listElement || this._find(this._element, 'list');
 
         if (!this._options.button) {
-            this._createUploadButton(this._find(this._element, 'button'));
+            this._createUploadButton({element: this._find(this._element, 'button')});
         }
 
         this._dnd.dispose();

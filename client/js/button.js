@@ -28,8 +28,10 @@ qq.UploadButton = function(o) {
             multiple: false,
 
             // Corresponds to the `accept` attribute on the associated `<input type="file">`
-
             acceptFiles: null,
+
+            // A true value allows folders to be selected, if supported by the UA
+            folders: false,
 
             // `name` attribute of `<input type="file">`
             name: 'qqfile',
@@ -60,7 +62,12 @@ qq.UploadButton = function(o) {
         }
 
         if (options.multiple) {
-            input.setAttribute("multiple", "multiple");
+            input.setAttribute("multiple", "");
+        }
+
+        if (options.folders && qq.supportedFeatures.folderSelection) {
+            // selecting directories is only possible in Chrome now, via a vendor-specific prefixed attribute
+            input.setAttribute("webkitdirectory", "");
         }
 
         if (options.acceptFiles) {

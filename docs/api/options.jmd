@@ -123,6 +123,8 @@ along with the default upload button.  Each button object can contain the follow
     (
         ("element", "`HTMLElement`", "`undefined`", "REQUIRED: The container element for the upload button."),
         ("multiple", "`Boolean`", "`multiple'`", "Specify to override the default `multiple` value."),
+        ("folders", "`Boolean`", "`false`", "`true` to allow folders to be selected, `false` to allow files to be selected.
+        See the browser support page for details regarding the limited user agent support for this feature."),
         ("validation", "`Object`", "`validation`", "Specify to override the default `validation` option specified.
         Any `validation` properties not specified will be inherited from the default `validation` option."),
     )

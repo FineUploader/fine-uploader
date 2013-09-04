@@ -274,8 +274,13 @@ qq.basePrivateApi = {
 
     // Creates an extra button element
     _initExtraButton: function(spec) {
-        var button = this._createUploadButton(spec.element, this._options.request.inputName,
-            spec.multiple, spec.validation.acceptFiles, true);
+        var button = this._createUploadButton({
+            element: spec.element,
+            multiple: spec.multiple,
+            accept: spec.validation.acceptFiles,
+            folders: spec.folders,
+            isExtraButton: true
+        });
 
         this._extraButtonSpecs[button.getExtraButtonId()] = spec;
     },
@@ -349,16 +354,24 @@ qq.basePrivateApi = {
         return callbackRetVal;
     },
 
-    _createUploadButton: function(element, inputName, isMultiple, acceptFiles, isExtraButton) {
+    /**
+     * Generate a tracked upload button.
+     *
+     * @param spec Object containing a required `element` property
+     * along with optional `multiple`, `accept`, `isExtraButton`, and `folders`.
+     * @returns {qq.UploadButton}
+     * @private
+     */
+    _createUploadButton: function(spec) {
         var self = this,
-            inputName = inputName || this._options.request.inputName,
-            isMultiple = isMultiple === undefined ? this._options.multiple : isMultiple,
-            acceptFiles = acceptFiles || this._options.validation.acceptFiles;
+            isMultiple = spec.multiple === undefined ? this._options.multiple : spec.multiple,
+            acceptFiles = spec.accept || this._options.validation.acceptFiles;
 
         var button = new qq.UploadButton({
-            element: element,
-            isExtraButton: isExtraButton,
-            name: inputName,
+            element: spec.element,
+            folders: spec.folders,
+            isExtraButton: spec.isExtraButton,
+            name: this._options.request.inputName,
             multiple: isMultiple && qq.supportedFeatures.ajaxUploading,
             acceptFiles: acceptFiles,
             onChange: function(input) {
