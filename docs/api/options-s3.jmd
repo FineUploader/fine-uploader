@@ -89,10 +89,6 @@ alert("The `resume.paramNames` option does **not** apply to S3.")
     )
 ) }}
 
-### `extraButtons` option
-
-Please see the core options documentation and keep in mind that the `endpoint` always refers to the S3 bucket.
-
 ### `signature` option
 
 {{ options_table(

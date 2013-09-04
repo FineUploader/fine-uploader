@@ -122,8 +122,7 @@ qq.FineUploaderBasic = function(o) {
         // Each element is an object, containing `element` as the only required
         // property.  The `element` must be a container that will ultimately
         // contain an invisible `<input type="file">` created by Fine Uploader.
-        // Options properties of each object include `inputName`, `multiple`,
-        // `validation`, `endpoint`, and `params`.
+        // Optional properties of each object include `multiple` and `validation`.
         extraButtons: []
     };
 

@@ -100,18 +100,11 @@ describe('uploader.basic.api.js', function () {
 
         beforeEach(function () {
 
-            $fixture.append("<div id='extraButton1'></div>")
-            $fixture.append("<div id='extraButton2'></div>")
-
-            fineuploader = new qq.FineUploaderBasic({ 
+            fineuploader = new qq.FineUploaderBasic({
                 element: $uploader[0],
                 request: {
                     endpoint: defaultEndpoint
-                },
-                extraButtons: [
-                    {element: document.getElementById('extraButton1')},
-                    {element: document.getElementById('extraButton2')}
-                ]
+                }
             });
         });
 
@@ -137,32 +130,6 @@ describe('uploader.basic.api.js', function () {
             qq.each(fineuploader._extraButtonSpecs, function(id, spec) {
                 assert.equal(spec.endpoint, defaultEndpoint, "endpoint for extra button was changed unexpectedly!");
             })
-        });
-
-        it("updates the endpoint for all extra button specs if an ID is not specified", function() {
-            var endpoint = '/endpoint';
-            fineuploader.setEndpoint(endpoint);
-
-            qq.each(fineuploader._extraButtonSpecs, function(id, spec) {
-                assert.equal(spec.endpoint, endpoint);
-            });
-        });
-
-        it("updates the endpoint for a specific button given the button container element", function() {
-            var newButtonEndpoint = "/new/button/endpoint",
-                buttonContainer = document.getElementById("extraButton2"),
-                buttonId = buttonContainer.getElementsByTagName("input")[0].getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME);
-
-            fineuploader.setEndpoint(newButtonEndpoint, buttonContainer);
-
-            qq.each(fineuploader._extraButtonSpecs, function(id, spec) {
-                if (id === buttonId) {
-                    assert.equal(spec.endpoint, newButtonEndpoint);
-                }
-                else {
-                    assert.equal(spec.endpoint, defaultEndpoint);
-                }
-            });
         });
     });
 

@@ -33,14 +33,13 @@ qq.basePublicApi = {
     },
 
     // Re-sets the default endpoint, an endpoint for a specific file, or an endpoint for a specific button
-    setEndpoint: function(endpoint, idOrButton) {
+    setEndpoint: function(endpoint, id) {
         /*jshint eqeqeq: true, eqnull: true*/
-        if (idOrButton == null) {
+        if (id == null) {
             this._options.request.endpoint = endpoint;
-            this._updateExtraButtonSpecs(null, endpoint)
         }
         else {
-            this._endpointStore.setEndpoint(endpoint, idOrButton);
+            this._endpointStore.setEndpoint(endpoint, id);
         }
     },
 
@@ -252,10 +251,7 @@ qq.basePrivateApi = {
         this._extraButtonSpecs = {};
 
         qq.each(this._options.extraButtons, function(idx, extraButtonOptionEntry) {
-            var inputName = extraButtonOptionEntry.inputName || self._options.request.inputName,
-                multiple = extraButtonOptionEntry.multiple,
-                endpoint = extraButtonOptionEntry.endpoint || self._options.request.endpoint,
-                params = extraButtonOptionEntry.params || self._options.request.params,
+            var multiple = extraButtonOptionEntry.multiple,
                 validation = qq.extend({}, self._options.validation, true),
                 extraButtonSpec = qq.extend({}, extraButtonOptionEntry);
 
@@ -268,10 +264,7 @@ qq.basePrivateApi = {
             }
 
             qq.extend(extraButtonSpec, {
-                inputName: inputName,
                 multiple: multiple,
-                endpoint: endpoint,
-                params: params,
                 validation: validation
             }, true);
 
@@ -292,7 +285,9 @@ qq.basePrivateApi = {
     _getExtraButtonId: function(buttonOrFileInput) {
         var inputs, fileInput;
 
-        if (buttonOrFileInput.tagName.toLowerCase() === "input" && buttonOrFileInput.type.toLowerCase() === "file") {
+        if (buttonOrFileInput.tagName.toLowerCase() === "input" &&
+            buttonOrFileInput.type.toLowerCase() === "file") {
+
             return buttonOrFileInput.getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME);
         }
 
@@ -307,24 +302,6 @@ qq.basePrivateApi = {
 
         if (fileInput) {
             return fileInput.getAttribute(qq.UploadButton.EXTRA_BUTTON_ID_ATTR_NAME);
-        }
-    },
-
-    // Adjusts the endpoint for either a specific extra button or all extra buttons.
-    _updateExtraButtonSpecs: function(button, endpoint) {
-        var buttonId;
-
-        if (button) {
-            buttonId = this._getExtraButtonId(button);
-        }
-
-        if (buttonId) {
-            this._extraButtonSpecs[buttonId].endpoint = endpoint;
-        }
-        else {
-            qq.each(this._extraButtonSpecs, function(id, spec) {
-                spec.endpoint = endpoint;
-            })
         }
     },
 
@@ -1193,35 +1170,14 @@ qq.basePrivateApi = {
         self = this;
 
         return {
-            // Allows an endpoint to be adjusted for a specific ID or button.
-            setEndpoint: function(endpoint, idOrInput) {
-                if (typeof idOrInput === "number") {
-                    endpointStore[idOrInput] = endpoint;
-                }
-                else {
-                    self._updateExtraButtonSpecs(idOrInput, endpoint);
-                }
+            setEndpoint: function(endpoint, id) {
+                endpointStore[id] = endpoint;
             },
 
-            // Retrieves the endpoint for a file first by determining if the file has a specific endpoint
-            // associated with it.  If not, and if this is an upload request endpoint, the endpoint
-            // associated with the button is returned.  The button endpoint is either stored internally
-            // as part of a "button spec" if the button is an "extra" button, or, for a default button,
-            // the `request.endpoint` option value is used.
             getEndpoint: function(id) {
-                var buttonSpec;
-
                 /*jshint eqeqeq: true, eqnull: true*/
                 if (id != null && endpointStore[id]) {
                     return endpointStore[id];
-                }
-                else if (type === "request") {
-                    buttonSpec = self._buttonSpecsByFileId[id];
-                    if (buttonSpec) {
-                        return buttonSpec.endpoint;
-                    }
-
-                    return self._options.request.endpoint;
                 }
 
                 return self._options[type].endpoint;
