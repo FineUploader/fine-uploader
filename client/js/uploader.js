@@ -116,16 +116,9 @@ qq.FineUploader = function(o, namespace) {
                 window.alert(message);
             }, 0);
         },
-        showConfirm: function(message, okCallback, cancelCallback) {
-            setTimeout(function() {
-                var result = window.confirm(message);
-                if (result) {
-                    okCallback();
-                }
-                else if (cancelCallback) {
-                    cancelCallback();
-                }
-            }, 0);
+        showConfirm: function(message) {
+            // @test(feltnerm): testme
+            return window.confirm(message);
         },
         showPrompt: function(message, defaultValue) {
             var promise = new qq.Promise(),
