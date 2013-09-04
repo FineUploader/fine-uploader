@@ -58,7 +58,10 @@ mode you are in and keep that in mind when determining which options do what.
 
 {{ options_table(
     (
-        ("ios", "`Boolean`", "`false`", "Enable or disable camera access on iOS (iPod, iPhone, and iPad) devices. Note: Enabling this will disable multiple file selection."),
+        ("ios", "`Boolean`", "`false`", "Enable or disable camera access on iOS (iPod, iPhone, and iPad) devices.
+        Note: Enabling this will disable multiple file selection."),
+        ("button", "`HTMLElement`", "`null`", "`null` means allow camera access on the default button in iOS,
+        otherwise, provide an extra button container element to target."),
     )
 ) }}
 

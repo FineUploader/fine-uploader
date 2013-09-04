@@ -145,6 +145,23 @@ qq.UploadButton = function(o) {
             return extraButtonId;
         },
 
+        setMultiple: function(isMultiple) {
+            if (isMultiple !== options.multiple) {
+                if (isMultiple) {
+                    input.setAttribute("multiple", "");
+                }
+                else {
+                    input.removeAttribute("multiple");
+                }
+            }
+        },
+
+        setAcceptFiles: function(acceptFiles) {
+            if (acceptFiles !== options.acceptFiles) {
+                input.setAttribute("accept", acceptFiles);
+            }
+        },
+
         reset: function(){
             if (input.parentNode){
                 qq(input).remove();

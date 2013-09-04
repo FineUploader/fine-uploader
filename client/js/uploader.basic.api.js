@@ -1206,16 +1206,34 @@ qq.basePrivateApi = {
         };
     },
 
+    // Allows camera access on either the default or an extra button for iOS devices.
     _handleCameraAccess: function() {
         if (this._options.camera.ios && qq.ios()) {
-            this._options.multiple = false;
+            var acceptIosCamera = "image/*;capture=camera",
+                button = this._options.camera.button,
+                extraButtonId = button ? this._getExtraButtonId(button) : undefined,
+                optionRoot = extraButtonId ? this._extraButtonSpecs[extraButtonId] : this._options;
 
-            if (this._options.validation.acceptFiles === null) {
-                this._options.validation.acceptFiles = "image/*;capture=camera";
+            // Camera access won't work in iOS if the `multiple` attribute is present on the file input
+            optionRoot.multiple = false;
+
+            // update the options
+            if (optionRoot.validation.acceptFiles === null) {
+                optionRoot.validation.acceptFiles = acceptIosCamera;
             }
             else {
-                this._options.validation.acceptFiles += ",image/*;capture=camera";
+                optionRoot.validation.acceptFiles += "," + acceptIosCamera;
             }
+
+            // update the already-created button
+            qq.each(this._buttons, function(idx, button) {
+                if (button.getExtraButtonId() === extraButtonId) {
+                    button.setMultiple(optionRoot.multiple);
+                    button.setAcceptFiles(optionRoot.acceptFiles);
+
+                    return false;
+                }
+            });
         }
     }
 };

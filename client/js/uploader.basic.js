@@ -115,7 +115,10 @@ qq.FineUploaderBasic = function(o) {
             defaultName: 'pasted_image'
         },
         camera: {
-            ios: false
+            ios: false,
+
+            // if ios is true: button is null means target the default button, otherwise target the button specified
+            button: null
         },
 
         // This refers to additional upload buttons to be handled by Fine Uploader.
@@ -133,8 +136,6 @@ qq.FineUploaderBasic = function(o) {
     this._buttons = [];
     this._extraButtonSpecs = {};
     this._buttonSpecsByFileId = [];
-
-    this._handleCameraAccess();
 
     this._wrapCallbacks();
     this._disposeSupport =  new qq.DisposeSupport();
@@ -163,6 +164,8 @@ qq.FineUploaderBasic = function(o) {
     }
 
     this._generateExtraButtonSpecs();
+
+    this._handleCameraAccess();
 
     if (this._options.paste.targetElement) {
         this._pasteHandler = this._createPasteHandler();
