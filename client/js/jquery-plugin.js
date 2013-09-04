@@ -164,7 +164,7 @@
         retVal = uploader()[command].apply(uploader(), xformedArgs);
 
         // If the command is returning an `HTMLElement` or `HTMLDocument`, wrap it in a `jQuery` object
-        if(typeof retVal === "object"
+        if(retVal != null && typeof retVal === "object"
             && (retVal.nodeType === 1 || retVal.nodeType === 9)
             && retVal.cloneNode) {
 
