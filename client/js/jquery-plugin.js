@@ -14,7 +14,7 @@
         }
 
         return $el;
-    };
+    }
 
     function getNewUploaderInstance(params) {
         var uploaderType = pluginOption('uploaderType'),
@@ -57,17 +57,17 @@
             }
             return data[key];
         }
-    };
+    }
 
     //the underlying Fine Uploader instance is stored in jQuery's data stored, associated with the element
     // tied to this instance of the plug-in
     function uploader(instanceToStore) {
         return dataStore('uploader', instanceToStore);
-    };
+    }
 
     function pluginOption(option, optionVal) {
         return dataStore(option, optionVal);
-    };
+    }
 
     // Implement all callbacks defined in Fine Uploader as functions that trigger appropriately names events and
     // return the result of executing the bound handler back to Fine Uploader
@@ -82,14 +82,19 @@
             $callbackEl = $el;
 
             callbacks[prop] = function() {
-                var args = Array.prototype.slice.call(arguments);
+                var args = Array.prototype.slice.call(arguments),
+                    transformedArgs = [];
 
-                return $callbackEl.triggerHandler(name, args);
+                $.each(args, function(idx, arg) {
+                    transformedArgs.push(maybeWrapInJquery(arg));
+                });
+
+                return $callbackEl.triggerHandler(name, transformedArgs);
             };
         });
 
         newUploaderInstance._options.callbacks = callbacks;
-    };
+    }
 
     //transform jQuery objects into HTMLElements, and pass along all other option properties
     function transformVariables(source, dest) {
@@ -144,13 +149,13 @@
         if (dest === undefined) {
             return xformed;
         }
-    };
+    }
 
     function isValidCommand(command) {
         return $.type(command) === "string" &&
             !command.match(/^_/) && //enforce private methods convention
             uploader()[command] !== undefined;
-    };
+    }
 
     // Assuming we have already verified that this is a valid command, call the associated function in the underlying
     // Fine Uploader instance (passing along the arguments from the caller) and return the result of the call back to the caller
@@ -163,16 +168,23 @@
 
         retVal = uploader()[command].apply(uploader(), xformedArgs);
 
-        // If the command is returning an `HTMLElement` or `HTMLDocument`, wrap it in a `jQuery` object
-        if(retVal != null && typeof retVal === "object"
-            && (retVal.nodeType === 1 || retVal.nodeType === 9)
-            && retVal.cloneNode) {
+        return maybeWrapInJquery(retVal);
+    }
 
-            retVal = $(retVal);
+    // If the value is an `HTMLElement` or `HTMLDocument`, wrap it in a `jQuery` object
+    function maybeWrapInJquery(val) {
+        var transformedVal = val;
+
+        // If the command is returning an `HTMLElement` or `HTMLDocument`, wrap it in a `jQuery` object
+        if(val != null && typeof val === "object"
+            && (val.nodeType === 1 || val.nodeType === 9)
+            && val.cloneNode) {
+
+            transformedVal = $(val);
         }
 
-        return retVal;
-    };
+        return transformedVal;
+    }
 
     $.fn.fineUploader = function(optionsOrCommand) {
         var self = this, selfArgs = arguments, retVals = [];

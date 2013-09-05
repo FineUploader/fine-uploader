@@ -237,15 +237,7 @@ qq.basePublicApi = {
     },
 
     getButton: function(fileId) {
-        var buttonId = this._buttonIdsForFileIds[fileId],
-            extraButtonsSpec = this._extraButtonSpecs[buttonId];
-
-        if (extraButtonsSpec) {
-            return extraButtonsSpec.element;
-        }
-        else if (buttonId === this._defaultButtonId) {
-            return this._options.button;
-        }
+        return this._getButton(this._buttonIdsForFileIds[fileId]);
     }
 };
 
@@ -336,6 +328,17 @@ qq.basePrivateApi = {
     _annotateWithButtonId: function(file, associatedInput) {
         if (qq.isFile(file)) {
             file.qqButtonId = this._getButtonId(associatedInput);
+        }
+    },
+
+    _getButton: function(buttonId) {
+        var extraButtonsSpec = this._extraButtonSpecs[buttonId];
+
+        if (extraButtonsSpec) {
+            return extraButtonsSpec.element;
+        }
+        else if (buttonId === this._defaultButtonId) {
+            return this._options.button;
         }
     },
 
@@ -816,12 +819,14 @@ qq.basePrivateApi = {
     },
 
     _prepareItemsForUpload: function(items, params, endpoint) {
-        var validationDescriptors = this._getValidationDescriptors(items);
+        var validationDescriptors = this._getValidationDescriptors(items),
+            buttonId = this._getButtonId(items[0]),
+            button = this._getButton(buttonId);
 
         this._handleCheckedCallback({
             name: "onValidateBatch",
-            callback: qq.bind(this._options.callbacks.onValidateBatch, this, validationDescriptors),
-            onSuccess: qq.bind(this._onValidateBatchCallbackSuccess, this, validationDescriptors, items, params, endpoint),
+            callback: qq.bind(this._options.callbacks.onValidateBatch, this, validationDescriptors, button),
+            onSuccess: qq.bind(this._onValidateBatchCallbackSuccess, this, validationDescriptors, items, params, endpoint, button),
             identifier: "batch validation"
         });
     },
@@ -862,7 +867,6 @@ qq.basePrivateApi = {
         }
 
         if (buttonId) {
-            qq.log("BUTTON ID: " + buttonId);
             this._buttonIdsForFileIds[id] = buttonId;
         }
 
@@ -888,7 +892,7 @@ qq.basePrivateApi = {
         this._storedIds.push(id);
     },
 
-    _onValidateBatchCallbackSuccess: function(validationDescriptors, items, params, endpoint) {
+    _onValidateBatchCallbackSuccess: function(validationDescriptors, items, params, endpoint, button) {
         var errorMessage,
             itemLimit = this._options.validation.itemLimit,
             proposedNetFilesUploadedOrQueued = this._netUploadedOrQueued + validationDescriptors.length;
@@ -897,7 +901,7 @@ qq.basePrivateApi = {
             if (items.length > 0) {
                 this._handleCheckedCallback({
                     name: "onValidate",
-                    callback: qq.bind(this._options.callbacks.onValidate, this, items[0]),
+                    callback: qq.bind(this._options.callbacks.onValidate, this, items[0], button),
                     onSuccess: qq.bind(this._onValidateCallbackSuccess, this, items, 0, params, endpoint),
                     onFailure: qq.bind(this._onValidateCallbackFailure, this, items, 0, params, endpoint),
                     identifier: "Item '" + items[0].name + "', size: " + items[0].size
@@ -1163,11 +1167,9 @@ qq.basePrivateApi = {
     },
 
     _getValidationDescriptor: function(fileOrBlobData) {
-        var name, size, fileDescriptor;
-
-        fileDescriptor = {};
-        name = this._parseFileOrBlobDataName(fileOrBlobData);
-        size = this._parseFileOrBlobDataSize(fileOrBlobData);
+        var fileDescriptor = {},
+            name = this._parseFileOrBlobDataName(fileOrBlobData),
+            size = this._parseFileOrBlobDataSize(fileOrBlobData);
 
         fileDescriptor.name = name;
         if (size !== undefined) {

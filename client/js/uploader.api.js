@@ -40,20 +40,6 @@ qq.uiPublicApi = {
 
         this._totalFilesInBatch = 0;
         this._filesInBatchAddedToUi = 0;
-    },
-
-    getButton: function(fileId) {
-        var button = this._parent.prototype.getButton.apply(this, arguments);
-
-        if (!button) {
-            var buttonId = this._buttonIdsForFileIds[fileId];
-
-            if (buttonId === this._defaultButtonId) {
-                button = this._find(this._element, "button");
-            }
-        }
-
-        return button;
     }
 };
 
@@ -64,6 +50,18 @@ qq.uiPublicApi = {
  * Defines the private (internal) API for FineUploader mode.
  */
 qq.uiPrivateApi = {
+    _getButton: function(buttonId) {
+        var button = this._parent.prototype._getButton.apply(this, arguments);
+
+        if (!button) {
+            if (buttonId === this._defaultButtonId) {
+                button = this._find(this._element, "button");
+            }
+        }
+
+        return button;
+    },
+
     _removeFileItem: function(fileId) {
         var item = this.getItemByFileId(fileId);
         qq(item).remove();
