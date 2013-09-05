@@ -115,15 +115,27 @@ qq.FineUploaderBasic = function(o) {
             defaultName: 'pasted_image'
         },
         camera: {
-            ios: false
-        }
+            ios: false,
+
+            // if ios is true: button is null means target the default button, otherwise target the button specified
+            button: null
+        },
+
+        // This refers to additional upload buttons to be handled by Fine Uploader.
+        // Each element is an object, containing `element` as the only required
+        // property.  The `element` must be a container that will ultimately
+        // contain an invisible `<input type="file">` created by Fine Uploader.
+        // Optional properties of each object include `multiple`, `validation`,
+        // and `folders`.
+        extraButtons: []
     };
 
     // Replace any default options with user defined ones
     qq.extend(this._options, o, true);
 
-
-    this._handleCameraAccess();
+    this._buttons = [];
+    this._extraButtonSpecs = {};
+    this._buttonIdsForFileIds = [];
 
     this._wrapCallbacks();
     this._disposeSupport =  new qq.DisposeSupport();
@@ -147,9 +159,13 @@ qq.FineUploaderBasic = function(o) {
     this._handler = this._createUploadHandler();
     this._deleteHandler = this._createDeleteHandler();
 
-    if (this._options.button){
-        this._button = this._createUploadButton(this._options.button);
+    if (this._options.button) {
+        this._defaultButtonId = this._createUploadButton({element: this._options.button}).getButtonId();
     }
+
+    this._generateExtraButtonSpecs();
+
+    this._handleCameraAccess();
 
     if (this._options.paste.targetElement) {
         this._pasteHandler = this._createPasteHandler();

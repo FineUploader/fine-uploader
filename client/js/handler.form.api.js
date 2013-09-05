@@ -311,6 +311,10 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
             }
         },
 
+        getInput: function(id) {
+            return fileState[id].input;
+        },
+
         setName: function(id, newName) {
             fileState[id].newName = newName;
         },

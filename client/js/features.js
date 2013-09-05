@@ -8,7 +8,8 @@ qq.supportedFeatures = (function () {
         supportsUploadCors,
         supportsDeleteFileXdr,
         supportsDeleteFileCorsXhr,
-        supportsDeleteFileCors;
+        supportsDeleteFileCors,
+        supportsFolderSelection;
 
 
     function testSupportsFileInputElement() {
@@ -70,6 +71,11 @@ qq.supportedFeatures = (function () {
         return isXdrSupported();
     }
 
+    function isFolderSelectionSupported() {
+        // We know that folder selection is only supported in Chrome via this proprietary attribute for now
+        return document.createElement('input').webkitdirectory !== undefined;
+    }
+
 
     supportsUploading = testSupportsFileInputElement();
 
@@ -91,6 +97,8 @@ qq.supportedFeatures = (function () {
 
     supportsDeleteFileCors = isCrossOriginAjaxSupported();
 
+    supportsFolderSelection = isFolderSelectionSupported();
+
 
     return {
         uploading: supportsUploading,
@@ -108,7 +116,8 @@ qq.supportedFeatures = (function () {
         deleteFileCorsXhr: supportsDeleteFileCorsXhr,
         deleteFileCorsXdr: supportsDeleteFileXdr, //NOTE: will also return true in IE10, where XDR is also supported
         deleteFileCors: supportsDeleteFileCors,
-        canDetermineSize: supportsAjaxFileUploading
+        canDetermineSize: supportsAjaxFileUploading,
+        folderSelection: supportsFolderSelection
     }
 
 }());

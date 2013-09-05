@@ -181,6 +181,16 @@ qq.isItemList = function(maybeItemList) {
     return Object.prototype.toString.call(maybeItemList) === "[object DataTransferItemList]";
 };
 
+// Looks for an object on a `NodeList` or an `HTMLCollection`|`HTMLFormElement`|`HTMLSelectElement`
+// object that is associated with collections of Nodes.
+qq.isNodeList = function(maybeNodeList) {
+    "use strict";
+    return Object.prototype.toString.call(maybeNodeList) === "[object NodeList]" ||
+        // If `HTMLCollection` is the actual type of the object, we must determine this
+        // by checking for expected properties/methods on the object
+        (maybeNodeList.item && maybeNodeList.namedItem);
+};
+
 qq.isString = function(maybeString) {
     "use strict";
     return Object.prototype.toString.call(maybeString) === '[object String]';
@@ -220,7 +230,7 @@ qq.isFile = function(maybeFile) {
 
 qq.isFileList = function(maybeFileList) {
     return window.FileList && Object.prototype.toString.call(maybeFileList) === '[object FileList]'
-}
+};
 
 qq.isFileOrInput = function(maybeFileOrInput) {
     "use strict";
@@ -455,8 +465,9 @@ qq.each = function(iterableItem, callback) {
                 }
             }
         }
-        // `DataTransferItemList` objects are array-like and should be treated as arrays when iterating over items inside the object.
-        else if (qq.isArray(iterableItem) || qq.isItemList(iterableItem)) {
+        // `DataTransferItemList` & `NodeList` objects are array-like and should be treated as arrays
+        // when iterating over items inside the object.
+        else if (qq.isArray(iterableItem) || qq.isItemList(iterableItem) || qq.isNodeList(iterableItem)) {
             for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
                 retVal = callback(keyOrIndex, iterableItem[keyOrIndex]);
                 if (retVal === false) {
