@@ -117,7 +117,6 @@ qq.FineUploader = function(o, namespace) {
             }, 0);
         },
         showConfirm: function(message) {
-            // @test(feltnerm): testme
             return window.confirm(message);
         },
         showPrompt: function(message, defaultValue) {
