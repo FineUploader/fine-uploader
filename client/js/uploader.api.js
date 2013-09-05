@@ -440,10 +440,9 @@ qq.uiPrivateApi = {
             retVal.then(function () {
                 self._sendDeleteRequest.apply(self, deleteRequestArgs);
             });
-        } else {
-            if (retVal !== false) {
-                self._sendDeleteRequest.apply(self, deleteRequestArgs);
-            }
+        }
+        else if (retVal !== false) {
+            self._sendDeleteRequest.apply(self, deleteRequestArgs);
         }
     },
     _addToList: function(id, name){
