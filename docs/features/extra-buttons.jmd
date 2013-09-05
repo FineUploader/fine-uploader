@@ -1,5 +1,5 @@
 {% extends "_templates/base.html" %}
-{% set page_title = "Editing Filenames" %}
+{% set page_title = "Multiple Upload Buttons" %}
 {% block content %}
 {% markdown %}
 
