@@ -132,7 +132,7 @@ if (!qq.ios()) {
     $("#cameraButtonContainer").hide();
 }
 
-$('"myFineUploader").fineUploader({
+$("myFineUploader").fineUploader({
     camera: {
         ios: true,
         button: ${"#cameraButtonContainer")
