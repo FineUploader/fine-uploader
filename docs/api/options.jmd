@@ -9,6 +9,7 @@
     <li><a href="#chunkingparamnames-option">chunking.paramNames</a></li>
     <li><a href="#cors-option">cors</a></li>
     <li><a href="#deletefile-option_1">deleteFile</a></li>
+    <li><a href="#extrabuttons-option">extraButtons</a></li>
     <li><a href="#messages-option_1">messages</a></li>
     <li><a href="#paste-option_1">paste</a></li>
     <li><a href="#resume-option_1">resume</a></li>
