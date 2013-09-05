@@ -297,28 +297,39 @@ qq.basePrivateApi = {
         this._extraButtonSpecs[button.getButtonId()] = spec;
     },
 
-    // Gets the internally used tracking ID for a button.  Undefined if not an "extra" button.
-    // You can pass in the file input or the input's container element.
-    _getButtonId: function(buttonOrFileInput) {
+    /**
+     * Gets the internally used tracking ID for a button.
+     *
+     * @param buttonOrFileInputOrFile `File`, `<input type="file">`, or a button container element
+     * @returns {*} The button's ID, or undefined if no ID is recoverable
+     * @private
+     */
+    _getButtonId: function(buttonOrFileInputOrFile) {
         var inputs, fileInput;
 
-        if (buttonOrFileInput.tagName.toLowerCase() === "input" &&
-            buttonOrFileInput.type.toLowerCase() === "file") {
-
-            return buttonOrFileInput.getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME);
-        }
-
-        inputs = buttonOrFileInput.getElementsByTagName("input");
-
-        qq.each(inputs, function(idx, input) {
-            if (input.getAttribute("type") === "file") {
-                fileInput = input;
-                return false;
+        // If the item is a `Blob` it will never be associated with a button or drop zone.
+        if (buttonOrFileInputOrFile && !buttonOrFileInputOrFile.blob && !qq.isBlob(buttonOrFileInputOrFile)) {
+            if (qq.isFile(buttonOrFileInputOrFile)) {
+                return buttonOrFileInputOrFile.qqButtonId;
             }
-        });
+            else if (buttonOrFileInputOrFile.tagName.toLowerCase() === "input" &&
+                buttonOrFileInputOrFile.type.toLowerCase() === "file") {
 
-        if (fileInput) {
-            return fileInput.getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME);
+                return buttonOrFileInputOrFile.getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME);
+            }
+
+            inputs = buttonOrFileInputOrFile.getElementsByTagName("input");
+
+            qq.each(inputs, function(idx, input) {
+                if (input.getAttribute("type") === "file") {
+                    fileInput = input;
+                    return false;
+                }
+            });
+
+            if (fileInput) {
+                return fileInput.getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME);
+            }
         }
     },
 
@@ -946,32 +957,44 @@ qq.basePrivateApi = {
         }
     },
 
+    /**
+     * Performs some internal validation checks on an item, defined in the `validation` option.
+     *
+     * @param item `File`, `Blob`, or `<input type="file">`
+     * @param validationDescriptor Normalized information about the item (`size`, `name`).
+     * @returns {boolean} true if the item is valid
+     * @private
+     */
     _validateFileOrBlobData: function(item, validationDescriptor) {
         var name = validationDescriptor.name,
             size = validationDescriptor.size,
+            buttonId = this._getButtonId(item),
+            extraButtonSpec = this._extraButtonSpecs[buttonId],
+            validationBase = extraButtonSpec ? extraButtonSpec.validation : this._options.validation,
+
             valid = true;
 
         if (this._options.callbacks.onValidate(validationDescriptor) === false) {
             valid = false;
         }
 
-        if (qq.isFileOrInput(item) && !this._isAllowedExtension(name)){
-            this._itemError('typeError', name);
+        if (qq.isFileOrInput(item) && !this._isAllowedExtension(validationBase.allowedExtensions, name)) {
+            this._itemError('typeError', name, item);
             valid = false;
 
         }
-        else if (size === 0){
-            this._itemError('emptyError', name);
+        else if (size === 0) {
+            this._itemError('emptyError', name, item);
             valid = false;
 
         }
-        else if (size && this._options.validation.sizeLimit && size > this._options.validation.sizeLimit){
-            this._itemError('sizeError', name);
+        else if (size && validationBase.sizeLimit && size > validationBase.sizeLimit) {
+            this._itemError('sizeError', name, item);
             valid = false;
 
         }
-        else if (size && size < this._options.validation.minSizeLimit){
-            this._itemError('minSizeError', name);
+        else if (size && size < validationBase.minSizeLimit) {
+            this._itemError('minSizeError', name, item);
             valid = false;
         }
 
@@ -982,22 +1005,33 @@ qq.basePrivateApi = {
         return valid;
     },
 
-    _fileOrBlobRejected: function(id, name) {
+    _fileOrBlobRejected: function(id) {
         if (id !== undefined) {
             this._uploadData.setStatus(id, qq.status.REJECTED);
         }
     },
 
-    _itemError: function(code, maybeNameOrNames) {
+    /**
+     * Constructs and returns a message that describes an item/file error.  Also calls `onError` callback.
+     *
+     * @param code REQUIRED - a code that corresponds to a stock message describing this type of error
+     * @param maybeNameOrNames names of the items that have failed, if applicable
+     * @param item `File`, `Blob`, or `<input type="file">`
+     * @private
+     */
+    _itemError: function(code, maybeNameOrNames, item) {
         var message = this._options.messages[code],
             allowedExtensions = [],
             names = [].concat(maybeNameOrNames),
             name = names[0],
+            buttonId = this._getButtonId(item),
+            extraButtonSpec = this._extraButtonSpecs[buttonId],
+            validationBase = extraButtonSpec ? extraButtonSpec.validation : this._options.validation,
             extensionsForMessage, placeholderMatch;
 
         function r(name, replacement){ message = message.replace(name, replacement); }
 
-        qq.each(this._options.validation.allowedExtensions, function(idx, allowedExtension) {
+        qq.each(validationBase.allowedExtensions, function(idx, allowedExtension) {
                 /**
                  * If an argument is not a string, ignore it.  Added when a possible issue with MooTools hijacking the
                  * `allowedExtensions` array was discovered.  See case #735 in the issue tracker for more details.
@@ -1011,8 +1045,8 @@ qq.basePrivateApi = {
 
         r('{file}', this._options.formatFileName(name));
         r('{extensions}', extensionsForMessage);
-        r('{sizeLimit}', this._formatSize(this._options.validation.sizeLimit));
-        r('{minSizeLimit}', this._formatSize(this._options.validation.minSizeLimit));
+        r('{sizeLimit}', this._formatSize(validationBase.sizeLimit));
+        r('{minSizeLimit}', this._formatSize(validationBase.minSizeLimit));
 
         placeholderMatch = message.match(/(\{\w+\})/g);
         if (placeholderMatch !== null) {
@@ -1030,9 +1064,8 @@ qq.basePrivateApi = {
         this._options.callbacks.onError(null, null, message, undefined);
     },
 
-    _isAllowedExtension: function(fileName){
-        var allowed = this._options.validation.allowedExtensions,
-            valid = false;
+    _isAllowedExtension: function(allowed, fileName) {
+        var valid = false;
 
         if (!allowed.length) {
             return true;

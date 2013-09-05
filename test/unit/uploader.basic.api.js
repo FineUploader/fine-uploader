@@ -134,39 +134,35 @@ describe('uploader.basic.api.js', function () {
     });
 
     describe("_isAllowedExtension", function() {
-        it("allows files if no restrictions are in place", function() {
+        beforeEach(function () {
             fineuploader = new qq.FineUploaderBasic();
+        });
 
-            assert.ok(fineuploader._isAllowedExtension("foo.bar"));
-            assert.ok(fineuploader._isAllowedExtension("foo.bar.bat"));
-            assert.ok(fineuploader._isAllowedExtension("foo"));
+        it("allows files if no restrictions are in place", function() {
+            var allowedExtensions = [];
+
+            assert.ok(fineuploader._isAllowedExtension(allowedExtensions, "foo.bar"));
+            assert.ok(fineuploader._isAllowedExtension(allowedExtensions, "foo.bar.bat"));
+            assert.ok(fineuploader._isAllowedExtension(allowedExtensions, "foo"));
         });
 
         it("doesn't choke if allowed extensions are not valid (i.e. not strings)", function() {
-            fineuploader = new qq.FineUploaderBasic({
-                validation: {
-                    allowedExtensions: [{}]
-                }
-            });
+            var allowedExtensions = [{}];
 
-            assert.ok(!fineuploader._isAllowedExtension("foo.bar"));
-            assert.ok(!fineuploader._isAllowedExtension("foo.bar.bat"));
-            assert.ok(!fineuploader._isAllowedExtension("foo"));
+            assert.ok(!fineuploader._isAllowedExtension(allowedExtensions, "foo.bar"));
+            assert.ok(!fineuploader._isAllowedExtension(allowedExtensions, "foo.bar.bat"));
+            assert.ok(!fineuploader._isAllowedExtension(allowedExtensions, "foo"));
         });
 
         it("only allows valid extensions", function() {
-            fineuploader = new qq.FineUploaderBasic({
-                validation: {
-                    allowedExtensions: ["bar", "exe", "png"]
-                }
-            });
+            var allowedExtensions = ["bar", "exe", "png"];
 
-            assert.ok(fineuploader._isAllowedExtension("foo.bar"));
-            assert.ok(fineuploader._isAllowedExtension("foo.fee.exe"));
-            assert.ok(fineuploader._isAllowedExtension("png.png"));
-            assert.ok(!fineuploader._isAllowedExtension("foo.bar.bat"));
-            assert.ok(!fineuploader._isAllowedExtension("foo"));
-            assert.ok(!fineuploader._isAllowedExtension("png"));
+            assert.ok(fineuploader._isAllowedExtension(allowedExtensions, "foo.bar"));
+            assert.ok(fineuploader._isAllowedExtension(allowedExtensions, "foo.fee.exe"));
+            assert.ok(fineuploader._isAllowedExtension(allowedExtensions, "png.png"));
+            assert.ok(!fineuploader._isAllowedExtension(allowedExtensions, "foo.bar.bat"));
+            assert.ok(!fineuploader._isAllowedExtension(allowedExtensions, "foo"));
+            assert.ok(!fineuploader._isAllowedExtension(allowedExtensions, "png"));
         });
     });
 

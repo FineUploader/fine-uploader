@@ -134,9 +134,9 @@ along with the default upload button.  Each button object can contain the follow
 ) }}
 
 {{ alert(
-"""If an `itemLimit` property is specified here, it will be ignored as the `itemLimit`
-from the default `validation` option is always used and shared among all
-buttons for a particular instance.""", "info", "Note:") }}
+"""If an `itemLimit` or `stopOnFirstInvalidFile` property is specified here,
+they will be ignored as these properties from the default `validation` option are
+always used and shared among all buttons for a particular instance.""", "info", "Note:") }}
 
 ----
 
