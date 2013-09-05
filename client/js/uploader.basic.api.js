@@ -117,6 +117,7 @@ qq.basePublicApi = {
         this._netUploadedOrQueued = 0;
         this._netUploaded = 0;
         this._uploadData.reset();
+        this._buttonIdsForFileIds = [];
 
         if (this._pasteHandler) {
             this._pasteHandler.reset();
@@ -236,7 +237,6 @@ qq.basePublicApi = {
     },
 
     getButton: function(fileId) {
-        qq.log("File ID: " + fileId);
         var buttonId = this._buttonIdsForFileIds[fileId],
             extraButtonsSpec = this._extraButtonSpecs[buttonId];
 
