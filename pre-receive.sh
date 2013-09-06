@@ -2,8 +2,8 @@
 # This will update the build number as part of each push (only in the develop branch).
 #
 # To install this hook:
-# 1.) chmod +x update.sh
-# 2.) ln -s -f ../../update.sh .git/hooks/update
+# 1.) chmod +x pre-receive.sh
+# 2.) ln -s -f ../../pre-receive.sh .git/hooks/pre-receive
 ###
 BRANCH=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
 echo $BRANCH
