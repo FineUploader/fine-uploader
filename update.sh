@@ -6,6 +6,7 @@
 # 2.) ln -s -f ../../update.sh .git/hooks/update
 ###
 BRANCH=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+echo $BRANCH
 if [ $BRANCH == "develop" ]; then
     grunt version:build
     RESULT=$?
