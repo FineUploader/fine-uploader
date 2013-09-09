@@ -559,7 +559,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'test:func', 'Run functional tests locally', ['dev', 'mochaWebdriver:local']
   grunt.registerTask 'test:func:sauce', 'Run functional tests on SauceLabs', ['dev', 'mochaWebdriver:sauce']
 
-  grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'test:unit:sauce']
+  grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'saucetests:default']
 
   grunt.registerTask 'dev', 'Prepare code for testing', ['concurrent:clean', 'shell:npm_install', 'bower', 'package', 'copy:test']
   grunt.registerTask 'build', 'Build from latest source', ['concurrent:concat', 'concurrent:minify', 'usebanner', 'copy:images']
