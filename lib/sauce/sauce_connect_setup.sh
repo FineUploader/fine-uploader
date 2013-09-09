@@ -39,7 +39,8 @@ ARGS=""
 
 # Set tunnel-id only on Travis, to make local testing easier.
 if [ ! -z "$TRAVIS_JOB_NUMBER" ]; then
-  ARGS="$ARGS --tunnel-identifier $TRAVIS_JOB_NUMBER"
+  #ARGS="$ARGS --tunnel-identifier $TRAVIS_JOB_NUMBER"
+  echo $TRAVIS_JOB_NUMBER
 fi
 if [ ! -z "$SAUCE_CONNECT_READY_FILE" ]; then
   ARGS="$ARGS --readyfile $SAUCE_CONNECT_READY_FILE"
