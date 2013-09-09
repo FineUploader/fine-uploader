@@ -13,7 +13,7 @@ before_script:
 - mkdir -p $LOGS_DIR
 - ./lib/sauce/sauce_connect_setup.sh
 - grunt dev
-- ./lib/sauce_connect_block.sh
+- ./lib/sauce/sauce_connect_block.sh
 
 script:
 - grunt travis
@@ -40,6 +40,3 @@ env:
       ItUbCE5lEEhfjbRw2xcG8F8L4T7JriFXCphlNV26ZzrRTGNGXKi2D7TDv2S5
       rwbV6veaxef5UrKDyR5vbRuyXcKg7B05snD3jvKhp/Jwn3cU9NbddwFqffej
       EFukvU9VidYA2iyLTB4UTVBh7AhZU05hLo5P4npKKcpObvSAL/8=
-
-addons:
-  sauce_connect: false
