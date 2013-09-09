@@ -61,16 +61,10 @@ if [[ ! -z "$SAUCE_USERNAME" && ! -z "$SAUCE_ACCESS_KEY" ]]; then
       $ARGS \
       --logfile $CONNECT_LOG \
       --readyfile $CONNECT_READYFILE 2> $CONNECT_STDERR 1> $CONNECT_STDOUT &
-    CONNECT_PID=$!
 
-    while [[ ! -f $CONNECT_READYFILE ]]; do
-      sleep .5
-    done
-
-    echo $CONNECT_PID
-    touch $CONNECT_PID_FILE
-    echo $CONNECT_PID > $CONNECT_PID_FILE
-    echo "You may start your tests"
+    #CONNECT_PID=$!
+    #touch $CONNECT_PID_FILE
+    #echo $CONNECT_PID > $CONNECT_PID_FILE
 else
     echo "Requires SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables"
 fi
