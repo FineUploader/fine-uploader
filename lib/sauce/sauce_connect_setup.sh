@@ -24,6 +24,7 @@ CONNECT_LOG="$LOGS_DIR/sauce-connect.log"
 CONNECT_STDOUT="$LOGS_DIR/sauce-connect.stdout"
 CONNECT_STDERR="$LOGS_DIR/sauce-connect.stderr"
 CONNECT_READYFILE="$LOGS_DIR/sauce-connect.ready-$RANDOM"
+CONNECT_PID_FILE="$LOGS_DIR/sauce-connect.pid"
 
 # Get Connect and start it
 mkdir -p $CONNECT_DIR
@@ -49,15 +50,29 @@ echo "Starting Sauce Connect in the background, logging into:"
 echo "  $CONNECT_LOG"
 echo "  $CONNECT_STDOUT"
 echo "  $CONNECT_STDERR"
+echo "  $CONNCT_PID"
+
 
 #2> $CONNECT_STDERR 1> $CONNECT_STDOUT &
 
-java -jar Sauce-Connect.jar \
-  $SAUCE_USERNAME $SAUCE_ACCESS_KEY \
-  $ARGS \
-  --logfile $CONNECT_LOG \
-  --readyfile $CONNECT_READYFILE 2> $CONNECT_STDERR 1> $CONNECT_STDOUT &
+if [[ ! -z "$SAUCE_USERNAME" && ! -z "$SAUCE_ACCESS_KEY" ]]; then
+    java -jar Sauce-Connect.jar \
+      $SAUCE_USERNAME $SAUCE_ACCESS_KEY \
+      $ARGS \
+      --logfile $CONNECT_LOG \
+      --readyfile $CONNECT_READYFILE 2> $CONNECT_STDERR 1> $CONNECT_STDOUT &
+    CONNECT_PID=$!
 
-while [[ ! -f $CONNECT_READYFILE ]]; do
-  sleep .5
-done
+    while [[ ! -f $CONNECT_READYFILE ]]; do
+      sleep .5
+    done
+
+    echo $CONNECT_PID
+    touch $CONNECT_PID_FILE
+    echo $CONNECT_PID > $CONNECT_PID_FILE
+    echo "You may start your tests"
+else
+    echo "Requires SAUCE_USERNAME and SAUCE_ACCESS_KEY environment variables"
+fi
+
+

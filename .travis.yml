@@ -7,8 +7,7 @@ before_install:
 - npm install -g grunt-cli
 - git submodule update --init --recursive
 before_script:
-- grunt prepare
-- grunt build
+- grunt dev
 script:
 - grunt travis
 branches:

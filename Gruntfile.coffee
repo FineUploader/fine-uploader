@@ -1,8 +1,16 @@
-# Gruntfile
-# for
-# fineuploader
+###
+  ______ _              _    _       _                 _
+ |  ____(_)            | |  | |     | |               | |
+ | |__   _ _ __   ___  | |  | |_ __ | | ___   __ _  __| | ___ _ __
+ |  __| | | '_ \ / _ \ | |  | | '_ \| |/ _ \ / _` |/ _` |/ _ \ '__|
+ | |    | | | | |  __/ | |__| | |_) | | (_) | (_| | (_| |  __/ |
+ |_|    |_|_| |_|\___|  \____/| .__/|_|\___/ \__,_|\__,_|\___|_|
+                              | |
+                              |_|
 
-# the 'wrapper' function
+ Gruntfile
+###
+
 module.exports = (grunt) ->
 
   require('time-grunt')(grunt)
@@ -27,7 +35,8 @@ module.exports = (grunt) ->
 
   # Browsers
   # ==========
-  browsers = require "#{paths.test}/browsers"
+  allBrowsers = require("#{paths.test}/browsers")
+  browsers = allBrowsers.browsers
 
   # Modules
   # ==========
@@ -38,7 +47,6 @@ module.exports = (grunt) ->
   grunt.initConfig
 
     pkg: pkg
-
 
     bower:
       install:
@@ -84,16 +92,16 @@ module.exports = (grunt) ->
             src: './jquery.<%= pkg.name %>-<%= pkg.version %>/*'
           }
         ]
-        jqueryS3:
-          options:
-            archive: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>.zip"
-          files: [
-            {
-              expand: true
-              cwd: paths.dist
-              src: './s3.jquery.<%= pkg.name %>-<%= pkg.version %>/*'
-            }
-          ]
+      jqueryS3:
+        options:
+          archive: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>.zip"
+        files: [
+          {
+            expand: true
+            cwd: paths.dist
+            src: './s3.jquery.<%= pkg.name %>-<%= pkg.version %>/*'
+          }
+        ]
       core:
         options:
           archive: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>.zip"
@@ -117,19 +125,19 @@ module.exports = (grunt) ->
 
     concat:
       core:
-        src: fineUploaderModules.mergeModules 'core', 'traditional'
+        src: fineUploaderModules.mergeModules 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules'
         dest: "#{paths.build}/<%= pkg.name %>.js"
       coreS3:
-        src: fineUploaderModules.mergeModules 'core', 's3'
+        src: fineUploaderModules.mergeModules 'fuSrcS3', 'fuSrcModules', 'fuUiModules'
         dest: "#{paths.build}/s3.<%= pkg.name %>.js"
       jquery:
-        src: fineUploaderModules.mergeModules 'jquery', 'traditional'
+        src: fineUploaderModules.mergeModules 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules', 'fuSrcJquery'
         dest: "#{paths.build}/jquery.<%= pkg.name %>.js"
       jqueryS3:
-        src: fineUploaderModules.mergeModules 'jquery', 's3'
+        src: fineUploaderModules.mergeModules 'fuSrcS3', 'fuSrcModules', 'fuUiModules', 'fuSrcJquery'
         dest: "#{paths.build}/s3.jquery.<%= pkg.name %>.js"
       all:
-        src: fineUploaderModules.mergeModules 'all'
+        src: fineUploaderModules.mergeModules 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules', 'fuSrcS3', 'fuSrcJquery'
         dest: paths.build + "/all.<%= pkg.name %>.js"
       css:
         src: ["#{paths.src}/*.css"]
@@ -138,6 +146,9 @@ module.exports = (grunt) ->
     concurrent:
       minify: ['cssmin', 'uglify']
       lint: ['jshint', 'coffeelint']
+      concat: ['concat']
+      clean: ['clean']
+      compress: ['compress']
 
     connect:
       root_server:
@@ -380,7 +391,6 @@ module.exports = (grunt) ->
         src: '<%= concat.css.dest %>'
         dest: "#{paths.build}/<%= pkg.name %>.min.css"
 
-
     jshint:
       source: ["#{paths.src}/js/*.js"]
       tests: ["#{paths.test}unit/*.js"]
@@ -471,8 +481,7 @@ module.exports = (grunt) ->
       js:
         files: ["#{paths.src}/js/*.js", "#{paths.src}/js/s3/*.js"]
         tasks: [
-          'build'
-          'copy:test'
+          'dev'
           'test-unit'
         ]
       test:
@@ -492,57 +501,49 @@ module.exports = (grunt) ->
         tasks: [
           'copy:images'
         ]
-      karma:
-        files: ["#{paths.src}/js/**/*.js"]
-        tasks: ["karma:ci:run"]
+
+    tests:
+      local: 'karma-local.conf.coffee'
+
+    autotest:
+      local: 'karma-local.conf.coffee'
+
+    saucetests:
+      default:
+        configFile: 'karma-sauce.conf.coffee'
+        browsers: [
+          ['SL-chrome-28-Linux', 'SL-firefox-21-Linux', 'SL-safari-6-OS_X_10.8'],
+          ['SL-internet_explorer-10-Windows_8', 'SL-internet_explorer-9-Windows_7', 'SL-internet_explorer-8-Windows_7'],
+          ['SL-android-4.0-Linux', 'SL-iphone-6-OS_X_10.8', 'SL-safari-5-OS_X_10.6'],
+          #['SL-internet_explorer-7-Windows_XP'],
+        ]
 
     mochaWebdriver:
       options:
-        timeout: 1000 * 60
+        timeout: 60000
+        testName: '[selenium] Fine Uploader'
         reporter: 'spec'
-        browsers: browsers
-      sauce:
-        src: ['./test/functional/*.coffee']
+      local:
+        src: ['test/functional/*.coffee']
         options:
-          concurrency: 3
-          testTags: [ process.env.SAUCE_USERNAME+"@"+process.env.TRAVIS_BRANCH || process.env.SAUCE_USERNAME+"@local"]
-          build: process.env.TRAVIS_BUILD_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()
-          identifer: process.env.TRAVIS_JOB_ID || Math.floor((new Date).getTime() / 1000 - 1230768000).toString()
-          tunnelTimeout: 120
-          testName: 'Sauce Mocha Test'
-
-    karma:
-      options:
-        configFile: './karma.conf.coffee'
-      dev:
-        configFile: './karma-local.conf.coffee'
-        autoWatch: true
-        singleRun: false
-        background: false
-        reporters: 'dots'
-      unit:
-        configFile: './karma-local.conf.coffee'
-        autoWatch: false
-        background: false
-        singleRun: true
-        reporters: 'dots'
-      ci:
-        configFile: './karma-local.conf.coffee'
-        autoWatch: false
-        singleRun: false
-        bakcground: true
-        reporters: 'dots'
+          usePhantom: true
       sauce:
-        configFile: './karma-sauce.conf.coffee'
-        singleRun: true
+        src: ['test/functional/*.coffee']
+        options:
+          username: process.env.SAUCE_USERNAME || process.env.SAUCE_USER_NAME || ''
+          key: process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_ACCESSKEY || ''
+          identifier: process.env.TRAVIS_JOB_NUMBER || `Math.floor((new Date).getTime() / 1000 - 1230768000).toString()`
+          concurrency: 3
+          tunnelTimeout: 60000
+          browsers: allBrowsers.modules
 
     shell:
-      sauce_connect:
-        command: 'cat ./lib/sauce/sauce_connect_setup.sh | bash'
-      karma:
-        command: 'karma start & sleep 5 && karma run karma-modules.conf.coffee '
-      karma_sauce:
-        command: 'karma start & sleep 5 && karma run karma-sauce.conf.coffee '
+      start_saucecon:
+        command: './lib/sauce/sauce_connect_setup.sh'
+      kill_saucecon:
+        command: 'cat /tmp/sauce-connect.pid | xargs kill'
+      npm_install:
+        command: 'npm install'
 
   # Dependencies
   # ==========
@@ -553,95 +554,14 @@ module.exports = (grunt) ->
 
   # Tasks
   # ==========
+  grunt.registerTask 'test:unit', 'Run unit tests locally with Karma', ['dev', 'tests:local']
+  grunt.registerTask 'test:unit:sauce', 'Run tests with Karma on SauceLabs', ['dev', 'saucetests:default']
+  grunt.registerTask 'test:func', 'Run functional tests locally', ['dev', 'mochaWebdriver:local']
+  grunt.registerTask 'test:func:sauce', 'Run functional tests on SauceLabs', ['dev', 'mochaWebdriver:sauce']
 
-  # General Tasks
-  # ----------
-  grunt.registerTask 'lint', 'Lint, in order, the Gruntfile, sources, and tests.', [
-    'concurrent:lint'
-  ]
+  grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'test:unit:sauce']
 
-  grunt.registerTask 'minify', 'Minify the source javascript and css', [
-    'concurrent:minify'
-  ]
-
-
-  # Testing Tasks
-  # ----------
-  grunt.registerTask 'check_for_pull_request_from_master', 'Fails if we are testing a pull request against master', ->
-    if (process.env.TRAVIS_BRANCH == 'master' and process.env.TRAVIS_PULL_REQUEST != 'false')
-      grunt.fail.fatal '''Woah there, buddy! Pull requests should be
-      branched from develop!\n
-      Details on contributing pull requests found here: \n
-      https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md\n
-      '''
-
-  grunt.registerTask 'travis', [
-    'check_for_pull_request_from_master'
-    'travis-sauce'
-  ]
-
-  grunt.registerTask 'test-watch', 'Run headless unit-tests and re-run on file changes', [
-    'prepare-test'
-    'watch'
-  ]
-
-  grunt.registerTask 'test-unit', 'Run headless unit tests', [
-    'prepare-test'
-    'karma:unit'
-  ]
-
-  grunt.registerTask 'test-unit-sauce', 'Run tests on SauceLabs', [
-    'prepare-test'
-    'shell:sauce_connect'
-    'karma:sauce'
-  ]
-
-  grunt.registerTask 'test-unit-forever', 'Run a local server for indefinite unit testing', [
-    'prepare-test'
-    'karma:dev'
-  ]
-
-  grunt.registerTask 'test-functional', 'ITW: Run functional tests', [
-    'prepare-test'
-    'mochaWebdriver:sauce'
-  ]
-
-  grunt.registerTask 'test-functional-sauce', 'ITW: Run functional tests (SauceLabs)', [
-    'prepare-test'
-    'mochaWebdriver:sauce'
-  ]
-
-  # Building Tasks
-  # ----------
-
-  grunt.registerTask 'prepare-test', 'Prepare code for testing', [
-    'rebuild'
-    'copy:test'
-  ]
-
-  grunt.registerTask 'prepare', 'Prepare the environment for development', [
-    'clean'
-    'bower'
-  ]
-
-  grunt.registerTask 'rebuild', "Rebuild the environment and source", [
-    'prepare',
-    'build'
-  ]
-
-  grunt.registerTask 'build', 'Build from latest source', [
-    'concat'
-    'minify'
-    'usebanner'
-    'copy:images'
-  ]
-
-  grunt.registerTask 'dist', 'Build a zipped distribution-worthy version', [
-    'build'
-    'copy:dist'
-    'compress'
-  ]
-
-  grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', [
-    'dist'
-  ]
+  grunt.registerTask 'dev', 'Prepare code for testing', ['concurrent:clean', 'shell:npm_install', 'bower', 'package', 'copy:test']
+  grunt.registerTask 'build', 'Build from latest source', ['concurrent:concat', 'concurrent:minify', 'usebanner', 'copy:images']
+  grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build', 'copy:dist', 'concurrent:compress']
+  grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', ['package']

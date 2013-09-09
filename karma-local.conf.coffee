@@ -1,10 +1,12 @@
+# Local Karma configuration
 sharedConfig = require './karma.conf'
-fineUploaderModules = require './lib/fineuploader.modules'
 
-module.exports = (config) ->
+module.exports = (config, options = {}) ->
     sharedConfig config,
-        testName: '[local] FineUploader: modules'
-        logFile: 'fineuploader-modules.log'
+      testName: '[local] FineUploader: tests'
+      logFile: 'fineuploader.log'
+      #files: modules.mergeModules 'karmaModules', 'fuSrcTraditional', 'fuSrcS3', 'fuSrcModules', 'fuUiModules', 'fuUnit'
 
     config.set
       browsers: ['PhantomJS']
+

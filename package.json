@@ -42,10 +42,16 @@
     "url": "https://github.com/Widen/fine-uploader/issues"
   },
   "devDependencies": {
+    "async": "~0.2.9",
+    "bower": "~1.2.5",
     "coffee-script": "~1.6.3",
     "glob": "~3.2.6",
     "grunt": "~0.4.1",
+    "grunt-banner": "~0.1.4",
+    "grunt-bower-task": "~0.3.1",
+    "grunt-concurrent": "~0.3.1",
     "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-compress": "~0.5.2",
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-connect": "~0.3.0",
     "grunt-contrib-copy": "~0.4.1",

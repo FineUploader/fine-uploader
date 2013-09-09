@@ -1,3 +1,4 @@
+/* Global beforeEach for mocha unit tests */
 var $fixture;
 beforeEach(function() {
     $fixture = $("<div id='mocha-fixture'></div>");

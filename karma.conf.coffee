@@ -1,62 +1,34 @@
-# Karma configuration
-# Generated on Mon Aug 26 2013 20:43:41 GMT-0500 (CDT)
-
-fineUploaderModules = require './lib/fineuploader.modules'
+# Shared Karma configuration
+modules = require './lib/fineuploader.modules'
+allBrowsers = require './test/browsers'
+testRunnerId = if process.env.TRAVIS_BRANCH? then "travis #{process.env.TRAVIS_BRANCH}" else "#{process.env.SAUCE_USERNAME}@local"
 
 module.exports = (config, options = {}) ->
-
   config.set
-
-    files: fineUploaderModules.mergeModules 'testScripts', 'all', 'karmaUnit'
-
+    files: modules.mergeModules 'karmaModules', 'fuSrcTraditional', 'fuSrcS3', 'fuSrcModules', 'fuUiModules', 'fuUnit'
+    basePath: ""
+    autoWatch: true
     preprocessors:
         '**/*.coffee': 'coffee'
-
-    # Logging
-    # possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     logLevel: config.LOG_INFO
-
-    # base path, that will be used to resolve files and exclude
-    basePath: ""
-
-    # enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false
-
-    # frameworks to use
+    logColors: true
     frameworks: ["mocha"]
-
-    # test results reporter to use
-    # possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
     reporters: ["progress"]
-
-    # web server port
-    port: 9876
-
-    # runner port
-    runnerPort: 0
-
-    # Start these browsers, currently available:
-    # - Chrome
-    # - ChromeCanary
-    # - Firefox
-    # - Opera
-    # - Safari (only Mac)
-    # - PhantomJS
-    # - IE (only Windows)
-    browsers: options.browsers || ['PhantomJS']
-
-    # If browser does not capture in given timeout [ms], kill it
     captureTimeout: 60000
-
-    # Continuous Integration mode
-    # if true, it capture browsers, run tests and exit
-    singleRun: false
-
-    # enable / disable colors in the output (reporters and logs)
     colors: true
+    customLaunchers: allBrowsers.sauceBrowsers
+    sauceLabs:
+      recordVideo: false
+      startConnect: false
+      tags: [ testRunnerId ]
+      testName: options.testName || '[unit] FineUploader'
+      username: process.env.SAUCE_USERNAME || process.env.SAUCE_USER_NAME || ''
+      accessKey: process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_ACCESSKEY || ''
+      build: process.env.TRAVIS_BUILD_ID || `Math.floor((new Date).getTime() / 1000 - 1230768000).toString()`
+      tunnelIdentifer: process.env.TRAVIS_JOB_NUMBER || `Math.floor((new Date).getTime() / 1000 - 1230768000).toString()`
 
     if process.env.TRAVIS
-        #config.transports = 'xhr-polling'
+        config.transports = 'xhr-polling'
         # Debug logging into a file, that we print out at the end of the build.
         config.loggers.push
             type: 'file'
