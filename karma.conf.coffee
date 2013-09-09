@@ -28,7 +28,7 @@ module.exports = (config, options = {}) ->
       tunnelIdentifer: process.env.TRAVIS_JOB_NUMBER || `Math.floor((new Date).getTime() / 1000 - 1230768000).toString()`
 
     if process.env.TRAVIS
-        config.transports = 'xhr-polling'
+        config.transports = ['xhr-polling']
         # Debug logging into a file, that we print out at the end of the build.
         config.loggers.push
             type: 'file'
