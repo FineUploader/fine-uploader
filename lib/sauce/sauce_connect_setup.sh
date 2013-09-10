@@ -17,7 +17,7 @@ CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
 CONNECT_DOWNLOAD="Sauce_Connect.zip"
 
 if [[ -z "${LOGS_DIR}" ]]; then
-  LOGS_DIR="/tmp"
+  LOGS_DIR="/tmp/fineuploader-build/logs"
 fi
 
 CONNECT_LOG="$LOGS_DIR/sauce-connect.log"
