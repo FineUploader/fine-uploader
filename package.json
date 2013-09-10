@@ -71,7 +71,6 @@
     "karma-slimerjs-launcher": "~0.1.2",
     "request": "~2.21.0",
     "semver": "2.0.x",
-    "time-grunt": "~0.1.1",
     "wd": "git://github.com/admc/wd.git"
   },
   "dependencies": {},

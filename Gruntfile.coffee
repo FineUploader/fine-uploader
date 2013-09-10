@@ -13,7 +13,6 @@
 
 module.exports = (grunt) ->
 
-  require('time-grunt')(grunt)
   fs = require 'fs'
 
   # Utilities
