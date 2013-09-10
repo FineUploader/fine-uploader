@@ -1,6 +1,6 @@
 # Shared Karma configuration
-modules = require './lib/fineuploader.modules'
-allBrowsers = require './test/browsers'
+modules = require './lib/modules'
+allBrowsers = require './lib/browsers'
 testRunnerId = if process.env.TRAVIS_BRANCH? then "travis #{process.env.TRAVIS_BRANCH}" else "#{process.env.SAUCE_USERNAME}@local"
 
 module.exports = (config, options = {}) ->

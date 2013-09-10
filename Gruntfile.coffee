@@ -35,12 +35,12 @@ module.exports = (grunt) ->
 
   # Browsers
   # ==========
-  allBrowsers = require("#{paths.test}/browsers")
+  allBrowsers = require("./lib/browsers")
   browsers = allBrowsers.browsers
 
   # Modules
   # ==========
-  fineUploaderModules = require './lib/fineuploader.modules'
+  fineUploaderModules = require './lib/modules'
 
   # Configuration
   # ==========
