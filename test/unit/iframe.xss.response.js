@@ -1,8 +1,8 @@
-if (window.postMessage && !window.PHANTOMJS) {
+if (window.postMessage) {
     describe('iframe.xss.response', function () {
 
         var iframe, doc;
-        var script = '<scr' + 'ipt type="text/javascript" src="/test/temp/iframe.xss.response.js"></scr' + 'ipt>';
+        var script = '<scr' + 'ipt type="text/javascript" src="temp/iframe.xss.response.js"></scr' + 'ipt>';
 
         beforeEach(function () {
             iframe = document.createElement('iframe');
