@@ -28,6 +28,8 @@ test/coverage/*
 test/vendor/*
 test/uploads/*
 test/temp*
+test/_temp*
+test/_vendor*
 node_modules/
 
 bin/
