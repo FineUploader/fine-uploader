@@ -71,15 +71,7 @@ qq.basePublicApi = {
     },
 
     retry: function(id) {
-        if (this._onBeforeManualRetry(id)) {
-            this._netUploadedOrQueued++;
-            this._uploadData.setStatus(id, qq.status.UPLOAD_RETRYING);
-            this._handler.retry(id);
-            return true;
-        }
-        else {
-            return false;
-        }
+        return this._manualRetry(id);
     },
 
     cancel: function(id) {
@@ -468,22 +460,7 @@ qq.basePrivateApi = {
                     return self._options.callbacks.onResume(id, name, chunkData);
                 },
                 onAutoRetry: function(id, name, responseJSON, xhr) {
-                    self._preventRetries[id] = responseJSON[self._options.retry.preventRetryResponseProperty];
-
-                    if (self._shouldAutoRetry(id, name, responseJSON)) {
-                        self._maybeParseAndSendUploadError(id, name, responseJSON, xhr);
-                        self._options.callbacks.onAutoRetry(id, name, self._autoRetries[id] + 1);
-                        self._onBeforeAutoRetry(id, name);
-
-                        self._retryTimeouts[id] = setTimeout(function() {
-                            self._onAutoRetry(id, name, responseJSON)
-                        }, self._options.retry.autoAttemptDelay * 1000);
-
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+                    return self._onAutoRetry.apply(self, arguments);
                 },
                 onUuidChanged: function(id, newUuid) {
                     self._uploadData.uuidChanged(id, newUuid);
@@ -756,11 +733,43 @@ qq.basePrivateApi = {
         this.log("Waiting " + this._options.retry.autoAttemptDelay + " seconds before retrying " + name + "...");
     },
 
-    _onAutoRetry: function(id, name, responseJSON) {
-        this.log("Retrying " + name + "...");
-        this._autoRetries[id]++;
-        this._uploadData.setStatus(id, qq.status.UPLOAD_RETRYING);
-        this._handler.retry(id);
+    /**
+     * Attempt to automatically retry a failed upload.
+     *
+     * @param id The file ID of the failed upload
+     * @param name The name of the file associated with the failed upload
+     * @param responseJSON Response from the server, parsed into a javascript object
+     * @param xhr Ajax transport used to send the failed request
+     * @param callback Optional callback to be invoked if a retry is prudent.
+     * Invoked in lieu of asking the upload handler to retry.
+     * @returns {boolean} true if an auto-retry will occur
+     * @private
+     */
+    _onAutoRetry: function(id, name, responseJSON, xhr, callback) {
+        var self = this;
+
+        self._preventRetries[id] = responseJSON[self._options.retry.preventRetryResponseProperty];
+
+        if (self._shouldAutoRetry(id, name, responseJSON)) {
+            self._maybeParseAndSendUploadError.apply(self, arguments);
+            self._options.callbacks.onAutoRetry(id, name, self._autoRetries[id] + 1);
+            self._onBeforeAutoRetry(id, name);
+
+            self._retryTimeouts[id] = setTimeout(function() {
+                self.log("Retrying " + name + "...");
+                self._autoRetries[id]++;
+                self._uploadData.setStatus(id, qq.status.UPLOAD_RETRYING);
+
+                if (callback) {
+                    callback(id);
+                }
+                else {
+                    self._handler.retry(id);
+                }
+            }, self._options.retry.autoAttemptDelay * 1000);
+
+            return true;
+        }
     },
 
     _shouldAutoRetry: function(id, name, responseJSON) {
@@ -805,8 +814,34 @@ qq.basePrivateApi = {
         }
     },
 
+    /**
+     * Conditionally orders a manual retry of a failed upload.
+     *
+     * @param id File ID of the failed upload
+     * @param callback Optional callback to invoke if a retry is prudent.
+     * In lieu of asking the upload handler to retry.
+     * @returns {boolean} true if a manual retry will occur
+     * @private
+     */
+    _manualRetry: function(id, callback) {
+        if (this._onBeforeManualRetry(id)) {
+            this._netUploadedOrQueued++;
+            this._uploadData.setStatus(id, qq.status.UPLOAD_RETRYING);
+
+            if (callback) {
+                callback(id);
+            }
+            else {
+                this._handler.retry(id);
+            }
+
+            return true;
+        }
+    },
+
     _maybeParseAndSendUploadError: function(id, name, response, xhr) {
-        //assuming no one will actually set the response code to something other than 200 and still set 'success' to true
+        // Assuming no one will actually set the response code to something other than 200
+        // and still set 'success' to true...
         if (!response.success){
             if (xhr && xhr.status !== 200 && !response.error) {
                 this._options.callbacks.onError(id, name, "XHR returned response code " + xhr.status, xhr);

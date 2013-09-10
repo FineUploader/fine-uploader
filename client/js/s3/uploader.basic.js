@@ -58,6 +58,10 @@ qq.s3.FineUploaderBasic = function(o) {
     qq.FineUploaderBasic.call(this, options);
 
     this._uploadSuccessParamsStore = this._createParamsStore("uploadSuccess");
+
+    // This will hold callbacks for failed uploadSuccess requests that will be invoked on retry.
+    // Indexed by file ID.
+    this._failedSuccessRequestCallbacks = [];
 };
 
 // Inherit basic public & private API methods.
@@ -79,6 +83,7 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
      */
     reset: function() {
         qq.FineUploaderBasic.prototype.reset.call(this);
+        this._failedSuccessRequestCallbacks = [];
     },
 
     setUploadSuccessParams: function(params, id) {
@@ -238,22 +243,36 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
             // sent to the `onComplete` callback, delegate to the parent `_onComplete`, and
             // fulfill the associated promise.
             onSuccessFromServer = function(awsSuccessRequestResult) {
+                delete self._failedSuccessRequestCallbacks[id];
                 qq.extend(result, awsSuccessRequestResult);
                 qq.FineUploaderBasic.prototype._onComplete.apply(self, onCompleteArgs);
                 promise.success(awsSuccessRequestResult);
             },
+
+            // If the upload success request fails, attempt to re-send the success request (via the core retry code).
+            // The entire upload may be restarted if the server returns a "reset" property with a value of true as well.
             onFailureFromServer = function(awsSuccessRequestResult) {
+                var callback = submitSuccessRequest;
+
                 qq.extend(result, awsSuccessRequestResult);
 
-                // The server might not want the user to be able to re-send the file.
-                if (result[self._options.retry.preventRetryResponseProperty]) {
-                    self._preventRetries[id] = true;
+                if (result && result.reset) {
+                    callback = null;
                 }
 
-                qq.FineUploaderBasic.prototype._onComplete.apply(self, onCompleteArgs);
-                promise.failure(awsSuccessRequestResult);
-            },
+                if (!callback) {
+                    delete self._failedSuccessRequestCallbacks[id];
+                }
+                else {
+                    self._failedSuccessRequestCallbacks[id] = callback;
+                }
 
+                if (!self._onAutoRetry(id, name, result, xhr, callback)) {
+                    qq.FineUploaderBasic.prototype._onComplete.apply(self, onCompleteArgs);
+                    promise.failure(awsSuccessRequestResult);
+                }
+            },
+            submitSuccessRequest,
             successAjaxRequestor;
 
         // Ask the local server if the file sent to S3 is ok.
@@ -274,14 +293,25 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
                 bucket: bucket
             }, true);
 
-            successAjaxRequestor.sendSuccessRequest(id, uploadSuccessParams)
-                .then(onSuccessFromServer, onFailureFromServer);
+            submitSuccessRequest = qq.bind(function() {
+                successAjaxRequestor.sendSuccessRequest(id, uploadSuccessParams)
+                    .then(onSuccessFromServer, onFailureFromServer);
+            }, self);
+
+            submitSuccessRequest();
 
             return promise;
         }
 
         // If we are not asking the local server about the file in S3, just delegate to the parent `_onComplete`.
         return qq.FineUploaderBasic.prototype._onComplete.apply(this, arguments);
+    },
+
+    // If the failure occurred on an uplaod success request (and a reset was not ordered), try to resend that instead.
+    _manualRetry: function(id) {
+        var successRequestCallback = this._failedSuccessRequestCallbacks[id];
+
+        return qq.FineUploaderBasic.prototype._manualRetry.call(this, id, successRequestCallback);
     },
 
     // Hooks into the base internal `_onSubmitDelete` to add key and bucket params to the delete file request.
