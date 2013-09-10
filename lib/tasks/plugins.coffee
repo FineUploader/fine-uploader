@@ -42,7 +42,10 @@ module.exports = (grunt) ->
           success = false
         next()
     , (err) ->
-      done(success || err)
+      if err?
+        done err
+      else
+        done success
 
   ###
   grunt.registerMultiTask 'sauce-connect', 'Run or kill sauce connect', ->
