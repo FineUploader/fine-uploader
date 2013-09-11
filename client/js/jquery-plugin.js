@@ -74,7 +74,7 @@
     function addCallbacks(transformedOpts, newUploaderInstance) {
         var callbacks = transformedOpts.callbacks = {};
 
-        $.each(newUploaderInstance._options.callbacks, function(prop, func) {
+        $.each(newUploaderInstance._options.callbacks, function(prop, defaultCallback) {
             var name, $callbackEl;
 
             name = /^on(\w+)/.exec(prop)[1];
@@ -82,14 +82,18 @@
             $callbackEl = $el;
 
             callbacks[prop] = function() {
-                var args = Array.prototype.slice.call(arguments),
-                    transformedArgs = [];
+                var originalArgs = Array.prototype.slice.call(arguments),
+                    transformedArgs = [],
+                    defaultCallbackRetVal, contributedCallbackRetVal;
 
-                $.each(args, function(idx, arg) {
+                $.each(originalArgs, function(idx, arg) {
                     transformedArgs.push(maybeWrapInJquery(arg));
                 });
 
-                return $callbackEl.triggerHandler(name, transformedArgs);
+                defaultCallbackRetVal = defaultCallback.apply(this, originalArgs);
+                contributedCallbackRetVal = $callbackEl.triggerHandler(name, transformedArgs);
+
+                return defaultCallbackRetVal || contributedCallbackRetVal;
             };
         });
 
