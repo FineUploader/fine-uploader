@@ -1,24 +1,37 @@
 ---
 language: node_js
+
 node_js:
 - '0.10'
+
 before_install:
 - sudo apt-get update -qq
 - npm install -g grunt-cli
 - git submodule update --init --recursive
+
 before_script:
-- grunt prepare
-- grunt build
+- mkdir -p $LOGS_DIR
+- ./lib/sauce/sauce_connect_setup.sh
+- grunt dev
+- ./lib/sauce/sauce_connect_block.sh
+
 script:
 - grunt travis
+
+after_script:
+- ./lib/travis/travis_print_logs.sh
+
 branches:
     only:
         - master
         - develop
         - /^feature.*$/
         - /^hotfix.*$/
+
 env:
   global:
+  - SAUCE_CONNECT_READY_FILE=/tmp/sauce-connect-ready
+  - LOGS_DIR=/tmp/fineuploader-build/logs
   - secure: |-
       gHDpZQb3YZtwxHnYCwP/mMeqNDU1OCptFtZ/2wfY/R81Of5JXnwO4nvk3ZT+
       9TmUexNxC7pgM4sU5MPYBPVcUJ1jKXp/DifgFmLzdygMkMHkQNji0Ey53W/7

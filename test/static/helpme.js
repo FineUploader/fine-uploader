@@ -6,23 +6,6 @@ var helpme = (function () {
 
     var obj = {
     
-        // create a test fixture in the dom
-        withTests: {
-            createFixture: function () {
-                $("<div id='mocha-fixture'></div>").appendTo('body'); 
-                return $("#mocha-fixture");
-            },
-
-            getFixture: function () {
-                return $("#mocha-fixture"); 
-            },
-
-            destroyFixture: function() {
-                $("#mocha-fixture").empty();
-                return $("#mocha-fixture").remove();
-            }
-        },
-       
         // create a BLOB object
         createBlob: function (data) {
             var blobby;
