@@ -153,17 +153,7 @@ qq.FineUploader = function(o, namespace) {
             this._defaultButtonId = this._createUploadButton({element: this._find(this._element, 'button')}).getButtonId();
         }
 
-        this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
-
-        // A better approach would be to check specifically for focusin event support by querying the DOM API,
-        // but the DOMFocusIn event is not exposed as a property, so we have to resort to UA string sniffing.
-        this._focusinEventSupported = !qq.firefox();
-
-        if (this._isEditFilenameEnabled()) {
-            this._filenameClickHandler = this._bindFilenameClickEvent();
-            this._filenameInputFocusInHandler = this._bindFilenameInputFocusInEvent();
-            this._filenameInputFocusHandler = this._bindFilenameInputFocusEvent();
-        }
+        this._setupClickAndEditEventHandlers();
 
         this._dnd = this._setupDragAndDrop();
 

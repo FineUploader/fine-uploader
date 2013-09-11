@@ -40,6 +40,8 @@ qq.uiPublicApi = {
 
         this._totalFilesInBatch = 0;
         this._filesInBatchAddedToUi = 0;
+
+        this._setupClickAndEditEventHandlers();
     }
 };
 
@@ -65,6 +67,20 @@ qq.uiPrivateApi = {
     _removeFileItem: function(fileId) {
         var item = this.getItemByFileId(fileId);
         qq(item).remove();
+    },
+
+    _setupClickAndEditEventHandlers: function() {
+        this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
+
+        // A better approach would be to check specifically for focusin event support by querying the DOM API,
+        // but the DOMFocusIn event is not exposed as a property, so we have to resort to UA string sniffing.
+        this._focusinEventSupported = !qq.firefox();
+
+        if (this._isEditFilenameEnabled()) {
+            this._filenameClickHandler = this._bindFilenameClickEvent();
+            this._filenameInputFocusInHandler = this._bindFilenameInputFocusInEvent();
+            this._filenameInputFocusHandler = this._bindFilenameInputFocusEvent();
+        }
     },
 
     _setupDragAndDrop: function() {
