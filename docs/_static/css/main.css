@@ -146,3 +146,8 @@ a:visited
 }
 .reference-table thead { font-weight: bold; } 
 .dropdown-menu .divider { margin-right: 20px; }
+
+.dropdown-backdrop
+{
+    position: static;
+}
