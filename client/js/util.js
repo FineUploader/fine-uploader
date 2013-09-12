@@ -416,6 +416,10 @@ qq.android = function(){
     "use strict";
     return navigator.userAgent.toLowerCase().indexOf('android') !== -1;
 };
+qq.ios7 = function() {
+    "use strict";
+    return qq.ios() && navigator.userAgent.indexOf(" OS 7_") !== -1;
+};
 qq.ios = function() {
     "use strict";
     return navigator.userAgent.indexOf("iPad") !== -1
