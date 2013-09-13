@@ -5,7 +5,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'lint', 'Lint, in order, the Gruntfile, sources, and tests.', ['concurrent:lint']
 
-  grunt.registerTask 'minify', 'Minify the source javascript and css', ['concurrent:minify']
+  grunt.registerTask 'minify', 'Minify the source javascript and css', ['cssmin', 'uglify']
 
   grunt.registerMultiTask 'tests', '** Use ` grunt-test` instead **', ->
     util.startKarma.call util, @data, true, @async()

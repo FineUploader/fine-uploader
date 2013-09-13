@@ -560,7 +560,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'saucetests:default']
 
-  grunt.registerTask 'dev', 'Prepare code for testing', ['concurrent:clean', 'shell:npm_install', 'bower', 'package', 'copy:test']
-  grunt.registerTask 'build', 'Build from latest source', ['concurrent:concat', 'concurrent:minify', 'usebanner', 'copy:images']
-  grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build', 'copy:dist', 'concurrent:compress']
+  grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'shell:npm_install', 'bower', 'package', 'copy:test']
+  grunt.registerTask 'build', 'Build from latest source', ['concat', 'minify', 'usebanner', 'copy:images']
+  grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build', 'copy:dist', 'compress']
   grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', ['package']
