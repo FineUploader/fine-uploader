@@ -936,7 +936,7 @@ qq.basePrivateApi = {
             if (items.length > 0) {
                 this._handleCheckedCallback({
                     name: "onValidate",
-                    callback: qq.bind(this._options.callbacks.onValidate, this, items[0], button),
+                    callback: qq.bind(this._options.callbacks.onValidate, this, validationDescriptors[0], button),
                     onSuccess: qq.bind(this._onValidateCallbackSuccess, this, items, 0, params, endpoint),
                     onFailure: qq.bind(this._onValidateCallbackFailure, this, items, 0, params, endpoint),
                     identifier: "Item '" + items[0].name + "', size: " + items[0].size
@@ -1012,10 +1012,6 @@ qq.basePrivateApi = {
             validationBase = extraButtonSpec ? extraButtonSpec.validation : this._options.validation,
 
             valid = true;
-
-        if (this._options.callbacks.onValidate(validationDescriptor) === false) {
-            valid = false;
-        }
 
         if (qq.isFileOrInput(item) && !this._isAllowedExtension(validationBase.allowedExtensions, name)) {
             this._itemError('typeError', name, item);
