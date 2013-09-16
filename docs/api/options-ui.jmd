@@ -49,7 +49,7 @@ options for `deleteFile`""", "info", "Note:") }}
         ("confirmMessage", "`String`", "`'Are you sure you want to delete {filename}?'`", "The message displayed in the confirm delete dialog."),
         ("deletingFailedText", "`String`", "`'Delete failed'`", "The status message to appear next to a file that is pending deletion."),
         ("deletingStatusText", "`String`", "`'Deleting...'`", "The status message to appear next to a file that has failed to delete."),
-        ("foreConfirm", "`Boolean`", "`false`", ""),
+        ("forceConfirm", "`Boolean`", "`false`", ""),
     )
 ) }}
 
