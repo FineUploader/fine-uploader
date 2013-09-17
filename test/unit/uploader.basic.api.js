@@ -6,6 +6,42 @@ describe('uploader.basic.api.js', function () {
         $uploader = $fixture.find("#fine-uploader");
     });
 
+    it('resets multiple buttons to their original states', function () {
+        var $btn1 = $fixture.appendTo("<div></div>"),
+            $btn2 = $fixture.appendTo("<div></div>")
+
+        var fineuploader = new qq.FineUploaderBasic({
+            element: $uploader[0],
+            extraButtons: [
+                {
+                    element: $btn1[0],
+                    multiple: false,
+                    accept: ''
+                },
+                {
+                    element: $btn2[0],
+                    multiple: false,
+                    accept: ''
+                }
+            ]
+        });
+
+        for (var i = 0; i < fineuploader._buttons.length - 1; i++) {
+            var button = fineuploader._buttons[i];
+            button.setMultiple(true);
+            button.setAcceptFiles('audio/*');
+        }
+
+        fineuploader.reset();
+
+        for (var i = 0; i < fineuploader._buttons.length - 1; i++) {
+            var button = fineuploader._buttons[i],
+                input = button.getInput();
+            assert.ok(!input.hasAttribute('multiple'));
+            assert.ok(!input.hasAttribute('accept'));
+        }
+    });
+
     describe('formatFileName', function () {
 
         beforeEach(function () {

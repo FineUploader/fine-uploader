@@ -63,13 +63,13 @@ describe('button.js', function () {
             hoverClass: hoverclass,
         });
 
-        $button.simulate('mousever', function (e) {
+        $button.simulate('mouseenter', function (e) {
             var classes = $(this).attr('class').split(' ');
-            assert.ok(classes.indexOf(hoverclass) > -1);
+            assert.ok($.inArray(hoverclass, classes));
 
-            $button.simualate('mouseout', function (e) {
+            $button.simulate('mouseleave', function (e) {
                 classes = $(this).attr('class').split(' ');
-                assert.ok(classes.indexOf(hoverclass) === -1);
+                assert.ok(!$.inArray(hoverClass, classes));
                 done();
             });
         });
