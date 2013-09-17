@@ -70,7 +70,7 @@ describe('uploader.basic.api.js', function () {
     describe('setParams', function () {
 
         beforeEach(function () {
-            fineuploader = new qq.FineUploaderBasic({ 
+            fineuploader = new qq.FineUploaderBasic({
                 element: $uploader[0]
             });
         });
@@ -79,7 +79,7 @@ describe('uploader.basic.api.js', function () {
             var params = {"hello": "world"}
             fineuploader.setParams(params, 'foo');
             assert.deepEqual(fineuploader._paramsStore.getParams('foo'), params,
-                "the request parameters should be set"); 
+                "the request parameters should be set");
             fineuploader._paramsStore.reset();
             assert.deepEqual(fineuploader._paramsStore.getParams('foo'), {},
                 "the request parameters should be reset");
@@ -89,7 +89,7 @@ describe('uploader.basic.api.js', function () {
             var params = {"hello": "world"}
             fineuploader.setParams(params);
             assert.deepEqual(fineuploader._options.request.params, params,
-                "the request parameters should be set"); 
+                "the request parameters should be set");
         });
 
         it('set nested objects as parameters', function () {
@@ -100,7 +100,7 @@ describe('uploader.basic.api.js', function () {
             };
             fineuploader.setParams(params);
             assert.deepEqual(fineuploader._options.request.params, params,
-                "the request parameters should be set"); 
+                "the request parameters should be set");
         });
 
         it('set function return values as parameters', function () {
@@ -111,14 +111,14 @@ describe('uploader.basic.api.js', function () {
             }
             fineuploader.setParams(params);
             assert.deepEqual(fineuploader._options.request.params, params,
-                "the request parameters should be set"); 
+                "the request parameters should be set");
         });
 
         it('allows changing parameters for a specific file id', function () {
             var params = {"hello": "world"}
             fineuploader.setParams(params, 'foo');
             assert.deepEqual(fineuploader._paramsStore.getParams('foo'), params,
-                "the request parameters should be set"); 
+                "the request parameters should be set");
 
         });
 
@@ -126,7 +126,7 @@ describe('uploader.basic.api.js', function () {
             var params = {"hello": "world"}
             fineuploader.setParams(params);
             assert.deepEqual(fineuploader._paramsStore.getParams(), params,
-                "the request parameters should be set"); 
+                "the request parameters should be set");
         });
 
     });
@@ -150,14 +150,14 @@ describe('uploader.basic.api.js', function () {
             var ep = fineuploader._endpointStore.getEndpoint(0);
             assert.deepEqual(ep,
                 endpoint,
-                "the endpoint should be set"); 
+                "the endpoint should be set");
             fineuploader._endpointStore.reset();
             ep = fineuploader._endpointStore.getEndpoint(0);
             assert.deepEqual(ep, fineuploader._options.request.endpoint, "the endpoint should be reset");
         });
 
         it('set a new endpoint', function () {
-            var endpoint = '/endpoint'; 
+            var endpoint = '/endpoint';
             fineuploader.setEndpoint(endpoint, 0);
             var ep = fineuploader._endpointStore.getEndpoint(0);
 
