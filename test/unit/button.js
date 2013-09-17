@@ -1,7 +1,7 @@
 describe('button.js', function () {
     it('constructor works', function () {
         $fixture.append("<div id='foo'></div>");
-        
+
         var button = new qq.UploadButton({
             element: $fixture.find("#foo")[0],
             multiple: true,
@@ -12,13 +12,13 @@ describe('button.js', function () {
         var input = button.getInput();
         var $input = $(input);
 
-        assert.notEqual(input, null, 
+        assert.notEqual(input, null,
             'a newed up upload button should have a non-null input element');
-        assert.equal($input.attr('type'), 'file', 
+        assert.equal($input.attr('type'), 'file',
                      'the input type should be `file`')
-        assert.equal($input.attr('accept'), "image/*,video/*,.test", 
+        assert.equal($input.attr('accept'), "image/*,video/*,.test",
                     'uploader should valid which files are accepted');
-        assert.equal($input.attr('name'), "testFile", 
+        assert.equal($input.attr('name'), "testFile",
                     'the name of the upload button should be set');
     });
 
@@ -33,7 +33,7 @@ describe('button.js', function () {
         var $input = $(input);
 
         button.reset();
-        assert.notEqual($input[0], button.getInput(), 
+        assert.notEqual($input[0], button.getInput(),
                'resetting the button should clear the element from the DOM');
     });
 
@@ -54,17 +54,57 @@ describe('button.js', function () {
         assert.equal(button.getInput().getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME), buttonId);
     });
 
-    it.skip('onChange callback', function () {
-        $fixture.append("<div id='foo'></div>");
+    it('sets and removes hover class', function() {
+        var hoverclass = 'qq-upload-button-hover';
+        var $button = $fixture.appendTo("<div id='button'></div>");
 
         var button = new qq.UploadButton({
-            element: $fixture.find("#foo")[0],
-            onChange: function (input) {
-                ok(true); 
-            }
+            element: $button[0],
+            hoverClass: hoverclass,
         });
 
-        button.dispatch('onChange');
+        $button.simulate('mousever', function (e) {
+            var classes = $(this).attr('class').split(' ');
+            assert.ok(classes.indexOf(hoverclass) > -1);
+
+            $button.simualate('mouseout', function (e) {
+                classes = $(this).attr('class').split(' ');
+                assert.ok(classes.indexOf(hoverclass) === -1);
+                done();
+            });
+        });
+
+    });
+
+    it('sets multiple attribute', function () {
+        var $button = $fixture.appendTo("<div></div>")
+
+        var input;
+        var button = new qq.UploadButton({
+            element: $button[0],
+            multiple: false
+        });
+
+        input = button.getInput();
+        assert.ok(!input.hasAttribute('multiple'));
+
+        button.setMultiple(true);
+        assert.ok(input.hasAttribute('multiple'));
+    });
+
+    it('sets accept files', function () {
+        var $button = $fixture.appendTo("<div></div>")
+
+        var input;
+        var button = new qq.UploadButton({
+            element: $button[0],
+        });
+
+        input = button.getInput();
+        assert.ok(!input.hasAttribute('accept'));
+
+        button.setAcceptFiles("audio/*");
+        assert.equal(input.getAttribute('accept'), 'audio/*');
     });
 
 });
