@@ -720,7 +720,8 @@ qq.basePrivateApi = {
 
             this.addFiles(input.files);
         }
-        else {
+        // Android 2.3.x will fire `onchange` even if no file has been selected
+        else if (input.value.length > 0) {
             this.addFiles(input);
         }
 
@@ -1185,7 +1186,7 @@ qq.basePrivateApi = {
         var size;
 
         if (qq.isFileOrInput(fileOrBlobData)) {
-            if (!fileOrBlobData.value){
+            if (fileOrBlobData.value === undefined) {
                 // fix missing properties in Safari 4 and firefox 11.0a2
                 size = (fileOrBlobData.fileSize !== null && fileOrBlobData.fileSize !== undefined) ? fileOrBlobData.fileSize : fileOrBlobData.size;
             }
