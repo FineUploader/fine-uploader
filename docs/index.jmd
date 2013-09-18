@@ -51,7 +51,8 @@ to the [API docs](#api-reference).
 #### Additional Information
 
 * [Browser Support](browser-support.html)
-* [Contributing](contributing.html)
+* [Build Your Own](contributing.html)
+* [Contributing](https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md)
 * [Changelog](http://blog.fineuploader.com/category/changelog/)
 * [Support](support.html)
 * [FAQ](faq.html)
@@ -79,6 +80,7 @@ be documented.
 * [Drag and Drop](features/drag-and-drop.html)
 * [Filename Editing](features/filename-edit.html)
 * [Handling Errors](features/handling-errors.html)
+* [Multiple Upload Buttons](features/extra-buttons.html)
 * [Paste to Upload](features/paste-to-upload.html)
 * [Progress Bars](features/progress-bars.html)
 * [Request Parameters](features/request-parameters.html)

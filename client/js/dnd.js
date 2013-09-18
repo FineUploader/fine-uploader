@@ -2,7 +2,8 @@
 qq.DragAndDrop = function(o) {
     "use strict";
 
-    var options, dz,
+    var options,
+        uploadDropZones = [],
         droppedFiles = [],
         disposeSupport = new qq.DisposeSupport();
 
@@ -20,9 +21,9 @@ qq.DragAndDrop = function(o) {
 
     setupDragDrop();
 
-    function uploadDroppedFiles(files) {
+    function uploadDroppedFiles(files, uploadDropZone) {
         options.callbacks.dropLog('Grabbed ' + files.length + " dropped files.");
-        dz.dropDisabled(false);
+        uploadDropZone.dropDisabled(false);
         options.callbacks.processingDroppedFilesComplete(files);
     }
 
@@ -67,17 +68,17 @@ qq.DragAndDrop = function(o) {
         return parseEntryPromise;
     }
 
-    function handleDataTransfer(dataTransfer) {
+    function handleDataTransfer(dataTransfer, uploadDropZone) {
         var pendingFolderPromises = [],
             handleDataTransferPromise = new qq.Promise();
 
         options.callbacks.processingDroppedFiles();
-        dz.dropDisabled(true);
+        uploadDropZone.dropDisabled(true);
 
         if (dataTransfer.files.length > 1 && !options.allowMultipleItems) {
             options.callbacks.processingDroppedFilesComplete([]);
             options.callbacks.dropError('tooManyFilesError', "");
-            dz.dropDisabled(false);
+            uploadDropZone.dropDisabled(false);
             handleDataTransferPromise.failure();
         }
         else {
@@ -116,8 +117,8 @@ qq.DragAndDrop = function(o) {
         return handleDataTransferPromise;
     }
 
-    function setupDropzone(dropArea){
-        dz = new qq.UploadDropZone({
+    function setupDropzone(dropArea) {
+        var dropZone = new qq.UploadDropZone({
             element: dropArea,
             onEnter: function(e){
                 qq(dropArea).addClass(options.classes.dropActive);
@@ -132,19 +133,23 @@ qq.DragAndDrop = function(o) {
                 }
                 qq(dropArea).removeClass(options.classes.dropActive);
 
-                handleDataTransfer(e.dataTransfer).done(function() {
-                    uploadDroppedFiles(droppedFiles);
+                handleDataTransfer(e.dataTransfer, dropZone).done(function() {
+                    uploadDroppedFiles(droppedFiles, dropZone);
                 });
             }
         });
 
         disposeSupport.addDisposer(function() {
-            dz.dispose();
+            dropZone.dispose();
         });
 
         if (options.hideDropZonesBeforeEnter) {
             qq(dropArea).hide();
         }
+
+        uploadDropZones.push(dropZone);
+
+        return dropZone;
     }
 
     function isFileDrag(dragEvent) {
@@ -160,23 +165,24 @@ qq.DragAndDrop = function(o) {
         return fileDrag;
     }
 
-    function setupDragDrop(){
+    function setupDragDrop() {
         var dropZones = options.dropZoneElements;
 
         qq.each(dropZones, function(idx, dropZone) {
-           setupDropzone(dropZone);
-        })
+           var uploadDropZone = setupDropzone(dropZone);
 
-        // IE <= 9 does not support the File API used for drag+drop uploads
-        if (dropZones.length && (!qq.ie() || qq.ie10())) {
-            disposeSupport.attach(document, 'dragenter', function(e) {
-                if (!dz.dropDisabled() && isFileDrag(e)) {
-                    qq.each(dropZones, function(idx, dropZone) {
-                        qq(dropZone).css({display: 'block'});
-                    });
-                }
-            });
-        }
+            // IE <= 9 does not support the File API used for drag+drop uploads
+            if (dropZones.length && (!qq.ie() || qq.ie10())) {
+                disposeSupport.attach(document, 'dragenter', function(e) {
+                    if (!uploadDropZone.dropDisabled() && isFileDrag(e)) {
+                        qq.each(dropZones, function(idx, dropZone) {
+                            qq(dropZone).css({display: 'block'});
+                        });
+                    }
+                });
+            }
+        });
+
         disposeSupport.attach(document, 'dragleave', function(e){
             if (options.hideDropZonesBeforeEnter && qq.FineUploader.prototype._leaving_document_out(e)) {
                 qq.each(dropZones, function(idx, dropZone) {
@@ -213,7 +219,9 @@ qq.DragAndDrop = function(o) {
 
         dispose: function() {
             disposeSupport.dispose();
-            dz.dispose();
+            qq.each(uploadDropZones, function(idx, dropZone) {
+                dropZone.dispose();
+            });
         }
     };
 };
@@ -229,7 +237,7 @@ qq.DragAndDrop.callbacks = function() {
             qq.log(message, level);
         }
     }
-}
+};
 
 qq.UploadDropZone = function(o){
     "use strict";

@@ -47,6 +47,11 @@ does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog 
     )
 ) }}
 
+## Promissory Options
+
+The `showPrompt` and `showConfirm` options in Fine Uploader accept promissory return values.
+This makes it trivial to do work (such as launching a confirmation window and waiting for user input)
+without blocking the rest of the UI thread (and thus stopping downloads).
 
 ### Example
 

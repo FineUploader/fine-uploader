@@ -247,7 +247,7 @@ The `chunkData` object, which is passed into the 'uploadChunk' event handler, ha
 
 #### validate
 
-**Parameters**: FileOrBlobData fileOrBlobData
+**Parameters**: FileOrBlobData fileOrBlobData, Element buttonContainer
 
 Called once for each selected, dropped, or `addFiles` submitted file and for
 each `addBlobs` submitted `Blob`.
@@ -263,6 +263,9 @@ A `qq.Promise` can be used if non-blocking work is required.
 Processing of this item is deferred until the promise is fullfilled.
 If a promise is returned, a call to `failure` is the same as returning `false`.
 
+A buttonContainer element will be passed as the last argument, provided the file was
+submitted using a Fine Uploader tracked button.
+
 {{ alert(
 """The `BlobData` object has two properties: `name` and `size`. The `size`
 property will be undefined for browsers without File API support.""", "info", "Note") }}
@@ -271,7 +274,7 @@ property will be undefined for browsers without File API support.""", "info", "N
 
 #### validateBatch
 
-**Parameters**: Array fileOrBlobDataArray
+**Parameters**: Array fileOrBlobDataArray, Element buttonContainer
 
 This callback is always invoked before the default Fine Uploader validators
 execute.
@@ -283,6 +286,9 @@ the `validate` event handler has returned `false` for an item.
 A `qq.Promise` can be used if non-blocking work is required.
 Processing of this item is deferred until the promise is fullfilled.
 If a promise is returned, a call to `failure` is the same as returning `false`.
+
+A buttonContainer element will be passed as the last argument, provided the file was
+submitted using a Fine Uploader tracked button.
 
 {{ alert(
 """The FileOrBlobData object has two properties: `name` and `size`. The `size`

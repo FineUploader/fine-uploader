@@ -14,9 +14,8 @@
 qq.UploadButton = function(o) {
     "use strict";
 
-    var input,
-       // Used to detach all event handlers created at once for this instance
-        disposeSupport = new qq.DisposeSupport(),
+
+    var disposeSupport = new qq.DisposeSupport(),
 
         options = {
             // "Container" element
@@ -26,8 +25,10 @@ qq.UploadButton = function(o) {
             multiple: false,
 
             // Corresponds to the `accept` attribute on the associated `<input type="file">`
-
             acceptFiles: null,
+
+            // A true value allows folders to be selected, if supported by the UA
+            folders: false,
 
             // `name` attribute of `<input type="file">`
             name: 'qqfile',
@@ -39,18 +40,27 @@ qq.UploadButton = function(o) {
             hoverClass: 'qq-upload-button-hover',
 
             focusClass: 'qq-upload-button-focus'
-        };
+        },
+        input, buttonId;
 
     // Overrides any of the default option values with any option values passed in during construction.
     qq.extend(options, o);
 
+    buttonId = qq.getUniqueId();
 
     // Embed an opaque `<input type="file">` element as a child of `options.element`.
     function createInput() {
         var input = document.createElement("input");
 
-        if (options.multiple){
-            input.setAttribute("multiple", "multiple");
+        input.setAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME, buttonId);
+
+        if (options.multiple) {
+            input.setAttribute("multiple", "");
+        }
+
+        if (options.folders && qq.supportedFeatures.folderSelection) {
+            // selecting directories is only possible in Chrome now, via a vendor-specific prefixed attribute
+            input.setAttribute("webkitdirectory", "");
         }
 
         if (options.acceptFiles) {
@@ -120,8 +130,29 @@ qq.UploadButton = function(o) {
 
     // Exposed API
     return {
-        getInput: function(){
+        getInput: function() {
             return input;
+        },
+
+        getButtonId: function() {
+            return buttonId;
+        },
+
+        setMultiple: function(isMultiple) {
+            if (isMultiple !== options.multiple) {
+                if (isMultiple) {
+                    input.setAttribute("multiple", "");
+                }
+                else {
+                    input.removeAttribute("multiple");
+                }
+            }
+        },
+
+        setAcceptFiles: function(acceptFiles) {
+            if (acceptFiles !== options.acceptFiles) {
+                input.setAttribute("accept", acceptFiles);
+            }
         },
 
         reset: function(){
@@ -134,3 +165,5 @@ qq.UploadButton = function(o) {
         }
     };
 };
+
+qq.UploadButton.BUTTON_ID_ATTR_NAME = "qq-button-id";

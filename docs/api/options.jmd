@@ -9,6 +9,7 @@
     <li><a href="#chunkingparamnames-option">chunking.paramNames</a></li>
     <li><a href="#cors-option">cors</a></li>
     <li><a href="#deletefile-option_1">deleteFile</a></li>
+    <li><a href="#extrabuttons-option">extraButtons</a></li>
     <li><a href="#messages-option_1">messages</a></li>
     <li><a href="#paste-option_1">paste</a></li>
     <li><a href="#resume-option_1">resume</a></li>
@@ -61,7 +62,10 @@ mode you are in and keep that in mind when determining which options do what.
 
 {{ options_table(
     (
-        ("ios", "`Boolean`", "`false`", "Enable or disable camera access on iOS (iPod, iPhone, and iPad) devices. Note: Enabling this will disable multiple file selection."),
+        ("ios", "`Boolean`", "`false`", "Enable or disable camera access on iOS (iPod, iPhone, and iPad) devices.
+        Note: Enabling this will disable multiple file selection."),
+        ("button", "`HTMLElement`", "`null`", "`null` means allow camera access on the default button in iOS,
+        otherwise, provide an extra button container element to target."),
     )
 ) }}
 
@@ -114,6 +118,29 @@ mode you are in and keep that in mind when determining which options do what.
         ("params", "`Object`", "`{}`", "Any additional parameters to attach to delete file requests."),
     )
 ) }}
+
+----
+
+### `extraButtons` option
+
+This must contain an array of objects.  Each object will describe an "extra" button that Fine Uploader will track
+along with the default upload button.  Each button object can contain the following properties:
+
+{{ options_table(
+    (
+        ("element", "`HTMLElement`", "`undefined`", "REQUIRED: The container element for the upload button."),
+        ("multiple", "`Boolean`", "`multiple'`", "Specify to override the default `multiple` value."),
+        ("folders", "`Boolean`", "`false`", "`true` to allow folders to be selected, `false` to allow files to be selected.
+        See the browser support page for details regarding the limited user agent support for this feature."),
+        ("validation", "`Object`", "`validation`", "Specify to override the default `validation` option specified.
+        Any `validation` properties not specified will be inherited from the default `validation` option."),
+    )
+) }}
+
+{{ alert(
+"""If an `itemLimit` or `stopOnFirstInvalidFile` property is specified here,
+they will be ignored as these properties from the default `validation` option are
+always used and shared among all buttons for a particular instance.""", "info", "Note:") }}
 
 ----
 

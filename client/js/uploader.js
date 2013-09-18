@@ -116,30 +116,11 @@ qq.FineUploader = function(o, namespace) {
                 window.alert(message);
             }, 0);
         },
-        showConfirm: function(message, okCallback, cancelCallback) {
-            setTimeout(function() {
-                var result = window.confirm(message);
-                if (result) {
-                    okCallback();
-                }
-                else if (cancelCallback) {
-                    cancelCallback();
-                }
-            }, 0);
+        showConfirm: function(message) {
+            return window.confirm(message);
         },
         showPrompt: function(message, defaultValue) {
-            var promise = new qq.Promise(),
-                retVal = window.prompt(message, defaultValue);
-
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (retVal != null && qq.trimStr(retVal).length > 0) {
-                promise.success(retVal);
-            }
-            else {
-                promise.failure("Undefined or invalid user-supplied value.");
-            }
-
-            return promise;
+            return window.prompt(message, defaultValue);
         }
     }, true);
 
@@ -168,21 +149,11 @@ qq.FineUploader = function(o, namespace) {
 
         this._classes = this._options.classes;
 
-        if (!this._button) {
-            this._button = this._createUploadButton(this._find(this._element, 'button'));
+        if (!this._options.button) {
+            this._defaultButtonId = this._createUploadButton({element: this._find(this._element, 'button')}).getButtonId();
         }
 
-        this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
-
-        // A better approach would be to check specifically for focusin event support by querying the DOM API,
-        // but the DOMFocusIn event is not exposed as a property, so we have to resort to UA string sniffing.
-        this._focusinEventSupported = !qq.firefox();
-
-        if (this._isEditFilenameEnabled()) {
-            this._filenameClickHandler = this._bindFilenameClickEvent();
-            this._filenameInputFocusInHandler = this._bindFilenameInputFocusInEvent();
-            this._filenameInputFocusHandler = this._bindFilenameInputFocusEvent();
-        }
+        this._setupClickAndEditEventHandlers();
 
         this._dnd = this._setupDragAndDrop();
 

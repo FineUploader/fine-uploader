@@ -31,12 +31,12 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         publicApi,
         policySignatureRequester = new qq.s3.SignatureAjaxRequestor({
             expectingPolicy: true,
-            endpoint: signature.endpoint,
+            signatureSpec: signature,
             cors: options.cors,
             log: log
         }),
         restSignatureRequester = new qq.s3.SignatureAjaxRequestor({
-            endpoint: signature.endpoint,
+            signatureSpec: signature,
             cors: options.cors,
             log: log
         }),
@@ -44,7 +44,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             filenameParam: filenameParam,
             endpointStore: endpointStore,
             paramsStore: paramsStore,
-            signatureEndpoint: signature.endpoint,
+            signatureSpec: signature,
             accessKey: options.accessKey,
             acl: acl,
             cors: options.cors,
@@ -61,7 +61,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         }),
         completeMultipartRequester = new qq.s3.CompleteMultipartAjaxRequester({
             endpointStore: endpointStore,
-            signatureEndpoint: signature.endpoint,
+            signatureSpec: signature,
             accessKey: options.accessKey,
             cors: options.cors,
             log: log,
@@ -71,7 +71,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         }),
         abortMultipartRequester = new qq.s3.AbortMultipartAjaxRequester({
             endpointStore: endpointStore,
-            signatureEndpoint: signature.endpoint,
+            signatureSpec: signature,
             accessKey: options.accessKey,
             cors: options.cors,
             log: log,
@@ -195,6 +195,11 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             if (responseToExamine.success) {
                 maybeDeletePersistedChunkData(id);
             }
+
+            // If we are done, no need to keep this state data around,
+            // especially if we want to restart the upload later
+            delete fileState[id].loaded;
+            delete fileState[id].chunking;
 
             uploadCompleteCallback(id);
         }
@@ -648,6 +653,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
             log(qq.format("Sending part {} of {} for file ID {} - {} ({} bytes)", chunkData.part+1, chunkData.count, id, name, chunkData.size));
             xhr.send(chunkData.blob);
+        }, function() {
+            uploadCompleted(id, {error: "Problem signing the chunk!"}, xhr);
         });
     }
 
@@ -774,7 +781,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             },
 
             expunge: function(id) {
-                var uploadId = fileState[id].chunking.uploadId,
+                var uploadId = fileState[id].chunking && fileState[id].chunking.uploadId,
                     existedInLocalStorage = maybeDeletePersistedChunkData(id);
 
                 if (uploadId !== undefined && existedInLocalStorage) {

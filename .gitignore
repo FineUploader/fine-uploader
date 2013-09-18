@@ -6,8 +6,8 @@
 !.gitignore
 Thumbs.db
 
-build/
-dist/
+_build/
+_dist/
 *.zip
 release/*
 master
@@ -18,6 +18,8 @@ selenium.log*
 
 pid.txt
 sauce_connect.log*
+lib/sauce/sauce-connect*
+
 fine-uploader/
 test/*.js
 test/upload/*
@@ -26,6 +28,8 @@ test/coverage/*
 test/vendor/*
 test/uploads/*
 test/temp*
+test/_temp*
+test/_vendor*
 node_modules/
 
 bin/

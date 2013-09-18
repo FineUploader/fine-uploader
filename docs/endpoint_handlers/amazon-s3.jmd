@@ -10,6 +10,10 @@ server.  This document will outline both required and optional server-side tasks
 document, Fine Uploader developers have provided fully functional [server-side examples](https://github.com/Widen/fine-uploader-server)
 in PHP, node.js, Python, and Java.  Other examples will be created in the future.
 
+{{ alert(
+"""[A comprehensive, step-by-step guide on implementing your origin server to
+handle S3 uploads can be found on the Fine Uploader blog](http://blog.fineuploader.com/2013/08/16/fine-uploader-s3-upload-directly-to-amazon-s3-from-your-browser/#support-chunking)""")}}
+
 #### Creating your S3 bucket's CORS configuration
 In order to use the upload-to-S3 feature, you MUST properly set the CORS configuration in your S3 bucket(s).  Fine Uploader
 must make cross-origin requests to S3 whenever it communicates with AWS.  You can [read more about CORS configuration on
@@ -130,6 +134,29 @@ You can also pass any data to your Fine Uploader [`complete` event handler](../a
 by including it in a valid JSON response to the `uploadSuccess.endpoint` POST request.  In fact, the S3 demo server-side
 code on FineUploader.com is passing a signed URL to the `complete` handler which allows you to view the file you've
 uploaded.
+
+## Chunked Uploads
+Fine Uploader S3 uses [Amazon S3's REST API](http://docs.aws.amazon.com/AmazonS3/latest/API/APIRest.html)
+to initiate, upload, complete, and
+abort multipart uploads. The REST API handles authentication by signing
+canonically formatted headers. This signing is something you need to implement
+server-side. All your server needs to do to authenticate and supported chunked
+uploads direct to Amazon S3 is sign a string representing the headers of the
+request that Fine Uploader sends to S3. This string is found in the payload of
+the signature request:
+
+    { "headers": /* string to sign */ }
+
+The precense of this property indicates to your sever that this is, in fact,
+a request to sign a REST/multipart request and not a policy document.
+
+This signature for the headers string differs slightly from the policy document
+signature. You should **NOT** base64 encode the headers string before signing it.
+All you must do, server-side, is generate an HMAC SHA1 signature of the string
+using your AWS secret key and _then_ base64 encode the result. Your server
+should respond with the following in the body of an 'application/json' response:
+
+    { "signature": /* signed headers string */ }
 
 
 ## Delete File support

@@ -76,12 +76,26 @@ exist in FineUploader mode (with default values in parentheses):
 **Note:** If you change any of these class names _be sure_ that you also adjust the associated class name in the template.
 
 ### Dialogs
+
+Fine Uploader UI mode -- by default -- uses the native browser implementations
+of alerts, confirms, and messages to show user notifications when necessary.
+More than likely, you are going to want to override these. To provide your own
+dialogs just provide your own functions for the `showMessage`,  `showConfirm`,
+and/or `showPrompt` options.
+
+{{ alert(
+"""For a tutorial on integrating the third-party modal dialog library [alertify.js]() with Fine
+Uploader's dialogs check out: [Alertify your Notifications and Dialogs](http://wp.me/p3FpYP-5I)."""
+)}}
+
 * `showMessage: function(message) {...}` - You may want to change the default alert dialog implementation and messages
 as you see fit.  This is possible by overriding the `showMessage` function option.  The default `showMessage` function
 simply invokes `alert` with the message text.  One instance in which this is used is when the user attempts to select an
 invalid file for upload.  There are general message types with default text that can be overriden as well.
 * `showConfirm: function(message, okCallback, cancelCallback) {...}` - This function is used to display a confirm dialog.  One
-such feature that optionally uses this is the `deleteFile` feature.  The default implementation uses `window.confirm`, but you
+such feature that optionally uses this is the `deleteFile` feature. Note that **this
+is a promissory callback**, meaning it requires a [`qq.Promise`](api/promise.html) to
+be returned.The default implementation uses `window.confirm`, but you
 may override this with something a bit nicer, if you choose.  The okCallback will be executed if the user clicks "ok" and the
 `cancelCallback` if the user clicks "cancel".  The `cancelCallback` is optional, but the `okCallback` is required.
 * `showPrompt: function(message, defaultValue) {...}` - This function is used to prompt the user for a value.  Note that **this

@@ -16,9 +16,11 @@ qq.s3.SignatureAjaxRequestor = function(o) {
         options = {
             expectingPolicy: false,
             method: "POST",
-            endpoint: null,
+            signatureSpec: {
+                endpoint: null,
+                customHeaders: {}
+            },
             maxConnections: 3,
-            customHeaders: {},
             paramsStore: {},
             cors: {
                 expected: false,
@@ -27,7 +29,7 @@ qq.s3.SignatureAjaxRequestor = function(o) {
             log: function(str, level) {}
         };
 
-    qq.extend(options, o);
+    qq.extend(options, o, true);
 
     function handleSignatureReceived(id, xhrOrXdr, isError) {
         var responseJson = xhrOrXdr.responseText,
@@ -88,12 +90,12 @@ qq.s3.SignatureAjaxRequestor = function(o) {
         contentType: "application/json; charset=utf-8",
         endpointStore: {
             getEndpoint: function() {
-                return options.endpoint;
+                return options.signatureSpec.endpoint;
             }
         },
         paramsStore: options.paramsStore,
         maxConnections: options.maxConnections,
-        customHeaders: options.customHeaders,
+        customHeaders: options.signatureSpec.customHeaders,
         log: options.log,
         onComplete: handleSignatureReceived,
         cors: options.cors,

@@ -17,7 +17,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             method: "POST",
             endpointStore: null,
             paramsStore: null,
-            signatureEndpoint: null,
+            signatureSpec: null,
             accessKey: null,
             acl: "private",
             maxConnections: 3,
@@ -31,7 +31,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
     qq.extend(options, o);
 
     getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequestor({
-        endpoint: options.signatureEndpoint,
+        signatureSpec: options.signatureSpec,
         cors: options.cors,
         log: options.log
     });

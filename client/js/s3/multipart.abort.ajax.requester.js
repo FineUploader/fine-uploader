@@ -13,7 +13,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
         options = {
             method: "DELETE",
             endpointStore: null,
-            signatureEndpoint: null,
+            signatureSpec: null,
             accessKey: null,
             maxConnections: 3,
             getKey: function(id) {},
@@ -25,7 +25,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
 
     // Transport for requesting signatures (for the "Complete" requests) from the local server
     getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequestor({
-        endpoint: options.signatureEndpoint,
+        signatureSpec: options.signatureSpec,
         cors: options.cors,
         log: options.log
     });

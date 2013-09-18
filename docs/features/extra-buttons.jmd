@@ -1,0 +1,149 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Multiple Upload Buttons" %}
+{% block content %}
+{% markdown %}
+
+# Multiple Upload Buttons {: .page-header }
+
+You have always been able to customize the default upload button.  As of Fine Uploader 3.9,
+you can easily create multiple upload buttons with varying validation rules, styles, and behaviors.
+
+## Adding additional upload buttons
+
+The new [`extraButtons` option](../api/options.html#extrabuttons-option) allows you to point Fine Uploader
+at styled containers that you would like to use as upload buttons.  This option takes an array of objects, and
+each object must, at least, define an `element` property with a value of your styled upload button container.
+Fine Uploader will then attach a file input element to this container and track it just as it tracks the default
+upload button it creates.  You can specify an `HTMLElement`, or even a `jQuery` object (if you are using the
+Fine Uploader jQuery plugin) as the value for the `element` property.
+
+By default, each extra button will inherit the root `multiple` and `validation` option values from the root option
+set.  You can override these values for each button by simply contributing alternate `multiple` and `validation`
+properties for a specific extra button object.  For example, say your default upload button allows jpegs,
+to be selected, but you have an extra button elsewhere on your page that deals specifically with PDFs.  You
+also want to enforce a 5 MiB limit (where supported) for all types of accepted files
+selected by both buttons. Your HTML and javascript might look something like this:
+
+```html
+<div id="pdfButton" class="myCustomCssClassForStyling">Select a PDF</div>
+<div id="uploader"></div>
+```
+
+```javascript
+$("#uploader").fineUploader({
+    validation: {
+        allowedExtensions: ["jpeg", "jpg"],
+        sizeLimit: 5000000 // 5 MiB
+    }
+    extraButtons: [
+        {
+            element: $("#pdfButton"),
+            validation: {
+                allowedExtensions: ["pdf"]
+            }
+        }
+    ]
+});
+```
+
+As always, Fine Uploader creates a default upload button (in Fine Uploader UI) for you,
+and attaches the limitations specified via the `validation` option to that button and any drop zones.
+Fine Uploader will also attach an invisible file input element to the `#pdfButton` element and track it.
+Note that, in the above code, the extra button inherits the `sizeLimit` from the base `validation` option,
+but overrides the `allowedExtensions` property.
+
+
+## Custom per-button validation rules
+
+Suppose you want to apply custom validation rules to a specific button.  No problem!  The `validate` and
+`validateBatch` events contain a `button` as the last parameter passed to your handler.  This `button` parameter
+will be the container element for the button that was used to select/submit the associated file to the uploader.
+If a drop zone was used to submit the file, or if an input element or source outside of Fine Uploader was used
+to submit the file (such as via the `addFiles` method), the `button` parameter will be undefined.  Note that, if
+you are using the jQuery plug-in, the `button` parameter will be a jQuery object.
+
+
+## Associate file ID to a button (per-button endpoints, params, etc)
+
+You can also, at any time, associate any file with the button that was used to select/submit the file.
+For example, if you want to attach specific parameters to a file, or send it to a different endpoint based
+on the button that selected it, you can do so in an appropriate event handler, such as `upload`.  For example:
+
+```javascript
+$("#uploader").on("upload", function(event, id, name) {
+    var $button = $(this).fineUploader("getButton", id);
+
+    if ($("#pdfButton").is($button)) {
+        $(this).fineUploader("setParams", {type: "pdf"}, id);
+    }
+    else {
+        $(this).fineUploader("setParams", {type: "jpeg"}, id);
+    }
+});
+```
+
+## Allow an extra upload button to be used to select folders
+
+Fine Uploader already allows you to drop folders that you would like to upload (currently Chrome-only).
+What if you want to allow users to select folders via the file chooser dialog?  Unfortunately, due
+to the restrictions imposed by this browser feature, you can either select files OR folders, not both.
+If you'd like to allow users to select files and folders, you can use the default upload button for file
+selection, and contribute an extra button marked as "folder selection" (currently Chrome-only).  Here's an example,
+also assuming you only want this button to appear if folder selection is possible in the current browser:
+
+```html
+<div id="foldersButton">Select Folders</div>
+<div id="uploader"></div>
+```
+
+```javascript
+// only show the folders button if folder selection is possible in the current browser
+if (!qq.supportedFeatures.folderSelection) {
+    $("#foldersButton").hide();
+}
+
+$("#uploader").fineUploader({
+    extraButtons: [
+        {
+            element: $("#foldersButton"),
+            folders: true
+        }
+    ]
+});
+```
+
+
+## Allow an extra upload button to target the camera in iOS
+
+As pointed out in [the blog](http://blog.fineuploader.com/2013/05/09/upload-directly-via-a-camera-on-mobile-devices/),
+iOS has an odd restriction that prohibits you from accessing the camera and the photo/video gallery simultaneously
+with a file input element.  The blog details a way to get around this, but it involves a bit of complexity.  Now,
+with the addition of the extra buttons feature, it's very easy!  Here is a simplified version of the code listed in the
+blog, now using the extra buttons feature:
+
+```html
+<div id="cameraButtonContainer">Upload from the camera</div>
+<div id="myFineUploader"></div>
+```
+
+```javascript
+// only show this button in iOS
+if (!qq.ios()) {
+    $("#cameraButtonContainer").hide();
+}
+
+$("myFineUploader").fineUploader({
+    camera: {
+        ios: true,
+        button: ${"#cameraButtonContainer")
+    }
+    extraButtons: [
+        {
+            element: $("#cameraButtonContainer")
+        }
+    ]
+});
+```
+
+{% endmarkdown %}
+{% endblock %}
