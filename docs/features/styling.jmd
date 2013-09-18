@@ -83,6 +83,11 @@ More than likely, you are going to want to override these. To provide your own
 dialogs just provide your own functions for the `showMessage`,  `showConfirm`,
 and/or `showPrompt` options.
 
+{{ alert(
+"""For a tutorial on integrating the third-party modal dialog library [alertify.js]() with Fine
+Uploader's dialogs check out: [Alertify your Notifications and Dialogs](http://wp.me/p3FpYP-5I)."""
+)}}
+
 * `showMessage: function(message) {...}` - You may want to change the default alert dialog implementation and messages
 as you see fit.  This is possible by overriding the `showMessage` function option.  The default `showMessage` function
 simply invokes `alert` with the message text.  One instance in which this is used is when the user attempts to select an
