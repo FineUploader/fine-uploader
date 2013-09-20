@@ -86,7 +86,8 @@ qq.FineUploader = function(o, namespace) {
         containerEl: this._options.element,
         fileContainerEl: this._options.listElement,
         hideClass: this._options.classes.hide,
-        button: this._options.button
+        button: this._options.button,
+        disableDnd: this._options.dragAndDrop.disableDefaultDropzone
     });
 
     if (!qq.supportedFeatures.uploading || (this._options.cors.expected && !qq.supportedFeatures.uploadCors)) {

@@ -10,7 +10,8 @@ qq.Templating = function(spec) {
             containerEl: null,
             fileContainerEl: null,
             hideClass: "qq-hide",
-            button: null
+            button: null,
+            disableDnd: false
         },
         selectorClasses = {
             button: 'qq-upload-button-selector',
@@ -36,7 +37,7 @@ qq.Templating = function(spec) {
 
 
     function getTemplateHtml() {
-        var scriptHtml, fileListNode, tempTemplateEl, fileListHtml, defaultButton;
+        var scriptHtml, fileListNode, tempTemplateEl, fileListHtml, defaultButton, dropzone;
 
         if (qq.isString(options.templateIdOrEl)) {
             scriptHtml = document.getElementById(options.templateIdOrEl).innerHTML;
@@ -53,6 +54,13 @@ qq.Templating = function(spec) {
             defaultButton = qq(tempTemplateEl).getByClass(selectorClasses.button)[0];
             if (defaultButton) {
                 qq(defaultButton).remove();
+            }
+        }
+
+        if (spec.disableDnd) {
+            dropzone = qq(tempTemplateEl).getByClass(selectorClasses.drop)[0];
+            if (dropzone) {
+                qq(dropzone).remove();
             }
         }
 
