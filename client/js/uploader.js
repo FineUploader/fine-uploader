@@ -11,6 +11,7 @@ qq.FineUploader = function(o, namespace) {
     // Options provided by FineUploader mode
     qq.extend(this._options, {
         element: null,
+        button: null,
         listElement: null,
         dragAndDrop: {
             extraDropzones: [],
@@ -84,7 +85,8 @@ qq.FineUploader = function(o, namespace) {
         templateIdOrEl: this._options.template,
         containerEl: this._options.element,
         fileContainerEl: this._options.listElement,
-        hideClass: this._options.classes.hide
+        hideClass: this._options.classes.hide,
+        button: this._options.button
     });
 
     if (!qq.supportedFeatures.uploading || (this._options.cors.expected && !qq.supportedFeatures.uploadCors)) {
