@@ -1,11 +1,15 @@
 util = require './utils'
+path = require 'path'
 spawn = require('child_process').spawn
+sourceModules = require('../modules')
 
 module.exports = (grunt) ->
 
   grunt.registerTask 'lint', 'Lint, in order, the Gruntfile, sources, and tests.', ['concurrent:lint']
 
-  grunt.registerTask 'minify', 'Minify the source javascript and css', ['cssmin', 'uglify']
+  grunt.registerTask 'minify', 'Minify the source javascript and css', [
+    'cssmin:all', 'uglify:core', 'uglify:jquery', 'uglify:coreS3',
+    'uglify:jqueryS3', 'uglify:all']
 
   grunt.registerMultiTask 'tests', '** Use ` grunt-test` instead **', ->
     util.startKarma.call util, @data, true, @async()
@@ -46,6 +50,111 @@ module.exports = (grunt) ->
         done err
       else
         done success
+
+  grunt.registerTask 'custombuild', 'Generate a custom build', () ->
+    argv = require('optimist')
+      .options('dest',
+        default: @options().dest
+        describe: "Destination to build to"
+      ).options('ui',
+        default: false
+        describe: "Provide default UI"
+      ).options('traditional',
+        default: false,
+        describe: "Provide 'traditional' endpoint support"
+      ).options('s3',
+        default: false
+        decribe: "Provide Amazon S3 endpoint support"
+      ).options('jquery',
+        default: false
+        describe: "Provide jQuery wrapper"
+      ).options('m',
+        alias: 'modules'
+        default: ""
+        describe: "Comma-separated list of optional modules to include"
+      ).options('no-css',
+        default: false
+        describe: "Include default css files"
+      ).options('no-img',
+        default: false
+        describe: "Include default image files"
+      ).options('no-iframe',
+        default: false
+        describe: "Include IE8 & 9 postMessage workaround"
+      ).argv
+
+    console.log argv
+
+    moduleMapping =
+      ui: ['fuSrcUi']
+      jquery: ['fuSrcJquery']
+      traditional: ['fuSrcTraditional']
+      s3: ['fuSrcS3']
+      s3Jquery: ['fuSrcS3Jquery']
+      extras:
+        all:
+          ['fuSrcModules', 'fuUiModules']
+        paste:
+          ['fuPasteModule']
+        dnd:
+          ['fuDndModule']
+        delete:
+          ['fuDeleteFileModule']
+        deleteui:
+          ['fuDeleteFileUiModule']
+        edit:
+          ['fuEditFilenameModule']
+
+    modules = ['fuSrcCore']
+    for option of moduleMapping
+      if argv[option] is true && argv[option] != 'extras'
+        modules = modules.concat moduleMapping[option]
+
+    if argv.modules?
+      extraModules = argv.modules.split(',')
+      if extraModules[0] == 'all'
+          modules = modules.concat moduleMapping.extras['all']
+      else
+        for extraModuleKey of moduleMapping['extras']
+          if extraModuleKey in extraModules
+            modules = modules.concat moduleMapping.extras[extraModuleKey]
+
+    grunt.log.write "\nBuilding with modules: "
+    console.log modules
+    modules = sourceModules.mergeModules.apply @, modules
+
+    src = ''
+    modules.map((f) ->
+      # Concatenate
+      src += grunt.file.read f
+      console.log f
+      src
+    ).join(grunt.util.linefeed)
+
+    grunt.file.mkdir argv.dest
+    dest = argv.dest + '/fineuploader-<%= pkg.version %>.js'
+    dest = grunt.template.process dest, grunt.config
+    grunt.file.write dest, src
+    grunt.log.writeln("Wrote #{dest}")
+
+    extraModulesMapping =
+      img: ['fuImages']
+      css: ['fuCss']
+      iframe: ['fuIframeXssResponse']
+
+    extraModules = ['fuDocs', 'fuImages', 'fuIframeXssResponse', 'fuCss']
+    for option in extraModulesMapping
+      if argv[option] is false
+        extraModules[option] = []
+
+    extraModules = sourceModules.mergeModules.apply @, extraModules
+
+    self = @
+    extraModules.map (f) ->
+      dest = argv.dest + "/#{path.basename(f)}"
+      src = grunt.file.read f
+      grunt.file.write(dest)
+      grunt.log.writeln("Wrote #{dest}")
 
   ###
   grunt.registerMultiTask 'sauce-connect', 'Run or kill sauce connect', ->

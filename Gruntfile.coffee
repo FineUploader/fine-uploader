@@ -14,6 +14,7 @@
 module.exports = (grunt) ->
 
   fs = require 'fs'
+  uuid = require 'uuid'
 
   # Utilities
   # ==========
@@ -31,6 +32,8 @@ module.exports = (grunt) ->
     'src': './client'
     'docs': './docs'
     'test': './test'
+    'custom': './_custom'
+  grunt.config.set('customBuildDest', path.join paths.custom, uuid.v1(1))
 
   # Browsers
   # ==========
@@ -69,6 +72,9 @@ module.exports = (grunt) ->
       vendor:
         files:
           src: "#{paths.test}/_vendor"
+      custom:
+        files:
+          src: "#{paths.custom}/*"
 
     coffeelint:
       options:
@@ -121,22 +127,31 @@ module.exports = (grunt) ->
             src: './s3.<%= pkg.name %>-<%= pkg.version %>/*'
           }
         ]
+      custom:
+        options:
+          archive: "#{grunt.config.get('customBuildDest')}/<%= pkg.name %>-<%= pkg.version %>.zip"
+        files: [
+          {
+            expand: true
+            src: "./#{paths.custom}/*"
+          }
+        ]
 
     concat:
       core:
-        src: fineUploaderModules.mergeModules 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules'
+        src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules'
         dest: "#{paths.build}/<%= pkg.name %>.js"
       coreS3:
-        src: fineUploaderModules.mergeModules 'fuSrcS3', 'fuSrcModules', 'fuUiModules'
+        src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcS3', 'fuSrcModules', 'fuUiModules'
         dest: "#{paths.build}/s3.<%= pkg.name %>.js"
       jquery:
-        src: fineUploaderModules.mergeModules 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules', 'fuSrcJquery'
+        src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules', 'fuSrcJquery'
         dest: "#{paths.build}/jquery.<%= pkg.name %>.js"
       jqueryS3:
-        src: fineUploaderModules.mergeModules 'fuSrcS3', 'fuSrcModules', 'fuUiModules', 'fuSrcJquery'
+        src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcS3', 'fuSrcModules', 'fuUiModules', 'fuSrcJquery', 'fuSrcS3Jquery'
         dest: "#{paths.build}/s3.jquery.<%= pkg.name %>.js"
       all:
-        src: fineUploaderModules.mergeModules 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules', 'fuSrcS3', 'fuSrcJquery'
+        src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules', 'fuSrcS3', 'fuSrcJquery', 'fuSrcS3Jquery'
         dest: paths.build + "/all.<%= pkg.name %>.js"
       css:
         src: ["#{paths.src}/*.css"]
@@ -386,9 +401,14 @@ module.exports = (grunt) ->
       options:
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
         report: 'min'
-      files:
-        src: '<%= concat.css.dest %>'
-        dest: "#{paths.build}/<%= pkg.name %>.min.css"
+      all:
+        files:
+          src: '<%= concat.css.dest %>'
+          dest: "#{paths.build}/<%= pkg.name %>.min.css"
+      custom:
+        files:
+          src: ["#{grunt.config.get('customBuildDest')}/*.css"]
+          dest: "#{grunt.config.get('customBuildDest')}/<%= pkg.name %>.min.css"
 
     jshint:
       source: ["#{paths.src}/js/*.js"]
@@ -404,6 +424,10 @@ module.exports = (grunt) ->
         boss: true
         expr: true
         asi: true
+
+    custombuild:
+      options:
+        dest: grunt.config.get('customBuildDest')
 
     uglify:
       options:
@@ -426,9 +450,12 @@ module.exports = (grunt) ->
       all:
         src: ['<%= concat.all.dest %>']
         dest: "#{paths.build}/all.<%= pkg.name %>.min.js"
+      custom:
+        src: ["#{grunt.config.get('customBuildDest')}/*.js"]
+        dest: "#{grunt.config.get('customBuildDest')}/<%= pkg.name %>-<%= pkg.version %>.min.js"
 
     usebanner:
-      header:
+      allhead:
         src: ["#{paths.build}/*.{js,css}"]
         options:
           position: 'top'
@@ -446,8 +473,31 @@ module.exports = (grunt) ->
                *
                * Licensed under GNU GPL v3, see LICENSE
                */ \n\n'''
-      footer:
+      allfoot:
         src: ["#{paths.build}/*.{js,css}"]
+        options:
+          position: 'bottom'
+          banner: '/*! <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+      customhead:
+        src: ["#{paths.custom}/*.{js,css}"]
+        options:
+          position: 'top'
+          banner: '''
+              /*!
+               * <%= pkg.title %>
+               *
+               * Copyright 2013, <%= pkg.author %> info@fineuploader.com
+               *
+               * Version: <%= pkg.version %>
+               *
+               * Homepage: http://fineuploader.com
+               *
+               * Repository: <%= pkg.repository.url %>
+               *
+               * Licensed under GNU GPL v3, see LICENSE
+               */ \n\n'''
+      customfoot:
+        src: ["#{paths.custom}/*.{js,css}"]
         options:
           position: 'bottom'
           banner: '/*! <%= grunt.template.today("yyyy-mm-dd") %> */\n'
@@ -561,6 +611,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'saucetests:default']
 
   grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'shell:npm_install', 'bower', 'package', 'copy:test']
-  grunt.registerTask 'build', 'Build from latest source', ['concat', 'minify', 'usebanner', 'copy:images']
+  grunt.registerTask 'build', 'Build from latest source', ['concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
+  grunt.registerTask 'build:custom', 'Build a custom version', ['custombuild', 'uglify:custom', 'cssmin:custom', 'usebanner:customhead', 'usebanner:customfoot', 'compress:custom']
   grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build', 'copy:dist', 'compress']
   grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', ['package']
