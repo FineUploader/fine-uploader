@@ -59,7 +59,7 @@
     font-size: 16px;
     background-color: #FFF0BD;
 }
-.qq-upload-file, .qq-upload-spinner, .qq-upload-size, .qq-upload-cancel, .qq-upload-retry, .qq-upload-failed-text, .qq-upload-finished, .qq-upload-delete {
+.qq-upload-file, .qq-upload-spinner, .qq-upload-size, .qq-upload-cancel, .qq-upload-retry, .qq-upload-failed-text, .qq-upload-delete {
     margin-right: 12px;
 }
 .qq-upload-file {
@@ -80,12 +80,6 @@
     width: 24px;
     height: 24px;
     vertical-align: text-bottom;
-}
-.qq-upload-finished {
-    display:none;
-    width:15px;
-    height:15px;
-    vertical-align:text-bottom;
 }
 .qq-upload-retry, .qq-upload-delete {
     display: none;
@@ -179,5 +173,9 @@ INPUT.qq-edit-filename.qq-editing {
 }
 
 INPUT.qq-edit-filename.qq-editing ~ .qq-upload-cancel {
+    display: none;
+}
+
+.qq-hide {
     display: none;
 }

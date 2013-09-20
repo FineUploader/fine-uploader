@@ -4,6 +4,7 @@ $ ->
 
     $('#basicUploadSuccessExample').fineUploaderS3(
         debug: true
+        listElement: $("#foobar")
         request:
             endpoint: "http://fineuploadertest.s3.amazonaws.com"
             accessKey: 'AKIAJEQ4NDFBCZAMWGUQ'
@@ -30,6 +31,7 @@ $ ->
             mode: 'custom'
         display:
             fileSizeOnSubmit: true
+            prependFiles: true
         paste:
             targetElement: $(document)
     )
@@ -58,8 +60,10 @@ $ ->
             forceConfirm: true
             params:
                 foo: "bar"
-        display:
-            fileSizeOnSubmit: true
+#        display:
+#            fileSizeOnSubmit: true
+        editFilename:
+            enabled: true
     )
         .on 'error', errorHandler
 
