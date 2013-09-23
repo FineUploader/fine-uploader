@@ -33,7 +33,7 @@ module.exports = (grunt) ->
     'docs': './docs'
     'test': './test'
     'custom': './_custom'
-  grunt.config.set('customBuildDest', path.join paths.custom, uuid.v1(1))
+  customBuildDest = path.join paths.custom, uuid.v1(1)
 
   # Browsers
   # ==========
@@ -49,6 +49,8 @@ module.exports = (grunt) ->
   grunt.initConfig
 
     pkg: pkg
+
+    #grunt.config.set('c ustomBuildDest', path.join paths.custom, uuid.v1(1))
 
     bower:
       install:
@@ -129,7 +131,7 @@ module.exports = (grunt) ->
         ]
       custom:
         options:
-          archive: "#{grunt.config.get('customBuildDest')}/<%= pkg.name %>-<%= pkg.version %>.zip"
+          archive: "#{customBuildDest}/<%= pkg.name %>-<%= pkg.version %>.zip"
         files: [
           {
             expand: true
@@ -407,8 +409,8 @@ module.exports = (grunt) ->
           dest: "#{paths.build}/<%= pkg.name %>.min.css"
       custom:
         files:
-          src: ["#{grunt.config.get('customBuildDest')}/*.css"]
-          dest: "#{grunt.config.get('customBuildDest')}/<%= pkg.name %>.min.css"
+          src: ["#{customBuildDest}/*.css"]
+          dest: "#{customBuildDest}/<%= pkg.name %>.min.css"
 
     jshint:
       source: ["#{paths.src}/js/*.js"]
@@ -427,7 +429,8 @@ module.exports = (grunt) ->
 
     custombuild:
       options:
-        dest: grunt.config.get('customBuildDest')
+        dest: customBuildDest
+        #dest: customBuildDest
 
     uglify:
       options:
@@ -451,8 +454,8 @@ module.exports = (grunt) ->
         src: ['<%= concat.all.dest %>']
         dest: "#{paths.build}/all.<%= pkg.name %>.min.js"
       custom:
-        src: ["#{grunt.config.get('customBuildDest')}/*.js"]
-        dest: "#{grunt.config.get('customBuildDest')}/<%= pkg.name %>-<%= pkg.version %>.min.js"
+        src: ["#{customBuildDest}/*.js"]
+        dest: "#{customBuildDest}/<%= pkg.name %>-<%= pkg.version %>.min.js"
 
     usebanner:
       allhead:
@@ -601,6 +604,11 @@ module.exports = (grunt) ->
 
   grunt.loadTasks './lib/grunt'
 
+  grunt.registerTask 'build_details', ->
+    grunt.log.writeln "\n##########\nCustom Build Generated: "
+    grunt.log.write customBuildDest
+    grunt.log.writeln "\n##########\n"
+
   # Tasks
   # ==========
   grunt.registerTask 'test:unit', 'Run unit tests locally with Karma', ['dev', 'tests:local']
@@ -612,6 +620,6 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'shell:npm_install', 'bower', 'package', 'copy:test']
   grunt.registerTask 'build', 'Build from latest source', ['concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
-  grunt.registerTask 'build:custom', 'Build a custom version', ['custombuild', 'uglify:custom', 'cssmin:custom', 'usebanner:customhead', 'usebanner:customfoot', 'compress:custom']
+  grunt.registerTask 'build:custom', 'Build a custom version', ['custombuild', 'uglify:custom', 'cssmin:custom', 'usebanner:customhead', 'usebanner:customfoot', 'compress:custom', 'build_details']
   grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build', 'copy:dist', 'compress']
   grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', ['package']
