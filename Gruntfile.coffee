@@ -605,8 +605,9 @@ module.exports = (grunt) ->
   grunt.loadTasks './lib/grunt'
 
   grunt.registerTask 'build_details', ->
-    grunt.log.writeln "\n##########\nCustom Build Generated: "
-    grunt.log.write customBuildDest
+    grunt.log.writeln "\n##########"
+    grunt.log.writeln "Custom Build Generated: "
+    grunt.log.write "### " + customBuildDest + " ###"
     grunt.log.writeln "\n##########\n"
 
   # Tasks
