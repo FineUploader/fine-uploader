@@ -125,6 +125,18 @@ qq.Templating = function(spec) {
         return getTemplateEl(getFile(id), selectorClasses.deleteButton);
     }
 
+    function getFilename(id) {
+        return getTemplateEl(getFile(id), selectorClasses.file);
+    }
+
+    function hide(el) {
+        el && qq(el).addClass(spec.classes.hide);
+    }
+
+    function show(el) {
+        el && qq(el).removeClass(spec.classes.hide);
+    }
+
     templateHtml = getTemplateHtml();
 
     api = {
@@ -153,8 +165,7 @@ qq.Templating = function(spec) {
 
         addFile: function(id, name, prependInfo) {
             var fileEl = qq.toElement(templateHtml.fileTemplate),
-                fileNameEl = getTemplateEl(fileEl, selectorClasses.file),
-                sizeEl;
+                fileNameEl = getTemplateEl(fileEl, selectorClasses.file);
 
             qq(fileEl).addClass(fileClassPrefix + id);
             fileNameEl && qq(fileNameEl).setText(name);
@@ -167,8 +178,8 @@ qq.Templating = function(spec) {
                 fileList.appendChild(fileEl);
             }
 
-            sizeEl = getSize(id);
-            sizeEl && qq(sizeEl).hide();
+            hide(getProgress(id));
+            hide(getSize(id));
 
             if (isCancelDisabled) {
                 api.hideCancel(id);
@@ -193,8 +204,24 @@ qq.Templating = function(spec) {
             return fileList;
         },
 
-        getFileName: function(id) {
-            return getTemplateEl(getFile(id), selectorClasses.file);
+        markFilenameEditable: function(id) {
+            var filename = getFilename(id);
+
+            filename && qq(filename).addClass(spec.classes.editable);
+        },
+
+        updateFilename: function(id, name) {
+            var filename = getFilename(id);
+
+            filename && qq(filename).setText(name);
+        },
+
+        hideFilename: function(id) {
+            hide(getFilename(id));
+        },
+
+        showFilename: function(id) {
+            show(getFilename(id));
         },
 
         isFileName: function(el) {
@@ -257,10 +284,10 @@ qq.Templating = function(spec) {
                 percent = Math.round(loaded / total * 100);
 
                 if (loaded === total) {
-                    qq(bar).hide();
+                    hide(bar);
                 }
                 else {
-                    qq(bar).css({display: 'block'});
+                    show(bar);
                 }
 
                 qq(bar).css({width: percent + '%'});
@@ -270,7 +297,7 @@ qq.Templating = function(spec) {
         hideProgress: function(id) {
             var bar = getProgress(id);
 
-            bar && qq(bar).hide();
+            bar && hide(bar);
         },
 
         resetProgress: function(id) {
@@ -288,9 +315,7 @@ qq.Templating = function(spec) {
         },
 
         hideCancel: function(id) {
-            var cancel = getCancel(id);
-
-            cancel && qq(cancel).addClass(spec.classes.hide);
+            hide(getCancel(id));
         },
 
         isCancel: function(el)  {
@@ -298,15 +323,11 @@ qq.Templating = function(spec) {
         },
 
         showDelete: function(id) {
-            var deleteBtn = getDelete(id);
-
-            deleteBtn && qq(deleteBtn).css({display: "inline"});
+            show(getDelete(id));
         },
 
         hideDelete: function(id) {
-            var deleteBtn = getDelete(id);
-
-            deleteBtn && qq(deleteBtn).hide();
+            hide(getDelete(id));
         },
 
         isDelete: function(el) {
@@ -325,9 +346,8 @@ qq.Templating = function(spec) {
             var size = getSize(id);
 
             if (size) {
-                qq(size)
-                    .css({display: "inline"})
-                    .setText(text);
+                show(size);
+                qq(size).setText(text);
             }
         },
 
@@ -345,15 +365,11 @@ qq.Templating = function(spec) {
         },
 
         hideSpinner: function(id) {
-            var spinner = getSpinner(id);
-
-            spinner && qq(spinner).hide();
+            hide(getSpinner(id));
         },
 
         showSpinner: function(id) {
-            var spinner = getSpinner(id);
-
-            spinner && qq(spinner).css({display: "inline-block"});
+            show(getSpinner(id));
         }
     };
 

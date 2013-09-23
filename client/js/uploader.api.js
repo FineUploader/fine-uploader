@@ -161,27 +161,23 @@ qq.uiPrivateApi = {
                 return self.getName(fileId);
             },
             onSetName: function(id, newName) {
-                var filenameDisplay = templating.getFileName(id),
-                    formattedFilename = self._options.formatFileName(newName);
+                var formattedFilename = self._options.formatFileName(newName);
 
-                filenameDisplay && qq(filenameDisplay).setText(formattedFilename);
+                templating.updateFilename(id, formattedFilename);
                 self.setName(id, newName);
             },
             onEditingStatusChange: function(id, isEditing) {
                 var qqInput = qq(templating.getEditInput(id)),
-                    filenameDisplay = templating.getFileName(id),
-                    qqFileContainer = qq(templating.getFileContainer(id)),
-                    editableClass = self._classes.editable;
+                    qqFileContainer = qq(templating.getFileContainer(id));
 
                 if (isEditing) {
                     qqInput.addClass('qq-editing');
-
-                    filenameDisplay && qq(filenameDisplay).hide();
+                    templating.hideFilename(id);
                     templating.hideEditIcon(id);
                 }
                 else {
                     qqInput.removeClass('qq-editing');
-                    filenameDisplay && qq(filenameDisplay).css({display: ''});
+                    templating.showFilename(id);
                     templating.showEditIcon(id);
                 }
 
@@ -193,14 +189,9 @@ qq.uiPrivateApi = {
 
     _onUploadStatusChange: function(id, oldStatus, newStatus) {
         if (this._isEditFilenameEnabled()) {
-            var editableClass = this._classes.editable,
-                filenameDisplay, qqEditFilenameIcon;
-
             // Status for a file exists before it has been added to the DOM, so we must be careful here.
             if (this._templating.getFileContainer(id) && newStatus !== qq.status.SUBMITTED) {
-                filenameDisplay = this._templating.getFileName(id);
-
-                filenameDisplay && qq(filenameDisplay).removeClass(editableClass);
+                this._templating.markFilenameEditable(id);
                 this._templating.hideEditIcon(id);
             }
         }
@@ -243,10 +234,7 @@ qq.uiPrivateApi = {
     _onSubmitted: function(id) {
         // If the edit filename feature is enabled, mark the filename element as "editable" and the associated edit icon
         if (this._isEditFilenameEnabled()) {
-            var qqFilenameDisplay = qq(this._templating.getFileContainer(id)),
-                editableClass = this._classes.editable;
-
-            qqFilenameDisplay.addClass(editableClass);
+            this._templating.markFilenameEditable(id);
             this._templating.showEditIcon(id);
 
             // If the focusin event is not supported, we must add a focus handler to the newly create edit filename text input
