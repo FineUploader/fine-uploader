@@ -4,7 +4,6 @@ $ ->
 
     $('#basicUploadSuccessExample').fineUploaderS3(
         debug: true
-        listElement: $("#foobar")
         request:
             endpoint: "http://fineuploadertest.s3.amazonaws.com"
             accessKey: 'AKIAJEQ4NDFBCZAMWGUQ'
