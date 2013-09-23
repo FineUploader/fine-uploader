@@ -23,7 +23,7 @@ qq.uiPublicApi = {
         this._parent.prototype.reset.apply(this, arguments);
         this._templating.reset();
 
-        if (!this._options.button) {
+        if (!this._options.button && this._templating.getButton()) {
             this._defaultButtonId = this._createUploadButton({element: this._templating.getButton()}).getButtonId();
         }
 
@@ -78,14 +78,15 @@ qq.uiPrivateApi = {
         var self = this,
             dropProcessingEl = this._templating.getDropProcessing(),
             dropZoneElements = this._options.dragAndDrop.extraDropzones,
+            defaultDropZone = this._templating.getDropZone(),
             preventSelectFiles;
 
         preventSelectFiles = function(event) {
             event.preventDefault();
         };
 
-        if (!this._options.dragAndDrop.disableDefaultDropzone) {
-            dropZoneElements.push(this._templating.getDropZone());
+        if (!this._options.dragAndDrop.disableDefaultDropzone && defaultDropZone) {
+            dropZoneElements.push(defaultDropZone);
         }
 
         return new qq.DragAndDrop({
@@ -141,7 +142,7 @@ qq.uiPrivateApi = {
     },
 
     _isEditFilenameEnabled: function() {
-        return this._options.editFilename.enabled && !this._options.autoUpload;
+        return this._templating.isEditFilenamePossible() && !this._options.autoUpload;
     },
 
     _filenameEditHandler: function() {
@@ -160,29 +161,28 @@ qq.uiPrivateApi = {
                 return self.getName(fileId);
             },
             onSetName: function(id, newName) {
-                var qqFilenameDisplay = qq(templating.getFileName(id)),
+                var filenameDisplay = templating.getFileName(id),
                     formattedFilename = self._options.formatFileName(newName);
 
-                qqFilenameDisplay.setText(formattedFilename);
+                filenameDisplay && qq(filenameDisplay).setText(formattedFilename);
                 self.setName(id, newName);
             },
             onEditingStatusChange: function(id, isEditing) {
                 var qqInput = qq(templating.getEditInput(id)),
-                    qqFilenameDisplay = qq(templating.getFileName(id)),
-                    qqEditFilenameIcon = qq(templating.getEditIcon(id)),
+                    filenameDisplay = templating.getFileName(id),
                     qqFileContainer = qq(templating.getFileContainer(id)),
                     editableClass = self._classes.editable;
 
                 if (isEditing) {
                     qqInput.addClass('qq-editing');
 
-                    qqFilenameDisplay.hide();
-                    qqEditFilenameIcon.removeClass(editableClass);
+                    filenameDisplay && qq(filenameDisplay).hide();
+                    templating.hideEditIcon(id);
                 }
                 else {
                     qqInput.removeClass('qq-editing');
-                    qqFilenameDisplay.css({display: ''});
-                    qqEditFilenameIcon.addClass(editableClass);
+                    filenameDisplay && qq(filenameDisplay).css({display: ''});
+                    templating.showEditIcon(id);
                 }
 
                 // Force IE8 and older to repaint
@@ -194,15 +194,14 @@ qq.uiPrivateApi = {
     _onUploadStatusChange: function(id, oldStatus, newStatus) {
         if (this._isEditFilenameEnabled()) {
             var editableClass = this._classes.editable,
-                qqFilenameDisplay, qqEditFilenameIcon;
+                filenameDisplay, qqEditFilenameIcon;
 
             // Status for a file exists before it has been added to the DOM, so we must be careful here.
             if (this._templating.getFileContainer(id) && newStatus !== qq.status.SUBMITTED) {
-                qqFilenameDisplay = qq(this._templating.getFileName(id));
-                qqEditFilenameIcon = qq(this._templating.getEditIcon(id));
+                filenameDisplay = this._templating.getFileName(id);
 
-                qqFilenameDisplay.removeClass(editableClass);
-                qqEditFilenameIcon.removeClass(editableClass);
+                filenameDisplay && qq(filenameDisplay).removeClass(editableClass);
+                this._templating.hideEditIcon(id);
             }
         }
     },
@@ -232,7 +231,7 @@ qq.uiPrivateApi = {
 
     _storeForLater: function(id) {
         this._parent.prototype._storeForLater.apply(this, arguments);
-        qq(this._templating.getSpinner(id)).hide();
+        this._templating.hideSpinner(id);
     },
 
     _onSubmit: function(id, name) {
@@ -245,11 +244,10 @@ qq.uiPrivateApi = {
         // If the edit filename feature is enabled, mark the filename element as "editable" and the associated edit icon
         if (this._isEditFilenameEnabled()) {
             var qqFilenameDisplay = qq(this._templating.getFileContainer(id)),
-                qqEditFilenameIcon = qq(this._templating.getEditIcon(id)),
                 editableClass = this._classes.editable;
 
             qqFilenameDisplay.addClass(editableClass);
-            qqEditFilenameIcon.addClass(editableClass);
+            this._templating.showEditIcon(id);
 
             // If the focusin event is not supported, we must add a focus handler to the newly create edit filename text input
             if (!this._focusinEventSupported) {
@@ -262,15 +260,11 @@ qq.uiPrivateApi = {
     _onProgress: function(id, name, loaded, total){
         this._parent.prototype._onProgress.apply(this, arguments);
 
-        var item, progressBar, percent, cancelLink;
-
-        progressBar = this._templating.getProgressBar(id);
-        percent = Math.round(loaded / total * 100);
+        this._templating.updateProgress(id, loaded, total);
 
         if (loaded === total) {
             this._templating.hideCancel(id);
 
-            qq(progressBar).hide();
             this._templating.setStatusText(id, this._options.text.waitingForResponse);
 
             // If last byte was sent, display total file size
@@ -279,12 +273,7 @@ qq.uiPrivateApi = {
         else {
             // If still uploading, display percentage - total size is actually the total request(s) size
             this._displayFileSize(id, loaded, total);
-
-            qq(progressBar).css({display: 'block'});
         }
-
-        // Update progress bar element
-        qq(progressBar).css({width: percent + '%'});
     },
 
     _onComplete: function(id, name, result, xhr) {
@@ -296,16 +285,16 @@ qq.uiPrivateApi = {
             templating.setStatusText(id);
 
             qq(templating.getFileContainer(id)).removeClass(self._classes.retrying);
-            qq(templating.getProgressBar(id)).hide();
+            templating.hideProgress(id);
 
             if (!self._options.disableCancelForFormUploads || qq.supportedFeatures.ajaxUploading) {
                 templating.hideCancel(id);
             }
-            qq(templating.getSpinner(id)).hide();
+            templating.hideSpinner(id);
 
             if (result.success) {
                 if (self._isDeletePossible()) {
-                    self._showDeleteLink(id);
+                    templating.showDelete(id);
                 }
 
                 qq(templating.getFileContainer(id)).addClass(self._classes.success);
@@ -313,7 +302,7 @@ qq.uiPrivateApi = {
             else {
                 qq(templating.getFileContainer(id)).addClass(self._classes.fail);
 
-                if (self._options.retry.showButton && !self._preventRetries[id]) {
+                if (self._templating.isRetryPossible() && !self._preventRetries[id]) {
                     qq(templating.getFileContainer(id)).addClass(self._classes.retryable);
                 }
                 self._controlFailureTextDisplay(id, result);
@@ -337,7 +326,7 @@ qq.uiPrivateApi = {
     _onUpload: function(id, name){
         var parentRetVal = this._parent.prototype._onUpload.apply(this, arguments);
 
-        this._showSpinner(id);
+        this._templating.showSpinner(id);
 
         return parentRetVal;
     },
@@ -348,15 +337,12 @@ qq.uiPrivateApi = {
     },
 
     _onBeforeAutoRetry: function(id) {
-        var progressBar, failTextEl, retryNumForDisplay, maxAuto, retryNote;
+        var retryNumForDisplay, maxAuto, retryNote;
 
         this._parent.prototype._onBeforeAutoRetry.apply(this, arguments);
 
-        progressBar = this._templating.getProgressBar(id);
-
         this._showCancelLink(id);
-        progressBar.style.width = 0;
-        qq(progressBar).hide();
+        this._templating.hideProgress(id);
 
         if (this._options.retry.showAutoRetryNote) {
             retryNumForDisplay = this._autoRetries[id] + 1;
@@ -375,10 +361,10 @@ qq.uiPrivateApi = {
     //return false if we should not attempt the requested retry
     _onBeforeManualRetry: function(id) {
         if (this._parent.prototype._onBeforeManualRetry.apply(this, arguments)) {
-            qq(this._templating.getProgressBar(id)).css({width: "0"});
+            this._templating.resetProgress(id);
             qq(this._templating.getFileContainer(id)).removeClass(this._classes.fail);
             this._templating.setStatusText(id);
-            this._showSpinner(id);
+            this._templating.showSpinner(id);
             this._showCancelLink(id);
             return true;
         }
@@ -406,11 +392,11 @@ qq.uiPrivateApi = {
     _onDeleteComplete: function(id, xhr, isError) {
         this._parent.prototype._onDeleteComplete.apply(this, arguments);
 
-        qq(this._templating.getSpinner(id)).hide();
+        this._templating.hideSpinner(id);
 
         if (isError) {
             this._templating.setStatusText(id, this._options.deleteFile.deletingFailedText);
-            this._showDeleteLink(id);
+            this._templating.showDelete(id);
         }
         else {
             this._removeFileItem(id);
@@ -418,8 +404,8 @@ qq.uiPrivateApi = {
     },
 
     _sendDeleteRequest: function(id, uuid, additionalMandatedParams) {
-        qq(this._templating.getDelete(id)).hide();
-        this._showSpinner(id);
+        this._templating.hideDelete(id);
+        this._templating.showSpinner(id);
         this._templating.setStatusText(id, this._options.deleteFile.deletingStatusText);
         this._deleteHandler.sendDelete.apply(this, arguments);
     },
@@ -469,8 +455,6 @@ qq.uiPrivateApi = {
 
         this._templating.addFile(id, this._options.formatFileName(name), prependData);
 
-        qq(this._templating.getSize(id)).hide();
-
         this._filesInBatchAddedToUi += 1;
 
         if (this._options.display.fileSizeOnSubmit && qq.supportedFeatures.ajaxUploading) {
@@ -485,15 +469,13 @@ qq.uiPrivateApi = {
 
     _displayFileSize: function(id, loadedSize, totalSize) {
         var size = this.getSize(id),
-            sizeForDisplay = this._formatSize(size),
-            sizeEl = this._templating.getSize(id);
+            sizeForDisplay = this._formatSize(size);
 
         if (loadedSize !== undefined && totalSize !== undefined) {
             sizeForDisplay = this._formatProgress(loadedSize, totalSize);
         }
 
-        qq(sizeEl).css({display: 'inline'});
-        qq(sizeEl).setText(sizeForDisplay);
+        this._templating.updateSize(id, sizeForDisplay);
     },
 
     _formatProgress: function (uploadedSize, totalSize) {
@@ -542,18 +524,10 @@ qq.uiPrivateApi = {
         this._templating.getFileContainer(id).title = text;
     },
 
-    _showSpinner: function(id) {
-        qq(this._templating.getSpinner(id)).css({display: "inline-block"});
-    },
-
     _showCancelLink: function(id) {
         if (!this._options.disableCancelForFormUploads || qq.supportedFeatures.ajaxUploading) {
             this._templating.showCancel(id);
         }
-    },
-
-    _showDeleteLink: function(id) {
-        qq(this._templating.getDelete(id)).css({display: "inline"});
     },
 
     _itemError: function(code, name, item) {

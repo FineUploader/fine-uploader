@@ -44,8 +44,7 @@ qq.FineUploader = function(o, namespace) {
         },
         retry: {
             showAutoRetryNote: true,
-            autoRetryNote: "Retrying {retryNum}/{maxAuto}...",
-            showButton: false
+            autoRetryNote: "Retrying {retryNum}/{maxAuto}..."
         },
         deleteFile: {
             forceConfirm: false,
@@ -61,9 +60,6 @@ qq.FineUploader = function(o, namespace) {
         paste: {
             promptForName: false,
             namePromptMessage: "Please name this image"
-        },
-        editFilename: {
-            enabled: false
         },
         showMessage: function(message){
             setTimeout(function() {
@@ -85,9 +81,12 @@ qq.FineUploader = function(o, namespace) {
         templateIdOrEl: this._options.template,
         containerEl: this._options.element,
         fileContainerEl: this._options.listElement,
-        hideClass: this._options.classes.hide,
         button: this._options.button,
-        disableDnd: this._options.dragAndDrop.disableDefaultDropzone
+        disableDnd: this._options.dragAndDrop.disableDefaultDropzone,
+        classes: {
+            hide: this._options.classes.hide,
+            editable: this._options.classes.editable
+        }
     });
 
     if (!qq.supportedFeatures.uploading || (this._options.cors.expected && !qq.supportedFeatures.uploadCors)) {
@@ -100,7 +99,7 @@ qq.FineUploader = function(o, namespace) {
 
         this._classes = this._options.classes;
 
-        if (!this._options.button) {
+        if (!this._options.button && this._templating.getButton()) {
             this._defaultButtonId = this._createUploadButton({element: this._templating.getButton()}).getButtonId();
         }
 

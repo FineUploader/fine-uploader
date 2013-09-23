@@ -46,11 +46,10 @@ qq.extend(qq.s3.FineUploader.prototype, {
      * @private
      */
     _onComplete: function(id, name, result, xhr) {
-        var parentRetVal = qq.FineUploader.prototype._onComplete.apply(this, arguments),
-            progressBar = this._templating.getProgressBar(id);
+        var parentRetVal = qq.FineUploader.prototype._onComplete.apply(this, arguments);
 
         if (qq.isPromise(parentRetVal)) {
-            qq(progressBar).hide();
+            this._templating.hideProgress(id);
             this._templating.setStatusText(id, this._options.text.waitingForResponse);
         }
 

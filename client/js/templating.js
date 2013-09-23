@@ -1,7 +1,8 @@
+// Expected: If any template elements do not exists, fail silently (no unchecked errors, etc)
 qq.Templating = function(spec) {
     "use strict";
 
-    var api,
+    var api, isEditElementsExist, isRetryElementExist,
         fileIdAttr = "qq-file-id",
         fileClassPrefix = "qq-file-id-",
         isCancelDisabled = false,
@@ -9,9 +10,12 @@ qq.Templating = function(spec) {
             templateIdOrEl: "qq-template",
             containerEl: null,
             fileContainerEl: null,
-            hideClass: "qq-hide",
             button: null,
-            disableDnd: false
+            disableDnd: false,
+            classes: {
+                hide: "qq-hide",
+                editable: "qq-editable"
+            }
         },
         selectorClasses = {
             button: 'qq-upload-button-selector',
@@ -64,6 +68,9 @@ qq.Templating = function(spec) {
             }
         }
 
+        isEditElementsExist = qq(tempTemplateEl).getByClass(selectorClasses.editFilenameInput).length > 0;
+        isRetryElementExist = qq(tempTemplateEl).getByClass(selectorClasses.retry).length > 0;
+
         fileListNode = qq(tempTemplateEl).getByClass(selectorClasses.list)[0];
         fileListHtml = fileListNode.innerHTML;
         fileListNode.innerHTML = "";
@@ -98,6 +105,26 @@ qq.Templating = function(spec) {
         return getTemplateEl(getFile(id), selectorClasses.cancel);
     }
 
+    function getProgress(id) {
+        return getTemplateEl(getFile(id), selectorClasses.progressBar);
+    }
+
+    function getSpinner(id) {
+        return getTemplateEl(getFile(id), selectorClasses.spinner);
+    }
+
+    function getEditIcon(id) {
+        return getTemplateEl(getFile(id), selectorClasses.editNameIcon);
+    }
+
+    function getSize(id) {
+        return getTemplateEl(getFile(id), selectorClasses.size);
+    }
+
+    function getDelete(id) {
+        return getTemplateEl(getFile(id), selectorClasses.deleteButton);
+    }
+
     templateHtml = getTemplateHtml();
 
     api = {
@@ -126,10 +153,11 @@ qq.Templating = function(spec) {
 
         addFile: function(id, name, prependInfo) {
             var fileEl = qq.toElement(templateHtml.fileTemplate),
-                fileNameEl = getTemplateEl(fileEl, selectorClasses.file);
+                fileNameEl = getTemplateEl(fileEl, selectorClasses.file),
+                sizeEl;
 
             qq(fileEl).addClass(fileClassPrefix + id);
-            qq(fileNameEl).setText(name);
+            fileNameEl && qq(fileNameEl).setText(name);
             fileEl.setAttribute(fileIdAttr, id);
 
             if (prependInfo) {
@@ -138,6 +166,9 @@ qq.Templating = function(spec) {
             else {
                 fileList.appendChild(fileEl);
             }
+
+            sizeEl = getSize(id);
+            sizeEl && qq(sizeEl).hide();
 
             if (isCancelDisabled) {
                 api.hideCancel(id);
@@ -182,12 +213,28 @@ qq.Templating = function(spec) {
             return getTemplateEl(container, selectorClasses.drop);
         },
 
+        isEditFilenamePossible: function() {
+            return isEditElementsExist;
+        },
+
+        isRetryPossible: function() {
+            return isRetryElementExist;
+        },
+
         getFileContainer: function(id) {
             return getFile(id);
         },
 
-        getEditIcon: function(id) {
-            return getTemplateEl(getFile(id), selectorClasses.editNameIcon);
+        showEditIcon: function(id) {
+            var icon = getEditIcon(id);
+
+            icon && qq(icon).addClass(spec.classes.editable);
+        },
+
+        hideEditIcon: function(id) {
+            var icon = getEditIcon(id);
+
+            icon && qq(icon).removeClass(spec.classes.editable);
         },
 
         isEditIcon: function(el) {
@@ -202,26 +249,64 @@ qq.Templating = function(spec) {
             return qq(el).hasClass(selectorClasses.editFilenameInput);
         },
 
-        getProgressBar: function(id) {
-            return getTemplateEl(getFile(id), selectorClasses.progressBar);
+        updateProgress: function(id, loaded, total) {
+            var bar = getProgress(id),
+                percent;
+
+            if (bar) {
+                percent = Math.round(loaded / total * 100);
+
+                if (loaded === total) {
+                    qq(bar).hide();
+                }
+                else {
+                    qq(bar).css({display: 'block'});
+                }
+
+                qq(bar).css({width: percent + '%'});
+            }
+        },
+
+        hideProgress: function(id) {
+            var bar = getProgress(id);
+
+            bar && qq(bar).hide();
+        },
+
+        resetProgress: function(id) {
+            var bar = getProgress(id);
+
+            bar && qq(bar).css({width: "0"});
         },
 
         showCancel: function(id) {
             if (!isCancelDisabled) {
-                qq(getCancel(id)).removeClass(spec.hideClass);
+                var cancel = getCancel(id);
+
+                cancel && qq(cancel).removeClass(spec.classes.hide);
             }
         },
 
         hideCancel: function(id) {
-            qq(getCancel(id)).addClass(spec.hideClass);
+            var cancel = getCancel(id);
+
+            cancel && qq(cancel).addClass(spec.classes.hide);
         },
 
         isCancel: function(el)  {
             return qq(el).hasClass(selectorClasses.cancel);
         },
 
-        getDelete: function(id) {
-            return getTemplateEl(getFile(id), selectorClasses.deleteButton);
+        showDelete: function(id) {
+            var deleteBtn = getDelete(id);
+
+            deleteBtn && qq(deleteBtn).css({display: "inline"});
+        },
+
+        hideDelete: function(id) {
+            var deleteBtn = getDelete(id);
+
+            deleteBtn && qq(deleteBtn).hide();
         },
 
         isDelete: function(el) {
@@ -236,23 +321,39 @@ qq.Templating = function(spec) {
             return qq(el).hasClass(selectorClasses.retry);
         },
 
+        updateSize: function(id, text) {
+            var size = getSize(id);
+
+            if (size) {
+                qq(size)
+                    .css({display: "inline"})
+                    .setText(text);
+            }
+        },
+
         setStatusText: function(id, text) {
             var textEl = getTemplateEl(getFile(id), selectorClasses.statusText);
 
-            if (text == null) {
-                qq(textEl).clearText();
-            }
-            else {
-                qq(textEl).setText(text);
+            if (textEl) {
+                if (text == null) {
+                    qq(textEl).clearText();
+                }
+                else {
+                    qq(textEl).setText(text);
+                }
             }
         },
 
-        getSize: function(id) {
-            return getTemplateEl(getFile(id), selectorClasses.size);
+        hideSpinner: function(id) {
+            var spinner = getSpinner(id);
+
+            spinner && qq(spinner).hide();
         },
 
-        getSpinner: function(id) {
-            return getTemplateEl(getFile(id), selectorClasses.spinner);
+        showSpinner: function(id) {
+            var spinner = getSpinner(id);
+
+            spinner && qq(spinner).css({display: "inline-block"});
         }
     };
 
