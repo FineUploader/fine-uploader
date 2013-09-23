@@ -82,13 +82,15 @@
     height: 24px;
     vertical-align: text-bottom;
 }
-.qq-upload-retry, .qq-upload-delete {
-    display: none;
+
+.qq-upload-delete {
+    display: inline;
+}
+
+.qq-upload-retry, .qq-upload-delete, .qq-upload-cancel {
     color: #000000;
 }
-.qq-upload-cancel, .qq-upload-delete {
-	color: #000000;
-}
+
 .qq-upload-retryable .qq-upload-retry {
     display: inline;
 }

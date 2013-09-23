@@ -127,6 +127,10 @@ qq.Templating = function(spec) {
         return getTemplateEl(getFile(id), selectorClasses.deleteButton);
     }
 
+    function getRetry(id) {
+        return getTemplateEl(getFile(id), selectorClasses.retry);
+    }
+
     function getFilename(id) {
         return getTemplateEl(getFile(id), selectorClasses.file);
     }
@@ -197,6 +201,8 @@ qq.Templating = function(spec) {
 
             hide(getProgress(id));
             hide(getSize(id));
+            hide(getDelete(id));
+            hide(getRetry(id));
 
             if (isCancelDisabled) {
                 api.hideCancel(id);
@@ -351,10 +357,6 @@ qq.Templating = function(spec) {
 
         isDelete: function(el) {
             return qq(el).hasClass(selectorClasses.deleteButton);
-        },
-
-        getRetry: function(id) {
-            return getTemplateEl(getFile(id), selectorClasses.retry);
         },
 
         isRetry: function(el) {
