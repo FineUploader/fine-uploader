@@ -21,6 +21,7 @@ qq.Templating = function(spec) {
             button: 'qq-upload-button-selector',
             drop: 'qq-upload-drop-area-selector',
             list: 'qq-upload-list-selector',
+            progressBarContainer: "qq-progress-bar-container-selector",
             progressBar: 'qq-progress-bar-selector',
             file: 'qq-upload-file-selector',
             spinner: 'qq-upload-spinner-selector',
@@ -106,7 +107,8 @@ qq.Templating = function(spec) {
     }
 
     function getProgress(id) {
-        return getTemplateEl(getFile(id), selectorClasses.progressBar);
+        return getTemplateEl(getFile(id), selectorClasses.progressBarContainer) ||
+            getTemplateEl(getFile(id), selectorClasses.progressBar);
     }
 
     function getSpinner(id) {
@@ -139,6 +141,16 @@ qq.Templating = function(spec) {
 
     function show(el) {
         el && qq(el).removeClass(spec.classes.hide);
+    }
+
+    function setProgressBarWidth(id, percent) {
+        var bar = getProgress(id);
+
+        if (bar && !qq(bar).hasClass(selectorClasses.progressBar)) {
+            bar = qq(bar).getByClass(selectorClasses.progressBar)[0];
+        }
+
+        qq(bar).css({width: percent + '%'});
     }
 
     templateHtml = getTemplateHtml();
@@ -299,7 +311,7 @@ qq.Templating = function(spec) {
                     show(bar);
                 }
 
-                qq(bar).css({width: percent + '%'});
+                setProgressBarWidth(id, percent);
             }
         },
 
@@ -310,9 +322,7 @@ qq.Templating = function(spec) {
         },
 
         resetProgress: function(id) {
-            var bar = getProgress(id);
-
-            bar && qq(bar).css({width: "0"});
+            setProgressBarWidth(id, 0);
         },
 
         showCancel: function(id) {
