@@ -76,9 +76,9 @@ qq.uiPrivateApi = {
 
     _setupDragAndDrop: function() {
         var self = this,
-            dropProcessingEl = this._templating.getDropProcessing(),
             dropZoneElements = this._options.dragAndDrop.extraDropzones,
-            defaultDropZone = this._templating.getDropZone(),
+            templating = this._templating,
+            defaultDropZone = templating.getDropZone(),
             preventSelectFiles;
 
         preventSelectFiles = function(event) {
@@ -98,10 +98,10 @@ qq.uiPrivateApi = {
             },
             callbacks: {
                 processingDroppedFiles: function() {
-                    qq(dropProcessingEl).css({display: 'block'});
+                    templating.showDropProcessing();
                 },
                 processingDroppedFilesComplete: function(files) {
-                    qq(dropProcessingEl).hide();
+                    templating.hideDropProcessing();
 
                     if (files) {
                         self.addFiles(files);

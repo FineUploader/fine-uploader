@@ -73,7 +73,7 @@
     vertical-align: text-bottom;
 }
 .qq-drop-processing {
-    display: none;
+    display: block;
 }
 .qq-drop-processing-spinner {
     display: inline-block;

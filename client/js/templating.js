@@ -129,6 +129,10 @@ qq.Templating = function(spec) {
         return getTemplateEl(getFile(id), selectorClasses.file);
     }
 
+    function getDropProcessing() {
+        return getTemplateEl(container, selectorClasses.dropProcessing);
+    }
+
     function hide(el) {
         el && qq(el).addClass(spec.classes.hide);
     }
@@ -142,6 +146,7 @@ qq.Templating = function(spec) {
     api = {
         render: function() {
             container.innerHTML = templateHtml.template;
+            hide(getDropProcessing());
             fileList = options.fileContainerEl || getTemplateEl(container, selectorClasses.list)
         },
 
@@ -232,8 +237,12 @@ qq.Templating = function(spec) {
             return options.button || getTemplateEl(container, selectorClasses.button);
         },
 
-        getDropProcessing: function() {
-            return getTemplateEl(container, selectorClasses.dropProcessing);
+        hideDropProcessing: function() {
+            hide(getDropProcessing());
+        },
+
+        showDropProcessing: function() {
+            show(getDropProcessing());
         },
 
         getDropZone: function() {
