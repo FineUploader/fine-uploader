@@ -42,12 +42,27 @@ qq.Templating = function(spec) {
 
 
     function getTemplateHtml() {
-        var scriptHtml, fileListNode, tempTemplateEl, fileListHtml, defaultButton, dropzone;
+        var scriptEl, scriptHtml, fileListNode, tempTemplateEl, fileListHtml, defaultButton, dropzone;
+
+        if (options.templateIdOrEl == null) {
+            throw new Error("You MUST specify either a template element or ID!");
+        }
 
         if (qq.isString(options.templateIdOrEl)) {
-            scriptHtml = document.getElementById(options.templateIdOrEl).innerHTML;
+            scriptEl = document.getElementById(options.templateIdOrEl);
+
+            if (scriptEl === null) {
+                throw new Error(qq.format("Cannot find template script at ID '{}'!", options.templateIdOrEl));
+            }
+
+            scriptHtml = scriptEl.innerHTML;
         }
         else {
+            if (options.templateIdOrEl.innerHTML === undefined) {
+                throw new Error("You have specified an invalid value for the template option!  " +
+                    "It must be an ID or an Element.");
+            }
+
             scriptHtml = options.templateIdOrEl.innerHTML;
         }
 
