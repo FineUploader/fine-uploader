@@ -843,7 +843,7 @@ qq.basePrivateApi = {
         // Assuming no one will actually set the response code to something other than 200
         // and still set 'success' to true...
         if (!response.success){
-            if (xhr && xhr.status !== 200 && !response.error) {
+            if (xhr && xhr.status >= 400 && !response.error) {
                 this._options.callbacks.onError(id, name, "XHR returned response code " + xhr.status, xhr);
             }
             else {
