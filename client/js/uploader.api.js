@@ -340,9 +340,7 @@ qq.uiPrivateApi = {
             retryNote = retryNote.replace(/\{maxAuto\}/g, maxAuto);
 
             this._templating.setStatusText(id, retryNote);
-            if (retryNumForDisplay === 1) {
-                qq(this._templating.getFileContainer(id)).addClass(this._classes.retrying);
-            }
+            qq(this._templating.getFileContainer(id)).addClass(this._classes.retrying);
         }
     },
 
