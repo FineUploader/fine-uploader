@@ -13,7 +13,7 @@ the built-in templating feature.
 
 ### Template
 
-A default template, default-template.html, is bundled with each version.  Fine Uploader UI should work just fine if you
+A default template, `default-template.html`, is bundled with each version.  Fine Uploader UI should work just fine if you
 simply use the provided template as is, without changing anything.  However, you can certainly customize the default
 template to match your web application's look and feel.  The rest of this section includes examples of some changes
 you may want to make to the default template.
@@ -36,6 +36,10 @@ TODO...
 Finally, a `classes` option allows you to change some default class names that Fine Uploader may add to template
 elements dynamically/on-demand.  The following `classes` option properties exist in Fine Uploader UI mode
 (with default values in parentheses):
+
+{% macro classes_table(rows, title=None) -%}
+{{ code_table(("Property Name", "Default CSS", "Description"), rows, title) }}
+{%- endmacro %}
 
 {{ classes_table(
     (
