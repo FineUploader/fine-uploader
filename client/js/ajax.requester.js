@@ -17,7 +17,7 @@ qq.AjaxRequestor = function (o) {
             mandatedParams: {},
             successfulResponseCodes: {
                 "DELETE": [200, 202, 204],
-                "POST": [200, 204]
+                "POST": [200, 201, 204]
             },
             cors: {
                 expected: false,

@@ -233,7 +233,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
     }
 
     function isErrorResponse(xhr, response) {
-        return xhr.status !== 200 || !response.success || response.reset;
+        return xhr.status >= 400 || !response.success || response.reset;
     }
 
     function parseResponse(id, xhr) {
