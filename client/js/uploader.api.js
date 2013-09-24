@@ -16,7 +16,7 @@ qq.uiPublicApi = {
     },
 
     getItemByFileId: function(id) {
-        this._templating.getFileContainer(id);
+        return this._templating.getFileContainer(id);
     },
 
     reset: function() {
