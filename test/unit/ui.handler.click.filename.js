@@ -1,7 +1,7 @@
 describe('ui.handler.click.filename.js', function () {
 
     var fileId = 123,
-        $container, $fileItem, $filenameDiv;
+        $container, $fileItem, $filenameDiv, templating;
 
     beforeEach(function () {
         $fixture.append('<div class="testcontainer"></div>');
@@ -10,18 +10,33 @@ describe('ui.handler.click.filename.js', function () {
         $container.append('<div class="fileitem"></div>');
 
         $fileItem = $container.find('.fileitem');
-        $fileItem.append('<div class="test-file"></div>');
+        $fileItem.append('<div class="test-file" file-id="123"></div>');
         $fileItem.append('<input class="test-input">');
 
         $filenameDiv = $fileItem.find('.test-file');
 
-        $fileItem[0].qqFileId = fileId;
+        templating = {
+            getFileList: function() {
+                return $container[0];
+            },
+            isFileName: function(el) {
+                return $(el).hasClass("test-file");
+            },
+            isEditIcon: function(el) {
+            },
+            getFileId: function(el) {
+                return $(el).attr("file-id");
+            },
+            getEditInput: function(id) {
+                return $container.find('INPUT')[0];
+            }
+        };
     });
 
     it('does not allow editing when upload is in progress', function () {
 
         var handler = new qq.FilenameClickHandler({
-            listElement: $container[0],
+            templating: templating,
             classes: {
                 file: 'test-file'
             },
@@ -45,7 +60,7 @@ describe('ui.handler.click.filename.js', function () {
                 editing;
 
             var handler = new qq.FilenameClickHandler({
-                listElement: $container[0],
+                templating: templating,
                 classes: {
                     file: 'test-file'
                 },
@@ -115,7 +130,7 @@ describe('ui.handler.click.filename.js', function () {
             $input = $container.find('INPUT');
 
         var handler = new qq.FilenameClickHandler({
-            listElement: $container[0],
+            templating: templating,
             classes: {
                 file: 'test-file'
             },
