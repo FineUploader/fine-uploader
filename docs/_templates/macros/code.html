@@ -42,6 +42,9 @@
 {% macro methods_table(rows, title=None) -%}
 {{ code_table(("Name", "Parameters", "Return", "Description"), rows, title) }}
 {%- endmacro %}
+{% macro classes_table(rows, title=None) -%}
+{{ code_table(("Property Name", "Default CSS", "Description"), rows, title) }}
+{%- endmacro %}
 
 {% macro snippet(options, element="#fine-uploader", endpoint="/server/upload", callbacks={}, modes=['Core', 'UI', 'jQuery Core', 'jQuery UI', 'S3']) -%}
 {#
