@@ -4,76 +4,52 @@
 {% markdown %}
 # Styling {: .page-header }
 
-### Templates
+{{ alert(
+"""Templating changed drastically in version 4.0.  If you are upgrading from a 3.x version to a 4.x version
+you will want to read the [upgrading to to 4.x document](../upgrading-to-4.html) as well.""", "warn") }}
 
-The `template` option contains default elements with default classes that make up the uploader as a whole in the DOM.  For example,
-the first default element in `template` is a `div` with a class of `qq-uploader`.  This is the parent element of the uploader.
-The default drop area, button, and file list elements are also, by default, contained in this option.  You can use this option to
-add additional elements, modify default template elements, etc.  There is also a `fileTemplate` option which contains
-default elements that make up one file item in the file list.
+This document applies to Fine Uploader UI mode only, and aims to help you customize the default UI using
+the built-in templating feature.
 
-Here is the default `template` option:
+### Template
 
-```javascript
-template: '<div class="qq-uploader">' +
-    ((!this._options.dragAndDrop || !this._options.dragAndDrop.disableDefaultDropzone) ? '<div class="qq-upload-drop-area"><span>{dragZoneText}</span></div>' : '') +
-    (!this._options.button ? '<div class="qq-upload-button"><div>{uploadButtonText}</div></div>' : '') +
-    '<span class="qq-drop-processing"><span>{dropProcessingText}</span><span class="qq-drop-processing-spinner"></span></span>' +
-    (!this._options.listElement ? '<ul class="qq-upload-list"></ul>' : '') +
-    '</div>'
-```
+A default template, default-template.html, is bundled with each version.  Fine Uploader UI should work just fine if you
+simply use the provided template as is, without changing anything.  However, you can certainly customize the default
+template to match your web application's look and feel.  The rest of this section includes examples of some changes
+you may want to make to the default template.
 
-...and the default `fileTemplate` options:
+TODO...
 
-```javascript
-fileTemplate: '<li>' +
-    '<div class="qq-progress-bar"></div>' +
-    '<span class="qq-upload-spinner"></span>' +
-    '<span class="qq-upload-finished"></span>' +
-    (this._options.editFilename && this._options.editFilename.enabled ? '<span class="qq-edit-filename-icon"></span>' : '') +
-    '<span class="qq-upload-file"></span>' +
-    '(this._options.editFilename && this._options.editFilename.enabled ? '<input class="qq-edit-filename" tabindex="0" type="text">' : '')' +
-    '<span class="qq-upload-size"></span>' +
-    '<a class="qq-upload-cancel" href="#">{cancelButtonText}</a>' +
-    '<a class="qq-upload-retry" href="#">{retryButtonText}</a>' +
-    '<a class="qq-upload-delete" href="#">{deleteButtonText}</a>' +
-    '<span class="qq-upload-status-text">{statusText}</span>' +
-    '</li>'
-```
+- Change the progress bar (bootstrap)
+- Omit a portion of the template that does not apply to your app
+- Change default text
+- Re-arrange the order of the template elements
+- Detach the file list portion of the template and locate it elsewhere on your page
+- Move the default drop zone into the file list
+- Easily remove Fine Uploader UI CSS styles from an element
+- Customize the buttons/links
+- Include other custom elements in your template
+
 
 ### `classes` option
 
-Finally, a `classes` option allows you to change the default class names for these elements.  Be sure the values in `classes`
-match the class names used in the corresponding template elements (where appropriate).  The following `classes` option properties
-exist in FineUploader mode (with default values in parentheses):
+Finally, a `classes` option allows you to change some default class names that Fine Uploader may add to template
+elements dynamically/on-demand.  The following `classes` option properties exist in Fine Uploader UI mode
+(with default values in parentheses):
 
-* `button` (qq-upload-button)
-* `drop` (qq-upload-drop-area)
-* `dropActive` (qq-upload-drop-area-active)
-* `dropDisabled` (qq-upload-drop-area-disable)
-* `list` (qq-upload-list)
-* `progressBar` (qq-progress-bar)
-* `file` (qq-upload-file)
-* `spinner` (qq-upload-spinner)
-* `finished` (qq-upload-finished)
-* `retrying` (qq-upload-retrying)
-* `retryable` (qq-upload-retryable)
-* `size` (qq-upload-size)
-* `cancel` (qq-upload-cancel)
-* `deleteButton` (qq-upload-delete)
-* `retry` (qq-upload-retry)
-* `statusText` (qq-upload-status-text)
-* `editFilenameInput` (qq-edit-filename)
-* `success` (qq-upload-success)
-* `fail` (qq-upload-fail)
-* `editable` (qq-editable)
-* `editNameIcon` (qq-edit-filename-icon)
-* `successIcon` (`null`)
-* `failIcon` (`null`)
-* `dropProcessing` (qq-drop-processing)
-* `dropProcessingSpinner` (qq-drop-processing-spinner)
-
-**Note:** If you change any of these class names _be sure_ that you also adjust the associated class name in the template.
+{{ classes_table(
+    (
+        ("retrying", "qq-upload-retrying", "Added to the file item container during a retry attempt."),
+        ("retryable", "qq-upload-retryable`", "Added to the file item container after a failed upload attempt
+        if the item is eligible for a retry."),
+        ("success", "qq-upload-success", "Added to the file item container after a successful upload."),
+        ("fail", "qq-upload-fail", "Added to the file item container after a completely failed upload."),
+        ("editable", "qq-editable", "Added to the file name element when the file name may be edited."),
+        ("hide", "qq-hide", "Added whenever an item should no longer be visible."),
+        ("dropActive", "qq-upload-drop-area-active", "Added to the drop area container when an item
+        has entered the drop zone."),
+    )
+) }}
 
 ### Dialogs
 
@@ -84,8 +60,8 @@ dialogs just provide your own functions for the `showMessage`,  `showConfirm`,
 and/or `showPrompt` options.
 
 {{ alert(
-"""For a tutorial on integrating the third-party modal dialog library [alertify.js]() with Fine
-Uploader's dialogs check out: [Alertify your Notifications and Dialogs](http://wp.me/p3FpYP-5I)."""
+"""For a tutorial on integrating the third-party modal dialog library [alertify.js](http://fabien-d.github.io/alertify.js/)
+with Fine Uploader's dialogs check out: [Alertify your Notifications and Dialogs](http://wp.me/p3FpYP-5I)."""
 )}}
 
 * `showMessage: function(message) {...}` - You may want to change the default alert dialog implementation and messages
