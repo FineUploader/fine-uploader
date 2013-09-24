@@ -30,7 +30,8 @@ qq.FineUploader = function(o, namespace) {
             success: 'qq-upload-success',
             fail: 'qq-upload-fail',
             editable: 'qq-editable',
-            hide: "qq-hide"
+            hide: "qq-hide",
+            dropActive: 'qq-upload-drop-area-active'
         },
         failedUploadTextDisplay: {
             mode: 'default', //default, custom, or none
