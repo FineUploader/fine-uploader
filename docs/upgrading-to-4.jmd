@@ -5,15 +5,16 @@
 # Upgrading to 4.x {: .page-header }
 
 TODO Breaking changes to document:
-- removal of `fileTemplate` option
-- changed `template` option to take an ID (string) or element (pointing to script tag containing template)
-- template must be included in document script tag for Fine Uploader UI
-- various changes to CSS file, including addition of .qq-hide style & removal of .qq-upload-finished style
-- removed `retry.showButton`
-- remove `editFilename.enabled` option
-- removed all `classes` option properties, other than the ones listed in styling doc
-- added `hide` `classes` option property
-- removed all `text` option properties, except for `failUpload`, `formatProgress` and `waitingForResponse`
+
+* removal of `fileTemplate` option
+* changed `template` option to take an ID (string) or element (pointing to script tag containing template)
+* template must be included in document script tag for Fine Uploader UI
+* various changes to CSS file, including addition of .qq-hide style & removal of .qq-upload-finished style
+* removed `retry.showButton`
+* remove `editFilename.enabled` option
+* removed all `classes` option properties, other than the ones listed in styling doc
+* added `hide` `classes` option property
+* removed all `text` option properties, except for `failUpload`, `formatProgress` and `waitingForResponse`
 
 
 
