@@ -168,6 +168,13 @@ $("#myUploader").on("complete", function(event, id, name, response) {
 });
 ```
 
+{{ alert(
+"""You cannot specify an `Element` as an option value if it only exists in a template.  This is due to the
+fact that the options are evaluated before the template is rendered.  For example, you cannot specify an
+[extra button](extra-buttons.html) that is declared in a template."""
+)}}
+
+
 
 ### `classes` option
 
