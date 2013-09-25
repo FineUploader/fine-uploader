@@ -46,6 +46,7 @@
 
         {% include "_templates/navbar.html" %}
 
+
         {% block pre_container %}{% endblock %}
         <div class="container-fluid">
             <div class='row-fluid'>
@@ -56,6 +57,8 @@
                 </div>
 
                 <div class="span10 content">
+                    <span class="pull-right" style="opacity: .7; padding: 1px; margin-right: 5px;"><p><a href="https://github.com/Widen/fine-uploader/tree/{{ PKG['version'] }}">{{ PKG['version'] }}</p></a></span>
+
                 {% block pre_content %}{% endblock %}
 
                 {% block content %}{% endblock %}
