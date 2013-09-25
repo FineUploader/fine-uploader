@@ -81,7 +81,6 @@ qq.FineUploader = function(o, namespace) {
         containerEl: this._options.element,
         fileContainerEl: this._options.listElement,
         button: this._options.button,
-        disableDnd: this._options.dragAndDrop.disableDefaultDropzone,
         classes: {
             hide: this._options.classes.hide,
             editable: this._options.classes.editable
