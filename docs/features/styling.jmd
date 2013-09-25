@@ -6,7 +6,7 @@
 
 {{ alert(
 """Templating changed drastically in version 4.0.  If you are upgrading from a 3.x version to a 4.x version
-you will want to read the [upgrading to to 4.x document](../upgrading-to-4.html) as well.""", "warn") }}
+you will want to read the [upgrading to 4.x document](../upgrading-to-4.html) as well.""", "warn") }}
 
 This document applies to Fine Uploader UI mode only, and aims to help you customize the default UI using
 the built-in templating feature.
@@ -39,15 +39,15 @@ elements dynamically/on-demand.  The following `classes` option properties exist
 
 {{ classes_table(
     (
-        ("retrying", "qq-upload-retrying", "Added to the file item container during a retry attempt."),
-        ("retryable", "qq-upload-retryable`", "Added to the file item container after a failed upload attempt
-        if the item is eligible for a retry."),
-        ("success", "qq-upload-success", "Added to the file item container after a successful upload."),
-        ("fail", "qq-upload-fail", "Added to the file item container after a completely failed upload."),
-        ("editable", "qq-editable", "Added to the file name element when the file name may be edited."),
-        ("hide", "qq-hide", "Added whenever an item should no longer be visible."),
         ("dropActive", "qq-upload-drop-area-active", "Added to the drop area container when an item
         has entered the drop zone."),
+        ("editable", "qq-editable", "Added to the file name element when the file name may be edited."),
+        ("fail", "qq-upload-fail", "Added to the file item container after a completely failed upload."),
+        ("hide", "qq-hide", "Added whenever an item should no longer be visible."),
+        ("retryable", "qq-upload-retryable", "Added to the file item container after a failed upload attempt
+        if the item is eligible for a retry."),
+        ("retrying", "qq-upload-retrying", "Added to the file item container during a retry attempt."),
+        ("success", "qq-upload-success", "Added to the file item container after a successful upload."),
     )
 ) }}
 
