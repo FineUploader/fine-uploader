@@ -149,14 +149,7 @@ options for `messages`""", "info", "Note:") }}
 
 {{ options_table(
     (
-        ("uploadButton", "`String`", "`'Upload a file'`", "Label for the file selector button."),
-        ("cancelButton", "`String`", "`'cancel'`", "The cancel button text"),
-        ("retryButton", "`String`", "`'Retry'`", "The retry link text"),
-        ("deleteButton", "`String`", "`'Delete'`", "The delete file link text"),
         ("failUpload", "`String`", "`'Upload failed'`", "Text that appears next to a failed item"),
-        ("deleteButton", "`String`", "`Delete'`", "The delete file link text"),
-        ("dragZone", "`String`", "`Drop files here to upload'`", "Appears in a drop zone while visible"),
-        ("dropProcessing", "`String`", "`'Processing dropped files...'`", "Appears next to 'drop processing' spinner"),
         ("formatProgress", "`String`", "`'{percent}% of {total_size}'`", "Appears next to a currently uploading item"),
         ("waitingForResponse", "`String`", "`'Processing...'`", "Appears next to item once the last bytes have been sent (differs on the user-agent)"),
     )
