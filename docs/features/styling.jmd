@@ -160,9 +160,11 @@ $("#myUploader").on("complete", function(event, id, name, response) {
     var serverPathToFile = response.filePath,
         $fileItem = $(this).fineUploader("getItemByFileId", id);
 
-    $fileItem.find(".view-btn")
-        .attr("href", serverPathToFile)
-        .removeClass("hide");
+    if (response.success) {
+        $fileItem.find(".view-btn")
+            .attr("href", serverPathToFile)
+            .removeClass("hide");
+    }
 });
 ```
 
