@@ -16,7 +16,8 @@ TODO Breaking changes to document:
 * added `hide` `classes` option property
 * removed all `text` option properties, except for `failUpload`, `formatProgress` and `waitingForResponse`
 * removed `dragAndDrop.disableDefaultDropzone`
-
+* removed `dragAndDrop.hideDropzones` (replaced w/ qq-hide-dropzone attr)
+* removed `hideDropZonesBeforeEnter` option in standalone DnD module (replaced w/ qq-hide-dropzone attr)
 
 
 {% endmarkdown %}
