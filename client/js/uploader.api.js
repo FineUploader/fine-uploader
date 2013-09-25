@@ -84,7 +84,6 @@ qq.uiPrivateApi = {
 
         return new qq.DragAndDrop({
             dropZoneElements: dropZoneElements,
-            hideDropZonesBeforeEnter: this._options.dragAndDrop.hideDropzones,
             allowMultipleItems: this._options.multiple,
             classes: {
                 dropActive: this._options.classes.dropActive

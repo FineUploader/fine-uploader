@@ -77,7 +77,6 @@ options for `deleteFile`""", "info", "Note:") }}
 {{ options_table(
     (
         ("extraDropzones", "`Array`", "`[]`", "Designate additional drop zones for file input."),
-        ("hideDropzones", "`Boolean`", "`true`", "Use if you would like dropzone elements to be hidden or not."),
     )
 ) }}
 
