@@ -19,6 +19,14 @@ Everything should work just fine if you simply use the provided template as is, 
 However, you can certainly customize the default template to match your web application's look and feel.
 The rest of this section includes examples of some changes you may want to make to the template.
 
+{{ alert(
+"""The CSS classes included in template elements that end with '-selector' are used internally by Fine Uploader UI
+for the purposes of element selection only.  No styles are attached to these classes.  Other CSS classes that DO NOT
+end with '-selector' are used to style these elements.  You can certainly remove the non-selector class if you
+want to contribute your own styles, but you should only remove the selector class if you no longer want Fine
+Uploader UI to track/address the associated template element."""
+)}}
+
 #### Re-style the progress bar
 
 Don't like the default progress bar included with Fine Uploader's CSS file?  No problem!  You can easily use,
@@ -42,35 +50,121 @@ To this:
 
 #### Omit a portion of the template that does not apply to your app
 
-TODO
+You can omit any element of the template that does not apply to your uploader except for:
+* The parent div that contains the contents of the template (qq-uploader-selector element)
+* The file list container element (qq-upload-list-selector element)
+* The immediate child container of the file list container element.  You can certainly change the type of tag here though.
+
+Otherwise, any portion of the template can simply be omitted.  For example, if you don't want to utilize the edit
+filename feature, simply omit any elements with class names that start with qq-edit-filename.  If you don't want
+to have the delete button appear after a successful upload, omit the qq-upload-delete-selector element.  If you don't
+want the progress bar at all, omit the qq-progress-bar elements, etc, etc.
 
 #### Change default text
 
-TODO
+Any of the text nodes in the template can be changed to match your language or preferences.  In some cases, Fine
+Uploader UI dynamically sets text, such as with the qq-upload-status-text-selector and qq-upload-size-selector
+elements.  See the [`text` option](../api/options-ui.html#text-option) for adjusting these types of strings.
 
 #### Re-arrange the order of the template elements
 
-TODO
+You may also change the order of the elements in the template.  Note that you should not move file-related elements
+out of the qq-upload-list-selector container or it's immediate child container though.
 
 #### Move the file list to an alternate location in the DOM
 
-TODO
+If you would like to locate the file list (contents of the qq-upload-list-selector element) elsewhere in your document,
+you may do so via the [`listElement` option](../api/options-ui.html) which allows you to specify an existing
+container element where Fine Uploader UI will render the file list item elements.
 
 #### Move the default drop zone into the file list
 
-TODO
+Suppose you want to combine the file list (qq-upload-list-selector element) and the drop zone (qq-upload-drop-area-selector element).
+You can accomplish this simply by following these steps:
 
-#### Easily remove/change Fine Uploader UI CSS styles from an element
+First, make the file list a child of the drop zone:
 
-TODO
+```html
+<div class="qq-upload-drop-area-selector">
+    <ul class="qq-upload-list-selector qq-upload-list">
+        <li>
+            ....
+        </li>
+    </ul>
+</div>
+
+```
+Notice that the default styling class for the drop area has been removed, you may want to contribute your own CSS class
+to match your web application's style.
+
+Then, instruct Fine Uploader UI to NOT hide the contents of the drop zone by default by setting the
+`dragAndDrop.hideDropzones` option to `false`:
+
+```javascript
+$("#myUploader").fineUploader({
+    ...
+    dragAndDrop: {
+        hideDropzones: false
+    }
+});
+```
+
+Finally, you may want to specify some custom styles for the drop zone.  Perhaps a `min-height` is important to ensure
+that the drop zone is not 0-sized when the uploader first loads (before any files have been submitted).  You may also
+want to consider setting a `background` image, adjusting the `opacity` (so the default background color that Fine
+Uploader UI adds when you enter the drop zone is visible), or something else.  You can contribute these styles directly
+to the qq-drop-area-selector element in the template via a `style` attribute, or define a CSS class elsewhere in the
+document with these styles and simply append this custom class to the drop-area element signature.
 
 #### Customize the buttons/links
 
-TODO
+It is trivial to re-style the delete, cancel, retry, and upload buttons.  For example, you can utilize Bootstrap's
+button styling to re-skin the upload button by changing this:
+
+```html
+<div class="qq-upload-button-selector qq-upload-button">
+    <div>Upload a file</div>
+</div>
+```
+
+to this:
+
+```html
+<div class="qq-upload-button-selector btn">
+    <div>Upload a file</div>
+</div>
+```
+
 
 #### Include other custom elements in your template
 
-TODO
+Suppose you want to include a link to the uploaded file next to each file item element.  You can modify the template
+to include a styled anchor link, hidden initially, and then show the anchor and set its `href` attribute
+in your `complete` event handler, once you know the path of the file on your server.
+
+To do this, the file list portion of the template can be modified to include this link as the last child:
+
+```html
+<ul class="qq-upload-list-selector qq-upload-list">
+    <li>
+        ...
+        <a class="view-btn hide btn">View</a>
+    </li>
+</ul>
+```
+
+Your `complete` event handler would look something like this:
+
+```javascript
+$("#myUploader").on("complete", function(event, id, name, response) {
+    var serverPathToFile = response.filePath,
+        $fileItem = $(this).fineUploader("getItemByFileId", id);
+
+    $fileItem.find(".view-btn")
+        .attr("href", serverPathToFile)
+        .removeClass("hide");
+});
+```
 
 
 ### `classes` option
