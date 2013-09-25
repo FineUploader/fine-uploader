@@ -78,16 +78,9 @@ qq.uiPrivateApi = {
         var self = this,
             dropZoneElements = this._options.dragAndDrop.extraDropzones,
             templating = this._templating,
-            defaultDropZone = templating.getDropZone(),
-            preventSelectFiles;
+            defaultDropZone = templating.getDropZone();
 
-        preventSelectFiles = function(event) {
-            event.preventDefault();
-        };
-
-        if (!this._options.dragAndDrop.disableDefaultDropzone && defaultDropZone) {
-            dropZoneElements.push(defaultDropZone);
-        }
+        defaultDropZone && dropZoneElements.push(defaultDropZone);
 
         return new qq.DragAndDrop({
             dropZoneElements: dropZoneElements,

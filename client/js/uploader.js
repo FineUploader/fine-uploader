@@ -15,8 +15,7 @@ qq.FineUploader = function(o, namespace) {
         listElement: null,
         dragAndDrop: {
             extraDropzones: [],
-            hideDropzones: true,
-            disableDefaultDropzone: false
+            hideDropzones: true
         },
         text: {
             formatProgress: "{percent}% of {total_size}",

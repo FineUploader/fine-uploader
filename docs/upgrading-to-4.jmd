@@ -15,7 +15,7 @@ TODO Breaking changes to document:
 * removed all `classes` option properties, other than the ones listed in styling doc
 * added `hide` `classes` option property
 * removed all `text` option properties, except for `failUpload`, `formatProgress` and `waitingForResponse`
-
+* removed `dragAndDrop.disableDefaultDropzone`
 
 
 
