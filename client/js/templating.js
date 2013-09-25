@@ -1,17 +1,23 @@
-// Expected: If any template elements do not exists, fail silently (no unchecked errors, etc)
+/**
+ * Module responsible for rendering all Fine Uploader UI templates.  This module also asserts at least
+ * a limited amount of control over the template elements after they are added to the DOM.
+ * Wherever possible, this module asserts total control over template elements present in the DOM.
+ *
+ * @param spec Specification object used to control various templating behaviors
+ * @returns various API methods
+ * @constructor
+ */
 qq.Templating = function(spec) {
     "use strict";
 
-    var api, isEditElementsExist, isRetryElementExist,
-        fileIdAttr = "qq-file-id",
-        fileClassPrefix = "qq-file-id-",
+    var FILE_ID_ATTR = "qq-file-id",
+        FILE_CLASS_PREFIX = "qq-file-id-",
         isCancelDisabled = false,
         options = {
             templateIdOrEl: "qq-template",
             containerEl: null,
             fileContainerEl: null,
             button: null,
-            disableDnd: false,
             classes: {
                 hide: "qq-hide",
                 editable: "qq-editable"
@@ -35,12 +41,19 @@ qq.Templating = function(spec) {
             dropProcessing: 'qq-drop-processing-selector',
             dropProcessingSpinner: 'qq-drop-processing-spinner-selector'
         },
-        templateHtml, container, fileList;
+        api, isEditElementsExist, isRetryElementExist, templateHtml, container, fileList;
 
     qq.extend(options, spec);
     container = options.containerEl;
 
-
+    /**
+     * Grabs the HTML from the script tag holding the template markup.  This function will also adjust
+     * some internally-tracked state variables based on the contents of the template.
+     * The template is filtered so that irrelevant elements (such as the drop zone if DnD is not supported)
+     * are omitted from the DOM.  Useful errors will be thrown if the template cannot be parsed.
+     *
+     * @returns {{template: *, fileTemplate: *}} HTML for the top-level file items templates
+     */
     function getTemplateHtml() {
         var scriptEl, scriptHtml, fileListNode, tempTemplateEl, fileListHtml, defaultButton, dropzone;
 
@@ -48,6 +61,7 @@ qq.Templating = function(spec) {
             throw new Error("You MUST specify either a template element or ID!");
         }
 
+        // Grab the contents of the script tag holding the template.
         if (qq.isString(options.templateIdOrEl)) {
             scriptEl = document.getElementById(options.templateIdOrEl);
 
@@ -70,6 +84,8 @@ qq.Templating = function(spec) {
         tempTemplateEl = document.createElement("div");
         tempTemplateEl.appendChild(qq.toElement(scriptHtml));
 
+        // Don't include the default template button in the DOM
+        // if an alternate button container has been specified.
         if (spec.button) {
             defaultButton = qq(tempTemplateEl).getByClass(selectorClasses.button)[0];
             if (defaultButton) {
@@ -77,11 +93,10 @@ qq.Templating = function(spec) {
             }
         }
 
-        if (spec.disableDnd || !qq.supportedFeatures.fileDrop) {
+        // Omit the drop zone from the DOM if DnD is not supported by the UA.
+        if (!qq.supportedFeatures.fileDrop) {
             dropzone = qq(tempTemplateEl).getByClass(selectorClasses.drop)[0];
-            if (dropzone) {
-                qq(dropzone).remove();
-            }
+            dropzone && qq(dropzone).remove();
         }
 
         isEditElementsExist = qq(tempTemplateEl).getByClass(selectorClasses.editFilenameInput).length > 0;
@@ -98,7 +113,7 @@ qq.Templating = function(spec) {
     }
 
     function getFile(id) {
-        return qq(fileList).getByClass(fileClassPrefix + id)[0];
+        return qq(fileList).getByClass(FILE_CLASS_PREFIX + id)[0];
     }
 
     function getTemplateEl(context, cssClass) {
@@ -203,9 +218,9 @@ qq.Templating = function(spec) {
             var fileEl = qq.toElement(templateHtml.fileTemplate),
                 fileNameEl = getTemplateEl(fileEl, selectorClasses.file);
 
-            qq(fileEl).addClass(fileClassPrefix + id);
+            qq(fileEl).addClass(FILE_CLASS_PREFIX + id);
             fileNameEl && qq(fileNameEl).setText(name);
-            fileEl.setAttribute(fileIdAttr, id);
+            fileEl.setAttribute(FILE_ID_ATTR, id);
 
             if (prependInfo) {
                 prependFile(fileEl, prependInfo.index);
@@ -231,11 +246,11 @@ qq.Templating = function(spec) {
         getFileId: function(el) {
             var currentNode = el;
 
-            while (currentNode.getAttribute(fileIdAttr) == null) {
+            while (currentNode.getAttribute(FILE_ID_ATTR) == null) {
                 currentNode = el.parentNode;
             }
 
-            return currentNode.getAttribute(fileIdAttr);
+            return currentNode.getAttribute(FILE_ID_ATTR);
         },
 
         getFileList: function() {
