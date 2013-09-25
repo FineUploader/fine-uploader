@@ -33,9 +33,8 @@ TODO...
 
 ### `classes` option
 
-Finally, a `classes` option allows you to change some default class names that Fine Uploader may add to template
-elements dynamically/on-demand.  The following `classes` option properties exist in Fine Uploader UI mode
-(with default values in parentheses):
+A `classes` option allows you to change some default class names that Fine Uploader may add to template
+elements dynamically/on-demand.  The following `classes` option properties exist in Fine Uploader UI mode:
 
 {% macro classes_table(rows, title=None) -%}
 {{ code_table(("Property Name", "Default CSS", "Description"), rows, title) }}
