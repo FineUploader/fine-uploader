@@ -98,7 +98,7 @@ Notice that the default styling class for the drop area has been removed, you ma
 to match your web application's style.
 
 Then, instruct Fine Uploader UI to NOT hide the contents of the drop zone by default by setting the
-`dragAndDrop.hideDropzones` option to `false`:
+[`dragAndDrop.hideDropzones` option](../api/options-ui.html#draganddrop-option) to `false`:
 
 ```javascript
 $("#myUploader").fineUploader({
