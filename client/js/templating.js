@@ -77,7 +77,7 @@ qq.Templating = function(spec) {
             }
         }
 
-        if (spec.disableDnd) {
+        if (spec.disableDnd || !qq.supportedFeatures.fileDrop) {
             dropzone = qq(tempTemplateEl).getByClass(selectorClasses.drop)[0];
             if (dropzone) {
                 qq(dropzone).remove();
