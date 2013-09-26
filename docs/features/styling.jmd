@@ -178,6 +178,10 @@ elements dynamically/on-demand.  The following `classes` option properties exist
 
 {{ classes_table(
     (
+        ("buttonFocus", "qq-upload-button-focus", "Added to any upload button tracked by Fine Uploader when the
+        button receives focus."),
+        ("buttonHover", "qq-upload-button-hover", "Added to any upload button tracked by Fine Uploader when a
+        mouse cursor hovers over the button."),
         ("dropActive", "qq-upload-drop-area-active", "Added to the drop area container when an item
         has entered the drop zone."),
         ("editable", "qq-editable", "Added to the file name element when the file name may be edited."),
