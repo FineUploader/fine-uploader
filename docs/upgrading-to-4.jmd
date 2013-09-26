@@ -8,6 +8,8 @@ The 4.0 version brings some breaking changes, mostly surrounding [templating](fe
 in [Fine Uploader UI](modes/ui.html).  If you are not using Fine Uploader UI or the [standalone drag & drop module](features/drag-and-drop.html#drag-and-drop-standalone-module),
 you will not be affected by these changes.
 
+Be sure to read about templating in the [styling guide](features/styling.html).
+
 
 ## Fine Uploader UI breaking changes & upgrade instructions
 
