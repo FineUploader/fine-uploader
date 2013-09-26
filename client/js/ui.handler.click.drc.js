@@ -3,7 +3,7 @@ qq.DeleteRetryOrCancelClickHandler = function(s) {
 
     var inheritedInternalApi = {},
         spec = {
-            listElement: document,
+            templating: null,
             log: function(message, lvl) {},
             classes: {
                 cancel: 'qq-upload-cancel',
@@ -17,12 +17,11 @@ qq.DeleteRetryOrCancelClickHandler = function(s) {
     };
 
     function examineEvent(target, event) {
-        if (qq(target).hasClass(spec.classes.cancel)
-            || qq(target).hasClass(spec.classes.retry)
-            || qq(target).hasClass(spec.classes.deleteButton)) {
+        if (spec.templating.isCancel(target) ||
+            spec.templating.isRetry(target) ||
+            spec.templating.isDelete(target)) {
 
-            var item = inheritedInternalApi.getItemFromEventTarget(target),
-                fileId = inheritedInternalApi.getFileIdFromItem(item);
+            var fileId = spec.templating.getFileId(target);
 
             qq.preventDefault(event);
 
@@ -32,10 +31,10 @@ qq.DeleteRetryOrCancelClickHandler = function(s) {
     }
 
     function deleteRetryOrCancel(target, fileId) {
-        if (qq(target).hasClass(spec.classes.deleteButton)) {
+        if (spec.templating.isDelete(target)) {
             spec.onDeleteFile(fileId);
         }
-        else if (qq(target).hasClass(spec.classes.cancel)) {
+        else if (spec.templating.isCancel(target)) {
             spec.onCancel(fileId);
         }
         else {
@@ -47,7 +46,7 @@ qq.DeleteRetryOrCancelClickHandler = function(s) {
 
     spec.eventType = 'click';
     spec.onHandled = examineEvent;
-    spec.attachTo = spec.listElement;
+    spec.attachTo = spec.templating.getFileList();
 
     qq.extend(this, new qq.UiEventHandler(spec, inheritedInternalApi));
 };

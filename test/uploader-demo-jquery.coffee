@@ -30,6 +30,7 @@ $ ->
             mode: 'custom'
         display:
             fileSizeOnSubmit: true
+            prependFiles: true
         paste:
             targetElement: $(document)
     )
@@ -58,8 +59,10 @@ $ ->
             forceConfirm: true
             params:
                 foo: "bar"
-        display:
-            fileSizeOnSubmit: true
+#        display:
+#            fileSizeOnSubmit: true
+        editFilename:
+            enabled: true
     )
         .on 'error', errorHandler
 

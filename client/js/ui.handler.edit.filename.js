@@ -4,15 +4,11 @@ qq.FilenameEditHandler = function(s, inheritedInternalApi) {
     "use strict";
 
     var spec = {
-            listElement: null,
+            templating: null,
             log: function(message, lvl) {},
-            classes: {
-                file: 'qq-upload-file'
-            },
             onGetUploadStatus: function(fileId) {},
             onGetName: function(fileId) {},
             onSetName: function(fileId, newName) {},
-            onGetInput: function(item) {},
             onEditingStatusChange: function(fileId, isEditing) {}
         },
         publicApi;
@@ -72,24 +68,24 @@ qq.FilenameEditHandler = function(s, inheritedInternalApi) {
 
     qq.extend(spec, s);
 
-    spec.attachTo = spec.listElement;
+    spec.attachTo = spec.templating.getFileList();
 
     publicApi = qq.extend(this, new qq.UiEventHandler(spec, inheritedInternalApi));
 
     qq.extend(inheritedInternalApi, {
-        handleFilenameEdit: function(fileId, target, item, focusInput) {
-            var newFilenameInputEl = spec.onGetInput(item);
+        handleFilenameEdit: function(id, target, focusInput) {
+            var newFilenameInputEl = spec.templating.getEditInput(id);
 
-            spec.onEditingStatusChange(fileId, true);
+            spec.onEditingStatusChange(id, true);
 
-            newFilenameInputEl.value = getFilenameSansExtension(fileId);
+            newFilenameInputEl.value = getFilenameSansExtension(id);
 
             if (focusInput) {
                 newFilenameInputEl.focus();
             }
 
-            registerInputBlurHandler(newFilenameInputEl, fileId);
-            registerInputEnterKeyHandler(newFilenameInputEl, fileId);
+            registerInputBlurHandler(newFilenameInputEl, id);
+            registerInputEnterKeyHandler(newFilenameInputEl, id);
         }
     });
 

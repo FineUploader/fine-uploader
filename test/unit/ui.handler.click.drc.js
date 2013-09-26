@@ -4,7 +4,7 @@ describe('ui.handler.click.drc.js', function () {
     
         it('delete, retry, and cancel click handlers', function (done) {
             var fileId = 123,
-                $container, $fileItem, $cancelLink, $deleteLink, $retryLink;
+                $container, $fileItem, $cancelLink, $deleteLink, $retryLink, templating;
             //expect(3);
 
             $fixture.append('<div class="testcontainer"></div>');
@@ -22,8 +22,23 @@ describe('ui.handler.click.drc.js', function () {
 
             $fileItem[0].qqFileId = fileId;
 
+            templating = {
+                getFileList: function() {
+                    return $container[0];
+                },
+                isCancel: function(el) {
+
+                },
+                isRetry: function(el) {
+
+                },
+                isDelete: function(el) {
+
+                }
+            };
+
             var handler = new qq.DeleteRetryOrCancelClickHandler({
-                listElement: $container[0],
+                templating: templating,
                 classes: {
                     cancel: 'test-cancel',
                     deleteButton: 'test-delete',

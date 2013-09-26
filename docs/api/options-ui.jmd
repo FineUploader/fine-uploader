@@ -32,7 +32,13 @@ can be overridden.
     (
         ("element", "`String`", "`null`", "Container for the default drop zone"),
         ("listElement", "`String`", "`null`", "Container for the item list."),
-        ("multiple", "`Boolean`", "`true`", "When `true` this will prevent the user from simultaneously selecting or dropping more than one item. Dropping or selecting another item will clear the upload list. If another is already uploading, it will be cancelled. To ignore rather than cancel, simply return `false` in the 'validate' or 'submit' event handlers."),
+        ("multiple", "`Boolean`", "`true`", "When `true` this will prevent the user from simultaneously
+        selecting or dropping more than one item. Dropping or selecting another item will clear the upload list.
+        If another is already uploading, it will be cancelled. To ignore rather than cancel, simply
+        return `false` in the 'validate' or 'submit' event handlers."),
+        ("template", "`String` or `Element`", "'qq-template'", "This points to the script tag that contains the
+        template to use for one or more Fine Uploader UI instances.  You can either specify a string, which is the
+        element ID (the ID of the script tag on the page) or an `Element` that points to the script tag."),
     )
 ) }}
 
@@ -71,8 +77,6 @@ options for `deleteFile`""", "info", "Note:") }}
 {{ options_table(
     (
         ("extraDropzones", "`Array`", "`[]`", "Designate additional drop zones for file input."),
-        ("hideDropzones", "`Boolean`", "`true`", "Use if you would like dropzone elements to be hidden or not."),
-        ("disableDefaultDropzone", "`Boolean`", "`false`", "Use if you are contributing your own dropzone(s) that is/are not the default one."),
     )
 ) }}
 
@@ -143,14 +147,7 @@ options for `messages`""", "info", "Note:") }}
 
 {{ options_table(
     (
-        ("uploadButton", "`String`", "`'Upload a file'`", "Label for the file selector button."),
-        ("cancelButton", "`String`", "`'cancel'`", "The cancel button text"),
-        ("retryButton", "`String`", "`'Retry'`", "The retry link text"),
-        ("deleteButton", "`String`", "`'Delete'`", "The delete file link text"),
         ("failUpload", "`String`", "`'Upload failed'`", "Text that appears next to a failed item"),
-        ("deleteButton", "`String`", "`Delete'`", "The delete file link text"),
-        ("dragZone", "`String`", "`Drop files here to upload'`", "Appears in a drop zone while visible"),
-        ("dropProcessing", "`String`", "`'Processing dropped files...'`", "Appears next to 'drop processing' spinner"),
         ("formatProgress", "`String`", "`'{percent}% of {total_size}'`", "Appears next to a currently uploading item"),
         ("waitingForResponse", "`String`", "`'Processing...'`", "Appears next to item once the last bytes have been sent (differs on the user-agent)"),
     )
