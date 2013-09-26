@@ -29,6 +29,7 @@ module.exports = (grunt) ->
     'dist': './_dist'
     'build': './_build'
     'src': './client'
+    'html': './client/html'
     'docs': './docs'
     'test': './test'
 
@@ -355,27 +356,27 @@ module.exports = (grunt) ->
           }
           {
             expand: true
-            cwd: paths.build
+            cwd: paths.html
             src: ['*.html']
-            dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
+            dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/templates/"
           }
           {
             expand: true
-            cwd: paths.build
+            cwd: paths.html
             src: ['*.html']
-            dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
+            dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/templates/"
           }
           {
             expand: true
-            cwd: paths.build
+            cwd: paths.html
             src: ['*.html']
-            dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
+            dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/templates/"
           }
           {
             expand: true
-            cwd: paths.build
+            cwd: paths.html
             src: ['*.html']
-            dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
+            dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/templates/"
           }
         ]
       build:
