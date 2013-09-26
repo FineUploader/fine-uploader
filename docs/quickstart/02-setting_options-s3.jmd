@@ -8,6 +8,11 @@ At this point in the tutorial you should have an very simple HTML page with a
 Fine Uploader instance. This section will get you started with setting some of
 the more common options of Fine Uploader.
 
+{{ alert(
+"""If you are using Fine Uploader UI, you MUST include a template in your document/markup.  You can
+use the default-template.html file bundled with the library and customize it as desired.  See the
+[styling documentation page](../features/styling.html) for more details.""") }}
+
 ## Initial Options
 
 Fine Uploader comes with a wealth of options. Most importantly, Fine Uploader
