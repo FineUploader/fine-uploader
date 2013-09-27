@@ -1,0 +1,127 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Overview" %}
+{% block content %}
+{% markdown %}
+# Documentation Overview {: .page-header }
+
+Welcome to Fine Uploader's documentation. This documentation is divided into
+different parts. It's recommended that you first check out the
+[quickstart](#quickstart) for Fine Uploader. If you’d rather dive into the
+internals of Fine Uploader, check out the exhaustive
+[feature reference](#features) or [API documentation](#api-reference).
+For assistance in getting your upload server set up, check out the docs on
+the [server-side](#endpoint-handlers_2).
+
+### Getting Started
+
+This area of the documentation is mostly prose and examples. It is meant to be
+human-readable and accessible to those looking to get started with Fine Uploader.
+For experts, or developers looking to view more technical documentation, refer
+to the [API docs](#api-reference).
+
+#### Quickstart
+
+##### Traditional Uploader
+
+1. [Getting Started with Fine Uploader](quickstart/01-getting-started.html)
+2. [Setting Fine Uploader options](quickstart/02-setting_options.html)
+3. [Creating an upload server](quickstart/03-setting_up_server.html)
+
+##### Amazon S3 Uploader
+
+1. [Getting Started with Fine Uploader](quickstart/01-getting-started.html)
+2. [Setting Fine Uploader options](quickstart/02-setting_options-s3.html)
+3. [Creating an upload server](quickstart/03-setting_up_server-s3.html)
+
+#### Fine Uploader Modes
+
+* [Core](modes/core.html)
+* [UI](modes/ui.html)
+
+#### Plugins
+
+* [jQuery](integrating/jquery.html)
+
+#### Endpoint Handlers (server-side guidelines)
+
+* [Traditional Server](endpoint_handlers/traditional.html)
+* [Amazon S3](endpoint_handlers/amazon-s3.html)
+* [Examples](https://github.com/Widen/fine-uploader-server)
+
+#### Additional Information
+
+* [Browser Support](browser-support.html)
+* [Build Your Own](contributing.html)
+* [Contributing](https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md)
+* [Changelog](http://blog.fineuploader.com/category/changelog/)
+* [Support](support.html)
+* [FAQ](faq.html)
+
+#### Links
+
+* [Official Site](http://fineuploader.com/index.html)
+* [Blog](http://blog.fineuploader.com/)
+* [Issue Tracker](https://github.com/Widen/fine-uploader/issues)
+* [Support Forum](http://stackoverflow.com/questions/tagged/fine-uploader)
+* [GitHub repo](https://github.com/Widen/fine-uploader)
+
+### Features
+
+This section will outline some of the major features offered by Fine Uploader.
+Any options, events, and API methods relevant to that specific feature will
+be documented.
+
+* [Uploading Files](features/upload-files.html)
+* [Asynchronous Tasks & Promises](features/async-tasks-and-promises.html)
+* [Cancellable Uploads](features/cancellable-uploads.html)
+* [Chunking & Partitioning](features/chunking.html)
+* [CORS](features/CORS.html)
+* [Deleting Files](features/delete.html)
+* [Drag and Drop](features/drag-and-drop.html)
+* [Filename Editing](features/filename-edit.html)
+* [Handling Errors](features/handling-errors.html)
+* [Multiple Upload Buttons](features/extra-buttons.html)
+* [Paste to Upload](features/paste-to-upload.html)
+* [Progress Bars](features/progress-bars.html)
+* [Request Parameters](features/request-parameters.html)
+* [Resuming Uploads](features/resume.html)
+* [Retrying](features/retry.html)
+* [Statistics & Status Updates](features/statistics-and-status-updates.html)
+* [Styling](features/styling.html)
+* [Upload via Mobile Device Camera](features/upload-from-mobile-camera.html)
+* [Validation](features/validation.html)
+
+### API Reference
+
+The API reference is primarily for experienced integrators who are looking for
+more advanced features and details about Fine Uploader. That being said, these
+docs should be viewed by all who are looking to use Fine Uploader as some of the
+information is integral.
+
+{% endmarkdown %}
+<div class="row-fluid">
+    <div class="span4">
+{% markdown %}
+#### Options
+* [Core](api/options.html)
+* [UI](api/options-ui.html)
+* [S3](api/options-s3.html)
+{% endmarkdown %}
+    </div>
+    <div class="span4">
+{% markdown %}
+#### Methods
+* [Core + UI](api/methods.html)
+* [S3](api/methods-s3.html)
+* [qq Utilities](api/qq.html)
+{% endmarkdown %}
+    </div>
+    <div class="span4">
+{% markdown %}
+#### Events
+* [Traditional & S3](api/events.html)
+{% endmarkdown %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "S3 Methods" %}
+{% block content %}
+{% markdown %}
+# Methods <small>S3</small>{: .page-header }
+
+## S3
+
+The S3 uploader provides many of the same API methods as the traditional
+uploader, but there are a few crucial differences to take into account.
+If you plan to use the S3 uploader, then use the following table as your API
+reference.  All methods outlined in the core or UI documentation are also available
+in Fine Uploader S3, unless otherwise noted here.
+
+{{ methods_table(
+(
+    ("getKey", "`Integer` fileId", "`String`", "Retreive the S3 object key with the associated id"),
+    ("getResumableFilesData", "", "`Object`", "Retrieve information about files that may be resumed during this session.
+    Includes all properties documented in the associated [core method](methods.html#core), as well as a `key` property."),
+    ("setEndpoint", "`String` bucketPath[, `Number` id]", "", "Modify the bucket where
+    upload requests should be directed.  The endpoint for a specific file or blob can be changed by passing in an
+    optional `id` parameter.  An id will always be a number and refers to a specific file.  All valid bucket URLs
+    documented by Amazon are supported, including custom domains. SSL is also supported."),
+    ("setUploadSuccessParams", "`Object` newParams[, `Integer` id]", "", "Set additional the parameters for the upload
+    success request.  Note that Fine Uploader will still send the bucket, key, filename, and UUID as well."),
+)
+) }}
+
+{% endmarkdown %}
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Paste to Upload" %}
+{% block content %}
+{% markdown %}
+
+# Paste to Upload {: .page-header }
+
+Before some of the latest HTML5 features came out, in order to upload an image
+from another web page, you must save the image to your local file system and
+then either drop it into an uploader instance or select it from the
+“choose files” dialog. Certainly copying and pasting is a much more efficient
+way to do this. Note that you can also use this feature to upload any image
+currently present in your clipboard. For example, suppose you take a screenshot
+and add it directly to your clipboard. You can then paste it into your Fine
+Uploader instance.
+
+{{ alert(
+"""This feature is only supported by browsers that feature the [Clipboard API](http://www.w3.org/TR/clipboard-apis/).
+Currently, only Chrome supports this completely.", "info", "Note:") }}
+
+
+## Options
+
+### `paste` option (Core mode)
+
+{{ options_table(
+    (
+       ("defaultName", "`String`", "'pasted_image'", "The default name given to pasted images."),
+       ("targetElement", "`HTMLElement`", "`null`", "Enable this feature by providing any `HTMLElement` here.")
+    )
+) }}
+
+### `paste` option (UI mode)
+Note that all core mode options are also available.
+
+{{ options_table(
+    (
+       ("promptForName", "`Boolean`", "`false`", "If set to true, the `showPrompt` function will be called in an attempt
+       to ask the user to provide a name for the associated pasted image. See the styling documentation for more
+       details on overriding `showPrompt`."),
+       ("namePromptMessage", "`String`", "'Please name this image'", "Text that will appear in the `showPrompt` dialog,
+       asking the user to name the pasted image. Note that an appropriate extension will always been appended to the
+       name supplied by the user automatically. If you override the `pasteReceived` event handler AND set this option to
+       true, your callback will be ignored.")
+    )
+) }}
+
+## Events
+
+{{ events_table(
+    (
+        ("pasteReceived", "`Blob` blob", "Called when a pasted image has been received, but before it is uploaded. You
+        may return false to prevent the paste from being processed.  You may also return a [`qq.Promise`](async-tasks-and-promises.html)."),
+    )
+) }}
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2013/03/04/upload-an-image-via-paste-in-3-4/)
+
+{% endmarkdown %}
+{% endblock %}

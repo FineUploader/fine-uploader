@@ -1,12 +1,15 @@
-/**
- * Class for uploading files, uploading itself is handled by child classes
- */
 /*globals qq*/
-qq.UploadHandler = function(o) {
+/**
+ * Base upload handler module.  Delegates to more specific handlers.
+ *
+ * @param o Options.  Passed along to the specific handler submodule as well.
+ * @param namespace [optional] Namespace for the specific handler.
+ */
+qq.UploadHandler = function(o, namespace) {
     "use strict";
 
     var queue = [],
-        options, log, dequeue, handlerImpl;
+        options, log, handlerImpl, api;
 
     // Default options, can be overridden by the user
     options = {
@@ -15,13 +18,14 @@ qq.UploadHandler = function(o) {
         paramsInBody: false,
         paramsStore: {},
         endpointStore: {},
+        filenameParam: 'qqfilename',
         cors: {
             expected: false,
             sendCredentials: false
         },
         maxConnections: 3, // maximum number of concurrent uploads
-        uuidParamName: 'qquuid',
-        totalFileSizeParamName: 'qqtotalfilesize',
+        uuidParam: 'qquuid',
+        totalFileSizeParam: 'qqtotalfilesize',
         chunking: {
             enabled: false,
             partSize: 2000000, //bytes
@@ -41,11 +45,6 @@ qq.UploadHandler = function(o) {
                 resuming: "qqresume"
             }
         },
-        blobs: {
-            paramNames: {
-                name: 'qqblobname'
-            }
-        },
         log: function(str, level) {},
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, response, xhr){},
@@ -53,7 +52,8 @@ qq.UploadHandler = function(o) {
         onUpload: function(id, fileName){},
         onUploadChunk: function(id, fileName, chunkData){},
         onAutoRetry: function(id, fileName, response, xhr){},
-        onResume: function(id, fileName, chunkData){}
+        onResume: function(id, fileName, chunkData){},
+        onUuidChanged: function(id, newUuid){}
 
     };
     qq.extend(options, o);
@@ -63,7 +63,7 @@ qq.UploadHandler = function(o) {
     /**
      * Removes element from queue, starts upload of next
      */
-    dequeue = function(id) {
+    function dequeue(id) {
         var i = qq.indexOf(queue, id),
             max = options.maxConnections,
             nextId;
@@ -76,17 +76,23 @@ qq.UploadHandler = function(o) {
                 handlerImpl.upload(nextId);
             }
         }
-    };
-
-    if (qq.supportedFeatures.ajaxUploading) {
-        handlerImpl = new qq.UploadHandlerXhr(options, dequeue, log);
-    }
-    else {
-        handlerImpl = new qq.UploadHandlerForm(options, dequeue, log);
     }
 
+    function cancelSuccess(id) {
+        log('Cancelling ' + id);
+        options.paramsStore.remove(id);
+        dequeue(id);
+    }
 
-    return {
+    function determineHandlerImpl() {
+        var handlerType = namespace ? qq[namespace] : qq,
+            handlerModuleSubtype = qq.supportedFeatures.ajaxUploading ? "Xhr" : "Form";
+
+        handlerImpl = new handlerType["UploadHandler" + handlerModuleSubtype](options, dequeue, options.onUuidChanged, log);
+    }
+
+
+    api = {
         /**
          * Adds file or file input to the queue
          * @returns id
@@ -102,8 +108,11 @@ qq.UploadHandler = function(o) {
 
             // if too many active uploads, wait...
             if (len <= options.maxConnections){
-                return handlerImpl.upload(id);
+                handlerImpl.upload(id);
+                return true;
             }
+
+            return false;
         },
         retry: function(id) {
             var i = qq.indexOf(queue, id);
@@ -118,10 +127,16 @@ qq.UploadHandler = function(o) {
          * Cancels file upload by id
          */
         cancel: function(id) {
-            log('Cancelling ' + id);
-            options.paramsStore.remove(id);
-            handlerImpl.cancel(id);
-            dequeue(id);
+            var cancelRetVal = handlerImpl.cancel(id);
+
+            if (qq.isPromise(cancelRetVal)) {
+                cancelRetVal.then(function() {
+                    cancelSuccess(id);
+                });
+            }
+            else if (cancelRetVal !== false) {
+                cancelSuccess(id);
+            }
         },
         /**
          * Cancels all queued or in-progress uploads
@@ -140,8 +155,13 @@ qq.UploadHandler = function(o) {
         /**
          * Returns name of the file identified by id
          */
-        getName: function(id){
+        getName: function(id) {
             return handlerImpl.getName(id);
+        },
+        // Update/change the name of the associated file.
+        // This updated name should be sent as a parameter.
+        setName: function(id, newName) {
+            handlerImpl.setName(id, newName);
         },
         /**
          * Returns size of the file identified by id
@@ -156,20 +176,25 @@ qq.UploadHandler = function(o) {
                 return handlerImpl.getFile(id);
             }
         },
-        /**
-         * Returns id of files being uploaded or
-         * waiting for their turn
-         */
-        getQueue: function(){
-            return queue;
+        getInput: function(id) {
+            if (handlerImpl.getInput) {
+                return handlerImpl.getInput(id);
+            }
         },
         reset: function() {
             log('Resetting upload handler');
+            api.cancelAll();
             queue = [];
             handlerImpl.reset();
         },
+        expunge: function(id) {
+            return handlerImpl.expunge(id);
+        },
         getUuid: function(id) {
             return handlerImpl.getUuid(id);
+        },
+        setUuid: function(id, newUuid) {
+            return handlerImpl.setUuid(id, newUuid);
         },
         /**
          * Determine if the file exists.
@@ -182,6 +207,23 @@ qq.UploadHandler = function(o) {
                 return handlerImpl.getResumableFilesData();
             }
             return [];
+        },
+        /**
+         * This may or may not be implemented, depending on the handler.  For handlers where a third-party ID is
+         * available (such as the "key" for Amazon S3), this will return that value.  Otherwise, the return value
+         * will be undefined.
+         *
+         * @param id Internal file ID
+         * @returns {*} Some identifier used by a 3rd-party service involved in the upload process
+         */
+        getThirdPartyFileId: function(id) {
+            if (handlerImpl.getThirdPartyFileId && api.isValid(id)) {
+                return handlerImpl.getThirdPartyFileId(id);
+            }
         }
     };
+
+    determineHandlerImpl();
+
+    return api;
 };

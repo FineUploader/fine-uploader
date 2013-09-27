@@ -1,0 +1,78 @@
+{
+  "name": "fineuploader",
+  "title": "Fine Uploader",
+  "version": "3.9.0-3",
+  "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
+  "main": "./fine-uploader/js/fineuploader.js",
+  "maintainers": [
+    "Ray Nicholus <rnicholus@widen.com>",
+    "Mark Feltner <mfeltner@widen.com>"
+  ],
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "grunt test",
+    "docs": "make docs",
+    "build": "make build"
+  },
+  "keywords": [
+    "upload",
+    "file",
+    "chunking",
+    "file-uploader"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Widen/fine-uploader.git"
+  },
+  "author": "Widen Enterprises, Inc.",
+  "licenses": [
+    {
+      "type": "GPL 3",
+      "url": "http://www.gnu.org/licenses/gpl-3.0.txt"
+    },
+    {
+      "type": "Widen Commerical License",
+      "url": "http://fineuploader.com/downloads.html"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/Widen/fine-uploader/issues"
+  },
+  "devDependencies": {
+    "async": "~0.2.9",
+    "bower": "~1.2.5",
+    "coffee-script": "~1.6.3",
+    "glob": "~3.2.6",
+    "grunt": "~0.4.1",
+    "grunt-banner": "~0.1.4",
+    "grunt-bower-task": "~0.3.1",
+    "grunt-concurrent": "~0.3.1",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-compress": "~0.5.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-connect": "~0.3.0",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-cssmin": "~0.6.1",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-uglify": "~0.2.2",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-karma": "~0.6.2",
+    "grunt-mocha-webdriver": "~0.9.3",
+    "grunt-open": "~0.2.2",
+    "grunt-saucelabs": "git://github.com/feltnerm/grunt-saucelabs.git",
+    "grunt-shell": "~0.3.1",
+    "grunt-version": "~0.2.2",
+    "karma": "~0.10.2",
+    "karma-mocha": "~0.1.0",
+    "karma-sauce-launcher": "~0.1.0",
+    "karma-slimerjs-launcher": "~0.1.2",
+    "request": "~2.21.0",
+    "semver": "2.0.x",
+    "wd": "git://github.com/admc/wd.git"
+  },
+  "dependencies": {},
+  "license": "GPLv3"
+}

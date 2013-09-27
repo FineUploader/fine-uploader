@@ -1,0 +1,179 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "S3 Endpoint" %}
+{% block content %}
+{% markdown %}
+# S3 Server-Side Notes & Requirements {: .page-header }
+
+Using the direct-to-S3 uploader module means that most of the server-side work required to parse upload requests is
+handled by Amazon for you.  However, there is some minimal communication required between Fine Uploader and your local
+server.  This document will outline both required and optional server-side tasks.  Note that, at the writing of this
+document, Fine Uploader developers have provided fully functional [server-side examples](https://github.com/Widen/fine-uploader-server)
+in PHP, node.js, Python, and Java.  Other examples will be created in the future.
+
+{{ alert(
+"""[A comprehensive, step-by-step guide on implementing your origin server to
+handle S3 uploads can be found on the Fine Uploader blog](http://blog.fineuploader.com/2013/08/16/fine-uploader-s3-upload-directly-to-amazon-s3-from-your-browser/#support-chunking)""")}}
+
+#### Creating your S3 bucket's CORS configuration
+In order to use the upload-to-S3 feature, you MUST properly set the CORS configuration in your S3 bucket(s).  Fine Uploader
+must make cross-origin requests to S3 whenever it communicates with AWS.  You can [read more about CORS configuration on
+the AWS developer site](http://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html).  A simple and typical CORS configuration
+would look like this:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+    <CORSRule>
+        <AllowedOrigin>*</AllowedOrigin>
+        <AllowedMethod>POST</AllowedMethod>
+        <AllowedMethod>PUT</AllowedMethod>
+        <AllowedMethod>DELETE</AllowedMethod>
+        <MaxAgeSeconds>3000</MaxAgeSeconds>
+        <ExposeHeader>ETag</ExposeHeader>
+        <AllowedHeader>*</AllowedHeader>
+    </CORSRule>
+</CORSConfiguration>
+```
+
+Some notes on the above configuration:
+
+* The POST method is required to allow HTML Form uploads by Fine Uploader, as well as other various REST API calls.  You
+will always need to include this.
+* The PUT method is required only if you enable the chunking feature in Fine Uploader.
+* The DELETE method is if you plan on deleting files from your bucket server-side.  This would be critical
+if you enable Fine Uploader's delete file feature.  It is also required if you enable the chunking feature, as Fine Uploader
+sends a DELETE request to S3 when a user cancels an in-progress upload in order to ensure S3 removes all chunks associated
+with that upload present in your bucket.
+* The ExposeHeader line is required only if you enable the chunking feature.
+* You can (and probably should) make the AllowedOrigin condition(s) a bit more restrictive.  If you know specifically what
+domains will host your Fine Uploader instance, include these in the AllowedOrigin tag value.
+* You can (and probably should) make the AllowedHeader condition(s) a bit more restrictive.  If you do, you will always
+need to allow the following headers: "origin" and "content-type".  If you have the chunking feature enabled, you will also
+need to include: "x-amz-acl", "x-amx-meta-qqfilename", "x-amz-date", and "authorization".  If you have chunking enabled,
+you will also need to authorize headers for any custom parameters (user metadata) you want to attach to the object in S3.
+All parameters are sent as headers in the "Initiate Multipart Upload" request sent by Fine Uploader with a prefix of
+"x-amz-meta-".
+
+### Required server-side tasks: all browsers
+The only required server-side task for all browsers is an endpoint that signs the policy document.  This endpoint
+corresponds to the `signature.endpoint` property.
+
+Fine Uploader will construct a policy document (required for securely uploading the file to your S3 bucket)
+which then must be signed using your AWS secret key.  When Fine Uploader requires this signature, it will send a
+POST request to the endpoint specified in your `signature.endpoint` option, passing the JSON policy document in the
+request payload with a Content-Type of "application/json".  You can read more about [policy documents on Amazon's developer site](http://docs.aws.amazon.com/AmazonS3/latest/dev/HTTPPOSTForms.html#HTTPPOSTConstructPolicy).
+
+#### Verifying the policy
+When your server receives this policy document, it should first verify that the policy contains expected properties.
+If the policy document appears incorrect (due to client-side tampering), your server should immediately return a response
+with a status code of 500, a Content-Type of "application/json" and the following payload:
+
+```javascript
+{
+    "invalid": true
+}
+```
+
+The above response will let Fine Uploader know that the policy document may have been tampered with client-side, and it
+will not send the file to S3 until the issue is addressed.
+
+#### Signing the policy
+If your server determines that the policy document is accurate, it should then base-64 encode the policy document,
+generate a base-64 encoded HMAC SHA1 of the policy document using your AWS secret key, and then return the base-64
+encoded policy document and the base-64 encoded signature in the response payload with a status of 200 and a Content-Type
+of "application/json".  Your response payload should follow this format:
+
+```javascript
+{
+    "policy": "INSERT BASE-64 ENCODED POLICY HERE",
+    "signature": "INSERT BASE-64 ENCODED SIGNED POLICY HERE"
+}
+```
+
+It's quite simple to sign the policy document server-side.  Amazon's developer site also provides some
+[code in several languages illustrating how to do this](http://aws.amazon.com/articles/1434/#signyours3postform).
+
+
+### Required server-side tasks: IE9 (and older) and Android 2.3.x (and older) ONLY
+This isn't really a server-side task, but I'll mention it here anyway as it does minimally involve your server.
+
+For browsers that do not support the File API, Fine Uploader must submit selected files inside of form, targeting a specific
+dynamically-generated iframe.  When the response comes in, Fine Uploader will not be able to determine if the upload was
+successful since the response originated from a domain other than the one hosting the uploader.  To get around this,
+we can ask Amazon to redirect the response, on success, to an endpoint of our choice.  This is where the `iframeSupport`
+option comes into play.
+
+Your `iframeSupport.localBlankPagePath` value must point to a page on your server.  It can (and probably should) be an empty HTML page,
+but it MUST reside on the same origin/domain as the one hosting your upload page.
+
+
+### Optional server-side tasks: all browsers
+If you would like Fine Uploader to notify your server when any file has been successfully uploaded to S3, you should
+set the `uploadSuccess.endpoint` property.  If this is set, Fine Uploader will send a POST request
+to your server with a Content-Type of "application/x-www-form-urlencoded".  The payload of this request, by default,
+will contain the following information:
+
+* S3 bucket
+* Key name of the associated file in S3
+* UUID of the file
+* Name of the file
+
+An example of the payload for this request sent by Fine Uploader would look like this:
+
+`key=f9a922bd-3007-4393-a76e-925fc009639c.txt&uuid=f9a922bd-3007-4393-a76e-925fc009639c&name=rubycsv.txt&bucket=fineuploadertest`
+
+Parsing url-encoded payloads should be trivial and handled by most web application frameworks.
+
+If you need to perform some specific task to verify the file server-side at this point, you can do so when
+handling this request and let Fine Uploader know if there is a problem with this file by returning a response with an
+appropriate (non-200) status code.  Furthermore, you can include a message to be displayed (FineUploader/default-UI mode)
+and passed to your `onError` callback handler via an `error` property in the payload of your response.  In this case,
+the response payload must be valid JSON.
+
+You can also pass any data to your Fine Uploader [`complete` event handler](../api/events.html), client-side,
+by including it in a valid JSON response to the `uploadSuccess.endpoint` POST request.  In fact, the S3 demo server-side
+code on FineUploader.com is passing a signed URL to the `complete` handler which allows you to view the file you've
+uploaded.
+
+## Chunked Uploads
+Fine Uploader S3 uses [Amazon S3's REST API](http://docs.aws.amazon.com/AmazonS3/latest/API/APIRest.html)
+to initiate, upload, complete, and
+abort multipart uploads. The REST API handles authentication by signing
+canonically formatted headers. This signing is something you need to implement
+server-side. All your server needs to do to authenticate and supported chunked
+uploads direct to Amazon S3 is sign a string representing the headers of the
+request that Fine Uploader sends to S3. This string is found in the payload of
+the signature request:
+
+    { "headers": /* string to sign */ }
+
+The precense of this property indicates to your sever that this is, in fact,
+a request to sign a REST/multipart request and not a policy document.
+
+This signature for the headers string differs slightly from the policy document
+signature. You should **NOT** base64 encode the headers string before signing it.
+All you must do, server-side, is generate an HMAC SHA1 signature of the string
+using your AWS secret key and _then_ base64 encode the result. Your server
+should respond with the following in the body of an 'application/json' response:
+
+    { "signature": /* signed headers string */ }
+
+
+## Delete File support
+Support for the delete file feature when using the S3 uploader is mostly the same as when using the traditional upload
+mode.  The S3 uploader does add "key" and "bucket" parameters with the request.  Otherwise, the request and the server-side
+code required to handle these requests in the same as when using the traditional uploader.  Fine Uploader expects your
+server-side code to delete the associated file in S3 via Amazon's S3 API, and then return a response to Fine Uploader's
+delete request when this has task has been handled.  See the [server-side documentation for the traditional uploader](../endpoint_handlers/traditional.html)
+for additional information on handling delete file requests.
+
+
+## CORS support
+Support for CORS exists for the requests sent to the `signature.endpoint` `uploadSuccess.endpoint` paths.  You will need
+to set the `expected` property of the `cors` option when setting up your Fine Uploader instance.  You must also include
+appropriate headers in your server-response, and possibly handle OPTIONS (pre-flight) requests sent by the browser.  Please
+read the [blog post on CORS support](http://blog.fineuploader.com/2013/01/31/cors-support-in-3-3/) for details.  Note that
+you can ignore the "Handling iframe CORS upload requests server-side" section.
+{% endmarkdown %}
+{% endblock %}
+

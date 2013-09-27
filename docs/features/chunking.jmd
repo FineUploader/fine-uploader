@@ -1,0 +1,112 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Chunking" %}
+{% block content %}
+{% markdown %}
+
+# Chunking & Partitioning {: .page-header }
+
+With the advent of the File API, modern browsers now are capable of dividing
+files into "chunks" (also referred to as partitions). This feature is a crucial
+component to the [resume](resume.html) feature, and makes the [retry](retry.html) feature
+more useful.  File chunking also provides a workaround for request size limits
+put in place by browsers (e.g., Firefox and Chrome limit upload request
+sizes to about 4GB).
+
+Chunking is made possible by the File API, and is supported in Chrome, Firefox,
+Safari (iOS 6+ and OS X), and Internet Explorer 10. Chunking is disabled in all
+Android browsers until its `Blob.prototype.slice` implementation is fixed.
+
+Each chunk is sent in order and as a separate request, and each chunked request
+should be acknowledged much as you would for a non-chunked request because
+the response to each chunk-request is checked to determine success. If the
+server responds with a failure message, the uploader will attempt to retry
+sending the file starting with the last failed chunk if the `autoRetry` option
+is enabled.
+
+The parameters on a chunked request will contain the following information:
+
+```json
+{
+    "qquuid": "380d6893-b98b-4189-9938-93d265dfab5d",
+    "qqpartindex": 1,
+    "qqpartbyteoffset": 2000000,
+    "qqtotalfilesize": 15092995,
+    "qqtotalparts": 8,
+    "qqfilename": "NSA_PRISM.ppt",
+    "qqchunksize": 2000000
+}
+```
+
+{{ alert("`qqpartindex` is 0-indexed!", "info", "Hey!") }}
+
+The `qqfilename` parameter is only sent along with chunked requests that are
+multipart encoded. This is because multipart encoded uploads report the filename
+in the Content-Disposition header as "blob" or the empty string when a `Blob`
+is included in the request. So, to determine the original filename when dealing
+with a multipart encoded request, you must read the `qqfilename` property.
+
+Custom parameters can be sent with each chunk. Those parameters can be set and
+modified in the `chunking.paramNames` option documented below.
+
+The most code to handle chunking will take be written on the backend as
+integrators need to ensure their server is ready and able to handle
+chunked uploads.
+
+Since each chunk comes in as a separate request, the server should save the chunk
+to a temporary location. The filename should be saved using the `qquuid` parameter
+to guarantee there are no collisions with other chunks. After all chunks have
+been received for a file (i.e., `qqpartindex == qqtotalparts`) then you should
+combine all the chunks (in order) to recreate the original file.
+
+Fine Uploader will also keep an eye out for a `reset` JSON property in the
+server's response. When this property is present Fine Uploader will
+fail the upload and then restart the upload with the first chunk again on the
+next attempt (assuming auto or manual retry has been enabled).
+
+## Options
+
+### `chunking` option
+
+{{ alert("The default chunk size for Fine Uploader S3 is 5 MiB. If your file is smaller than that size, the upload will be non-chunked.", "default", "Amazon S3 Specific Note:") }}
+
+{{ options_table(
+    (
+        ("enabled", "`Boolean`", "`false`", "Enable or disable splitting the file separate parts. Each part is sent in a separate request."),
+        ("partSize", "`Number`", "`2000000`", "THe maximum size of each part, in bytes."),
+    )
+) }}
+
+### `chunking.paramNames` option
+
+{{ alert("These options do not apply to the S3 uploader", "default", "Amazon S3 Specific Note:") }}
+
+{{ options_table(
+    (
+        ("chunkSize", "`String`", "`'qqchunksize'`", "Name of the parameter passed with a chunked request that specifies the size in bytes of the associated chunk."),
+        ("partByteOffset", "`String`", "`'qqpartbyteoffset'`", "Name of the parameter passed with a chunked request that specifies the starting byte of the associated chunk."),
+        ("partIndex", "`String`", "`'qqpartindex'`", "Name of the parameter passed with a chunked request that specifies the index of the associated partition."),
+        ("totalParts", "`String`", "`'qqtotalparts'`", "Name of the parameter passed with a chunked request that specifies the total number of chunks associated with the `File` or `Blob`."),
+    )
+) }}
+
+## Events
+
+{{ events_table(
+    (
+        ("uploadChunk", "`Integer` id, `String` name, `Object` chunkData", "Called just before a chunk request is sent."),
+    )
+) }}
+
+### The chunkData Object
+
+The `chunkData` object, which is passed into the 'uploadChunk' event handler, has 4 properties:
+
+* `partIndex` - the 0-based index of the associated partition.
+* `startByte` - the byte offset of the current chunk.
+* `endByte` - the last byte of the current chunk.
+* `totalParts` - the total number of partitions associated with the `File` or `Blob`.
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2012/12/28/file-chunkingpartitioning-is-now-available-in-3-2/)
+
+{% endmarkdown %}
+{% endblock %}

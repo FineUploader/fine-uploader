@@ -1,0 +1,127 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "S3 Options" %}
+{% block sidebar %}
+<ul class="nav nav-tabs nav-stacked">
+    <li><a href="#core-mode"><b>Core</b></a></li>
+    <li><a href="#chunking-option">chunking</a></li>
+    <li><a href="#cors-option">cors</a></li>
+    <li><a href="#iframesupport-option">iframeSupport</a></li>
+    <li><a href="#objectproperties-option">objectProperties</a></li>
+    <li><a href="#resume-option">resume</a></li>
+    <li><a href="#request-option">request</a></li>
+    <li><a href="#signature-option">signature</a></li>
+    <li><a href="#uploadsuccess-option">uploadSuccess</a></li>
+    <li><a href="#ui-mode"><b>UI</b></a></li>
+    <li><a href="#faileduploadtextdisplay-option">failedUploadTextDisplay</a></li>
+</ul>
+{% endblock %}
+{% block content %}
+{% markdown %}
+# Options <small>S3</small> {: .page-header }
+
+If you are using the S3 uploader, all of Fine Uploader's options are still
+present, and most of them still function the same way. However, some of the
+options are slightly different. This page will list any new or different options
+for the S3 uploader. Any option not listed here can be assumed to have the same
+behavior for the Traditonal or S3 uploader.
+
+## Core Mode
+
+### `chunking` option
+
+{{ options_table(
+    (
+        ("partSize", "`Number`", "`5242880`", "The maximum size of each part, in bytes."),
+    )
+) }}
+
+{{
+alert("The `chunking.paramNames` option does **not** apply to S3.")
+}}
+
+
+### `cors` option
+
+{{ options_table(
+    (
+        ("allowXdr", "`Boolean`", "true", "Enables or disables cross-domain ajax calls (if `expected` property is true) in IE9 and older."),
+    )
+) }}
+
+### `iframeSupport` option
+
+{{ options_table(
+    (
+        ("localBlankPagePath", "`String`", "`null`", "This is required if you plan on supporting browsers that do not implement the File API, such as IE9 and older.  This must point to a blank page on the same origin/domain as the page hosting Fine Uploader."),
+    )
+) }}
+
+### `objectProperties` option
+
+{{ options_table(
+    (
+        ("acl", "`String`", "`'private'`", "This value corresponds to a [canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/ACLOverview.html#CannedACL)"),
+        ("key", "`String` or `Function`", "`'uuid'`", "Describes the object key used to identify the file in your S3 bucket.
+        Possible values are 'uuid', 'filename' or a function.  If the value is a function, Fine Uploader S3 will pass
+        the associated file ID as a parameter when invoking your function."),
+    )
+) }}
+
+### `resume` option
+
+{{ options_table(
+    (
+        ("recordsExpireIn", "`Integer`", "7", "Number of days before resumable file records expire."),
+    )
+) }}
+
+{{
+alert("The `resume.paramNames` option does **not** apply to S3.")
+}}
+### `request` option
+
+{{ options_table(
+    (
+        ("endpoint", "`String`", "`null`", "URL for your S3 bucket.  All valid bucket URLs documented by Amazon are supported, including custom domains.  SSL is also supported."),
+        ("accessKey", "`String`", "`null`", "Your AWS public key. **NOT YOUR SECRET KEY**."),
+        ("params", "`Object`", "`{}`", "Parameters passed along with each upload request."),
+        ("filenameParam", "`String`", "`'qqfilename'`", "Part of the parameter name that contains the name of the associated file which may differ from the key name. Prefixed with 'x-amz-meta-' by Fine Uploader."),
+    )
+) }}
+
+### `signature` option
+
+{{ options_table(
+    (
+        ("endpoint", "`String`", "`null`", "The endpoint that Fine Uploader can use to send policy documents
+        (HTML form uploads) or other strings to sign (REST requests) before sending requests off to S3."),
+    )
+) }}
+
+### `uploadSuccess` option
+
+{{ options_table(
+    (
+        ("endpoint", "`String`", "`null`", "An endpoint that Fine Uploader should POST to when a file
+has been succcessfully uploaded to S3. The parameters include the key, name, UUID, and bucket associated with the file."),
+        ("params", "`Object`", "`{}`", "Any additional parameters to attach to upload success file requests.
+        Note that Fine Uploader will still send the bucket, key, filename, and UUID as well"),
+    )
+) }}
+
+
+
+
+## UI Mode
+
+### `failedUploadTextDisplay` option
+
+{{ options_table(
+    (
+        ("mode", "`String`", "custom", "You will most likely want to keep this at the default value of 'custom'.
+        See the UI options documentation for more info on this option."),
+    )
+) }}
+
+{% endmarkdown %}
+{% endblock %}

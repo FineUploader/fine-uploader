@@ -1,0 +1,61 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Contributing" %}
+{% block content %}
+{% markdown %}
+# Contributing
+
+## Build status
+
+<table class='table table-condensed' style="width: 300px;">
+    <thead>
+        <tr>
+            <th>Branch</th>
+            <th>Travis</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Master</td>
+            <td><a href="https://www.travis-ci.org/Widen/fine-uploader"><img src="https://www.travis-ci.org/Widen/fine-uploader.png?branch=master"></a></td>
+        </tr>
+        <tr>
+            <td>Develop</td>
+            <td><a href="https://www.travis-ci.org/Widen/fine-uploader"><img src="https://www.travis-ci.org/Widen/fine-uploader.png?branch=develop"></a></td>
+        </tr>
+    </tbody>
+</table>
+
+## Coding
+
+Oh, you think you can code? Great!
+
+If you are developing an open-source project and are comfortable with the GPL v3 license, you can build your own
+version-stamped copy of Fine Uploader's combined javascript/css files using the provided Gruntfile. To do this just
+
+1. Clone the repository: `git clone git://github.com/Widen/fine-uploader`
+2. Checkout the "develop" branch. It's where the most bleeding edge code exists: `git checkout develop`
+3. From the develop branch, make a new topic branch to work on the whichever
+new, hot feature you plan to add such as 'feature/add-ie6-support'.
+4. Install [grunt](http://gruntjs.com/:) `npm install -g grunt`
+3. Issue `grunt dev` this will prepare the development environment
+4. `grunt build` will build the latest version from the source code into `./_build/`.
+5. `grunt package` will build from the latest source will be built in the `./_dist/` directory in the root source directory.
+
+To contribute to development [fork it](https://github.com/Widen/fine-uploader/fork), and make sure to submit any pull requests against the "develop" branch.  See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
+
+Pull requests **MUST** be against the "develop" branch!
+
+## Testing
+
+If you're reading this, then good for you!
+
+You can run the test suite by forking or cloning the repo and running `grunt test` on your development machine.
+
+## Writing
+
+Like to write for people rather than computers?
+
+Fine Uploader could always use better documentation, examples, tutorials, and demos. Feel free to answer questions on the support forum, discuss issues on GitHub, write tutorials on your blog, posts screencasts on YouTube, … anything that can help the developers spend more time creating new features always helps!
+
+{% endmarkdown %}
+{% endblock %}

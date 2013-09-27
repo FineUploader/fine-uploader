@@ -3,7 +3,8 @@ package fineuploader;
 import org.apache.commons.fileupload.FileItem;
 
 import javax.servlet.http.HttpServletRequest;
-
+import java.io.BufferedReader;
+import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,7 +18,7 @@ public class RequestParser
     private static String TOTAL_PARTS_PARAM = "qqtotalparts";
     private static String UUID_PARAM = "qquuid";
     private static String PART_FILENAME_PARAM = "qqfilename";
-    private static String BLOB_NAME_PARAM = "qqblobname";
+    private static String METHOD_PARAM = "_method";
 
     private static String GENERATE_ERROR_PARAM = "generateError";
 
@@ -30,6 +31,7 @@ public class RequestParser
     private int totalParts;
     private String uuid;
     private String originalFilename;
+    private String method;
 
     private Map<String, String> customParams = new HashMap<>();
 
@@ -45,8 +47,15 @@ public class RequestParser
 
         if (multipartUploadParser == null)
         {
-            requestParser.filename = request.getParameter(FILENAME_PARAM);
-            parseQueryStringParams(requestParser, request);
+            if (request.getMethod().equals("POST") && request.getContentType() == null)
+            {
+                parseXdrPostParams(request, requestParser);
+            }
+            else
+            {
+                requestParser.filename = request.getParameter(FILENAME_PARAM);
+                parseQueryStringParams(requestParser, request);
+            }
         }
         else
         {
@@ -65,7 +74,7 @@ public class RequestParser
 
     public String getFilename()
     {
-        return filename;
+        return originalFilename != null ? originalFilename : filename;
     }
 
     //only non-null for MPFRs
@@ -104,6 +113,11 @@ public class RequestParser
         return originalFilename;
     }
 
+    public String getMethod()
+    {
+        return method;
+    }
+
     public Map<String, String> getCustomParams()
     {
         return customParams;
@@ -116,11 +130,6 @@ public class RequestParser
             requestParser.generateError = Boolean.parseBoolean(multipartUploadParser.getParams().get(GENERATE_ERROR_PARAM));
         }
 
-        if (multipartUploadParser.getParams().get(BLOB_NAME_PARAM) != null)
-        {
-            requestParser.filename = multipartUploadParser.getParams().get(BLOB_NAME_PARAM);
-        }
-
         String partNumStr = multipartUploadParser.getParams().get(PART_INDEX_PARAM);
         if (partNumStr != null)
         {
@@ -128,7 +137,6 @@ public class RequestParser
 
             requestParser.totalFileSize = Integer.parseInt(multipartUploadParser.getParams().get(FILE_SIZE_PARAM));
             requestParser.totalParts = Integer.parseInt(multipartUploadParser.getParams().get(TOTAL_PARTS_PARAM));
-            requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
         }
 
         for (Map.Entry<String, String> paramEntry : multipartUploadParser.getParams().entrySet())
@@ -141,6 +149,10 @@ public class RequestParser
             requestParser.uuid = multipartUploadParser.getParams().get(UUID_PARAM);
         }
 
+        if (requestParser.originalFilename == null)
+        {
+            requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
+        }
     }
 
     private static void parseQueryStringParams(RequestParser requestParser, HttpServletRequest req)
@@ -150,18 +162,12 @@ public class RequestParser
             requestParser.generateError = Boolean.parseBoolean(req.getParameter(GENERATE_ERROR_PARAM));
         }
 
-        if (req.getParameter(BLOB_NAME_PARAM) != null)
-        {
-            requestParser.filename = req.getParameter(BLOB_NAME_PARAM);
-        }
-
         String partNumStr = req.getParameter(PART_INDEX_PARAM);
         if (partNumStr != null)
         {
             requestParser.partIndex = Integer.parseInt(partNumStr);
             requestParser.totalFileSize = Integer.parseInt(req.getParameter(FILE_SIZE_PARAM));
             requestParser.totalParts = Integer.parseInt(req.getParameter(TOTAL_PARTS_PARAM));
-            requestParser.originalFilename = req.getParameter(PART_FILENAME_PARAM);
         }
 
         Enumeration<String> paramNames = req.getParameterNames();
@@ -174,6 +180,16 @@ public class RequestParser
         if (requestParser.uuid == null)
         {
             requestParser.uuid = req.getParameter(UUID_PARAM);
+        }
+
+        if (requestParser.method == null)
+        {
+            requestParser.method = req.getParameter(METHOD_PARAM);
+        }
+
+        if (requestParser.originalFilename == null)
+        {
+            requestParser.originalFilename = req.getParameter(PART_FILENAME_PARAM);
         }
     }
 
@@ -189,5 +205,57 @@ public class RequestParser
                 paramIterator.remove();
             }
         }
+    }
+
+    private static void parseXdrPostParams(HttpServletRequest request, RequestParser requestParser) throws Exception
+    {
+        String queryString = getQueryStringFromRequestBody(request);
+        String[] queryParams = queryString.split("&");
+
+        for (String queryParam : queryParams)
+        {
+            String[] keyAndVal = queryParam.split("=");
+            String key = URLDecoder.decode(keyAndVal[0], "UTF-8");
+            String value = URLDecoder.decode(keyAndVal[1], "UTF-8");
+
+            if (key.equals(UUID_PARAM))
+            {
+                requestParser.uuid = value;
+            }
+            else if (key.equals(METHOD_PARAM))
+            {
+                requestParser.method = value;
+            }
+            else
+            {
+                requestParser.customParams.put(key, value);
+            }
+        }
+    }
+
+    private static String getQueryStringFromRequestBody(HttpServletRequest request) throws Exception
+    {
+        StringBuilder content = new StringBuilder();
+        BufferedReader reader = null;
+
+        try
+        {
+            reader = request.getReader();
+            char[] chars = new char[128];
+            int bytesRead;
+            while ( (bytesRead = reader.read(chars)) != -1 )
+            {
+                content.append(chars, 0, bytesRead);
+            }
+        }
+        finally
+        {
+            if (reader != null)
+            {
+                reader.close();
+            }
+        }
+
+        return content.toString();
     }
 }

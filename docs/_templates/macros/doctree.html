@@ -1,0 +1,72 @@
+{% for item in DOC_TREE|sort %}
+       {% if item.name|length <= 3 %}
+            {% set item_name = item.name|upper %}
+        {% else %}
+            {% set item_name = item.name|title %}
+        {% endif %}
+
+        {% if 'files' in item or 'dirs' in item %}
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ item_name }} <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                <ul><a href="/{{ GIT_REF_TYPE }}/{{ GIT_REF }}/html/{{ item_name }}">Home</a></ul>
+                {% for f in item.files|sort %}
+                    {% if f.name|length <= 3 %}
+                        {% set f_name = f.name|upper %}
+                    {% else %}
+                        {% set f_name = f.name|title %}
+                    {% endif %}
+                    <ul><a href="/{{ GIT_REF_TYPE }}/{{ GIT_REF }}/html/{{ f.path.lstrip("/") }}">{{ f_name }}</a></ul>
+                {% endfor %}
+                <li class="divider"></li>
+                {% for d in item.dirs|sort %}
+                    {% if d.name|length <= 3 %}
+                        {% set d_name = d.name|upper %}
+                    {% else %}
+                        {% set d_name = d.name|title %}
+                    {% endif %}
+
+                    <ul class="dropdown-menu">
+                    {% for sd in d.dirs|sort %}
+                        {% if sd.name|length <= 3 %}
+                            {% set sd_name = sd.name|upper %}
+                        {% else %}
+                            {% set sd_name = sd.name|title %}
+                        {% endif %}
+                        <ul><a href="/{{ GIT_REF_TYPE }}/{{ GIT_REF }}/html/{{ sd.path.lstrip("/") }}">{{ sd_name }}</a></ul>
+                    {% endfor %}
+                    {% for sf in d.files|sort %}
+                        {% if sf.name|length <= 3 %}
+                            {% set sf_name = sf.name|upper %}
+                        {% else %}
+                            {% set sf_name = sf.name|title %}
+                        {% endif %}
+                        <ul><a href="/{{ GIT_REF_TYPE }}/{{ GIT_REF }}/html/{{ sf.path.lstrip("/") }}">{{ sf_name }}</a></ul>
+                    {% endfor %}
+                    </ul>
+                    <ul><a href="/{{ GIT_REF_TYPE }}/{{ GIT_REF }}/html/{{ d.path.lstrip("/") }}">{{ d_name }}</a></ul>
+                {% endfor %}
+                </ul>
+            </li>
+        {% else %}
+            <li><a href="/{{ GIT_REF_TYPE }}/{{ GIT_REF }}/html/{{ item.path.lstrip("/") }}">{{ item_name }}</a></li>
+        {% endif %}
+{% endfor %}
+<li class="divider-vertical"></li>
+
+{#
+{% for category in DOC_TREE.categories|dictsort %}
+    <li class="dropdown pull-left">
+        {% if category[0]|length <= 3 %}
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ category[0]|upper }} <b class="caret"></b></a>
+        {% else %}
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ category[0]|title }} <b class="caret"></b></a>
+        {% endif %}
+
+        <ul class="dropdown-menu">
+        {% for page in category[1]|sort %}
+            <ul><a href="/{{ category_page }}.html">{{ page|title }}</a></ul>
+        {% endfor %}
+        </ul>
+    </li>
+{% endfor %}

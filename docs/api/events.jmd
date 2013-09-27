@@ -1,0 +1,300 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Events" %}
+{% block title %}Events - Fine Uploader Documentation{% endblock %}
+
+{% block sidebar %}
+<ul class="nav nav-tabs nav-stacked">
+    <li><a href="#autoretry">autoRetry</a></li>
+    <li><a href="#cancel">cancel</a></li>
+    <li><a href="#complete">complete</a></li>
+    <li><a href="#delete">delete</a></li>
+    <li><a href="#deletecomplete">deleteComplete</a></li>
+    <li><a href="#error">error</a></li>
+    <li><a href="#manualretry">manualRetry</a></li>
+    <li><a href="#pastereceived">pasteReceived</a></li>
+    <li><a href="#progress">progress</a></li>
+    <li><a href="#resume">resume</a></li>
+    <li><a href="#statuschange">statusChange</a></li>
+    <li><a href="#submit">submit</a></li>
+    <li><a href="#submitdelete">submitDelete</a></li>
+    <li><a href="#submitted">submitted</a></li>
+    <li><a href="#upload">upload</a></li>
+    <li><a href="#uploadchunk">uploadChunk</a></li>
+    <li><a href="#validate">validate</a></li>
+    <li><a href="#validatebatch">validateBatch</a></li>
+</ul>
+{% endblock %}
+
+{% block content %}
+{% markdown %}
+
+# Events <small>Traditional & S3</small> {: .page-header }
+
+Fine Uploader's event system enables integrators to execute any operations at
+almost any point in the upload process. Knowing how these callbacks work, and
+when they are called, is crucial to unlocking the full potential of
+Fine Uploader.
+
+#### autoRetry
+
+**Parameters**: Integer id, String name, String attemptNumber
+
+Called before each automatic retry attempt for a failed item.
+
+----
+
+#### cancel
+
+**Parameters**: Integer id, String name
+
+Called when the item has been cancelled.
+
+Return `false` to prevent the upload from being cancelled. Also can return a
+`qq.Promise` if non-blocking work is required
+here. Calling `failure()` on the promise is equivalent to returning `false`.
+If using a Promise, then processing of the cancel request will be
+deferred until the promise is fullfilled. Since there is no way to "pause"
+the upload in progress while waiting for the promise to be fullfilled the
+upload may actually complete until the promise has actually be fullfilled.
+
+----
+
+#### complete
+
+**Parameters**: Integer id, String name, Object responseJSON, XMLHttpRequest xhr
+
+Called when the item has finished uploading.
+
+The responseJSON will contain the raw response from the server including the
+"success" property which indicates whether the upload succeeded or not.
+
+{{ alert(
+"""The `xhr` parameter will only be included if this request was initiated by
+an `XMLHttpRequest` (see [Browser Support](../browser-support.html)).""", "info", "Note") }}
+
+----
+
+#### delete
+
+**Parameters**: Integer id
+
+Called just before a delete request is sent for the associated item.
+
+----
+
+#### deleteComplete
+
+**Parameters**: Integer id, XMLHttpRequest xhr, Boolean isError
+
+Called just after receiving a response from the server for a delete file
+request.
+
+
+{{ alert(
+"""When using browsers that do not provide an `XMLHttpRequest` object,
+the `xhr` parameter will be an `XDomainRequest` instead.""", "failure", "Note") }}
+
+----
+
+#### error
+
+**Parameters**: Integer id, String name, String errorReason, XMLHttpRequest xhr
+
+Called whenever an exceptional condition occurs (see [Handling Errors](../features/handling-errors.html))
+
+{{ alert(
+"""The `xhr` parameter will only be included if this request was initiated by
+an `XMLHttpRequest` (see [Browser Support](../browser-support.html)).""", "info", "Note") }}
+
+----
+
+#### manualRetry
+
+**Parameters**: Integer id, String name
+
+Called before each manual retry attempt.
+
+Return `false` to prevent this an all future retry attempts on the associated item.
+
+----
+
+#### pasteReceived
+
+**Parameters**: Blob blob
+
+Called when a pasted image has been received (before upload).
+
+The pasted image is represented as a `Blob`. Also can return a `qq.Promise` if non-blocking work is required
+here. If using a Promise the value of the success parameter must be the name
+to associate with the pasted image. If the associated attempt is marked a
+`failure` then you should include a string explaining the reason in your
+`failure` callback for the Promise.
+
+{{ alert(
+"""The `promptForName` option, if `true`, will effectively wipe away any custom implementation of this callback. The two are not meant to be used together. This callback is meant to provide an alternative means to provide a name for a pasted image. If you are using Fine Uploader Core mode then you can display your own prompt for the name by overriding the default implementation of this callback.""", "info", "Note") }}
+
+----
+
+#### progress
+
+**Parameters**: Integer id, String name, int uploadedBytes, int totalBytes
+
+Called during the upload, as it progresses.
+
+For chunked uploads, this will be called for each chunk.
+
+Only used by the AJAX uploader.
+
+----
+
+#### resume
+
+**Parameters**: Integer id, String name, Object chunkData
+
+Called just before a file upload is resumed.  See the `uploadChunk` event for more info on the `ChunkData` object.
+
+----
+
+#### statusChange
+
+**Parameters**: Integer id, String oldStatus, String newStatus
+
+Invoked whenever the status changes for any item submitted to the uploader.
+
+The status values correspond to those found in the `qq.status` object.
+For reference, the status':
+
+* `SUBMITTED`
+* `QUEUED`
+* `UPLOADING`
+* `UPLOAD_RETRYING`
+* `UPLOAD_FAILED`
+* `UPLOAD_SUCCESSFUL`
+* `CANCELLED`
+* `REJECTED`
+* `DELETED`
+* `DELETING`
+* `DELETE_FAILED`
+
+----
+
+#### submit
+
+**Parameters**: Integer id, String name
+
+Called when the item has been selected and is a candidate for uploading.
+
+This
+does not mean the item is going to be uploaded. Return `false` to prevent
+submission to the uploader. A `qq.Promise` can be used if non-blocking work is
+required. Processing of this item is deferred until the promise is fullfilled.
+If a promise is returned, a call to `failure` is the same as returning `false`.
+
+----
+
+#### submitDelete
+
+**Parameters**: Integer id
+
+Called before an item has been marked for deletion has been submitted to the
+uploader.
+
+A `qq.Promise` can be used if non-blocking work is required.
+Processing of this item is deferred until the promise is fullfilled.
+If a promise is returned, a call to `failure` is the same as returning `false`.
+
+----
+
+#### submitted
+
+**Parameters**: Integer id, String name
+
+Called when the item has been successfully submitted to the uploader.
+
+The file will upload immediately if there is a) at least one free connection
+(see: [`maxConnections` option](options.html#maxconnections)) and b) `autoUpload`
+is set to `true` (see [`autoUpload` option](options.html#autoupload)).
+
+The callback is invoked after the 'submit' event is handled without returning a
+`false` value. In Fine Uploader Core mode it is usually safe to assume that
+the associated elements in the UI representing the associated file have already
+been added to the DOM immediately before this callback is invoked.
+
+----
+
+#### upload
+
+**Parameters**: Integer id, String name
+
+Called just before an item begins uploading to the server.
+
+----
+
+#### uploadChunk
+
+**Parameters:** Integer id, String name, Object chunkData
+
+Called just before a chunk requset is sent.
+
+The `chunkData` object, which is passed into the 'uploadChunk' event handler, has 4 properties:
+
+* `partIndex` - the 0-based index of the associated partition.
+* `startByte` - the byte offset of the current chunk.
+* `endByte` - the last byte of the current chunk.
+* `totalParts` - the total number of partitions associated with the `File` or `Blob`.
+
+----
+
+#### validate
+
+**Parameters**: FileOrBlobData fileOrBlobData, Element buttonContainer
+
+Called once for each selected, dropped, or `addFiles` submitted file and for
+each `addBlobs` submitted `Blob`.
+
+This callback is always invoked before the default Fine Uploader validators
+execute.
+
+This event will not be called if you return `false` in your `validateBatch` event
+handler, or if the `stopOnFirstInvalidFile` validation option is `true` and
+the `validate` event handler has returned `false` for an item.
+
+A `qq.Promise` can be used if non-blocking work is required.
+Processing of this item is deferred until the promise is fullfilled.
+If a promise is returned, a call to `failure` is the same as returning `false`.
+
+A buttonContainer element will be passed as the last argument, provided the file was
+submitted using a Fine Uploader tracked button.
+
+{{ alert(
+"""The `BlobData` object has two properties: `name` and `size`. The `size`
+property will be undefined for browsers without File API support.""", "info", "Note") }}
+
+----
+
+#### validateBatch
+
+**Parameters**: Array fileOrBlobDataArray, Element buttonContainer
+
+This callback is always invoked before the default Fine Uploader validators
+execute.
+
+This event will not be called if you return `false` in your `validateBatch` event
+handler, or if the `stopOnFirstInvalidFile` validation option is `true` and
+the `validate` event handler has returned `false` for an item.
+
+A `qq.Promise` can be used if non-blocking work is required.
+Processing of this item is deferred until the promise is fullfilled.
+If a promise is returned, a call to `failure` is the same as returning `false`.
+
+A buttonContainer element will be passed as the last argument, provided the file was
+submitted using a Fine Uploader tracked button.
+
+{{ alert(
+"""The FileOrBlobData object has two properties: `name` and `size`. The `size`
+property will be undefined for browsers without File API support.""", "info", "Note") }}
+
+----
+
+{% endmarkdown %}
+{% endblock %}

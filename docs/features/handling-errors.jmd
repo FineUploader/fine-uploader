@@ -1,0 +1,138 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Handling Errors" %}
+{% block content %}
+{% markdown %}
+
+# Handling Errors {: .page-header }
+
+Fine Uploader has a wealth of ways to respond to error messages.
+
+By default, Fine Uploader asssumes an error when the server response does not
+have a key of `success` set to `true`.
+
+If any error is thrown, then the `onError` callback will be called.
+
+## Debugging Errors
+
+Sometimes errors are not intended, or unexpected. Fine Uploader provides the
+`debug` option which will make the plugin spit out logging messages to the
+client's JavaScript log.
+
+To enable debug mode, set the `debug` option of Fine Uploader to `true`
+and open the developer console in your browser. Interact with Fine Uploader
+and notice that it is logging specifically what is happening. These messages
+can be crucial in deciphering why something is not working as expected.
+
+## Handling Errors
+
+Handling error messages and errors can take place inside of the `onError`
+callback. `onError` is triggered whenever Fine Uploader encounters an error.
+The text to be displayed in the case of an error is passed in as the `errorReason`
+parameter.
+
+The following code snippet shows how one might display a custom alert on the
+event of an error.
+
+```javascript
+$("#fine-uploader").fineUploader({
+   // ...
+}).on('error', function (event, id, name, errorReason, xhrOrXdr) {
+    alert("Error on file number " + id + " - " + name ". Reason: " + errorReason);
+});
+```
+
+{{ alert("jQuery 1.7+ is required to use the `on` function.") }}
+
+## The `error` Response Property
+
+By default, if Fine Uploader does **not** receive a successful server response
+then it will look for the `error` property of the response body and will pass
+that value to the `onError` callback.
+
+If the server indicates failure in the response, but does not include an
+`error` property and the response status code is `200`, then the
+`defaultResponseError` property will be used as the error message.
+
+```javascript
+$("#fine-uploader").fineUploader({
+    text: {
+        defaultResponseError: 'An unknown upload error occurred.'
+    }
+});
+```
+
+## Changing Error Messages
+
+The `messages` property in the main Fine Upload options object provides a
+handful of properties one can override to display custom error messages.
+
+```javascript
+$("#fine-uploader").fineUploader({
+    messages: {
+        typeError: '{file} has an invalid extension. Valid extension(s): {extensions}.'
+        // other messages can go here as well ...
+    }
+});
+```
+
+### Error Messages
+
+#### `messages` option
+
+{{ options_table(
+    (
+        ("emptyError", "`String`", "'{file} is empty, please select files again without it.'", "Text passed to the error event handler if a submitted item is zero bits."),
+        ("sizeError", "`String`", "'{file} is too large, maximum file size is {sizeLimit}.'", "Text passed to the error event handler if a submitted item is too large."),
+        ("typeError", "`String`", "'{file} has an invalid extension. Valid extension(s): {extensions}.'", "Text passed to the error event handler if an invalid file type is detected."),
+        ("minSizeError", "`String`", "'{file} is too small, minimum file size is {minSizeLimit}.'", "Text passed to the error event handler if the item is too small."),
+        ("noFilesError", "`String`", "'No files to upload.'", "Text passed to the error event handler if any empty array of items is submitted."),
+        ("onLeave", "`String`", "'The files are being uploaded, if you leave now the upload will be cancelled.'", "Text displayed to the user when they attempt to leave the page while uploads are still in progress."),
+        ("retryFailTooManyItemsError", "`String`", "'Retry failed - you have reached your file limit.'", "Text passed to the error event handler if a retry attempt is declared a failed due to a violation of the `validation.itemLimit` rule."),
+        ("tooManyItemsError", "`String`", "'Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.'", "Text passed to the error event handler if a submit is ignored due to a violation of the `validation.itemLimit` rules."),
+    )
+) }}
+
+
+Error messages include primitive `String` interpolation that allows integrators
+to inject variable data into error messages. For example, the `typeError`
+message could be modified:
+
+```javascript
+messages: {
+    typeError: 'Invalid extension detected in file, {file}.'
+}
+```
+
+and the filename of the file which the error was thrown on will be injected
+instead of the `"{file}"` `String`.
+
+## Modifying the Text for Failed Uploads
+
+The `failedUploadTextDisplay` option defines properties used for displaying
+text when an upload fails.
+
+```javascript
+$("#fine-uploader").fineUploader({
+    // These are all the DEFAULT values...
+    failedUploadTextDisplay: {
+        mode: 'default',
+        maxChars: 50,
+        responseProperty: 'error',
+        enableTooltip: true
+    }
+});
+```
+
+The `mode` property has three settings, each of which determine how failed
+upload errors are displayed.
+
+* `'default'` will display the `failUploadText` defined in the `text` option
+properties next to each item.
+* `'none'` will **not** display any text next to a failed item.
+* `'custom'` will display an error reponse text from the server next to each
+failed item).
+    * `'custom'` mode will use the provided `responseProperty` (which defaults
+    to `'error'`) as its text
+
+{% endmarkdown %}
+{% endblock %}

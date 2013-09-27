@@ -1,0 +1,160 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "UI Options" %}
+
+{% block sidebar %}
+<ul class="nav nav-tabs nav-stacked">
+    <li><a href="#ui_1"><b>UI</b></a></li>
+    <li><a href="#deletefile-option">deleteFile</a></li>
+    <li><a href="#display-option">display</a></li>
+    <li><a href="#draganddrop-option">dragAndDrop</a></li>
+    <li><a href="#editfilename-option">editFilename</a></li>
+    <li><a href="#faileduploadtextdisplay-option_1">failedUploadTextDisplay</a></li>
+    <li><a href="#messages-option">messages</a></li>
+    <li><a href="#retry-option">retry</a></li>
+    <li><a href="#paste-option">paste</a></li>
+    <li><a href="#text-option">text</a></li>
+</ul>
+{% endblock %}
+
+{% block content %}
+{% markdown %}
+# Options <small>UI</small> {: .page-header }
+
+## UI
+
+Fine Uploader UI mode has a few different options as well as some options
+pertaining specifically to the UI which Core mode does not have.
+
+Any options that exist in Core mode also exist in UI mode, and, in most cases,
+can be overridden.
+
+{{ options_table(
+    (
+        ("element", "`String`", "`null`", "Container for the default drop zone"),
+        ("listElement", "`String`", "`null`", "Container for the item list."),
+        ("multiple", "`Boolean`", "`true`", "When `true` this will prevent the user from simultaneously selecting or dropping more than one item. Dropping or selecting another item will clear the upload list. If another is already uploading, it will be cancelled. To ignore rather than cancel, simply return `false` in the 'validate' or 'submit' event handlers."),
+    )
+) }}
+
+----
+
+### `deleteFile` option
+
+{{ alert(
+"""`deleteFile` is also in the Core mode options. This section defines UI specific
+options for `deleteFile`""", "info", "Note:") }}
+
+{{ options_table(
+    (
+        ("confirmMessage", "`String`", "`'Are you sure you want to delete {filename}?'`", "The message displayed in the confirm delete dialog."),
+        ("deletingFailedText", "`String`", "`'Delete failed'`", "The status message to appear next to a file that is pending deletion."),
+        ("deletingStatusText", "`String`", "`'Deleting...'`", "The status message to appear next to a file that has failed to delete."),
+        ("forceConfirm", "`Boolean`", "`false`", ""),
+    )
+) }}
+
+----
+
+### `display` option
+
+{{ options_table(
+    (
+        ("fileSizeOnSubmit", "`Boolean`", "`false`", "Enable or disable the display of the file size next to the file after it has been submitted."),
+        ("prependFiles", "`Boolean`", "`false`", "When `true` batches of files are added to the top of the UI's file list. The default is to append file(s) to the bottom of the list."),
+    )
+) }}
+
+----
+
+### `dragAndDrop` option
+
+{{ options_table(
+    (
+        ("extraDropzones", "`Array`", "`[]`", "Designate additional drop zones for file input."),
+        ("hideDropzones", "`Boolean`", "`true`", "Use if you would like dropzone elements to be hidden or not."),
+        ("disableDefaultDropzone", "`Boolean`", "`false`", "Use if you are contributing your own dropzone(s) that is/are not the default one."),
+    )
+) }}
+
+----
+
+### `editFilename` option
+
+{{ options_table(
+    (
+        ("enabled", "`Boolean`", "`false`", "Enable or disable the user's ability to edit the names of submitted files before upload."),
+    )
+) }}
+
+----
+
+### `failedUploadTextDisplay` option
+
+{{ options_table(
+    (
+        ("enableTooltip", "`Boolean`", "`true`", "Enable or disable a tooltip that will display the full contents of the error message when the mouse pointer hovers over the failed item."),
+        ("maxChars", "`Number`", "`50`", "The maximum amount of characters to display next to each item. Ignored unless `mode` is `'custom'`"),
+        ("mode", "`String`", "`'default'`", "Set the message to display next to each failed file. One of: `'default'` which displays the `failedUploadText`, `'custom'` which displays the error response from the server, or `'none'` which displays no text."),
+        ("responseProperty", "`String`", "`'error'`", "The property from the server response that contains the error text to display next to a failed item. Ignored unless `mode` is `'custom'`"),
+    )
+) }}
+
+----
+
+### `messages` option
+
+{{ alert(
+"""`messages` is also in the Core mode options. This section defines UI specific
+options for `messages`""", "info", "Note:") }}
+
+{{ options_table(
+    (
+        ("tooManyFilesError", "`String`", "`You may only drop one file.`", "Text sent to `showMessage` in the 'error' event handler when `multiple` is `false` and more than one file is dropped at once."),
+        ("unsupportedBrowser", "`String`", "`Unrecoverable error - the browser does not permit uploading of any kind.`", "Text displayed to users who have ancient browsers."),
+    )
+) }}
+
+----
+
+### `retry` option
+
+{{ options_table(
+    (
+        ("autoRetryNote", "`String`", "`'Retrying {retryNum}/{maxAuto} ...'`", "The text of the note that will optionally appear next to the item during automatic retry attempts. Ignored if `showAutoRetryNote` is false."),
+        ("showButton", "`Boolean`", "`false`", "Enable or disable the showing of a button/link nex to the failed item after all retry attempts have been exchausted. Clicking the button/link will force the uploader to make another attempt."),
+        ("showAutoRetryNote", "`Boolean`", "`true`", "Enable or disable a status message appearing next to the item during auto retry attempts."),
+    )
+) }}
+
+----
+
+### `paste` option
+
+{{ options_table(
+    (
+        ("promptForName", "`Boolean`", "`false`", "Enable or disable the usage of `showPrompt` by Fine Uploader to prompt the user for a filename for a pasted file."),
+        ("namePromptMessage", "`String`", "`'Please name this image'`", "Text that will appear in the `showPrompt` dialog."),
+    )
+) }}
+
+----
+
+### `text` option
+
+{{ options_table(
+    (
+        ("uploadButton", "`String`", "`'Upload a file'`", "Label for the file selector button."),
+        ("cancelButton", "`String`", "`'cancel'`", "The cancel button text"),
+        ("retryButton", "`String`", "`'Retry'`", "The retry link text"),
+        ("deleteButton", "`String`", "`'Delete'`", "The delete file link text"),
+        ("failUpload", "`String`", "`'Upload failed'`", "Text that appears next to a failed item"),
+        ("deleteButton", "`String`", "`Delete'`", "The delete file link text"),
+        ("dragZone", "`String`", "`Drop files here to upload'`", "Appears in a drop zone while visible"),
+        ("dropProcessing", "`String`", "`'Processing dropped files...'`", "Appears next to 'drop processing' spinner"),
+        ("formatProgress", "`String`", "`'{percent}% of {total_size}'`", "Appears next to a currently uploading item"),
+        ("waitingForResponse", "`String`", "`'Processing...'`", "Appears next to item once the last bytes have been sent (differs on the user-agent)"),
+    )
+) }}
+
+{% endmarkdown %}
+{% endblock %}

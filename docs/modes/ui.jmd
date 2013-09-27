@@ -1,0 +1,22 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "UI Mode" %}
+{% block content %}
+{% markdown %}
+# Fine Uploader UI Mode {: .page-header }
+
+Fine Uploader UI mode is the easiest way to get started with a dependency-free 
+Fine Uploader. This mode provides a customizable UI, drag and drop support, 
+progress bars, status messages, a file list with color-coded status indicators, 
+and other UI niceties. Most developers will likely opt to use Fine Uploader mode.
+
+Fine Uploader UI mode is defined in the qq.FineUploader module in the code. 
+It inherits everything from FineUploaderBasic.
+
+For more information, see:
+
+* [Core Mode Options](../api/options.html)
+* [UI Mode Options](../api/options-ui.html)
+* [API Methods](../api/methods.html)
+* [Events](../api/events.html)
+{% endmarkdown %}
+{% endblock %}

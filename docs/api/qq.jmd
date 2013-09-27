@@ -1,0 +1,113 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "qq API" %}
+{% block content %}
+{% markdown %}
+
+# qq Utilities {: .page-header }
+
+Fine Uploader contains a number of utility functions and polyfills to keep
+it dependency free and lightweight. These functions are found in the same
+namespace as Fine Uploader, `qq`.
+
+## qQuery
+
+The qQuery object is much like a poor man's jQuery. If you cannot or do not
+want to import a 3rd-party library such as jQuery or Zepto to do cross-browser
+DOM manipulation, then qQuery will be your friend.
+
+{{ methods_table(
+    (
+        ("qq", "element", "`qq HTMLElement`", "Selects an `HTMLElement` and returns a `qq` 'wrapped' object."),
+    )
+) }}
+
+`qq` functions similar to the `jQuery` function in terms of the operations
+it can perform. For now, though, `qq` only accepts `HTMLElements` as input.
+To be able to use the `qq` methods, first one must wrap some `HTMLElement`
+in the `qq` function as such:
+
+For example, if you wanted to hide an element with the id of "myDiv":
+
+```javascript
+var myDiv, qqMyDiv;
+myDiv = document.getElementById("myDiv");
+qqMyDiv = qq(myDiv);
+
+// Now we can call other qq methods:
+qqMyDiv.hide();
+var children = qqMyDiv.children();
+
+// etc ...
+```
+
+Once you've wrapped an element, you have access to a wealth of cross-browser
+polyfills that will let you manipulate the DOM and CSS as you please. Just make
+sure to wrap any elements before calling these methods on them.
+
+### DOM Selection and Traversal
+
+{{ methods_table(
+    (
+        ("children", "element", "`Array`", "Returns an array of all immediate children of this element."),
+        ("contains", "element", "`boolean`", "Returns `true` if the element contains the passed element."),
+    )
+) }}
+
+### DOM Manipulation
+
+{{ methods_table(
+    (
+        ("clearText", "", "", "Clears all text for this element."),
+        ("insertBefore", "element", "", "Inserts the element directly befor the passed element in the DOM."),
+        ("remove", "element", "", "Removes this element from the DOM."),
+        ("setText", "text", "", "Set the text for this element."),
+    )
+) }}
+
+### CSS Manipulation
+
+{{ methods_table(
+    (
+        ("addClass", "className", "", "Add a class to this element"),
+        ("css", "styles", "", "Specify css styles for this element (e.g., `{ top: 0, right: 0 }`)"),
+        ("getByClass", "className", "`Array`", "Returns an array of all descendants of this element that contain the passed class name."),
+        ("hasClass", "className", "`boolean`", "Returns true if the element has this class name"),
+        ("removeClass", "className", "", "Remove the provided class from the element."),
+    )
+)}}
+
+### Event Attaching and Detaching
+
+{{ methods_table(
+    (
+        ("attach", "type, callback", "`detach` function", "Attach an event handler to this element for a specific DOM event."),
+        ("detach", "type, originalCallback", "", "Detach an already attached event handler from this element.")
+    )
+) }}
+
+## Utility Functions
+
+{{ methods_table(
+    (
+        ("bind", "oldFunc, context", "`function`", "Polyfill for `Function.prototype.bind`. Pass comma-separated values after the `context parameter for all arguments to be passed into the new function (when invoked). You can still pass in additional arguments during invocation."),
+        ("each", "iterable, callback", "", "Polyfill iterator. Iterates through a collection, passing the key and value into the provided callback. `return false;` to stop iteration."),
+        ("extend", "firstObj, secondObj, extendNested", "`Object`", "Shallowly copies the parameters of `secondObj` to `firstObj`. If `extendNested` is true then a deep-copy is performed."),
+        ("indexOf", "array, item, startingIndex", "`number`", "Returns the index of `item` in the `array` starting the search form `startingIndex`."),
+        ("isObject", "obj", "`boolean`", "`True` if the parameter is a 'simple' object."),
+        ("isFunction", "func", "`boolean`", "`True` if the parameter is a function."),
+        ("isString", "str", "`boolean`", "`True` if the parameter is a string."),
+        ("preventDefault", "event", "", "Prevent the user agent's default action on an event. Useful inside of event handlers."),
+        ("trimStr", "str", "`string`", "Removes whitespace from both ends of a string. Poylfill for `String.prototype.trim`."),
+        ("toElement", "", "div `HTMLElement`", "Creates and returns a new `div` element"),
+        ("log", "logMessage[, logLevel]", "", "Log a message to the console. No-op if console logging is not supported. Polyfill for th user-agent's logging function corresponding to that passed logging level. Generally delegates to `console.log`"),
+        ("getUniqueId", "", "`string`", "Returns a version4 UUID"),
+        ("areCookiesEnabled", "", "`boolean`", "`True` if cookies are enabled."),
+        ("getCookie", "name", "`string`", "Returns the value of the cookie with the associated name."),
+        ("setCookie", "name, value, daysTillExpiration", "", "Sets or updates a cookie."),
+        ("deleteCookie", "name", "", "Deletes the cookie with the associated name."),
+        ("getExtension", "filename", "`string`", "Return the extension for the filename, if any."),
+    )
+) }}
+
+{% endmarkdown %}
+{% endblock %}

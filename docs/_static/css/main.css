@@ -1,0 +1,153 @@
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+body
+{
+    padding-top: 60px;
+    padding-bottom: 40px;
+    color: #525252;
+    background-color: #FCFCFA;
+    font-family:'Maven Pro', sans-serif !important;
+}
+
+@media (max-width: 979px)
+{
+    body
+    {
+        padding-top: 0px;
+    }
+}
+code, pre { color: #f87436; }
+pre
+{
+    overflow: -moz-scrollbars-vertical;
+    overflow: scroll;
+    word-wrap: normal !important;
+    white-space: pre !important;
+}
+.nav > .brand > img
+{
+    margin-top: -13px;
+}
+.dropdown-menu
+{
+    min-width: 220px;
+}
+.dropdown-menu.api
+{
+    padding-left: 20px;
+}
+h1, h2, h3
+{
+    margin: 20px 0;
+}
+h1 {
+    font-size: 30px;
+    color: #00abc7;
+}
+h2
+{
+    size: 24px;
+    color: #00abc7;
+}
+h3
+{
+    color: #00ABC7;
+}
+h1, h2, h3, h4, h5
+{
+    margin-top: -40px !important;
+    padding-top: 40px !important;
+}
+
+
+.navbar-inverse .brand, .navbar-inverse .nav > li > a,
+.navbar-inverse .nav-collapse .nav > li > a,
+.navbar-inverse .nav-collapse .dropdown-menu a
+{
+    color: #6C6C6C;
+    text-shadow:none;
+    font-size:13px;
+    font-weight: normal;
+    text-transform:uppercase;
+}
+.navbar-inverse .brand, .navbar-inverse .nav > li > a:hover
+{
+    color: #F87436 !important;
+}
+.navbar-inverse .nav li.dropdown.open > .dropdown-toggle,
+.navbar-inverse .nav li.dropdown.active > .dropdown-toggle,
+.navbar-inverse .nav li.dropdown.open.active > .dropdown-toggle
+{
+    background-color:#525252;
+}
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus
+{
+    background-color: #66ccdd;
+    background-image:linear-gradient(to bottom, #66ccdd, #66ccdd);
+}
+.navbar-inverse .btn-navbar
+{
+    background-color:#F87436;
+    background-image:linear-gradient(to bottom, #F87436, #F7631E)
+}
+.navbar-inverse .btn-navbar:hover
+{
+    background-color:#F7631E;
+}
+.navbar-inverse .nav-collapse .nav > li > a:hover
+{
+    background-color:#FFFfff;
+}
+.navbar-inverse .nav-collapse .dropdown-menu a:hover
+{
+    background:none;
+    color:#F87436;
+}
+.navbar-inverse .nav .active > a:hover,
+.navbar-inverse .nav .active > a:focus {
+    color:#005580;
+    text-decoration:underline;
+}
+.navbar-inverse .navbar-inner
+{
+    background: #66ccdd;
+    /* fallback for non-supporting browsers */
+    background-image: -webkit-gradient(radial,33% 25px,0,center center,141,from(#ddf3f7),to(#00abc7));
+    /* old WebKit Syntax */
+    background-image: -webkit-radial-gradient(33% 25px,circle contain,#ddf3f7 0%,#00abc7 5000%);
+    /* New WebKit syntax */
+    background-image: -moz-radial-gradient(33% 25px,circle contain,#ddf3f7 0%,#00abc7 5000%);
+    background-image: -ms-radial-gradient(33% 25px,circle contain,#ddf3f7 0%,#00abc7 5000%);
+    /* IE10+ */
+    background-image: -o-radial-gradient(33% 25px,circle contain,#ddf3f7 0%,#00abc7 5000%);
+    /* Opera (13?) */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#D1F8FF',endColorstr='#00859b',GradientType=0);
+    -webkit-box-shadow: inset 0 1px 5px rgba(100,100,100,.2), inset 0 -1px 5px rgba(100,100,100,.2);
+    -moz-box-shadow: inset 0 1px 5px rgba(0,100,100,.2), inset 0 -1px 5px rgba(100,100,100,.2);
+    box-shadow: inset 0 1px 5px rgba(100,100,100,.2), inset 0 -1px 7px rgba(100,100,100,.2);
+    border:none;
+}
+
+.content { width: 80%; max-width: 960px; }
+
+a:hover {
+    -webkit-transition: all .15s ease-in-out;
+    -moz-transition: all .15s ease-in-out;
+    transition: all .15s ease-in-out;
+}
+a:visited
+{
+    color: #0088CC;
+}
+.reference-table thead { font-weight: bold; } 
+.dropdown-menu .divider { margin-right: 20px; }
+
+.dropdown-backdrop
+{
+    position: static;
+}

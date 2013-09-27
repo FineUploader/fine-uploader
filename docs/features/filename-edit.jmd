@@ -1,0 +1,43 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Editing Filenames" %}
+{% block content %}
+{% markdown %}
+
+# Filename Editing {: .page-header }
+
+Fine Uploader provides methods and options to enable client-side editing
+of filenames before upload.
+
+In Core mode, integrators can use the API methods `getName` and `setName` for
+this. In UI mode, if the `editFilename` option is enabled, then when a user
+clicks a file that they have submitted to the uploader the text will become
+an input element that they can use to change the name.
+
+The filename will then be sent with the request as the `qqfilename` parameter.
+Be sure to read this parameter when naming your file server-side.
+
+{{
+alert("You will want to have `autoUpload` disabled when using the edit filename feature.")
+}}
+
+## `editFilename` option
+
+{{ options_table(
+    (
+        ("enabled", "boolean", "`false`", "If set to `true`, users are allowed to edit the name of a submitted files before upload."),
+    )
+) }}
+
+## Methods
+
+{{ methods_table(
+    (
+        ("getName", "`Integer` id", "`String`", "Returns the name of the item with the associated id"),
+        ("setName", "`Integer` id, `String` newName", "", "Provide an alternative name for the associated item"),
+    )
+) }}
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2013/06/23/3-7-edit-override-file-names/)
+
+{% endmarkdown %}
+{% endblock %}

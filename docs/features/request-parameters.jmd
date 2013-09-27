@@ -1,0 +1,139 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Request Parameters" %}
+{% block content %}
+{% markdown %}
+
+# Request Parameters {: .page-header }
+
+The requests that Fine Uploader makes to your server are arguably the most
+ crucial part of the uploading process. Fortunately, modifying the request
+is a fairly trivial task thanks to a few helpful options and methods
+provided by Fine Uploader.
+
+Request parameters can be modified foremost by changing the values of the
+following options found in the `request` option:
+
+### `request` option
+These deal specifically with the traditional (non-S3) uploader.
+
+{{ options_table(
+    (
+        ("endpoint", "`String`", "`'/server/upload'`", "The endpoint to send upload requests to."),
+        ("params", "`Object`", "`{}`", "The parameters that shall be sent with each upload request."),
+        ("paramsInBody", "`Boolean`", "`true`", "Enable or disable sending parameters in the request body. If `false`, parameters are sent in the URL. Otherwise, parameters are sent in the request body."),
+        ("customHeaders", "`Object`", "`{}`", "Additional headers sent along with each POST request."),
+        ("forceMultipart", "`Boolean`", "`true`", "Force all uploads to use multipart encoding"),
+        ("inputName", "`String`", "`'qqfile'`", "The attribute of the input element which will contain the file name. Not applicable to non AJAX uploads."),
+        ("uuidName", "`String`", "`'qquuid'`", "The name of the parameter the uniquely identifies each associated item. The value is a [Level 4 UUID](http://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_.28random.29)."),
+        ("totalFileSizeName", "`String`", "`'qqtotalfilesize'`", "The name of the parameter passed that specifies the total file size in bytes."),
+        ("filenameParam", "`String`", "`'qqfilename'`", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent."),
+    )
+) }}
+
+### Fine Uploader S3's `request` option
+The request option properties are a bit different if you are using Fine Uploader S3.  Here are the only properties of
+the `request` option used by Fine Uploader S3.
+
+{{ options_table(
+    (
+        ("endpoint", "`String`", "`null`", "URL for your S3 bucket.  All valid bucket URLs documented by Amazon are supported, including custom domains.  SSL is also supported."),
+        ("accessKey", "`String`", "`null`", "Your AWS public key. **NOT YOUR SECRET KEY**."),
+        ("params", "`Object`", "`{}`", "The parameters that shall be sent with each upload request."),
+        ("filenameParam", "`String`", "`'qqfilename'`", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent.")
+    )
+) }}
+
+----
+
+The `params` option is used to define request parameters when you instantiate a
+new Fine Uploader instance. Parameters defined this way are set on the request
+at the very last minute before it is sent to the server. Parameters can also
+be set for delete file requests. Simply modify the `params` property of the
+`deletFile` option. Either of these properties are capable of handling a
+variety of JavaScript objects.
+
+#### Simple Objects
+
+```javascript
+params: {
+    username: "mark",
+    date: new Date()
+}
+```
+
+#### Nested Objects
+
+```javascript
+params: {
+    user: {
+        username: 'mark',
+        firstName: 'Mark',
+        lastName: 'Twain'
+    }
+}
+```
+
+#### Functions
+
+Yes, even functions! (They are first-class citizens in JS world)
+
+Each function will be evaluated **for each** file that is submitted. The following code snippet
+demonstrates how one would track the current number of uploaded files.
+
+
+```javascript
+var fileNum = 0;
+
+// ...
+
+    params: {
+        fileNum: function () {
+            return fileNum++;
+        }
+    }
+```
+
+{{ alert("Any params with a function value **must** return either a number or a string.", "info", "Note") }}
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2012/12/09/setparams-is-now-much-more-useful-in-3-1/)
+
+## Methods
+
+The `setParams` and `setDeleteFileParams` methods can be used to change parameters
+passed at any point in the upload process (well, at any point up until the file
+is uploaded). For the current file, you can adjust the passed parameters along
+with the request as late as when the `upload` event is fired. Parameters can
+also be modified for a file in the `manualRetry` and `autoRetry` events.
+
+`setParams` can change the parameters for a all files, or for a single file by
+providing an optional `id` parameter.
+
+{{ methods_table(
+    (
+        ("setParams", "`newParams[, id]`", "", "Set the parameters sent along with the request after initializing the uploader. Takes an optional `id` parameter which will only change the parameters for a single file."),
+        ("setDeleteFileParams", "`newParams[, id]`", "", "Set the parameters sent along with a delete request. Takes an optional `id` parameter which will only change the parameters for a single file.")
+    )
+) }}
+
+{{ alert(
+"""Once you change parameters for a specific file, subsequent calls to `setParams` without an `id` will **not** affect this file.
+To change parameters again, call `setParams` again with the associated `id`.""", "info", "Note") }}
+
+## URL Query String Parameters
+
+Sometimes it may prove useful to send request parameters in the URL
+query string, and fortunately Fine Uploader supports this right out of the
+box. By disabling the `request.paramsInBody` option, you can pass parameters
+through the query string rather than the request body.
+
+{{ alert(
+"""All parameters in the query string are [URI Component Encoded](https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/encodeURIComponent).
+This means that you must decode the parameter keys and values server-side. JavaScript's `encodeURIComponent` function
+uses the UTF-8 encoding scheme so make sure that your server is using the same encoding. Lastly,
+be sure to the meta tag in your HTML: `<meta charset='utf-8'>`""", "info", "Note") }}
+
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2012/12/05/include-params-in-the-request-body-or-the-query-string/)
+
+{% endmarkdown %}
+{% endblock %}

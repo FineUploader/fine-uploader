@@ -1,0 +1,70 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Retrying Uploads" %}
+{% block content %}
+{% markdown %}
+
+# Retrying Uploads {: .page-header }
+
+## Options
+
+### `retry` option (core mode)
+
+{{ options_table(
+    (
+        ("autoAttemptsDelay", "`Number`", "5", "The number of seconds to wait between auto retry attempts."),
+        ("enableAuto", "`Boolean`", "`false`", "Enable or disable retrying uploads that receive any error or non-200 response."),
+        ("maxAutoAttempts", "`Number`", "3", "The maximum number of times to attempt to retry a failed upload."),
+        ("preventRetryResponseProperty", "`String`", "'preventRetry'", "This property will be looked for in the server response and, if found and `true`, will indicate that no more retries should be attempted for this item."),
+    )
+) }}
+
+
+### `retry` option (UI mode)
+Note that all core mode options are also available.
+
+{{ options_table(
+    (
+        ("showAutoRetryNote", "`Boolean`", "true", "If set to true, a status message will appear next to the file or `Blob` during automatic retry attempts."),
+        ("autoRetryNote", "`String`", "'Retrying {retryNum}/{maxAuto}...'", "The text of the note that will optionally appear next to the file or `Blob` during automatic retry attempts. Ignored if `showAutoRetryNote` is false."),
+        ("showButton", "`Boolean`", "false", "If true, a button/link will appear next to a failed file or `Blob` after all retry attempts have been exhausted, assuming the server has not prohibited further retry attempts via the `preventRetryResponseProperty`. This button/link will allow the user to manually order the uploader to make another attempt at uploading the failed file or `Blob`. Note that this operation does respect the `maxConnections` value, so if all connections are accounted for, the retry attempt will be queued until a connection opens up.")
+    )
+) }}
+
+
+## Events
+
+{{ events_table(
+    (
+        ("autoRetry", "`Integer` id, `String` name, `Integer` attemptNumber", "Called before each automatic retry attempt for a failed item."),
+        ("manualRetry", "`Integer` id, `String` name, `Integer` attemptNumber", "Called before each manual retry attempt for a failed item. Return `false` to prevent this and all future retry attempts associated with the item."),
+    )
+) }}
+
+## Methods
+
+{{ methods_table(
+    (
+        ("retry", "`Integer` id", "", "Try uploading the specific item again."),
+    )
+) }}
+
+## Example
+
+Fine Uploader will automatically attempt to retry an upload if the `enableAuto` option is set to `true`:
+
+```javascript
+$("#fine-uploader").fineUploader({
+    // ..
+    retry: {
+        enableAuto: true
+    }
+}).on('autoRetry', function (event, id, name, attemptNumber) {
+
+});
+```
+
+{{ alert("jQuery 1.7+ is required to use the `on` function.") }}
+
+
+{% endmarkdown %}
+{% endblock %}

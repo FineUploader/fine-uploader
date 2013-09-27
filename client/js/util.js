@@ -1,4 +1,4 @@
-/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest, Blob*/
+/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest, Blob, Storage*/
 var qq = function(element) {
     "use strict";
 
@@ -30,6 +30,14 @@ var qq = function(element) {
         },
 
         contains: function(descendant) {
+            // The [W3C spec](http://www.w3.org/TR/domcore/#dom-node-contains)
+            // says a `null` (or ostensibly `undefined`) parameter
+            // passed into `Node.contains` should result in a false return value.
+            // IE7 throws an exception if the parameter is `undefined` though.
+            if (!descendant) {
+                return false;
+            }
+
             // compareposition returns false in this case
             if (element === descendant) {
                 return true;
@@ -61,7 +69,7 @@ var qq = function(element) {
          * Fixes opacity in IE6-8.
          */
         css: function(styles) {
-            if (styles.opacity !== null){
+            if (styles.opacity != null){
                 if (typeof element.style.opacity !== 'string' && typeof(element.filters) !== 'undefined'){
                     styles.filter = 'alpha(opacity=' + Math.round(100 * styles.opacity) + ')';
                 }
@@ -154,12 +162,33 @@ qq.log = function(message, level) {
 
 qq.isObject = function(variable) {
     "use strict";
-    return variable !== null && variable && typeof(variable) === "object" && variable.constructor === Object;
+    return variable && !variable.nodeType && Object.prototype.toString.call(variable) === '[object Object]';
 };
 
 qq.isFunction = function(variable) {
     "use strict";
     return typeof(variable) === "function";
+};
+
+qq.isArray = function(variable) {
+    "use strict";
+    return Object.prototype.toString.call(variable) === "[object Array]";
+};
+
+// Looks for an object on a `DataTransfer` object that is associated with drop events when utilizing the Filesystem API.
+qq.isItemList = function(maybeItemList) {
+    "use strict";
+    return Object.prototype.toString.call(maybeItemList) === "[object DataTransferItemList]";
+};
+
+// Looks for an object on a `NodeList` or an `HTMLCollection`|`HTMLFormElement`|`HTMLSelectElement`
+// object that is associated with collections of Nodes.
+qq.isNodeList = function(maybeNodeList) {
+    "use strict";
+    return Object.prototype.toString.call(maybeNodeList) === "[object NodeList]" ||
+        // If `HTMLCollection` is the actual type of the object, we must determine this
+        // by checking for expected properties/methods on the object
+        (maybeNodeList.item && maybeNodeList.namedItem);
 };
 
 qq.isString = function(maybeString) {
@@ -175,21 +204,51 @@ qq.trimStr = function(string) {
     return string.replace(/^\s+|\s+$/g,'');
 };
 
+
+/**
+ * @param str String to format.
+ * @returns {string} A string, swapping argument values with the associated occurrence of {} in the passed string.
+ */
+qq.format = function(str) {
+    "use strict";
+
+    var args =  Array.prototype.slice.call(arguments, 1),
+        newStr = str;
+
+    qq.each(args, function(idx, val) {
+        newStr = newStr.replace(/{}/, val);
+    });
+
+    return newStr;
+};
+
+qq.isFile = function(maybeFile) {
+    "use strict";
+
+    return window.File && Object.prototype.toString.call(maybeFile) === '[object File]'
+};
+
+qq.isFileList = function(maybeFileList) {
+    return window.FileList && Object.prototype.toString.call(maybeFileList) === '[object FileList]'
+};
+
 qq.isFileOrInput = function(maybeFileOrInput) {
     "use strict";
-    if (window.File && maybeFileOrInput instanceof File) {
-        return true;
-    }
-    else if (window.HTMLInputElement) {
-        if (maybeFileOrInput instanceof HTMLInputElement) {
-            if (maybeFileOrInput.type && maybeFileOrInput.type.toLowerCase() === 'file') {
+
+    return qq.isFile(maybeFileOrInput) || qq.isInput(maybeFileOrInput);
+};
+
+qq.isInput = function(maybeInput) {
+    if (window.HTMLInputElement) {
+        if (Object.prototype.toString.call(maybeInput) === '[object HTMLInputElement]') {
+            if (maybeInput.type && maybeInput.type.toLowerCase() === 'file') {
                 return true;
             }
         }
     }
-    else if (maybeFileOrInput.tagName) {
-        if (maybeFileOrInput.tagName.toLowerCase() === 'input') {
-            if (maybeFileOrInput.type && maybeFileOrInput.type.toLowerCase() === 'file') {
+    if (maybeInput.tagName) {
+        if (maybeInput.tagName.toLowerCase() === 'input') {
+            if (maybeInput.type && maybeInput.type.toLowerCase() === 'file') {
                 return true;
             }
         }
@@ -212,7 +271,22 @@ qq.isXhrUploadSupported = function() {
         input.multiple !== undefined &&
             typeof File !== "undefined" &&
             typeof FormData !== "undefined" &&
-            typeof (new XMLHttpRequest()).upload !== "undefined" );
+            typeof (qq.createXhrInstance()).upload !== "undefined" );
+};
+
+// Fall back to ActiveX is native XHR is disabled (possible in any version of IE).
+qq.createXhrInstance = function() {
+    if (window.XMLHttpRequest) {
+        return new XMLHttpRequest();
+    }
+
+    try {
+        return new ActiveXObject("MSXML2.XMLHTTP.3.0");
+    }
+    catch(error) {
+        qq.log("Neither XHR or ActiveX are supported!", "error");
+        return null;
+    }
 };
 
 qq.isFolderDropSupported = function(dataTransfer) {
@@ -227,8 +301,9 @@ qq.isFileChunkingSupported = function() {
         (File.prototype.slice !== undefined || File.prototype.webkitSlice !== undefined || File.prototype.mozSlice !== undefined);
 };
 
-qq.extend = function (first, second, extendNested) {
+qq.extend = function(first, second, extendNested) {
     "use strict";
+
     qq.each(second, function(prop, val) {
         if (extendNested && qq.isObject(val)) {
             if (first[prop] === undefined) {
@@ -240,6 +315,33 @@ qq.extend = function (first, second, extendNested) {
             first[prop] = val;
         }
     });
+
+    return first;
+};
+
+/**
+ * Allow properties in one object to override properties in another,
+ * keeping track of the original values from the target object.
+ *
+ * Note that the pre-overriden properties to be overriden by the source will be passed into the `sourceFn` when it is invoked.
+ *
+ * @param target Update properties in this object from some source
+ * @param sourceFn A function that, when invoked, will return properties that will replace properties with the same name in the target.
+ * @returns {object} The target object
+ */
+qq.override = function(target, sourceFn) {
+    var super_ = {},
+        source = sourceFn(super_);
+
+    qq.each(source, function(srcPropName, srcPropVal) {
+        if (target[srcPropName] !== undefined) {
+            super_[srcPropName] = target[srcPropName];
+        }
+
+        target[srcPropName] = srcPropVal;
+    });
+
+    return target;
 };
 
 /**
@@ -286,6 +388,10 @@ qq.ie       = function(){
     "use strict";
     return navigator.userAgent.indexOf('MSIE') !== -1;
 };
+qq.ie7      = function(){
+    "use strict";
+    return navigator.userAgent.indexOf('MSIE 7') !== -1;
+};
 qq.ie10     = function(){
     "use strict";
     return navigator.userAgent.indexOf('MSIE 10') !== -1;
@@ -309,6 +415,16 @@ qq.windows  = function(){
 qq.android = function(){
     "use strict";
     return navigator.userAgent.toLowerCase().indexOf('android') !== -1;
+};
+qq.ios7 = function() {
+    "use strict";
+    return qq.ios() && navigator.userAgent.indexOf(" OS 7_") !== -1;
+};
+qq.ios = function() {
+    "use strict";
+    return navigator.userAgent.indexOf("iPad") !== -1
+        || navigator.userAgent.indexOf("iPod") !== -1
+        || navigator.userAgent.indexOf("iPhone") !== -1;
 };
 
 //
@@ -338,20 +454,67 @@ qq.toElement = (function(){
     };
 }());
 
-//key and value are passed to callback for each item in the object or array
-qq.each = function(obj, callback) {
+//key and value are passed to callback for each entry in the iterable item
+qq.each = function(iterableItem, callback) {
     "use strict";
-    var key, retVal;
-    if (obj) {
-        for (key in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                retVal = callback(key, obj[key]);
+    var keyOrIndex, retVal;
+
+    if (iterableItem) {
+        // Iterate through [`Storage`](http://www.w3.org/TR/webstorage/#the-storage-interface) items
+        if (window.Storage && iterableItem.constructor === window.Storage) {
+            for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
+                retVal = callback(iterableItem.key(keyOrIndex), iterableItem.getItem(iterableItem.key(keyOrIndex)));
                 if (retVal === false) {
                     break;
                 }
             }
         }
+        // `DataTransferItemList` & `NodeList` objects are array-like and should be treated as arrays
+        // when iterating over items inside the object.
+        else if (qq.isArray(iterableItem) || qq.isItemList(iterableItem) || qq.isNodeList(iterableItem)) {
+            for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
+                retVal = callback(keyOrIndex, iterableItem[keyOrIndex]);
+                if (retVal === false) {
+                    break;
+                }
+            }
+        }
+        else if (qq.isString(iterableItem)) {
+            for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
+                retVal = callback(keyOrIndex, iterableItem.charAt(keyOrIndex));
+                if (retVal === false) {
+                    break;
+                }
+            }
+        }
+        else {
+            for (keyOrIndex in iterableItem) {
+                if (Object.prototype.hasOwnProperty.call(iterableItem, keyOrIndex)) {
+                    retVal = callback(keyOrIndex, iterableItem[keyOrIndex]);
+                    if (retVal === false) {
+                        break;
+                    }
+                }
+            }
+        }
     }
+};
+
+//include any args that should be passed to the new function after the context arg
+qq.bind = function(oldFunc, context) {
+    if (qq.isFunction(oldFunc)) {
+        var args =  Array.prototype.slice.call(arguments, 2);
+
+        return function() {
+            var newArgs = qq.extend([], args);
+            if (arguments.length) {
+                newArgs = newArgs.concat(Array.prototype.slice.call(arguments))
+            }
+            return oldFunc.apply(context, newArgs);
+        };
+    }
+
+    throw new Error("first parameter must be a function!");
 };
 
 /**
@@ -373,8 +536,7 @@ qq.each = function(obj, callback) {
 qq.obj2url = function(obj, temp, prefixDone){
     "use strict";
     /*jshint laxbreak: true*/
-     var i, len,
-         uristrings = [],
+     var uristrings = [],
          prefix = '&',
          add = function(nextObj, i){
             var nextTemp = temp
@@ -398,17 +560,13 @@ qq.obj2url = function(obj, temp, prefixDone){
         uristrings.push(temp);
         uristrings.push(qq.obj2url(obj));
     } else if ((Object.prototype.toString.call(obj) === '[object Array]') && (typeof obj !== 'undefined') ) {
-        // we wont use a for-in-loop on an array (performance)
-        for (i = -1, len = obj.length; i < len; i+=1){
-            add(obj[i], i);
-        }
+        qq.each(obj, function(idx, val) {
+            add(val, idx);
+        });
     } else if ((typeof obj !== 'undefined') && (obj !== null) && (typeof obj === "object")){
-        // for anything else but a scalar, we will use for-in-loop
-        for (i in obj){
-            if (obj.hasOwnProperty(i)) {
-                add(obj[i], i);
-            }
-        }
+        qq.each(obj, function(prop, val) {
+            add(val, prop);
+        });
     } else {
         uristrings.push(encodeURIComponent(temp) + '=' + encodeURIComponent(obj));
     }
@@ -480,17 +638,21 @@ qq.setCookie = function(name, value, days) {
 qq.getCookie = function(name) {
 	var nameEQ = name + "=",
         ca = document.cookie.split(';'),
-        c;
+        cookie;
 
-	for(var i=0;i < ca.length;i++) {
-		c = ca[i];
-		while (c.charAt(0)==' ') {
-            c = c.substring(1,c.length);
+    qq.each(ca, function(idx, part) {
+        var cookiePart = part;
+        while (cookiePart.charAt(0)==' ') {
+            cookiePart = cookiePart.substring(1, cookiePart.length);
         }
-		if (c.indexOf(nameEQ) === 0) {
-            return c.substring(nameEQ.length,c.length);
+
+        if (cookiePart.indexOf(nameEQ) === 0) {
+            cookie = cookiePart.substring(nameEQ.length, cookiePart.length);
+            return false;
         }
-	}
+    });
+
+    return cookie;
 };
 
 qq.getCookieNames = function(regexp) {
@@ -536,6 +698,20 @@ qq.parseJson = function(json) {
         return JSON.parse(json);
     } else {
         return eval("(" + json + ")");
+    }
+};
+
+/**
+ * Retrieve the extension of a file, if it exists.
+ *
+ * @param filename
+ * @returns {string || undefined}
+ */
+qq.getExtension = function(filename) {
+    var extIdx = filename.lastIndexOf('.') + 1;
+
+    if (extIdx > 0) {
+        return filename.substr(extIdx, filename.length - extIdx);
     }
 };
 

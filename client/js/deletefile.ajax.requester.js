@@ -5,6 +5,8 @@ qq.DeleteFileAjaxRequestor = function(o) {
 
     var requestor,
         options = {
+            method: "DELETE",
+            uuidParamName: "qquuid",
             endpointStore: {},
             maxConnections: 3,
             customHeaders: {},
@@ -16,29 +18,50 @@ qq.DeleteFileAjaxRequestor = function(o) {
             },
             log: function(str, level) {},
             onDelete: function(id) {},
-            onDeleteComplete: function(id, xhr, isError) {}
+            onDeleteComplete: function(id, xhrOrXdr, isError) {}
         };
 
     qq.extend(options, o);
 
+    function getMandatedParams() {
+        if (options.method.toUpperCase() === "POST") {
+            return {
+                "_method": "DELETE"
+            };
+        }
+
+        return {};
+    }
+
     requestor = new qq.AjaxRequestor({
-        method: 'DELETE',
+        validMethods: ["POST", "DELETE"],
+        method: options.method,
         endpointStore: options.endpointStore,
         paramsStore: options.paramsStore,
+        mandatedParams: getMandatedParams(),
         maxConnections: options.maxConnections,
         customHeaders: options.customHeaders,
-        successfulResponseCodes: [200, 202, 204],
         demoMode: options.demoMode,
         log: options.log,
         onSend: options.onDelete,
-        onComplete: options.onDeleteComplete
+        onComplete: options.onDeleteComplete,
+        cors: options.cors
     });
 
 
     return {
-        sendDelete: function(id, uuid) {
-            requestor.send(id, uuid);
-            options.log("Submitted delete file request for " + id);
+        sendDelete: function(id, uuid, additionalMandatedParams) {
+            var additionalOptions = additionalMandatedParams || {};
+
+            options.log("Submitting delete file request for " + id);
+
+            if (requestor.getMethod() === "DELETE") {
+                requestor.send(id, uuid, additionalOptions);
+            }
+            else {
+                additionalOptions[options.uuidParamName] = uuid;
+                requestor.send(id, null, additionalOptions);
+            }
         }
     };
 };

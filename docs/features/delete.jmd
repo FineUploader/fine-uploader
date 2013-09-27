@@ -1,0 +1,57 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Deleting Files" %}
+{% block content %}
+{% markdown %}
+
+# Deleting Files {: .page-header }
+
+Enabling the deletion of files means your users can delete files after they have been uploaded.
+You can only delete files that have been uploaded during the current session.
+If you upload a file, leave the page, and come back then you cannot delete that file though Fine Uploader.
+
+A file is eligible for deletion only after it has been successfully uploaded.
+
+## Options
+
+#### `deleteFile` option
+
+{{ options_table(
+    (
+        ("enabled", "`Boolean`", "`false`", "Set to `true` if users should be able to delete files."),
+        ("method", "`String`", "`'DELETE'`", "Set the HTTP method to use for delete. You may also set this to POST"),
+        ("endpoint", "`String`", "`'/server/upload'`", "The endpoint where the delete request is sent."),
+        ("customHeaders", "`Object`", "`{}`", "Specify any additional headers to attach to all delete requests."),
+        ("params", "`Object`", "`{}`", "Specify any additonal parameters to attach to all delete requests.")
+    )
+) }}
+
+{{
+alert("""Fine Uploader appends a `_delete` parameter to the request object when the HTTP method is POST instead of DELETE.
+This is for your benefit so your server knows what sort of request it is.""")
+}}
+
+## Events
+
+{{ events_table(
+    (
+        ("delete", "`Integer` id", "Called just before a delete request is sent for the associated item."),
+        ("deleteComplete", "`Integer` id, `XMLHttpRequest` or `XDomainRequest` xhrOrXdr, `Boolean` isError", "Called just after receiving a request from the server for a delete file request."),
+        ("submitDelete", "`Integer` id", "Called just before an item that has been marked for deletion has been submitted to the uploader. You may return false to prevent the delete.
+        You may also return a [`qq.Promise`](async-tasks-and-promises.html)."),
+    )
+) }}
+
+## Methods
+
+{{ methods_table(
+    (
+        ("deleteFile", "`Integer` id", "", "Delete the file with the corresponding ID off the server."),
+        ("setDeleteFileEndpoint", "`String` endpointPath[, `Integer` id]", "", "Modify the location where the upload request should be directed. Pass in a value for the `id` parameter to change for a specific item."),
+        ("setDeleteFileParams", "`String` newParams[, `Integer` id]", "", "Set the parameters for the delete file request.")
+    )
+) }}
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2013/01/25/delete-an-uploaded-file-in-3-3/)
+
+{% endmarkdown %}
+{% endblock %}

@@ -1,0 +1,36 @@
+{% macro alert(content, type="info", alert_header="Note", close_button=False) -%}
+{# type can be success, error (or danger), info. Defaults to a warning style. #}
+<div class="alert
+            {%- if alert_header %} alert-block{% endif -%}
+            {%- if type %} alert-{{ type }}{% endif -%}
+            {%- if close_button %} fade in{% endif %}">
+{% if close_button -%}
+<a class="close" data-dismiss="alert">&times;</a>
+{%- endif %}
+{% if alert_header -%}
+<h4 class="alert-heading">{{ alert_header|safe }}</h4>
+{%- endif %}
+
+{{ content|markdown|safe }}
+
+</div>
+{%- endmacro %}
+
+{#
+{% macro browsers(ok, not_ok) -%}
+{% for browser in ok %}
+    <span class="label label-success">{{ content|safe }}</span>
+{% endfor %}
+{% for browser in ok %}
+    <span class="label label-failure">{{ content|safe }}</span>
+{% endfor %}
+{%- endmacro %}
+#}
+
+{% macro label(content, type='warning') -%}
+    <span class="label label-{{ type }}">{{ content|safe }}</span>
+{%- endmacro %}
+
+{% macro badge(content, type='warning') -%}
+<span class="badge badge-{{ type }}">{{ content|safe }}</span>
+{%- endmacro %}

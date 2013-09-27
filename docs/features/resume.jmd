@@ -1,0 +1,64 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Resume" %}
+{% block content %}
+{% markdown %}
+
+# Resuming Uploads {: .page-header }
+
+The ability to resume an upload that was somehow interrupted is
+dependant on the support for [chunking](chunking.html) and cookies (traditional uploader) or
+localstorage (S3 uploader) by the client. Essentially, to support resumable uploads, Fine
+Uploader just needs to keep track of where it currently is in the upload process.
+To do this it stores session data in a record that is saved on the client
+before each chunk is sent to the server.
+
+Note that resuming is disabled by default, and the cookie or local storage object is stored for 7 days
+(both of these options can be easily changed).
+
+## Options
+
+### `resume` option
+
+{{ options_table(
+    (
+        ("cookiesExpireIn", "`Number`", "`7`", "The number of days before a persistent resume cookie will expire."),
+        ("enabled", "`Boolean`", "`false`", "Enable or disable the ability to resume failed or stopped chunked uploads."),
+        ("id", "`Number` or `String`", "`null`", "An additional component of the cookie name used to store the current upload session.")
+    )
+) }}
+
+{{
+    alert("The `cookiesExpireIn` property is not applicable to the S3 uploader.  Instead, use `recordsExpireIn`.")
+}}
+
+{{
+    alert("The `id` property is not applicable to the S3 uploader.")
+}}
+
+### `resume.paramNames` option
+
+{{
+    alert("These options are not applicable to the S3 uploader.")
+}}
+
+{{
+options_table(
+    (
+        ("resuming", "`String`", "`'qqresume'`", "Sent with the first request of the resume with a value of `true`."),
+    )
+)
+}}
+
+## Methods
+
+{{ methods_table(
+    (
+        ("getResumableFilesData", "", "`Array`", "Returns an array of potentially resumable items."),
+    )
+)
+}}
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2013/01/01/resume-uploads-from-previous-sessions-in-3-2/)
+
+{% endmarkdown %}
+{% endblock %}

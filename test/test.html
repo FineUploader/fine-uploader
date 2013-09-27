@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> Test Suite :: FineUploader</title>
+        <meta http-equiv='Content-Type' content='text/html' charset='utf-8' />
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+
+    </head>
+
+    <body>
+
+        <div id="mocha"></div>
+        <div id="mocha-fixture"></div>
+
+        <!-- dependencies -->
+        <script src="vendor/purl/purl.js" type="text/javascript"></script>
+        <script src="vendor/json2/json2.js" type="text/javascript"></script>
+        <script src="vendor/jquery/jquery.js" type="text/javascript"></script>
+        <script src="vendor/jquery.simulate/jquery.simulate.js" type="text/javascript"></script>
+        <script src="vendor/sinon/index.js" type="text/javascript"></script>
+
+        <link href="vendor/mocha/css/mocha.css" rel="stylesheet" type="text/css" media="screen" />
+        <script src="vendor/mocha/js/mocha.js" type="text/javascript"></script>
+        <script src="vendor/assert/assert.js" type="text/javascript"></script>
+
+        <!-- phantomjs logging script
+        <script src="/static/phantom.js"></script>
+        -->
+        <script src="static/client.js"></script>
+        <script src="static/helpme.js"></script>
+
+        <!-- Fine Uploader -->
+        <link href="temp/fineuploader.css" />
+        <script src="temp/all.fineuploader.js" type="text/javascript"></script>
+        <!--
+        <script src="temp/jquery.fineuploader.js" type="text/javascript"></script>
+        -->
+
+        <!-- any setup code... -->
+        <script>
+            window.chocoReady = false;
+            window.mochaResults = {};
+            mocha.setup('tdd');
+
+            var $fixture;
+            beforeEach(function () {
+                $fixture = helpme.withTests.createFixture();
+            });
+
+            afterEach(function () {
+                $fixture = helpme.withTests.destroyFixture();
+            });
+
+        </script>
+
+        <!-- load the test scripts -->
+        <script src="unit/util.js"></script>
+        <script src="unit/promise.js"></script>
+        <script src="unit/button.js"></script>
+        <script src="unit/upload-data.js"></script>
+        <script src="unit/features.js"></script>
+        <script src="unit/ui.handler.click.drc.js"></script>
+        <script src="unit/ui.handler.click.filename.js"></script>
+        <script src="unit/uploader.basic.api.js"></script>
+        <script src="unit/s3/util.js"></script>
+        <script src="unit/iframe.xss.response.js"></script>
+
+        <!-- run the tests -->
+        <script>
+        $(function () {
+            mochaSaucePlease();
+            console.log("The droids you were looking for ...");
+        });
+        </script>
+
+    </body>
+</html>

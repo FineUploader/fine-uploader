@@ -1,0 +1,91 @@
+# .htaccess file for docs.fineuploader.com
+#
+# The plan:
+# * the directory structure of the docs is like so:
+#
+#       ~/docs.fineuploader.com/<branch_or_tag>/<branch_or_tag_value>/<path>
+#
+# We simply want to make request for root foward to the 'master' branch and we 
+# want to strip out `html` in all the paths.
+
+
+#####
+# Authentication
+#####
+
+# Require Authentication for POST requests to the hooks.php
+SetEnvIf Request_URI ^(?!/hook.php) no_require_auth=true
+AuthType Basic
+AuthName "Password protected"
+AuthUserFile /home/fineuploaderdocs/docs.fineuploader.com/.htpasswd
+Require valid-user
+
+Order Deny,Allow
+Deny from all
+Satisfy any
+Require valid-user
+Allow from env=no_require_auth
+
+Options +FollowSymLinks
+RewriteEngine On
+RewriteBase /
+
+#####
+# favicon.ico
+#####
+RewriteRule favicon.ico favicon.ico [PT,L]
+
+#####
+# hook.php
+#####
+
+# Hook.php responds to GitHub webooks. When it receives a notification
+# about newly pushed code, it rebuilds the documentation form the
+# most recent source.
+RewriteRule ^hook.php$ hook.php [L]
+
+#####
+# URLS
+#####
+
+# set master branch as root 
+RewriteRule ^(?!branch/)(.*)$ branch/master/$1 [PT,L]
+
+# Update: Fri Aug 16 10:11:15 CDT 2013
+# By: Mark Feltner
+#
+# Documentation has been refactored for S3 support. Page rules have changed.
+# All 404 pages should redirect to the documentation root to mitigate any broken links.
+
+########
+# Redirect old pages:
+########
+RewriteRule ^branch/master/api/callbacks.html api/events.html [R,L]
+RewriteRule ^branch/master/api/drag-and-drop.html  features/drag-and-drop.html [R,L]
+RewriteRule ^branch/master/api/feature-detection.html browser-support.html [R,L]
+RewriteRule ^branch/master/api/fineuploader(basic)?.html api/methods.html [R,L]
+RewriteRule ^branch/master/api/promise.html features/async-tasks-and-promises.html [R,L]
+RewriteRule ^branch/master/api/qquery.html api/qq.html [R,L]
+RewriteRule ^branch/master/integrating/debugging_errors.html features/handling-errors.html [R,L]
+RewriteRule ^branch/master/integrating/limitations-ie.html browser-support.html [R,L]
+RewriteRule ^branch/master/integrating/styling.html features/styling.html [R,L]
+RewriteRule ^branch/master/integrating/modes/fineuploader.html modes/ui.html [R,L]
+RewriteRule ^branch/master/integrating/modes/fineuploaderbasic.html modes/core.html [R,L]
+RewriteRule ^branch/master/integrating/modes/.*jquery.*.html integrating/jquery.html [R,L]
+RewriteRule ^branch/master/integrating/options/fineuploader.html api/options-ui.html [R,L]
+RewriteRule ^branch/master/integrating/options/fineuploaderbasic.html api/options.html [R,L]
+RewriteRule ^branch/master/integrating/quickstart/index.html quickstart/01-getting-started.html [R,L]
+RewriteRule ^branch/master/integrating/server/index.html endpoint_handlers/traditional.html [R,L]
+RewriteRule ^branch/master/overview/index.html index.html [R,L]
+RewriteRule ^branch/master/overview/development.html contributing.html [R,L]
+RewriteRule ^branch/master/overview/faq.html faq.html [R,L]
+RewriteRule ^branch/master/overview/features.html index.html#features [R,L]
+RewriteRule ^branch/master/overview/support.html support.html [R,L]
+
+########
+# Redirect all 404s to the root:
+########
+ErrorDocument 404 /
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteRule . / [L,R=301]
+

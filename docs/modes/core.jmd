@@ -1,0 +1,28 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Core Mode" %}
+{% block content %}
+{% markdown %}
+# Fine Uploader Core Mode {: .page-header }
+
+Fine Uploader Core mode offers all the features of Fine Uploader UI mode, 
+but rather than make assumptions about the UI, allows the developer to 
+explicitly define which elements in the DOM Fine Uploader should act upon. 
+This opens the door for finely tuned integration between Fine Uploader and 
+your existing application. Choose this mode if you need very tight control 
+over your uploader’s UI.
+
+Fine Uploader Core mode is defined in the qq.FineUploaderBasic module in the code. 
+This is the base module for Fine Uploader, and provides all functions that do not 
+involve UI components.
+
+Fine Uploader Core mode has a couple more options that need to be set than regular 
+Fine Uploader UI mode.
+
+For more information, see:
+
+* [Core Mode Options](../api/options.html)
+* [API Methods](../api/methods.html)
+* [Events](../api/events.html)
+
+{% endmarkdown %}
+{% endblock %}

@@ -2,21 +2,27 @@
 qq.Promise = function() {
     "use strict";
 
-    var successValue, failureValue,
-        successCallback, failureCallback, doneCallback,
+    var successArgs, failureArgs,
+        successCallbacks = [],
+        failureCallbacks = [],
+        doneCallbacks = [],
         state = 0;
 
     return {
         then: function(onSuccess, onFailure) {
             if (state === 0) {
-                successCallback = onSuccess;
-                failureCallback = onFailure;
+                if (onSuccess) {
+                    successCallbacks.push(onSuccess);
+                }
+                if (onFailure) {
+                    failureCallbacks.push(onFailure);
+                }
             }
             else if (state === -1 && onFailure) {
-                onFailure(failureValue);
+                onFailure.apply(null, failureArgs);
             }
             else if (onSuccess) {
-                onSuccess(successValue);
+                onSuccess.apply(null,successArgs);
             }
 
             return this;
@@ -24,43 +30,55 @@ qq.Promise = function() {
 
         done: function(callback) {
             if (state === 0) {
-                doneCallback = callback;
+                doneCallbacks.push(callback);
             }
             else {
-                callback();
+                callback.apply(null, failureArgs === undefined ? successArgs : failureArgs);
             }
 
             return this;
         },
 
-        success: function(val) {
+        success: function() {
             state = 1;
-            successValue = val;
+            successArgs = arguments;
 
-            if (successCallback) {
-                successCallback(val);
+            if (successCallbacks.length) {
+                qq.each(successCallbacks, function(idx, callback) {
+                    callback.apply(null, successArgs)
+                })
             }
 
-            if(doneCallback) {
-                doneCallback();
+            if(doneCallbacks.length) {
+                qq.each(doneCallbacks, function(idx, callback) {
+                    callback.apply(null, successArgs)
+                })
             }
 
             return this;
         },
 
-        failure: function(val) {
+        failure: function() {
             state = -1;
-            failureValue = val;
+            failureArgs = arguments;
 
-            if (failureCallback) {
-                failureCallback(val);
+            if (failureCallbacks.length) {
+                qq.each(failureCallbacks, function(idx, callback) {
+                    callback.apply(null, failureArgs);
+                })
             }
 
-            if(doneCallback) {
-                doneCallback();
+            if(doneCallbacks.length) {
+                qq.each(doneCallbacks, function(idx, callback) {
+                    callback.apply(null, failureArgs);
+                })
             }
 
             return this;
         }
     };
+};
+
+qq.isPromise = function(maybePromise) {
+    return maybePromise && maybePromise.then && maybePromise.done;
 };

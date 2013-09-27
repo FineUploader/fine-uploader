@@ -1,0 +1,50 @@
+{% extends "_templates/base.html" %}
+{% block content %}
+{% markdown %}
+### Enabling Fine Uploader
+
+Fine Uploader does NOT depend on jQuery, and you don't have to use the jQuery plug-in if you don't want to.The same features are available without the jQuery plug-in.  To use Fine Uploader with "plain 'ole" Javascript, include the uploader Javascript file and, optionally, the css file along with any images provided into your page. If you are only making use of FineUploaderBasic, you can omit the css and image(s) file(s).
+
+    html
+    <div id="fine-uploader">
+        <noscript>
+            <p>Please enable JavaScript to use Fine Uploader.</p>
+            <!-- or put a simple form for upload here -->
+        </noscript>
+    </div>
+
+#### without jQuery ...
+
+Initialize uploader when the DOM is ready. Change the endpoint option.
+In the server folder you will find some examples for different platforms.
+If you can't find the one you need, please read up on handling multipart form
+requests and XHR upload requests in your server-side language of choice.
+
+    javascript
+    var uploader = new qq.FineUploader({
+    	    // pass the dom node (ex. $(selector)[0] for jQuery users)
+	    element: document.getElementById('fine-uploader'),
+
+	    request: {
+      		    // path to server-side upload script
+		    endpoint: '/server/upload'
+	    }
+    });
+
+#### with jQuery …
+A jQuery plug-in exists that wraps the native Fine Uploader code.  If you would like to reap all of the benefits that
+a jQuery plug-in offers, such as use of jQuery Events, specifying elements using the jQuery object/jQuery selectors,
+easy integration into your otherwise jQuery project: look no further!
+
+To use the jQuery plug-in, ensure you include the proper Fine Uploader js file on your page, and instantiate it like so:
+
+    javascript
+    $('#fineUploaderElementId').fineUploader({
+        request: {
+            endpoint: '/upload/endpoint'
+        }
+    });
+
+[Next](setting_up_server.html), you'll learn to set up a simple server to handle uploads.
+{% endmarkdown %}
+{% endblock %}

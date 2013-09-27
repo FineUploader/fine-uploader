@@ -1,0 +1,253 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Core Options" %}
+{% block sidebar %}
+<ul class="nav nav-tabs nav-stacked">
+    <li><a href="#core_1"><b>Core</b></a></li>
+    <li><a href="#blobs-option">blobs</a></li>
+    <li><a href="#camera-option">camera</a></li>
+    <li><a href="#chunking-option_1">chunking</a></li>
+    <li><a href="#chunkingparamnames-option">chunking.paramNames</a></li>
+    <li><a href="#cors-option">cors</a></li>
+    <li><a href="#deletefile-option_1">deleteFile</a></li>
+    <li><a href="#extrabuttons-option">extraButtons</a></li>
+    <li><a href="#messages-option_1">messages</a></li>
+    <li><a href="#paste-option_1">paste</a></li>
+    <li><a href="#resume-option_1">resume</a></li>
+    <li><a href="#resumeparamnames-option">resume.paramNames</a></li>
+    <li><a href="#retry-option_1">retry</a></li>
+    <li><a href="#request-option_1">request</a></li>
+    <li><a href="#text-option_1">text</a></li>
+    <li><a href="#validation-option">validation</a></li>
+</ul>
+{% endblock %}
+
+{% block content %}
+{% markdown %}
+# Options <small>Core</small> {: .page-header }
+
+Fine Uploader has a **plethora** of options. Many of these options change meaning
+depending on what sort of uploader you are using. Pay close attention to the
+mode you are in and keep that in mind when determining which options do what.
+
+## Core
+
+{{ options_table(
+    (
+        ("autoUpload", "`Boolean`", "`true`", "Set to `false` if you want to be able to upload queued items later by calling the `uploadStoredFiles()` method."),
+        ("button", "`HTMLElement`", "`null`", "Specify an element to use as the 'select files' button. Cannot be a `<button>` ([#33](https://github.com/Widen/fine-uploader/issues/33))"),
+        ("debug", "`Boolean`", "`false`", "This will result in log messages being written to the [`window.console`](https://developer.mozilla.org/en-USDOM/console.log) object"),
+        ("disableCancelForFormUploads", "`Boolean`", "`false`", "When `true` the cancel link does not appear next to files when the form uploader is used."),
+        ("formatFileName", "`Function`", "", "Provide a function to control the display of file names. The default function limits the name displayed in the UI to 33 characters plus 3 ellipses separating the first and last several characters."),
+        ("maxConnections", "`Number`", "`3`", "Maxmimum allowable concurrent requests"),
+        ("multiple", "`Boolean`", "`true`", "When `true` this will prevent the user from simultaneously selecting or dropping more than one item."),
+        ("showMessage", "`String` message", "", "Provide a function here to display a message to the user when the uploader receives an error or the user attempts to leave the page."),
+        ("showConfirm", "`String` message", "", "Provide a function here to prompt the user to confirm deletion of a file."),
+        ("showPrompt", "`String` message", "", "Provide a function here to prompt the user for a filename when pasting file(s)."),
+    )
+) }}
+
+----
+
+### `blobs` option
+
+{{ options_table(
+    (
+        ("defaultName", "`String`", "`'Misc data'`", "The default name to be used for nameless `Blob`s."),
+    )
+) }}
+
+----
+
+### `camera` option
+
+{{ options_table(
+    (
+        ("ios", "`Boolean`", "`false`", "Enable or disable camera access on iOS (iPod, iPhone, and iPad) devices.
+        Note: Enabling this will disable multiple file selection."),
+        ("button", "`HTMLElement`", "`null`", "`null` means allow camera access on the default button in iOS,
+        otherwise, provide an extra button container element to target."),
+    )
+) }}
+
+----
+
+### `chunking` option
+
+{{ options_table(
+    (
+        ("enabled", "`Boolean`", "`false`", "Enable or disable splitting the file separate parts. Each part is sent in a separate request."),
+        ("partSize", "`Number`", "`2000000`", "THe maximum size of each part, in bytes."),
+    )
+) }}
+
+----
+
+### `chunking.paramNames` option
+
+{{ options_table(
+    (
+        ("chunkSize", "`String`", "`'qqchunksize'`", "Name of the parameter passed with a chunked request that specifies the size in bytes of the associated chunk."),
+        ("partByteOffset", "`String`", "`'qqpartbyteoffset'`", "Name of the parameter passed with a chunked request that specifies the starting byte of the associated chunk."),
+        ("partIndex", "`String`", "`'qqpartindex'`", "Name of the parameter passed with a chunked request that specifies the index of the associated partition."),
+        ("totalParts", "`String`", "`'qqtotalparts'`", "Name of the parameter passed with a chunked request that specifies the total number of chunks associated with the `File` or `Blob`."),
+    )
+) }}
+
+----
+
+### `cors` option
+
+{{ options_table(
+    (
+        ("allowXdr", "`Boolean`", "`false`", "Enable or disable cross-origin requests from IE9 and older where [XDomainRequest](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS#Note) must be used."),
+        ("expected", "`Boolean`", "`false`", "Enable or disable cross-domain requests."),
+        ("sendCredentials", "`Boolean`", "`false`", "Enable or disable sending credentials along with each cross-domain request. Ignored if `allowXdr` is `true` and IE9 is being used."),
+    )
+) }}
+
+----
+
+### `deleteFile` option
+
+{{ options_table(
+    (
+        ("enabled", "`Boolean`", "`false`", "Enable or disable deletion of uploaded files."),
+        ("method", "`String`", "`'DELETE'`", "Set the method to use for delete requests. Accepts 'POST' or 'DELETE'"),
+        ("endpoint", "`String`", "`'/server/upload'`", "The endpoint to which delete file requests are sent."),
+        ("customHeaders", "`Object`", "`{}`", "Any additional headers to attach to all delete file requests."),
+        ("params", "`Object`", "`{}`", "Any additional parameters to attach to delete file requests."),
+    )
+) }}
+
+----
+
+### `extraButtons` option
+
+This must contain an array of objects.  Each object will describe an "extra" button that Fine Uploader will track
+along with the default upload button.  Each button object can contain the following properties:
+
+{{ options_table(
+    (
+        ("element", "`HTMLElement`", "`undefined`", "REQUIRED: The container element for the upload button."),
+        ("multiple", "`Boolean`", "`multiple'`", "Specify to override the default `multiple` value."),
+        ("folders", "`Boolean`", "`false`", "`true` to allow folders to be selected, `false` to allow files to be selected.
+        See the browser support page for details regarding the limited user agent support for this feature."),
+        ("validation", "`Object`", "`validation`", "Specify to override the default `validation` option specified.
+        Any `validation` properties not specified will be inherited from the default `validation` option."),
+    )
+) }}
+
+{{ alert(
+"""If an `itemLimit` or `stopOnFirstInvalidFile` property is specified here,
+they will be ignored as these properties from the default `validation` option are
+always used and shared among all buttons for a particular instance.""", "info", "Note:") }}
+
+----
+
+### `messages` option
+
+{{ options_table(
+    (
+        ("emptyError", "`String`", "'{file} is empty, please select files again without it.'", "Text passed to the error event handler if a submitted item is zero bits."),
+        ("sizeError", "`String`", "'{file} is too large, maximum file size is {sizeLimit}.'", "Text passed to the error event handler if a submitted item is too large."),
+        ("typeError", "`String`", "'{file} has an invalid extension. Valid extension(s): {extensions}.'", "Text passed to the error event handler if an invalid file type is detected."),
+        ("minSizeError", "`String`", "'{file} is too small, minimum file size is {minSizeLimit}.'", "Text passed to the error event handler if the item is too small."),
+        ("noFilesError", "`String`", "'No files to upload.'", "Text passed to the error event handler if any empty array of items is submitted."),
+        ("onLeave", "`String`", "'The files are being uploaded, if you leave now the upload will be cancelled.'", "Text displayed to the user when they attempt to leave the page while uploads are still in progress."),
+        ("retryFailTooManyItemsError", "`String`", "'Retry failed - you have reached your file limit.'", "Text passed to the error event handler if a retry attempt is declared a failed due to a violation of the `validation.itemLimit` rule."),
+        ("tooManyItemsError", "`String`", "'Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.'", "Text passed to the error event handler if a submit is ignored due to a violation of the `validation.itemLimit` rules."),
+    )
+) }}
+
+----
+
+### `paste` option
+
+{{ options_table(
+    (
+        ("defaultName", "`String`", "`'pasted_image'`", "The default name given to pasted images."),
+        ("targetElement", "`HTMLElement`", "`null`", "Enable this feature by providing any `HTMLElement` here."),
+    )
+) }}
+
+----
+
+### `resume` option
+
+{{ options_table(
+    (
+        ("enabled", "`Boolean`", "`false`", "Enable or disable the ability to resume failed or stopped chunked uploads."),
+        ("id", "`Number`, `String`, or `Boolean`", "`null`", "An additional component of the cookie name used to store the current upload session."),
+        ("cookiesExpireIn", "`Number`", "`7`", "The number of days before a persistent resume cookie will expire."),
+    )
+) }}
+
+----
+
+### `resume.paramNames` option
+
+{{ options_table(
+    (
+        ("resuming", "`String`", "`'qqresume'`", "Sent with the first request of the resume with a value of `true`."),
+    )
+) }}
+
+----
+
+### `retry` option
+
+{{ options_table(
+    (
+        ("autoAttemptsDelay", "`Number`", "`5`", "The number of seconds to wait between auto retry attempts."),
+        ("enableAuto", "`Boolean`", "`false`", "Enable or disable retrying uploads that receive any error or non-200 response."),
+        ("maxAutoAttempts", "`Number`", "`3`", "The maximum number of times to attempt to retry a failed upload."),
+        ("preventRetryResponseProperty", "`String`", "`'preventRetry'`", "This property will be looked for in the server response and, if found and `true`, will indicate that no more retries should be attempted for this item."),
+    )
+) }}
+
+----
+
+### `request` option
+
+{{ options_table(
+    (
+        ("endpoint", "`String`", "`'/server/upload'`", "The endpoint to send upload requests to."),
+        ("params", "`Object`", "`{}`", "The parameters that shall be sent with each upload request."),
+        ("paramsInBody", "`Boolean`", "`true`", "Enable or disable sending parameters in the request body. If `false`, parameters are sent in the URL. Otherwise, parameters are sent in the request body."),
+        ("customHeaders", "`Object`", "`{}`", "Additional headers sent along with each POST request."),
+        ("forceMultipart", "`Boolean`", "`true`", "Force all uploads to use multipart encoding"),
+        ("inputName", "`String`", "`'qqfile'`", "The attribute of the input element which will contain the file name. Not applicable to non AJAX uploads."),
+        ("uuidName", "`String`", "`'qquuid'`", "The name of the parameter the uniquely identifies each associated item. The value is a [Level 4 UUID](http://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_.28random.29)."),
+        ("totalFileSizeName", "`String`", "`'qqtotalfilesize'`", "The name of the parameter passed that specifies the total file size in bytes."),
+        ("filenameParam", "`String`", "`'qqfilename'`", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent."),
+    )
+) }}
+
+----
+
+### `text` option
+
+{{ options_table(
+    (
+        ("defaultResponseError", "`String`", "`'Upload failure reason unknown'`", "In the event of non-200 response from the server sans the 'error' property, this message will be passed to the 'error' event handler."),
+        ("sizeSymbols", "Array of Strings", "`['kB', 'MB', 'GB', 'TB', 'PB', 'EB']`", "Symbols used to represent file size, in ascending order."),
+    )
+) }}
+
+----
+
+### `validation` option
+
+{{ options_table(
+    (
+        ("acceptFiles", "comma-separated Strings", "`null`", "Used by the file selection dialog. Restrict the valid file types that appear in the selection dialog by listing valid content-type specifiers here. See docs on the [accept attribute of the `<input>` element](https://developer.mozilla.org/en-USHTML/Element/Input)"),
+        ("allowedExtensions", "Array of Strings", "`[]`", "Specify file valid file extensions here to restrict uploads to specific types."),
+        ("itemLimit", "`Number`", "`0`", "Maximum number of items that can be potentially uploaded in this session. Will reject all items that are added or retried after this limit is reached."),
+        ("minSizeLimit", "`Number`", "`0`", "The minimum allowable size, in bytes, for an item."),
+        ("sizeLimit", "`Number`", "`0`", "The maximum allowable size, in bytes, for an item."),
+        ("stopOnFirstInvalidFile", "`Boolean`", "`true`", "When `true` the first invalid item will stop processing further files.")
+    )
+) }}
+
+{% endmarkdown %}
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Getting Started" %}
+{% block content %}
+{% markdown %}
+# Getting Started with Fine Uploader {: .page-header }
+
+This tutorial will serve as a step-by-step walkthrough for getting starting with
+Fine Uploader. It is geared towards those who have minimal experience with
+Javascript, server-side concepts, or the web.
+
+The tutorial is not comprehensive or meant to cover all aspects of Fine Uploader.
+For more information, make sure to read through the list of features as well
+as the API documentation.
+
+### 1. Download
+
+You can get Fine Uploader in the [downloads](http://fineuploader.com/downloads.html)
+section. The download comes bundled with all required scripts and modules.
+
+### 2. Decide which Fine Uploader to use
+
+#### Modes
+Fine Uploader comes with two different modes pertaining to the user interface.
+
+##### [Core Mode](../modes/core.html)
+The most basic Fine Uploader mode.  Core mode assumes that the developer will code their own UI
+but still make use of Fine Uploader's API. Core mode is suggested for advanced developers
+who wish for to heavily customize the uploader's user interface. To use Core Mode:
+
+```javascript
+var uploader = new qq.FineUploaderBasic({/* options go here .... */});
+```
+
+##### [UI Mode](../modes/ui.html)
+Inherits everything from Core mode. UI mode also comes with a fully functional
+user interface which includes, but is not limited to: a default upload button,
+progress bars, retry/cancel/delete buttons, proper display of error messages,
+and more. UI mode is recommended for beginning developers or for those who
+are pleased with the default Fine Uploader interface or can customize the default Fine Uploader
+UI via CSS. To use UI Mode:
+
+```javascript
+var uploader = new qq.FineUploader({/* options go here ... */});
+```
+
+#### Endpoint Handlers
+
+##### [Traditional](../endpoint_handlers/traditional.html)
+To use the traditional endpoint handler, simply declare Fine Uploader as you
+normally would.
+
+##### [Amazon S3](../endpoint_handlers/amazon-s3.html)
+Amazon's S3 is currently the most popular cloud service.
+Fine Uploader comes with built in support that allows all files to be uploaded directly to S3 via the browser.
+To make use of Fine Uploader S3:
+
+```javascript
+var uploader = new qq.s3.FineUploader({/* options go here ... */});
+```
+
+#### [jQuery](../integrating/jquery.html)
+
+Fine Uploader is also easily used as a jQuery plugin. This plugin gives you
+the ability to use either Core or UI mode.
+
+To use Core Mode with the jQuery plugin simply set the uploaderType to be
+'basic':
+
+```javascript
+$("#fine-uploader").fineUploader({uploaderType: 'basic' /* options go here... */});
+```
+
+To use UI Mode with the jQuery plugin:
+```javascript
+$("#fine-uploader").fineUploader({/* options go here... */});
+```
+
+To use Fine Uploader S3 with the jQuery plugin:
+```javascript
+$("#fine-uploader").fineUploaderS3({/* options go here... */});
+```
+
+{{ alert(
+"""Henceforth this walkthrough will utilize the jQuery plugin of Fine Uploader.
+This is because jQuery is more or less ubiquitous on the web, and its a safe bet
+to assume it is included somewhere on your page. If you are forced to use the
+non-jQuery version, then keep in mind that the syntax will be slightly different.""") }}
+
+#### Callbacks
+Like many other JavaScript libraries, Fine Uploader implements a event system
+that uses callbacks to execute user-provided functions at runtime, based on
+specific events. These [events are listed here](../api/events.html). Depending
+on whether you are using the jQuery plugin or not, the callback syntax is a
+bit different:
+
+##### non-jQuery
+With the non-jQuery plugin, callbacks are defined in the `callbacks` option
+property. The parameters for the callbacks are the same as listed in the
+[documentation](../api/events.html).
+
+**Example:**
+
+```javascript
+var uploader = new qq.FineUploader({
+    // options
+    callbacks: {
+        onUpload: function (id, name) {
+        },
+        onSubmitted: function (id, name) {
+        }
+    }
+});
+```
+
+##### jQuery
+The jQuery plugin uses a slightly different callback syntax. This syntax will
+be familiar to thsoe used to working with jQuery plugins. Note that an extra
+[`Event`](http://api.jquery.com/Types/#Event) object is passed into the handler
+function as the first parameter, the consecutive parameters are the same as
+those listed in the [events documentation](../api/events.html).
+
+**Example:**
+
+```javascript
+$("#fine-uploader")
+    .fineUploader({/* options go here... */})
+    .on('upload', function (event, id, name) {
+        // callback code here...
+    })
+    .on('submitted', function (event, id, name) {
+        // callback code here...
+    });
+```
+
+
+Next, let's check out some of Fine Uploader's options.
+
+Proceed by selecting either:
+
+* [Traditional Mode](02-setting_options.html)
+* [Amazon S3 Mode](02-setting_options-s3.html)
+
+{% endmarkdown %}
+{% endblock %}

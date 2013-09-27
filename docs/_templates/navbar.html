@@ -1,0 +1,107 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    <li><a class="brand" href="http://fineuploader.com/"><img style="margin-top: -10px; height: 20px" src="http://fineuploader.com/img/FineUploader_logo.png"></img></a></li>
+                    <li><a href="{{ URL_ROOT }}">Docs</li></a>
+                    <li><a href="http://blog.fineuploader.com/">Blog</li></a>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ URL_ROOT }}/features/async-tasks-and-promises.html">Async Tasks & Promises</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/cancellable-uploads.html">Cancelling</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/chunking.html">Chunking</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/CORS.html">CORS</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/delete.html">Delete</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/drag-and-drop.html">Drag and Drop</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/handling-errors.html">Error Handling</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/filename-edit.html">Filename Editing</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/extra-buttons.html">Multiple Upload Buttons</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/paste-to-upload.html">Paste</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/progress-bars.html">Progress Bars</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/request-parameters.html">Request</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/resume.html">Resuming</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/retry.html">Retrying</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/statistics-and-status-updates.html">Stats & Status</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/styling.html">Styling</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/upload-files.html">Uploading</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/upload-from-mobile-camera.html">Upload via Mobile Camera</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/validation.html">Validation</a></li>
+                        </ul>
+                    </li>
+
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">API <b class="caret"></b></a>
+                        <ul class="dropdown-menu api">
+                                <li><b>Options</b></li>
+                                <li><a href="{{ URL_ROOT }}/api/options.html">Core</a></li>
+                                <li><a href="{{ URL_ROOT }}/api/options-ui.html">UI</a></li>
+                                <li><a href="{{ URL_ROOT }}/api/options-s3.html">S3</a></li>
+                                <li class="divider"></li>
+                                <li><b>Methods</b></li>
+                                <li><a href="{{ URL_ROOT }}/api/methods.html">Core & UI</a></li>
+                                <li><a href="{{ URL_ROOT }}/api/methods-s3.html">S3</a></li>
+                                <li class="divider"></li>
+                                <li><a style="margin-left: -20px;"href="{{ URL_ROOT }}/api/events.html">Events</a></li>
+                                <li><a style="margin-left: -20px;"href="{{ URL_ROOT }}/api/qq.html">Utilities</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Servers <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <ul><a href="{{ URL_ROOT }}/endpoint_handlers/traditional.html">Traditional</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/endpoint_handlers/amazon-s3.html">Amazon S3</a></ul>
+                        </ul>
+                    </li>
+
+                    <li><a href="{{ URL_ROOT }}/support.html">Support</li></a>
+
+                    {% set version_bar = [
+                        ('/branch/master', 'master', 'Stable'),
+                        ('/branch/develop', 'develop', 'In Progress'),
+                        ] -%}
+
+                    {% if GIT_REF_VAL %}
+                        {% set active_page = GIT_REF_VAL %}
+                    {% else %}
+                        {% set active_page = "master" %}
+                    {% endif %}
+                    {% set active_page = GIT_REF_VAL %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version <b class="caret"></b>
+                        <ul class="dropdown-menu">
+                            {% for href, id, caption in version_bar %}
+                                <ul{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{{ caption|e }}</a></ul>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <!--
+                    <li class="dropdown pull-right">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Current {{ GIT_REF_TYPE|capitalize }}: {{ GIT_REF_VAL }} <b class="caret"></b>
+                        <ul class="dropdown-menu">
+                        {% for ref_folder in ALL_GIT_REFS|dictsort %}
+                            <li><a href="/{{ ref_folder[0] }}">{{ ref_folder[0]|title }}</a></li>
+                            {% for ref in ref_folder[1].refs %}
+                                <ul><a href="/{{ ref_folder[0] }}/{{ ref.ref_val|replace("_", "/") }}">{{ ref.ref_val|title }}</a></ul>
+                            {% endfor %}
+                        {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+                -->
+            </div><!--/.nav-collapse -->
+        </div>
+    </div>
+</div>
+
+

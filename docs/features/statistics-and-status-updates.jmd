@@ -1,0 +1,60 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Statistics and Status Updates" %}
+{% block content %}
+{% markdown %}
+
+# Statistics and Status Updates {: .page-header }
+
+Fine Uploader provides API methods and other options to facilitate statistics
+and status updates on your uploads.
+
+{{ events_table(
+    (
+        ("statusChange", "`Integer` id, `String` oldStatus, `String` newStatus", "Invoked whenever the status changes for any item submitted to the upload."),
+    )
+) }}
+
+The status values correspond to those found in the `qq.status` object.
+For reference, here are valid status values:
+
+* `SUBMITTED`
+* `QUEUED`
+* `UPLOADING`
+* `UPLOAD_RETRYING`
+* `UPLOAD_FAILED`
+* `UPLOAD_SUCCESSFUL`
+* `CANCELLED`
+* `REJECTED`
+* `DELETED`
+* `DELETING`
+* `DELETE_FAILED`
+
+----
+
+{{ methods_table(
+    (
+       ("getUploads", "`Function` [filter]", "`Array`", "Return information about all the items that have been submitted to the uploader. The objects being iterated over will have the following properties: `id`, `uuid`, `originalName`, `name`, `status`, and `size`."),
+    )
+) }}
+
+
+The API method allows you the retrieve information about all items submitted to
+the uploader. If you invoke this method without any arguments, information on
+all items will be returned.
+
+Note that you can filter by ID(s) OR UUID(s) OR status. All valid status values
+are defined in the qq.status object. Also, please note that the size property
+will only be included if the user agent supports the File API (that is, if
+qq.supportedFeatures.canDetermineSize evaluates to true).
+
+Along the same lines, we can register a callback that allows us to be notified
+when any submitted item changes status. This callback, as mentioned earlier, is
+onStatusChange(id, oldStatus, newStatus). The concept is simple: this will be
+invoked whenever any submitted file changes state. The ID, old status, and the
+new status will be included in the callback parameters. Again, see `qq.status`
+for all valid status values.
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2013/05/24/query-fine-uploader-for-upload-stats/)
+
+{% endmarkdown %}
+{% endblock %}

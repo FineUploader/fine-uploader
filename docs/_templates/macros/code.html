@@ -1,0 +1,60 @@
+{% macro modal_btn_group() -%}
+<div class="btn-group code-snippet">
+    <button class="btn">Core</button>
+    <button class="btn">UI</button>
+    <button class="btn">jQuery Core</button>
+    <button class="btn">jQuery UI</button>
+    <button class="btn">S3</button>
+</div>
+{%- endmacro %}
+
+{% macro code_table(headings, rows, title=None) -%}
+{% if title %}
+<h2>{{ title }}</h2>
+{% endif %}
+<table class="table table-striped table-bordered reference-table">
+    <thead>
+    <tr>
+        {% for heading in headings %}
+        <td>{{ heading|markdown|safe }}</td>
+        {% endfor %}
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for row in rows %}
+    <tr>
+        {% for col in row %}
+        <td>{{ col|markdown|safe }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{%- endmacro %}
+
+{% macro options_table(rows, title=None) -%}
+{{ code_table(("Option Name", "Type", "Default", "Description"), rows, title) }}
+{%- endmacro %}
+{% macro events_table(rows, title=None) -%}
+{{ code_table(("Event", "Parameters", "Description"), rows, title) }}
+{%- endmacro %}
+{% macro methods_table(rows, title=None) -%}
+{{ code_table(("Name", "Parameters", "Return", "Description"), rows, title) }}
+{%- endmacro %}
+
+{% macro snippet(options, element="#fine-uploader", endpoint="/server/upload", callbacks={}, modes=['Core', 'UI', 'jQuery Core', 'jQuery UI', 'S3']) -%}
+{#
+ This macro will take the same parameters as Fine Uploader, but it will generate
+ an example code snippet for each sort of FineUploader type (core, UI, jquery, etc.)
+#}
+
+{#
+{% for mode in modes %}
+    {% if mode == 'Core' %}
+
+    {% endif %}
+{% endfor %}
+#}
+
+{%- endmacro %}

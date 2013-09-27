@@ -1,0 +1,97 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Async Tasks and Promises" %}
+{% block content %}
+{% markdown %}
+
+# Async Tasks and Promises {: .page-header }
+
+In some cases, Fine Uploader uses "promises", both internally and via the API.
+Promises are a design pattern taken from the functional programming style and
+are extremely helpful when dealing with asynchronous operations.
+
+Fine Uploader's support for promises is encapsulated in the `qq.Promise` module.
+
+For more informaton on promises in JavaScript, have a look at
+[Promises -- an alternative way to approach asynchronous JavaScript](http://12devs.co.uk/articles/promises-an-alternative-way-to-approach-asynchronous-javascript/).
+
+## Promissory Callbacks
+
+Promises are acceptable return values in the following [event handlers](../api/events.html).
+All of these callbacks can also prevent an associated action from being executed
+with a false return value (non-promise) or a call to `failure()` on a returned
+promise instance:
+
+* `onSubmit`
+* `onCancel`
+* `onResume`
+* `onValidateBatch`
+* `onValidate`
+* `onSubmitDelete`
+* `onPasteReceived`
+
+You are not required to return a promise -- you can simply return `false` (or nothing).
+However, there are some instances where you may want to perform
+some asynchronous work in your callback handler. A promise can be returned from
+any of the above callbacks if you need to execute  some non-blocking task,
+such as an AJAX request, or asking the user for input via a modal window that
+does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog box).
+
+## qq.Promise API
+
+{{ methods_table(
+    (
+        ("then", "`Function` successCallback, `Function` failureCallback", "`qq.promise` instance", "Register success and failure callbacks. The creator of the promise will pass any values into the provided callbacks. If success or failure has occurred before you register your callbacks, then they will be called immediately after this call has executed. Each call to `then` registers an additional set of callbacks."),
+        ("done", "`Function` callback", "`qq.promise` instance", "Register callbacks for successs OR failure. Invoked when the promise is fullfilled, regardless of result. The creator of the promise will pass any values into the provided callback. Each call to `done` registers an additional set of callbacks."),
+        ("success", "`Function` callback", "`qq.promise` instance", "Call this on a promise to indicate success. The parameter values will depend on the situation. "),
+        ("failure", "`Function` callback", "`qq.promise` instance", "Call this on a promise to indicate failure. The parameter values will depend on the situation. "),
+    )
+) }}
+
+## Promissory Options
+
+The `showPrompt` and `showConfirm` options in Fine Uploader accept promissory return values.
+This makes it trivial to do work (such as launching a confirmation window and waiting for user input)
+without blocking the rest of the UI thread (and thus stopping downloads).
+
+### Example
+
+Suppose you are overriding a promissory function or callback.  For example,
+suppose you want to override the `showPrompt` option (function).  The default
+implementation of this function uses `window.prompt`, which isn't very stylish.
+You may want to provide a more appropriate prompt dialog for your application.
+Your implementation, using [bootbox](http://bootboxjs.com/)
+for your prompt dialog, might look something like this:
+
+```javascript
+showPrompt: function(message, defaultValue) {
+    var promise = new qq.Promise();
+
+    bootbox.prompt("Enter a value", "Cancel", "Confirm", function(result) {
+        if (result === null || qq.trimStr(result).length === 0) {
+            promise.failure("User cancelled prompt dialog or entered an empty string.");
+        }
+        else {
+            promise.success(result);
+        }
+    }, defaultValue);
+
+    return promise;
+}
+```
+
+The bootbox prompt dialog is not blocking, meaning the `showPrompt` call will
+return before the user has entered any information.  So, you must return a
+promise that will be updated with the user's response after it is submitted.
+Fine Uploader will wait for a callback indicating either success or
+failure, and will then continue executing the original task
+based on this result.  One use of the `showPrompt` function is to grab a name,
+from the user, of a pasted image.  In this case
+once the result has been updated on the promise instance, Fine Uploader will
+proceed to upload the pasted image using the
+name supplied by the user.
+
+[For more information, see the associated blog post](http://blog.fineuploader.com/2013/05/07/callbacks-that-permit-asynchronous-returns/)
+
+
+{% endmarkdown %}
+{% endblock %}

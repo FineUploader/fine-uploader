@@ -1,0 +1,48 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Cancellable Uploads" %}
+{% block content %}
+{% markdown %}
+
+# Cancellable Uploads {: .page-header }
+
+Fine Uploader allows for the cancellation of in-progress uploads.
+
+Uploads can be cancelled programmatically by calling the `cancel` or `cancelAll`
+API methods.  The 'cancel' event will be fired and handled by a callback whenever
+an item is cancelled.
+
+In Fine Uploader UI mode, cancelling an upload will remove that element from
+the DOM as well.
+
+## Options
+
+{{ options_table(
+    (
+("disableCancelForFormUploads", "`Boolean`", "`false`", "When `true` the cancel link does not appear next to files when the form uploader is used."),
+    )
+)}}
+
+## Events
+
+The 'cancel' event allows integrators to assign an action to be completed eeach time an item is cancellled.
+
+{{ events_table(
+    (
+        ("cancel", "`Integer` id, `String` name", "Called when the item has been cancelled.
+        You may return `false` to prevent the upload from being cancelled.  You may also return a [`qq.Promise`](async-tasks-and-promises.html)."),
+    )
+) }}
+
+## Methods
+
+The Fine Uploader API provides two methods to cancel uploads: `cancel` and `cancelAll`.
+
+{{ methods_table(
+   (
+       ("cancel", "`Integer` id", "", "Cancels a queued or currently uploading item."),
+       ("cancelAll", "", "", "Cancels all queued or currently uploading items.")
+   )
+) }}
+
+{% endmarkdown %}
+{% endblock %}

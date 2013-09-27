@@ -1,0 +1,2 @@
+watch('client/js/.*\.js') { system 'make test' }
+watch('test/unit/.*\.js') { system 'make lint-tests' }

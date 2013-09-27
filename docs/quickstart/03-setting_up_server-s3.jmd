@@ -1,0 +1,52 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Server Set-Upi S3" %}
+
+{% block content %}
+{% markdown %}
+# Server Set-Up <small>Amazon S3</small>{: .page-header}
+
+{{ alert(
+"""This section of the tutorial is aimed at beginners looking to create their
+own upload server. Note that this example does not apply to S3 uploads. For
+more information on uploading to Amazon's Simple Storage Service,
+read the [Fine Uploader S3 server documentation](../endpoint_handlers/amazon-s3.html).""",
+"warn") }}
+
+For this tutorial we are going to use [Node.js](http://nodejs.org/) to develop
+a simple server which will accept uploads from our Fine Uploader instance. If
+you don't have Node.js, now's the time to [get it](http://nodejs.org/download/).
+
+If Node.js is not your style, then feel free to browse the other
+[server-side demos repository](http://github.com/Widen/fine-uploader-server).  **It's quite important for you to read
+the [Amazon S3 server-side integration instructions](../endpoint_handlers/amazon-s3.html) before you do any of this,
+though**.
+
+#### Getting Started
+
+Let's rock! First, download [express](https://npmjs.org/package/express) and the
+[aws-sdk](https://npmjs.org/package/aws-sdk):
+
+`npm install -g express aws-sdk`
+
+Now let's download our server:
+
+`wget -O server.js https://raw.github.com/Widen/fine-uploader-server/3.8/nodejs/s3/s3handler.js`
+
+Then set relevant environment variables:
+
+```bash
+$ export CLIENT_SECRET_KEY = 'secret'
+$ export SERVER_PUBLIC_KEY = 'not really secret'
+$ export SERVER_SECRET_KEY = 'secret'
+```
+
+And let's run it!
+
+`node server.js`
+
+Fire up the HTML page with the client-side uploader code on it, and attempt to
+upload.
+
+Booyakosha! You are on the fast-track to upload nirvana. Continue forth in your quest to learn to integrate Fine Uploader with your application by reviewing the rest of the [documentation](../)
+{% endmarkdown %}
+{% endblock %}
