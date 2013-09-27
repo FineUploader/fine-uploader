@@ -37,7 +37,7 @@ event of an error.
 $("#fine-uploader").fineUploader({
    // ...
 }).on('error', function (event, id, name, errorReason, xhrOrXdr) {
-    alert("Error on file number " + id + " - " + name ". Reason: " + errorReason);
+    alert("Error on file number " + id + " - " + name + ". Reason: " + errorReason);
 });
 ```
 
