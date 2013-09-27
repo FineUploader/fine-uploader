@@ -13,6 +13,7 @@ qq.Templating = function(spec) {
     var FILE_ID_ATTR = "qq-file-id",
         FILE_CLASS_PREFIX = "qq-file-id-",
         isCancelDisabled = false,
+        showThumbnails = qq.supportedFeatures.imagePreviews,
         options = {
             templateIdOrEl: "qq-template",
             containerEl: null,
@@ -39,9 +40,10 @@ qq.Templating = function(spec) {
             editFilenameInput: 'qq-edit-filename-selector',
             editNameIcon: 'qq-edit-filename-icon-selector',
             dropProcessing: 'qq-drop-processing-selector',
-            dropProcessingSpinner: 'qq-drop-processing-spinner-selector'
+            dropProcessingSpinner: 'qq-drop-processing-spinner-selector',
+            thumbnail: 'qq-thumbnail-selector'
         },
-        api, isEditElementsExist, isRetryElementExist, templateHtml, container, fileList;
+        api, isEditElementsExist, isRetryElementExist, templateHtml, container, fileList, preview;
 
     qq.extend(options, spec);
     container = options.containerEl;
@@ -55,7 +57,7 @@ qq.Templating = function(spec) {
      * @returns {{template: *, fileTemplate: *}} HTML for the top-level file items templates
      */
     function getTemplateHtml() {
-        var scriptEl, scriptHtml, fileListNode, tempTemplateEl, fileListHtml, defaultButton, dropzone;
+        var scriptEl, scriptHtml, fileListNode, tempTemplateEl, fileListHtml, defaultButton, dropzone, thumbnail;
 
         if (options.templateIdOrEl == null) {
             throw new Error("You MUST specify either a template element or ID!");
@@ -98,6 +100,14 @@ qq.Templating = function(spec) {
             dropzone = qq(tempTemplateEl).getByClass(selectorClasses.drop)[0];
             dropzone && qq(dropzone).remove();
         }
+
+        // Ensure the `showThumbnails` flag is only set if the thumbnail element
+        // is present in the template AND the current UA is capable of generating client-side previews.
+        thumbnail = qq(tempTemplateEl).getByClass(selectorClasses.thumbnail)[0];
+        if (!showThumbnails) {
+            thumbnail && qq(thumbnail).remove();
+        }
+        showThumbnails = showThumbnails && thumbnail;
 
         isEditElementsExist = qq(tempTemplateEl).getByClass(selectorClasses.editFilenameInput).length > 0;
         isRetryElementExist = qq(tempTemplateEl).getByClass(selectorClasses.retry).length > 0;
@@ -188,6 +198,7 @@ qq.Templating = function(spec) {
     }
 
     templateHtml = getTemplateHtml();
+    preview = showThumbnails && new qq.Preview();
 
     api = {
         render: function() {
@@ -421,6 +432,12 @@ qq.Templating = function(spec) {
 
         showSpinner: function(id) {
             show(getSpinner(id));
+        },
+
+        generatePreview: function(id, fileOrBlob) {
+            var thumbnail = showThumbnails && getTemplateEl(getFile(id), selectorClasses.thumbnail);
+
+            return thumbnail && preview.generate(fileOrBlob, thumbnail);
         }
     };
 

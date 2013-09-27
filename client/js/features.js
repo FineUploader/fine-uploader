@@ -9,7 +9,8 @@ qq.supportedFeatures = (function () {
         supportsDeleteFileXdr,
         supportsDeleteFileCorsXhr,
         supportsDeleteFileCors,
-        supportsFolderSelection;
+        supportsFolderSelection,
+        supportsImagePreviews;
 
 
     function testSupportsFileInputElement() {
@@ -99,6 +100,8 @@ qq.supportedFeatures = (function () {
 
     supportsFolderSelection = isFolderSelectionSupported();
 
+    supportsImagePreviews = supportsAjaxFileUploading && window.FileReader !== undefined;
+
 
     return {
         uploading: supportsUploading,
@@ -117,7 +120,8 @@ qq.supportedFeatures = (function () {
         deleteFileCorsXdr: supportsDeleteFileXdr, //NOTE: will also return true in IE10, where XDR is also supported
         deleteFileCors: supportsDeleteFileCors,
         canDetermineSize: supportsAjaxFileUploading,
-        folderSelection: supportsFolderSelection
+        folderSelection: supportsFolderSelection,
+        imagePreviews: supportsImagePreviews
     }
 
 }());

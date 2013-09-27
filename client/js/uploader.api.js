@@ -432,6 +432,7 @@ qq.uiPrivateApi = {
         }
 
         this._templating.addFile(id, this._options.formatFileName(name), prependData);
+        this._templating.generatePreview(id, this.getFile(id));
 
         this._filesInBatchAddedToUi += 1;
 
