@@ -5,7 +5,7 @@ qq.Preview = function() {
         var landscape = sourceImg.width >= sourceImg.height,
             aspectRatio = sourceImg.width / sourceImg.height,
             canvasContext = canvasEl.getContext("2d"),
-            drawWidthMultipier = qq.ios() ? 2.041 : 1,// iOS subsampling issue workaround,
+            drawWidthMultipier = qq.ios() ? 4.041 : 1,// iOS subsampling issue workaround,
             height = maxSize,
             width = Math.round(maxSize * aspectRatio);
 
