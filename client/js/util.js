@@ -308,6 +308,38 @@ qq.sliceBlob = function(fileOrBlob, start, end) {
     return slicer.call(fileOrBlob, start, end);
 };
 
+qq.arrayBufferToHex = function(buffer) {
+    var bytesAsHex = "",
+        bytes = new Uint8Array(buffer);
+
+
+    qq.each(bytes, function(idx, byte) {
+        var byteAsHexStr = byte.toString(16);
+
+        if (byteAsHexStr.length < 2) {
+            byteAsHexStr = "0" + byteAsHexStr;
+        }
+
+        bytesAsHex += byteAsHexStr;
+    });
+
+    return bytesAsHex;
+};
+
+qq.readBlobToHex = function(blob, startOffset, length) {
+    var initialBlob = qq.sliceBlob(blob, startOffset, startOffset + length),
+        fileReader = new FileReader(),
+        promise = new qq.Promise();
+
+    fileReader.onload = function() {
+        promise.success(qq.arrayBufferToHex(fileReader.result));
+    };
+
+    fileReader.readAsArrayBuffer(initialBlob);
+
+    return promise;
+};
+
 qq.extend = function(first, second, extendNested) {
     "use strict";
 

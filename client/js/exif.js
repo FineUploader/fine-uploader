@@ -7,28 +7,6 @@ qq.Exif = function(fileOrBlob) {
             }
         };
 
-    function getAsHexBytes(buffer) {
-        var bytesAsHex = "",
-            bytes = new Uint8Array(buffer);
-
-
-        qq.each(bytes, function(idx, byte) {
-            var byteAsHexStr = byte.toString(16);
-
-            if (byteAsHexStr.length < 2) {
-                byteAsHexStr = "0" + byteAsHexStr;
-            }
-
-            bytesAsHex += byteAsHexStr.toUpperCase();
-        });
-
-        qq.log("GAHB IS STRING: " + qq.isString(bytesAsHex));
-        qq.log("GAHB HEX: " + bytesAsHex);
-        qq.log("GAHB LENGTH: " + bytesAsHex.length);
-
-        return bytesAsHex;
-    }
-
     function parseLittleEndian(hex) {
         var result = 0,
             pow = 0;
@@ -42,23 +20,6 @@ qq.Exif = function(fileOrBlob) {
         return result;
     }
 
-    function readToHexString(start, length) {
-        qq.log("RTHS: " + length);
-        var initialBlob = qq.sliceBlob(fileOrBlob, start, start + length),
-            fileReader = new FileReader(),
-            promise = new qq.Promise();
-
-        qq.log("RTHS: initialBlobSize = " + initialBlob.size);
-
-        fileReader.onload = function() {
-            promise.success(getAsHexBytes(fileReader.result));
-        };
-
-        fileReader.readAsArrayBuffer(initialBlob);
-
-        return promise;
-    }
-
     function seekToApp1(offset, promise) {
         var theOffset = offset,
             thePromise = promise;
@@ -67,8 +28,8 @@ qq.Exif = function(fileOrBlob) {
             thePromise = new qq.Promise();
         }
 
-        readToHexString(theOffset, 4).then(function(hex) {
-            var match = /^FFE([0-9])/.exec(hex);
+        qq.readBlobToHex(fileOrBlob, theOffset, 4).then(function(hex) {
+            var match = /^ffe([0-9])/.exec(hex);
             if (match) {
                 if (match[1] !== "1") {
                     var segmentLength = parseInt(hex.slice(4, 8), 16);
@@ -89,8 +50,8 @@ qq.Exif = function(fileOrBlob) {
     function getApp1Offset() {
         var promise = new qq.Promise();
 
-        readToHexString(0, 6).then(function(hex) {
-            if (hex.indexOf("FFD8") !== 0) {
+        qq.readBlobToHex(fileOrBlob, 0, 6).then(function(hex) {
+            if (hex.indexOf("ffd8") !== 0) {
                 promise.failure("Not a valid JPEG!");
             }
             else {
@@ -109,8 +70,7 @@ qq.Exif = function(fileOrBlob) {
     function isLittleEndian(app1Start) {
         var promise = new qq.Promise();
 
-        readToHexString(app1Start + 10, 2).then(function(hex) {
-            qq.log("BYTE ORDER: " + hex);
+        qq.readBlobToHex(fileOrBlob, app1Start + 10, 2).then(function(hex) {
             promise.success(hex === "4949");
         });
 
@@ -120,8 +80,7 @@ qq.Exif = function(fileOrBlob) {
     function getDirEntryCount(app1Start, littleEndian) {
         var promise = new qq.Promise();
 
-        readToHexString(app1Start + 18, 2).then(function(hex) {
-            qq.log(qq.format("DIR COUNT: little endian? {}, hex: {}", littleEndian, hex));
+        qq.readBlobToHex(fileOrBlob, app1Start + 18, 2).then(function(hex) {
             if (littleEndian) {
                 return promise.success(parseLittleEndian(hex));
             }
@@ -134,21 +93,10 @@ qq.Exif = function(fileOrBlob) {
     }
 
     function getIfd(app1Start, dirEntries) {
-        var promise = new qq.Promise(),
-            offset = app1Start + 20,
-            bytes = dirEntries * 12,
-            fileReader = new FileReader(),
-            ifdBlob = qq.sliceBlob(fileOrBlob, offset, offset + bytes);
+        var offset = app1Start + 20,
+            bytes = dirEntries * 12;
 
-        qq.log("IFD offset = " + offset);
-        qq.log("IFD end = " + (offset + bytes));
-        fileReader.onload = function() {
-            promise.success(getAsHexBytes(fileReader.result));
-        };
-
-        fileReader.readAsArrayBuffer(ifdBlob);
-
-        return promise;
+        return qq.readBlobToHex(fileOrBlob, offset, bytes);
     }
 
     function getDirEntries(ifdHex) {
@@ -201,15 +149,10 @@ qq.Exif = function(fileOrBlob) {
                 };
 
             getApp1Offset().then(function(app1Offset) {
-                qq.log("Got App1");
                 isLittleEndian(app1Offset).then(function(littleEndian) {
-                    qq.log("Got Little Endian");
                     getDirEntryCount(app1Offset, littleEndian).then(function(dirEntryCount) {
-                        qq.log("Got Dir Entry Count");
                         getIfd(app1Offset, dirEntryCount).then(function(ifdHex) {
-                            qq.log("Got IFD");
                             var dirEntries = getDirEntries(ifdHex);
-
                             parser.success(getTagValues(littleEndian, dirEntries));
                         }, onParseFailure);
                     }, onParseFailure);

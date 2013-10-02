@@ -5,28 +5,22 @@ qq.Preview = function() {
         var landscape = sourceImg.width >= sourceImg.height,
             aspectRatio = sourceImg.width / sourceImg.height,
             canvasContext = canvasEl.getContext("2d"),
-            // iOS subsampling issue
-            drawWidthMultipier = qq.ios() ? 2.041 : 1,
-            height, width;
+            drawWidthMultipier = qq.ios() ? 2.041 : 1,// iOS subsampling issue workaround,
+            height = maxSize,
+            width = Math.round(maxSize * aspectRatio);
 
 
         // If this is naturally landscape, but will be rotated to be a portrait...
         if (landscape && qq.indexOf([5,6,7,8], orientation) >= 0) {
             height = maxSize;
-            width = Math.round(maxSize/aspectRatio);
+            width = Math.round(maxSize / aspectRatio);
         }
          // If this is naturally a landscape, and will remain as such after transformations...
         else if (landscape) {
-            height = Math.round(maxSize/aspectRatio);
+            height = Math.round(maxSize / aspectRatio);
             width =  maxSize;
         }
-        // If this is naturally a portrait, and will remain as such after transformation...
-        else {
-            height = maxSize;
-            width = Math.round(maxSize*aspectRatio);
-        }
 
-        qq.log(qq.format("orig w x h = {} x {}", sourceImg.width, sourceImg.height));
         canvasEl.width = width;
         canvasEl.height = height;
 
@@ -50,75 +44,86 @@ qq.Preview = function() {
                 canvasContext.drawImage(sourceImg, 0, 0, width, height * drawWidthMultipier);
                 break;
             case 5:
-                canvasContext.rotate( (90 * Math.PI) / 180);
+                canvasContext.rotate(Math.PI / 2);
                 canvasContext.scale(1, -1);
                 canvasContext.drawImage(sourceImg, 0, 0, height, width * drawWidthMultipier);
                 break;
             case 6:
-                canvasContext.rotate( (90 * Math.PI) / 180);
+                canvasContext.rotate(Math.PI / 2);
                 canvasContext.translate(0, -width);
                 canvasContext.drawImage(sourceImg, 0, 0, height, width * drawWidthMultipier);
                 break;
             case 7:
-                canvasContext.rotate( (90 * Math.PI) / 180);
+                canvasContext.rotate(Math.PI / 2);
                 canvasContext.translate(height, -width);
                 canvasContext.scale(-1, 1);
                 canvasContext.drawImage(sourceImg, 0, 0, height, width * drawWidthMultipier);
                 break;
             case 8:
-                canvasContext.rotate( -(90 * Math.PI) / 180);
+                canvasContext.rotate(-Math.PI / 2);
                 canvasContext.translate(-height, 0);
                 canvasContext.drawImage(sourceImg, 0, 0, height, width * drawWidthMultipier);
                 break;
             default:
-                qq.log(qq.format("{} is not a recognized Orientation EXIF value!", exif.Orientation), "error");
+                qq.log(qq.format("{} is not a recognized orientation value!", orientation), "error");
         }
     }
 
-    function draw(fileOrBlob, img, maxSize) {
-        var promise = new qq.Promise(),
+    function draw(fileOrBlob, targetImg, maxSize) {
+        var drawPreview = new qq.Promise(),
             fileReader = new FileReader(),
             canvasEl = document.createElement("canvas"),
-            tempImg = document.createElement("img");
+            fullSizedImg = document.createElement("img"),
+            identifier = new qq.Identify(fileOrBlob);
 
-        fileReader.onload = function(event) {
-            tempImg.onload = function() {
-                var exif = new qq.Exif(fileOrBlob);
+        identifier.isPreviewable().then(function(mime) {
+            qq.log("Identified as " + mime);
+            fileReader.onload = function(event) {
+                fullSizedImg.onload = function() {
+                    var exif = new qq.Exif(fileOrBlob);
 
-                tempImg.onload = null;
+                    fullSizedImg.onload = null;
 
-                exif.parse().then(function(exif) {
-                    qq.log("exif.Orientation = " + exif.Orientation);
+                    exif.parse().then(
+                        function(exif) {
+                            var orientation = exif.Orientation;
 
-                    drawOnCanvas(tempImg, canvasEl, exif.Orientation, maxSize);
-                    img.src = canvasEl.toDataURL();
+                            drawOnCanvas(fullSizedImg, canvasEl, orientation, maxSize);
 
-                    promise.success(exif.Orientation);
-                }, function() {
-                    drawOnCanvas(tempImg, canvasEl, 1, maxSize);
-                    img.src = canvasEl.toDataURL();
-                });
+                            targetImg.src = canvasEl.toDataURL();
+                            drawPreview.success(orientation);
+                        },
+                        function(failureMsg) {
+                            qq.log(qq.format("EXIF data could not be parsed ({}).  Assuming orientation = 1.", failureMsg));
+                            drawOnCanvas(fullSizedImg, canvasEl, 1, maxSize);
+                            targetImg.src = canvasEl.toDataURL();
+                            drawPreview.success(1);
+                        }
+                    );
+                };
+
+                fullSizedImg.onerror = function() {
+                    //TODO img.src = placeholder based on MIME type
+                    qq.log("Client-side preview is not possible.");
+                    drawPreview.failure();
+                };
+
+                fullSizedImg.src = event.target.result;
             };
 
-            tempImg.onerror = function() {
-                //TODO img.src = placeholder based on MIME type
+            fileReader.readAsDataURL(fileOrBlob);
+        }, function() {
+            qq.log("Not previewable");
+            drawPreview.failure();
+        });
 
-                promise.failure();
-            };
-
-//            qq(tempImg).insertBefore(img);
-            tempImg.src = event.target.result;
-        };
-
-        fileReader.readAsDataURL(fileOrBlob);
-
-        return promise;
+        return drawPreview;
     }
 
 
     return {
-        generate: function(fileOrBlob, img, maxSize) {
-            return draw(fileOrBlob, img, maxSize);
+        generate: function(fileOrBlob, targetImg, maxSize) {
+            return draw(fileOrBlob, targetImg, maxSize);
         }
     }
 };
