@@ -91,14 +91,14 @@ qq.Exif = function(fileOrBlob) {
 
         readToHexString(0, 6).then(function(hex) {
             if (hex.indexOf("FFD8") !== 0) {
-                qq.log("Not a valid JPEG!");
+                promise.failure("Not a valid JPEG!");
             }
             else {
                 seekToApp1().then(function(offset) {
                     promise.success(offset);
                 },
                 function(error) {
-                    qq.log(error);
+                    promise.failure(error);
                 });
             }
         });
@@ -195,7 +195,10 @@ qq.Exif = function(fileOrBlob) {
 
     return {
         parse: function() {
-            var parser = new qq.Promise();
+            var parser = new qq.Promise(),
+                onParseFailure = function(message) {
+                    parser.failure(message);
+                };
 
             getApp1Offset().then(function(app1Offset) {
                 qq.log("Got App1");
@@ -208,10 +211,10 @@ qq.Exif = function(fileOrBlob) {
                             var dirEntries = getDirEntries(ifdHex);
 
                             parser.success(getTagValues(littleEndian, dirEntries));
-                        });
-                    });
-                });
-            });
+                        }, onParseFailure);
+                    }, onParseFailure);
+                }, onParseFailure);
+            }, onParseFailure);
 
             return parser;
         }
