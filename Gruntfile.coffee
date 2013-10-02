@@ -29,7 +29,7 @@ module.exports = (grunt) ->
     'dist': './_dist'
     'build': './_build'
     'src': './client'
-    'html': './client/html'
+    'templates': './client/html/templates'
     'docs': './docs'
     'test': './test'
 
@@ -356,25 +356,25 @@ module.exports = (grunt) ->
           }
           {
             expand: true
-            cwd: paths.html
+            cwd: paths.templates
             src: ['*.html']
             dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/templates/"
           }
           {
             expand: true
-            cwd: paths.html
+            cwd: paths.templates
             src: ['*.html']
             dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/templates/"
           }
           {
             expand: true
-            cwd: paths.html
+            cwd: paths.templates
             src: ['*.html']
             dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/templates/"
           }
           {
             expand: true
-            cwd: paths.html
+            cwd: paths.templates
             src: ['*.html']
             dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/templates/"
           }
@@ -415,7 +415,7 @@ module.exports = (grunt) ->
       templates:
         files: [
           expand: true
-          cwd: paths.src + '/html'
+          cwd: paths.src + '/html/templates'
           src: ['*.html']
           dest: paths.build
         ]

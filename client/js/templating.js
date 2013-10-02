@@ -12,8 +12,10 @@ qq.Templating = function(spec) {
 
     var FILE_ID_ATTR = "qq-file-id",
         FILE_CLASS_PREFIX = "qq-file-id-",
+        THUMBNAIL_MAX_SIZE_ATTR = "qq-max-size",
         isCancelDisabled = false,
         showThumbnails = qq.supportedFeatures.imagePreviews,
+        thumbnailMaxSize = -1,
         options = {
             templateIdOrEl: "qq-template",
             containerEl: null,
@@ -106,6 +108,9 @@ qq.Templating = function(spec) {
         thumbnail = qq(tempTemplateEl).getByClass(selectorClasses.thumbnail)[0];
         if (!showThumbnails) {
             thumbnail && qq(thumbnail).remove();
+        }
+        else {
+            thumbnailMaxSize = parseInt(thumbnail.getAttribute(THUMBNAIL_MAX_SIZE_ATTR));
         }
         showThumbnails = showThumbnails && thumbnail;
 
@@ -437,7 +442,9 @@ qq.Templating = function(spec) {
         generatePreview: function(id, fileOrBlob) {
             var thumbnail = showThumbnails && getTemplateEl(getFile(id), selectorClasses.thumbnail);
 
-            return thumbnail && preview.generate(fileOrBlob, thumbnail);
+            return thumbnail && preview.generate(fileOrBlob, thumbnail, thumbnailMaxSize).then(function(orientation) {
+                //TODO anything to do here?
+            });
         }
     };
 

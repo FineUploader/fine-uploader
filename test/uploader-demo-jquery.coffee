@@ -51,6 +51,9 @@ $ ->
         autoUpload: false
         debug: true
         uploadButtonText: "Select Files"
+        display:
+            fileSizeOnSubmit: true
+            prependFiles: true
         request:
             endpoint: "/upload/receiver"
         deleteFile:

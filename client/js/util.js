@@ -172,7 +172,8 @@ qq.isFunction = function(variable) {
 
 qq.isArray = function(variable) {
     "use strict";
-    return Object.prototype.toString.call(variable) === "[object Array]";
+    return Object.prototype.toString.call(variable) === "[object Array]"
+        || (window.ArrayBuffer && variable.buffer && variable.buffer.constructor === ArrayBuffer);
 };
 
 // Looks for an object on a `DataTransfer` object that is associated with drop events when utilizing the Filesystem API.
@@ -299,6 +300,12 @@ qq.isFileChunkingSupported = function() {
     return !qq.android() && //android's impl of Blob.slice is broken
         qq.isXhrUploadSupported() &&
         (File.prototype.slice !== undefined || File.prototype.webkitSlice !== undefined || File.prototype.mozSlice !== undefined);
+};
+
+qq.sliceBlob = function(fileOrBlob, start, end) {
+    var slicer = fileOrBlob.slice || fileOrBlob.mozSlice || fileOrBlob.webkitSlice;
+
+    return slicer.call(fileOrBlob, start, end);
 };
 
 qq.extend = function(first, second, extendNested) {
