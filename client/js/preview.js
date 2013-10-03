@@ -22,6 +22,8 @@ qq.Preview = function() {
         };
     }
 
+    // Draw the preview iff the current UA can natively display it.
+    // Also rotate the image if necessary.
     function draw(fileOrBlob, targetImg, maxSize) {
         var drawPreview = new qq.Promise(),
             identifier = new qq.Identify(fileOrBlob);

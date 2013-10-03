@@ -1,4 +1,13 @@
+/**
+ * EXIF image data parser.  Currently only parses the Orientation tag value,
+ * but this may be expanded to other tags in the future.
+ *
+ * @param fileOrBlob Attempt to parse EXIF data in this `Blob`
+ * @returns {{parse: Function}}
+ * @constructor
+ */
 qq.Exif = function(fileOrBlob) {
+    // Orientation is the only tag parsed here at this time.
     var TAG_IDS = [274],
         TAG_INFO = {
             274: {
@@ -7,6 +16,7 @@ qq.Exif = function(fileOrBlob) {
             }
         };
 
+    // Convert a little endian hex value to big endian.
     function parseLittleEndian(hex) {
         var result = 0,
             pow = 0;
@@ -20,6 +30,8 @@ qq.Exif = function(fileOrBlob) {
         return result;
     }
 
+    // Find the byte offset, of Application Segment 1 (EXIF).
+    // External callers need not supply any arguments.
     function seekToApp1(offset, promise) {
         var theOffset = offset,
             thePromise = promise;
@@ -47,6 +59,7 @@ qq.Exif = function(fileOrBlob) {
         return thePromise;
     }
 
+    // Find the byte offset of Application Segment 1 (EXIF) for valid JPEGs only.
     function getApp1Offset() {
         var promise = new qq.Promise();
 
@@ -67,6 +80,7 @@ qq.Exif = function(fileOrBlob) {
         return promise;
     }
 
+    // Determine the byte ordering of the EXIF header.
     function isLittleEndian(app1Start) {
         var promise = new qq.Promise();
 
@@ -77,6 +91,7 @@ qq.Exif = function(fileOrBlob) {
         return promise;
     }
 
+    // Determine the number of directory entries in the EXIF header.
     function getDirEntryCount(app1Start, littleEndian) {
         var promise = new qq.Promise();
 
@@ -92,6 +107,7 @@ qq.Exif = function(fileOrBlob) {
         return promise;
     }
 
+    // Get the IFD portion of the EXIF header as a hex string.
     function getIfd(app1Start, dirEntries) {
         var offset = app1Start + 20,
             bytes = dirEntries * 12;
@@ -99,6 +115,7 @@ qq.Exif = function(fileOrBlob) {
         return qq.readBlobToHex(fileOrBlob, offset, bytes);
     }
 
+    // Obtain an array of all directory entries (as hex strings) in the EXIF header.
     function getDirEntries(ifdHex) {
         var entries = [],
             offset = 0;
@@ -111,6 +128,7 @@ qq.Exif = function(fileOrBlob) {
         return entries;
     }
 
+    // Obtain values for all relevant tags and return them.
     function getTagValues(littleEndian, dirEntries) {
         var TAG_VAL_OFFSET = 16,
             tagsToFind = qq.extend([], TAG_IDS),
@@ -142,6 +160,12 @@ qq.Exif = function(fileOrBlob) {
     }
 
     return {
+        /**
+         * Attempt to parse the EXIF header for the `Blob` associated with this instance.
+         *
+         * @returns {qq.Promise} To be fulfilled when the parsing is complete.
+         * If successful, the parsed EXIF header as an object will be included.
+         */
         parse: function() {
             var parser = new qq.Promise(),
                 onParseFailure = function(message) {

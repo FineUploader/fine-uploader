@@ -170,10 +170,16 @@ qq.isFunction = function(variable) {
     return typeof(variable) === "function";
 };
 
-qq.isArray = function(variable) {
+/**
+ * Check the type of a value.  Is it an "array"?
+ *
+ * @param value value to test.
+ * @returns true if the value is an array or associated with an `ArrayBuffer`
+ */
+qq.isArray = function(value) {
     "use strict";
-    return Object.prototype.toString.call(variable) === "[object Array]"
-        || (window.ArrayBuffer && variable.buffer && variable.buffer.constructor === ArrayBuffer);
+    return Object.prototype.toString.call(value) === "[object Array]"
+        || (window.ArrayBuffer && value.buffer && value.buffer.constructor === ArrayBuffer);
 };
 
 // Looks for an object on a `DataTransfer` object that is associated with drop events when utilizing the Filesystem API.
