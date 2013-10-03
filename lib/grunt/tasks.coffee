@@ -5,6 +5,7 @@ sourceModules = require('../modules')
 
 module.exports = (grunt) ->
 
+  _ = grunt.util._
   grunt.registerTask 'lint', 'Lint, in order, the Gruntfile, sources, and tests.', ['concurrent:lint']
 
   grunt.registerTask 'minify', 'Minify the source javascript and css', [
@@ -51,40 +52,43 @@ module.exports = (grunt) ->
       else
         done success
 
-  grunt.registerTask 'custombuild', 'Generate a custom build', () ->
+  grunt.registerTask 'custombuild', 'Generate a custom build', (derp) ->
+    if (arguments.length == 0)
+      grunt.log.writeln "No args"
+    else
+      grunt.log.writeln derp
+    ###
     argv = require('optimist')
       .options('dest',
         default: @options().dest
         describe: "Destination to build to"
-      ).options('ui',
+      ).options('fuSrcUi',
         default: false
         describe: "Provide default UI"
-      ).options('traditional',
+      ).options('fuSrcTraditional',
         default: false,
         describe: "Provide 'traditional' endpoint support"
-      ).options('s3',
+      ).options('fuSrcS3',
         default: false
         decribe: "Provide Amazon S3 endpoint support"
-      ).options('jquery',
+      ).options('fuSrcJquery',
         default: false
         describe: "Provide jQuery wrapper"
-      ).options('m',
-        alias: 'modules'
+      ).options('extras',
         default: ""
         describe: "Comma-separated list of optional modules to include"
-      ).options('no-css',
-        default: false
-        describe: "Include default css files"
-      ).options('no-img',
-        default: false
-        describe: "Include default image files"
-      ).options('no-iframe',
-        default: false
-        describe: "Include IE8 & 9 postMessage workaround"
       ).argv
 
-    console.log argv
+    opts = _.filter _.keys(argv), (k) ->
+      if argv[k] is true
+        opts[k] = true
 
+    console.dir opts
+
+    util.build.call @, argv.dest, argv
+    ###
+
+    ###
     moduleMapping =
       ui: ['fuSrcUi']
       jquery: ['fuSrcJquery']
@@ -155,6 +159,8 @@ module.exports = (grunt) ->
       src = grunt.file.read f
       grunt.file.write(dest)
       grunt.log.writeln("Wrote #{dest}")
+
+  ###
 
   ###
   grunt.registerMultiTask 'sauce-connect', 'Run or kill sauce connect', ->

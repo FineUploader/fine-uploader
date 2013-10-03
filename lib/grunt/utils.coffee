@@ -1,5 +1,8 @@
 spawn = require('child_process').spawn
+path = require 'path'
 grunt = require 'grunt'
+_ = grunt.util._
+modules = require '../modules'
 
 module.exports =
 
@@ -43,3 +46,66 @@ module.exports =
     task
 
   sauceLabsAvailablePorts: [9000, 9001, 9080, 9090, 9876]
+
+  concat: (formulae) ->
+    src = ''
+    _.map(formulae, (f) ->
+      src = grunt.file.read f
+      src
+    ).join(grunt.util.linefeed)
+
+  copy: (files, dest) ->
+    _.each files, (f) ->
+
+  build: (dest, formulae) ->
+
+    dest_src = path.join(dest, 'src')
+    filename = grunt.config.process 'custom.<%= pkg.name %>-<%= pkg.version %>.js'
+    dest_filename = path.join(dest, 'src', filename)
+
+    # Build formula, true indicates that module should be included
+    formula = []
+    includes =
+      fuSrcCore: true
+      fuSrcUi: false
+      fuSrcJquery: false
+      fuSrcTraditional: false
+      fuSrcS3: false
+      fuSrcS3Jquery: false
+      fuSrcModules: false
+      fuSrcUiModules: false
+      fuPasteModule: false
+      fuDndModule: false
+      fuDeleteFileModule: false
+      fuDeleteFileUiModule: false
+      fuEditFilenameModule: false
+
+    extraIncludes =
+      fuDocs: true
+      fuImages: true
+      fuCss: true
+      fuIframeXssResponse: true
+
+    if _.isArray formulae
+      _.each formulae, (mod) ->
+        if mod in _.keys(includes)
+          includes[mod] = true
+          console.log mod
+    else if _.isObject formulae
+      includes = _.defaults includes, formulae
+
+    formula = _.filter _.keys(includes), (k) -> includes[k] is true
+
+    src = @concat(modules.mergeModules.apply @, formula)
+    grunt.file.write dest_filename, src
+    grunt.log.writeln "Wrote: " + dest_filename
+
+    extraFormula = _.filter _.keys(extraIncludes), (k) -> extraIncludes[k] is true
+    extraModules = modules.mergeModules.apply @, extraFormula
+
+    _.each extraModules, (mod) ->
+      modname = path.basename(mod)
+      if modname.match(/\.css$/)
+        modname = grunt.config.process 'custom.<%= pkg.name %>-<%= pkg.version %>.css'
+      grunt.file.copy mod, path.join(dest_src, modname)
+      grunt.log.writeln "Copied: #{path.basename(modname)}"
