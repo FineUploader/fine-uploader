@@ -483,6 +483,11 @@ module.exports = (grunt) ->
                * Repository: <%= pkg.repository.url %>
                *
                * Licensed under GNU GPL v3, see LICENSE
+               *
+               * Third-party credits:
+               *     MegaPixImage module (MIT):
+               *         https://github.com/stomita/ios-imagefile-megapixel
+               *         Copyright (c) 2012 Shinichi Tomita <shinichi.tomita@gmail.com>
                */ \n\n'''
       footer:
         src: ["#{paths.build}/*.{js,css}"]
