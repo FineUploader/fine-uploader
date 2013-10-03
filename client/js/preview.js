@@ -1,5 +1,26 @@
+/**
+ * Draws a preview of a Blob/File onto an <img>.
+ *
+ * @returns {{generate: Function}}
+ * @constructor
+ */
 qq.Preview = function() {
     "use strict";
+
+    function registerPreviewListener(img, promise) {
+        img.onload = function() {
+            img.onload = null;
+            img.onerror = null;
+            promise.success(img);
+        };
+
+        img.onerror = function() {
+            img.onload = null;
+            img.onerror = null;
+            qq.log("Problem drawing preview!", "error");
+            promise.failure(img);
+        };
+    }
 
     function draw(fileOrBlob, targetImg, maxSize) {
         var drawPreview = new qq.Promise(),
@@ -10,6 +31,8 @@ qq.Preview = function() {
                 var exif = new qq.Exif(fileOrBlob),
                     mpImg = new MegaPixImage(fileOrBlob);
 
+                registerPreviewListener(targetImg, drawPreview);
+
                 exif.parse().then(
                     function(exif) {
                         var orientation = exif.Orientation;
@@ -19,8 +42,6 @@ qq.Preview = function() {
                             maxHeight: maxSize,
                             orientation: orientation
                         });
-
-                        drawPreview.success(orientation);
                     },
 
                     function(failureMsg) {
@@ -30,14 +51,13 @@ qq.Preview = function() {
                             maxWidth: maxSize,
                             maxHeight: maxSize
                         });
-
-                        drawPreview.success(1);
                     }
                 );
             },
 
             function() {
                 qq.log("Not previewable");
+                //TODO optionally include placeholder image
                 drawPreview.failure();
             }
         );
@@ -47,6 +67,14 @@ qq.Preview = function() {
 
 
     return {
+        /**
+         * Generate the preview.
+         *
+         * @param fileOrBlob
+         * @param targetImg
+         * @param maxSize
+         * @returns qq.Promise fulfilled when the preview has been drawn, or the attempt has failed
+         */
         generate: function(fileOrBlob, targetImg, maxSize) {
             return draw(fileOrBlob, targetImg, maxSize);
         }

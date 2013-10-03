@@ -442,9 +442,7 @@ qq.Templating = function(spec) {
         generatePreview: function(id, fileOrBlob) {
             var thumbnail = showThumbnails && getTemplateEl(getFile(id), selectorClasses.thumbnail);
 
-            return thumbnail && preview.generate(fileOrBlob, thumbnail, thumbnailMaxSize).then(function(orientation) {
-                //TODO anything to do here?
-            });
+            return thumbnail && preview.generate(fileOrBlob, thumbnail, thumbnailMaxSize);
         }
     };
 
