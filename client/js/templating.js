@@ -106,7 +106,7 @@ qq.Templating = function(spec) {
         if (!showThumbnails) {
             thumbnail && qq(thumbnail).remove();
         }
-        else {
+        else if (thumbnail) {
             thumbnailMaxSize = parseInt(thumbnail.getAttribute(THUMBNAIL_MAX_SIZE_ATTR));
         }
         showThumbnails = showThumbnails && thumbnail;
