@@ -230,6 +230,16 @@ qq.basePublicApi = {
 
     getButton: function(fileId) {
         return this._getButton(this._buttonIdsForFileIds[fileId]);
+    },
+
+    // Generate a variable size thumbnail on an img or canvas,
+    // returning a promise that is fulfilled when the attempt completes.
+    getThumbnail: function(fileId, imgOrCanvas, maxSize) {
+        if (this._preview) {
+            var file = this.getFile(fileId);
+
+            return this._preview.generate(file, imgOrCanvas, maxSize);
+        }
     }
 };
 

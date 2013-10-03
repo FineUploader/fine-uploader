@@ -14,13 +14,13 @@ qq.Templating = function(spec) {
         FILE_CLASS_PREFIX = "qq-file-id-",
         THUMBNAIL_MAX_SIZE_ATTR = "qq-max-size",
         isCancelDisabled = false,
-        showThumbnails = qq.supportedFeatures.imagePreviews,
         thumbnailMaxSize = -1,
         options = {
             templateIdOrEl: "qq-template",
             containerEl: null,
             fileContainerEl: null,
             button: null,
+            preview: null,
             classes: {
                 hide: "qq-hide",
                 editable: "qq-editable"
@@ -45,10 +45,7 @@ qq.Templating = function(spec) {
             dropProcessingSpinner: 'qq-drop-processing-spinner-selector',
             thumbnail: 'qq-thumbnail-selector'
         },
-        api, isEditElementsExist, isRetryElementExist, templateHtml, container, fileList, preview;
-
-    qq.extend(options, spec);
-    container = options.containerEl;
+        api, isEditElementsExist, isRetryElementExist, templateHtml, container, fileList, showThumbnails;
 
     /**
      * Grabs the HTML from the script tag holding the template markup.  This function will also adjust
@@ -202,8 +199,12 @@ qq.Templating = function(spec) {
         qq(bar).css({width: percent + '%'});
     }
 
+
+    qq.extend(options, spec);
+    container = options.containerEl;
+    showThumbnails = options.preview !== undefined;
     templateHtml = getTemplateHtml();
-    preview = showThumbnails && new qq.Preview();
+
 
     api = {
         render: function() {
@@ -442,7 +443,7 @@ qq.Templating = function(spec) {
         generatePreview: function(id, fileOrBlob) {
             var thumbnail = showThumbnails && getTemplateEl(getFile(id), selectorClasses.thumbnail);
 
-            return thumbnail && preview.generate(fileOrBlob, thumbnail, thumbnailMaxSize);
+            return thumbnail && options.preview.generate(fileOrBlob, thumbnail, thumbnailMaxSize);
         }
     };
 

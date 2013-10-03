@@ -81,6 +81,7 @@ qq.FineUploader = function(o, namespace) {
         containerEl: this._options.element,
         fileContainerEl: this._options.listElement,
         button: this._options.button,
+        preview: this._preview,
         classes: {
             hide: this._options.classes.hide,
             editable: this._options.classes.editable
