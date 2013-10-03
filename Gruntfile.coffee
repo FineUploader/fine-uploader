@@ -33,7 +33,7 @@ module.exports = (grunt) ->
     'docs': './docs'
     'test': './test'
     'custom': './_custom'
-  customBuildDest = path.join paths.custom, uuid.v1(1)
+  customBuildDest = path.join paths.custom, uuid.v1(1), "custom.#{pkg.name}-#{pkg.version}"
 
   # Browsers
   # ==========
@@ -131,11 +131,12 @@ module.exports = (grunt) ->
         ]
       custom:
         options:
-          archive: "#{customBuildDest}/<%= pkg.name %>-<%= pkg.version %>.zip"
+          archive: "#{customBuildDest}/custom.<%= pkg.name %>-<%= pkg.version %>.zip"
         files: [
           {
             expand: true
-            src: "./#{paths.custom}/*"
+            cwd: customBuildDest + '/src/'
+            src: "*"
           }
         ]
 
@@ -408,9 +409,13 @@ module.exports = (grunt) ->
           src: '<%= concat.css.dest %>'
           dest: "#{paths.build}/<%= pkg.name %>.min.css"
       custom:
-        files:
-          src: ["#{customBuildDest}/*.css"]
-          dest: "#{customBuildDest}/<%= pkg.name %>.min.css"
+        expand: true
+        cwd: customBuildDest + '/src/'
+        src: ['*.css', '!*.min.css']
+        dest: customBuildDest + '/src/'
+        ext: '.<%= pkg.name %>-<%= pkg.version %>.min.css'
+        #src: ["#{customBuildDest}/src/<%= pkg.name %>-<%= pkg.version %>.css"]
+        #dest: "#{customBuildDest}/src/<%= pkg.name %>-<%= pkg.version %>.min.css"
 
     jshint:
       source: ["#{paths.src}/js/*.js"]
@@ -427,7 +432,7 @@ module.exports = (grunt) ->
         expr: true
         asi: true
 
-    custombuild:
+    custom:
       options:
         dest: customBuildDest
         #dest: customBuildDest
@@ -454,8 +459,8 @@ module.exports = (grunt) ->
         src: ['<%= concat.all.dest %>']
         dest: "#{paths.build}/all.<%= pkg.name %>.min.js"
       custom:
-        src: ["#{customBuildDest}/*.js"]
-        dest: "#{customBuildDest}/<%= pkg.name %>-<%= pkg.version %>.min.js"
+        src: ["#{customBuildDest}/src/*.js"]
+        dest: "#{customBuildDest}/src/custom.<%= pkg.name %>-<%= pkg.version %>.min.js"
 
     usebanner:
       allhead:
@@ -621,6 +626,12 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'shell:npm_install', 'bower', 'package', 'copy:test']
   grunt.registerTask 'build', 'Build from latest source', ['concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
-  grunt.registerTask 'build:custom', 'Build a custom version', ['custombuild', 'uglify:custom', 'cssmin:custom', 'usebanner:customhead', 'usebanner:customfoot', 'compress:custom', 'build_details']
-  grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build', 'copy:dist', 'compress']
+  grunt.registerTask 'custom', 'Build a custom version', (modules) ->
+    util = require './lib/grunt/utils'
+    dest = customBuildDest
+    if (modules?)
+      util.build.call util, dest, modules.split(',')
+    util.build.call util, dest, []
+    grunt.task.run(['uglify:custom', 'cssmin:custom', 'usebanner:customhead', 'usebanner:customfoot', 'compress:custom', 'build_details'])
+    grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build', 'copy:dist', 'compress']
   grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', ['package']
