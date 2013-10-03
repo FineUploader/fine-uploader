@@ -269,6 +269,14 @@ describe('util.js', function () {
         it('returns false for a string', function () {
             assert.ok(!qq.isArray("Herp derp"));
         });
+
+        if (window.Uint8Array) {
+            it("returns true for an ArrayBuffer", function() {
+                var uint8array = new Uint8Array();
+                assert.ok(qq.isArray(uint8array));
+            });
+        }
+
     }); // isArray
 
     // template
