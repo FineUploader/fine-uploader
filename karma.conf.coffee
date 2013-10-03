@@ -13,7 +13,7 @@ module.exports = (config, options = {}) ->
     logLevel: config.LOG_INFO
     logColors: true
     frameworks: ["mocha"]
-    reporters: ["progress"]
+    reporters: ["dots"]
     captureTimeout: 60000
     colors: true
     customLaunchers: allBrowsers.sauceBrowsers

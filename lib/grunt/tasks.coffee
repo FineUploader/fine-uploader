@@ -10,7 +10,7 @@ module.exports = (grunt) ->
   grunt.registerMultiTask 'tests', '** Use ` grunt-test` instead **', ->
     util.startKarma.call util, @data, true, @async()
 
-  grunt.registerMultiTask 'autotest', ->
+  grunt.registerMultiTask 'autotest', "Re-run karma tests on changes", ->
     util.startKarma.call util, @data, false, @async()
 
   grunt.registerTask 'check_pull_req', '', ->
