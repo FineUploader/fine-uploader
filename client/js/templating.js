@@ -108,6 +108,8 @@ qq.Templating = function(spec) {
         }
         else if (thumbnail) {
             thumbnailMaxSize = parseInt(thumbnail.getAttribute(THUMBNAIL_MAX_SIZE_ATTR));
+            // Only enforce max size if the attr value is non-zero
+            thumbnailMaxSize = thumbnailMaxSize > 0 ? thumbnailMaxSize : null;
         }
         showThumbnails = showThumbnails && thumbnail;
 
