@@ -13,15 +13,14 @@
         <div id="mocha-fixture"></div>
 
         <!-- dependencies -->
-        <script src="vendor/purl/purl.js" type="text/javascript"></script>
-        <script src="vendor/json2/json2.js" type="text/javascript"></script>
-        <script src="vendor/jquery/jquery.js" type="text/javascript"></script>
-        <script src="vendor/jquery.simulate/jquery.simulate.js" type="text/javascript"></script>
-        <script src="vendor/sinon/index.js" type="text/javascript"></script>
+        <script src="_vendor/purl/purl.js" type="text/javascript"></script>
+        <script src="_vendor/json2/json2.js" type="text/javascript"></script>
+        <script src="_vendor/jquery/jquery.js" type="text/javascript"></script>
+        <script src="_vendor/jquery.simulate/jquery.simulate.js" type="text/javascript"></script>
 
-        <link href="vendor/mocha/css/mocha.css" rel="stylesheet" type="text/css" media="screen" />
-        <script src="vendor/mocha/js/mocha.js" type="text/javascript"></script>
-        <script src="vendor/assert/assert.js" type="text/javascript"></script>
+        <link href="_vendor/mocha/css/mocha.css" rel="stylesheet" type="text/css" media="screen" />
+        <script src="_vendor/mocha/js/mocha.js" type="text/javascript"></script>
+        <script src="_vendor/assert/assert.js" type="text/javascript"></script>
 
         <!-- phantomjs logging script
         <script src="/static/phantom.js"></script>
@@ -30,8 +29,8 @@
         <script src="static/helpme.js"></script>
 
         <!-- Fine Uploader -->
-        <link href="temp/fineuploader.css" />
-        <script src="temp/all.fineuploader.js" type="text/javascript"></script>
+        <link href="_temp/fineuploader.css" />
+        <script src="_temp/all.fineuploader.js" type="text/javascript"></script>
         <!--
         <script src="temp/jquery.fineuploader.js" type="text/javascript"></script>
         -->
@@ -44,11 +43,13 @@
 
             var $fixture;
             beforeEach(function () {
-                $fixture = helpme.withTests.createFixture();
+                $fixture = $('<div id="mocha-fixture"></div>').appendTo('body');
+                return $fixture;
             });
 
             afterEach(function () {
-                $fixture = helpme.withTests.destroyFixture();
+                $("#mocha-fixture").empty();
+                $("#mocha-fixture").remove();
             });
 
         </script>

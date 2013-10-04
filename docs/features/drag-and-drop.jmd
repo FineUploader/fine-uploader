@@ -5,6 +5,9 @@
 
 # Drag and Drop {: .page-header }
 
+{{ alert("If you want the contents of any drop zone to be invisible until an item enters the drop zone,
+simply ensure a `qq-hide-dropzone` attribute is present on the drop zone container.") }}
+
 Fine Uploader's UI mode has drag & drop support built in.  The following contains information about that built-in
 support.  Near the middle of this page, you can find instructions that will allow you to easily integrate Fine Uploader's
 standalone drag & drop module into your project if you are using Fine Uploader's core mode only.
@@ -16,9 +19,7 @@ Dragging and dropping of _folders_ is currently only supported in Chrome >=21", 
 
 {{ options_table(
     (
-        ("disableDefaultDropzone", "boolean", "`false`", "Set to true if the default dropzone should be disabled."),
         ("extraDropzones", "Array", "`[ ]`", "Designate additional dropzone elements."),
-        ("hideDropzones", "boolean", "`false`", "Designate dropzone elements to be hidden"),
     )
 ) }}
 
@@ -55,7 +56,6 @@ you are running this in UI mode, then take a look at the `dragAndDrop` options d
     (
         ("allowMultipleItems", "boolean", "`true`", "Set to `false` if you would to prevent the user from dropping more than one item at once."),
         ("dropZoneElements", "Array", "`[ ]`", "Specify all container elements that should be treated as drop zones."),
-        ("hideDropZonesBeforeEnter", "boolean", "`false`", "Set to `true` to ensure that the contents of all drop zones are only revealed when a file has entered the drop zone."),
     )
 ) }}
 

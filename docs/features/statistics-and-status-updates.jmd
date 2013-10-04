@@ -33,7 +33,7 @@ For reference, here are valid status values:
 
 {{ methods_table(
     (
-       ("getUploads", "`Function` [filter]", "`Array`", "Return information about all the items that have been submitted to the uploader. The objects being iterated over will have the following properties: `id`, `uuid`, `originalName`, `name`, and `size`."),
+       ("getUploads", "`Function` [filter]", "`Array`", "Return information about all the items that have been submitted to the uploader. The objects being iterated over will have the following properties: `id`, `uuid`, `originalName`, `name`, `status`, and `size`."),
     )
 ) }}
 

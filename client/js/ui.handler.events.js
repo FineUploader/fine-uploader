@@ -37,18 +37,6 @@ qq.UiEventHandler = function(s, protectedApi) {
 
     // These make up the "protected" API methods that children of this base handler will utilize.
     qq.extend(protectedApi, {
-        // Find the ID of the associated file by looking for an
-        // expando property present on each file item in the DOM.
-        getItemFromEventTarget: function(target) {
-            var item = target.parentNode;
-
-            while(item.qqFileId === undefined) {
-                item = item.parentNode;
-            }
-
-            return item;
-        },
-
         getFileIdFromItem: function(item) {
             return item.qqFileId;
         },

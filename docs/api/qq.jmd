@@ -92,6 +92,7 @@ sure to wrap any elements before calling these methods on them.
         ("bind", "oldFunc, context", "`function`", "Polyfill for `Function.prototype.bind`. Pass comma-separated values after the `context parameter for all arguments to be passed into the new function (when invoked). You can still pass in additional arguments during invocation."),
         ("each", "iterable, callback", "", "Polyfill iterator. Iterates through a collection, passing the key and value into the provided callback. `return false;` to stop iteration."),
         ("extend", "firstObj, secondObj, extendNested", "`Object`", "Shallowly copies the parameters of `secondObj` to `firstObj`. If `extendNested` is true then a deep-copy is performed."),
+        ("format", "message", "`String`", "Returns a string, swapping argument values with the associated occurrence of {} in the passed string."),
         ("indexOf", "array, item, startingIndex", "`number`", "Returns the index of `item` in the `array` starting the search form `startingIndex`."),
         ("isObject", "obj", "`boolean`", "`True` if the parameter is a 'simple' object."),
         ("isFunction", "func", "`boolean`", "`True` if the parameter is a function."),
