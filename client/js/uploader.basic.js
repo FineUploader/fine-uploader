@@ -173,7 +173,7 @@ qq.FineUploaderBasic = function(o) {
 
     this._preventLeaveInProgress();
 
-    this._preview = qq.supportedFeatures.imagePreviews && qq.Preview && new qq.Preview();
+    this._imageGenerator = qq.ImageGenerator && new qq.ImageGenerator();
 };
 
 // Define the private & public API methods.

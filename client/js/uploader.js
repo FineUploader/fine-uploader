@@ -11,17 +11,23 @@ qq.FineUploader = function(o, namespace) {
     // Options provided by FineUploader mode
     qq.extend(this._options, {
         element: null,
+
         button: null,
+
         listElement: null,
+
         dragAndDrop: {
             extraDropzones: []
         },
+
         text: {
             formatProgress: "{percent}% of {total_size}",
             failUpload: "Upload failed",
             waitingForResponse: "Processing..."
         },
+
         template: "qq-template",
+
         classes: {
             retrying: 'qq-upload-retrying',
             retryable: 'qq-upload-retryable',
@@ -31,20 +37,24 @@ qq.FineUploader = function(o, namespace) {
             hide: "qq-hide",
             dropActive: 'qq-upload-drop-area-active'
         },
+
         failedUploadTextDisplay: {
             mode: 'default', //default, custom, or none
             maxChars: 50,
             responseProperty: 'error',
             enableTooltip: true
         },
+
         messages: {
             tooManyFilesError: "You may only drop one file",
             unsupportedBrowser: "Unrecoverable error - this browser does not permit file uploading of any kind."
         },
+
         retry: {
             showAutoRetryNote: true,
             autoRetryNote: "Retrying {retryNum}/{maxAuto}..."
         },
+
         deleteFile: {
             forceConfirm: false,
             confirmMessage: "Are you sure you want to delete {filename}?",
@@ -52,22 +62,27 @@ qq.FineUploader = function(o, namespace) {
             deletingFailedText: "Delete failed"
 
         },
+
         display: {
             fileSizeOnSubmit: false,
             prependFiles: false
         },
+
         paste: {
             promptForName: false,
             namePromptMessage: "Please name this image"
         },
+
         showMessage: function(message){
             setTimeout(function() {
                 window.alert(message);
             }, 0);
         },
+
         showConfirm: function(message) {
             return window.confirm(message);
         },
+
         showPrompt: function(message, defaultValue) {
             return window.prompt(message, defaultValue);
         }
@@ -81,7 +96,7 @@ qq.FineUploader = function(o, namespace) {
         containerEl: this._options.element,
         fileContainerEl: this._options.listElement,
         button: this._options.button,
-        preview: this._preview,
+        imageGenerator: this._imageGenerator,
         classes: {
             hide: this._options.classes.hide,
             editable: this._options.classes.editable

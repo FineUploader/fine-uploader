@@ -1,5 +1,6 @@
 package fineuploader;
 
+import com.google.gson.JsonObject;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -88,8 +89,8 @@ public class UploadReceiver extends HttpServlet
             {
                 MultipartUploadParser multipartUploadParser = new MultipartUploadParser(req, TEMP_DIR, getServletContext());
                 requestParser = RequestParser.getInstance(req, multipartUploadParser);
-                writeFileForMultipartRequest(requestParser);
-                writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, isIframe, false, requestParser);
+                File file = writeFileForMultipartRequest(requestParser);
+                writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, isIframe, false, requestParser, file);
             }
             else
             {
@@ -104,8 +105,8 @@ public class UploadReceiver extends HttpServlet
                 }
                 else
                 {
-                    writeFileForNonMultipartRequest(req, requestParser);
-                    writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, isIframe, false, requestParser);
+                    File file = writeFileForNonMultipartRequest(req, requestParser);
+                    writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, isIframe, false, requestParser, file);
                 }
             }
         } catch (Exception e)
@@ -113,16 +114,16 @@ public class UploadReceiver extends HttpServlet
             log.error("Problem handling upload request", e);
             if (e instanceof MergePartsException)
             {
-                writeResponse(resp.getWriter(), e.getMessage(), isIframe, true, requestParser);
+                writeResponse(resp.getWriter(), e.getMessage(), isIframe, true, requestParser, null);
             }
             else
             {
-                writeResponse(resp.getWriter(), e.getMessage(), isIframe, false, requestParser);
+                writeResponse(resp.getWriter(), e.getMessage(), isIframe, false, requestParser, null);
             }
         }
     }
 
-    private void writeFileForNonMultipartRequest(HttpServletRequest req, RequestParser requestParser) throws Exception
+    private File writeFileForNonMultipartRequest(HttpServletRequest req, RequestParser requestParser) throws Exception
     {
         File dir = new File(UPLOAD_DIR, requestParser.getUuid());
         dir.mkdirs();
@@ -149,12 +150,16 @@ public class UploadReceiver extends HttpServlet
         }
         else
         {
-            writeFile(req.getInputStream(), new File(dir, requestParser.getFilename()), expectedFileSize);
+            File file = new File(dir, requestParser.getFilename());
+            writeFile(req.getInputStream(), file, expectedFileSize);
+            return file;
         }
+
+        return null;
     }
 
 
-    private void writeFileForMultipartRequest(RequestParser requestParser) throws Exception
+    private File writeFileForMultipartRequest(RequestParser requestParser) throws Exception
     {
         File dir = new File(UPLOAD_DIR, requestParser.getUuid());
         dir.mkdirs();
@@ -178,8 +183,12 @@ public class UploadReceiver extends HttpServlet
         }
         else
         {
-            writeFile(requestParser.getUploadItem().getInputStream(), new File(dir, requestParser.getFilename()), null);
+            File file = new File(dir, requestParser.getFilename());
+            writeFile(requestParser.getUploadItem().getInputStream(), file, null);
+            return file;
         }
+
+        return null;
     }
 
     private void assertCombinedFileIsVaid(int totalFileSize, File outputFile, String uuid) throws MergePartsException
@@ -283,8 +292,10 @@ public class UploadReceiver extends HttpServlet
         }
     }
 
-    private void writeResponse(PrintWriter writer, String failureReason, boolean isIframe, boolean restartChunking, RequestParser requestParser)
+    private void writeResponse(PrintWriter writer, String failureReason, boolean isIframe, boolean restartChunking, RequestParser requestParser, File file)
     {
+        JsonObject response = new JsonObject();
+
         if (failureReason == null)
         {
 //            if (isIframe)
@@ -293,14 +304,22 @@ public class UploadReceiver extends HttpServlet
 //            }
 //            else
 //            {
-                writer.print("{\"success\": true}");
+
+
+                response.addProperty("success", true);
+                if (file != null)
+                {
+                    response.addProperty("thumbnailUrl", "/" + file.getPath());
+                }
 //            }
         }
         else
         {
+            response.addProperty("error", failureReason);
+
             if (restartChunking)
             {
-                writer.print("{\"error\": \"" + failureReason + "\", \"reset\": true}");
+                response.addProperty("reset", true);
             }
             else
             {
@@ -311,10 +330,12 @@ public class UploadReceiver extends HttpServlet
 //                else
 //                {
 
-                    writer.print("{\"error\": \"" + failureReason + "\"}");
+
 //                }
             }
         }
+
+        writer.write(response.toString());
     }
 
     private class MergePartsException extends Exception

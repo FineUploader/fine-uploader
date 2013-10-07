@@ -278,6 +278,8 @@ qq.uiPrivateApi = {
                 }
 
                 qq(templating.getFileContainer(id)).addClass(self._classes.success);
+
+                self._maybeUpdateThumbnail(id, result);
             }
             else {
                 qq(templating.getFileContainer(id)).addClass(self._classes.fail);
@@ -539,5 +541,11 @@ qq.uiPrivateApi = {
         this._totalFilesInBatch = items.length;
         this._filesInBatchAddedToUi = 0;
         this._parent.prototype._prepareItemsForUpload.apply(this, arguments);
+    },
+
+    _maybeUpdateThumbnail: function(fileId, serverResponse) {
+        if (serverResponse.thumbnailUrl) {
+            this._templating.updateThumbnail(fileId, serverResponse.thumbnailUrl);
+        }
     }
 };

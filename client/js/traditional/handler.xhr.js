@@ -54,33 +54,21 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
             method = options.demoMode ? "GET" : "POST",
             endpoint = options.endpointStore.getEndpoint(id),
             url = endpoint,
-            name = publicApi.getName(id),
-            size = publicApi.getSize(id),
-            blobData = fileState[id].blobData,
-            newName = fileState[id].newName;
+            name = fileState[id].newName || publicApi.getName(id),
+            size = publicApi.getSize(id);
 
         params[options.uuidParam] = fileState[id].uuid;
+        params[options.filenameParam] = name;
+
 
         if (multipart) {
             params[options.totalFileSizeParam] = size;
-
-            if (blobData) {
-                /**
-                 * When a Blob is sent in a multipart request, the filename value in the content-disposition header is either "blob"
-                 * or an empty string.  So, we will need to include the actual file name as a param in this case.
-                 */
-                params[options.filenameParam] = blobData.name;
-            }
-        }
-
-        if (newName !== undefined) {
-            params[options.filenameParam] = newName;
         }
 
         //build query string
         if (!options.paramsInBody) {
             if (!multipart) {
-                params[options.inputName] = newName || name;
+                params[options.inputName] = name;
             }
             url = qq.obj2url(params, endpoint);
         }

@@ -20,7 +20,7 @@ qq.Templating = function(spec) {
             containerEl: null,
             fileContainerEl: null,
             button: null,
-            preview: null,
+            imageGenerator: null,
             classes: {
                 hide: "qq-hide",
                 editable: "qq-editable"
@@ -45,7 +45,7 @@ qq.Templating = function(spec) {
             dropProcessingSpinner: 'qq-drop-processing-spinner-selector',
             thumbnail: 'qq-thumbnail-selector'
         },
-        api, isEditElementsExist, isRetryElementExist, templateHtml, container, fileList, showThumbnails;
+        api, isEditElementsExist, isRetryElementExist, templateHtml, container, fileList, showThumbnails, serverScale;
 
     /**
      * Grabs the HTML from the script tag holding the template markup.  This function will also adjust
@@ -110,6 +110,8 @@ qq.Templating = function(spec) {
             thumbnailMaxSize = parseInt(thumbnail.getAttribute(THUMBNAIL_MAX_SIZE_ATTR));
             // Only enforce max size if the attr value is non-zero
             thumbnailMaxSize = thumbnailMaxSize > 0 ? thumbnailMaxSize : null;
+
+            serverScale = /true/i.exec(thumbnail.getAttribute("qq-server-scale")) !== null;
         }
         showThumbnails = showThumbnails && thumbnail;
 
@@ -183,6 +185,10 @@ qq.Templating = function(spec) {
         return getTemplateEl(container, selectorClasses.dropProcessing);
     }
 
+    function getThumbnail(id) {
+        return showThumbnails && getTemplateEl(getFile(id), selectorClasses.thumbnail);
+    }
+
     function hide(el) {
         el && qq(el).addClass(spec.classes.hide);
     }
@@ -204,7 +210,7 @@ qq.Templating = function(spec) {
 
     qq.extend(options, spec);
     container = options.containerEl;
-    showThumbnails = options.preview !== undefined;
+    showThumbnails = options.imageGenerator !== undefined;
     templateHtml = getTemplateHtml();
 
 
@@ -443,9 +449,28 @@ qq.Templating = function(spec) {
         },
 
         generatePreview: function(id, fileOrBlob) {
-            var thumbnail = showThumbnails && getTemplateEl(getFile(id), selectorClasses.thumbnail);
+            if (qq.supportedFeatures.imagePreviews) {
+                var thumbnail = getThumbnail(id),
+                    spec = {
+                        maxSize: thumbnailMaxSize,
+                        scale: true,
+                        orient: true
+                    };
 
-            return thumbnail && options.preview.generate(fileOrBlob, thumbnail, thumbnailMaxSize);
+                return thumbnail && options.imageGenerator.generate(fileOrBlob, thumbnail, spec);
+            }
+
+            return new qq.Promise().failure("Client-side previews are not possible on this browser!");
+        },
+
+        updateThumbnail: function(id, thumbnailUrl) {
+            var thumbnail = getThumbnail(id),
+                spec = {
+                    maxSize: thumbnailMaxSize,
+                    scale: serverScale
+                };
+
+            return thumbnail && options.imageGenerator.generate(thumbnailUrl, thumbnail, spec);
         }
     };
 
