@@ -99,6 +99,7 @@ qq.basePublicApi = {
         this._autoRetries = [];
         this._retryTimeouts = [];
         this._preventRetries = [];
+        this._thumbnailUrls = [];
 
         qq.each(this._buttons, function(idx, button) {
             button.reset();
@@ -234,11 +235,27 @@ qq.basePublicApi = {
 
     // Generate a variable size thumbnail on an img or canvas,
     // returning a promise that is fulfilled when the attempt completes.
-    getThumbnail: function(fileId, imgOrCanvas, maxSize) {
+    // Thumbnail can either be based off of a URL for an image returned
+    // by the server in the upload response, or the associated `Blob`.
+    drawThumbnail: function(fileId, imgOrCanvas, maxSize, fromServer) {
         if (this._imageGenerator) {
-            var file = this.getFile(fileId);
+            var fileOrUrl = this._thumbnailUrls[fileId],
+                options = {
+                    scale: maxSize > 0,
+                    maxSize: maxSize > 0 ? maxSize : null
+                };
 
-            return this._imageGenerator.generate(file, imgOrCanvas, maxSize);
+            // If client-side preview generation is possible
+            // and we are not specifically looking for the image URl returned by the server...
+            if (!fromServer && qq.supportedFeatures.imagePreviews) {
+                fileOrUrl = this.getFile(fileId);
+            }
+
+            if (fileOrUrl == null) {
+                return new qq.Promise().failure("File or URL not found.");
+            }
+
+            return this._imageGenerator.generate(fileOrUrl, imgOrCanvas, options);
         }
     }
 };
@@ -611,6 +628,10 @@ qq.basePrivateApi = {
             this._uploadData.setStatus(id, qq.status.UPLOAD_FAILED);
         }
         else {
+            if (result.thumbnailUrl) {
+                this._thumbnailUrls[id] = result.thumbnailUrl;
+            }
+
             this._netUploaded++;
             this._uploadData.setStatus(id, qq.status.UPLOAD_SUCCESSFUL);
         }

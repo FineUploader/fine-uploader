@@ -16,7 +16,7 @@ qq.ImageGenerator = function() {
     }
 
     function isImgCorsSupported() {
-        return new Image().crossOrigin === undefined;
+        return new Image().crossOrigin !== undefined;
     }
 
     function isCanvasSupported() {

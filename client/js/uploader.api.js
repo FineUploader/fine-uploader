@@ -279,7 +279,7 @@ qq.uiPrivateApi = {
 
                 qq(templating.getFileContainer(id)).addClass(self._classes.success);
 
-                self._maybeUpdateThumbnail(id, result);
+                self._maybeUpdateThumbnail(id);
             }
             else {
                 qq(templating.getFileContainer(id)).addClass(self._classes.fail);
@@ -543,9 +543,9 @@ qq.uiPrivateApi = {
         this._parent.prototype._prepareItemsForUpload.apply(this, arguments);
     },
 
-    _maybeUpdateThumbnail: function(fileId, serverResponse) {
-        if (serverResponse.thumbnailUrl) {
-            this._templating.updateThumbnail(fileId, serverResponse.thumbnailUrl);
-        }
+    _maybeUpdateThumbnail: function(fileId) {
+        var thumbnailUrl = this._thumbnailUrls[fileId];
+
+        thumbnailUrl && this._templating.updateThumbnail(fileId, thumbnailUrl);
     }
 };
