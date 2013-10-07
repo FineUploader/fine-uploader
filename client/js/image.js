@@ -31,7 +31,6 @@ qq.ImageGenerator = function() {
     // If canvas isn't supported by the UA (IE8 and older)
     // this method should not even be called.
     function isCrossOrigin(url) {
-
         var targetAnchor = document.createElement('a'),
             targetProtocol, targetHostname, targetPort;
 
