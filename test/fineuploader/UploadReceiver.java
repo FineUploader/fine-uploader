@@ -72,6 +72,7 @@ public class UploadReceiver extends HttpServlet
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         RequestParser requestParser = null;
+        resp.setCharacterEncoding("UTF-8");
 
         boolean isIframe = req.getHeader("X-Requested-With") == null || !req.getHeader("X-Requested-With").equals("XMLHttpRequest");
 
