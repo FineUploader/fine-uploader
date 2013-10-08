@@ -54,10 +54,13 @@ module.exports =
       src
     ).join(grunt.util.linefeed)
 
-  copy: (files, dest) ->
-    _.each files, (f) ->
-
   build: (dest, formulae) ->
+    ###
+    This task will generate a custom build of Fine Uploader based on the
+    provided `formulae`
+    These formulae correspond to the keys in './lib/modules'
+    and are combined into the `dest` directory.
+    ###
 
     dest_src = path.join(dest, 'src')
     filename = grunt.config.process 'custom.<%= pkg.name %>-<%= pkg.version %>.js'
@@ -66,19 +69,30 @@ module.exports =
     # Build formula, true indicates that module should be included
     formula = []
     includes =
+      fuCoreTraditional: false
+      fuCoreS3: false
+      fuUiTraditional: false
+      fuUiS3: false
+      fuSrcJquery: false
+      fuSrcS3Jquery: false
+    ###
+    Soon to be included formulae
+    includes =
       fuSrcCore: true
+      fuSrcUiModules: false
+      fuPasteModule: false
+      fuDndModule: false
+      fuUiModules: false
+      fuDeleteFileModule: false
+      fuDeleteFileUiModule: false
+      fuEditFilenameModule: false
+      fuSrcModules: false
       fuSrcUi: false
       fuSrcJquery: false
       fuSrcTraditional: false
       fuSrcS3: false
       fuSrcS3Jquery: false
-      fuSrcModules: false
-      fuSrcUiModules: false
-      fuPasteModule: false
-      fuDndModule: false
-      fuDeleteFileModule: false
-      fuDeleteFileUiModule: false
-      fuEditFilenameModule: false
+    ###
 
     extraIncludes =
       fuDocs: true
@@ -90,13 +104,13 @@ module.exports =
       _.each formulae, (mod) ->
         if mod in _.keys(includes)
           includes[mod] = true
-          console.log mod
     else if _.isObject formulae
       includes = _.defaults includes, formulae
 
     formula = _.filter _.keys(includes), (k) -> includes[k] is true
+    mods = modules.mergeModules.apply @, formula
 
-    src = @concat(modules.mergeModules.apply @, formula)
+    src = @concat mods
     grunt.file.write dest_filename, src
     grunt.log.writeln "Wrote: " + dest_filename
 
