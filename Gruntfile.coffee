@@ -34,7 +34,12 @@ module.exports = (grunt) ->
     'docs': './docs'
     'test': './test'
     'custom': './_custom'
+
+  # Desitnation for custom builds. Appended with a uuid to make builds unique
+  # and not overwrite each other (if, say, two builds were being concurrently
+  # generated.
   customBuildDest = path.join paths.custom, uuid.v1(1), "custom.#{pkg.name}-#{pkg.version}"
+  #customBuildDest = path.join paths.custom, "custom.#{pkg.name}-#{pkg.version}"
 
   # Browsers
   # ==========
@@ -50,8 +55,6 @@ module.exports = (grunt) ->
   grunt.initConfig
 
     pkg: pkg
-
-    #grunt.config.set('c ustomBuildDest', path.join paths.custom, uuid.v1(1))
 
     bower:
       install:
@@ -669,7 +672,8 @@ module.exports = (grunt) ->
     dest = customBuildDest
     if (modules?)
       util.build.call util, dest, modules.split(',')
-    util.build.call util, dest, []
+    else
+      util.build.call util, dest, []
     grunt.task.run(['uglify:custom', 'cssmin:custom', 'usebanner:customhead', 'usebanner:customfoot', 'compress:custom', 'build_details'])
-    grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build', 'copy:dist', 'compress']
+  grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build', 'copy:dist', 'compress']
   grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', ['package']
