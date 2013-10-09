@@ -73,6 +73,14 @@ qq.FineUploader = function(o, namespace) {
             namePromptMessage: "Please name this image"
         },
 
+        thumbnails: {
+            placeholders: {
+                waitUntilResponse: false,
+                notAvailablePath: null,
+                waitingPath: null
+            }
+        },
+
         showMessage: function(message){
             setTimeout(function() {
                 window.alert(message);
@@ -100,6 +108,11 @@ qq.FineUploader = function(o, namespace) {
         classes: {
             hide: this._options.classes.hide,
             editable: this._options.classes.editable
+        },
+        placeholders: {
+            waitUntilUpdate: this._options.thumbnails.placeholders.waitUntilResponse,
+            thumbnailNotAvailable: this._options.thumbnails.placeholders.notAvailablePath,
+            waitingForThumbnail: this._options.thumbnails.placeholders.waitingPath
         }
     });
 

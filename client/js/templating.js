@@ -13,6 +13,8 @@ qq.Templating = function(spec) {
     var FILE_ID_ATTR = "qq-file-id",
         FILE_CLASS_PREFIX = "qq-file-id-",
         THUMBNAIL_MAX_SIZE_ATTR = "qq-max-size",
+        PREVIEW_GENERATED_ATTR = "qq-preview-generated",
+        THUMBNAIL_SERVER_SCALE_ATTR = "qq-server-scale",
         isCancelDisabled = false,
         thumbnailMaxSize = -1,
         options = {
@@ -24,6 +26,11 @@ qq.Templating = function(spec) {
             classes: {
                 hide: "qq-hide",
                 editable: "qq-editable"
+            },
+            placeholders: {
+                waitUntilUpdate: false,
+                thumbnailNotAvailable: null,
+                waitingForThumbnail: null
             }
         },
         selectorClasses = {
@@ -45,7 +52,16 @@ qq.Templating = function(spec) {
             dropProcessingSpinner: 'qq-drop-processing-spinner-selector',
             thumbnail: 'qq-thumbnail-selector'
         },
-        api, isEditElementsExist, isRetryElementExist, templateHtml, container, fileList, showThumbnails, serverScale;
+        api,
+        isEditElementsExist,
+        isRetryElementExist,
+        templateHtml,
+        container,
+        fileList,
+        showThumbnails,
+        serverScale,
+        cachedThumbnailNotAvailableImg,
+        cachedWaitingForThumbnailImg;
 
     /**
      * Grabs the HTML from the script tag holding the template markup.  This function will also adjust
@@ -55,7 +71,7 @@ qq.Templating = function(spec) {
      *
      * @returns {{template: *, fileTemplate: *}} HTML for the top-level file items templates
      */
-    function getTemplateHtml() {
+    function parseAndGetTemplate() {
         var scriptEl, scriptHtml, fileListNode, tempTemplateEl, fileListHtml, defaultButton, dropzone, thumbnail;
 
         if (options.templateIdOrEl == null) {
@@ -111,7 +127,7 @@ qq.Templating = function(spec) {
             // Only enforce max size if the attr value is non-zero
             thumbnailMaxSize = thumbnailMaxSize > 0 ? thumbnailMaxSize : null;
 
-            serverScale = /true/i.exec(thumbnail.getAttribute("qq-server-scale")) !== null;
+            serverScale = hasAttr(thumbnail, THUMBNAIL_SERVER_SCALE_ATTR);
         }
         showThumbnails = showThumbnails && thumbnail;
 
@@ -197,6 +213,10 @@ qq.Templating = function(spec) {
         el && qq(el).removeClass(spec.classes.hide);
     }
 
+    function hasAttr(el, attr) {
+        return /true/i.exec(el.getAttribute(attr)) !== null;
+    }
+
     function setProgressBarWidth(id, percent) {
         var bar = getProgress(id);
 
@@ -207,12 +227,96 @@ qq.Templating = function(spec) {
         qq(bar).css({width: percent + '%'});
     }
 
+    // During initialization of the templating module we should cache any
+    // placeholder images so we can quickly swap them into the file list on demand.
+    // Any placeholder images that cannot be loaded/found are simply ignored.
+    function cacheThumbnailPlaceholders() {
+        var notAvailableUrl =  options.placeholders.thumbnailNotAvailable,
+            waitingUrl = options.placeholders.waitingForThumbnail,
+            spec = {
+                maxSize: thumbnailMaxSize,
+                scale: serverScale
+            };
+
+        if (showThumbnails) {
+            if (notAvailableUrl) {
+                options.imageGenerator.generate(notAvailableUrl, new Image(), spec).then(
+                    function(updatedImg) {
+                        cachedThumbnailNotAvailableImg = updatedImg;
+                    },
+                    function() {
+                        qq.log("Problem loading 'not available' placeholder image at " + notAvailableUrl, "error");
+                    }
+                );
+            }
+
+            if (waitingUrl) {
+                options.imageGenerator.generate(waitingUrl, new Image(), spec).then(
+                    function(updatedImg) {
+                        cachedWaitingForThumbnailImg = updatedImg;
+                    },
+                    function() {
+                        qq.log("Problem loading 'waiting for thumbnail' placeholder image at " + waitingUrl, "error");
+                    }
+                );
+            }
+        }
+    }
+
+    // Displays a "waiting for thumbnail" type placeholder image
+    // iff we were able to load it during initialization of the templating module.
+    function displayWaitingImg(thumbnail) {
+        if (cachedWaitingForThumbnailImg) {
+            maybeScalePlaceholderViaCss(cachedWaitingForThumbnailImg, thumbnail);
+            thumbnail.src = cachedWaitingForThumbnailImg.src;
+            show(thumbnail);
+        }
+        // In some browsers (such as IE9 and older) an img w/out a src attribute
+        // are displayed as "broken" images, so we sohuld just hide the img tag
+        // if we aren't going to display the "waiting" placeholder.
+        else {
+            hide(thumbnail);
+        }
+    }
+
+    // Displays a "thumbnail not available" type placeholder image
+    // iff we were able to load this placeholder during initialization
+    // of the templating module AND a valid preview does not already exist in the thumbnail element.
+    function displayNotAvailableImg(thumbnail) {
+        if (cachedThumbnailNotAvailableImg && !hasValidPreview(thumbnail)) {
+            maybeScalePlaceholderViaCss(cachedThumbnailNotAvailableImg, thumbnail);
+            thumbnail.src = cachedThumbnailNotAvailableImg.src;
+            show(thumbnail);
+        }
+    }
+
+    // Ensures a placeholder image does not exceed any max size specified
+    // via `style` attribute properties iff <canvas> was not used to scale
+    // the placeholder AND the target <img> doesn't already have these `style` attribute properties set.
+    function maybeScalePlaceholderViaCss(placeholder, thumbnail) {
+        var maxWidth = placeholder.style.maxWidth,
+            maxHeight = placeholder.style.maxHeight;
+
+        if (maxHeight && maxWidth && !thumbnail.style.maxWidth && !thumbnail.style.maxHeight) {
+            qq(thumbnail).css({
+                maxWidth: maxWidth,
+                maxHeight: maxHeight
+            });
+        }
+    }
+
+    // Allows us to determine if a thumbnail element has already received a valid preview.
+    function hasValidPreview(thumbnail) {
+        return hasAttr(thumbnail, PREVIEW_GENERATED_ATTR);
+    }
+
 
     qq.extend(options, spec);
     container = options.containerEl;
     showThumbnails = options.imageGenerator !== undefined;
-    templateHtml = getTemplateHtml();
+    templateHtml = parseAndGetTemplate();
 
+    cacheThumbnailPlaceholders();
 
     api = {
         render: function() {
@@ -449,18 +553,33 @@ qq.Templating = function(spec) {
         },
 
         generatePreview: function(id, fileOrBlob) {
+            var thumbnail = getThumbnail(id),
+                spec = {
+                    maxSize: thumbnailMaxSize,
+                    scale: true,
+                    orient: true
+                };
+
             if (qq.supportedFeatures.imagePreviews) {
-                var thumbnail = getThumbnail(id),
-                    spec = {
-                        maxSize: thumbnailMaxSize,
-                        scale: true,
-                        orient: true
-                    };
-
-                return thumbnail && options.imageGenerator.generate(fileOrBlob, thumbnail, spec);
+                if (thumbnail) {
+                    displayWaitingImg(thumbnail);
+                    return options.imageGenerator.generate(fileOrBlob, thumbnail, spec).then(
+                        function() {
+                            thumbnail.setAttribute(PREVIEW_GENERATED_ATTR, "true");
+                            show(thumbnail);
+                        },
+                        function() {
+                            // Display the "not available" placeholder img only if we are
+                            // not expecting a thumbnail at a later point, such as in a server response.
+                            if (!options.placeholders.waitUntilUpdate) {
+                                displayNotAvailableImg(thumbnail);
+                            }
+                        });
+                }
             }
-
-            return new qq.Promise().failure("Client-side previews are not possible on this browser!");
+            else if (thumbnail) {
+                displayWaitingImg(thumbnail);
+            }
         },
 
         updateThumbnail: function(id, thumbnailUrl) {
@@ -470,7 +589,21 @@ qq.Templating = function(spec) {
                     scale: serverScale
                 };
 
-            return thumbnail && options.imageGenerator.generate(thumbnailUrl, thumbnail, spec);
+            if (thumbnail) {
+                if (thumbnailUrl) {
+                    return options.imageGenerator.generate(thumbnailUrl, thumbnail, spec).then(
+                        function() {
+                            show(thumbnail);
+                        },
+                        function() {
+                            displayNotAvailableImg(thumbnail);
+                        }
+                    );
+                }
+                else {
+                    displayNotAvailableImg(thumbnail);
+                }
+            }
         }
     };
 

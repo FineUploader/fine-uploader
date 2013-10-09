@@ -546,6 +546,6 @@ qq.uiPrivateApi = {
     _maybeUpdateThumbnail: function(fileId) {
         var thumbnailUrl = this._thumbnailUrls[fileId];
 
-        thumbnailUrl && this._templating.updateThumbnail(fileId, thumbnailUrl);
+        this._templating.updateThumbnail(fileId, thumbnailUrl);
     }
 };
