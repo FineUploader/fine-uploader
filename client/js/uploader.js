@@ -100,6 +100,7 @@ qq.FineUploader = function(o, namespace) {
     qq.extend(this._options, o, true);
 
     this._templating = new qq.Templating({
+        log: qq.bind(this.log, this),
         templateIdOrEl: this._options.template,
         containerEl: this._options.element,
         fileContainerEl: this._options.listElement,

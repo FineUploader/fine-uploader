@@ -4,7 +4,7 @@
  * @returns {{generate: Function}}
  * @constructor
  */
-qq.ImageGenerator = function() {
+qq.ImageGenerator = function(log) {
     "use strict";
 
     function isImg(el) {
@@ -66,7 +66,7 @@ qq.ImageGenerator = function() {
         img.onerror = function() {
             img.onload = null;
             img.onerror = null;
-            qq.log("Problem drawing preview!", "error");
+            log("Problem drawing preview!", "error");
             promise.failure(img);
         };
     }
@@ -99,7 +99,7 @@ qq.ImageGenerator = function() {
         }
         else {
             promise.fail(imgOrCanvas);
-            qq.log(qq.format("Element container of type {} is not supported!", imgOrCanvas.tagName), "error");
+            log(qq.format("Element container of type {} is not supported!", imgOrCanvas.tagName), "error");
         }
 
         return registered;
@@ -130,7 +130,7 @@ qq.ImageGenerator = function() {
                         },
 
                         function(failureMsg) {
-                            qq.log(qq.format("EXIF data could not be parsed ({}).  Assuming orientation = 1.", failureMsg));
+                            log(qq.format("EXIF data could not be parsed ({}).  Assuming orientation = 1.", failureMsg));
 
                             mpImg.render(container, {
                                 maxWidth: maxSize,
@@ -142,7 +142,7 @@ qq.ImageGenerator = function() {
             },
 
             function() {
-                qq.log("Not previewable");
+                log("Not previewable");
                 //TODO optionally include placeholder image
                 drawPreview.failure();
             }
@@ -242,11 +242,11 @@ qq.ImageGenerator = function() {
          */
         generate: function(fileBlobOrUrl, container, options) {
             if (qq.isString(fileBlobOrUrl)) {
-                qq.log("Attempting to update thumbnail based on server response.");
+                log("Attempting to update thumbnail based on server response.");
                 return drawFromUrl(fileBlobOrUrl, container, options || {})
             }
             else {
-                qq.log("Attempting to draw client-side image preview.");
+                log("Attempting to draw client-side image preview.");
                 return draw(fileBlobOrUrl, container, options || {});
             }
         }

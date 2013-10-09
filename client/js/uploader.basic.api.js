@@ -447,9 +447,7 @@ qq.basePrivateApi = {
                 chunking: this._options.chunking,
                 resume: this._options.resume,
                 blobs: this._options.blobs,
-                log: function(str, level) {
-                    self.log(str, level);
-                },
+                log: qq.bind(self.log, self),
                 onProgress: function(id, name, loaded, total){
                     self._onProgress(id, name, loaded, total);
                     self._options.callbacks.onProgress(id, name, loaded, total);
@@ -519,9 +517,7 @@ qq.basePrivateApi = {
             endpointStore: this._deleteFileEndpointStore,
             demoMode: this._options.demoMode,
             cors: this._options.cors,
-            log: function(str, level) {
-                self.log(str, level);
-            },
+            log: qq.bind(self.log, self),
             onDelete: function(id) {
                 self._onDelete(id);
                 self._options.callbacks.onDelete(id);
@@ -540,9 +536,7 @@ qq.basePrivateApi = {
         return new qq.PasteSupport({
             targetElement: this._options.paste.targetElement,
             callbacks: {
-                log: function(str, level) {
-                    self.log(str, level);
-                },
+                log: qq.bind(self.log, self),
                 pasteReceived: function(blob) {
                     self._handleCheckedCallback({
                         name: "onPasteReceived",

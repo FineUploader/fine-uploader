@@ -174,7 +174,7 @@ qq.FineUploaderBasic = function(o) {
 
     this._preventLeaveInProgress();
 
-    this._imageGenerator = qq.ImageGenerator && new qq.ImageGenerator();
+    this._imageGenerator = qq.ImageGenerator && new qq.ImageGenerator(qq.bind(this.log, this));
 };
 
 // Define the private & public API methods.

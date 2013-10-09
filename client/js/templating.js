@@ -18,6 +18,7 @@ qq.Templating = function(spec) {
         isCancelDisabled = false,
         thumbnailMaxSize = -1,
         options = {
+            log: null,
             templateIdOrEl: "qq-template",
             containerEl: null,
             fileContainerEl: null,
@@ -52,6 +53,7 @@ qq.Templating = function(spec) {
             dropProcessingSpinner: 'qq-drop-processing-spinner-selector',
             thumbnail: 'qq-thumbnail-selector'
         },
+        log,
         api,
         isEditElementsExist,
         isRetryElementExist,
@@ -245,7 +247,7 @@ qq.Templating = function(spec) {
                         cachedThumbnailNotAvailableImg = updatedImg;
                     },
                     function() {
-                        qq.log("Problem loading 'not available' placeholder image at " + notAvailableUrl, "error");
+                        log("Problem loading 'not available' placeholder image at " + notAvailableUrl, "error");
                     }
                 );
             }
@@ -256,7 +258,7 @@ qq.Templating = function(spec) {
                         cachedWaitingForThumbnailImg = updatedImg;
                     },
                     function() {
-                        qq.log("Problem loading 'waiting for thumbnail' placeholder image at " + waitingUrl, "error");
+                        log("Problem loading 'waiting for thumbnail' placeholder image at " + waitingUrl, "error");
                     }
                 );
             }
@@ -312,6 +314,8 @@ qq.Templating = function(spec) {
 
 
     qq.extend(options, spec);
+    log = options.log;
+
     container = options.containerEl;
     showThumbnails = options.imageGenerator !== undefined;
     templateHtml = parseAndGetTemplate();
