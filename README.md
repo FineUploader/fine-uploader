@@ -1,6 +1,6 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-Version: 3.9.0-3 (Released: September 18, 2013)
+Version: 3.9.1 (Released: October 9, 2013)
 
 [![Build Status](https://www.travis-ci.org/Widen/fine-uploader.png?branch=master)](https://www.travis-ci.org/Widen/fine-uploader) | [![Semver badge](http://calm-shore-6115.herokuapp.com/?label=SemVer&value=2.0.0&color=green)](http://semver.org/spec/v2.0.0.html)
 
