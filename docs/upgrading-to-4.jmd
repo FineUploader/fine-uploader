@@ -51,7 +51,7 @@ ignore the item, though it will still render in the DOM.
 
 The contents of the old `template` and `fileTemplate` options have been combined into one template, which must be
 included as a `<script>` tag with a type of "text/template" in your document.  You can use the template contained in
-the included `default-template.html` file as-is, or modify it to match your application.
+the included `default.html` file in the `templates` directory as-is, or modify it to match your application.
 
 ### Template must be included in document script tag for Fine Uploader UI
 

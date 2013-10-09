@@ -13,11 +13,12 @@ the built-in templating feature.
 
 ### Template
 
-A default template, `default-template.html`, is bundled with each version.  In the future, alternate templates may be
-included as well.  Note that you must include a template in your markup/document when using Fine Uploader UI.
-Everything should work just fine if you simply use the provided template as is, without changing anything.
-However, you can certainly customize the default template to match your web application's look and feel.
-The rest of this section includes examples of some changes you may want to make to the template.
+A default template, `default.html` in the `templates` directory, is bundled with each version.  In the future,
+alternate templates may be included as well.  Note that you must include a template in your markup/document
+when using Fine Uploader UI.  Everything should work just fine if you simply use the provided template as is,
+without changing anything.  However, you can certainly customize the default template to match your
+web application's look and feel.  The rest of this section includes examples of some changes you may want to
+make to the template.
 
 {{ alert(
 """The CSS classes included in template elements that end with '-selector' are used internally by Fine Uploader UI

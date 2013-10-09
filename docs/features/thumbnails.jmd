@@ -1,0 +1,10 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Previews & Thumbnails" %}
+{% block content %}
+{% markdown %}
+# Styling {: .page-header }
+
+TODO
+
+{% endmarkdown %}
+{% endblock %}

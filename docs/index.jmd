@@ -89,6 +89,7 @@ be documented.
 * [Multiple Upload Buttons](features/extra-buttons.html)
 * [Paste to Upload](features/paste-to-upload.html)
 * [Progress Bars](features/progress-bars.html)
+* [Previews & Thumbnails](features/thumbnails.html)
 * [Request Parameters](features/request-parameters.html)
 * [Resuming Uploads](features/resume.html)
 * [Retrying](features/retry.html)
