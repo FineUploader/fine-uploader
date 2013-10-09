@@ -22,11 +22,11 @@ qq.s3.util = qq.s3.util || (function() {
         getBucket: function(endpoint) {
             var patterns = [
                     //bucket in domain
-                    /^(?:https?:\/\/)?([a-z0-9.\-]+)\.s3(?:-[a-z0-9\-]+)?\.amazonaws\.com/i,
+                    /^(?:https?:\/\/)?([a-z0-9.\-_]+)\.s3(?:-[a-z0-9\-]+)?\.amazonaws\.com/i,
                     //bucket in path
-                    /^(?:https?:\/\/)?s3(?:-[a-z0-9\-]+)?\.amazonaws\.com\/([a-z0-9.\-]+)/i,
+                    /^(?:https?:\/\/)?s3(?:-[a-z0-9\-]+)?\.amazonaws\.com\/([a-z0-9.\-_]+)/i,
                     //custom domain
-                    /^(?:https?:\/\/)?([a-z0-9.\-]+)/i
+                    /^(?:https?:\/\/)?([a-z0-9.\-_]+)/i
                 ],
                 bucket;
 
