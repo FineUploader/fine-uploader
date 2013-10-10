@@ -174,6 +174,13 @@ to set the `expected` property of the `cors` option when setting up your Fine Up
 appropriate headers in your server-response, and possibly handle OPTIONS (pre-flight) requests sent by the browser.  Please
 read the [blog post on CORS support](http://blog.fineuploader.com/2013/01/31/cors-support-in-3-3/) for details.  Note that
 you can ignore the "Handling iframe CORS upload requests server-side" section.
+
+## Thumbnails
+If you would like to override the client-side generated preview (where supported) or provide a thumbnail for a
+non-previewable file that you have generated server-side, you can do so by providing an absolute or relative path (URL)
+to this thumbnail in your response to the `uploadSuccess` request via a `thumbnailUrl` property in your JSON response.
+The URL may be cross-origin as well.
+
 {% endmarkdown %}
 {% endblock %}
 

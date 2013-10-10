@@ -125,5 +125,13 @@ See the [values](#values) section above for an example.
 ## Handling an Overridden Filename
 Simple look for a "qqfilename" parameter.  If this exists in the request, be sure to use this when naming your file server-side.
 See the [blog post](http://blog.fineuploader.com/2013/06/23/3-7-edit-override-file-names/) for more details.
+
+## Thumbnails
+If you would like to override the client-side generated preview (where supported) or provide a thumbnail for a
+non-previewable file that you have generated server-side, you can do so by providing an absolute or relative path (URL)
+to this thumbnail in your response to the upload request via a `thumbnailUrl` property in your JSON response.  The
+URL may be cross-origin as well.
+
+
 {% endmarkdown %}
 {% endblock %}
