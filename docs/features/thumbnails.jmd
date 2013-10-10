@@ -2,9 +2,47 @@
 {% set page_title = "Previews & Thumbnails" %}
 {% block content %}
 {% markdown %}
-# Styling {: .page-header }
+# Previews & Thumbnails {: .page-header }
 
-TODO
+## Summary
+    - Previews for natively supported images formats in modern browsers
+    - Thumbnails from server response in all browsers
+    - Orientation adjustments in modern browsers
+    - Scaling in all browsers
+    - Placeholder images in all browsers
+    - Template for UI mode, API method available to easily display previews/thumbnails if using core mode
+
+## Modern Browsers
+    - UI
+        - client-side previews
+            - orienting (after identifying and reading EXIF)
+            - scaling
+        - server-generated thumbnails
+            - scaling
+            - orienting not supported
+            - CORS
+        - placeholders
+            - scaling
+            - orienting not supported
+    - Core
+        - drawThumbnail method
+            - from File/Blob
+                - <canvas> or <img>
+            - from server-returned thumbnail
+                - <canvas> or <img>
+## Older Browsers
+    - UI
+        - to support or not to support?
+        - server-generated thumbnails
+            - CSS scaling only
+        - placeholders
+            - CSS scaling only
+    - Core
+        - drawThumbnail method
+            - CSS scaling only (CORS is irrelevant)
+            - from server-returned thumbnail
+                - <img>
+
 
 {% endmarkdown %}
 {% endblock %}
