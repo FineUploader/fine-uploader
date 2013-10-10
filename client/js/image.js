@@ -67,7 +67,7 @@ qq.ImageGenerator = function(log) {
             img.onload = null;
             img.onerror = null;
             log("Problem drawing preview!", "error");
-            promise.failure(img);
+            promise.failure(img, "Problem drawing preview!");
         };
     }
 
@@ -144,7 +144,7 @@ qq.ImageGenerator = function(log) {
             function() {
                 log("Not previewable");
                 //TODO optionally include placeholder image
-                drawPreview.failure();
+                drawPreview.failure(container, "Not previewable");
             }
         );
 

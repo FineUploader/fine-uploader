@@ -252,7 +252,7 @@ qq.basePublicApi = {
             }
 
             if (fileOrUrl == null) {
-                return new qq.Promise().failure("File or URL not found.");
+                return new qq.Promise().failure(imgOrCanvas, "File or URL not found.");
             }
 
             return this._imageGenerator.generate(fileOrUrl, imgOrCanvas, options);
