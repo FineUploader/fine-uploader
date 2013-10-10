@@ -30,7 +30,9 @@
         a preview will be generated from the `Blob`/`File` provided by the browser.  If client-side preview generation is
         not supported by the browser, or if you specify `true` for the `fromServer` option, a thumbnail based on the
         server `thumbnailUrl` from your server's upload response will be displayed on the `targetContainer`.  You can
-        also optionally specify a maximum height/width for the thumbnail."),
+        also optionally specify a maximum height/width for the thumbnail.  The returned promise will be fulfilled by
+        passing the container back into the `success` callback after the thumbnail has rendered.  If the thumbnail
+        cannot be generated, failure callbacks will be invoked instead, passing the container and an error message."),
         ("getButton", "`Integer` id", "`HTMLElement`", "Returns the button container element associated with a file,
         or undefined if the file was not submitted via a Fine Uploader controlled upload button."),
         ("getFile", "`Integer` id", "`File` or `Blob`", "Returns the item associated with the id. File API browsers only"),
