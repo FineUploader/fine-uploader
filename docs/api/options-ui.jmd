@@ -137,12 +137,14 @@ options for `messages`""", "info", "Note:") }}
 
 {{ options_table(
     (
-        ("waitUntilResponse", "`Boolean`", "`false`", "Set this to `true` if you want the "waiting" placeholder
+        ("waitUntilResponse", "`Boolean`", "`false`", "Set this to `true` if you want the 'waiting' placeholder
         image to remain in place until the server response has been parsed.  This is useful if you expect to
         return thumbnail URLs in your upload responses for files types that cannot be previewed.  This option is
         ignored in older browsers where client-side previews cannot be generated."),
+
         ("notAvailablePath", "`String`", "`null`", "Absolute URL or relative path to the image to display if
         the preview/thumbnail could not be generated/displayed."),
+
         ("waitingPath", "`String`", "`null`", "Absolute URL or relative path to the image to display during
         preview generation (modern browsers) or until the server response has been parsed (older browsers)."),
     )
