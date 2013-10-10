@@ -11,6 +11,7 @@
     <li><a href="#faileduploadtextdisplay-option_1">failedUploadTextDisplay</a></li>
     <li><a href="#messages-option">messages</a></li>
     <li><a href="#retry-option">retry</a></li>
+    <li><a href="#thumbnailsplaceholders-option">thumbnails.placeholders</a></li>
     <li><a href="#paste-option">paste</a></li>
     <li><a href="#text-option">text</a></li>
 </ul>
@@ -127,6 +128,25 @@ options for `messages`""", "info", "Note:") }}
         ("autoRetryNote", "`String`", "`'Retrying {retryNum}/{maxAuto} ...'`", "The text of the note that will optionally appear next to the item during automatic retry attempts. Ignored if `showAutoRetryNote` is false."),
         ("showButton", "`Boolean`", "`false`", "Enable or disable the showing of a button/link nex to the failed item after all retry attempts have been exchausted. Clicking the button/link will force the uploader to make another attempt."),
         ("showAutoRetryNote", "`Boolean`", "`true`", "Enable or disable a status message appearing next to the item during auto retry attempts."),
+    )
+) }}
+
+----
+
+### `thumbnails.placeholders` option
+
+{{ options_table(
+    (
+        ("waitUntilResponse", "`Boolean`", "`false`", "Set this to `true` if you want the "waiting" placeholder
+        image to remain in place until the server response has been parsed.  This is useful if you expect to
+        return thumbnail URLs in your upload responses for files types that cannot be previewed.  This option is
+        ignored in older browsers where client-side previews cannot be generated."),
+
+        ("notAvailablePath", "`String`", "`null`", "Absolute URL or relative path to the image to display if
+        the preview/thumbnail could not be generated/displayed."),
+
+        ("waitingPath", "`String`", "`null`", "Absolute URL or relative path to the image to display during
+        preview generation (modern browsers) or until the server response has been parsed (older browsers)."),
     )
 ) }}
 
