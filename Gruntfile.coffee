@@ -1,12 +1,12 @@
 ###
-  ______ _              _    _       _                 _
- |  ____(_)            | |  | |     | |               | |
- | |__   _ _ __   ___  | |  | |_ __ | | ___   __ _  __| | ___ _ __
- |  __| | | '_ \ / _ \ | |  | | '_ \| |/ _ \ / _` |/ _` |/ _ \ '__|
- | |    | | | | |  __/ | |__| | |_) | | (_) | (_| | (_| |  __/ |
- |_|    |_|_| |_|\___|  \____/| .__/|_|\___/ \__,_|\__,_|\___|_|
-                              | |
-                              |_|
+    ______ _              _    _       _                 _
+ |    ____(_)            | |  | |     | |               | |
+ | |__     _ _ __   ___  | |  | |_ __ | | ___   __ _  __| | ___ _ __
+ |    __| | | '_ \ / _ \ | |  | | '_ \| |/ _ \ / _` |/ _` |/ _ \ '__|
+ | |      | | | | |  __/ | |__| | |_) | | (_) | (_| | (_| |  __/ |
+ |_|      |_|_| |_|\___|  \____/| .__/|_|\___/ \__,_|\__,_|\___|_|
+                                | |
+                                |_|
 
  Gruntfile
 ###
@@ -14,6 +14,7 @@
 module.exports = (grunt) ->
 
     fs = require 'fs'
+    uuid = require 'uuid'
 
     # Utilities
     # ==========
@@ -32,6 +33,13 @@ module.exports = (grunt) ->
         'templates': './client/html/templates'
         'docs': './docs'
         'test': './test'
+        'custom': './_custom'
+
+    # Desitnation for custom builds. Appended with a uuid to make builds unique
+    # and not overwrite each other (if, say, two builds were being generated in parallel
+
+    customBuildDest = path.join paths.custom, uuid.v1(1), "custom.#{pkg.name}-#{pkg.version}"
+    #customBuildDest = path.join paths.custom, "custom.#{pkg.name}-#{pkg.version}"
 
     # Browsers
     # ==========
@@ -46,553 +54,602 @@ module.exports = (grunt) ->
     # ==========
     grunt.initConfig
 
-        pkg: pkg
 
-        bower:
-            install:
-                options:
-                    targetDir: "#{paths.test}/_vendor"
-                    install: true
-                    cleanTargetDir: true
-                    cleanBowerDir: true
-                    layout: 'byComponent'
+      pkg: pkg
 
-        clean:
-            build:
-                files:
-                    src: paths.build
-            dist:
-                files:
-                    src: paths.dist
-            test:
-                files:
-                    src: ["#{paths.test}/_temp*"]
-            vendor:
-                files:
-                    src: "#{paths.test}/_vendor"
+      bower:
+        install:
+          options:
+            targetDir: "#{paths.test}/_vendor"
+            install: true
+            cleanTargetDir: true
+            cleanBowerDir: true
+            layout: 'byComponent'
 
-        coffeelint:
-            options:
-                indentation:
-                    level: 'ignore'
-                no_trailing_whitespace:
-                    level: 'ignore'
-                max_line_length:
-                    level: 'ignore'
-            grunt: './Gruntfile.coffee'
+      clean:
+        build:
+          files:
+            src: paths.build
+        dist:
+          files:
+            src: paths.dist
+        test:
+          files:
+            src: ["#{paths.test}/_temp*"]
+        vendor:
+          files:
+            src: "#{paths.test}/_vendor"
+        custom:
+          files:
+            src: "#{paths.custom}/*"
 
-        compress:
-            jquery:
-                options:
-                    archive: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>.zip"
-                files: [
-                    {
-                        expand: true
-                        cwd: paths.dist
-                        src: './jquery.<%= pkg.name %>-<%= pkg.version %>/*'
-                    }
-                ]
-            jqueryS3:
-                options:
-                    archive: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>.zip"
-                files: [
-                    {
-                        expand: true
-                        cwd: paths.dist
-                        src: './s3.jquery.<%= pkg.name %>-<%= pkg.version %>/*'
-                    }
-                ]
-            core:
-                options:
-                    archive: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>.zip"
-                files: [
-                    {
-                        expand: true
-                        cwd: paths.dist
-                        src: './<%= pkg.name %>-<%= pkg.version %>/*'
-                    }
-                ]
-            coreS3:
-                options:
-                    archive: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>.zip"
-                files: [
-                    {
-                        expand: true
-                        cwd: paths.dist
-                        src: './s3.<%= pkg.name %>-<%= pkg.version %>/*'
-                    }
-                ]
+      coffeelint:
+        options:
+          indentation:
+            level: 'ignore'
+          no_trailing_whitespace:
+            level: 'ignore'
+          max_line_length:
+            level: 'ignore'
+        grunt: './Gruntfile.coffee'
 
-        concat:
-            core:
-                src: fineUploaderModules.mergeModules 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules'
-                dest: "#{paths.build}/<%= pkg.name %>.js"
-            coreS3:
-                src: fineUploaderModules.mergeModules 'fuSrcS3', 'fuSrcModules', 'fuUiModules'
-                dest: "#{paths.build}/s3.<%= pkg.name %>.js"
-            jquery:
-                src: fineUploaderModules.mergeModules 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules', 'fuSrcJquery'
-                dest: "#{paths.build}/jquery.<%= pkg.name %>.js"
-            jqueryS3:
-                src: fineUploaderModules.mergeModules 'fuSrcS3', 'fuSrcModules', 'fuUiModules', 'fuSrcJquery'
-                dest: "#{paths.build}/s3.jquery.<%= pkg.name %>.js"
-            all:
-                src: fineUploaderModules.mergeModules 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules', 'fuSrcS3', 'fuSrcJquery'
-                dest: paths.build + "/all.<%= pkg.name %>.js"
-            css:
-                src: ["#{paths.src}/*.css"]
-                dest: "#{paths.build}/<%= pkg.name %>.css"
+      compress:
+        jquery:
+          options:
+            archive: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>.zip"
+          files: [
+            {
+              expand: true
+              cwd: paths.dist
+              src: './jquery.<%= pkg.name %>-<%= pkg.version %>/*'
+            }
+          ]
+        jqueryS3:
+          options:
+            archive: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>.zip"
+          files: [
+            {
+              expand: true
+              cwd: paths.dist
+              src: './s3.jquery.<%= pkg.name %>-<%= pkg.version %>/*'
+            }
+          ]
+        core:
+          options:
+            archive: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>.zip"
+          files: [
+            {
+              expand: true
+              cwd: paths.dist
+              src: './<%= pkg.name %>-<%= pkg.version %>/*'
+            }
+          ]
+        coreS3:
+          options:
+            archive: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>.zip"
+          files: [
+            {
+              expand: true
+              cwd: paths.dist
+              src: './s3.<%= pkg.name %>-<%= pkg.version %>/*'
+            }
+          ]
+        custom:
+          options:
+            archive: "#{customBuildDest}/custom.<%= pkg.name %>-<%= pkg.version %>.zip"
+          files: [
+            {
+              expand: true
+              cwd: customBuildDest + '/src/'
+              src: "*"
+            }
+          ]
 
-        concurrent:
-            minify: ['cssmin', 'uglify']
-            lint: ['jshint', 'coffeelint']
-            concat: ['concat']
-            clean: ['clean']
-            compress: ['compress']
+      concat:
+        core:
+          src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules'
+          dest: "#{paths.build}/<%= pkg.name %>.js"
+        coreS3:
+          src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcS3', 'fuSrcModules', 'fuUiModules'
+          dest: "#{paths.build}/s3.<%= pkg.name %>.js"
+        jquery:
+          src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules', 'fuSrcJquery'
+          dest: "#{paths.build}/jquery.<%= pkg.name %>.js"
+        jqueryS3:
+          src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcS3', 'fuSrcModules', 'fuUiModules', 'fuSrcJquery', 'fuSrcS3Jquery'
+          dest: "#{paths.build}/s3.jquery.<%= pkg.name %>.js"
+        all:
+          src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules', 'fuSrcS3', 'fuSrcJquery', 'fuSrcS3Jquery'
+          dest: paths.build + "/all.<%= pkg.name %>.js"
+        css:
+          src: ["#{paths.src}/*.css"]
+          dest: "#{paths.build}/<%= pkg.name %>.css"
 
-        connect:
-            root_server:
-                options:
-                    base: "."
-                    hostname: "0.0.0.0"
-                    port: 9000
-                    keepalive: true
-            test_server:
-                options:
-                    base: "test"
-                    hostname: "0.0.0.0"
-                    port: 9000
+      concurrent:
+        minify: ['cssmin', 'uglify']
+        lint: ['jshint', 'coffeelint']
+        concat: ['concat']
+        clean: ['clean']
+        compress: ['compress']
 
-        copy:
-            dist:
-                files: [
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['*.js', '!all.*', '!s3.*', '!*.min.js', '!jquery*', '!*iframe*']
-                        dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
-                        ext: '-<%= pkg.version %>.js'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: [ '!all.*', 's3.*.js', '!*.min.js', '!s3.jquery*', '!*iframe*']
-                        dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
-                        ext: '.<%= pkg.name %>-<%= pkg.version %>.js'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['*.min.js',  '!all.*', '!s3.*', '!jquery*']
-                        dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
-                        ext: '-<%= pkg.version %>.min.js'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['s3.*.min.js', '!s3.jquery*']
-                        dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
-                        ext: '.<%= pkg.name %>-<%= pkg.version %>.min.js'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['jquery*js', '!s3.*', '!*.min.js']
-                        dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
-                        ext: '.<%= pkg.name %>-<%= pkg.version %>.js'
-                    },
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['s3.jquery*js', '!*.min.js']
-                        dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
-                        ext: '.jquery.<%= pkg.name %>-<%= pkg.version %>.js'
-                    },
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['jquery*min.js']
-                        dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
-                        ext: '.<%= pkg.name %>-<%= pkg.version %>.min.js'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['s3.jquery*min.js']
-                        dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
-                        ext: '.jquery.<%= pkg.name %>-<%= pkg.version %>.min.js'
-                    }
-                    {
-                        expand: true
-                        cwd: "./#{paths.src}/js/"
-                        src: ['iframe.xss.response.js']
-                        dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
-                        ext: '.xss.response-<%= pkg.version %>.js'
-                    }
-                    {
-                        expand: true
-                        cwd: "./#{paths.src}/js/"
-                        src: ['iframe.xss.response.js']
-                        dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
-                        ext: '.xss.response-<%= pkg.version %>.js'
-                    }
-                    {
-                        expand: true
-                        cwd: "./#{paths.src}/js/"
-                        src: ['iframe.xss.response.js']
-                        dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
-                        ext: '.xss.response-<%= pkg.version %>.js'
-                    }
-                    {
-                        expand: true
-                        cwd: "./#{paths.src}/js/"
-                        src: ['iframe.xss.response.js']
-                        dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
-                        ext: '.xss.response-<%= pkg.version %>.js'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.src
-                        src: ['*.gif']
-                        dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
-                    }
-                    {
-                        expand: true
-                        cwd: paths.src
-                        src: ['*.gif']
-                        dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
-                    }
-                    {
-                        expand: true
-                        cwd: paths.src
-                        src: ['*.gif']
-                        dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
-                    }
-                    {
-                        expand: true
-                        cwd: paths.src
-                        src: ['*.gif']
-                        dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
-                    }
-                    {
-                        expand: true
-                        cwd: './'
-                        src: ['LICENSE']
-                        dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
-                    }
-                    {
-                        expand: true
-                        cwd: './'
-                        src: ['LICENSE']
-                        dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
-                    }
-                    {
-                        expand: true
-                        cwd: './'
-                        src: ['LICENSE']
-                        dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
-                    }
-                    {
-                        expand: true
-                        cwd: './'
-                        src: ['LICENSE']
-                        dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['*.min.css']
-                        dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>"
-                        ext: '-<%= pkg.version %>.min.css'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['*.min.css']
-                        dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>"
-                        ext: '-<%= pkg.version %>.min.css'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['*.css', '!*.min.css']
-                        dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>"
-                        ext: '-<%= pkg.version %>.css'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['*.css', '!*.min.css']
-                        dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>"
-                        ext: '-<%= pkg.version %>.css'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['*.min.css']
-                        dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>"
-                        ext: '-<%= pkg.version %>.min.css'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['*.min.css']
-                        dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>"
-                        ext: '-<%= pkg.version %>.min.css'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['*.css', '!*.min.css']
-                        dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>"
-                        ext: '-<%= pkg.version %>.css'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.build
-                        src: ['*.css', '!*.min.css']
-                        dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>"
-                        ext: '-<%= pkg.version %>.css'
-                    }
-                    {
-                        expand: true
-                        cwd: paths.templates
-                        src: ['*.html']
-                        dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/templates/"
-                    }
-                    {
-                        expand: true
-                        cwd: paths.templates
-                        src: ['*.html']
-                        dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/templates/"
-                    }
-                    {
-                        expand: true
-                        cwd: paths.templates
-                        src: ['*.html']
-                        dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/templates/"
-                    }
-                    {
-                        expand: true
-                        cwd: paths.templates
-                        src: ['*.html']
-                        dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/templates/"
-                    }
-                ]
-            build:
-                files: [
-                    {
-                        expand: true
-                        cwd: "#{paths.src}/js/"
-                        src: ['iframe.xss.response.js']
-                        dest: paths.build
-                    },
-                    {
-                        expand: true
-                        cwd: paths.src
-                        src: ['*.gif']
-                        dest: paths.build
-                    }
-                    {
-                        expand: true
-                        cwd: paths.src + '/html/'
-                        src: ['*.html']
-                        dest: paths.build
-                    }
-                ]
-            test:
-                expand: true
-                flatten: true
-                src: ["#{paths.build}/*"]
-                dest: "#{paths.test}/_temp"
-            images:
-                files: [
-                    expand: true
-                    cwd: paths.src
-                    src: ['*.gif']
-                    dest: paths.build
-                ]
-            templates:
-                files: [
-                    expand: true
-                    cwd: paths.src + '/html/templates'
-                    src: ['*.html']
-                    dest: paths.build
-                ]
+      connect:
+        root_server:
+          options:
+            base: "."
+            hostname: "0.0.0.0"
+            port: 9000
+            keepalive: true
+        test_server:
+          options:
+            base: "test"
+            hostname: "0.0.0.0"
+            port: 9000
 
-        cssmin:
-            options:
-                banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
-                report: 'min'
-            files:
-                src: '<%= concat.css.dest %>'
-                dest: "#{paths.build}/<%= pkg.name %>.min.css"
+      copy:
+        dist:
+          files: [
+            {
+              expand: true
+              cwd: paths.build
+              src: ['*.js', '!all.*', '!s3.*', '!*.min.js', '!jquery*', '!*iframe*']
+              dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
+              ext: '-<%= pkg.version %>.js'
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: [ '!all.*', 's3.*.js', '!*.min.js', '!s3.jquery*', '!*iframe*']
+              dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
+              ext: '.<%= pkg.name %>-<%= pkg.version %>.js'
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: ['*.min.js',  '!all.*', '!s3.*', '!jquery*']
+              dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
+              ext: '-<%= pkg.version %>.min.js'
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: ['s3.*.min.js', '!s3.jquery*']
+              dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
+              ext: '.<%= pkg.name %>-<%= pkg.version %>.min.js'
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: ['jquery*js', '!s3.*', '!*.min.js']
+              dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
+              ext: '.<%= pkg.name %>-<%= pkg.version %>.js'
+            },
+            {
+              expand: true
+              cwd: paths.build
+              src: ['s3.jquery*js', '!*.min.js']
+              dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
+              ext: '.jquery.<%= pkg.name %>-<%= pkg.version %>.js'
+            },
+            {
+              expand: true
+              cwd: paths.build
+              src: ['jquery*min.js']
+              dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
+              ext: '.<%= pkg.name %>-<%= pkg.version %>.min.js'
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: ['s3.jquery*min.js']
+              dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
+              ext: '.jquery.<%= pkg.name %>-<%= pkg.version %>.min.js'
+            }
+            {
+              expand: true
+              cwd: "./#{paths.src}/js/"
+              src: ['iframe.xss.response.js']
+              dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
+              ext: '.xss.response-<%= pkg.version %>.js'
+            }
+            {
+              expand: true
+              cwd: "./#{paths.src}/js/"
+              src: ['iframe.xss.response.js']
+              dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
+              ext: '.xss.response-<%= pkg.version %>.js'
+            }
+            {
+              expand: true
+              cwd: "./#{paths.src}/js/"
+              src: ['iframe.xss.response.js']
+              dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
+              ext: '.xss.response-<%= pkg.version %>.js'
+            }
+            {
+              expand: true
+              cwd: "./#{paths.src}/js/"
+              src: ['iframe.xss.response.js']
+              dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
+              ext: '.xss.response-<%= pkg.version %>.js'
+            }
+            {
+              expand: true
+              cwd: paths.src
+              src: ['*.gif']
+              dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
+            }
+            {
+              expand: true
+              cwd: paths.src
+              src: ['*.gif']
+              dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
+            }
+            {
+              expand: true
+              cwd: paths.src
+              src: ['*.gif']
+              dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
+            }
+            {
+              expand: true
+              cwd: paths.src
+              src: ['*.gif']
+              dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
+            }
+            {
+              expand: true
+              cwd: './'
+              src: ['LICENSE']
+              dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
+            }
+            {
+              expand: true
+              cwd: './'
+              src: ['LICENSE']
+              dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
+            }
+            {
+              expand: true
+              cwd: './'
+              src: ['LICENSE']
+              dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
+            }
+            {
+              expand: true
+              cwd: './'
+              src: ['LICENSE']
+              dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: ['*.min.css']
+              dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>"
+              ext: '-<%= pkg.version %>.min.css'
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: ['*.min.css']
+              dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>"
+              ext: '-<%= pkg.version %>.min.css'
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: ['*.css', '!*.min.css']
+              dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>"
+              ext: '-<%= pkg.version %>.css'
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: ['*.css', '!*.min.css']
+              dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>"
+              ext: '-<%= pkg.version %>.css'
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: ['*.min.css']
+              dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>"
+              ext: '-<%= pkg.version %>.min.css'
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: ['*.min.css']
+              dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>"
+              ext: '-<%= pkg.version %>.min.css'
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: ['*.css', '!*.min.css']
+              dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>"
+              ext: '-<%= pkg.version %>.css'
+            }
+            {
+              expand: true
+              cwd: paths.build
+              src: ['*.css', '!*.min.css']
+              dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>"
+              ext: '-<%= pkg.version %>.css'
+            }
+            {
+              expand: true
+              cwd: paths.html
+              src: ['*.html']
+              dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/templates/"
+            }
+            {
+              expand: true
+              cwd: paths.html
+              src: ['*.html']
+              dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/templates/"
+            }
+            {
+              expand: true
+              cwd: paths.html
+              src: ['*.html']
+              dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/templates/"
+            }
+            {
+              expand: true
+              cwd: paths.html
+              src: ['*.html']
+              dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/templates/"
+            }
+          ]
+        build:
+          files: [
+            {
+              expand: true
+              cwd: "#{paths.src}/js/"
+              src: ['iframe.xss.response.js']
+              dest: paths.build
+            },
+            {
+              expand: true
+              cwd: paths.src
+              src: ['*.gif']
+              dest: paths.build
+            }
+            {
+              expand: true
+              cwd: paths.src + '/html/'
+              src: ['*.html']
+              dest: paths.build
+            }
+          ]
+        test:
+          expand: true
+          flatten: true
+          src: ["#{paths.build}/*"]
+          dest: "#{paths.test}/_temp"
+        images:
+          files: [
+            expand: true
+            cwd: paths.src
+            src: ['*.gif']
+            dest: paths.build
+          ]
+        templates:
+          files: [
+            expand: true
+            cwd: paths.src + '/html'
+            src: ['*.html']
+            dest: paths.build
+          ]
 
-        jshint:
-            source: ["#{paths.src}/js/*.js"]
-            tests: ["#{paths.test}unit/*.js"]
-            options:
-                validthis: true
-                laxcomma: true
-                laxbreak: true
-                browser: true
-                eqnull: true
-                debug: true
-                devel: true
-                boss: true
-                expr: true
-                asi: true
+      cssmin:
+        options:
+          banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+          report: 'min'
+        all:
+          files:
+            src: '<%= concat.css.dest %>'
+            dest: "#{paths.build}/<%= pkg.name %>.min.css"
+        custom:
+          expand: true
+          cwd: customBuildDest + '/src/'
+          src: ['*.css', '!*.min.css']
+          dest: customBuildDest + '/src/'
+          ext: '.<%= pkg.name %>-<%= pkg.version %>.min.css'
+          #src: ["#{customBuildDest}/src/<%= pkg.name %>-<%= pkg.version %>.css"]
+          #dest: "#{customBuildDest}/src/<%= pkg.name %>-<%= pkg.version %>.min.css"
 
-        uglify:
-            options:
-                mangle: true
-                compress: true
-                report: 'min'
-                preserveComments: 'some'
-            core:
-                src: ['<%= concat.core.dest %>']
-                dest: "#{paths.build}/<%= pkg.name %>.min.js"
-            jquery:
-                src: ['<%= concat.jquery.dest %>']
-                dest: "#{paths.build}/jquery.<%= pkg.name %>.min.js"
-            coreS3:
-                src: ['<%= concat.coreS3.dest %>']
-                dest: "#{paths.build}/s3.<%= pkg.name %>.min.js"
-            jqueryS3:
-                src: ['<%= concat.jqueryS3.dest %>']
-                dest: "#{paths.build}/s3.jquery.<%= pkg.name %>.min.js"
-            all:
-                src: ['<%= concat.all.dest %>']
-                dest: "#{paths.build}/all.<%= pkg.name %>.min.js"
+      jshint:
+        source: ["#{paths.src}/js/*.js"]
+        tests: ["#{paths.test}unit/*.js"]
+        options:
+          validthis: true
+          laxcomma: true
+          laxbreak: true
+          browser: true
+          eqnull: true
+          debug: true
+          devel: true
+          boss: true
+          expr: true
+          asi: true
 
-        usebanner:
-            header:
-                src: ["#{paths.build}/*.{js,css}"]
-                options:
-                    position: 'top'
-                    banner: '''
-                            /*!
-                            * <%= pkg.title %>
-                            *
-                            * Copyright 2013, <%= pkg.author %> info@fineuploader.com
-                            *
-                            * Version: <%= pkg.version %>
-                            *
-                            * Homepage: http://fineuploader.com
-                            *
-                            * Repository: <%= pkg.repository.url %>
-                            *
-                            * Licensed under GNU GPL v3, see LICENSE
-                            *
-                            * Third-party credits:
-                            *     MegaPixImage module (MIT):
-                            *         https://github.com/stomita/ios-imagefile-megapixel
-                            *         Copyright (c) 2012 Shinichi Tomita <shinichi.tomita@gmail.com>
-                            */ \n\n'''
-            footer:
-                src: ["#{paths.build}/*.{js,css}"]
-                options:
-                    position: 'bottom'
-                    banner: '/*! <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+      custom:
+        options:
+          dest: customBuildDest
+          #dest: customBuildDest
 
-        version:
-            options:
-                pkg: pkg,
-                prefix: '[^\\-][Vv]ersion[\'"]?\\s*[:=]\\s*[\'"]?'
-            major:
-                options:
-                    release: 'major'
-                src: fineUploaderModules.modules.versioned
-            minor:
-                options:
-                    release: 'minor'
-                src: fineUploaderModules.modules.versioned
-            hotfix:
-                options:
-                    release: 'patch'
-                src: fineUploaderModules.modules.versioned
-            build:
-                options:
-                    release: 'build'
-                src: fineUploaderModules.modules.versioned
+      uglify:
+        options:
+          mangle: true
+          compress: true
+          report: 'min'
+          preserveComments: 'some'
+        core:
+          src: ['<%= concat.core.dest %>']
+          dest: "#{paths.build}/<%= pkg.name %>.min.js"
+        jquery:
+          src: ['<%= concat.jquery.dest %>']
+          dest: "#{paths.build}/jquery.<%= pkg.name %>.min.js"
+        coreS3:
+          src: ['<%= concat.coreS3.dest %>']
+          dest: "#{paths.build}/s3.<%= pkg.name %>.min.js"
+        jqueryS3:
+          src: ['<%= concat.jqueryS3.dest %>']
+          dest: "#{paths.build}/s3.jquery.<%= pkg.name %>.min.js"
+        all:
+          src: ['<%= concat.all.dest %>']
+          dest: "#{paths.build}/all.<%= pkg.name %>.min.js"
+        custom:
+          src: ["#{customBuildDest}/src/*.js"]
+          dest: "#{customBuildDest}/src/custom.<%= pkg.name %>-<%= pkg.version %>.min.js"
 
-        watch:
-            options:
-                interrupt: true
-                debounceDelay: 250
-            js:
-                files: ["#{paths.src}/js/*.js", "#{paths.src}/js/s3/*.js"]
-                tasks: [
-                    'dev'
-                    'test-unit'
-                ]
-            test:
-                files: ["#{paths.test}/unit/*.js", "#{paths.test}/unit/s3/*.js"]
-                tasks: [
-                    'jshint:tests'
-                    'test-unit'
-                ]
-            grunt:
-                files: ['./Gruntfile.coffee']
-                tasks: [
-                    'coffeelint:grunt'
-                    'build'
-                ]
-            images:
-                files: ["#{paths.src}/*.gif"]
-                tasks: [
-                    'copy:images'
-                ]
+      usebanner:
+        allhead:
+          src: ["#{paths.build}/*.{js,css}"]
+          options:
+            position: 'top'
+            banner: '''
+                /*!
+                 * <%= pkg.title %>
+                 *
+                 * Copyright 2013, <%= pkg.author %> info@fineuploader.com
+                 *
+                 * Version: <%= pkg.version %>
+                 *
+                 * Homepage: http://fineuploader.com
+                 *
+                 * Repository: <%= pkg.repository.url %>
+                 *
+                 * Licensed under GNU GPL v3, see LICENSE
+                 */ \n\n'''
+        allfoot:
+          src: ["#{paths.build}/*.{js,css}"]
+          options:
+            position: 'bottom'
+            banner: '/*! <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+        customhead:
+          src: ["#{paths.custom}/*.{js,css}"]
+          options:
+            position: 'top'
+            banner: '''
+                /*!
+                 * <%= pkg.title %>
+                 *
+                 * Copyright 2013, <%= pkg.author %> info@fineuploader.com
+                 *
+                 * Version: <%= pkg.version %>
+                 *
+                 * Homepage: http://fineuploader.com
+                 *
+                 * Repository: <%= pkg.repository.url %>
+                 *
+                 * Licensed under GNU GPL v3, see LICENSE
+                 */ \n\n'''
+        customfoot:
+          src: ["#{paths.custom}/*.{js,css}"]
+          options:
+            position: 'bottom'
+            banner: '/*! <%= grunt.template.today("yyyy-mm-dd") %> */\n'
 
-        tests:
-            local: 'karma-local.conf.coffee'
+      version:
+        options:
+          pkg: pkg,
+          prefix: '[^\\-][Vv]ersion[\'"]?\\s*[:=]\\s*[\'"]?'
+        major:
+          options:
+            release: 'major'
+          src: fineUploaderModules.modules.versioned
+        minor:
+          options:
+            release: 'minor'
+          src: fineUploaderModules.modules.versioned
+        hotfix:
+          options:
+            release: 'patch'
+          src: fineUploaderModules.modules.versioned
+        build:
+          options:
+            release: 'build'
+          src: fineUploaderModules.modules.versioned
 
-        autotest:
-            local: 'karma-local.conf.coffee'
+      watch:
+        options:
+          interrupt: true
+          debounceDelay: 250
+        js:
+          files: ["#{paths.src}/js/*.js", "#{paths.src}/js/s3/*.js"]
+          tasks: [
+            'dev'
+            'test-unit'
+          ]
+        test:
+          files: ["#{paths.test}/unit/*.js", "#{paths.test}/unit/s3/*.js"]
+          tasks: [
+            'jshint:tests'
+            'test-unit'
+          ]
+        grunt:
+          files: ['./Gruntfile.coffee']
+          tasks: [
+            'coffeelint:grunt'
+            'build'
+          ]
+        images:
+          files: ["#{paths.src}/*.gif"]
+          tasks: [
+            'copy:images'
+          ]
 
-        saucetests:
-            default:
-                configFile: 'karma-sauce.conf.coffee'
-                browsers: [
-                    ['SL-chrome-28-Linux', 'SL-firefox-21-Linux', 'SL-safari-6-OS_X_10.8'],
-                    ['SL-internet_explorer-10-Windows_8', 'SL-internet_explorer-9-Windows_7', 'SL-internet_explorer-8-Windows_7'],
-                    ['SL-android-4.0-Linux', 'SL-iphone-6-OS_X_10.8', 'SL-safari-5-OS_X_10.6'],
-                    #['SL-internet_explorer-7-Windows_XP'],
-                ]
+      tests:
+        local: 'karma-local.conf.coffee'
 
-        mochaWebdriver:
-            options:
-                timeout: 60000
-                testName: '[selenium] Fine Uploader'
-                reporter: 'spec'
-            local:
-                src: ['test/functional/*.coffee']
-                options:
-                    usePhantom: true
-            sauce:
-                src: ['test/functional/*.coffee']
-                options:
-                    username: process.env.SAUCE_USERNAME || process.env.SAUCE_USER_NAME || ''
-                    key: process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_ACCESSKEY || ''
-                    identifier: process.env.TRAVIS_JOB_NUMBER || `Math.floor((new Date).getTime() / 1000 - 1230768000).toString()`
-                    concurrency: 3
-                    tunnelTimeout: 60000
-                    browsers: allBrowsers.modules
+      autotest:
+        local: 'karma-local.conf.coffee'
 
-        shell:
-            start_saucecon:
-                command: './lib/sauce/sauce_connect_setup.sh'
-            kill_saucecon:
-                command: 'cat /tmp/sauce-connect.pid | xargs kill'
-            npm_install:
-                command: 'npm install'
+      saucetests:
+        default:
+          configFile: 'karma-sauce.conf.coffee'
+          browsers: [
+            ['SL-chrome-28-Linux', 'SL-firefox-21-Linux', 'SL-safari-6-OS_X_10.8'],
+            ['SL-internet_explorer-10-Windows_8', 'SL-internet_explorer-9-Windows_7', 'SL-internet_explorer-8-Windows_7'],
+            ['SL-android-4.0-Linux', 'SL-iphone-6-OS_X_10.8', 'SL-safari-5-OS_X_10.6'],
+            #['SL-internet_explorer-7-Windows_XP'],
+          ]
 
-        strip_code:
-            options:
-                start_comment: "<testing>"
-                end_comment: "</testing>"
-            files:
-                src: "#{paths.build}/*.js"
+      mochaWebdriver:
+        options:
+          timeout: 60000
+          testName: '[selenium] Fine Uploader'
+          reporter: 'spec'
+        local:
+          src: ['test/functional/*.coffee']
+          options:
+            usePhantom: true
+        sauce:
+          src: ['test/functional/*.coffee']
+          options:
+            username: process.env.SAUCE_USERNAME || process.env.SAUCE_USER_NAME || ''
+            key: process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_ACCESSKEY || ''
+            identifier: process.env.TRAVIS_JOB_NUMBER || `Math.floor((new Date).getTime() / 1000 - 1230768000).toString()`
+            concurrency: 3
+            tunnelTimeout: 60000
+            browsers: allBrowsers.modules
+
+      shell:
+        start_saucecon:
+          command: './lib/sauce/sauce_connect_setup.sh'
+        kill_saucecon:
+          command: 'cat /tmp/sauce-connect.pid | xargs kill'
+        npm_install:
+          command: 'npm install'
+
+    strip_code:
+        options:
+            start_comment: "<testing>"
+            end_comment: "</testing>"
+        files:
+            src: "#{paths.build}/*.js"
 
     # Dependencies
     # ==========
@@ -600,6 +657,12 @@ module.exports = (grunt) ->
         grunt.loadNpmTasks name
 
     grunt.loadTasks './lib/grunt'
+
+    grunt.registerTask 'build_details', ->
+      grunt.log.writeln "\n##########"
+      grunt.log.writeln "Custom Build Generated: "
+      grunt.log.write "### " + customBuildDest + " ###"
+      grunt.log.writeln "\n##########\n"
 
     # Tasks
     # ==========
@@ -611,7 +674,19 @@ module.exports = (grunt) ->
     grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'saucetests:default']
 
     grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'shell:npm_install', 'bower', 'package', 'copy:test']
-    grunt.registerTask 'build', 'Build from latest source', ['concat', 'minify', 'usebanner', 'copy:images']
+
+    grunt.registerTask 'build', 'Build from latest source', ['concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
     grunt.registerTask 'build_stripped', 'Build from latest source w/ test artifacts stripped out', ['concat', 'strip_code', 'minify', 'usebanner', 'copy:images']
+
     grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build_stripped', 'copy:dist', 'compress']
+
+    grunt.registerTask 'custom', 'Build a custom version', (modules) ->
+      util = require './lib/grunt/utils'
+      dest = customBuildDest
+      if (modules?)
+        util.build.call util, dest, modules.split(',')
+      else
+        util.build.call util, dest, []
+      grunt.task.run(['uglify:custom', 'cssmin:custom', 'usebanner:customhead', 'usebanner:customfoot', 'compress:custom', 'build_details'])
+
     grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', ['package']
