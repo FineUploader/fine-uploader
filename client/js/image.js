@@ -111,12 +111,15 @@ qq.ImageGenerator = function(log) {
     function draw(fileOrBlob, container, options) {
         var drawPreview = new qq.Promise(),
             identifier = new qq.Identify(fileOrBlob),
-            maxSize = options.maxSize;
+            maxSize = options.maxSize,
+            megapixErrorHandler = function() {
+                drawPreview.failure(container, "Browser cannot render image!");
+            };
 
         identifier.isPreviewable().then(
             function() {
                 var exif = new qq.Exif(fileOrBlob),
-                    mpImg = new MegaPixImage(fileOrBlob);
+                    mpImg = new MegaPixImage(fileOrBlob, megapixErrorHandler);
 
                 if (registerThumbnailRenderedListener(container, drawPreview)) {
                     exif.parse().then(
