@@ -179,7 +179,7 @@
   /**
    * MegaPixImage class
    */
-  function MegaPixImage(srcImage) {
+  function MegaPixImage(srcImage, errorCallback) {
     if (window.Blob && srcImage instanceof Blob) {
       var img = new Image();
       var URL = window.URL && window.URL.createObjectURL ? window.URL :
@@ -201,6 +201,7 @@
           }
         }
       };
+      srcImage.onerror = errorCallback;
       this.imageLoadListeners = [];
     }
     this.srcImage = srcImage;
