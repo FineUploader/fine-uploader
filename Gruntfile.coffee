@@ -36,8 +36,8 @@ module.exports = (grunt) ->
     'custom': './_custom'
 
   # Desitnation for custom builds. Appended with a uuid to make builds unique
-  # and not overwrite each other (if, say, two builds were being concurrently
-  # generated.
+  # and not overwrite each other (if, say, two builds were being generated in parallel
+
   customBuildDest = path.join paths.custom, uuid.v1(1), "custom.#{pkg.name}-#{pkg.version}"
   #customBuildDest = path.join paths.custom, "custom.#{pkg.name}-#{pkg.version}"
 
