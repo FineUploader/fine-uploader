@@ -64,6 +64,7 @@
     "grunt-open": "~0.2.2",
     "grunt-saucelabs": "git://github.com/feltnerm/grunt-saucelabs.git",
     "grunt-shell": "~0.3.1",
+    "grunt-strip-code": "~0.1.2",
     "grunt-version": "~0.2.2",
     "karma": "~0.10.2",
     "karma-mocha": "~0.1.0",

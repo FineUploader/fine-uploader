@@ -14,9 +14,10 @@ qq.Exif = function(fileOrBlob) {
                 name: "Orientation",
                 bytes: 2
             }
-        };
+        },
+        api;
 
-    // Convert a little endian hex value to big endian.
+    // Convert a little endian (hex string) to big endian (decimal).
     function parseLittleEndian(hex) {
         var result = 0,
             pow = 0;
@@ -155,11 +156,9 @@ qq.Exif = function(fileOrBlob) {
         });
 
         return vals;
-
-
     }
 
-    return {
+    api = {
         /**
          * Attempt to parse the EXIF header for the `Blob` associated with this instance.
          *
@@ -185,5 +184,12 @@ qq.Exif = function(fileOrBlob) {
 
             return parser;
         }
-    }
+    };
+
+    /*<testing>*/
+    api._testing = {};
+    api._testing.parseLittleEndian = parseLittleEndian;
+    /*</testing>*/
+
+    return api;
 };
