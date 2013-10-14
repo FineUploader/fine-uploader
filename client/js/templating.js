@@ -611,5 +611,10 @@ qq.Templating = function(spec) {
         }
     };
 
+    /*<testing>*/
+    api._testing = {};
+    api._testing.hasAttr = hasAttr;
+    /*</testing>*/
+
     return api;
 };

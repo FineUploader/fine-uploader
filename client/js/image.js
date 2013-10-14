@@ -6,6 +6,7 @@
  */
 qq.ImageGenerator = function(log) {
     "use strict";
+    var api;
 
     function isImg(el) {
         return el.tagName.toLowerCase() === "img";
@@ -229,7 +230,7 @@ qq.ImageGenerator = function(log) {
     }
 
 
-    return {
+    api = {
         /**
          * Generate a thumbnail.  Depending on the arguments, this may either result in
          * a client-side rendering of an image (if a `Blob` is supplied) or a server-generated
@@ -250,5 +251,14 @@ qq.ImageGenerator = function(log) {
                 return draw(fileBlobOrUrl, container, options || {});
             }
         }
-    }
+    };
+
+    /*<testing>*/
+    api._testing = {};
+    api._testing.isImg = isImg;
+    api._testing.isCanvas = isCanvas;
+    api._testing.isCrossOrigin = isCrossOrigin;
+    /*</testing>*/
+
+    return api;
 };
