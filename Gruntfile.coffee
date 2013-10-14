@@ -417,7 +417,7 @@ module.exports = (grunt) ->
                     }
                     {
                         expand: true
-                        cwd: paths.src + '/html/'
+                        cwd: paths.html
                         src: ['*.html']
                         dest: paths.build
                     }
@@ -544,6 +544,11 @@ module.exports = (grunt) ->
                             * Repository: <%= pkg.repository.url %>
                             *
                             * Licensed under GNU GPL v3, see LICENSE
+                            *
+                            * Third-party credits:
+                            *   MegaPixImageModule (MIT)
+                            *       https://github.com/stomita/ios-imagefile-megapixel
+                            *       Copyright (c) 2012 Shinichi Tomita <shinichi.tomita@gmail.com>
                             */ \n\n'''
             customfoot:
                 src: ["#{paths.custom}/*.{js,css}"]
@@ -648,7 +653,7 @@ module.exports = (grunt) ->
                 start_comment: "<testing>"
                 end_comment: "</testing>"
             files:
-                src: "#{paths.build}/*.js"
+                src: "#{paths.dist}/**/*.js"
 
     # Dependencies
     # ==========
@@ -675,9 +680,9 @@ module.exports = (grunt) ->
     grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'shell:npm_install', 'bower', 'package', 'copy:test']
 
     grunt.registerTask 'build', 'Build from latest source', ['concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
-    grunt.registerTask 'build_stripped', 'Build from latest source w/ test artifacts stripped out', ['concat', 'strip_code', 'minify', 'usebanner', 'copy:images']
+    #grunt.registerTask 'build_stripped', 'Build from latest source w/ test artifacts stripped out', ['concat', 'strip_code', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
 
-    grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build_stripped', 'copy:dist', 'compress']
+    grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build', 'copy:dist', 'strip_code', 'compress']
 
     grunt.registerTask 'custom', 'Build a custom version', (modules) ->
         util = require './lib/grunt/utils'
