@@ -481,7 +481,8 @@ module.exports = (grunt) ->
         uglify:
             options:
                 mangle: true
-                compress: true
+                compress:
+                    warnings: false
                 report: 'min'
                 preserveComments: 'some'
             core:
