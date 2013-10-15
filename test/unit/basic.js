@@ -12,7 +12,7 @@ describe('uploader.basic.js', function () {
             debug: true,
             request: {
                 endpoint: '/uploads/'
-            },
+            }
         });
     });
 });

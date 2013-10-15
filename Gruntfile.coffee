@@ -619,7 +619,7 @@ module.exports = (grunt) ->
                     ['SL-chrome-28-Linux', 'SL-firefox-21-Linux', 'SL-safari-6-OS_X_10.8'],
                     ['SL-internet_explorer-10-Windows_8', 'SL-internet_explorer-9-Windows_7', 'SL-internet_explorer-8-Windows_7'],
                     ['SL-android-4.0-Linux', 'SL-iphone-6-OS_X_10.8', 'SL-safari-5-OS_X_10.6'],
-                    #['SL-internet_explorer-7-Windows_XP'],
+                    ['SL-internet_explorer-7-Windows_XP']
                 ]
 
         mochaWebdriver:
