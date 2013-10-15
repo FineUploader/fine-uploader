@@ -654,7 +654,7 @@ module.exports = (grunt) ->
                 start_comment: "<testing>"
                 end_comment: "</testing>"
             files:
-                src: "#{paths.dist}/**/*.js"
+                src: "#{paths.build}/**/*.js"
 
     # Dependencies
     # ==========
@@ -678,12 +678,12 @@ module.exports = (grunt) ->
 
     grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'saucetests:default']
 
-    grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'shell:npm_install', 'bower', 'package', 'copy:test']
+    grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'shell:npm_install', 'bower', 'build', 'copy:test']
 
     grunt.registerTask 'build', 'Build from latest source', ['concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
-    #grunt.registerTask 'build_stripped', 'Build from latest source w/ test artifacts stripped out', ['concat', 'strip_code', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
+    grunt.registerTask 'build_stripped', 'Build from latest source w/ test artifacts stripped out', ['concat', 'strip_code', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
 
-    grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build', 'copy:dist', 'strip_code', 'compress']
+    grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build_stripped', 'copy:dist',  'compress:jquery', 'compress:jqueryS3', 'compress:core', 'compress:coreS3' ]
 
     grunt.registerTask 'custom', 'Build a custom version', (modules) ->
         util = require './lib/grunt/utils'
