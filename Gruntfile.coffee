@@ -678,7 +678,7 @@ module.exports = (grunt) ->
 
     grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'saucetests:default']
 
-    grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'shell:npm_install', 'bower', 'build', 'copy:test']
+    grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'bower', 'build', 'copy:test']
 
     grunt.registerTask 'build', 'Build from latest source', ['concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
     grunt.registerTask 'build_stripped', 'Build from latest source w/ test artifacts stripped out', ['concat', 'strip_code', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
