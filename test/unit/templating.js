@@ -3,7 +3,10 @@ describe("templating.js", function() {
 
     beforeEach(function() {
         var $template = $('<script id="qq-template" type="text/template"></script>');
-        $template.html('<div class="qq-uploader-selector qq-uploader"><ul class="qq-upload-list-selector qq-upload-list"></ul></div>');
+        console.log("OK1");
+        console.log($template.attr("id"));
+        $template[0].text = '<div class="qq-uploader-selector qq-uploader"><ul class="qq-upload-list-selector qq-upload-list"><li></li></ul></div>';
+        console.log("OK2");
         $fixture.append($template);
         templating = new qq.Templating({});
     });
