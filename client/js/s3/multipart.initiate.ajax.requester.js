@@ -20,6 +20,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             signatureSpec: null,
             accessKey: null,
             acl: "private",
+            reducedRedundancy: false,
             maxConnections: 3,
             getContentType: function(id) {},
             getKey: function(id) {},
@@ -56,6 +57,11 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         headers["x-amz-date"] = new Date().toUTCString();
         headers["Content-Type"] = options.getContentType(id);
         headers["x-amz-acl"] = options.acl;
+
+        if (options.reducedRedundancy) {
+            headers["x-amz-storage-class"] = "REDUCED_REDUNDANCY";
+        }
+
         headers[qq.s3.util.AWS_PARAM_PREFIX + options.filenameParam] = encodeURIComponent(options.getName(id));
 
         qq.each(options.paramsStore.getParams(id), function(name, val) {
