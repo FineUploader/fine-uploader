@@ -41,6 +41,7 @@ describe("templating.js", function() {
         $template[0].text = content;
         $fixture.append($template);
         templating = new qq.Templating({
+            log: function() {},
             containerEl: $fixture[0],
             classes: {
                 hide: HIDE_CSS,
