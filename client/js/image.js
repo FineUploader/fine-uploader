@@ -110,7 +110,7 @@ qq.ImageGenerator = function(log) {
     // Also rotate the image if necessary.
     function draw(fileOrBlob, container, options) {
         var drawPreview = new qq.Promise(),
-            identifier = new qq.Identify(fileOrBlob),
+            identifier = new qq.Identify(fileOrBlob, log),
             maxSize = options.maxSize,
             megapixErrorHandler = function() {
                 drawPreview.failure(container, "Browser cannot render image!");
@@ -118,7 +118,7 @@ qq.ImageGenerator = function(log) {
 
         identifier.isPreviewable().then(
             function() {
-                var exif = new qq.Exif(fileOrBlob),
+                var exif = new qq.Exif(fileOrBlob, log),
                     mpImg = new MegaPixImage(fileOrBlob, megapixErrorHandler);
 
                 if (registerThumbnailRenderedListener(container, drawPreview)) {

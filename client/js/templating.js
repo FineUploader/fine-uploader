@@ -84,6 +84,8 @@ qq.Templating = function(spec) {
             thumbnail,
             dropProcessing;
 
+        log("Parsing template");
+
         if (options.templateIdOrEl == null) {
             throw new Error("You MUST specify either a template element or ID!");
         }
@@ -152,6 +154,8 @@ qq.Templating = function(spec) {
         fileListNode = qq(tempTemplateEl).getByClass(selectorClasses.list)[0];
         fileListHtml = fileListNode.innerHTML;
         fileListNode.innerHTML = "";
+
+       log("Template parsing complete");
 
         return {
             template: qq.trimStr(tempTemplateEl.innerHTML),
@@ -326,7 +330,7 @@ qq.Templating = function(spec) {
     }
 
 
-    qq.extend(options, spec, true);
+    qq.extend(options, spec);
     log = options.log;
 
     container = options.containerEl;
@@ -337,9 +341,13 @@ qq.Templating = function(spec) {
 
     api = {
         render: function() {
+            log("Rendering template in DOM.");
+
             container.innerHTML = templateHtml.template;
             hide(getDropProcessing());
             fileList = options.fileContainerEl || getTemplateEl(container, selectorClasses.list)
+
+            log("Template rendering complete");
         },
 
         renderFailure: function(message) {

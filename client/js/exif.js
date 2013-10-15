@@ -6,7 +6,7 @@
  * @returns {{parse: Function}}
  * @constructor
  */
-qq.Exif = function(fileOrBlob) {
+qq.Exif = function(fileOrBlob, log) {
     // Orientation is the only tag parsed here at this time.
     var TAG_IDS = [274],
         TAG_INFO = {
@@ -168,15 +168,28 @@ qq.Exif = function(fileOrBlob) {
         parse: function() {
             var parser = new qq.Promise(),
                 onParseFailure = function(message) {
+                    log(qq.format("EXIF header parse failed: '{}' ", message));
                     parser.failure(message);
                 };
 
             getApp1Offset().then(function(app1Offset) {
+                log(qq.format("Moving forward with EXIF header parsing for '{}'", fileOrBlob.name === undefined ? "blob" : fileOrBlob.name));
+
                 isLittleEndian(app1Offset).then(function(littleEndian) {
+
+                    log(qq.format("EXIF Byte order is {} endian", littleEndian ? "little" : "big"));
+
                     getDirEntryCount(app1Offset, littleEndian).then(function(dirEntryCount) {
+
+                        log(qq.format("Found {} APP1 directory entries", dirEntryCount));
+
                         getIfd(app1Offset, dirEntryCount).then(function(ifdHex) {
-                            var dirEntries = getDirEntries(ifdHex);
-                            parser.success(getTagValues(littleEndian, dirEntries));
+                            var dirEntries = getDirEntries(ifdHex),
+                                tagValues = getTagValues(littleEndian, dirEntries);
+
+                            log("Successfully parsed some EXIF tags");
+
+                            parser.success(tagValues);
                         }, onParseFailure);
                     }, onParseFailure);
                 }, onParseFailure);
