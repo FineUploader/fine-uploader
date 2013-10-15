@@ -577,6 +577,10 @@ module.exports = (grunt) ->
                 options:
                     release: 'build'
                 src: fineUploaderModules.modules.versioned
+            release:
+                options:
+                    release: pkg.version.replace /-\d+$/, ""
+                src: fineUploaderModules.modules.versioned
 
         watch:
             options:
