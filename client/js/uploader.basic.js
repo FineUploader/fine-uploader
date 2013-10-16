@@ -169,7 +169,12 @@ qq.FineUploaderBasic = function(o) {
     this._handleCameraAccess();
 
     if (this._options.paste.targetElement) {
-        this._pasteHandler = this._createPasteHandler();
+        if (qq.PasteSupport) {
+            this._pasteHandler = this._createPasteHandler();
+        }
+        else {
+            qq.log("Paste support module not found", "error");
+        }
     }
 
     this._preventLeaveInProgress();

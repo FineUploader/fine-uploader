@@ -136,7 +136,12 @@ qq.FineUploader = function(o, namespace) {
         this._dnd = this._setupDragAndDrop();
 
         if (this._options.paste.targetElement && this._options.paste.promptForName) {
-            this._setupPastePrompt();
+            if (qq.PasteSupport) {
+                this._setupPastePrompt();
+            }
+            else {
+                qq.log("Paste support module not found!", "error");
+            }
         }
 
         this._totalFilesInBatch = 0;
