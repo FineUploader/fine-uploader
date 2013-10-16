@@ -8,11 +8,15 @@ qq.uiPublicApi = {
     },
 
     addExtraDropzone: function(element){
-        this._dnd.setupExtraDropzone(element);
+        if (this._dnd) {
+            this._dnd.setupExtraDropzone(element);
+        }
     },
 
     removeExtraDropzone: function(element){
-        return this._dnd.removeDropzone(element);
+        if (this._dnd) {
+            return this._dnd.removeDropzone(element);
+        }
     },
 
     getItemByFileId: function(id) {
@@ -27,8 +31,12 @@ qq.uiPublicApi = {
             this._defaultButtonId = this._createUploadButton({element: this._templating.getButton()}).getButtonId();
         }
 
-        this._dnd.dispose();
-        this._dnd = this._setupDragAndDrop();
+        if (this._dnd) {
+            this._dnd.dispose();
+        }
+        if (qq.DragAndDrop) {
+            this._dnd = this._setupDragAndDrop();
+        }
 
         this._totalFilesInBatch = 0;
         this._filesInBatchAddedToUi = 0;

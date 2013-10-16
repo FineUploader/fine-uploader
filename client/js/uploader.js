@@ -133,7 +133,9 @@ qq.FineUploader = function(o, namespace) {
 
         this._setupClickAndEditEventHandlers();
 
-        this._dnd = this._setupDragAndDrop();
+        if (qq.DragAndDrop) {
+            this._dnd = this._setupDragAndDrop();
+        }
 
         if (this._options.paste.targetElement && this._options.paste.promptForName) {
             if (qq.PasteSupport) {

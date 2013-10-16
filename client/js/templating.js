@@ -112,8 +112,9 @@ qq.Templating = function(spec) {
             }
         }
 
-        // Omit the drop zone from the DOM if DnD is not supported by the UA.
-        if (!qq.supportedFeatures.fileDrop) {
+        // Omit the drop zone from the DOM if DnD is not supported by the UA,
+        // or if the Drag and Drop Module is not included.
+        if (!qq.DragAndDrop || !qq.supportedFeatures.fileDrop) {
             dropzone = qq(tempTemplateEl).getByClass(selectorClasses.drop)[0];
             dropzone && qq(dropzone).remove();
         }
