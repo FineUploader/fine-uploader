@@ -158,7 +158,8 @@ qq.FineUploaderBasic = function(o) {
     this._deleteFileEndpointStore = this._createEndpointStore("deleteFile");
 
     this._handler = this._createUploadHandler();
-    this._deleteHandler = this._createDeleteHandler();
+
+    this._deleteHandler = qq.DeleteFileAjaxRequestor && this._createDeleteHandler();
 
     if (this._options.button) {
         this._defaultButtonId = this._createUploadButton({element: this._options.button}).getButtonId();

@@ -42,6 +42,7 @@ qq.uiPublicApi = {
         this._filesInBatchAddedToUi = 0;
 
         this._setupClickAndEditEventHandlers();
+
     }
 };
 
@@ -69,7 +70,7 @@ qq.uiPrivateApi = {
     },
 
     _setupClickAndEditEventHandlers: function() {
-        this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
+        this._deleteRetryOrCancelClickHandler = qq.DeleteRetryOrCancelClickHandler && this._bindDeleteRetryOrCancelClickEvent();
 
         // A better approach would be to check specifically for focusin event support by querying the DOM API,
         // but the DOMFocusIn event is not exposed as a property, so we have to resort to UA string sniffing.

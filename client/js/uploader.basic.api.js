@@ -652,7 +652,7 @@ qq.basePrivateApi = {
     },
 
     _isDeletePossible: function() {
-        if (!this._options.deleteFile.enabled) {
+        if (!qq.DeleteFileAjaxRequestor || !this._options.deleteFile.enabled) {
             return false;
         }
 
