@@ -62,9 +62,11 @@
    * Rendering image element (with resizing) and get its data URL
    */
   function renderImageToDataURL(img, options, doSquash) {
-    var canvas = document.createElement('canvas');
+    var canvas = document.createElement('canvas'),
+        mime = options.mime || "image/jpeg";
+
     renderImageToCanvas(img, canvas, options, doSquash);
-    return canvas.toDataURL("image/jpeg", options.quality || 0.8);
+    return canvas.toDataURL(mime, options.quality || 0.8);
   }
 
   /**
