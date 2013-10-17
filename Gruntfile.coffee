@@ -447,9 +447,11 @@ module.exports = (grunt) ->
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
                 report: 'min'
             all:
-                files:
-                    src: '<%= concat.css.dest %>'
-                    dest: "#{paths.build}/<%= pkg.name %>.min.css"
+                expand: true
+                cwd: paths.build
+                src: ['*.css', '!*.min.css']
+                dest: paths.build
+                ext: ".min.css"
             custom:
                 expand: true
                 cwd: customBuildDest + '/src/'
