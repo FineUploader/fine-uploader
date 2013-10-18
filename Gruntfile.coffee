@@ -147,19 +147,19 @@ module.exports = (grunt) ->
 
         concat:
             core:
-                src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules'
+                src: fineUploaderModules.mergeModules 'fuTraditional'
                 dest: "#{paths.build}/<%= pkg.name %>.js"
             coreS3:
-                src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcS3', 'fuSrcModules', 'fuUiModules'
+                src: fineUploaderModules.mergeModules 'fuS3'
                 dest: "#{paths.build}/s3.<%= pkg.name %>.js"
             jquery:
-                src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules', 'fuSrcJquery'
+                src: fineUploaderModules.mergeModules 'fuTraditionalJquery'
                 dest: "#{paths.build}/jquery.<%= pkg.name %>.js"
             jqueryS3:
-                src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcS3', 'fuSrcModules', 'fuUiModules', 'fuSrcJquery', 'fuSrcS3Jquery'
+                src: fineUploaderModules.mergeModules 'fuS3Jquery'
                 dest: "#{paths.build}/s3.jquery.<%= pkg.name %>.js"
             all:
-                src: fineUploaderModules.mergeModules 'fuSrcCore', 'fuSrcUi', 'fuSrcTraditional', 'fuSrcModules', 'fuUiModules', 'fuSrcS3', 'fuSrcJquery', 'fuSrcS3Jquery'
+                src: fineUploaderModules.mergeModules 'fuAll'
                 dest: paths.build + "/all.<%= pkg.name %>.js"
             css:
                 src: ["#{paths.src}/*.css"]
@@ -447,9 +447,11 @@ module.exports = (grunt) ->
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
                 report: 'min'
             all:
-                files:
-                    src: '<%= concat.css.dest %>'
-                    dest: "#{paths.build}/<%= pkg.name %>.min.css"
+                expand: true
+                cwd: paths.build
+                src: ['*.css', '!*.min.css']
+                dest: paths.build
+                ext: ".min.css"
             custom:
                 expand: true
                 cwd: customBuildDest + '/src/'

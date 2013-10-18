@@ -69,14 +69,24 @@ module.exports =
     # Build formula, true indicates that module should be included
     formula = []
     includes =
-      fuCoreTraditional: false
-      fuCoreS3: false
-      fuUiTraditional: false
-      fuUiS3: false
-      fuSrcJquery: false
-      fuSrcS3Jquery: false
+        fuSrcCore: false
+        fuSrcS3: false
+        fuSrcTraditional: false
+        fuSrcUi: false
+        fuDeleteFileModule: false
+        fuPasteModule: false
+        fuDndModule: false
+        fuUiEvents: false
+        fuDeleteFileUiModule: false
+        fuEditFilenameModule: false
+        fuSrcJquery: false
+        fuSrcS3Jquery: false
+        fuJqueryDnd: false
+        fuImagePreviewModule: false
+
     ###
     Soon to be included formulae
+
     includes =
       fuSrcCore: true
       fuSrcUiModules: false
@@ -108,6 +118,7 @@ module.exports =
       includes = _.defaults includes, formulae
 
     formula = _.filter _.keys(includes), (k) -> includes[k] is true
+    grunt.log.writeln ">> FORMULA: " + formula
     mods = modules.mergeModules.apply @, formula
 
     src = @concat mods
