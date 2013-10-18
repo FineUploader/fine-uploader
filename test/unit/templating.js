@@ -84,7 +84,7 @@ describe("templating.js", function() {
             assert.ok(templating.getButton() == null);
             templating.hideDropProcessing();
             templating.showDropProcessing();
-            assert.ok(templating.getDropZone() == null);
+            assert.ok(templating.getDropZone() !== null);
             assert.ok(!templating.isEditFilenamePossible());
             assert.ok(!templating.isRetryPossible());
             assert.ok(templating.getFileContainer(0) != null);
@@ -129,17 +129,10 @@ describe("templating.js", function() {
             qq.supportedFeatures.fileDrop && assert.ok($fixture.find(".qq-drop-processing-selector").hasClass(HIDE_CSS));
         });
 
-        it("has edit filename & retry features enabled, also button & drop zones present if applicable", function() {
+        it("has edit filename & retry features enabled, also button present if applicable", function() {
             assert.ok(templating.isEditFilenamePossible());
             assert.ok(templating.isRetryPossible());
             assert.ok(templating.getButton() != null);
-
-            if (qq.supportedFeatures.fileDrop) {
-                assert.ok(templating.getDropZone() != null);
-            }
-            else {
-                assert.ok(templating.getDropZone() == null);
-            }
         });
 
         it("adds & removes file entries", function() {
