@@ -392,6 +392,8 @@ qq.Templating = function(spec) {
         },
 
         markFilenameEditable: function(id) {
+            if (qq.FilenameClickHandler && qq.FilenameClickEvent
+               && qq.FilenameInputFocusHandler && qq.FilenameInputFocusInHandler)
             var filename = getFilename(id);
 
             filename && qq(filename).addClass(spec.classes.editable);
@@ -444,9 +446,12 @@ qq.Templating = function(spec) {
         },
 
         showEditIcon: function(id) {
-            var icon = getEditIcon(id);
+            if (qq.FilenameClickHandler && qq.FilenameClickEvent
+               && qq.FilenameInputFocusHandler && qq.FilenameInputFocusInHandler) {
+                var icon = getEditIcon(id);
 
-            icon && qq(icon).addClass(spec.classes.editable);
+                icon && qq(icon).addClass(spec.classes.editable);
+            }
         },
 
         hideEditIcon: function(id) {
