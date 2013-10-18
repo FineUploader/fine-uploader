@@ -275,25 +275,25 @@ module.exports = (grunt) ->
                     {
                         expand: true
                         cwd: paths.src
-                        src: ['*.gif']
+                        src: ['*.gif', 'placeholders/*.png']
                         dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
                     },
                     {
                         expand: true
                         cwd: paths.src
-                        src: ['*.gif']
+                        src: ['*.gif', 'placeholders/*.png']
                         dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
                     },
                     {
                         expand: true
                         cwd: paths.src
-                        src: ['*.gif']
+                        src: ['*.gif', 'placeholders/*.png']
                         dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
                     },
                     {
                         expand: true
                         cwd: paths.src
-                        src: ['*.gif']
+                        src: ['*.gif', 'placeholders/*.png']
                         dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
                     },
                     {
@@ -412,7 +412,7 @@ module.exports = (grunt) ->
                     {
                         expand: true
                         cwd: paths.src
-                        src: ['*.gif']
+                        src: ['*.gif', 'placeholders/*.png']
                         dest: paths.build
                     }
                     {
@@ -431,7 +431,7 @@ module.exports = (grunt) ->
                 files: [
                     expand: true
                     cwd: paths.src
-                    src: ['*.gif']
+                    src: ['*.gif', 'placeholders/*.png']
                     dest: paths.build
                 ]
             templates:
@@ -607,7 +607,7 @@ module.exports = (grunt) ->
                     'build'
                 ]
             images:
-                files: ["#{paths.src}/*.gif"]
+                files: ["#{paths.src}/*.gif", "#{paths.src}/placeholders/*.png"]
                 tasks: [
                     'copy:images'
                 ]
