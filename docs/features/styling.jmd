@@ -20,6 +20,10 @@ without changing anything.  However, you can certainly customize the default tem
 web application's look and feel.  The rest of this section includes examples of some changes you may want to
 make to the template.
 
+The templates are, by default, included in a `<script>` tag with the `type` attribute set to "text/template".
+The template does not have to be included in a `<script>` tag.  For example, you may instead include the template
+in a hidden `<div>`.  Fine Uploader simple needs to be able to locate the template element container in the document.
+
 {{ alert(
 """The CSS classes included in template elements that end with '-selector' are used internally by Fine Uploader UI
 for the purposes of element selection only.  No styles are attached to these classes.  Other CSS classes that DO NOT
