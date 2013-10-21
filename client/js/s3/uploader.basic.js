@@ -14,8 +14,11 @@ qq.s3.FineUploaderBasic = function(o) {
 
         objectProperties: {
             acl: 'private',
+
             // 'uuid', 'filename', or a function which may be promissory
-            key: 'uuid'
+            key: 'uuid',
+
+            reducedRedundancy: false
         },
 
         signature: {

@@ -22,6 +22,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         endpointStore = options.endpointStore,
         accessKey = options.accessKey,
         acl = options.objectProperties.acl,
+        reducedRedundancy = options.objectProperties.reducedRedundancy,
         validation = options.validation,
         signature = options.signature,
         successRedirectUrl = options.iframeSupport.localBlankPagePath,
@@ -90,6 +91,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
                 minFileSize: validation.minSizeLimit,
                 maxFileSize: validation.maxSizeLimit,
                 successRedirectUrl: successRedirectUrl,
+                reducedRedundancy: reducedRedundancy,
                 log: log
             },
             qq.bind(getSignatureAjaxRequester.getSignature, this, id));

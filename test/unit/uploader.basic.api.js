@@ -34,11 +34,13 @@ describe('uploader.basic.api.js', function () {
 
         fineuploader.reset();
 
-        for (var i = 0; i < fineuploader._buttons.length - 1; i++) {
-            var button = fineuploader._buttons[i],
-                input = button.getInput();
-            assert.ok(!input.hasAttribute('multiple'));
-            assert.ok(!input.hasAttribute('accept'));
+        if (qq.supportedFeatures.ajaxUploading) {
+            for (var i = 0; i < fineuploader._buttons.length - 1; i++) {
+                var button = fineuploader._buttons[i],
+                    input = button.getInput();
+                assert.ok(!input.hasAttribute('multiple'));
+                assert.ok(!input.hasAttribute('accept'));
+            }
         }
     });
 

@@ -1,4 +1,4 @@
-qq.Identify = function(fileOrBlob) {
+qq.Identify = function(fileOrBlob, log) {
     var PREVIEWABLE_MAGIC_BYTES = {
             "image/jpeg": "ffd8ff",
             "image/gif": "474946",
@@ -24,7 +24,10 @@ qq.Identify = function(fileOrBlob) {
     return {
         isPreviewable: function() {
             var idenitifer = new qq.Promise(),
-                previewable = false;
+                previewable = false,
+                name = fileOrBlob.name === undefined ? "blob" : fileOrBlob.name;
+
+            log(qq.format("Attempting to determine if {} can be rendered in this browser", name));
 
             qq.readBlobToHex(fileOrBlob, 0, 4).then(function(hex) {
                 qq.each(PREVIEWABLE_MAGIC_BYTES, function(mime, bytes) {
@@ -39,6 +42,8 @@ qq.Identify = function(fileOrBlob) {
                         return false;
                     }
                 });
+
+                log(qq.format("'{}' is {} able to be rendered in this browser", name, previewable ? "" : "NOT"));
 
                 if (!previewable) {
                     idenitifer.failure();

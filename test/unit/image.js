@@ -43,4 +43,31 @@ describe("image.js", function() {
             });
         });
     }
+
+    describe("determineMimeOfFileName", function() {
+        it("identifies all renderable image formats", function() {
+            var pathsAndExpectedTypes = {
+                "http://example.com/hmm/ha/test.jpg": "image/jpeg",
+                "http://example.com/hmm/ha/test.jpeg": "image/jpeg",
+                "test.jpg": "image/jpeg",
+                "test.jpeg": "image/jpeg",
+                "http://example.com/hmm/ha/test.png": "image/png",
+                "test.png": "image/png",
+                "http://example.com/hmm/ha/test.bmp": "image/bmp",
+                "test.bmp": "image/bmp",
+                "http://example.com/hmm/ha/test.gif": "image/gif",
+                "test.gif": "image/gif",
+                "http://example.com/hmm/ha/test.tiff": "image/tiff",
+                "http://example.com/hmm/ha/test.tif": "image/tiff",
+                "test.tif": "image/tiff",
+                "test.tif": "image/tiff",
+                "http://example.com/hmm/ha/test": null,
+                "test": null
+            };
+
+            qq.each(pathsAndExpectedTypes, function(path, expectedType) {
+                assert.equal(imageGenerator._testing.determineMimeOfFileName(path), expectedType);
+            });
+        })
+    });
 });

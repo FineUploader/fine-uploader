@@ -60,7 +60,7 @@ describe('button.js', function () {
 
         var button = new qq.UploadButton({
             element: $button[0],
-            hoverClass: hoverclass,
+            hoverClass: hoverclass
         });
 
         $button.simulate('mouseenter', function (e) {
@@ -76,35 +76,39 @@ describe('button.js', function () {
 
     });
 
-    it('sets multiple attribute', function () {
-        var $button = $fixture.appendTo("<div></div>")
+    if (qq.supportedFeatures.ajaxUploading) {
+        it('sets multiple attribute', function () {
+            var $button = $fixture.appendTo("<div></div>");
 
-        var input;
-        var button = new qq.UploadButton({
-            element: $button[0],
-            multiple: false
+            var input;
+            var button = new qq.UploadButton({
+                element: $button[0],
+                multiple: false
+            });
+
+            input = button.getInput();
+            assert.ok(!input.hasAttribute('multiple'));
+
+            button.setMultiple(true);
+            assert.ok(input.hasAttribute('multiple'));
         });
+    }
 
-        input = button.getInput();
-        assert.ok(!input.hasAttribute('multiple'));
+    if (qq.supportedFeatures.ajaxUploading) {
+        it('sets accept files', function () {
+            var $button = $fixture.appendTo("<div></div>")
 
-        button.setMultiple(true);
-        assert.ok(input.hasAttribute('multiple'));
-    });
+            var input;
+            var button = new qq.UploadButton({
+                element: $button[0]
+            });
 
-    it('sets accept files', function () {
-        var $button = $fixture.appendTo("<div></div>")
+            input = button.getInput();
+            assert.ok(!input.hasAttribute('accept'));
 
-        var input;
-        var button = new qq.UploadButton({
-            element: $button[0],
+            button.setAcceptFiles("audio/*");
+            assert.equal(input.getAttribute('accept'), 'audio/*');
         });
-
-        input = button.getInput();
-        assert.ok(!input.hasAttribute('accept'));
-
-        button.setAcceptFiles("audio/*");
-        assert.equal(input.getAttribute('accept'), 'audio/*');
-    });
+    }
 
 });

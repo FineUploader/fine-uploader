@@ -26,6 +26,32 @@ qq.ImageGenerator = function(log) {
         return canvas.getContext && canvas.getContext("2d")
     }
 
+    // This is only meant to determine the MIME type of a renderable image file.
+    // It is used to ensure images drawn from a URL that have transparent backgrounds
+    // are rendered correctly, among other things.
+    function determineMimeOfFileName(nameWithPath) {
+        var pathSegments = nameWithPath.split("/"),
+            name = pathSegments[pathSegments.length - 1],
+            extension = qq.getExtension(name);
+
+        extension = extension && extension.toLowerCase();
+
+        switch(extension) {
+            case "jpeg":
+            case "jpg":
+                return "image/jpeg";
+            case "png":
+                return "image/png";
+            case "bmp":
+                return "image/bmp";
+            case "gif":
+                return "image/gif";
+            case "tiff":
+            case "tif":
+                return "image/tiff";
+        }
+    }
+
     // This will likely not work correctly in IE8 and older.
     // It's only used as part of a formula to determine
     // if a canvas can be used to scale a server-hosted thumbnail.
@@ -110,15 +136,15 @@ qq.ImageGenerator = function(log) {
     // Also rotate the image if necessary.
     function draw(fileOrBlob, container, options) {
         var drawPreview = new qq.Promise(),
-            identifier = new qq.Identify(fileOrBlob),
+            identifier = new qq.Identify(fileOrBlob, log),
             maxSize = options.maxSize,
             megapixErrorHandler = function() {
                 drawPreview.failure(container, "Browser cannot render image!");
             };
 
         identifier.isPreviewable().then(
-            function() {
-                var exif = new qq.Exif(fileOrBlob),
+            function(mime) {
+                var exif = new qq.Exif(fileOrBlob, log),
                     mpImg = new MegaPixImage(fileOrBlob, megapixErrorHandler);
 
                 if (registerThumbnailRenderedListener(container, drawPreview)) {
@@ -129,7 +155,8 @@ qq.ImageGenerator = function(log) {
                             mpImg.render(container, {
                                 maxWidth: maxSize,
                                 maxHeight: maxSize,
-                                orientation: orientation
+                                orientation: orientation,
+                                mime: mime
                             });
                         },
 
@@ -138,7 +165,8 @@ qq.ImageGenerator = function(log) {
 
                             mpImg.render(container, {
                                 maxWidth: maxSize,
-                                maxHeight: maxSize
+                                maxHeight: maxSize,
+                                mime: mime
                             });
                         }
                     );
@@ -173,7 +201,8 @@ qq.ImageGenerator = function(log) {
             var mpImg = new MegaPixImage(tempImg);
             mpImg.render(canvasOrImg, {
                 maxWidth: maxSize,
-                maxHeight: maxSize
+                maxHeight: maxSize,
+                mime: determineMimeOfFileName(url)
             });
         });
     }
@@ -261,6 +290,7 @@ qq.ImageGenerator = function(log) {
     api._testing.isImg = isImg;
     api._testing.isCanvas = isCanvas;
     api._testing.isCrossOrigin = isCrossOrigin;
+    api._testing.determineMimeOfFileName = determineMimeOfFileName;
     /*</testing>*/
 
     return api;

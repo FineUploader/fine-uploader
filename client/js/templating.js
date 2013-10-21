@@ -74,7 +74,17 @@ qq.Templating = function(spec) {
      * @returns {{template: *, fileTemplate: *}} HTML for the top-level file items templates
      */
     function parseAndGetTemplate() {
-        var scriptEl, scriptHtml, fileListNode, tempTemplateEl, fileListHtml, defaultButton, dropzone, thumbnail;
+        var scriptEl,
+            scriptHtml,
+            fileListNode,
+            tempTemplateEl,
+            fileListHtml,
+            defaultButton,
+            dropzone,
+            thumbnail,
+            dropProcessing;
+
+        log("Parsing template");
 
         if (options.templateIdOrEl == null) {
             throw new Error("You MUST specify either a template element or ID!");
@@ -105,18 +115,22 @@ qq.Templating = function(spec) {
 
         // Don't include the default template button in the DOM
         // if an alternate button container has been specified.
-        if (spec.button) {
+        if (options.button) {
             defaultButton = qq(tempTemplateEl).getByClass(selectorClasses.button)[0];
             if (defaultButton) {
                 qq(defaultButton).remove();
             }
         }
 
-        // Omit the drop zone from the DOM if DnD is not supported by the UA,
-        // or if the Drag and Drop Module is not included.
+        // Omit the drop processing element from the DOM if DnD is not supported by the UA.
+        // NOTE: We are consciously not removing the drop zone if the UA doesn't support DnD
+        // to support layouts where the drop zone is also a container for visible elements,
+        // such as the file list.
         if (!qq.DragAndDrop || !qq.supportedFeatures.fileDrop) {
-            dropzone = qq(tempTemplateEl).getByClass(selectorClasses.drop)[0];
-            dropzone && qq(dropzone).remove();
+            dropProcessing = qq(tempTemplateEl).getByClass(selectorClasses.dropProcessing)[0];
+            if (dropProcessing) {
+                qq(dropProcessing).remove();
+            }
         }
 
         // Ensure the `showThumbnails` flag is only set if the thumbnail element
@@ -140,6 +154,8 @@ qq.Templating = function(spec) {
         fileListNode = qq(tempTemplateEl).getByClass(selectorClasses.list)[0];
         fileListHtml = fileListNode.innerHTML;
         fileListNode.innerHTML = "";
+
+       log("Template parsing complete");
 
         return {
             template: qq.trimStr(tempTemplateEl.innerHTML),
@@ -209,11 +225,11 @@ qq.Templating = function(spec) {
     }
 
     function hide(el) {
-        el && qq(el).addClass(spec.classes.hide);
+        el && qq(el).addClass(options.classes.hide);
     }
 
     function show(el) {
-        el && qq(el).removeClass(spec.classes.hide);
+        el && qq(el).removeClass(options.classes.hide);
     }
 
     function hasAttr(el, attr) {
@@ -227,7 +243,7 @@ qq.Templating = function(spec) {
             bar = qq(bar).getByClass(selectorClasses.progressBar)[0];
         }
 
-        qq(bar).css({width: percent + '%'});
+        bar && qq(bar).css({width: percent + '%'});
     }
 
     // During initialization of the templating module we should cache any
@@ -325,9 +341,13 @@ qq.Templating = function(spec) {
 
     api = {
         render: function() {
+            log("Rendering template in DOM.");
+
             container.innerHTML = templateHtml.template;
             hide(getDropProcessing());
             fileList = options.fileContainerEl || getTemplateEl(container, selectorClasses.list)
+
+            log("Template rendering complete");
         },
 
         renderFailure: function(message) {
@@ -394,7 +414,7 @@ qq.Templating = function(spec) {
         markFilenameEditable: function(id) {
             var filename = getFilename(id);
 
-            filename && qq(filename).addClass(spec.classes.editable);
+            filename && qq(filename).addClass(options.classes.editable);
         },
 
         updateFilename: function(id, name) {
@@ -446,13 +466,13 @@ qq.Templating = function(spec) {
         showEditIcon: function(id) {
             var icon = getEditIcon(id);
 
-            icon && qq(icon).addClass(spec.classes.editable);
+            icon && qq(icon).addClass(options.classes.editable);
         },
 
         hideEditIcon: function(id) {
             var icon = getEditIcon(id);
 
-            icon && qq(icon).removeClass(spec.classes.editable);
+            icon && qq(icon).removeClass(options.classes.editable);
         },
 
         isEditIcon: function(el) {
@@ -499,7 +519,7 @@ qq.Templating = function(spec) {
             if (!isCancelDisabled) {
                 var cancel = getCancel(id);
 
-                cancel && qq(cancel).removeClass(spec.classes.hide);
+                cancel && qq(cancel).removeClass(options.classes.hide);
             }
         },
 
