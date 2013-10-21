@@ -152,6 +152,10 @@ qq.Templating = function(spec) {
         isRetryElementExist = qq(tempTemplateEl).getByClass(selectorClasses.retry).length > 0;
 
         fileListNode = qq(tempTemplateEl).getByClass(selectorClasses.list)[0];
+        if (fileListNode == null) {
+            throw new Error("Could not find the file list container in the template!");
+        }
+
         fileListHtml = fileListNode.innerHTML;
         fileListNode.innerHTML = "";
 
