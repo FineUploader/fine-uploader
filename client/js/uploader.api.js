@@ -76,9 +76,7 @@ qq.uiPrivateApi = {
         // but the DOMFocusIn event is not exposed as a property, so we have to resort to UA string sniffing.
         this._focusinEventSupported = !qq.firefox();
 
-        if (qq.FilenameClickHandler && qq.FilenameClickEvent
-            && qq.FilenameInputFocusInHandler && qq.FilenameInputFocusInHandler
-            && this._isEditFilenameEnabled())
+        if (this._isEditFilenameEnabled())
         {
             this._filenameClickHandler = this._bindFilenameClickEvent();
             this._filenameInputFocusInHandler = this._bindFilenameInputFocusInEvent();
@@ -146,7 +144,11 @@ qq.uiPrivateApi = {
     },
 
     _isEditFilenameEnabled: function() {
-        return this._templating.isEditFilenamePossible() && !this._options.autoUpload;
+        return this._templating.isEditFilenamePossible()
+            && !this._options.autoUpload
+            && qq.FilenameClickHandler
+            && qq.FilenameInputFocusHandler
+            && qq.FilenameInputFocusHandler;
     },
 
     _filenameEditHandler: function() {
