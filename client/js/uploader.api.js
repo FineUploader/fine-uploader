@@ -8,9 +8,7 @@ qq.uiPublicApi = {
     },
 
     addExtraDropzone: function(element){
-        if (this._dnd) {
-            this._dnd.setupExtraDropzone(element);
-        }
+        this._dnd && this._dnd.setupExtraDropzone(element);
     },
 
     removeExtraDropzone: function(element){
@@ -33,8 +31,6 @@ qq.uiPublicApi = {
 
         if (this._dnd) {
             this._dnd.dispose();
-        }
-        if (qq.DragAndDrop) {
             this._dnd = this._setupDragAndDrop();
         }
 
