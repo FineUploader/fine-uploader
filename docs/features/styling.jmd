@@ -50,8 +50,8 @@ To this:
 
 
 #### Omit a portion of the template that does not apply to your app
-
 You can omit any element of the template that does not apply to your uploader except for:
+
 * The parent div that contains the contents of the template (qq-uploader-selector element)
 * The file list container element (qq-upload-list-selector element)
 * The immediate child container of the file list container element.  You can certainly change the type of tag here though.
