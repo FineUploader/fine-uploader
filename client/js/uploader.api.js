@@ -42,7 +42,6 @@ qq.uiPublicApi = {
         this._filesInBatchAddedToUi = 0;
 
         this._setupClickAndEditEventHandlers();
-
     }
 };
 
