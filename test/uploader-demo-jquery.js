@@ -46,6 +46,12 @@
             },
             paste: {
                 targetElement: $(document)
+            },
+            thumbnails: {
+                placeholders: {
+                    waitingPath: "/client/placeholders/waiting-generic.png",
+                    notAvailablePath: "/client/placeholders/not_available-generic.png"
+                }
             }
         }).on('error', errorHandler).on("upload", function(event, id, filename) {
                 $(this).fineUploader('setParams', {
@@ -84,8 +90,11 @@
                     foo: "bar"
                 }
             },
-            editFilename: {
-                enabled: true
+            thumbnails: {
+                placeholders: {
+                    waitingPath: "/client/placeholders/waiting-generic.png",
+                    notAvailablePath: "/client/placeholders/not_available-generic.png"
+                }
             }
         }).on('error', errorHandler);
         $('#triggerUpload').click(function() {
