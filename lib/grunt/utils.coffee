@@ -84,30 +84,11 @@ module.exports =
         fuJqueryDnd: false
         fuImagePreviewModule: false
 
-    ###
-    Soon to be included formulae
-
-    includes =
-      fuSrcCore: true
-      fuSrcUiModules: false
-      fuPasteModule: false
-      fuDndModule: false
-      fuUiModules: false
-      fuDeleteFileModule: false
-      fuDeleteFileUiModule: false
-      fuEditFilenameModule: false
-      fuSrcModules: false
-      fuSrcUi: false
-      fuSrcJquery: false
-      fuSrcTraditional: false
-      fuSrcS3: false
-      fuSrcS3Jquery: false
-    ###
-
     extraIncludes =
       fuDocs: true
       fuImages: true
       fuCss: true
+      fuTemplates: true
       fuIframeXssResponse: true
 
     if _.isArray formulae
