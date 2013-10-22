@@ -126,7 +126,7 @@ qq.Templating = function(spec) {
         // NOTE: We are consciously not removing the drop zone if the UA doesn't support DnD
         // to support layouts where the drop zone is also a container for visible elements,
         // such as the file list.
-        if (!qq.supportedFeatures.fileDrop) {
+        if (!qq.DragAndDrop || !qq.supportedFeatures.fileDrop) {
             dropProcessing = qq(tempTemplateEl).getByClass(selectorClasses.dropProcessing)[0];
             if (dropProcessing) {
                 qq(dropProcessing).remove();

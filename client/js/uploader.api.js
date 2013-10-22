@@ -8,11 +8,13 @@ qq.uiPublicApi = {
     },
 
     addExtraDropzone: function(element){
-        this._dnd.setupExtraDropzone(element);
+        this._dnd && this._dnd.setupExtraDropzone(element);
     },
 
     removeExtraDropzone: function(element){
-        return this._dnd.removeDropzone(element);
+        if (this._dnd) {
+            return this._dnd.removeDropzone(element);
+        }
     },
 
     getItemByFileId: function(id) {
@@ -27,8 +29,10 @@ qq.uiPublicApi = {
             this._defaultButtonId = this._createUploadButton({element: this._templating.getButton()}).getButtonId();
         }
 
-        this._dnd.dispose();
-        this._dnd = this._setupDragAndDrop();
+        if (this._dnd) {
+            this._dnd.dispose();
+            this._dnd = this._setupDragAndDrop();
+        }
 
         this._totalFilesInBatch = 0;
         this._filesInBatchAddedToUi = 0;
@@ -61,13 +65,14 @@ qq.uiPrivateApi = {
     },
 
     _setupClickAndEditEventHandlers: function() {
-        this._deleteRetryOrCancelClickHandler = this._bindDeleteRetryOrCancelClickEvent();
+        this._deleteRetryOrCancelClickHandler = qq.DeleteRetryOrCancelClickHandler && this._bindDeleteRetryOrCancelClickEvent();
 
         // A better approach would be to check specifically for focusin event support by querying the DOM API,
         // but the DOMFocusIn event is not exposed as a property, so we have to resort to UA string sniffing.
         this._focusinEventSupported = !qq.firefox();
 
-        if (this._isEditFilenameEnabled()) {
+        if (this._isEditFilenameEnabled())
+        {
             this._filenameClickHandler = this._bindFilenameClickEvent();
             this._filenameInputFocusInHandler = this._bindFilenameInputFocusInEvent();
             this._filenameInputFocusHandler = this._bindFilenameInputFocusEvent();
@@ -134,7 +139,11 @@ qq.uiPrivateApi = {
     },
 
     _isEditFilenameEnabled: function() {
-        return this._templating.isEditFilenamePossible() && !this._options.autoUpload;
+        return this._templating.isEditFilenamePossible()
+            && !this._options.autoUpload
+            && qq.FilenameClickHandler
+            && qq.FilenameInputFocusHandler
+            && qq.FilenameInputFocusHandler;
     },
 
     _filenameEditHandler: function() {

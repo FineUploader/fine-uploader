@@ -158,7 +158,8 @@ qq.FineUploaderBasic = function(o) {
     this._deleteFileEndpointStore = this._createEndpointStore("deleteFile");
 
     this._handler = this._createUploadHandler();
-    this._deleteHandler = this._createDeleteHandler();
+
+    this._deleteHandler = qq.DeleteFileAjaxRequestor && this._createDeleteHandler();
 
     if (this._options.button) {
         this._defaultButtonId = this._createUploadButton({element: this._options.button}).getButtonId();
@@ -169,7 +170,12 @@ qq.FineUploaderBasic = function(o) {
     this._handleCameraAccess();
 
     if (this._options.paste.targetElement) {
-        this._pasteHandler = this._createPasteHandler();
+        if (qq.PasteSupport) {
+            this._pasteHandler = this._createPasteHandler();
+        }
+        else {
+            qq.log("Paste support module not found", "error");
+        }
     }
 
     this._preventLeaveInProgress();
