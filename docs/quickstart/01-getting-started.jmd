@@ -43,6 +43,12 @@ UI via CSS. To use UI Mode:
 var uploader = new qq.FineUploader({/* options go here ... */});
 ```
 
+{{ alert(
+"""If you are using Fine Uploader UI, you MUST include a template in your document/markup.  You can
+use the `default.html` file in the `templates` directory bundled with the library and customize it as desired.  See the
+[styling documentation page](../features/styling.html) for more details.""") }}
+
+
 #### Endpoint Handlers
 
 ##### [Traditional](../endpoint_handlers/traditional.html)
@@ -132,6 +138,14 @@ $("#fine-uploader")
     });
 ```
 
+{{ alert(
+"""You may use traditional callback handler functions with the jQuery plug-in if you wish.
+If you do contribute traditional callback functions via the `callbacks` option, you should disregard event handler section
+of the above example as this will bypass the jQuery plug-in entirely.  Also, while it is possible to contribute
+two callbacks of the same type via a jQuery event handler and a `callbacks` option, you should be aware that the
+`callbacks` function will always be evaluated first, and the return value from the `callbacks` function will be
+accepted instead of the return value from the jQuery event handler if the return value of the `callbacks`
+function is non-null.""", "info", "Note:") }}
 
 Next, let's check out some of Fine Uploader's options.
 

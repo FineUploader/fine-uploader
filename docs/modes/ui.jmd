@@ -16,6 +16,7 @@ For more information, see:
 
 * [Core Mode Options](../api/options.html)
 * [UI Mode Options](../api/options-ui.html)
+* [Styling/templating](../features/styling.html)
 * [API Methods](../api/methods.html)
 * [Events](../api/events.html)
 {% endmarkdown %}

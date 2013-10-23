@@ -1,0 +1,6 @@
+Third-party credits (client/js/third-party/)
+
+MegaPixImage module
+    Licensed under MIT (https://github.com/stomita/ios-imagefile-megapixel/blob/master/LICENSE)
+    https://github.com/stomita/ios-imagefile-megapixel
+    Copyright (c) 2012 Shinichi Tomita <shinichi.tomita@gmail.com>

@@ -3,7 +3,7 @@ describe('util.js', function () {
     var el, $el;
 
     describe('hide', function () {
-        it('properly hide an element', function () { 
+        it('properly hide an element', function () {
             $fixture.append("<div id='foo'></div>");
             $el = $fixture.find("#foo");
             el = qq($el[0]);
@@ -13,9 +13,9 @@ describe('util.js', function () {
             assert.equal($el.css('display'), 'none', 'element should be hidden');
         });
     }); // hide
-    
+
     describe('attach', function () {
-        it.skip('attaches an event to an element', function () {}); 
+        it.skip('attaches an event to an element', function () {});
     });
 
     describe('detach',function () {
@@ -29,7 +29,7 @@ describe('util.js', function () {
             });
 
             $el.trigger('click');
-        }); 
+        });
     }); // detach
 
     describe('contains', function () {
@@ -69,21 +69,19 @@ describe('util.js', function () {
 
     describe('insertBefore', function () {
         it('inserts an element before another', function () {
-           var elB, $elB;  
+            var elB, $elB;
 
-            $fixture.append("<div id='foo'></div>");
-            
-            $elB = $("#foo");
+            $elB = $("<div id='foo'></div>").appendTo($fixture);
             elB = $elB[0];
-            
+
             $el = $("<div/>").html("<div id='bar'></div>").contents();
             el = $el[0];
 
             // insert `el` before `elB`
             qq(el).insertBefore(elB);
-            
+
             assert.ok($fixture.find("#bar").length > 0, "should have inserted #bar before #foo");
-        }); 
+        });
     }); // insertBefore
 
     describe('remove', function () {
@@ -91,7 +89,7 @@ describe('util.js', function () {
             var elB, $elB;
 
             $fixture.append("<div id='foo'></div>");
-            
+
             $el = $fixture.find("#foo");
             $el.append("<div id='bar'></div>");
             el = $el[0];
@@ -134,7 +132,7 @@ describe('util.js', function () {
 
             assert.ok(qq(el).hasClass('derp'), "el should have the 'derp' class");
             assert.ok(!qq(el).hasClass('herp'), "el should not have the class 'herp'");
-        }); 
+        });
     }); // hasClass
 
     describe('addClass', function () {
@@ -144,9 +142,9 @@ describe('util.js', function () {
             assert.ok(!$(el).hasClass('derp'), "element should NOT have the 'derp' class")
 
             qq(el).addClass('derp');
-            
+
             assert.ok($(el).hasClass('derp'), "element should have the 'derp' class")
-        }); 
+        });
     }); // addClass
 
     describe('removeClass', function () {
@@ -156,7 +154,7 @@ describe('util.js', function () {
             qq(el).removeClass('derp');
 
             assert.ok(!$(el).hasClass('derp'), 'class should have been removed from the element');
-        }); 
+        });
     }); // hasClass
 
     describe('getByClass', function () {
@@ -177,24 +175,24 @@ describe('util.js', function () {
             results = q.getByClass("bar");
 
             assert.equal(results.length, 2, "getting the wrong number of classes");
-        }); 
-    
+        });
+
     }); // getByClass
 
     describe('children', function () {
         it('returns a list of children of an element', function () {
             var results, q;
-            
+
             results = []
             $fixture.empty();
             q = qq($fixture[0]);
             $fixture.append("<div class='foo'></div>");
             $fixture.append("<div class='bar'></div>");
             $fixture.append("<div class='foo bar'></div>");
-             
+
             results = q.children();
             assert.equal(results.length, 3, "was expecting 3 children");
-        }); 
+        });
     }); // children
 
     describe('setText', function () {
@@ -204,7 +202,7 @@ describe('util.js', function () {
             qq(el).setText(text);
 
             assert.equal($(el).text(), text, "text should have been set to " + text);
-        }); 
+        });
     }); // setText
 
     describe('clearText', function () {
@@ -215,25 +213,25 @@ describe('util.js', function () {
             qq(el).clearText();
 
             assert.equal($(el).text(), '', "text was not cleared");
-        }); 
+        });
     }); // clearText
 
     describe('isObject', function () {
         it('returns true for an empty object', function () {
-            assert.ok(qq.isObject({}), "empty objects are objects"); 
-        }); 
+            assert.ok(qq.isObject({}), "empty objects are objects");
+        });
 
         it('returns true for a simple object', function () {
-            assert.ok(qq.isObject({ foo: 'bar' }), "simple objects are objects"); 
+            assert.ok(qq.isObject({ foo: 'bar' }), "simple objects are objects");
         });
 
         it('should return true for a newed up Object', function() {
             /* jshint -W010 */
-            assert.ok(qq.isObject(new Object()), "new objects are objects"); 
+            assert.ok(qq.isObject(new Object()), "new objects are objects");
         });
 
         it('should return false for a function', function () {
-            assert.ok(!qq.isObject(function(){}), "This is not Ruby. Functions are not objects"); 
+            assert.ok(!qq.isObject(function(){}), "This is not Ruby. Functions are not objects");
         });
 
         it('should return false for null', function () {
@@ -255,7 +253,7 @@ describe('util.js', function () {
         });
 
         it('returns false for an Object', function () {
-            assert.ok(!qq.isFunction({})); 
+            assert.ok(!qq.isFunction({}));
         });
     }); // isFunction
 
@@ -267,10 +265,18 @@ describe('util.js', function () {
         it('returns true for a basic array', function () {
             assert.ok(qq.isArray([1, "foo", { herp: "derp" }]));
         });
-        
+
         it('returns false for a string', function () {
             assert.ok(!qq.isArray("Herp derp"));
         });
+
+        if (window.Uint8Array) {
+            it("returns true for an ArrayBuffer", function() {
+                var uint8array = new Uint8Array();
+                assert.ok(qq.isArray(uint8array));
+            });
+        }
+
     }); // isArray
 
     // template
@@ -316,8 +322,8 @@ describe('util.js', function () {
                 assert.ok(qq.isFile(new File()));
             } catch (ex) {
                 assert.ok(!qq.supportedFeatures.supportsUploader);
-            } 
-        }); 
+            }
+        });
     }); // isFile
 
     describe('isInput', function () {
@@ -327,15 +333,15 @@ describe('util.js', function () {
             $fixture.append("<input id='foo' type='file'></input>");
             input = $fixture.find("#foo")[0]
             assert.ok(qq.isInput(input));
-        }); 
+        });
     }); // isInput
 
     describe('extend', function () {
         it('extends simple objects', function () {
-            var testy = 
-                {   one: 'one', 
-                    two: 'two', 
-                    three: 'three', 
+            var testy =
+                {   one: 'one',
+                    two: 'two',
+                    three: 'three',
                     four: {
                             a: 'a',
                             b: 'b'
@@ -353,10 +359,10 @@ describe('util.js', function () {
         });
 
         it('extends nested objects', function () {
-            var testy = 
-                {   one: 'one', 
-                    two: 'two', 
-                    three: 'three', 
+            var testy =
+                {   one: 'one',
+                    two: 'two',
+                    three: 'three',
                     four: {
                             a: 'a',
                             b: 'b'
@@ -375,10 +381,10 @@ describe('util.js', function () {
         });
 
         it('extends non-nested objects', function () {
-            var testy = 
-                {   one: 'one', 
-                    two: 'two', 
-                    three: 'three', 
+            var testy =
+                {   one: 'one',
+                    two: 'two',
+                    three: 'three',
                     four: {
                             a: 'a',
                             b: 'b'
@@ -609,7 +615,7 @@ describe('util.js', function () {
             assert.equal(qq.obj2FormData(params1, formData).get('two'), 'two');
             assert.equal(qq.obj2FormData(params1, formData).get('three'), 'three');
 
-            formData.clear(); 
+            formData.clear();
         });
 
         it('constructs a URL with an embedded object as param', function () {
@@ -664,7 +670,7 @@ describe('util.js', function () {
 
             var cookie_name2 = 'qq|cookieName2';
             var cookie_val2 = 'cookieVal2';
-        
+
             qq.setCookie(cookie_name1, cookie_val1, 1);
             qq.setCookie(cookie_name2, cookie_val2, 1);
 
@@ -692,7 +698,7 @@ describe('util.js', function () {
             var json = JSON.stringify(object)
             var parsedJson = JSON.parse(json);
 
-            assert.deepEqual(qq.parseJson(json), parsedJson); 
+            assert.deepEqual(qq.parseJson(json), parsedJson);
         });
     }); // parseJson
 
@@ -704,7 +710,7 @@ describe('util.js', function () {
             input = $fixture.find("#foo")[0]
 
             assert.ok(qq.isFileOrInput(input));
-        }); 
+        });
         it('returns false on a regular input element', function () {
             var $input;
 
@@ -713,7 +719,7 @@ describe('util.js', function () {
 
             assert.ok(!qq.isFileOrInput($input[0]), "must be a file input");
         });
-    
+
         it('returns true for a file-input field', function () {
             var $input;
 
@@ -722,7 +728,7 @@ describe('util.js', function () {
 
             assert.ok(qq.isFileOrInput($input[0]), "this is a file input");
         });
-    
+
         it('isFileOrInput - should return false on a div element', function () {
             var $input;
 
@@ -735,15 +741,15 @@ describe('util.js', function () {
 
     describe('isInput', function () {
         it('returns true on an input element', function () {
-            $fixture.append("<input id='foo' type='file'></input>");
-            var el = $("#foo")[0];
+            var $el = $("<input id='foo' type='file'></input>").appendTo($fixture);
+            var el = $el[0];
 
             assert.ok(qq.isInput(el), "inputs are inputs");
         });
-    
+
         it('isInput - should return false on a div', function () {
-            $fixture.append("<div id='foo'></div>");
-            var el = $('#foo')[0];
+            var $el = $("<div id='foo'></div>").appendTo($fixture);
+            var el = $el[0];
 
             assert.ok(!qq.isInput(el), "divs are not inputs");
         });
@@ -751,11 +757,11 @@ describe('util.js', function () {
 
     describe('isBlob', function () {
         it.skip('identifies BLOBs, if possible', function () {
-            try { 
+            try {
                 var blob = new Blob([1, 2, 3, 4, 5, 6, 7, 8], { type: 'application/octet-binary' });
                 assert.ok(qq.isBlob(blob));
             } catch (ex) {
-                assert.ok(true);                 
+                assert.ok(true);
             }
         });
     }); //
@@ -774,9 +780,9 @@ describe('util.js', function () {
 
     describe('DisposeSupport', function () {
         it("adds disposers and dispose of them", function () {
-            var disposer = new qq.DisposeSupport(); 
+            var disposer = new qq.DisposeSupport();
             disposer.addDisposer(function () {
-                assert.ok(true); 
+                assert.ok(true);
             });
 
             disposer.dispose();

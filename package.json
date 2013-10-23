@@ -1,7 +1,7 @@
 {
   "name": "fineuploader",
   "title": "Fine Uploader",
-  "version": "3.9.1",
+  "version": "4.0.0",
   "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
   "main": "./fine-uploader/js/fineuploader.js",
   "maintainers": [
@@ -64,6 +64,7 @@
     "grunt-open": "~0.2.2",
     "grunt-saucelabs": "git://github.com/feltnerm/grunt-saucelabs.git",
     "grunt-shell": "~0.3.1",
+    "grunt-strip-code": "~0.1.2",
     "grunt-version": "~0.2.2",
     "karma": "~0.10.2",
     "karma-mocha": "~0.1.0",
@@ -73,6 +74,10 @@
     "semver": "2.0.x",
     "wd": "git://github.com/admc/wd.git"
   },
-  "dependencies": {},
+  "dependencies": {
+    "optimist": "~0.6.0",
+    "underscore": "~1.5.2",
+    "uuid": "~1.4.1"
+  },
   "license": "GPLv3"
 }

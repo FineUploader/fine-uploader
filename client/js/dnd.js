@@ -3,13 +3,13 @@ qq.DragAndDrop = function(o) {
     "use strict";
 
     var options,
+        HIDE_BEFORE_ENTER_ATTR = "qq-hide-dropzone",
         uploadDropZones = [],
         droppedFiles = [],
         disposeSupport = new qq.DisposeSupport();
 
      options = {
         dropZoneElements: [],
-        hideDropZonesBeforeEnter: false,
         allowMultipleItems: true,
         classes: {
             dropActive: null
@@ -128,9 +128,7 @@ qq.DragAndDrop = function(o) {
                 qq(dropArea).removeClass(options.classes.dropActive);
             },
             onDrop: function(e){
-                if (options.hideDropZonesBeforeEnter) {
-                    qq(dropArea).hide();
-                }
+                dropArea.hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropArea).hide();
                 qq(dropArea).removeClass(options.classes.dropActive);
 
                 handleDataTransfer(e.dataTransfer, dropZone).done(function() {
@@ -143,9 +141,7 @@ qq.DragAndDrop = function(o) {
             dropZone.dispose();
         });
 
-        if (options.hideDropZonesBeforeEnter) {
-            qq(dropArea).hide();
-        }
+        dropArea.hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropArea).hide();
 
         uploadDropZones.push(dropZone);
 
@@ -184,18 +180,16 @@ qq.DragAndDrop = function(o) {
         });
 
         disposeSupport.attach(document, 'dragleave', function(e){
-            if (options.hideDropZonesBeforeEnter && qq.FineUploader.prototype._leaving_document_out(e)) {
+            if (qq.FineUploader.prototype._leaving_document_out(e)) {
                 qq.each(dropZones, function(idx, dropZone) {
-                    qq(dropZone).hide();
+                    dropZone.hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
                 });
             }
         });
         disposeSupport.attach(document, 'drop', function(e){
-            if (options.hideDropZonesBeforeEnter) {
-                qq.each(dropZones, function(idx, dropZone) {
-                    qq(dropZone).hide();
-                });
-            }
+            qq.each(dropZones, function(idx, dropZone) {
+                dropZone.hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
+            });
             e.preventDefault();
         });
     }

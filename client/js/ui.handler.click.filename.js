@@ -4,6 +4,7 @@ qq.FilenameClickHandler = function(s) {
 
     var inheritedInternalApi = {},
         spec = {
+            templating: null,
             log: function(message, lvl) {},
             classes: {
                 file: 'qq-upload-file',
@@ -17,9 +18,8 @@ qq.FilenameClickHandler = function(s) {
 
     // This will be called by the parent handler when a `click` event is received on the list element.
     function examineEvent(target, event) {
-        if (qq(target).hasClass(spec.classes.file) || qq(target).hasClass(spec.classes.editNameIcon)) {
-            var item = inheritedInternalApi.getItemFromEventTarget(target),
-                fileId = inheritedInternalApi.getFileIdFromItem(item),
+        if (spec.templating.isFileName(target) || spec.templating.isEditIcon(target)) {
+            var fileId = spec.templating.getFileId(target),
                 status = spec.onGetUploadStatus(fileId);
 
             // We only allow users to change filenames of files that have been submitted but not yet uploaded.
@@ -27,7 +27,7 @@ qq.FilenameClickHandler = function(s) {
                 spec.log(qq.format("Detected valid filename click event on file '{}', ID: {}.", spec.onGetName(fileId), fileId));
                 qq.preventDefault(event);
 
-                inheritedInternalApi.handleFilenameEdit(fileId, target, item, true);
+                inheritedInternalApi.handleFilenameEdit(fileId, target, true);
             }
         }
     }

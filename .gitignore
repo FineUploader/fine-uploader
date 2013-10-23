@@ -21,7 +21,6 @@ sauce_connect.log*
 lib/sauce/sauce-connect*
 
 fine-uploader/
-test/*.js
 test/upload/*
 test/uploadsTemp/
 test/coverage/*

@@ -1,0 +1,157 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Previews & Thumbnails" %}
+{% block content %}
+{% markdown %}
+# Previews & Thumbnails {: .page-header }
+
+## Summary
+Version 4.0 brings native support for thumbnail generation for UI and core mode integrators.
+In modern browsers, Fine Uploader has the ability to generate image previews for dropped or selected files
+before the upload even begins.  For older browsers (IE9 and older) Fine Uploader will display a thumbnail
+associated with an uploaded file, provided your server response contains a URL for the thumbnail.  You also have
+the option to provide alternate thumbnails or thumbnails for non-images, such as videos, in your server response.
+
+Fine Uploader will even go the extra mile, whenever possible, and parse the EXIF data for dropped or selected
+JPEGs in order to ensure any generated previews are oriented correctly when displayed.  You can also ask Fine Uploader
+to enforce a maximum height/width for thumbnails in all browsers.
+
+Finally, you may elect to have Fine Uploader display a placeholder image before the thumbnail is displayed, along
+with a placeholder if the thumbnail cannot be displayed for any reason.  The library ships with some default
+placeholders, but you can easily replace these with your own.
+
+
+## Getting Started
+The `templates` folder bundled with Fine Uploader contains a `simple-thumbnails.html` template document
+that you may use to get up and running with the thumbnail feature.  If you are a Fine Uploader UI user,
+simply including using this document or including the template `<script>` in your existing document
+in place of the `default.html` template is all that is required to turn on the thumbnails feature.
+
+The simple thumbnails template bundled with the library will display thumbnails between the spinner and the
+file name.  You, of course, can customize the location, along with any other aspect of the template.  Notice
+that the thumbnail will always be house in an `<img>` element.  This `<img>` tag has a `qq-max-size` attribute
+which specifies a default maximum size to enforce for all thumbnails.  A `qq-server-scale` attribute is also
+present by default, with a value of "true".  This signals Fine Uploader UI to always ensure any thumbnails display
+from server responses are scaled as well.  You can remove this attribute or set the value to "false" if any thumbnails
+returned in your upload responses are already appropriately scaled.
+
+If you are not a Fine Uploader UI user, and instead are building your own highly-customized UI utilizing
+Fine Uploader Core, you can still easily display thumbnails/previews via the new `drawThumbnail` API method.
+This method supports rendering optionally scaled thumbnails/previews on `<canvas>` elements (where supported)
+and of course `<img>` elements.
+
+
+## Supporting Modern Browsers
+Modern browsers include Chrome, Firefox, IE10+, Safari 6+, iOS 6+, and Android 4+.  In these browsers,
+image previews can be generated immediately after the file has been selected or dropped.  The images that can be
+previewed depend on the browser.  All of these browsers can render previews for JPEG, GIF, and PNGs.  Safari
+can also render TIFF previews.
+
+### UI mode
+
+#### Previews
+As mentioned previously Fine Uploader can generate previews for popular image file formats in modern browsers.
+In addition to this, JPEGs will be displayed with the correct orientation as Fine Uploader includes an file parser
+that will read the Orientation tag in the EXIF header and render the image appropriately based on this tag's value.
+Furthermore, the preview will be scaled according to the value (in the template) of the `<img>` tag's
+`qq-max-size` attribute.  When scaling previews, Fine Uploader will draw the preview onto a `<canvas>` internally
+in order to scale the preview without resorting to CSS or inline `style` attribute adjustments.  Once the preview
+is scaled on the `<canvas>`, it is then transferred to the `<img>` tag mentioned in the template.
+
+#### Thumbnails from server response
+If the server's response to Fine Uploader's upload request (or `uploadSuccess` for S3 endpoints) contains a
+`thumbnailUrl` property in the JSON response, Fine Uploader will attempt to render the path in the template's `<img>`
+element for the associated successfully uploaded file.  If a preview already exists for the file, it will be replaced
+with the server-returned thumbnail, but only if the thumbnail can be successfully displayed in the browser.  This
+thumbnail will be scaled according to the value of the `<img>` tag's `qq-max-size` attribute, but only if the `<img>`
+tag also contains a `qq-server-scale` attribute with a value of "true".  The provided simple thumbnails template
+includes both of these attributes, but you can remove the latter one if your server is going to generate an
+appropriately scaled thumbnail at the returned `thumbnailUrl`.
+
+Note that JPEGs grabbed from the URL returned in your server's upload response will not be re-oriented, so your server
+must either be sure to create thumbnails that are oriented correctly.  Since modern browsers already generate correctly
+oriented JPEG previews client-side, there is generally no need to worry about this.  However, you should take care to
+not blindly return a `thumbnailUrl` for images that are already previewable in modern browsers unless your server
+intends to orient them correctly first.
+
+{{ alert(
+"""You can determine if the current browser is capable of previewing images by checking the value of
+`qq.supportedFeatures.imagePreviews`."""
+)}}
+
+
+##### Cross-origin thumbnails
+Thumbnails returned in the server response may be cross-origin as well.  In that case, Fine Uploader will make a
+best-effort attempt to scale the thumbnail (if required) using a `<canvas>` internally.  In some browsers, this is
+not possible as support for image CORS is required in order to transfer the scaled cross-origin image from the `<canvas>`
+to the `<img>` tag.  In browsers where image CORS is not supported (such as IE10) the thumbnail URL will be placed
+directly on the template's `<img>` tag and scaled (if required) via inline `style` attribute properties (using
+`max-width` and `max-height`).  If your server returns a cross-origin thumbnail URL, your server must also return
+the appropriate `Access-Control-Allow-Origin` header in the response, with a value equal to the domain hosting
+the uploader page.  You can determine the domain server-side by looking at the `Origin` header for the GET request
+that the browser will send when Fine Uploader attempts to render the thumbnail in the document.
+
+#### Placeholder images
+If you specify URLs/paths for the [`thumbnails.placeholders.notAvailablePath` and/or `thumbnails.placeholders.waitingPath`](../api/options-ui.html#thumbnailsplaceholders-option)
+options, Fine Uploader will render a "waiting for thumbnail/preview" image until the preview generation attempt has
+completed, and a "image/preview not available" image if the preview generation attempt has failed.  Placeholders are
+bundled with Fine Uploader.  You can use the bundled placeholders or use your own, but be sure to specify the correct
+path for these placeholders in the Fine Uploader UI options if you want them to be displayed.  It is valid to leave
+either of these options `null` if you don't want a placeholder image to be displayed.
+
+Placeholders will also be scaled, if the `qq-max-size` attribute on the template's `<img>` tag is specified.  Cross-origin
+placeholders will be treated the same way as cross-origin server-generated thumbnails.  See the "Cross-origin thumbnails"
+section above for details.  Re-orienting placeholder images is not supported, so, if you provide your own placeholder
+images, ensure they are already oriented correctly.
+
+### Core mode
+For Core mode users that need to create their own highly-customized UI, there is a [`drawThumbnail` API method](../api/methods.html)
+that will allow you to effortlessly render either a submitted image file's preview or a server-returned thumbnail
+on either a `<canvas>` or and `<img>`.  See the [method documentation section](../api/methods.html)
+for `drawThumbnail` for more details.
+
+{{ alert(
+"""The `drawThumbnail` method is also, of course, available to UI mode users if you want to, for example, render a
+preview/thumbnail on a `<canvas>` instead of the `<img>` tag in the template."""
+)}}
+
+
+## Supporting Older Browsers (IE9 and older)
+"Older" browsers include IE9 and older, Safari 5, and Android older than version 4.  In these browsers, client-side
+image previews are not possible.  However, Fine Uploader provides a way to display thumbnails returned in the server's
+response to the upload request.  If you want thumbnails to be displayed in these browsers, your server will have to
+either generate the thumbnail or simply return a public URL for the uploaded image.  Fine Uploader will display
+the thumbnail if the URL can result in a natively rendered `<img>`.
+
+### UI mode
+If you want to display thumbnails (after the upload has completed) next to the associated files, your server must
+return a `thumbnailUrl` property in its JSON response to the upload (or `uploadSuccess` request for S3 endpoints).
+Fine Uploader will scale the thumbnail using inline `style` attribute properties (via `max-width` and `max-height`) if
+the `qq-max-size` attribute is present on the template's `<img>` template tag.  Re-orientation is not possible
+client-side.  If you do not want to display thumbnails for these browsers, you can contribute an alternate template
+for browsers that do not support client-side previews and set the [`template` option](../api/options-ui.html)
+accordingly, based on the capabilities of the current browser.
+
+#### Placeholder images
+Placeholder images are supported in older browsers as well.  As with thumbnails, placeholder images will be scaled,
+if required, via incline style attribute properties.  If specified, the "waiting for thumbnail" placeholder will be
+visible until the server response is parsed.  If the server response contains a `thumbnailUrl` property in its response,
+and the URL can be rendered in an `<img>` tag, this placeholder will be replaced with the thumbnail.  Otherwise, if
+specified, the "not available" placeholder will be displayed.  See the "Placeholder images" section above for more
+details.
+
+### Core mode
+For Core mode users that need to create their own highly-customized UI, there is a [`drawThumbnail` API method](../api/methods.html)
+that will allow you to effortlessly render either a submitted image file's server-returned thumbnail on an `<img>`.
+Note that you are limited to drawing the thumbnail on an `<img>` in these browsers.  Also, since client-side previews
+are not possible in these browsers, the thumbnail will need to be provided in your server's upload response.
+Fine Uploader will scale the thumbnail using inline `style` attribute properties (via `max-width` and `max-height`) if
+you specify a `maxSize` parameter.  See the [method documentation section](../api/methods.html) for `drawThumbnail`
+for more details.
+
+{{ alert(
+"""The `drawThumbnail` method is also, of course, available to UI mode users."""
+)}}
+
+
+{% endmarkdown %}
+{% endblock %}

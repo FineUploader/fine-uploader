@@ -64,6 +64,7 @@ alert("The `chunking.paramNames` option does **not** apply to S3.")
         ("key", "`String` or `Function`", "`'uuid'`", "Describes the object key used to identify the file in your S3 bucket.
         Possible values are 'uuid', 'filename' or a function.  If the value is a function, Fine Uploader S3 will pass
         the associated file ID as a parameter when invoking your function."),
+        ("reducedRedundancy", "`Boolean`", "`false`", "Set this to true if you would like to use the reduced redundancy storage class for all objects uploaded to S3."),
     )
 ) }}
 

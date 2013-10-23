@@ -1,9 +1,11 @@
 package fineuploader;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -115,7 +118,7 @@ public class S3Uploads extends HttpServlet
     // Called by the main POST request handler if Fine Uploader has indicated that the file has been
     // successfully sent to S3.  You have the opportunity here to examine the file in S3 and "fail" the upload
     // if something in not correct.
-    private void handleUploadSuccessRequest(HttpServletRequest req, HttpServletResponse resp)
+    private void handleUploadSuccessRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         String key = req.getParameter("key");
         String uuid = req.getParameter("uuid");
@@ -126,6 +129,27 @@ public class S3Uploads extends HttpServlet
 
         System.out.println(String.format("Upload successfully sent to S3!  Bucket: %s, Key: %s, UUID: %s, Filename: %s",
                 bucket, key, uuid, name));
+
+        AWSCredentials myCredentials = new BasicAWSCredentials(
+                                        AWS_PUBLIC_KEY_SERVER, AWS_SECRET_KEY_SERVER);
+        AmazonS3 s3Client = new AmazonS3Client(myCredentials);
+
+        java.util.Date expiration = new java.util.Date();
+        long msec = expiration.getTime();
+        msec += 1000 * 60 * 60; // 1 hour.
+        expiration.setTime(msec);
+
+        GeneratePresignedUrlRequest generatePresignedUrlRequest =
+                      new GeneratePresignedUrlRequest(bucket, key);
+        generatePresignedUrlRequest.setMethod(HttpMethod.GET); // Default.
+        generatePresignedUrlRequest.setExpiration(expiration);
+
+        URL s = s3Client.generatePresignedUrl(generatePresignedUrlRequest);
+
+        JsonObject response = new JsonObject();
+        response.addProperty("thumbnailUrl", s.toString());
+
+        resp.getWriter().write(response.toString());
     }
 
     private String base64EncodePolicy(JsonElement jsonElement) throws UnsupportedEncodingException

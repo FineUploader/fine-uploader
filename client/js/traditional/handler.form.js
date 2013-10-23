@@ -47,13 +47,10 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
         var params = options.paramsStore.getParams(id),
             method = options.demoMode ? "GET" : "POST",
             endpoint = options.endpointStore.getEndpoint(id),
-            newName = fileState[id].newName;
+            name = fileState[id].newName || publicApi.getName(id);
 
         params[options.uuidParam] = fileState[id].uuid;
-
-        if (newName) {
-            params[options.filenameParam] = newName;
-        }
+        params[options.filenameParam] = name;
 
         return internalApi.initFormForUpload({
             method: method,

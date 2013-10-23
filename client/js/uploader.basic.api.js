@@ -99,6 +99,7 @@ qq.basePublicApi = {
         this._autoRetries = [];
         this._retryTimeouts = [];
         this._preventRetries = [];
+        this._thumbnailUrls = [];
 
         qq.each(this._buttons, function(idx, button) {
             button.reset();
@@ -230,6 +231,32 @@ qq.basePublicApi = {
 
     getButton: function(fileId) {
         return this._getButton(this._buttonIdsForFileIds[fileId]);
+    },
+
+    // Generate a variable size thumbnail on an img or canvas,
+    // returning a promise that is fulfilled when the attempt completes.
+    // Thumbnail can either be based off of a URL for an image returned
+    // by the server in the upload response, or the associated `Blob`.
+    drawThumbnail: function(fileId, imgOrCanvas, maxSize, fromServer) {
+        if (this._imageGenerator) {
+            var fileOrUrl = this._thumbnailUrls[fileId],
+                options = {
+                    scale: maxSize > 0,
+                    maxSize: maxSize > 0 ? maxSize : null
+                };
+
+            // If client-side preview generation is possible
+            // and we are not specifically looking for the image URl returned by the server...
+            if (!fromServer && qq.supportedFeatures.imagePreviews) {
+                fileOrUrl = this.getFile(fileId);
+            }
+
+            if (fileOrUrl == null) {
+                return new qq.Promise().failure(imgOrCanvas, "File or URL not found.");
+            }
+
+            return this._imageGenerator.generate(fileOrUrl, imgOrCanvas, options);
+        }
     }
 };
 
@@ -420,9 +447,7 @@ qq.basePrivateApi = {
                 chunking: this._options.chunking,
                 resume: this._options.resume,
                 blobs: this._options.blobs,
-                log: function(str, level) {
-                    self.log(str, level);
-                },
+                log: qq.bind(self.log, self),
                 onProgress: function(id, name, loaded, total){
                     self._onProgress(id, name, loaded, total);
                     self._options.callbacks.onProgress(id, name, loaded, total);
@@ -492,9 +517,7 @@ qq.basePrivateApi = {
             endpointStore: this._deleteFileEndpointStore,
             demoMode: this._options.demoMode,
             cors: this._options.cors,
-            log: function(str, level) {
-                self.log(str, level);
-            },
+            log: qq.bind(self.log, self),
             onDelete: function(id) {
                 self._onDelete(id);
                 self._options.callbacks.onDelete(id);
@@ -513,9 +536,7 @@ qq.basePrivateApi = {
         return new qq.PasteSupport({
             targetElement: this._options.paste.targetElement,
             callbacks: {
-                log: function(str, level) {
-                    self.log(str, level);
-                },
+                log: qq.bind(self.log, self),
                 pasteReceived: function(blob) {
                     self._handleCheckedCallback({
                         name: "onPasteReceived",
@@ -601,6 +622,10 @@ qq.basePrivateApi = {
             this._uploadData.setStatus(id, qq.status.UPLOAD_FAILED);
         }
         else {
+            if (result.thumbnailUrl) {
+                this._thumbnailUrls[id] = result.thumbnailUrl;
+            }
+
             this._netUploaded++;
             this._uploadData.setStatus(id, qq.status.UPLOAD_SUCCESSFUL);
         }
@@ -627,7 +652,7 @@ qq.basePrivateApi = {
     },
 
     _isDeletePossible: function() {
-        if (!this._options.deleteFile.enabled) {
+        if (!qq.DeleteFileAjaxRequestor || !this._options.deleteFile.enabled) {
             return false;
         }
 
@@ -720,7 +745,8 @@ qq.basePrivateApi = {
 
             this.addFiles(input.files);
         }
-        else {
+        // Android 2.3.x will fire `onchange` even if no file has been selected
+        else if (input.value.length > 0) {
             this.addFiles(input);
         }
 
@@ -1185,7 +1211,7 @@ qq.basePrivateApi = {
         var size;
 
         if (qq.isFileOrInput(fileOrBlobData)) {
-            if (!fileOrBlobData.value){
+            if (fileOrBlobData.value === undefined) {
                 // fix missing properties in Safari 4 and firefox 11.0a2
                 size = (fileOrBlobData.fileSize !== null && fileOrBlobData.fileSize !== undefined) ? fileOrBlobData.fileSize : fileOrBlobData.size;
             }

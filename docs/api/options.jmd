@@ -37,7 +37,7 @@ mode you are in and keep that in mind when determining which options do what.
         ("button", "`HTMLElement`", "`null`", "Specify an element to use as the 'select files' button. Cannot be a `<button>` ([#33](https://github.com/Widen/fine-uploader/issues/33))"),
         ("debug", "`Boolean`", "`false`", "This will result in log messages being written to the [`window.console`](https://developer.mozilla.org/en-USDOM/console.log) object"),
         ("disableCancelForFormUploads", "`Boolean`", "`false`", "When `true` the cancel link does not appear next to files when the form uploader is used."),
-        ("formatFileName", "`Function`", "", "Provide a function to control the display of file names. The default function limits the name displayed in the UI to 33 characters plus 3 ellipses separating the first and last several characters."),
+        ("formatFileName", "`Function`", "", "Provide a function to control the display of file names.  The default function limits the name displayed in the UI to 33 characters plus 3 ellipses separating the first and last several characters.  The unformatted file name is passed into the function when it is invoked."),
         ("maxConnections", "`Number`", "`3`", "Maxmimum allowable concurrent requests"),
         ("multiple", "`Boolean`", "`true`", "When `true` this will prevent the user from simultaneously selecting or dropping more than one item."),
         ("showMessage", "`String` message", "", "Provide a function here to display a message to the user when the uploader receives an error or the user attempts to leave the page."),

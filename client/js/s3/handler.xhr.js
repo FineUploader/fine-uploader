@@ -23,6 +23,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         endpointStore = options.endpointStore,
         accessKey = options.accessKey,
         acl = options.objectProperties.acl,
+        reducedRedundancy = options.objectProperties.reducedRedundancy,
         validation = options.validation,
         signature = options.signature,
         chunkingPossible = options.chunking.enabled && qq.supportedFeatures.chunking,
@@ -47,6 +48,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             signatureSpec: signature,
             accessKey: options.accessKey,
             acl: acl,
+            reducedRedundancy: reducedRedundancy,
             cors: options.cors,
             log: log,
             getContentType: function(id) {
@@ -336,6 +338,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
                 expectedStatus: expectedStatus,
                 minFileSize: validation.minSizeLimit,
                 maxFileSize: validation.maxSizeLimit,
+                reducedRedundancy: reducedRedundancy,
                 log: log
             },
             qq.bind(policySignatureRequester.getSignature, this, id));

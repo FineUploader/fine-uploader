@@ -93,6 +93,15 @@ $("#fine-uploader").fineUploader({
 });
 ```
 
+{{ alert(
+"""You may use traditional callback handler functions with the jQuery plug-in if you wish.
+If you do contribute traditional callback functions via the `callbacks` option, you should disregard everything on this
+page when writing code inside of your callback functions as this will bypass the jQuery plug-in entirely.
+Also, while it is possible to contribute two callbacks of the same type via a jQuery event handler and a `callbacks`
+option, you should be aware that the `callbacks` function will always be evaluated first, and the return value from
+the `callbacks` function will be accepted instead of the return value from the jQuery event handler if the return
+value of the `callbacks` function is non-null.""", "info", "Note:") }}
+
 ## API Methods
 
 All public API methods are also accessible when using the jQuery plugin, but -- as with callbacks --

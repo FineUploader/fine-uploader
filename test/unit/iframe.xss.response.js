@@ -3,6 +3,9 @@ if (window.postMessage) {
 
         var iframe, doc;
         var script = '<scr' + 'ipt type="text/javascript" src="/base/client/js/iframe.xss.response.js"></scr' + 'ipt>';
+        if (window.mochaResults) {
+            script = '<scr' + 'ipt type="text/javascript" src="/client/js/iframe.xss.response.js"></scr' + 'ipt>';
+        }
 
         beforeEach(function () {
             iframe = document.createElement('iframe');

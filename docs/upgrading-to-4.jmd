@@ -1,0 +1,138 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Upgrading to 4.x" %}
+{% block content %}
+{% markdown %}
+# Upgrading to 4.x {: .page-header }
+
+The 4.0 version brings some breaking changes, mostly surrounding [templating](features/styling.html)
+in [Fine Uploader UI](modes/ui.html).  If you are not using Fine Uploader UI or the [standalone drag & drop module](features/drag-and-drop.html#drag-and-drop-standalone-module),
+you will not be affected by these changes.
+
+Be sure to read about templating in the [styling guide](features/styling.html).
+
+
+## Fine Uploader UI breaking changes & upgrade instructions
+
+Templating has been a mess in Fine Uploader UI for quite some time, arguably since day 1.  The goal was to clean up
+this mess in 4.0 so that integrators/designers could more easily customize the look and feel of UI mode without
+resorting to core mode and developing a custom UI from scratch.  There will likely still be some cases where it makes
+more sense to drop back to Fine Uploader Core and develop a new UI from scratch, but the improvements to templating
+in UI mode should make that scenario much less likely.
+
+At a high level, the template markup was moved out of the
+javascript source and into the document.  You will need to, at least, include the default template bundled with Fine
+Uploader in your document.  This step made many `classes` and `text` option properties redundant as well, so appropriate
+properties were removed.  What follows is a more detailed description of these breaking changes, along with instructions
+that should make the upgrade process from a 3.x build a bit easier.
+
+
+### Changed `template` option to take an ID (string) or element (pointing to script tag containing template)
+
+Previously, the `template` option contained the top-level template markup (sans the file list markup) as a string.
+If you wanted to change this, you needed to copy and paste this unwieldy string into your glue code and make appropriate
+changes.  You also had to be careful about changing any of the CSS classes assigned to these template items.  If any
+CSS class was removed/renamed, you had to be sure to update the associated `classes` option property, since Fine Uploader
+UI used the same CSS classes for selection and styling.
+
+In version 4.0, the `template` option expects either a string or an `Element` as a value (or a `jQuery` object if using
+the jQuery plug-in wrapper).  You may either specify the ID of the `<script>` element in your document that contains
+the template markup, or you may select the `<script>` yourself.  The default value is a string: "qq-template".
+
+The default template HTML file that is bundled with Fine Uploader contains a `<script>` with an ID of "qq-template" along
+with all supported template items.  You can drop this into your document without any changes, and Fine Uploader UI
+will work just as it did before.  If you want to further customize the template, you can make appropriate changes to
+the markup in the `<script>` template contents.  You can remove almost any item in the template if you don't want it
+to be rendered in the DOM.  Note that each template item has a CSS class that ends in "-selector" which is used internally
+for selecting the item.  A second CSS class may be present on the item, used only for styling.  You can remove this second
+CSS class without fear of breaking the uploader.  If you remove the "-selector" CSS class, Fine Uploader will simply
+ignore the item, though it will still render in the DOM.
+
+### Removed the `fileTemplate` option
+
+The contents of the old `template` and `fileTemplate` options have been combined into one template, which must be
+included as a `<script>` tag with a type of "text/template" in your document.  You can use the template contained in
+the included `default.html` file in the `templates` directory as-is, or modify it to match your application.
+
+### Template must be included in document script tag for Fine Uploader UI
+
+As mentioned previously, even if you did not make any adjustments to the default `template` or `fileTemplate` options
+in older versions of Fine Uploader UI, you still must include a template in your document.  A default template is
+now bundled with Fine Uploader.  You can use the bundled HTML file, or copy and paste the template `<script>` tag
+into your document.
+
+### Various changes to the bundled CSS file
+
+There were a few styling-related changes made to the CSS file that ships with the library.
+
+A `.qq-hide` style, which defaults to `display: none;` was also added.  You can override this default style
+via increased specificity, or you can contribute a new value for this CSS class that Fine Uploader will assign
+to any element that it needs to hide.  See the `classes` option in the [styling guide](features/styling.html)
+for more details.
+
+The `.qq-upload-finished` style was removed, as this did not appear to serve a useful purpose anymore.
+
+### Removed `retry.showButton`
+
+If you do not want the retry button displayed next to each file automatically when a manual retry is possible,
+simply omit the retry-related element from your template.
+
+
+### Removed `editFilename.enabled`
+
+If you do not want to utilize the edit filename feature, either ensure the `autoUpload` option is set to true
+(this is the default) or remove the edit-filename related elements from your template.  Currently, this involves removing
+the "qq-edit-filename-icon-selector" and "qq-edit-filename-selector" elements.
+
+### Removed all `classes` option properties, other than the ones listed in styling doc
+
+In most cases, there is no longer any need to define options for each class associated with a UI-mode template item.
+Remember, Fine Uploader UI 4.0's default template includes a "-selector" class on each template item specifically for
+selecting the item, and another for styling.  You can remove or rename the styling class without fear of breaking the
+uploader.  In fact, omitting most template items is possible as well.  The only `classes` properties that remain are
+ones that are added by Fine Uploader dynamically/on-demand.  You can override any of these default values if you'd like
+to use one of your own custom CSS classes instead.
+
+### Added `classes.hide`
+
+Part of the 4.0 template rework included a push to stop assigning/changing style attributes on template items in the
+javascript code directly.  Previously, if Fine Uploader UI wanted to hide an element, it would add a `display: none;`
+style attribute value to the element, and then change this `display` property to a variable appropriate value when
+it was time to display the element again.  As of 4.0, to hide an element, Fine Uploader adds a `qq-hide` CSS class to
+the element, which is defined with a default style of `display: none;` in the bundled CSS file.  When the element must
+be visible again, this class is removed.  You can override the default CSS class name for hiding elements via
+`classes.hide`.
+
+Note that the standalone drag & drop module (which is also used internally by Fine Uploader UI) still sets a `display: none;`
+style directly on drop zones when they must be hidden, and changes this to `display: block;` to make them visible again.
+This was left alone, as we didn't want to break all Fine Uploader Core mode apps that do not include Fine Uploader UI's
+default CSS file (since there has never been a dependency on this file when using core mode).
+
+
+### Removed all `text` option properties, except for `failUpload`, `formatProgress` and `waitingForResponse`
+
+Similar to the changes to the `classes` option, there is no longer a need to have options dedicated to text that
+appears with template items in most cases.  You can easily change the default text in your template.  In cases where
+Fine Uploader UI dynamically changes text based on conditions, `text` options remain for you to adjust if desired.
+
+### Removed `dragAndDrop.disableDefaultDropzone`
+
+If you want to disable the default drop zone, simply remove the drop zone related element(s) from your template.
+
+### Removed `dragAndDrop.hideDropzones`
+
+If you want an extra or default drop zone to remain invisible until an item approaches the drop area, simply include
+a `qq-hide-dropzone` attribute on the drop zone container.  This attribute is present on the drop area in the default
+template, but it can be removed, of course.
+
+
+## Standalone drag & drop module breaking changes & upgrade instructions
+
+### Removed `hideDropZonesBeforeEnter` option in standalone DnD module (replaced w/ qq-hide-dropzone attr)
+
+This is the only breaking change to the standalone drag & drop module.  Instead of specifying a value for a
+`hideDropZonesBeforeEnter` option that either hides all drop zones until an item approaches (or not) you can now control
+visibility in this respect per-dropzone via a `qq-hide-dropzone` attribute on the drop zone container.
+
+
+{% endmarkdown %}
+{% endblock %}

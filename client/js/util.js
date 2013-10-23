@@ -170,9 +170,16 @@ qq.isFunction = function(variable) {
     return typeof(variable) === "function";
 };
 
-qq.isArray = function(variable) {
+/**
+ * Check the type of a value.  Is it an "array"?
+ *
+ * @param value value to test.
+ * @returns true if the value is an array or associated with an `ArrayBuffer`
+ */
+qq.isArray = function(value) {
     "use strict";
-    return Object.prototype.toString.call(variable) === "[object Array]";
+    return Object.prototype.toString.call(value) === "[object Array]"
+        || (window.ArrayBuffer && value.buffer && value.buffer.constructor === ArrayBuffer);
 };
 
 // Looks for an object on a `DataTransfer` object that is associated with drop events when utilizing the Filesystem API.
@@ -299,6 +306,44 @@ qq.isFileChunkingSupported = function() {
     return !qq.android() && //android's impl of Blob.slice is broken
         qq.isXhrUploadSupported() &&
         (File.prototype.slice !== undefined || File.prototype.webkitSlice !== undefined || File.prototype.mozSlice !== undefined);
+};
+
+qq.sliceBlob = function(fileOrBlob, start, end) {
+    var slicer = fileOrBlob.slice || fileOrBlob.mozSlice || fileOrBlob.webkitSlice;
+
+    return slicer.call(fileOrBlob, start, end);
+};
+
+qq.arrayBufferToHex = function(buffer) {
+    var bytesAsHex = "",
+        bytes = new Uint8Array(buffer);
+
+
+    qq.each(bytes, function(idx, byte) {
+        var byteAsHexStr = byte.toString(16);
+
+        if (byteAsHexStr.length < 2) {
+            byteAsHexStr = "0" + byteAsHexStr;
+        }
+
+        bytesAsHex += byteAsHexStr;
+    });
+
+    return bytesAsHex;
+};
+
+qq.readBlobToHex = function(blob, startOffset, length) {
+    var initialBlob = qq.sliceBlob(blob, startOffset, startOffset + length),
+        fileReader = new FileReader(),
+        promise = new qq.Promise();
+
+    fileReader.onload = function() {
+        promise.success(qq.arrayBufferToHex(fileReader.result));
+    };
+
+    fileReader.readAsArrayBuffer(initialBlob);
+
+    return promise;
 };
 
 qq.extend = function(first, second, extendNested) {

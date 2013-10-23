@@ -60,7 +60,8 @@ qq.s3.util = qq.s3.util || (function() {
                 params = spec.params,
                 successRedirectUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl(spec.successRedirectUrl),
                 minFileSize = spec.minFileSize,
-                maxFileSize = spec.maxFileSize;
+                maxFileSize = spec.maxFileSize,
+                reducedRedundancy = spec.reducedRedundancy;
 
             policy.expiration = qq.s3.util.getPolicyExpirationDate(expirationDate);
 
@@ -77,6 +78,10 @@ qq.s3.util = qq.s3.util || (function() {
 
             if (successRedirectUrl) {
                 conditions.push({success_action_redirect: successRedirectUrl});
+            }
+
+            if (reducedRedundancy) {
+                conditions.push({"x-amz-storage-class": "REDUCED_REDUNDANCY"});
             }
 
             conditions.push({key: key});
@@ -105,7 +110,7 @@ qq.s3.util = qq.s3.util || (function() {
          * before it is sent to the server for signing.
          *
          * @param spec Object with properties: `params`, `type`, `key`, `accessKey`, `acl`, `expectedStatus`, `successRedirectUrl`,
-         * and `log()`, along with any options associated with `qq.s3.util.getPolicy()`.
+         * `reducedRedundancy`, and `log()`, along with any options associated with `qq.s3.util.getPolicy()`.
          * @returns {qq.Promise} Promise that will be fulfilled once all parameters have been determined.
          */
         generateAwsParams: function(spec, signPolicyCallback) {
@@ -119,6 +124,7 @@ qq.s3.util = qq.s3.util || (function() {
                 acl = spec.acl,
                 expectedStatus = spec.expectedStatus,
                 successRedirectUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl(spec.successRedirectUrl),
+                reducedRedundancy = spec.reducedRedundancy,
                 log = spec.log;
 
             awsParams.key = key;
@@ -134,6 +140,10 @@ qq.s3.util = qq.s3.util || (function() {
 
             if (successRedirectUrl) {
                 awsParams["success_action_redirect"] = successRedirectUrl;
+            }
+
+            if (reducedRedundancy) {
+                awsParams["x-amz-storage-class"] = "REDUCED_REDUNDANCY";
             }
 
             awsParams.acl = acl;

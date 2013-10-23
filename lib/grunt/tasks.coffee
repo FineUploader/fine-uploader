@@ -1,16 +1,21 @@
 util = require './utils'
+path = require 'path'
 spawn = require('child_process').spawn
+sourceModules = require('../modules')
 
 module.exports = (grunt) ->
 
+  _ = grunt.util._
   grunt.registerTask 'lint', 'Lint, in order, the Gruntfile, sources, and tests.', ['concurrent:lint']
 
-  grunt.registerTask 'minify', 'Minify the source javascript and css', ['cssmin', 'uglify']
+  grunt.registerTask 'minify', 'Minify the source javascript and css', [
+    'cssmin:all', 'uglify:core', 'uglify:jquery', 'uglify:coreS3',
+    'uglify:jqueryS3', 'uglify:all']
 
   grunt.registerMultiTask 'tests', '** Use ` grunt-test` instead **', ->
     util.startKarma.call util, @data, true, @async()
 
-  grunt.registerMultiTask 'autotest', ->
+  grunt.registerMultiTask 'autotest', "Re-run karma tests on changes", ->
     util.startKarma.call util, @data, false, @async()
 
   grunt.registerTask 'check_pull_req', '', ->
@@ -46,9 +51,4 @@ module.exports = (grunt) ->
         done err
       else
         done success
-
-  ###
-  grunt.registerMultiTask 'sauce-connect', 'Run or kill sauce connect', ->
-    if grunt.option 'kill'
-  ###
 

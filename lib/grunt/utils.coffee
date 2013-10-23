@@ -1,5 +1,8 @@
 spawn = require('child_process').spawn
+path = require 'path'
 grunt = require 'grunt'
+_ = grunt.util._
+modules = require '../modules'
 
 module.exports =
 
@@ -43,3 +46,72 @@ module.exports =
     task
 
   sauceLabsAvailablePorts: [9000, 9001, 9080, 9090, 9876]
+
+  concat: (formulae) ->
+    src = ''
+    _.map(formulae, (f) ->
+      src = grunt.file.read f
+      src
+    ).join(grunt.util.linefeed)
+
+  build: (dest, formulae) ->
+    ###
+    This task will generate a custom build of Fine Uploader based on the
+    provided `formulae`
+    These formulae correspond to the keys in './lib/modules'
+    and are combined into the `dest` directory.
+    ###
+
+    dest_src = path.join(dest, 'src')
+    filename = grunt.config.process 'custom.<%= pkg.name %>-<%= pkg.version %>.js'
+    dest_filename = path.join(dest, 'src', filename)
+
+    # Build formula, true indicates that module should be included
+    formula = []
+    includes =
+        fuSrcCore: false
+        fuSrcS3: false
+        fuSrcTraditional: false
+        fuSrcUi: false
+        fuDeleteFileModule: false
+        fuPasteModule: false
+        fuDndModule: false
+        fuUiEvents: false
+        fuDeleteFileUiModule: false
+        fuEditFilenameModule: false
+        fuSrcJquery: false
+        fuSrcS3Jquery: false
+        fuJqueryDnd: false
+        fuImagePreviewModule: false
+
+    extraIncludes =
+      fuDocs: true
+      fuImages: true
+      fuCss: true
+      fuTemplates: true
+      fuIframeXssResponse: true
+
+    if _.isArray formulae
+      _.each formulae, (mod) ->
+        if mod in _.keys(includes)
+          includes[mod] = true
+    else if _.isObject formulae
+      includes = _.defaults includes, formulae
+
+    formula = _.filter _.keys(includes), (k) -> includes[k] is true
+    grunt.log.writeln ">> FORMULA: " + formula
+    mods = modules.mergeModules.apply @, formula
+
+    src = @concat mods
+    grunt.file.write dest_filename, src
+    grunt.log.writeln "Wrote: " + dest_filename
+
+    extraFormula = _.filter _.keys(extraIncludes), (k) -> extraIncludes[k] is true
+    extraModules = modules.mergeModules.apply @, extraFormula
+
+    _.each extraModules, (mod) ->
+      modname = path.basename(mod)
+      if modname.match(/\.css$/)
+        modname = grunt.config.process 'custom.<%= pkg.name %>-<%= pkg.version %>.css'
+      grunt.file.copy mod, path.join(dest_src, modname)
+      grunt.log.writeln "Copied: #{path.basename(modname)}"
