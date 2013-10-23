@@ -141,7 +141,7 @@ module.exports = (grunt) ->
                     {
                         expand: true
                         cwd: customBuildDest + '/src/'
-                        src: "*"
+                        src: "**/*"
                     }
                 ]
 

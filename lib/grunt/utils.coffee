@@ -84,13 +84,6 @@ module.exports =
         fuJqueryDnd: false
         fuImagePreviewModule: false
 
-    extraIncludes =
-      fuDocs: true
-      fuImages: true
-      fuCss: true
-      fuTemplates: true
-      fuIframeXssResponse: true
-
     if _.isArray formulae
       _.each formulae, (mod) ->
         if mod in _.keys(includes)
@@ -106,6 +99,14 @@ module.exports =
     grunt.file.write dest_filename, src
     grunt.log.writeln "Wrote: " + dest_filename
 
+    extraIncludes =
+      fuDocs: true
+      fuImages: true
+      fuCss: true
+      fuTemplates: true
+      fuPlaceholders: includes['fuImagePreviewModule']
+      fuIframeXssResponse: true
+
     extraFormula = _.filter _.keys(extraIncludes), (k) -> extraIncludes[k] is true
     extraModules = modules.mergeModules.apply @, extraFormula
 
@@ -113,5 +114,8 @@ module.exports =
       modname = path.basename(mod)
       if modname.match(/\.css$/)
         modname = grunt.config.process 'custom.<%= pkg.name %>-<%= pkg.version %>.css'
+      if '/' in mod and mod.split('/').indexOf('placeholders') != -1 or mod.split('/').indexOf('templates') != -1
+          modname = mod.split('/').slice(1).join('/')
+          console.log(modname)
       grunt.file.copy mod, path.join(dest_src, modname)
       grunt.log.writeln "Copied: #{path.basename(modname)}"
