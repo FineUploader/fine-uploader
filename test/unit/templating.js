@@ -163,7 +163,7 @@ describe("templating.js", function() {
         });
 
         it("embeds the file ID correctly", function() {
-            assert.equal(templating.getFileId(fileContainer0), 0);
+            assert.ok(templating.getFileId(fileContainer0) === 0);
         });
 
         it("hides and shows spinner", function() {
