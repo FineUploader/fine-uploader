@@ -408,7 +408,7 @@ qq.Templating = function(spec) {
                 currentNode = currentNode.parentNode;
             }
 
-            return currentNode.getAttribute(FILE_ID_ATTR);
+            return parseInt(currentNode.getAttribute(FILE_ID_ATTR));
         },
 
         getFileList: function() {
