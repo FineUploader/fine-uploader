@@ -34,6 +34,24 @@ describe("templating.js", function() {
                                     '<span class="qq-upload-status-text-selector qq-upload-status-text"></span>' +
                                 '</li>' +
                             '</ul>' +
+                        '</div>',
+        simpleTwoLevelFilesTemplate = '<div class="qq-uploader-selector qq-uploader">' +
+                            '<ul class="qq-upload-list-selector qq-upload-list">' +
+                                '<li>' +
+                                    '<a class="qq-upload-delete-selector qq-upload-delete" href="#">Delete</a>' +
+                                    '<div>' +
+                                        '<span class="qq-edit-filename-icon-selector qq-edit-filename-icon"></span>' +
+                                        '<span class="qq-upload-file-selector qq-upload-file"></span>' +
+                                        '<input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">' +
+                                        '<span class="qq-upload-size-selector qq-upload-size"></span>' +
+                                        '<a class="qq-upload-cancel-selector qq-upload-cancel" href="#">Cancel</a>' +
+                                        '<div>' +
+                                            '<a class="qq-upload-retry-selector qq-upload-retry" href="#">Retry</a>' +
+                                        '</div>' +
+                                        '<span class="qq-upload-status-text-selector qq-upload-status-text"></span>' +
+                                    '</div>' +
+                                '</li>' +
+                            '</ul>' +
                         '</div>'
 
     function renderTemplate(content) {
@@ -206,4 +224,20 @@ describe("templating.js", function() {
         }
     });
 
+    describe("file elements are two levels below the file container", function() {
+        var fileContainer, deleteButtonEl, cancelButtonEl, retryButtonEl;
+
+        it("is able to find the file ID given a button elememnt", function() {
+            renderTemplate(simpleTwoLevelFilesTemplate);
+            templating.addFile(0, "foobar");
+            fileContainer = templating.getFileContainer(0);
+            deleteButtonEl = $(fileContainer).find(".qq-upload-delete-selector")[0];
+            cancelButtonEl = $(fileContainer).find(".qq-upload-cancel-selector")[0];
+            retryButtonEl = $(fileContainer).find(".qq-upload-retry-selector")[0];
+
+            assert.equal(templating.getFileId(deleteButtonEl), 0, "Button 1 level deep");
+            assert.equal(templating.getFileId(cancelButtonEl), 0, "Button 2 levels deep");
+            assert.equal(templating.getFileId(retryButtonEl), 0, "Button 3 levels deep");
+        });
+    });
 });
