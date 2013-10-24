@@ -405,10 +405,10 @@ qq.Templating = function(spec) {
             var currentNode = el;
 
             while (currentNode.getAttribute(FILE_ID_ATTR) == null) {
-                currentNode = el.parentNode;
+                currentNode = currentNode.parentNode;
             }
 
-            return currentNode.getAttribute(FILE_ID_ATTR);
+            return parseInt(currentNode.getAttribute(FILE_ID_ATTR));
         },
 
         getFileList: function() {
