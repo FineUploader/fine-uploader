@@ -44,7 +44,13 @@ qq.basePublicApi = {
     },
 
     getInProgress: function() {
-        return this._filesInProgress.length;
+        return this._uploadData.retrieve({
+            status: [
+                qq.status.UPLOADING,
+                qq.status.UPLOAD_RETRYING,
+                qq.status.QUEUED
+            ]
+        }).length;
     },
 
     getNetUploads: function() {
@@ -60,7 +66,6 @@ qq.basePublicApi = {
         else {
             while (this._storedIds.length) {
                 idToUpload = this._storedIds.shift();
-                this._filesInProgress.push(idToUpload);
                 this._handler.upload(idToUpload);
             }
         }
@@ -94,7 +99,6 @@ qq.basePublicApi = {
         this.log("Resetting uploader...");
 
         this._handler.reset();
-        this._filesInProgress = [];
         this._storedIds = [];
         this._autoRetries = [];
         this._retryTimeouts = [];
@@ -594,22 +598,18 @@ qq.basePrivateApi = {
         var self = this;
 
         this._disposeSupport.attach(window, 'beforeunload', function(e){
-            if (!self._filesInProgress.length){return;}
-
-            var e = e || window.event;
-            // for ie, ff
-            e.returnValue = self._options.messages.onLeave;
-            // for webkit
-            return self._options.messages.onLeave;
+            if (self.getInProgress()) {
+                var e = e || window.event;
+                // for ie, ff
+                e.returnValue = self._options.messages.onLeave;
+                // for webkit
+                return self._options.messages.onLeave;
+            }
         });
     },
 
     _onSubmit: function(id, name) {
         this._netUploadedOrQueued++;
-
-        if (this._options.autoUpload) {
-            this._filesInProgress.push(id);
-        }
     },
 
     _onProgress: function(id, name, loaded, total) {
@@ -630,7 +630,6 @@ qq.basePrivateApi = {
             this._uploadData.setStatus(id, qq.status.UPLOAD_SUCCESSFUL);
         }
 
-        this._removeFromFilesInProgress(id);
         this._maybeParseAndSendUploadError(id, name, result, xhr);
 
         return result.success ? true : false;
@@ -638,8 +637,6 @@ qq.basePrivateApi = {
 
     _onCancel: function(id, name) {
         this._netUploadedOrQueued--;
-
-        this._removeFromFilesInProgress(id);
 
         clearTimeout(this._retryTimeouts[id]);
 
@@ -721,13 +718,6 @@ qq.basePrivateApi = {
             this._handler.expunge(id);
             this._uploadData.setStatus(id, qq.status.DELETED);
             this.log("Delete request for '" + name + "' has succeeded.");
-        }
-    },
-
-    _removeFromFilesInProgress: function(id) {
-        var index = qq.indexOf(this._filesInProgress, id);
-        if (index >= 0) {
-            this._filesInProgress.splice(index, 1);
         }
     },
 
@@ -831,7 +821,6 @@ qq.basePrivateApi = {
             }
 
             this.log("Retrying upload for '" + fileName + "' (id: " + id + ")...");
-            this._filesInProgress.push(id);
             return true;
         }
         else {

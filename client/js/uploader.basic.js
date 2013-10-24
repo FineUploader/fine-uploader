@@ -140,7 +140,6 @@ qq.FineUploaderBasic = function(o) {
     this._wrapCallbacks();
     this._disposeSupport =  new qq.DisposeSupport();
 
-    this._filesInProgress = [];
     this._storedIds = [];
     this._autoRetries = [];
     this._retryTimeouts = [];
