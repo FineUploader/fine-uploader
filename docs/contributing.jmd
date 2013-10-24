@@ -16,11 +16,11 @@
     <tbody>
         <tr>
             <td>Master</td>
-            <td><a href="https://www.travis-ci.org/Widen/fine-uploader"><img src="https://www.travis-ci.org/Widen/fine-uploader.png?branch=master"></a></td>
+            <td><a href="https://travis-ci.org/Widen/fine-uploader"><img src="https://travis-ci.org/Widen/fine-uploader.png?branch=master"></a></td>
         </tr>
         <tr>
             <td>Develop</td>
-            <td><a href="https://www.travis-ci.org/Widen/fine-uploader"><img src="https://www.travis-ci.org/Widen/fine-uploader.png?branch=develop"></a></td>
+            <td><a href="https://travis-ci.org/Widen/fine-uploader"><img src="https://travis-ci.org/Widen/fine-uploader.png?branch=develop"></a></td>
         </tr>
     </tbody>
 </table>
