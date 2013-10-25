@@ -503,7 +503,7 @@ module.exports = (grunt) ->
                 src: ['<%= concat.all.dest %>']
                 dest: "#{paths.build}/all.<%= pkg.name %>.min.js"
             custom:
-                src: ["#{customBuildDest}/src/*.js"]
+                src: ["#{customBuildDest}/src/custom.<%= pkg.name %>-<%= pkg.version %>.js"]
                 dest: "#{customBuildDest}/src/custom.<%= pkg.name %>-<%= pkg.version %>.min.js"
 
         usebanner:
@@ -556,7 +556,7 @@ module.exports = (grunt) ->
                             */ \n\n'''
             customfoot:
                 files:
-                    src: ["#{customBuildDest}/src/*.{js,css}"]
+                    src: ["#{customBuildDest}/*.{js,css}"]
                 options:
                     position: 'bottom'
                     banner: '/*! <%= grunt.template.today("yyyy-mm-dd") %> */\n'
