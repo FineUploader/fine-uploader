@@ -73,6 +73,7 @@ module.exports =
         fuSrcTraditional: false
         fuSrcUi: false
         fuSrcS3: false
+        fuSrcS3Ui: false
         fuDeleteFileModule: false
         fuPasteModule: false
         fuDndModule: false
