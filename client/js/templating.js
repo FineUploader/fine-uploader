@@ -131,6 +131,17 @@ qq.Templating = function(spec) {
             if (dropProcessing) {
                 qq(dropProcessing).remove();
             }
+
+        }
+
+        // If DnD is not available then remove
+        // it from the DOM as well.
+        if (!qq.DragAndDrop) {
+            var dropArea = qq(tempTemplateEl).getByClass(selectorClasses.drop)[0];
+            if (dropArea) {
+                qq.log("DnD module unavailable.", "info");
+                qq(dropArea).remove();
+            }
         }
 
         // Ensure the `showThumbnails` flag is only set if the thumbnail element
