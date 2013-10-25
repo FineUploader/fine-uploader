@@ -81,7 +81,7 @@ module.exports =
         fuEditFilenameModule: false
         fuSrcJquery: false
         fuSrcS3Jquery: false
-        fuJqueryDnd: false
+        fuSrcJqueryDnd: false
         fuImagePreviewModule: false
 
     if _.isArray formulae
