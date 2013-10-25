@@ -12,7 +12,7 @@ in PHP, node.js, Python, and Java.  Other examples will be created in the future
 
 {{ alert(
 """[A comprehensive, step-by-step guide on implementing your origin server to
-handle S3 uploads can be found on the Fine Uploader blog](http://blog.fineuploader.com/2013/08/16/fine-uploader-s3-upload-directly-to-amazon-s3-from-your-browser/#support-chunking)""")}}
+handle S3 uploads can be found on the Fine Uploader blog](http://blog.fineuploader.com/2013/08/16/fine-uploader-s3-upload-directly-to-amazon-s3-from-your-browser)""")}}
 
 #### Creating your S3 bucket's CORS configuration
 In order to use the upload-to-S3 feature, you MUST properly set the CORS configuration in your S3 bucket(s).  Fine Uploader
