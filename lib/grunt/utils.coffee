@@ -50,6 +50,7 @@ module.exports =
   concat: (formulae) ->
     src = ''
     _.map(formulae, (f) ->
+      grunt.log.writeln "File added: " + f
       src = grunt.file.read f
       src
     ).join(grunt.util.linefeed)
@@ -89,6 +90,8 @@ module.exports =
       _.each formulae, (mod) ->
         if mod in _.keys(includes)
           includes[mod] = true
+        else
+            grunt.log.error "Module: #{mod} not found in modules"
     else if _.isObject formulae
       includes = _.defaults includes, formulae
 
