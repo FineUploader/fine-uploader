@@ -531,7 +531,8 @@ module.exports = (grunt) ->
                     position: 'bottom'
                     banner: '/*! <%= grunt.template.today("yyyy-mm-dd") %> */\n'
             customhead:
-                src: ["#{paths.custom}/*.{js,css}"]
+                files:
+                    src: ["#{customBuildDest}/src/*.{js,css}"]
                 options:
                     position: 'top'
                     banner: '''
@@ -554,7 +555,8 @@ module.exports = (grunt) ->
                             *       Copyright (c) 2012 Shinichi Tomita <shinichi.tomita@gmail.com>
                             */ \n\n'''
             customfoot:
-                src: ["#{paths.custom}/*.{js,css}"]
+                files:
+                    src: ["#{customBuildDest}/src/*.{js,css}"]
                 options:
                     position: 'bottom'
                     banner: '/*! <%= grunt.template.today("yyyy-mm-dd") %> */\n'
@@ -715,6 +717,6 @@ module.exports = (grunt) ->
             util.build.call util, dest, modules.split(',')
         else
             util.build.call util, dest, []
-        grunt.task.run(['uglify:custom', 'cssmin:custom', 'usebanner:customhead', 'usebanner:customfoot', 'strip_code:custom', 'shell:version_custom_templates', 'compress:custom', 'build_details'])
+        grunt.task.run(['uglify:custom', 'cssmin:custom', 'strip_code:custom', 'shell:version_custom_templates', 'usebanner:customhead', 'usebanner:customfoot', 'compress:custom', 'build_details'])
 
     grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', ['package']
