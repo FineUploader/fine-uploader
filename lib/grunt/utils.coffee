@@ -70,9 +70,9 @@ module.exports =
     formula = []
     includes =
         fuSrcCore: false
-        fuSrcS3: false
         fuSrcTraditional: false
         fuSrcUi: false
+        fuSrcS3: false
         fuDeleteFileModule: false
         fuPasteModule: false
         fuDndModule: false
@@ -116,6 +116,6 @@ module.exports =
         modname = grunt.config.process 'custom.<%= pkg.name %>-<%= pkg.version %>.css'
       if '/' in mod and mod.split('/').indexOf('placeholders') != -1 or mod.split('/').indexOf('templates') != -1
           modname = mod.split('/').slice(1).join('/')
-          console.log(modname)
+          grunt.log.writeln "Wrote extra module: #{modname}"
       grunt.file.copy mod, path.join(dest_src, modname)
       grunt.log.writeln "Copied: #{path.basename(modname)}"
