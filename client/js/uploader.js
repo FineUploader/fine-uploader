@@ -142,7 +142,7 @@ qq.FineUploader = function(o, namespace) {
                 this._setupPastePrompt();
             }
             else {
-                qq.log("Paste support module not found!", "error");
+                qq.log("Paste support module not found.", "info");
             }
         }
 
