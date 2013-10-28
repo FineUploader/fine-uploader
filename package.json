@@ -1,7 +1,7 @@
 {
   "name": "fineuploader",
   "title": "Fine Uploader",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
   "main": "./fine-uploader/js/fineuploader.js",
   "maintainers": [
@@ -47,7 +47,7 @@
     "coffee-script": "~1.6.3",
     "glob": "~3.2.6",
     "grunt": "~0.4.1",
-    "grunt-banner": "~0.1.4",
+    "grunt-banner": "~0.2.0",
     "grunt-bower-task": "~0.3.1",
     "grunt-concurrent": "~0.3.1",
     "grunt-contrib-clean": "~0.4.1",

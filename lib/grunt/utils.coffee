@@ -50,6 +50,7 @@ module.exports =
   concat: (formulae) ->
     src = ''
     _.map(formulae, (f) ->
+      grunt.log.writeln "File added: " + f
       src = grunt.file.read f
       src
     ).join(grunt.util.linefeed)
@@ -70,24 +71,27 @@ module.exports =
     formula = []
     includes =
         fuSrcCore: false
-        fuSrcS3: false
         fuSrcTraditional: false
         fuSrcUi: false
+        fuSrcS3: false
+        fuSrcS3Ui: false
         fuDeleteFileModule: false
         fuPasteModule: false
         fuDndModule: false
         fuUiEvents: false
         fuDeleteFileUiModule: false
         fuEditFilenameModule: false
+        fuImagePreviewModule: false
         fuSrcJquery: false
         fuSrcS3Jquery: false
-        fuJqueryDnd: false
-        fuImagePreviewModule: false
+        fuSrcJqueryDnd: false
 
     if _.isArray formulae
       _.each formulae, (mod) ->
         if mod in _.keys(includes)
           includes[mod] = true
+        else
+            grunt.log.error "Module: #{mod} not found in modules"
     else if _.isObject formulae
       includes = _.defaults includes, formulae
 
@@ -116,6 +120,6 @@ module.exports =
         modname = grunt.config.process 'custom.<%= pkg.name %>-<%= pkg.version %>.css'
       if '/' in mod and mod.split('/').indexOf('placeholders') != -1 or mod.split('/').indexOf('templates') != -1
           modname = mod.split('/').slice(1).join('/')
-          console.log(modname)
+          grunt.log.writeln "Wrote extra module: #{modname}"
       grunt.file.copy mod, path.join(dest_src, modname)
       grunt.log.writeln "Copied: #{path.basename(modname)}"

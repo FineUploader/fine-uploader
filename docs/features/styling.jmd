@@ -101,9 +101,9 @@ First, make the file list a child of the drop zone:
 ```
 Notice that the default styling class for the drop area has been removed, you may want to contribute your own CSS class
 to match your web application's style.  Also notice that the `qq-hide-dropzone` attribute has been omitted from
-the drop area container.  By removing this, we are telling Fine Uploader UI to keep the contents of this drop zone
-visible at all times.  When this attribute is present, the contents are only visible when an item enters the
-drop zone.
+the drop area container.  By removing this (or setting its value to "false", we are telling Fine Uploader UI
+to keep the contents of this drop zone visible at all times.  When this attribute is present, the contents are
+only visible when an item enters the drop zone.
 
 Then, you may want to specify some custom styles for the drop zone.  Perhaps a `min-height` is important to ensure
 that the drop zone is not 0-sized when the uploader first loads (before any files have been submitted).  You may also

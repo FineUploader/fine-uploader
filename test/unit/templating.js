@@ -73,21 +73,6 @@ describe("templating.js", function() {
         $("#qq-template").remove();
     });
 
-    describe("hasAttr", function() {
-        it("detects presence of an attr", function() {
-            renderTemplate(emptyTemplate);
-
-            var div = document.createElement("div");
-
-            div.setAttribute("foobar", "true");
-            div.setAttribute("foobar1", "false");
-
-            assert.ok(templating._testing.hasAttr(div, "foobar"));
-            assert.ok(!templating._testing.hasAttr(div, "foobar1"));
-            assert.ok(!templating._testing.hasAttr(div, "foobar2"));
-        });
-    });
-
     describe("test with empty template", function() {
         it("ensure missing elements do not cause exceptions", function() {
             renderTemplate(emptyTemplate);

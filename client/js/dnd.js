@@ -128,7 +128,7 @@ qq.DragAndDrop = function(o) {
                 qq(dropArea).removeClass(options.classes.dropActive);
             },
             onDrop: function(e){
-                dropArea.hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropArea).hide();
+                qq(dropArea).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropArea).hide();
                 qq(dropArea).removeClass(options.classes.dropActive);
 
                 handleDataTransfer(e.dataTransfer, dropZone).done(function() {
@@ -141,7 +141,7 @@ qq.DragAndDrop = function(o) {
             dropZone.dispose();
         });
 
-        dropArea.hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropArea).hide();
+        qq(dropArea).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropArea).hide();
 
         uploadDropZones.push(dropZone);
 
@@ -182,13 +182,13 @@ qq.DragAndDrop = function(o) {
         disposeSupport.attach(document, 'dragleave', function(e){
             if (qq.FineUploader.prototype._leaving_document_out(e)) {
                 qq.each(dropZones, function(idx, dropZone) {
-                    dropZone.hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
+                    qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
                 });
             }
         });
         disposeSupport.attach(document, 'drop', function(e){
             qq.each(dropZones, function(idx, dropZone) {
-                dropZone.hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
+                qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
             });
             e.preventDefault();
         });

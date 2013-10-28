@@ -1,1 +1,1 @@
-qq.version="4.0.1";
+qq.version="4.0.2";

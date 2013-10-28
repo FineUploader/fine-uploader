@@ -173,7 +173,7 @@ qq.FineUploaderBasic = function(o) {
             this._pasteHandler = this._createPasteHandler();
         }
         else {
-            qq.log("Paste support module not found", "error");
+            qq.log("Paste support module not found", "info");
         }
     }
 
