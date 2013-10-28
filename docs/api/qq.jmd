@@ -50,6 +50,8 @@ sure to wrap any elements before calling these methods on them.
     (
         ("children", "element", "`Array`", "Returns an array of all immediate children of this element."),
         ("contains", "element", "`boolean`", "Returns `true` if the element contains the passed element."),
+        ("hasAttribute", "attribute name", "`boolean`", "Returns `true` if the attribute exists on the element and
+        the value of the attribute is not "false" (case-insensitive)."),
     )
 ) }}
 
