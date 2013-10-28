@@ -799,5 +799,38 @@ describe('util.js', function () {
         });
     }); //
 
+    describe("hasAttribute", function() {
+        it("should return true if the attribute exists w/ no specified value", function() {
+            var el = $("<div test-attr></div>")[0];
+            assert.ok(qq(el).hasAttribute("test-attr"));
+        });
+
+        it("should return true if the attribute exists w/ anything other than false as the value", function() {
+            var el1 = $('<div test-attr=""></div>')[0],
+                el2 = $('<div test-attr="foobar"></div>')[0],
+                el3 = $('<div test-attr="true"></div>')[0],
+                el4 = $('<div test-attr="truefalse"></div>')[0];
+
+            assert.ok(qq(el1).hasAttribute("test-attr"), "empty string test");
+            assert.ok(qq(el2).hasAttribute("test-attr"), "not false value test");
+            assert.ok(qq(el3).hasAttribute("test-attr"), "true value test");
+            assert.ok(qq(el4).hasAttribute("test-attr"), "whole string should be 'false'");
+
+        });
+
+        it("should return false if the attribute does not exist", function() {
+            var el = $("<div></div>")[0];
+            assert.ok(!qq(el).hasAttribute("test-attr"));
+        });
+
+        it("should return false if the value is false", function() {
+            var el1 = $('<div test-attr="false"></div>')[0],
+                el2 = $('<div test-attr="fAlse"></div>')[0];
+
+            assert.ok(!qq(el1).hasAttribute("test-attr"), "all lowercase false test");
+            assert.ok(!qq(el2).hasAttribute("test-attr"), "mixed case false test");
+        });
+    });
+
 }); // Util
 

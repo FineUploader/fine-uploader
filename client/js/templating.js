@@ -15,6 +15,8 @@ qq.Templating = function(spec) {
         THUMBNAIL_MAX_SIZE_ATTR = "qq-max-size",
         PREVIEW_GENERATED_ATTR = "qq-preview-generated",
         THUMBNAIL_SERVER_SCALE_ATTR = "qq-server-scale",
+        // This variable is duplicated in the DnD module since it can function as a standalone as well
+        HIDE_DROPZONE_ATTR = "qq-hide-dropzone",
         isCancelDisabled = false,
         thumbnailMaxSize = -1,
         options = {
@@ -80,7 +82,7 @@ qq.Templating = function(spec) {
             tempTemplateEl,
             fileListHtml,
             defaultButton,
-            dropzone,
+            dropArea,
             thumbnail,
             dropProcessing;
 
@@ -131,6 +133,28 @@ qq.Templating = function(spec) {
             if (dropProcessing) {
                 qq(dropProcessing).remove();
             }
+
+        }
+
+        dropArea = qq(tempTemplateEl).getByClass(selectorClasses.drop)[0];
+
+        // If DnD is not available then remove
+        // it from the DOM as well.
+        if (dropArea && !qq.DragAndDrop) {
+            qq.log("DnD module unavailable.", "info");
+            qq(dropArea).remove();
+        }
+
+        // If there is a drop area defined in the template, and the current UA doesn't support DnD,
+        // and the drop area is marked as "hide before enter", ensure it is hidden as the DnD module
+        // will not do this (since we will not be loading the DnD module)
+        if (dropArea
+            && !qq.supportedFeatures.fileDrop
+            && qq(dropArea).hasAttribute(HIDE_DROPZONE_ATTR)) {
+
+            qq(dropArea).css({
+                display: "none"
+            });
         }
 
         // Ensure the `showThumbnails` flag is only set if the thumbnail element
@@ -144,7 +168,7 @@ qq.Templating = function(spec) {
             // Only enforce max size if the attr value is non-zero
             thumbnailMaxSize = thumbnailMaxSize > 0 ? thumbnailMaxSize : null;
 
-            serverScale = hasAttr(thumbnail, THUMBNAIL_SERVER_SCALE_ATTR);
+            serverScale = qq(thumbnail).hasAttribute(THUMBNAIL_SERVER_SCALE_ATTR);
         }
         showThumbnails = showThumbnails && thumbnail;
 
@@ -234,10 +258,6 @@ qq.Templating = function(spec) {
 
     function show(el) {
         el && qq(el).removeClass(options.classes.hide);
-    }
-
-    function hasAttr(el, attr) {
-        return /true/i.exec(el.getAttribute(attr)) !== null;
     }
 
     function setProgressBarWidth(id, percent) {
@@ -330,7 +350,7 @@ qq.Templating = function(spec) {
 
     // Allows us to determine if a thumbnail element has already received a valid preview.
     function hasValidPreview(thumbnail) {
-        return hasAttr(thumbnail, PREVIEW_GENERATED_ATTR);
+        return qq(thumbnail).hasAttribute(PREVIEW_GENERATED_ATTR);
     }
 
 
@@ -635,11 +655,6 @@ qq.Templating = function(spec) {
             }
         }
     };
-
-    /*<testing>*/
-    api._testing = {};
-    api._testing.hasAttr = hasAttr;
-    /*</testing>*/
 
     return api;
 };

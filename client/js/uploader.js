@@ -133,7 +133,7 @@ qq.FineUploader = function(o, namespace) {
 
         this._setupClickAndEditEventHandlers();
 
-        if (qq.DragAndDrop) {
+        if (qq.DragAndDrop && qq.supportedFeatures.fileDrop) {
             this._dnd = this._setupDragAndDrop();
         }
 
@@ -142,7 +142,7 @@ qq.FineUploader = function(o, namespace) {
                 this._setupPastePrompt();
             }
             else {
-                qq.log("Paste support module not found!", "error");
+                qq.log("Paste support module not found.", "info");
             }
         }
 
