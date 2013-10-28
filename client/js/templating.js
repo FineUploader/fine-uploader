@@ -150,7 +150,7 @@ qq.Templating = function(spec) {
         // will not do this (since we will not be loading the DnD module)
         if (dropArea
             && !qq.supportedFeatures.fileDrop
-            && hasAttr(dropArea, HIDE_DROPZONE_ATTR)) {
+            && qq(dropArea).hasAttribute(HIDE_DROPZONE_ATTR)) {
 
             qq(dropArea).css({
                 display: "none"
@@ -168,7 +168,7 @@ qq.Templating = function(spec) {
             // Only enforce max size if the attr value is non-zero
             thumbnailMaxSize = thumbnailMaxSize > 0 ? thumbnailMaxSize : null;
 
-            serverScale = hasAttr(thumbnail, THUMBNAIL_SERVER_SCALE_ATTR);
+            serverScale = qq(thumbnail).hasAttribute(THUMBNAIL_SERVER_SCALE_ATTR);
         }
         showThumbnails = showThumbnails && thumbnail;
 
@@ -258,10 +258,6 @@ qq.Templating = function(spec) {
 
     function show(el) {
         el && qq(el).removeClass(options.classes.hide);
-    }
-
-    function hasAttr(el, attr) {
-        return /true/i.exec(el.getAttribute(attr)) !== null;
     }
 
     function setProgressBarWidth(id, percent) {
@@ -354,7 +350,7 @@ qq.Templating = function(spec) {
 
     // Allows us to determine if a thumbnail element has already received a valid preview.
     function hasValidPreview(thumbnail) {
-        return hasAttr(thumbnail, PREVIEW_GENERATED_ATTR);
+        return qq(thumbnail).hasAttribute(PREVIEW_GENERATED_ATTR);
     }
 
 
@@ -659,11 +655,6 @@ qq.Templating = function(spec) {
             }
         }
     };
-
-    /*<testing>*/
-    api._testing = {};
-    api._testing.hasAttr = hasAttr;
-    /*</testing>*/
 
     return api;
 };

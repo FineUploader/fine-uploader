@@ -8,7 +8,7 @@ describe("templating.js", function() {
                             '</ul>' +
                         '</div>',
         defaultTemplate = '<div class="qq-uploader-selector qq-uploader">' +
-                            '<div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone="true">' +
+                            '<div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>' +
                                 '<span>Drop files here to upload</span>' +
                             '</div>' +
                             '<div class="qq-upload-button-selector qq-upload-button">' +
@@ -71,21 +71,6 @@ describe("templating.js", function() {
 
     afterEach(function() {
         $("#qq-template").remove();
-    });
-
-    describe("hasAttr", function() {
-        it("detects presence of an attr", function() {
-            renderTemplate(emptyTemplate);
-
-            var div = document.createElement("div");
-
-            div.setAttribute("foobar", "true");
-            div.setAttribute("foobar1", "false");
-
-            assert.ok(templating._testing.hasAttr(div, "foobar"));
-            assert.ok(!templating._testing.hasAttr(div, "foobar1"));
-            assert.ok(!templating._testing.hasAttr(div, "foobar2"));
-        });
     });
 
     describe("test with empty template", function() {

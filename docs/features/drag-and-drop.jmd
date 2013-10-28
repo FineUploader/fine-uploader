@@ -6,7 +6,7 @@
 # Drag and Drop {: .page-header }
 
 {{ alert("If you want the contents of any drop zone to be invisible until an item enters the drop zone,
-simply ensure a `qq-hide-dropzone` attribute with a value of "true" is present on the drop zone container.") }}
+simply ensure a `qq-hide-dropzone` attribute is present on the drop zone container.") }}
 
 Fine Uploader's UI mode has drag & drop support built in.  The following contains information about that built-in
 support.  Near the middle of this page, you can find instructions that will allow you to easily integrate Fine Uploader's

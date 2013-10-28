@@ -21,11 +21,6 @@ qq.DragAndDrop = function(o) {
 
     setupDragDrop();
 
-    // Duplicated in templating module as this is a standalone and I don't want to expose this function in util.js
-    function hasAttr(el, attr) {
-        return /true/i.exec(el.getAttribute(attr)) !== null;
-    }
-
     function uploadDroppedFiles(files, uploadDropZone) {
         options.callbacks.dropLog('Grabbed ' + files.length + " dropped files.");
         uploadDropZone.dropDisabled(false);
@@ -133,7 +128,7 @@ qq.DragAndDrop = function(o) {
                 qq(dropArea).removeClass(options.classes.dropActive);
             },
             onDrop: function(e){
-                hasAttr(dropArea, HIDE_BEFORE_ENTER_ATTR) && qq(dropArea).hide();
+                qq(dropArea).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropArea).hide();
                 qq(dropArea).removeClass(options.classes.dropActive);
 
                 handleDataTransfer(e.dataTransfer, dropZone).done(function() {
@@ -146,7 +141,7 @@ qq.DragAndDrop = function(o) {
             dropZone.dispose();
         });
 
-        hasAttr(dropArea, HIDE_BEFORE_ENTER_ATTR) && qq(dropArea).hide();
+        qq(dropArea).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropArea).hide();
 
         uploadDropZones.push(dropZone);
 
@@ -187,13 +182,13 @@ qq.DragAndDrop = function(o) {
         disposeSupport.attach(document, 'dragleave', function(e){
             if (qq.FineUploader.prototype._leaving_document_out(e)) {
                 qq.each(dropZones, function(idx, dropZone) {
-                    hasAttr(dropZone, HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
+                    qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
                 });
             }
         });
         disposeSupport.attach(document, 'drop', function(e){
             qq.each(dropZones, function(idx, dropZone) {
-                hasAttr(dropZone, HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
+                qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
             });
             e.preventDefault();
         });

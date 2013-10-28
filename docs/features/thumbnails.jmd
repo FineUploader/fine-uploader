@@ -30,7 +30,7 @@ The simple thumbnails template bundled with the library will display thumbnails 
 file name.  You, of course, can customize the location, along with any other aspect of the template.  Notice
 that the thumbnail will always be house in an `<img>` element.  This `<img>` tag has a `qq-max-size` attribute
 which specifies a default maximum size to enforce for all thumbnails.  A `qq-server-scale` attribute is also
-present by default, with a value of "true".  This signals Fine Uploader UI to always ensure any thumbnails display
+present by default.  This signals Fine Uploader UI to always ensure any thumbnails display
 from server responses are scaled as well.  You can remove this attribute or set the value to "false" if any thumbnails
 returned in your upload responses are already appropriately scaled.
 
@@ -63,9 +63,9 @@ If the server's response to Fine Uploader's upload request (or `uploadSuccess` f
 element for the associated successfully uploaded file.  If a preview already exists for the file, it will be replaced
 with the server-returned thumbnail, but only if the thumbnail can be successfully displayed in the browser.  This
 thumbnail will be scaled according to the value of the `<img>` tag's `qq-max-size` attribute, but only if the `<img>`
-tag also contains a `qq-server-scale` attribute with a value of "true".  The provided simple thumbnails template
-includes both of these attributes, but you can remove the latter one if your server is going to generate an
-appropriately scaled thumbnail at the returned `thumbnailUrl`.
+tag also contains a `qq-server-scale` attribute.  The provided simple thumbnails template
+includes both of these attributes, but you can remove the latter one (or set it's value to false) if your server
+is going to generate an appropriately scaled thumbnail at the returned `thumbnailUrl`.
 
 Note that JPEGs grabbed from the URL returned in your server's upload response will not be re-oriented, so your server
 must either be sure to create thumbnails that are oriented correctly.  Since modern browsers already generate correctly

@@ -137,6 +137,30 @@ var qq = function(element) {
 
         clearText: function() {
             return qq(element).setText("");
+        },
+
+        // Returns true if the attribute exists on the element
+        // AND the value of the attribute is NOT "false" (case-insensitive)
+        hasAttribute: function(attrName) {
+            var attrVal;
+
+            if (element.hasAttribute) {
+
+                if (!element.hasAttribute(attrName)) {
+                    return false;
+                }
+
+                return /false/i.exec(element.getAttribute(attrName)) == null;
+            }
+            else {
+                attrVal = element[attrName];
+
+                if (attrVal === undefined) {
+                    return false;
+                }
+
+                return /false/i.exec(attrVal) == null;
+            }
         }
     };
 };
