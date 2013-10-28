@@ -133,7 +133,7 @@ qq.FineUploader = function(o, namespace) {
 
         this._setupClickAndEditEventHandlers();
 
-        if (qq.DragAndDrop) {
+        if (qq.DragAndDrop && qq.supportedFeatures.dragAndDrop) {
             this._dnd = this._setupDragAndDrop();
         }
 

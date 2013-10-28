@@ -121,8 +121,8 @@ If you want to disable the default drop zone, simply remove the drop zone relate
 ### Removed `dragAndDrop.hideDropzones`
 
 If you want an extra or default drop zone to remain invisible until an item approaches the drop area, simply include
-a `qq-hide-dropzone` attribute on the drop zone container.  This attribute is present on the drop area in the default
-template, but it can be removed, of course.
+a `qq-hide-dropzone` attribute on the drop zone container with a value of "true".  This attribute with a value of "true"
+is present on the drop area in the default template, but it can be removed, of course.
 
 
 ## Standalone drag & drop module breaking changes & upgrade instructions
@@ -131,7 +131,7 @@ template, but it can be removed, of course.
 
 This is the only breaking change to the standalone drag & drop module.  Instead of specifying a value for a
 `hideDropZonesBeforeEnter` option that either hides all drop zones until an item approaches (or not) you can now control
-visibility in this respect per-dropzone via a `qq-hide-dropzone` attribute on the drop zone container.
+visibility in this respect per-dropzone via a `qq-hide-dropzone` attribute (with a boolean value) on the drop zone container.
 
 
 {% endmarkdown %}

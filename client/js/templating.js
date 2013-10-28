@@ -15,6 +15,8 @@ qq.Templating = function(spec) {
         THUMBNAIL_MAX_SIZE_ATTR = "qq-max-size",
         PREVIEW_GENERATED_ATTR = "qq-preview-generated",
         THUMBNAIL_SERVER_SCALE_ATTR = "qq-server-scale",
+        // This variable is duplicated in the DnD module since it can function as a standalone as well
+        HIDE_DROPZONE_ATTR = "qq-hide-dropzone",
         isCancelDisabled = false,
         thumbnailMaxSize = -1,
         options = {
@@ -80,7 +82,7 @@ qq.Templating = function(spec) {
             tempTemplateEl,
             fileListHtml,
             defaultButton,
-            dropzone,
+            dropArea,
             thumbnail,
             dropProcessing;
 
@@ -134,14 +136,23 @@ qq.Templating = function(spec) {
 
         }
 
+        dropArea = qq(tempTemplateEl).getByClass(selectorClasses.drop)[0];
+
         // If DnD is not available then remove
         // it from the DOM as well.
-        if (!qq.DragAndDrop) {
-            var dropArea = qq(tempTemplateEl).getByClass(selectorClasses.drop)[0];
-            if (dropArea) {
-                qq.log("DnD module unavailable.", "info");
-                qq(dropArea).remove();
-            }
+        if (dropArea && !qq.DragAndDrop) {
+            qq.log("DnD module unavailable.", "info");
+            qq(dropArea).remove();
+        }
+
+        // If there is a drop area defined in the template, and the current UA doesn't support DnD,
+        // and the drop area is marked as "hide before enter", ensure it is hidden as the DnD module
+        // will not do this (since we will not be loading the DnD module)
+        if (dropArea
+            && !qq.supportedFeatures.dragAndDrop
+            && hasAttr(dropArea, HIDE_DROPZONE_ATTR)) {
+
+            hide(dropArea);
         }
 
         // Ensure the `showThumbnails` flag is only set if the thumbnail element

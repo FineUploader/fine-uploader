@@ -8,7 +8,7 @@ describe("templating.js", function() {
                             '</ul>' +
                         '</div>',
         defaultTemplate = '<div class="qq-uploader-selector qq-uploader">' +
-                            '<div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>' +
+                            '<div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone="true">' +
                                 '<span>Drop files here to upload</span>' +
                             '</div>' +
                             '<div class="qq-upload-button-selector qq-upload-button">' +
