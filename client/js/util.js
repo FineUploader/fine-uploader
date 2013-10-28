@@ -150,7 +150,7 @@ var qq = function(element) {
                     return false;
                 }
 
-                return /false/i.exec(element.getAttribute(attrName)) == null;
+                return /^false$/i.exec(element.getAttribute(attrName)) == null;
             }
             else {
                 attrVal = element[attrName];
@@ -159,7 +159,7 @@ var qq = function(element) {
                     return false;
                 }
 
-                return /false/i.exec(attrVal) == null;
+                return /^false$/i.exec(attrVal) == null;
             }
         }
     };
