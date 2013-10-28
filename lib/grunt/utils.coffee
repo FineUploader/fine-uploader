@@ -81,10 +81,10 @@ module.exports =
         fuUiEvents: false
         fuDeleteFileUiModule: false
         fuEditFilenameModule: false
+        fuImagePreviewModule: false
         fuSrcJquery: false
         fuSrcS3Jquery: false
         fuSrcJqueryDnd: false
-        fuImagePreviewModule: false
 
     if _.isArray formulae
       _.each formulae, (mod) ->
