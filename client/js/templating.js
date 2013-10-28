@@ -149,10 +149,12 @@ qq.Templating = function(spec) {
         // and the drop area is marked as "hide before enter", ensure it is hidden as the DnD module
         // will not do this (since we will not be loading the DnD module)
         if (dropArea
-            && !qq.supportedFeatures.dragAndDrop
+            && !qq.supportedFeatures.fileDrop
             && hasAttr(dropArea, HIDE_DROPZONE_ATTR)) {
 
-            hide(dropArea);
+            qq(dropArea).css({
+                display: "none"
+            });
         }
 
         // Ensure the `showThumbnails` flag is only set if the thumbnail element
