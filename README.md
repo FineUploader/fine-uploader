@@ -26,3 +26,4 @@ your own version-stamped copy of the library.
 
 
 *Fine Uploader is an open-source component of [Widen Enterprises, Inc.](http://www.widen.com/)*
+
