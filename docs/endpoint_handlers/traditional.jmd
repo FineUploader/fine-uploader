@@ -73,7 +73,7 @@ to avoid collisions during accumulation of chunks between files with the same na
 
 Some server-side examples have been updated to handle file chunking.
 
-For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2013/01/01/resume-uploads-from-previous-sessions-in-3-2/).
+For more complete details regarding the file chunking feature, along with code examples, please see [this blog post](http://blog.fineuploader.com/2012/12/28/file-chunkingpartitioning-is-now-available-in-3-2/).
 on the topic.
 
 ## File Resume
