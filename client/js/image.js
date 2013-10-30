@@ -116,7 +116,7 @@ qq.ImageGenerator = function(log) {
     // failure if the target is not an <img> or a <canvas>, or if the drawing
     // attempt was not successful.
     function registerThumbnailRenderedListener(imgOrCanvas, promise) {
-        var registered = isImg || isCanvas;
+        var registered = isImg(imgOrCanvas) || isCanvas(imgOrCanvas);
 
         if (isImg(imgOrCanvas)) {
             registerImgLoadListeners(imgOrCanvas, promise);
@@ -125,7 +125,7 @@ qq.ImageGenerator = function(log) {
             registerCanvasDrawImageListener(imgOrCanvas, promise);
         }
         else {
-            promise.fail(imgOrCanvas);
+            promise.failure(imgOrCanvas);
             log(qq.format("Element container of type {} is not supported!", imgOrCanvas.tagName), "error");
         }
 
