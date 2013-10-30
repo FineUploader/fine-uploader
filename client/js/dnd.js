@@ -161,6 +161,11 @@ qq.DragAndDrop = function(o) {
         return fileDrag;
     }
 
+    function leavingDocumentOut(e) {
+        return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
+            || (qq.firefox() && !e.relatedTarget); // null e.relatedTarget for Firefox
+    }
+
     function setupDragDrop() {
         var dropZones = options.dropZoneElements;
 
@@ -179,8 +184,8 @@ qq.DragAndDrop = function(o) {
             }
         });
 
-        disposeSupport.attach(document, 'dragleave', function(e){
-            if (qq.FineUploader.prototype._leaving_document_out(e)) {
+        disposeSupport.attach(document, 'dragleave', function(e) {
+            if (leavingDocumentOut(e)) {
                 qq.each(dropZones, function(idx, dropZone) {
                     qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
                 });

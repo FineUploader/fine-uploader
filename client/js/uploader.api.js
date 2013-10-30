@@ -216,11 +216,6 @@ qq.uiPrivateApi = {
         return new qq.FilenameClickHandler(spec);
     },
 
-    _leaving_document_out: function(e){
-        return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
-            || (qq.firefox() && !e.relatedTarget); // null e.relatedTarget for Firefox
-    },
-
     _storeForLater: function(id) {
         this._parent.prototype._storeForLater.apply(this, arguments);
         this._templating.hideSpinner(id);
