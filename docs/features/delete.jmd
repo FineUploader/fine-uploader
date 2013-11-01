@@ -26,8 +26,8 @@ A file is eligible for deletion only after it has been successfully uploaded.
 ) }}
 
 {{
-alert("""Fine Uploader appends a `_delete` parameter to the request object when the HTTP method is POST instead of DELETE.
-This is for your benefit so your server knows what sort of request it is.""")
+alert("""Fine Uploader appends a `_method` parameter to the request object with a value of DELETE when the HTTP method is 
+POST instead of DELETE.  This makes it easier to determine the intended semantics of the request server-side.""")
 }}
 
 ## Events
