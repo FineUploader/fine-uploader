@@ -185,23 +185,14 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             // Code outside of the upload handlers looks for this to determine if the upload succeeded
             if (!isError) {
                 responseToBubble.success = true;
-            }
-
-            onProgress(id, name, size, size);
-            onComplete(id, name, responseToBubble, xhr);
-
-            if (fileState[id]) {
-                delete fileState[id].xhr;
-            }
-
-            if (responseToExamine.success) {
+                onProgress(id, name, size, size);
                 maybeDeletePersistedChunkData(id);
+                delete fileState[id].loaded;
+                delete fileState[id].chunking;
             }
 
-            // If we are done, no need to keep this state data around,
-            // especially if we want to restart the upload later
-            delete fileState[id].loaded;
-            delete fileState[id].chunking;
+            onComplete(id, name, responseToBubble, xhr);
+            fileState[id] && delete fileState[id].xhr;
 
             uploadCompleteCallback(id);
         }
