@@ -175,7 +175,6 @@ qq.ImageGenerator = function(log) {
 
             function() {
                 log("Not previewable");
-                //TODO optionally include placeholder image
                 drawPreview.failure(container, "Not previewable");
             }
         );
