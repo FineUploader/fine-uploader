@@ -13,7 +13,6 @@ qq.Templating = function(spec) {
     var FILE_ID_ATTR = "qq-file-id",
         FILE_CLASS_PREFIX = "qq-file-id-",
         THUMBNAIL_MAX_SIZE_ATTR = "qq-max-size",
-        PREVIEW_GENERATED_ATTR = "qq-preview-generated",
         THUMBNAIL_SERVER_SCALE_ATTR = "qq-server-scale",
         // This variable is duplicated in the DnD module since it can function as a standalone as well
         HIDE_DROPZONE_ATTR = "qq-hide-dropzone",
@@ -55,6 +54,7 @@ qq.Templating = function(spec) {
             dropProcessingSpinner: 'qq-drop-processing-spinner-selector',
             thumbnail: 'qq-thumbnail-selector'
         },
+        previewGeneration = {},
         log,
         api,
         isEditElementsExist,
@@ -324,12 +324,22 @@ qq.Templating = function(spec) {
 
     // Displays a "thumbnail not available" type placeholder image
     // iff we were able to load this placeholder during initialization
-    // of the templating module AND a valid preview does not already exist in the thumbnail element.
-    function displayNotAvailableImg(thumbnail) {
-        if (cachedThumbnailNotAvailableImg && !hasValidPreview(thumbnail)) {
-            maybeScalePlaceholderViaCss(cachedThumbnailNotAvailableImg, thumbnail);
-            thumbnail.src = cachedThumbnailNotAvailableImg.src;
-            show(thumbnail);
+    // of the templating module or after preview generation has failed.
+    function maybeSetDisplayNotAvailableImg(id, thumbnail) {
+        var previewing = previewGeneration[id] || new qq.Promise().failure();
+
+        if (cachedThumbnailNotAvailableImg) {
+            previewing.then(
+                function() {
+                    delete previewGeneration[id];
+                },
+                function() {
+                    maybeScalePlaceholderViaCss(cachedThumbnailNotAvailableImg, thumbnail);
+                    thumbnail.src = cachedThumbnailNotAvailableImg.src;
+                    show(thumbnail);
+                    delete previewGeneration[id];
+                }
+            );
         }
     }
 
@@ -346,11 +356,6 @@ qq.Templating = function(spec) {
                 maxHeight: maxHeight
             });
         }
-    }
-
-    // Allows us to determine if a thumbnail element has already received a valid preview.
-    function hasValidPreview(thumbnail) {
-        return qq(thumbnail).hasAttribute(PREVIEW_GENERATED_ATTR);
     }
 
 
@@ -610,19 +615,23 @@ qq.Templating = function(spec) {
                 };
 
             if (qq.supportedFeatures.imagePreviews) {
+                previewGeneration[id] = new qq.Promise();
+
                 if (thumbnail) {
                     displayWaitingImg(thumbnail);
                     return options.imageGenerator.generate(fileOrBlob, thumbnail, spec).then(
                         function() {
-                            thumbnail.setAttribute(PREVIEW_GENERATED_ATTR, "true");
                             show(thumbnail);
+                            previewGeneration[id].success();
                         },
                         function() {
                             // Display the "not available" placeholder img only if we are
                             // not expecting a thumbnail at a later point, such as in a server response.
                             if (!options.placeholders.waitUntilUpdate) {
-                                displayNotAvailableImg(thumbnail);
+                                maybeSetDisplayNotAvailableImg(id, thumbnail);
                             }
+
+                            previewGeneration[id].failure();
                         });
                 }
             }
@@ -645,12 +654,12 @@ qq.Templating = function(spec) {
                             show(thumbnail);
                         },
                         function() {
-                            displayNotAvailableImg(thumbnail);
+                            maybeSetDisplayNotAvailableImg(id, thumbnail);
                         }
                     );
                 }
                 else {
-                    displayNotAvailableImg(thumbnail);
+                    maybeSetDisplayNotAvailableImg(id, thumbnail);
                 }
             }
         }
