@@ -90,6 +90,15 @@
                     foo: "bar"
                 }
             },
+            chunking: {
+                enabled: true
+            },
+            resume: {
+                enabled: true
+            },
+            retry: {
+                enableAuto: true
+            },
             thumbnails: {
                 placeholders: {
                     waitingPath: "/client/placeholders/waiting-generic.png",
