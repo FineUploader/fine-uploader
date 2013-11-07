@@ -167,9 +167,10 @@ options for `messages`""", "info", "Note:") }}
 
 {{ options_table(
     (
-        ("failUpload", "`String`", "`'Upload failed'`", "Text that appears next to a failed item"),
-        ("formatProgress", "`String`", "`'{percent}% of {total_size}'`", "Appears next to a currently uploading item"),
-        ("waitingForResponse", "`String`", "`'Processing...'`", "Appears next to item once the last bytes have been sent (differs on the user-agent)"),
+        ("failUpload", "`String`", "'Upload failed'", "Text that appears next to a failed item"),
+        ("formatProgress", "`String`", "'{percent}% of {total_size}'", "Appears next to a currently uploading item"),
+        ("paused", "`String`", "'Paused'", "Appears next to a paused item"),
+        ("waitingForResponse", "`String`", "'Processing...'", "Appears next to item once the last bytes have been sent (differs on the user-agent)"),
     )
 ) }}
 

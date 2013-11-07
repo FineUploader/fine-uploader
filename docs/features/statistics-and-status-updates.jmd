@@ -28,6 +28,7 @@ For reference, here are valid status values:
 * `DELETED`
 * `DELETING`
 * `DELETE_FAILED`
+* `PAUSED`
 
 ----
 
