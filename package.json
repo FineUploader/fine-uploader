@@ -72,7 +72,8 @@
     "karma-slimerjs-launcher": "~0.1.2",
     "request": "~2.21.0",
     "semver": "2.0.x",
-    "wd": "git://github.com/admc/wd.git"
+    "wd": "git://github.com/admc/wd.git",
+    "saucelabs": "~0.1.1"
   },
   "dependencies": {
     "optimist": "~0.6.0",
