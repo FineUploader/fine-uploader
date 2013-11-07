@@ -41,15 +41,17 @@ qq.uiPublicApi = {
     },
 
     pauseUpload: function(id) {
-        if (this._parent.prototype.pauseUpload.apply(this, arguments)) {
-            this._templating.uploadPaused(id);
-        }
+        var paused = this._parent.prototype.pauseUpload.apply(this, arguments);
+
+        paused && this._templating.uploadPaused(id);
+        return paused;
     },
 
     continueUpload: function(id) {
-        if (this._parent.prototype.continueUpload.apply(this, arguments)) {
-            this._templating.uploadContinued(id);
-        }
+        var continued = this._parent.prototype.continueUpload.apply(this, arguments);
+
+        continued && this._templating.uploadContinued(id);
+        return continued;
     }
 };
 

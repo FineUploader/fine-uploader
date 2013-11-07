@@ -266,6 +266,10 @@ qq.basePublicApi = {
     pauseUpload: function(id) {
         var uploadData = this._uploadData.retrieve({id: id});
 
+        if (!qq.supportedFeatures.pause || !this._options.chunking.enabled) {
+            return false;
+        }
+
         // Pause only really makes sense if the file is uploading or retrying
         if (qq.indexOf([qq.status.UPLOADING, qq.status.UPLOAD_RETRYING], uploadData.status) >= 0) {
             if (this._handler.pause(id)) {
@@ -273,16 +277,22 @@ qq.basePublicApi = {
                 return true;
             }
             else {
-                qq.log(qq.format("Unable to pause file ID {} ({}).", id, this.getName(id)), "error")
+                qq.log(qq.format("Unable to pause file ID {} ({}).", id, this.getName(id)), "error");
             }
         }
         else {
-            qq.log(qq.format("Ignoring pause for file ID {} ({}).  Not in progress.", id, this.getName(id)), "error")
+            qq.log(qq.format("Ignoring pause for file ID {} ({}).  Not in progress.", id, this.getName(id)), "error");
         }
+
+        return false;
     },
 
     continueUpload: function(id) {
         var uploadData = this._uploadData.retrieve({id: id});
+
+        if (!qq.supportedFeatures.pause || !this._options.chunking.enabled) {
+            return false;
+        }
 
         if (uploadData.status === qq.status.PAUSED) {
             qq.log(qq.format("Paused file ID {} ({}) will be continued.  Not paused.", id, this.getName(id)));
@@ -293,8 +303,10 @@ qq.basePublicApi = {
             return true;
         }
         else {
-            qq.log(qq.format("Ignoring continue for file ID {} ({}).  Not paused.", id, this.getName(id)), "error")
+            qq.log(qq.format("Ignoring continue for file ID {} ({}).  Not paused.", id, this.getName(id)), "error");
         }
+
+        return false;
     }
 };
 
