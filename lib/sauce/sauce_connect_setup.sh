@@ -19,6 +19,7 @@ CONNECT_DOWNLOAD="Sauce_Connect.zip"
 if [[ -z "${LOGS_DIR}" ]]; then
   LOGS_DIR="/tmp/fineuploader-build/logs"
 fi
+mkdir -p $LOGS_DIR
 
 CONNECT_LOG="$LOGS_DIR/sauce-connect.log"
 CONNECT_STDOUT="$LOGS_DIR/sauce-connect.stdout"
@@ -29,7 +30,9 @@ CONNECT_PID_FILE="$LOGS_DIR/sauce-connect.pid"
 # Get Connect and start it
 mkdir -p $CONNECT_DIR
 cd $CONNECT_DIR
-curl $CONNECT_URL -o $CONNECT_DOWNLOAD 2> /dev/null 1> /dev/null
+echo "Downloading Sauce-Connect"
+curl -# $CONNECT_URL -o $CONNECT_DOWNLOAD
+echo "got it!"
 unzip $CONNECT_DOWNLOAD > /dev/null
 rm $CONNECT_DOWNLOAD
 
