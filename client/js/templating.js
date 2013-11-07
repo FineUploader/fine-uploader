@@ -49,7 +49,7 @@ qq.Templating = function(spec) {
             size: 'qq-upload-size-selector',
             cancel: 'qq-upload-cancel-selector',
             pause: 'qq-upload-pause-selector',
-            continue: 'qq-upload-continue-selector',
+            continueButton: 'qq-upload-continue-selector',
             deleteButton: 'qq-upload-delete-selector',
             retry: 'qq-upload-retry-selector',
             statusText: 'qq-upload-status-text-selector',
@@ -225,7 +225,7 @@ qq.Templating = function(spec) {
     }
 
     function getContinue(id) {
-        return getTemplateEl(getFile(id), selectorClasses.continue);
+        return getTemplateEl(getFile(id), selectorClasses.continueButton);
     }
 
     function getProgress(id) {
@@ -595,7 +595,7 @@ qq.Templating = function(spec) {
         },
 
         isContinueButton: function(el) {
-            return qq(el).hasClass(selectorClasses.continue);
+            return qq(el).hasClass(selectorClasses.continueButton);
         },
 
         allowContinueButton: function(id) {
