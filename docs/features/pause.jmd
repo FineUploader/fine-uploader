@@ -24,6 +24,8 @@ add the following to your template:
 <button class="qq-upload-pause-selector qq-upload-pause">Pause</button>
 <button class="qq-upload-continue-selector qq-upload-continue">Continue</button>
 ```
+These elements must be added under the qq-upload-list-selector container in your template in order for Fine Uploader
+UI to find them.
 
 You can remove the second CSS class in each element, if you choose.  The first CSS class is used internally
 by Fine Uploader to select the buttons, and the second is used to apply default styles defined in Fine Uploader's
