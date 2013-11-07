@@ -166,7 +166,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             responseToExamine = parseResponse(id, requestXhr),
             // This is the response we plan on passing to external callbacks
             responseToBubble = errorDetails || parseResponse(id),
-            isError = errorDetails != null || responseToExamine.success !== true;
+            paused = fileState[id].paused,
+            isError = !paused && (errorDetails != null || responseToExamine.success !== true);
 
         // If this upload failed, we might want to completely start the upload over on retry in some cases.
         if (isError) {
@@ -182,8 +183,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         if (!isError || !options.onAutoRetry(id, name, responseToBubble, xhr)) {
             log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
 
-            // Code outside of the upload handlers looks for this to determine if the upload succeeded
-            if (!isError) {
+            // If the upload has not failed and has not been paused, clean up state date
+            if (!isError && !paused) {
                 responseToBubble.success = true;
                 onProgress(id, name, size, size);
                 maybeDeletePersistedChunkData(id);
@@ -191,10 +192,15 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
                 delete fileState[id].chunking;
             }
 
-            onComplete(id, name, responseToBubble, xhr);
-            fileState[id] && delete fileState[id].xhr;
-
-            uploadCompleteCallback(id);
+            // Only declare the upload complete (to listeners) if it has not been paused.
+            if (paused) {
+                qq.log(qq.format("Detected pause on {} ({}).", id, name));
+            }
+            else {
+                onComplete(id, name, responseToBubble, xhr);
+                fileState[id] && delete fileState[id].xhr;
+                uploadCompleteCallback(id);
+            }
         }
     }
 

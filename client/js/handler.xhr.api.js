@@ -182,6 +182,7 @@ qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, on
          * Sends the file identified by id to the server
          */
         upload: function(id, retry) {
+            fileState[id] && delete fileState[id].paused;
             return onUpload(id, retry);
         },
 
@@ -205,6 +206,17 @@ qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, on
             log("Server requested UUID change from '" + fileState[id].uuid + "' to '" + newUuid + "'");
             fileState[id].uuid = newUuid;
             onUuidChanged(id, newUuid);
+        },
+
+        pause: function(id) {
+            var xhr = fileState[id].xhr;
+
+            if(xhr) {
+                log(qq.format("Aborting XHR upload for {} '{}' due to pause instruction.", id, publicApi.getName(id)));
+                fileState[id].paused = true;
+                xhr.abort();
+                return true;
+            }
         }
     };
 

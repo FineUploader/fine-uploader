@@ -319,6 +319,44 @@ describe('uploader.basic.api.js', function () {
 
             assert.ok(qq.isPromise(fineuploader._handleCheckedCallback(spec)));
         });
+
+        it("does auto retry if upload is not paused", function() {
+            fineuploader = new qq.FineUploaderBasic({
+                element: $uploader[0],
+                retry: {
+                    enableAuto: true
+                }
+            });
+
+            fineuploader._uploadData = {
+                retrieve: function() {
+                    return {
+                        status: qq.status.UPLOADING
+                    }
+                }
+            };
+
+            assert.ok(fineuploader._shouldAutoRetry(0));
+        });
+
+        it("does not auto retry if upload is paused", function() {
+            fineuploader = new qq.FineUploaderBasic({
+                element: $uploader[0],
+                retry: {
+                    enableAuto: true
+                }
+            });
+
+            fineuploader._uploadData = {
+                retrieve: function() {
+                    return {
+                        status: qq.status.PAUSED
+                    }
+                }
+            };
+
+            assert.ok(!fineuploader._shouldAutoRetry(0));
+        });
     });
 
 });

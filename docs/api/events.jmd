@@ -175,6 +175,7 @@ For reference, the status':
 * `DELETED`
 * `DELETING`
 * `DELETE_FAILED`
+* `PAUSED`
 
 ----
 

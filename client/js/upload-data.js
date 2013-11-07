@@ -146,6 +146,7 @@ qq.status = {
     REJECTED: "rejected",
     QUEUED: "queued",
     CANCELED: "canceled",
+    PAUSED: "paused",
     UPLOADING: "uploading",
     UPLOAD_RETRYING: "retrying upload",
     UPLOAD_SUCCESSFUL: "upload successful",

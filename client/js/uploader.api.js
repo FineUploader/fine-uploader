@@ -38,6 +38,20 @@ qq.uiPublicApi = {
         this._filesInBatchAddedToUi = 0;
 
         this._setupClickAndEditEventHandlers();
+    },
+
+    pauseUpload: function(id) {
+        var paused = this._parent.prototype.pauseUpload.apply(this, arguments);
+
+        paused && this._templating.uploadPaused(id);
+        return paused;
+    },
+
+    continueUpload: function(id) {
+        var continued = this._parent.prototype.continueUpload.apply(this, arguments);
+
+        continued && this._templating.uploadContinued(id);
+        return continued;
     }
 };
 
@@ -65,7 +79,7 @@ qq.uiPrivateApi = {
     },
 
     _setupClickAndEditEventHandlers: function() {
-        this._deleteRetryOrCancelClickHandler = qq.DeleteRetryOrCancelClickHandler && this._bindDeleteRetryOrCancelClickEvent();
+        this._fileButtonsClickHandler = qq.FileButtonsClickHandler && this._bindFileButtonsClickEvent();
 
         // A better approach would be to check specifically for focusin event support by querying the DOM API,
         // but the DOMFocusIn event is not exposed as a property, so we have to resort to UA string sniffing.
@@ -114,24 +128,37 @@ qq.uiPrivateApi = {
         });
     },
 
-    _bindDeleteRetryOrCancelClickEvent: function() {
+    _bindFileButtonsClickEvent: function() {
         var self = this;
 
-        return new qq.DeleteRetryOrCancelClickHandler({
+        return new qq.FileButtonsClickHandler({
             templating: this._templating,
+
             log: function(message, lvl) {
                 self.log(message, lvl);
             },
+
             onDeleteFile: function(fileId) {
                 self.deleteFile(fileId);
             },
+
             onCancel: function(fileId) {
                 self.cancel(fileId);
             },
+
             onRetry: function(fileId) {
                 qq(self._templating.getFileContainer(fileId)).removeClass(self._classes.retryable);
                 self.retry(fileId);
             },
+
+            onPause: function(fileId) {
+                self.pauseUpload(fileId);
+            },
+
+            onContinue: function(fileId) {
+                self.continueUpload(fileId);
+            },
+
             onGetName: function(fileId) {
                 return self.getName(fileId);
             }
@@ -189,6 +216,8 @@ qq.uiPrivateApi = {
     },
 
     _onUploadStatusChange: function(id, oldStatus, newStatus) {
+        this._parent.prototype._onUploadStatusChange.apply(this, arguments);
+
         if (this._isEditFilenameEnabled()) {
             // Status for a file exists before it has been added to the DOM, so we must be careful here.
             if (this._templating.getFileContainer(id) && newStatus !== qq.status.SUBMITTED) {
@@ -248,6 +277,7 @@ qq.uiPrivateApi = {
 
         if (loaded === total) {
             this._templating.hideCancel(id);
+            this._templating.hidePause(id);
 
             this._templating.setStatusText(id, this._options.text.waitingForResponse);
 
@@ -278,7 +308,7 @@ qq.uiPrivateApi = {
 
             if (result.success) {
                 if (self._isDeletePossible()) {
-                    templating.showDelete(id);
+                    templating.showDeleteButton(id);
                 }
 
                 qq(templating.getFileContainer(id)).addClass(self._classes.success);
@@ -317,6 +347,13 @@ qq.uiPrivateApi = {
         return parentRetVal;
     },
 
+    _onUploadChunk: function(id, chunkData) {
+        this._parent.prototype._onUploadChunk.apply(this, arguments);
+
+        // Only display the pause button if we have finished uploading at least one chunk
+        chunkData.partIndex > 0 && this._templating.allowPause(id);
+    },
+
     _onCancel: function(id, name) {
         this._parent.prototype._onCancel.apply(this, arguments);
         this._removeFileItem(id);
@@ -328,7 +365,6 @@ qq.uiPrivateApi = {
         this._parent.prototype._onBeforeAutoRetry.apply(this, arguments);
 
         this._showCancelLink(id);
-        this._templating.hideProgress(id);
 
         if (this._options.retry.showAutoRetryNote) {
             retryNumForDisplay = this._autoRetries[id] + 1;
@@ -380,7 +416,7 @@ qq.uiPrivateApi = {
 
         if (isError) {
             this._templating.setStatusText(id, this._options.deleteFile.deletingFailedText);
-            this._templating.showDelete(id);
+            this._templating.showDeleteButton(id);
         }
         else {
             this._removeFileItem(id);
@@ -388,7 +424,7 @@ qq.uiPrivateApi = {
     },
 
     _sendDeleteRequest: function(id, uuid, additionalMandatedParams) {
-        this._templating.hideDelete(id);
+        this._templating.hideDeleteButton(id);
         this._templating.showSpinner(id);
         this._templating.setStatusText(id, this._options.deleteFile.deletingStatusText);
         this._deleteHandler.sendDelete.apply(this, arguments);

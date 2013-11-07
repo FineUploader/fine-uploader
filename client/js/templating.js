@@ -33,6 +33,9 @@ qq.Templating = function(spec) {
                 waitUntilUpdate: false,
                 thumbnailNotAvailable: null,
                 waitingForThumbnail: null
+            },
+            text: {
+                paused: "Paused"
             }
         },
         selectorClasses = {
@@ -45,6 +48,8 @@ qq.Templating = function(spec) {
             spinner: 'qq-upload-spinner-selector',
             size: 'qq-upload-size-selector',
             cancel: 'qq-upload-cancel-selector',
+            pause: 'qq-upload-pause-selector',
+            continueButton: 'qq-upload-continue-selector',
             deleteButton: 'qq-upload-delete-selector',
             retry: 'qq-upload-retry-selector',
             statusText: 'qq-upload-status-text-selector',
@@ -213,6 +218,14 @@ qq.Templating = function(spec) {
 
     function getCancel(id) {
         return getTemplateEl(getFile(id), selectorClasses.cancel);
+    }
+
+    function getPause(id) {
+        return getTemplateEl(getFile(id), selectorClasses.pause);
+    }
+
+    function getContinue(id) {
+        return getTemplateEl(getFile(id), selectorClasses.continueButton);
     }
 
     function getProgress(id) {
@@ -416,6 +429,8 @@ qq.Templating = function(spec) {
             hide(getSize(id));
             hide(getDelete(id));
             hide(getRetry(id));
+            hide(getPause(id));
+            hide(getContinue(id));
 
             if (isCancelDisabled) {
                 api.hideCancel(id);
@@ -560,15 +575,49 @@ qq.Templating = function(spec) {
             return qq(el).hasClass(selectorClasses.cancel);
         },
 
-        showDelete: function(id) {
+        allowPause: function(id) {
+            show(getPause(id));
+            hide(getContinue(id));
+        },
+
+        uploadPaused: function(id) {
+            api.setStatusText(id, options.text.paused);
+            api.allowContinueButton(id);
+            hide(getSpinner(id));
+        },
+
+        hidePause: function(id) {
+            hide(getPause(id));
+        },
+
+        isPause: function(el) {
+            return qq(el).hasClass(selectorClasses.pause);
+        },
+
+        isContinueButton: function(el) {
+            return qq(el).hasClass(selectorClasses.continueButton);
+        },
+
+        allowContinueButton: function(id) {
+            show(getContinue(id));
+            hide(getPause(id));
+        },
+
+        uploadContinued: function(id) {
+            api.setStatusText(id, "");
+            api.allowPause(id);
+            show(getSpinner(id));
+        },
+
+        showDeleteButton: function(id) {
             show(getDelete(id));
         },
 
-        hideDelete: function(id) {
+        hideDeleteButton: function(id) {
             hide(getDelete(id));
         },
 
-        isDelete: function(el) {
+        isDeleteButton: function(el) {
             return qq(el).hasClass(selectorClasses.deleteButton);
         },
 

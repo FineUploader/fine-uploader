@@ -121,7 +121,8 @@ qq.supportedFeatures = (function () {
         deleteFileCors: supportsDeleteFileCors,
         canDetermineSize: supportsAjaxFileUploading,
         folderSelection: supportsFolderSelection,
-        imagePreviews: supportsImagePreviews
+        imagePreviews: supportsImagePreviews,
+        pause: supportsChunking
     }
 
 }());

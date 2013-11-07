@@ -97,13 +97,14 @@ qq.UploadHandler = function(o, namespace) {
          * Adds file or file input to the queue
          * @returns id
          **/
-        add: function(file){
+        add: function(file) {
             return handlerImpl.add(file);
         },
+
         /**
          * Sends the file identified by id
          */
-        upload: function(id){
+        upload: function(id) {
             var len = queue.push(id);
 
             // if too many active uploads, wait...
@@ -114,6 +115,7 @@ qq.UploadHandler = function(o, namespace) {
 
             return false;
         },
+
         retry: function(id) {
             var i = qq.indexOf(queue, id);
             if (i >= 0) {
@@ -123,6 +125,7 @@ qq.UploadHandler = function(o, namespace) {
                 return this.upload(id);
             }
         },
+
         /**
          * Cancels file upload by id
          */
@@ -138,6 +141,7 @@ qq.UploadHandler = function(o, namespace) {
                 cancelSuccess(id);
             }
         },
+
         /**
          * Cancels all queued or in-progress uploads
          */
@@ -152,17 +156,20 @@ qq.UploadHandler = function(o, namespace) {
 
             queue = [];
         },
+
         /**
          * Returns name of the file identified by id
          */
         getName: function(id) {
             return handlerImpl.getName(id);
         },
+
         // Update/change the name of the associated file.
         // This updated name should be sent as a parameter.
         setName: function(id, newName) {
             handlerImpl.setName(id, newName);
         },
+
         /**
          * Returns size of the file identified by id
          */
@@ -171,43 +178,52 @@ qq.UploadHandler = function(o, namespace) {
                 return handlerImpl.getSize(id);
             }
         },
+
         getFile: function(id) {
             if (handlerImpl.getFile) {
                 return handlerImpl.getFile(id);
             }
         },
+
         getInput: function(id) {
             if (handlerImpl.getInput) {
                 return handlerImpl.getInput(id);
             }
         },
+
         reset: function() {
             log('Resetting upload handler');
             api.cancelAll();
             queue = [];
             handlerImpl.reset();
         },
+
         expunge: function(id) {
             return handlerImpl.expunge(id);
         },
+
         getUuid: function(id) {
             return handlerImpl.getUuid(id);
         },
+
         setUuid: function(id, newUuid) {
             return handlerImpl.setUuid(id, newUuid);
         },
+
         /**
          * Determine if the file exists.
          */
         isValid: function(id) {
             return handlerImpl.isValid(id);
         },
+
         getResumableFilesData: function() {
             if (handlerImpl.getResumableFilesData) {
                 return handlerImpl.getResumableFilesData();
             }
             return [];
         },
+
         /**
          * This may or may not be implemented, depending on the handler.  For handlers where a third-party ID is
          * available (such as the "key" for Amazon S3), this will return that value.  Otherwise, the return value
@@ -219,6 +235,18 @@ qq.UploadHandler = function(o, namespace) {
         getThirdPartyFileId: function(id) {
             if (handlerImpl.getThirdPartyFileId && api.isValid(id)) {
                 return handlerImpl.getThirdPartyFileId(id);
+            }
+        },
+
+        /**
+         * Attempts to pause the associated upload if the specific handler supports this and the file is "valid".
+         * @param id ID of the upload/file to pause
+         * @returns {boolean} true if the upload was paused
+         */
+        pause: function(id) {
+            if (handlerImpl.pause && api.isValid(id) && handlerImpl.pause(id)) {
+                dequeue(id);
+                return true;
             }
         }
     };

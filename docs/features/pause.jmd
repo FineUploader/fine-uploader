@@ -1,0 +1,54 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Pause In-Progress Uploads" %}
+{% block content %}
+{% markdown %}
+# Pause In-Progress Uploads {: .page-header }
+
+### Summary
+Version 4.1 brings the ability to pause (and then continue) in-progress chunked uploads.  A paused upload will free
+up a slot in the [connections](../api/options.html#core_1) queue, allowing the next queued file to begin uploading as well.
+This feature includes new [API methods](../api/methods.html), built-in Fine Uploader UI support (via optional
+[template](styling.html) elements), and a [feature support](../browser-support.html) flag.  Note that this feature
+depends on the chunking feature, so chunking must be possible and enabled in the current browser.  When a paused upload
+is continued, it will start at the beginning of the chunk that was in progress when the upload was paused.
+
+### Use Cases
+This feature mainly compliments the [chunking](chunking.html) and [auto-resume](resume.html) features.
+For example, while it is not necessary to "pause" an in progress upload to resume it later, it is probably much more
+intuitive for end users to do so.  This feature also provides the ability to upload queued items immediately (or sooner)
+simply by pausing in-progress uploads that are lower priority.
+
+### Fine Uploader UI Support
+If you want "pause" and/or "continue" buttons to appear next to your files at the appropriate times, you must
+add the following to your template:
+
+```html
+<button class="qq-upload-pause-selector qq-upload-pause">Pause</button>
+<button class="qq-upload-continue-selector qq-upload-continue">Continue</button>
+```
+These elements must be added under the qq-upload-list-selector container in your template in order for Fine Uploader
+UI to find them.
+
+You can remove the second CSS class in each element, if you choose.  The first CSS class is used internally
+by Fine Uploader to select the buttons, and the second is used to apply default styles defined in Fine Uploader's
+CSS file.  You can also change the text, omit one or both of these elements, add attributes, or add CSS classes
+in your template definition.
+
+The pause button will appear next to a file that is in progress if chunking is enabled and at least one chunk has been
+successfully uploaded.  By default, the progress bar will remain visible, the spinner will be hidden, and a "Paused"
+message will appear to the right of the file.  This text can be customized by overriding the default value of the
+[`text.paused` UI option](../api/options-ui.html#text-option).
+
+The continue button will appear (and the pause button will be hidden) after a file upload has been paused.  The status
+text will be cleared and the spinner will re-appear at this point.  The file will be added to the end of the connections
+queue, meaning that it will not actually continue until all other files ahead of it in the queue have completed
+(or have been paused).
+
+### Fine Uploader Core Support (API methods)
+There are two new [API methods](../api/methods.html): `pauseUpload` and `continueUpload`.  As with all API methods,
+these are also available to Fine Uploader UI instances as well.  With these, you can programmatically pause an in-progress
+upload, or continue a paused upload.   These methods will return `true` if the operation succeeds.  Note that pausing
+an upload is only possible if the current browser supports chunking, and if chunking is enabled.
+
+{% endmarkdown %}
+{% endblock %}
