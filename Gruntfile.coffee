@@ -15,6 +15,7 @@ module.exports = (grunt) ->
 
     fs = require 'fs'
     uuid = require 'uuid'
+    async = require 'async'
 
     # Utilities
     # ==========
@@ -694,12 +695,13 @@ module.exports = (grunt) ->
 
     # Tasks
     # ==========
-    grunt.registerTask 'test:unit', 'Run unit tests locally with Karma', ['dev', 'tests:local']
-    grunt.registerTask 'test:unit:sauce', 'Run tests with Karma on SauceLabs', ['dev', 'saucetests:default']
-    grunt.registerTask 'test:func', 'Run functional tests locally', ['dev', 'mochaWebdriver:local']
-    grunt.registerTask 'test:func:sauce', 'Run functional tests on SauceLabs', ['dev', 'mochaWebdriver:sauce']
 
-    grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'saucetests:default']
+    grunt.registerTask 'test:unit', 'Run unit tests locally with Karma', ['dev', 'tests:local']
+    grunt.registerTask 'test:unit:sauce', 'Run tests with Karma on SauceLabs', ['dev', 'wait_for_sauce', 'saucetests:default']
+    grunt.registerTask 'test:func', 'Run functional tests locally', ['dev', 'mochaWebdriver:local']
+    grunt.registerTask 'test:func:sauce', 'Run functional tests on SauceLabs', ['dev', 'wait_for_sauce', 'mochaWebdriver:sauce']
+
+    grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'wait_for_sauce', 'saucetests:default']
 
     grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'bower', 'build', 'copy:test']
 

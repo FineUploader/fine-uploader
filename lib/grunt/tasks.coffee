@@ -21,10 +21,6 @@ module.exports = (grunt) ->
     grunt.registerTask 'check_pull_req', '', ->
         util.checkPullRequest()
 
-        active_jobs = (jobs) ->
-            jobs.filter (job) ->
-                job.status == 'in-progress'
-
     grunt.registerMultiTask 'saucetests', 'Run Karma tests on sauce', ->
         self = @
         done = @async()
@@ -55,4 +51,52 @@ module.exports = (grunt) ->
                 done err
             else
                 done success
+
+    grunt.registerTask 'wait_for_sauce', '', ->
+        done = @async()
+
+        SauceLabs = require 'saucelabs'
+        saucelabs = new SauceLabs
+            username: process.env.SAUCE_USERNAME || process.env.SAUCE_USER_NAME
+            password: process.env.SAUCE_ACCESSKEY || process.env.SAUCE_ACCESS_KEY
+
+        jobs_in_progress = 1
+
+        # Filter out all the jobs that do NOT match `type`
+        reject_jobs = (type, next) ->
+            (jobs) ->
+                jobs = jobs.filter (job) ->
+                    return job.status != type
+                if typeof next == 'function'
+                    next jobs
+
+        # Query SauceLabs' REST API for all jobs that have been run for this
+        # account
+        get_jobs = (next) ->
+            saucelabs.getJobs (err, jobs) ->
+                if err?
+                    grunt.log.error(error)
+                if typeof next == 'function'
+                    next jobs
+
+        # Wait until jobs_in_progress is 0, if it isn't keep querying
+        # SauceLabs
+        # Currently, if more than 0 jobs are running, this task will block
+        # until 0 are running. This could be optimized since we can run
+        # 3 at a time.
+        wait = (next) ->
+            if jobs_in_progress > 0
+                grunt.log.writeln("Waiting. #{jobs_in_progress} jobs running ...")
+                in_progress = reject_jobs 'complete', (jobs, next) ->
+                    if jobs and jobs.length > 0
+                        jobs_in_progress = jobs.length
+                    else
+                        jobs_in_progress = 0
+                get_jobs in_progress
+                setTimeout wait, 10000, next
+            else
+                grunt.log.writeln("0 jobs running. Continuing forth!")
+                if typeof next == 'function'
+                    next(true)
+        wait done
 
