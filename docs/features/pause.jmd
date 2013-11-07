@@ -8,7 +8,9 @@
 Version 4.1 brings the ability to pause (and then continue) in-progress chunked uploads.  A paused upload will free
 up a slot in the [connections](../api/options.html#core_1) queue, allowing the next queued file to begin uploading as well.
 This feature includes new [API methods](../api/methods.html), built-in Fine Uploader UI support (via optional
-[template](styling.html) elements), and a [feature support](../browser-support.html) flag.
+[template](styling.html) elements), and a [feature support](../browser-support.html) flag.  Note that this feature
+depends on the chunking feature, so chunking must be possible and enabled in the current browser.  When a paused upload
+is continued, it will start at the beginning of the chunk that was in progress when the upload was paused.
 
 ### Use Cases
 This feature mainly compliments the [chunking](chunking.html) and [auto-resume](resume.html) features.
