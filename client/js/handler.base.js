@@ -236,8 +236,19 @@ qq.UploadHandler = function(o, namespace) {
             if (handlerImpl.getThirdPartyFileId && api.isValid(id)) {
                 return handlerImpl.getThirdPartyFileId(id);
             }
-        }
+        },
 
+        /**
+         * Attempts to pause the associated upload if the specific handler supports this and the file is "valid".
+         * @param id ID of the upload/file to pause
+         * @returns {boolean} true if the upload was paused
+         */
+        pause: function(id) {
+            if (handlerImpl.pause && api.isValid(id) && handlerImpl.pause(id)) {
+                dequeue(id);
+                return true;
+            }
+        }
     };
 
     determineHandlerImpl();

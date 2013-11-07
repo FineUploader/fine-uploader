@@ -261,6 +261,40 @@ qq.basePublicApi = {
 
             return this._imageGenerator.generate(fileOrUrl, imgOrCanvas, options);
         }
+    },
+
+    pauseUpload: function(id) {
+        var uploadData = this._uploadData.retrieve({id: id});
+
+        // Pause only really makes sense if the file is uploading or retrying
+        if (qq.indexOf([qq.status.UPLOADING, qq.status.UPLOAD_RETRYING], uploadData.status) >= 0) {
+            if (this._handler.pause(id)) {
+                this._uploadData.setStatus(id, qq.status.PAUSED);
+                return true;
+            }
+            else {
+                qq.log(qq.format("Unable to pause file ID {} ({}).", id, this.getName(id)), "error")
+            }
+        }
+        else {
+            qq.log(qq.format("Ignoring pause for file ID {} ({}).  Not in progress.", id, this.getName(id)), "error")
+        }
+    },
+
+    continueUpload: function(id) {
+        var uploadData = this._uploadData.retrieve({id: id});
+
+        if (uploadData.status === qq.status.PAUSED) {
+            qq.log(qq.format("Paused file ID {} ({}) will be continued.  Not paused.", id, this.getName(id)));
+
+            if (!this._handler.upload(id)) {
+                this._uploadData.setStatus(id, qq.status.QUEUED);
+            }
+            return true;
+        }
+        else {
+            qq.log(qq.format("Ignoring continue for file ID {} ({}).  Not paused.", id, this.getName(id)), "error")
+        }
     }
 };
 
@@ -482,7 +516,8 @@ qq.basePrivateApi = {
                     self._onUpload(id, name);
                     self._options.callbacks.onUpload(id, name);
                 },
-                onUploadChunk: function(id, name, chunkData){
+                onUploadChunk: function(id, name, chunkData) {
+                    self._onUploadChunk(id, chunkData);
                     self._options.callbacks.onUploadChunk(id, name, chunkData);
                 },
                 onResume: function(id, name, chunkData) {
@@ -574,7 +609,10 @@ qq.basePrivateApi = {
     },
 
     _onUploadStatusChange: function(id, oldStatus, newStatus) {
-        //nothing to do in the basic uploader
+        // Make sure a "queued" retry attempt is canceled if the upload has been paused
+        if (newStatus === qq.status.PAUSED) {
+            clearTimeout(this._retryTimeouts[id]);
+        }
     },
 
     _handlePasteSuccess: function(blob, extSuppliedName) {
@@ -725,6 +763,10 @@ qq.basePrivateApi = {
         this._uploadData.setStatus(id, qq.status.UPLOADING);
     },
 
+    _onUploadChunk: function(id, chunkData) {
+        //nothing to do in the base uploader
+    },
+
     _onInputChange: function(input) {
         var fileIndex;
 
@@ -789,7 +831,12 @@ qq.basePrivateApi = {
     },
 
     _shouldAutoRetry: function(id, name, responseJSON) {
-        if (!this._preventRetries[id] && this._options.retry.enableAuto) {
+        var uploadData = this._uploadData.retrieve({id: id});
+
+        if (!this._preventRetries[id]
+            && this._options.retry.enableAuto
+            && uploadData.status !== qq.status.PAUSED) {
+
             if (this._autoRetries[id] === undefined) {
                 this._autoRetries[id] = 0;
             }

@@ -277,10 +277,14 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
     }
 
     function onComplete(id, xhr) {
-        var response;
+        var state = fileState[id],
+            attemptingResume = state && state.attemptingResume,
+            paused = state && state.paused,
+            response;
 
-        // the request was aborted/cancelled
-        if (!fileState[id]) {
+        // The logic in this function targets uploads that have not been paused or canceled,
+        // so return at once if this is not the case.
+        if (!state || paused) {
             return;
         }
 
@@ -293,7 +297,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
                 handleResetResponse(id);
             }
 
-            if (fileState[id].attemptingResume && response.reset) {
+            if (attemptingResume && response.reset) {
                 handleResetResponseOnResumeAttempt(id);
             }
             else {

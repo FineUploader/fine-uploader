@@ -1,4 +1,4 @@
-describe('ui.handler.click.drc.js', function () {
+describe('ui.handler.click.filebuttons.js', function () {
 
     describe('click handlers', function () {
     
@@ -32,12 +32,12 @@ describe('ui.handler.click.drc.js', function () {
                 isRetry: function(el) {
 
                 },
-                isDelete: function(el) {
+                isDeleteButton: function(el) {
 
                 }
             };
 
-            var handler = new qq.DeleteRetryOrCancelClickHandler({
+            var handler = new qq.FileButtonsClickHandler({
                 templating: templating,
                 classes: {
                     cancel: 'test-cancel',

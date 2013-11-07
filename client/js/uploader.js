@@ -23,7 +23,8 @@ qq.FineUploader = function(o, namespace) {
         text: {
             formatProgress: "{percent}% of {total_size}",
             failUpload: "Upload failed",
-            waitingForResponse: "Processing..."
+            waitingForResponse: "Processing...",
+            paused: "Paused"
         },
 
         template: "qq-template",
@@ -114,7 +115,8 @@ qq.FineUploader = function(o, namespace) {
             waitUntilUpdate: this._options.thumbnails.placeholders.waitUntilResponse,
             thumbnailNotAvailable: this._options.thumbnails.placeholders.notAvailablePath,
             waitingForThumbnail: this._options.thumbnails.placeholders.waitingPath
-        }
+        },
+        text: this._options.text
     });
 
     if (!qq.supportedFeatures.uploading || (this._options.cors.expected && !qq.supportedFeatures.uploadCors)) {

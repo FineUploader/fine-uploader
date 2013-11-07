@@ -99,8 +99,8 @@ describe("templating.js", function() {
             templating.resetProgress(0);
             templating.showCancel(0);
             templating.hideCancel(0);
-            templating.showDelete(0);
-            templating.hideDelete(0);
+            templating.showDeleteButton(0);
+            templating.hideDeleteButton(0);
             templating.updateSize(0, "100MB");
             templating.setStatusText(0, "test");
             templating.hideSpinner(0);
@@ -175,10 +175,10 @@ describe("templating.js", function() {
         });
 
         it("hides and shows delete link", function() {
-            templating.hideDelete(0);
+            templating.hideDeleteButton(0);
             assert.ok($(fileContainer0).find(".qq-upload-delete-selector").hasClass(HIDE_CSS));
 
-            templating.showDelete(0);
+            templating.showDeleteButton(0);
             assert.ok(!$(fileContainer0).find(".qq-upload-delete-selector").hasClass(HIDE_CSS));
         });
 
