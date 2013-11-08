@@ -9,6 +9,7 @@ Currently, Fine Uploader supports the following browsers:
 * Internet Explorer 7+
 * Firefox
 * Chrome
+* Chrome mobile (iOS & Android)
 * Opera 15+
 * Android 2.3.x+
 * iOS 6+
@@ -16,7 +17,7 @@ Currently, Fine Uploader supports the following browsers:
 
 We plan on supporting the following browsers/OSes in the very near future:
 
-* Mobile versions of Chrome and Firefox (these probably already work now)
+* Mobile Firefox (probably already works)
 * Internet Explorer 11
 * Opera Mini
 * Firefox OS
@@ -59,6 +60,36 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+        </tr>
+        <tr>
+            <td>Chrome for iOS 6+</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+        </tr>
+        <tr>
+            <td>Chrome for Android 4+</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>Opera 15+</td>

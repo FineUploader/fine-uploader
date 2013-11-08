@@ -12,7 +12,7 @@ Fine Uploader contains first-class support for the latest HTML5 features includi
 All the HTML5 features can be configured via the options object that is passed into the initial Fine Uploader instance.
 
 #### File Chunking
-File chunking is a feature made possible by the HTML5 File API.  Chunking is currently possible in Chrome, Firefox,
+File chunking is a feature made possible by the HTML5 File API.  Chunking is currently possible in Chrome (except on Android), Firefox,
 Safari in iOS6+ and OS X, Internet Explorer 10, and Opera 15+.
 Chunking is required for the auto-retry and auto-resume features.
 Not much has to be changed in Fine Uploader to handle chunking, simply set the options:
