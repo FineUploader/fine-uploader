@@ -20,6 +20,7 @@
     <li><a href="#submitted">submitted</a></li>
     <li><a href="#upload">upload</a></li>
     <li><a href="#uploadchunk">uploadChunk</a></li>
+    <li><a href="#uploadchunksuccess">uploadChunkSuccess</a></li>
     <li><a href="#validate">validate</a></li>
     <li><a href="#validatebatch">validateBatch</a></li>
 </ul>
@@ -243,6 +244,17 @@ The `chunkData` object, which is passed into the 'uploadChunk' event handler, ha
 * `startByte` - the byte offset of the current chunk.
 * `endByte` - the last byte of the current chunk.
 * `totalParts` - the total number of partitions associated with the `File` or `Blob`.
+
+----
+
+#### uploadChunkSuccess
+
+**Parameters:** Integer id, Object chunkData, Object responseJSON, XMLHttpRequest xhr
+
+This is similar to the [`complete` event](#complete), except it is invoked after each chunk
+has been **successfully** uploaded.
+
+See the [`uploadChunk` event](#uploadChunk) for more information on the `chunkData` object.
 
 ----
 

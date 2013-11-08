@@ -33,6 +33,7 @@ qq.FineUploaderBasic = function(o) {
             onCancel: function(id, name){},
             onUpload: function(id, name){},
             onUploadChunk: function(id, name, chunkData){},
+            onUploadChunkSuccess: function(id, chunkData, responseJSON, xhr){},
             onResume: function(id, fileName, chunkData){},
             onProgress: function(id, name, loaded, total){},
             onError: function(id, name, reason, maybeXhrOrXdr) {},

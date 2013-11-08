@@ -736,6 +736,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
             maybePersistChunkedState(id);
 
+            options.onUploadChunkSuccess(id, chunkData, response, xhr);
+
             // We might not be done with this file...
             maybeUploadNextChunk(id);
         }

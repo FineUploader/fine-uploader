@@ -532,6 +532,9 @@ qq.basePrivateApi = {
                     self._onUploadChunk(id, chunkData);
                     self._options.callbacks.onUploadChunk(id, name, chunkData);
                 },
+                onUploadChunkSuccess: function(id, chunkData, result, xhr) {
+                    self._options.callbacks.onUploadChunkSuccess.apply(self, arguments);
+                },
                 onResume: function(id, name, chunkData) {
                     return self._options.callbacks.onResume(id, name, chunkData);
                 },

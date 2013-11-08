@@ -51,6 +51,7 @@ qq.UploadHandler = function(o, namespace) {
         onCancel: function(id, fileName){},
         onUpload: function(id, fileName){},
         onUploadChunk: function(id, fileName, chunkData){},
+        onUploadChunkSuccess: function(id, chunkData, response, xhr){},
         onAutoRetry: function(id, fileName, response, xhr){},
         onResume: function(id, fileName, chunkData){},
         onUuidChanged: function(id, newUuid){}
