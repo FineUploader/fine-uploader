@@ -203,7 +203,9 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
 
     function handleSuccessfullyCompletedChunk(id, response, xhr) {
         var chunkIdx = fileState[id].remainingChunkIdxs.shift(),
-            chunkData = internalApi.getChunkData(id, chunkIdx);
+            chunkData = internalApi.getChunkData(id, chunkIdx),
+            name = publicApi.getName(id);
+        options.onUploadedChunk(id, name, response, xhr);
 
         fileState[id].attemptingResume = false;
         fileState[id].loaded += chunkData.size + getLastRequestOverhead(id);
