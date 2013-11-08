@@ -473,6 +473,10 @@ qq.chrome   = function(){
     "use strict";
     return navigator.vendor !== undefined && navigator.vendor.indexOf('Google') !== -1;
 };
+qq.opera   = function(){
+    "use strict";
+    return navigator.vendor !== undefined && navigator.vendor.indexOf('Opera') !== -1;
+};
 qq.firefox  = function(){
     "use strict";
     return (navigator.userAgent.indexOf('Mozilla') !== -1 && navigator.vendor !== undefined && navigator.vendor === '');

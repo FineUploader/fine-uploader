@@ -35,13 +35,13 @@ qq.supportedFeatures = (function () {
 
     //only way to test for Filesystem API support since webkit does not expose the DataTransfer interface
     function isChrome21OrHigher() {
-        return qq.chrome() &&
+        return (qq.chrome() || qq.opera()) &&
             navigator.userAgent.match(/Chrome\/[2][1-9]|Chrome\/[3-9][0-9]/) !== undefined;
     }
 
     //only way to test for complete Clipboard API support at this time
     function isChrome14OrHigher() {
-        return qq.chrome() &&
+        return (qq.chrome() || qq.opera()) &&
             navigator.userAgent.match(/Chrome\/[1][4-9]|Chrome\/[2-9][0-9]/) !== undefined;
     }
 

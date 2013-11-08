@@ -13,7 +13,7 @@ support.  Near the middle of this page, you can find instructions that will allo
 standalone drag & drop module into your project if you are using Fine Uploader's core mode only.
 
 {{ alert("While dragging and dropping of _files_ is supported in many browsers,
-Dragging and dropping of _folders_ is currently only supported in Chrome >=21", "default", "Note") }}
+Dragging and dropping of _folders_ is currently only supported in Chrome 21+ & Opera 15+", "default", "Note") }}
 
 ## `dragAndDrop` option
 

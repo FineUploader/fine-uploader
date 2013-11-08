@@ -84,11 +84,11 @@ $("#uploader").on("upload", function(event, id, name) {
 
 ## Allow an extra upload button to be used to select folders
 
-Fine Uploader already allows you to drop folders that you would like to upload (currently Chrome-only).
+Fine Uploader already allows you to drop folders that you would like to upload (Chrome & Opera 15+ only).
 What if you want to allow users to select folders via the file chooser dialog?  Unfortunately, due
 to the restrictions imposed by this browser feature, you can either select files OR folders, not both.
 If you'd like to allow users to select files and folders, you can use the default upload button for file
-selection, and contribute an extra button marked as "folder selection" (currently Chrome-only).  Here's an example,
+selection, and contribute an extra button marked as "folder selection" (Chrome & Opera 15+).  Here's an example,
 also assuming you only want this button to appear if folder selection is possible in the current browser:
 
 ```html

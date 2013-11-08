@@ -9,6 +9,7 @@ Currently, Fine Uploader supports the following browsers:
 * Internet Explorer 7+
 * Firefox
 * Chrome
+* Opera 15+
 * Android 2.3.x+
 * iOS 6+
 * Safari 5+ (OS X)
@@ -17,7 +18,6 @@ We plan on supporting the following browsers/OSes in the very near future:
 
 * Mobile versions of Chrome and Firefox (these probably already work now)
 * Internet Explorer 11
-* Opera
 * Opera Mini
 * Firefox OS
 * Dolphin
@@ -47,6 +47,21 @@ Note: Any features not listed here are supported in all browsers.
     <tbody>
         <tr>
             <td>Chrome</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+        </tr>
+        <tr>
+            <td>Opera 15+</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>

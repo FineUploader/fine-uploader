@@ -41,7 +41,7 @@ and of course `<img>` elements.
 
 
 ## Supporting Modern Browsers
-Modern browsers include Chrome, Firefox, IE10+, Safari 6+, iOS 6+, and Android 4+.  In these browsers,
+Modern browsers include Chrome, Firefox, IE10+, Safari 6+, iOS 6+, Android 4+, & Opera 15+.  In these browsers,
 image previews can be generated immediately after the file has been selected or dropped.  The images that can be
 previewed depend on the browser.  All of these browsers can render previews for JPEG, GIF, and PNGs.  Safari
 can also render TIFF previews.

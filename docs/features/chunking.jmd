@@ -13,7 +13,7 @@ put in place by browsers (e.g., Firefox and Chrome limit upload request
 sizes to about 4GB).
 
 Chunking is made possible by the File API, and is supported in Chrome, Firefox,
-Safari (iOS 6+ and OS X), and Internet Explorer 10. Chunking is disabled in all
+Safari (iOS 6+ and OS X), Internet Explorer 10+, and Opera 15+. Chunking is disabled in all
 Android browsers until its `Blob.prototype.slice` implementation is fixed.
 
 Each chunk is sent in order and as a separate request, and each chunked request
