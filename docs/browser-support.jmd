@@ -6,12 +6,12 @@
 
 Currently, Fine Uploader supports the following browsers:
 
-* Internet Explorer >=7
+* Internet Explorer 7+
 * Firefox
 * Chrome
-* Android >=2.3.x
-* iOS >=6.0
-* Safari >=5 (OS X)
+* Android 2.3.x+
+* iOS 6+
+* Safari 5+ (OS X)
 
 We plan on supporting the following browsers/OSes in the very near future:
 
@@ -169,7 +169,7 @@ Note: Any features not listed here are supported in all browsers.
         </tr>
         <tr>
             <td>iOS
-                6</td>
+                6+</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
