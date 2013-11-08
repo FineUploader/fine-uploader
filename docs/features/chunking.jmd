@@ -96,7 +96,7 @@ next attempt (assuming auto or manual retry has been enabled).
         ("uploadChunk", "`Integer` id, `String` name, `Object` chunkData",
         "Called just before a chunk request is sent."),
 
-        ("uploadChunkSuccess", "`Integer` id, `Object` chunkData, `Object` responseJSON", `XMLHttpRequest` xhr,
+        ("uploadChunkSuccess", "`Integer` id, `Object` chunkData, `Object` responseJSON, `XMLHttpRequest` xhr",
         "Called after each chunk has been successfully uploaded."),
     )
 ) }}
