@@ -352,7 +352,8 @@ qq.basePrivateApi = {
             element: spec.element,
             multiple: spec.multiple,
             accept: spec.validation.acceptFiles,
-            folders: spec.folders
+            folders: spec.folders,
+            allowedExtensions: spec.validation.allowedExtensions
         });
 
         this._extraButtonSpecs[button.getButtonId()] = spec;
@@ -459,14 +460,31 @@ qq.basePrivateApi = {
      */
     _createUploadButton: function(spec) {
         var self = this,
-            isMultiple = spec.multiple === undefined ? this._options.multiple : spec.multiple,
-            acceptFiles = spec.accept || this._options.validation.acceptFiles;
+            acceptFiles = spec.accept || this._options.validation.acceptFiles,
+            allowedExtensions = spec.allowedExtensions || this._options.validation.allowedExtensions;
+
+        function allowMultiple() {
+            if (qq.supportedFeatures.ajaxUploading) {
+                // Workaround for bug in iOS7 (see #1039)
+                if (qq.ios7() && self._isAllowedExtension(allowedExtensions, ".mov")) {
+                    return false;
+                }
+
+                if (spec.multiple === undefined) {
+                    return self._options.multiple;
+                }
+
+                return spec.multiple;
+            }
+
+            return false;
+        }
 
         var button = new qq.UploadButton({
             element: spec.element,
             folders: spec.folders,
             name: this._options.request.inputName,
-            multiple: isMultiple && qq.supportedFeatures.ajaxUploading,
+            multiple: allowMultiple(),
             acceptFiles: acceptFiles,
             onChange: function(input) {
                 self._onInputChange(input);
@@ -1085,9 +1103,7 @@ qq.basePrivateApi = {
         var name = validationDescriptor.name,
             size = validationDescriptor.size,
             buttonId = this._getButtonId(item),
-            extraButtonSpec = this._extraButtonSpecs[buttonId],
-            validationBase = extraButtonSpec ? extraButtonSpec.validation : this._options.validation,
-
+            validationBase = this._getValidationBase(buttonId),
             valid = true;
 
         if (qq.isFileOrInput(item) && !this._isAllowedExtension(validationBase.allowedExtensions, name)) {
@@ -1137,8 +1153,7 @@ qq.basePrivateApi = {
             names = [].concat(maybeNameOrNames),
             name = names[0],
             buttonId = this._getButtonId(item),
-            extraButtonSpec = this._extraButtonSpecs[buttonId],
-            validationBase = extraButtonSpec ? extraButtonSpec.validation : this._options.validation,
+            validationBase = this._getValidationBase(buttonId),
             extensionsForMessage, placeholderMatch;
 
         function r(name, replacement){ message = message.replace(name, replacement); }
@@ -1390,5 +1405,14 @@ qq.basePrivateApi = {
                 }
             });
         }
+    },
+
+    // Get the validation options for this button.  Could be the default validation option
+    // or a specific one assigned to this particular button.
+    _getValidationBase: function(buttonId) {
+        var extraButtonSpec = this._extraButtonSpecs[buttonId];
+
+        return extraButtonSpec ? extraButtonSpec.validation : this._options.validation;
+
     }
 };
