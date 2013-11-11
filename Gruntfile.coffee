@@ -1,14 +1,9 @@
 ###
-    ______ _              _    _       _                 _
- |    ____(_)            | |  | |     | |               | |
- | |__     _ _ __   ___  | |  | |_ __ | | ___   __ _  __| | ___ _ __
- |    __| | | '_ \ / _ \ | |  | | '_ \| |/ _ \ / _` |/ _` |/ _ \ '__|
- | |      | | | | |  __/ | |__| | |_) | | (_) | (_| | (_| |  __/ |
- |_|      |_|_| |_|\___|  \____/| .__/|_|\___/ \__,_|\__,_|\___|_|
-                                | |
-                                |_|
+    Fine Uploader
+    -------------
 
- Gruntfile
+    Gruntfile
+
 ###
 
 module.exports = (grunt) ->
@@ -625,10 +620,10 @@ module.exports = (grunt) ->
             default:
                 configFile: 'karma-sauce.conf.coffee'
                 browsers: [
-                    ['SL-chrome-28-Linux', 'SL-firefox-21-Linux', 'SL-safari-6-OS_X_10.8'],
-                    ['SL-internet_explorer-10-Windows_8', 'SL-internet_explorer-9-Windows_7', 'SL-internet_explorer-8-Windows_7'],
                     ['SL-android-4.0-Linux', 'SL-iphone-6-OS_X_10.8', 'SL-safari-5-OS_X_10.6'],
-                    ['SL-internet_explorer-7-Windows_XP']
+                    ['SL-chrome-28-Linux', 'SL-firefox-21-Linux', 'SL-safari-6-OS_X_10.8'],
+                    ['SL-internet_explorer-11-Windows_8.1', 'SL-internet_explorer-10-Windows_8', 'SL-internet_explorer-9-Windows_7'],
+                    ['SL-internet_explorer-8-Windows_7', 'SL-internet_explorer-7-Windows_XP']
                 ]
 
         mochaWebdriver:
