@@ -465,6 +465,11 @@ qq.ie10     = function(){
     "use strict";
     return navigator.userAgent.indexOf('MSIE 10') !== -1;
 };
+qq.ie11     = function(){
+    "use strict";
+    return (navigator.userAgent.indexOf("Trident") !== -1 &&
+           navigator.userAgent.indexOf("rv:11") !== -1);
+};
 qq.safari   = function(){
     "use strict";
     return navigator.vendor !== undefined && navigator.vendor.indexOf("Apple") !== -1;
@@ -479,7 +484,9 @@ qq.opera   = function(){
 };
 qq.firefox  = function(){
     "use strict";
-    return (navigator.userAgent.indexOf('Mozilla') !== -1 && navigator.vendor !== undefined && navigator.vendor === '');
+    return (navigator.userAgent.indexOf('Mozilla') !== -1 &&
+            navigator.vendor !== undefined && navigator.vendor === '' &&
+            !qq.ie11());
 };
 qq.windows  = function(){
     "use strict";
