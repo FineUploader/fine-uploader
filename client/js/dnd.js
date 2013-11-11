@@ -294,7 +294,10 @@ qq.UploadDropZone = function(o){
 
         // dt.effectAllowed is none in Safari 5
         // dt.types.contains check is for firefox
-        effectTest = qq.ie10() ? true : dt.effectAllowed !== 'none';
+
+        // dt.effectAllowed crashes IE11 when files have been dragged from
+        // the filesystem
+        effectTest = (qq.ie10() || qq.ie11()) ? true : dt.effectAllowed !== 'none';
         return dt && effectTest && (dt.files || (!isSafari && dt.types.contains && dt.types.contains('Files')));
     }
 
@@ -311,7 +314,9 @@ qq.UploadDropZone = function(o){
                 return;
             }
 
-            var effect = qq.ie() ? null : e.dataTransfer.effectAllowed;
+            // dt.effectAllowed crashes IE11 when files have been dragged from
+            // the filesystem
+            var effect = (qq.ie() || qq.ie11()) ? null : e.dataTransfer.effectAllowed;
             if (effect === 'move' || effect === 'linkMove'){
                 e.dataTransfer.dropEffect = 'move'; // for FF (only move allowed)
             } else {
