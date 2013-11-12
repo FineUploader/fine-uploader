@@ -30,13 +30,13 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         resumeEnabled = options.resume.enabled && chunkingPossible && qq.supportedFeatures.resume && window.localStorage !== undefined,
         internalApi = {},
         publicApi,
-        policySignatureRequester = new qq.s3.SignatureAjaxRequestor({
+        policySignatureRequester = new qq.s3.SignatureAjaxRequester({
             expectingPolicy: true,
             signatureSpec: signature,
             cors: options.cors,
             log: log
         }),
-        restSignatureRequester = new qq.s3.SignatureAjaxRequestor({
+        restSignatureRequester = new qq.s3.SignatureAjaxRequester({
             signatureSpec: signature,
             cors: options.cors,
             log: log

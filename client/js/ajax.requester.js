@@ -1,6 +1,6 @@
 /** Generic class for sending non-upload ajax requests and handling the associated responses **/
 /*globals qq, XMLHttpRequest*/
-qq.AjaxRequestor = function (o) {
+qq.AjaxRequester = function (o) {
     "use strict";
 
     var log, shouldParamsBeInQueryString,
@@ -32,21 +32,15 @@ qq.AjaxRequestor = function (o) {
     qq.extend(options, o);
     log = options.log;
 
-        // TODO remove code duplication among all ajax requesters
-    if (qq.indexOf(options.validMethods, getNormalizedMethod()) < 0) {
-        throw new Error("'" + getNormalizedMethod() + "' is not a supported method for this type of request!");
-    }
-
-    // TODO remove code duplication among all ajax requesters
-    function getNormalizedMethod() {
-        return options.method.toUpperCase();
+    if (qq.indexOf(options.validMethods, options.method) < 0) {
+        throw new Error("'" + options.method + "' is not a supported method for this type of request!");
     }
 
     // [Simple methods](http://www.w3.org/TR/cors/#simple-method)
     // are defined by the W3C in the CORS spec as a list of methods that, in part,
     // make a CORS request eligible to be exempt from preflighting.
     function isSimpleMethod() {
-        return qq.indexOf(["GET", "POST", "HEAD"], getNormalizedMethod()) >= 0;
+        return qq.indexOf(["GET", "POST", "HEAD"], options.method) >= 0;
     }
 
     // [Simple headers](http://www.w3.org/TR/cors/#simple-header)
@@ -120,7 +114,7 @@ qq.AjaxRequestor = function (o) {
 
     function onComplete(id, xdrError) {
         var xhr = getXhrOrXdr(id),
-            method = getNormalizedMethod(),
+            method = options.method,
             isError = xdrError === true;
 
         dequeue(id);
@@ -137,7 +131,7 @@ qq.AjaxRequestor = function (o) {
     }
 
     function getParams(id) {
-        var onDemandParams = requestData[id].onDemandParams,
+        var onDemandParams = requestData[id].additionalParams,
             mandatedParams = options.mandatedParams,
             params;
 
@@ -164,9 +158,9 @@ qq.AjaxRequestor = function (o) {
 
     function sendRequest(id) {
         var xhr = getXhrOrXdr(id),
-            method = getNormalizedMethod(),
+            method = options.method,
             params = getParams(id),
-            body = requestData[id].body,
+            payload = requestData[id].payload,
             url;
 
         options.onSend(id);
@@ -195,8 +189,8 @@ qq.AjaxRequestor = function (o) {
 
         log('Sending ' + method + " request for " + id);
 
-        if (body) {
-            xhr.send(body)
+        if (payload) {
+            xhr.send(payload)
         }
         else if (shouldParamsBeInQueryString || !params) {
             xhr.send();
@@ -258,7 +252,7 @@ qq.AjaxRequestor = function (o) {
         var xhr = getXhrOrXdr(id),
             customHeaders = options.customHeaders,
             onDemandHeaders = requestData[id].additionalHeaders || {},
-            method = getNormalizedMethod(),
+            method = options.method,
             allHeaders = {};
 
         // If this is a CORS request and a simple method with simple headers are used
@@ -289,62 +283,67 @@ qq.AjaxRequestor = function (o) {
         }
     }
 
-    function cancelRequest(id) {
-        var xhr = getXhrOrXdr(id, true),
-            method = getNormalizedMethod();
-
-        if (xhr) {
-            // The event handlers we remove/unregister is dependant on whether we are
-            // using `XDomainRequest` or `XMLHttpRequest`.
-            if (isXdr(xhr)) {
-                xhr.onerror = null;
-                xhr.onload = null;
-            }
-            else {
-                xhr.onreadystatechange = null;
-            }
-
-            xhr.abort();
-            dequeue(id);
-
-            log('Cancelled ' + method + " for " + id);
-            options.onCancel(id);
-
-            return true;
-        }
-
-        return false;
-    }
-
     function isResponseSuccessful(responseCode) {
-        return qq.indexOf(options.successfulResponseCodes[getNormalizedMethod()], responseCode) >= 0;
+        return qq.indexOf(options.successfulResponseCodes[options.method], responseCode) >= 0;
     }
 
-    shouldParamsBeInQueryString = getNormalizedMethod() === 'GET' || getNormalizedMethod() === 'DELETE';
+    function prepareToSend(id, addToPath, additionalParams, additionalHeaders, payload) {
+        requestData[id] = {
+            addToPath: addToPath,
+            additionalParams: additionalParams,
+            additionalHeaders: additionalHeaders,
+            payload: payload
+        };
+
+        var len = queue.push(id);
+
+        // if too many active connections, wait...
+        if (len <= options.maxConnections) {
+            sendRequest(id);
+        }
+    }
+
+
+    shouldParamsBeInQueryString = options.method === 'GET' || options.method === 'DELETE';
 
     return {
-        send: function (id, addToPath, onDemandParams, onDemandHeaders, body) {
-            requestData[id] = {
-                addToPath: addToPath,
-                onDemandParams: onDemandParams,
-                additionalHeaders: onDemandHeaders,
-                body: body
+        // Start the process of sending the request.  The ID refers to the file associated with the request.
+        initTransport: function(id) {
+            var path, params, headers, payload;
+
+            return {
+                // Optionally specify the end of the endpoint path for the request.
+                withPath: function(appendToPath) {
+                    path = appendToPath;
+                    return this;
+                },
+
+                // Optionally specify additional parameters to send along with the request.
+                // These will be added to the query string for GET/DELETE requests or the payload
+                // for POST/PUT requests.  The Content-Type of the request will be used to determine
+                // how these parameters should be formatted as well.
+                withParams: function(additionalParams) {
+                    params = additionalParams;
+                    return this;
+                },
+
+                // Optionally specify additional headers to send along with the request.
+                withHeaders: function(additionalHeaders) {
+                    headers = additionalHeaders;
+                    return this;
+                },
+
+                // Optionally specify a payload/body for the request.
+                withPayload: function(thePayload) {
+                    payload = thePayload;
+                    return this;
+                },
+
+                // Send the constructed request.
+                send: function() {
+                    prepareToSend(id, path, params, headers, payload);
+                }
             };
-
-            var len = queue.push(id);
-
-            // if too many active connections, wait...
-            if (len <= options.maxConnections) {
-                sendRequest(id);
-            }
-        },
-
-        cancel: function (id) {
-            return cancelRequest(id);
-        },
-
-        getMethod: function() {
-            return getNormalizedMethod();
         }
     };
 };

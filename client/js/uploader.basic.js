@@ -159,7 +159,7 @@ qq.FineUploaderBasic = function(o) {
 
     this._handler = this._createUploadHandler();
 
-    this._deleteHandler = qq.DeleteFileAjaxRequestor && this._createDeleteHandler();
+    this._deleteHandler = qq.DeleteFileAjaxRequester && this._createDeleteHandler();
 
     if (this._options.button) {
         this._defaultButtonId = this._createUploadButton({element: this._options.button}).getButtonId();

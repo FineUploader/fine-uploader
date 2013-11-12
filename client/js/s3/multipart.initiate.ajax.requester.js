@@ -31,7 +31,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
 
     qq.extend(options, o);
 
-    getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequestor({
+    getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequester({
         signatureSpec: options.signatureSpec,
         cors: options.cors,
         log: options.log
@@ -158,7 +158,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         }
     }
 
-    requester = new qq.AjaxRequestor({
+    requester = new qq.AjaxRequester({
         method: options.method,
         contentType: null,
         endpointStore: options.endpointStore,
@@ -188,7 +188,10 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
                 options.log("Submitting S3 initiate multipart upload request for " + id);
 
                 pendingInitiateRequests[id] = promise;
-                requester.send(id, addToPath, null, headers);
+                requester.initTransport(id)
+                    .withPath(addToPath)
+                    .withHeaders(headers)
+                    .send();
             }, promise.failure);
 
             return promise;

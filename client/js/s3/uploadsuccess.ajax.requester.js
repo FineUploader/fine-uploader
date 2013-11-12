@@ -68,7 +68,7 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
         }
     }
 
-    requester = new qq.AjaxRequestor({
+    requester = new qq.AjaxRequester({
         method: options.method,
         endpointStore: {
             getEndpoint: function() {
@@ -101,7 +101,11 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
             var promise = new qq.Promise();
 
             options.log("Submitting upload success request/notification for " + id);
-            requester.send(id, null, spec);
+
+            requester.initTransport(id)
+                .withParams(spec)
+                .send();
+
             pendingRequests[id] = promise;
 
             return promise;

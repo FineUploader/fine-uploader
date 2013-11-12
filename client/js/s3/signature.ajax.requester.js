@@ -8,7 +8,7 @@
  * @returns {{getSignature: Function}} API method used to initiate the signature request.
  * @constructor
  */
-qq.s3.SignatureAjaxRequestor = function(o) {
+qq.s3.SignatureAjaxRequester = function(o) {
     "use strict";
 
     var requester,
@@ -85,7 +85,7 @@ qq.s3.SignatureAjaxRequestor = function(o) {
         }
     }
 
-    requester = new qq.AjaxRequestor({
+    requester = new qq.AjaxRequester({
         method: options.method,
         contentType: "application/json; charset=utf-8",
         endpointStore: {
@@ -120,7 +120,10 @@ qq.s3.SignatureAjaxRequestor = function(o) {
 
             options.log("Submitting S3 signature request for " + id);
 
-            requester.send(id, null, params);
+            requester.initTransport(id)
+                .withParams(params)
+                .send();
+
             pendingSignatures[id] = {
                 promise: promise,
                 expectingPolicy: options.expectingPolicy

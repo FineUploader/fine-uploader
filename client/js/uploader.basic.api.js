@@ -580,8 +580,8 @@ qq.basePrivateApi = {
     _createDeleteHandler: function() {
         var self = this;
 
-        return new qq.DeleteFileAjaxRequestor({
-            method: this._options.deleteFile.method,
+        return new qq.DeleteFileAjaxRequester({
+            method: this._options.deleteFile.method.toUpperCase(),
             maxConnections: this._options.maxConnections,
             uuidParamName: this._options.request.uuidName,
             customHeaders: this._options.deleteFile.customHeaders,
@@ -720,7 +720,7 @@ qq.basePrivateApi = {
     },
 
     _isDeletePossible: function() {
-        if (!qq.DeleteFileAjaxRequestor || !this._options.deleteFile.enabled) {
+        if (!qq.DeleteFileAjaxRequester || !this._options.deleteFile.enabled) {
             return false;
         }
 

@@ -24,7 +24,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
     qq.extend(options, o);
 
     // Transport for requesting signatures (for the "Complete" requests) from the local server
-    getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequestor({
+    getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequester({
         signatureSpec: options.signatureSpec,
         cors: options.cors,
         log: options.log
@@ -119,7 +119,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
     }
 
 
-    requester = new qq.AjaxRequestor({
+    requester = new qq.AjaxRequester({
         validMethods: ["DELETE"],
         method: options.method,
         contentType: null,
@@ -145,8 +145,10 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
 
             getHeaders(id, uploadId).then(function(headers) {
                 options.log("Submitting S3 Abort multipart upload request for " + id);
-
-                requester.send(id, endOfUrl, null, headers);
+                requester.initTransport(id)
+                    .withPath(endOfUrl)
+                    .withHeaders(headers)
+                    .send();
             });
         }
     };

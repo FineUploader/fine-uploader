@@ -14,6 +14,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         pendingCompleteRequests = {},
         options = {
             method: "POST",
+            contentType: "text/xml",
             endpointStore: null,
             signatureSpec: null,
             accessKey: null,
@@ -26,7 +27,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
     qq.extend(options, o);
 
     // Transport for requesting signatures (for the "Complete" requests) from the local server
-    getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequestor({
+    getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequester({
         signatureSpec: options.signatureSpec,
         cors: options.cors,
         log: options.log
@@ -166,7 +167,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         return new XMLSerializer().serializeToString(doc);
     }
 
-    requester = new qq.AjaxRequestor({
+    requester = new qq.AjaxRequester({
         method: options.method,
         contentType: "application/xml; charset=UTF-8",
         endpointStore: options.endpointStore,
@@ -197,7 +198,12 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
                 options.log("Submitting S3 complete multipart upload request for " + id);
 
                 pendingCompleteRequests[id] = promise;
-                requester.send(id, getEndOfUrl(id, uploadId), null, headers, body);
+
+                requester.initTransport(id)
+                    .withPath(getEndOfUrl(id, uploadId))
+                    .withHeaders(headers)
+                    .withPayload(body)
+                    .send();
             }, promise.failure);
 
             return promise;

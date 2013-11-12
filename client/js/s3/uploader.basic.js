@@ -276,11 +276,11 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
                 }
             },
             submitSuccessRequest,
-            successAjaxRequestor;
+            successAjaxRequester;
 
         // Ask the local server if the file sent to S3 is ok.
         if (success && successEndpoint) {
-            successAjaxRequestor = new qq.s3.UploadSuccessAjaxRequester({
+            successAjaxRequester = new qq.s3.UploadSuccessAjaxRequester({
                 endpoint: successEndpoint,
                 customHeaders: successCustomHeaders,
                 cors: cors,
@@ -297,7 +297,7 @@ qq.extend(qq.s3.FineUploaderBasic.prototype, {
             }, true);
 
             submitSuccessRequest = qq.bind(function() {
-                successAjaxRequestor.sendSuccessRequest(id, uploadSuccessParams)
+                successAjaxRequester.sendSuccessRequest(id, uploadSuccessParams)
                     .then(onSuccessFromServer, onFailureFromServer);
             }, self);
 

@@ -1,9 +1,9 @@
 /** Generic class for sending non-upload ajax requests and handling the associated responses **/
 /*globals qq, XMLHttpRequest*/
-qq.DeleteFileAjaxRequestor = function(o) {
+qq.DeleteFileAjaxRequester = function(o) {
     "use strict";
 
-    var requestor,
+    var requester,
         options = {
             method: "DELETE",
             uuidParamName: "qquuid",
@@ -33,7 +33,7 @@ qq.DeleteFileAjaxRequestor = function(o) {
         return {};
     }
 
-    requestor = new qq.AjaxRequestor({
+    requester = new qq.AjaxRequester({
         validMethods: ["POST", "DELETE"],
         method: options.method,
         endpointStore: options.endpointStore,
@@ -55,12 +55,17 @@ qq.DeleteFileAjaxRequestor = function(o) {
 
             options.log("Submitting delete file request for " + id);
 
-            if (requestor.getMethod() === "DELETE") {
-                requestor.send(id, uuid, additionalOptions);
+            if (options.method === "DELETE") {
+                requester.initTransport(id)
+                    .withPath(uuid)
+                    .withParams(additionalOptions)
+                    .send();
             }
             else {
                 additionalOptions[options.uuidParamName] = uuid;
-                requestor.send(id, null, additionalOptions);
+                requester.initTransport(id)
+                    .withParams(additionalOptions)
+                    .send();
             }
         }
     };
