@@ -590,13 +590,13 @@ module.exports = (grunt) ->
                 files: ["#{paths.src}/js/*.js", "#{paths.src}/js/s3/*.js"]
                 tasks: [
                     'dev'
-                    'test-unit'
+                    'tests:local'
                 ]
             test:
                 files: ["#{paths.test}/unit/*.js", "#{paths.test}/unit/s3/*.js"]
                 tasks: [
                     'jshint:tests'
-                    'test-unit'
+                    'tests:local'
                 ]
             grunt:
                 files: ['./Gruntfile.coffee']
