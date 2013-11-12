@@ -259,21 +259,18 @@ qq.AjaxRequester = function (o) {
         // on an `XMLHttpRequest`, exclude these specific non-simple headers
         // in an attempt to prevent preflighting.  `XDomainRequest` does not support setting
         // request headers, so we will take this into account as well.
-        if (isXdr(xhr)) {
+        if (!isXdr(xhr)) {
             if (!options.cors.expected || (!isSimpleMethod() || containsNonSimpleHeaders(customHeaders))) {
                 xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
                 xhr.setRequestHeader("Cache-Control", "no-cache");
             }
-        }
 
-        // Note that we can't set the Content-Type when using this transport XDR, and it is
-        // not relevant unless we will be including the params in the payload.
-        if (options.contentType && (method === "POST" || method === "PUT") && !isXdr(xhr)) {
-            xhr.setRequestHeader("Content-Type", options.contentType);
-        }
+            // Note that we can't set the Content-Type when using this transport XDR, and it is
+            // not relevant unless we will be including the params in the payload.
+            if (options.contentType && (method === "POST" || method === "PUT")) {
+                xhr.setRequestHeader("Content-Type", options.contentType);
+            }
 
-        // `XDomainRequest` doesn't allow you to set any headers.
-        if (!isXdr(xhr)) {
             qq.extend(allHeaders, customHeaders);
             qq.extend(allHeaders, onDemandHeaders);
 
