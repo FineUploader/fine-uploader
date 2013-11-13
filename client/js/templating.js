@@ -1,3 +1,5 @@
+/* globals qq */
+/* jshint -W065 */
 /**
  * Module responsible for rendering all Fine Uploader UI templates.  This module also asserts at least
  * a limited amount of control over the template elements after they are added to the DOM.
@@ -39,25 +41,25 @@ qq.Templating = function(spec) {
             }
         },
         selectorClasses = {
-            button: 'qq-upload-button-selector',
-            drop: 'qq-upload-drop-area-selector',
-            list: 'qq-upload-list-selector',
+            button: "qq-upload-button-selector",
+            drop: "qq-upload-drop-area-selector",
+            list: "qq-upload-list-selector",
             progressBarContainer: "qq-progress-bar-container-selector",
-            progressBar: 'qq-progress-bar-selector',
-            file: 'qq-upload-file-selector',
-            spinner: 'qq-upload-spinner-selector',
-            size: 'qq-upload-size-selector',
-            cancel: 'qq-upload-cancel-selector',
-            pause: 'qq-upload-pause-selector',
-            continueButton: 'qq-upload-continue-selector',
-            deleteButton: 'qq-upload-delete-selector',
-            retry: 'qq-upload-retry-selector',
-            statusText: 'qq-upload-status-text-selector',
-            editFilenameInput: 'qq-edit-filename-selector',
-            editNameIcon: 'qq-edit-filename-icon-selector',
-            dropProcessing: 'qq-drop-processing-selector',
-            dropProcessingSpinner: 'qq-drop-processing-spinner-selector',
-            thumbnail: 'qq-thumbnail-selector'
+            progressBar: "qq-progress-bar-selector",
+            file: "qq-upload-file-selector",
+            spinner: "qq-upload-spinner-selector",
+            size: "qq-upload-size-selector",
+            cancel: "qq-upload-cancel-selector",
+            pause: "qq-upload-pause-selector",
+            continueButton: "qq-upload-continue-selector",
+            deleteButton: "qq-upload-delete-selector",
+            retry: "qq-upload-retry-selector",
+            statusText: "qq-upload-status-text-selector",
+            editFilenameInput: "qq-edit-filename-selector",
+            editNameIcon: "qq-edit-filename-icon-selector",
+            dropProcessing: "qq-drop-processing-selector",
+            dropProcessingSpinner: "qq-drop-processing-spinner-selector",
+            thumbnail: "qq-thumbnail-selector"
         },
         previewGeneration = {},
         log,
@@ -93,6 +95,7 @@ qq.Templating = function(spec) {
 
         log("Parsing template");
 
+        /*jshint -W116*/
         if (options.templateIdOrEl == null) {
             throw new Error("You MUST specify either a template element or ID!");
         }
@@ -153,9 +156,8 @@ qq.Templating = function(spec) {
         // If there is a drop area defined in the template, and the current UA doesn't support DnD,
         // and the drop area is marked as "hide before enter", ensure it is hidden as the DnD module
         // will not do this (since we will not be loading the DnD module)
-        if (dropArea
-            && !qq.supportedFeatures.fileDrop
-            && qq(dropArea).hasAttribute(HIDE_DROPZONE_ATTR)) {
+        if (dropArea && !qq.supportedFeatures.fileDrop &&
+            qq(dropArea).hasAttribute(HIDE_DROPZONE_ATTR)) {
 
             qq(dropArea).css({
                 display: "none"
@@ -181,6 +183,7 @@ qq.Templating = function(spec) {
         isRetryElementExist = qq(tempTemplateEl).getByClass(selectorClasses.retry).length > 0;
 
         fileListNode = qq(tempTemplateEl).getByClass(selectorClasses.list)[0];
+        /*jshint -W116*/
         if (fileListNode == null) {
             throw new Error("Could not find the file list container in the template!");
         }
@@ -188,12 +191,12 @@ qq.Templating = function(spec) {
         fileListHtml = fileListNode.innerHTML;
         fileListNode.innerHTML = "";
 
-       log("Template parsing complete");
+        log("Template parsing complete");
 
         return {
             template: qq.trimStr(tempTemplateEl.innerHTML),
             fileTemplate: qq.trimStr(fileListHtml)
-        }
+        };
     }
 
     function getFile(id) {
@@ -280,7 +283,7 @@ qq.Templating = function(spec) {
             bar = qq(bar).getByClass(selectorClasses.progressBar)[0];
         }
 
-        bar && qq(bar).css({width: percent + '%'});
+        bar && qq(bar).css({width: percent + "%"});
     }
 
     // During initialization of the templating module we should cache any
@@ -387,7 +390,7 @@ qq.Templating = function(spec) {
 
             container.innerHTML = templateHtml.template;
             hide(getDropProcessing());
-            fileList = options.fileContainerEl || getTemplateEl(container, selectorClasses.list)
+            fileList = options.fileContainerEl || getTemplateEl(container, selectorClasses.list);
 
             log("Template rendering complete");
         },
@@ -444,6 +447,7 @@ qq.Templating = function(spec) {
         getFileId: function(el) {
             var currentNode = el;
 
+            /*jshint -W116*/
             while (currentNode.getAttribute(FILE_ID_ATTR) == null) {
                 currentNode = currentNode.parentNode;
             }
@@ -638,6 +642,7 @@ qq.Templating = function(spec) {
             var textEl = getTemplateEl(getFile(id), selectorClasses.statusText);
 
             if (textEl) {
+                /*jshint -W116*/
                 if (text == null) {
                     qq(textEl).clearText();
                 }
