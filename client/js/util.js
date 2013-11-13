@@ -1,10 +1,10 @@
-/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest, Blob, Storage*/
+/*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest, Blob, Storage, ActiveXObject */
 var qq = function(element) {
     "use strict";
 
     return {
         hide: function() {
-            element.style.display = 'none';
+            element.style.display = "none";
             return this;
         },
 
@@ -13,7 +13,7 @@ var qq = function(element) {
             if (element.addEventListener){
                 element.addEventListener(type, fn, false);
             } else if (element.attachEvent){
-                element.attachEvent('on' + type, fn);
+                element.attachEvent("on" + type, fn);
             }
             return function() {
                 qq(element).detach(type, fn);
@@ -24,7 +24,7 @@ var qq = function(element) {
             if (element.removeEventListener){
                 element.removeEventListener(type, fn, false);
             } else if (element.attachEvent){
-                element.detachEvent('on' + type, fn);
+                element.detachEvent("on" + type, fn);
             }
             return this;
         },
@@ -69,9 +69,10 @@ var qq = function(element) {
          * Fixes opacity in IE6-8.
          */
         css: function(styles) {
+            /*jshint -W116*/
             if (styles.opacity != null){
-                if (typeof element.style.opacity !== 'string' && typeof(element.filters) !== 'undefined'){
-                    styles.filter = 'alpha(opacity=' + Math.round(100 * styles.opacity) + ')';
+                if (typeof element.style.opacity !== "string" && typeof(element.filters) !== "undefined"){
+                    styles.filter = "alpha(opacity=" + Math.round(100 * styles.opacity) + ")";
                 }
             }
             qq.extend(element.style, styles);
@@ -80,20 +81,20 @@ var qq = function(element) {
         },
 
         hasClass: function(name) {
-            var re = new RegExp('(^| )' + name + '( |$)');
+            var re = new RegExp("(^| )" + name + "( |$)");
             return re.test(element.className);
         },
 
         addClass: function(name) {
             if (!qq(element).hasClass(name)){
-                element.className += ' ' + name;
+                element.className += " " + name;
             }
             return this;
         },
 
         removeClass: function(name) {
-            var re = new RegExp('(^| )' + name + '( |$)');
-            element.className = element.className.replace(re, ' ').replace(/^\s+|\s+$/g, "");
+            var re = new RegExp("(^| )" + name + "( |$)");
+            element.className = element.className.replace(re, " ").replace(/^\s+|\s+$/g, "");
             return this;
         },
 
@@ -102,7 +103,7 @@ var qq = function(element) {
                 result = [];
 
             if (element.querySelectorAll){
-                return element.querySelectorAll('.' + className);
+                return element.querySelectorAll("." + className);
             }
 
             candidates = element.getElementsByTagName("*");
@@ -150,7 +151,8 @@ var qq = function(element) {
                     return false;
                 }
 
-                return /^false$/i.exec(element.getAttribute(attrName)) == null;
+                /*jshint -W116*/
+                return (/^false$/i).exec(element.getAttribute(attrName)) == null;
             }
             else {
                 attrVal = element[attrName];
@@ -159,665 +161,631 @@ var qq = function(element) {
                     return false;
                 }
 
-                return /^false$/i.exec(attrVal) == null;
+                /*jshint -W116*/
+                return (/^false$/i).exec(attrVal) == null;
             }
         }
     };
 };
 
-qq.log = function(message, level) {
+(function(){
     "use strict";
 
-    if (window.console) {
-        if (!level || level === 'info') {
-            window.console.log(message);
+    qq.log = function(message, level) {
+        if (window.console) {
+            if (!level || level === "info") {
+                window.console.log(message);
+            }
+            else
+            {
+                if (window.console[level]) {
+                    window.console[level](message);
+                }
+                else {
+                    window.console.log("<" + level + "> " + message);
+                }
+            }
         }
-        else
-        {
-            if (window.console[level]) {
-                window.console[level](message);
+    };
+
+    qq.isObject = function(variable) {
+        return variable && !variable.nodeType && Object.prototype.toString.call(variable) === "[object Object]";
+    };
+
+    qq.isFunction = function(variable) {
+        return typeof(variable) === "function";
+    };
+
+    /**
+     * Check the type of a value.  Is it an "array"?
+     *
+     * @param value value to test.
+     * @returns true if the value is an array or associated with an `ArrayBuffer`
+     */
+    qq.isArray = function(value) {
+        return Object.prototype.toString.call(value) === "[object Array]" ||
+            (window.ArrayBuffer && value.buffer && value.buffer.constructor === ArrayBuffer);
+    };
+
+    // Looks for an object on a `DataTransfer` object that is associated with drop events when utilizing the Filesystem API.
+    qq.isItemList = function(maybeItemList) {
+        return Object.prototype.toString.call(maybeItemList) === "[object DataTransferItemList]";
+    };
+
+    // Looks for an object on a `NodeList` or an `HTMLCollection`|`HTMLFormElement`|`HTMLSelectElement`
+    // object that is associated with collections of Nodes.
+    qq.isNodeList = function(maybeNodeList) {
+        return Object.prototype.toString.call(maybeNodeList) === "[object NodeList]" ||
+            // If `HTMLCollection` is the actual type of the object, we must determine this
+            // by checking for expected properties/methods on the object
+            (maybeNodeList.item && maybeNodeList.namedItem);
+    };
+
+    qq.isString = function(maybeString) {
+        return Object.prototype.toString.call(maybeString) === "[object String]";
+    };
+
+    qq.trimStr = function(string) {
+        if (String.prototype.trim) {
+            return string.trim();
+        }
+
+        return string.replace(/^\s+|\s+$/g,"");
+    };
+
+
+    /**
+     * @param str String to format.
+     * @returns {string} A string, swapping argument values with the associated occurrence of {} in the passed string.
+     */
+    qq.format = function(str) {
+
+        var args =  Array.prototype.slice.call(arguments, 1),
+            newStr = str;
+
+        qq.each(args, function(idx, val) {
+            newStr = newStr.replace(/{}/, val);
+        });
+
+        return newStr;
+    };
+
+    qq.isFile = function(maybeFile) {
+        return window.File && Object.prototype.toString.call(maybeFile) === "[object File]";
+    };
+
+    qq.isFileList = function(maybeFileList) {
+        return window.FileList && Object.prototype.toString.call(maybeFileList) === "[object FileList]";
+    };
+
+    qq.isFileOrInput = function(maybeFileOrInput) {
+        return qq.isFile(maybeFileOrInput) || qq.isInput(maybeFileOrInput);
+    };
+
+    qq.isInput = function(maybeInput) {
+        if (window.HTMLInputElement) {
+            if (Object.prototype.toString.call(maybeInput) === "[object HTMLInputElement]") {
+                if (maybeInput.type && maybeInput.type.toLowerCase() === "file") {
+                    return true;
+                }
+            }
+        }
+        if (maybeInput.tagName) {
+            if (maybeInput.tagName.toLowerCase() === "input") {
+                if (maybeInput.type && maybeInput.type.toLowerCase() === "file") {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    };
+
+    qq.isBlob = function(maybeBlob) {
+        return window.Blob && Object.prototype.toString.call(maybeBlob) === "[object Blob]";
+    };
+
+    qq.isXhrUploadSupported = function() {
+        var input = document.createElement("input");
+        input.type = "file";
+
+        return (
+            input.multiple !== undefined &&
+                typeof File !== "undefined" &&
+                typeof FormData !== "undefined" &&
+                typeof (qq.createXhrInstance()).upload !== "undefined" );
+    };
+
+    // Fall back to ActiveX is native XHR is disabled (possible in any version of IE).
+    qq.createXhrInstance = function() {
+        if (window.XMLHttpRequest) {
+            return new XMLHttpRequest();
+        }
+
+        try {
+            return new ActiveXObject("MSXML2.XMLHTTP.3.0");
+        }
+        catch(error) {
+            qq.log("Neither XHR or ActiveX are supported!", "error");
+            return null;
+        }
+    };
+
+    qq.isFolderDropSupported = function(dataTransfer) {
+        return (dataTransfer.items && dataTransfer.items[0].webkitGetAsEntry);
+    };
+
+    qq.isFileChunkingSupported = function() {
+        return !qq.android() && //android's impl of Blob.slice is broken
+            qq.isXhrUploadSupported() &&
+            (File.prototype.slice !== undefined || File.prototype.webkitSlice !== undefined || File.prototype.mozSlice !== undefined);
+    };
+
+    qq.sliceBlob = function(fileOrBlob, start, end) {
+        var slicer = fileOrBlob.slice || fileOrBlob.mozSlice || fileOrBlob.webkitSlice;
+
+        return slicer.call(fileOrBlob, start, end);
+    };
+
+    qq.arrayBufferToHex = function(buffer) {
+        var bytesAsHex = "",
+            bytes = new Uint8Array(buffer);
+
+
+        qq.each(bytes, function(idx, byte) {
+            var byteAsHexStr = byte.toString(16);
+
+            if (byteAsHexStr.length < 2) {
+                byteAsHexStr = "0" + byteAsHexStr;
+            }
+
+            bytesAsHex += byteAsHexStr;
+        });
+
+        return bytesAsHex;
+    };
+
+    qq.readBlobToHex = function(blob, startOffset, length) {
+        var initialBlob = qq.sliceBlob(blob, startOffset, startOffset + length),
+            fileReader = new FileReader(),
+            promise = new qq.Promise();
+
+        fileReader.onload = function() {
+            promise.success(qq.arrayBufferToHex(fileReader.result));
+        };
+
+        fileReader.readAsArrayBuffer(initialBlob);
+
+        return promise;
+    };
+
+    qq.extend = function(first, second, extendNested) {
+        qq.each(second, function(prop, val) {
+            if (extendNested && qq.isObject(val)) {
+                if (first[prop] === undefined) {
+                    first[prop] = {};
+                }
+                qq.extend(first[prop], val, true);
             }
             else {
-                window.console.log('<' + level + '> ' + message);
+                first[prop] = val;
             }
-        }
-    }
-};
+        });
 
-qq.isObject = function(variable) {
-    "use strict";
-    return variable && !variable.nodeType && Object.prototype.toString.call(variable) === '[object Object]';
-};
-
-qq.isFunction = function(variable) {
-    "use strict";
-    return typeof(variable) === "function";
-};
-
-/**
- * Check the type of a value.  Is it an "array"?
- *
- * @param value value to test.
- * @returns true if the value is an array or associated with an `ArrayBuffer`
- */
-qq.isArray = function(value) {
-    "use strict";
-    return Object.prototype.toString.call(value) === "[object Array]"
-        || (window.ArrayBuffer && value.buffer && value.buffer.constructor === ArrayBuffer);
-};
-
-// Looks for an object on a `DataTransfer` object that is associated with drop events when utilizing the Filesystem API.
-qq.isItemList = function(maybeItemList) {
-    "use strict";
-    return Object.prototype.toString.call(maybeItemList) === "[object DataTransferItemList]";
-};
-
-// Looks for an object on a `NodeList` or an `HTMLCollection`|`HTMLFormElement`|`HTMLSelectElement`
-// object that is associated with collections of Nodes.
-qq.isNodeList = function(maybeNodeList) {
-    "use strict";
-    return Object.prototype.toString.call(maybeNodeList) === "[object NodeList]" ||
-        // If `HTMLCollection` is the actual type of the object, we must determine this
-        // by checking for expected properties/methods on the object
-        (maybeNodeList.item && maybeNodeList.namedItem);
-};
-
-qq.isString = function(maybeString) {
-    "use strict";
-    return Object.prototype.toString.call(maybeString) === '[object String]';
-};
-
-qq.trimStr = function(string) {
-    if (String.prototype.trim) {
-        return string.trim();
-    }
-
-    return string.replace(/^\s+|\s+$/g,'');
-};
-
-
-/**
- * @param str String to format.
- * @returns {string} A string, swapping argument values with the associated occurrence of {} in the passed string.
- */
-qq.format = function(str) {
-    "use strict";
-
-    var args =  Array.prototype.slice.call(arguments, 1),
-        newStr = str;
-
-    qq.each(args, function(idx, val) {
-        newStr = newStr.replace(/{}/, val);
-    });
-
-    return newStr;
-};
-
-qq.isFile = function(maybeFile) {
-    "use strict";
-
-    return window.File && Object.prototype.toString.call(maybeFile) === '[object File]'
-};
-
-qq.isFileList = function(maybeFileList) {
-    return window.FileList && Object.prototype.toString.call(maybeFileList) === '[object FileList]'
-};
-
-qq.isFileOrInput = function(maybeFileOrInput) {
-    "use strict";
-
-    return qq.isFile(maybeFileOrInput) || qq.isInput(maybeFileOrInput);
-};
-
-qq.isInput = function(maybeInput) {
-    if (window.HTMLInputElement) {
-        if (Object.prototype.toString.call(maybeInput) === '[object HTMLInputElement]') {
-            if (maybeInput.type && maybeInput.type.toLowerCase() === 'file') {
-                return true;
-            }
-        }
-    }
-    if (maybeInput.tagName) {
-        if (maybeInput.tagName.toLowerCase() === 'input') {
-            if (maybeInput.type && maybeInput.type.toLowerCase() === 'file') {
-                return true;
-            }
-        }
-    }
-
-    return false;
-};
-
-qq.isBlob = function(maybeBlob) {
-    "use strict";
-    return window.Blob && Object.prototype.toString.call(maybeBlob) === '[object Blob]';
-};
-
-qq.isXhrUploadSupported = function() {
-    "use strict";
-    var input = document.createElement('input');
-    input.type = 'file';
-
-    return (
-        input.multiple !== undefined &&
-            typeof File !== "undefined" &&
-            typeof FormData !== "undefined" &&
-            typeof (qq.createXhrInstance()).upload !== "undefined" );
-};
-
-// Fall back to ActiveX is native XHR is disabled (possible in any version of IE).
-qq.createXhrInstance = function() {
-    if (window.XMLHttpRequest) {
-        return new XMLHttpRequest();
-    }
-
-    try {
-        return new ActiveXObject("MSXML2.XMLHTTP.3.0");
-    }
-    catch(error) {
-        qq.log("Neither XHR or ActiveX are supported!", "error");
-        return null;
-    }
-};
-
-qq.isFolderDropSupported = function(dataTransfer) {
-    "use strict";
-    return (dataTransfer.items && dataTransfer.items[0].webkitGetAsEntry);
-};
-
-qq.isFileChunkingSupported = function() {
-    "use strict";
-    return !qq.android() && //android's impl of Blob.slice is broken
-        qq.isXhrUploadSupported() &&
-        (File.prototype.slice !== undefined || File.prototype.webkitSlice !== undefined || File.prototype.mozSlice !== undefined);
-};
-
-qq.sliceBlob = function(fileOrBlob, start, end) {
-    var slicer = fileOrBlob.slice || fileOrBlob.mozSlice || fileOrBlob.webkitSlice;
-
-    return slicer.call(fileOrBlob, start, end);
-};
-
-qq.arrayBufferToHex = function(buffer) {
-    var bytesAsHex = "",
-        bytes = new Uint8Array(buffer);
-
-
-    qq.each(bytes, function(idx, byte) {
-        var byteAsHexStr = byte.toString(16);
-
-        if (byteAsHexStr.length < 2) {
-            byteAsHexStr = "0" + byteAsHexStr;
-        }
-
-        bytesAsHex += byteAsHexStr;
-    });
-
-    return bytesAsHex;
-};
-
-qq.readBlobToHex = function(blob, startOffset, length) {
-    var initialBlob = qq.sliceBlob(blob, startOffset, startOffset + length),
-        fileReader = new FileReader(),
-        promise = new qq.Promise();
-
-    fileReader.onload = function() {
-        promise.success(qq.arrayBufferToHex(fileReader.result));
+        return first;
     };
 
-    fileReader.readAsArrayBuffer(initialBlob);
+    /**
+     * Allow properties in one object to override properties in another,
+     * keeping track of the original values from the target object.
+     *
+     * Note that the pre-overriden properties to be overriden by the source will be passed into the `sourceFn` when it is invoked.
+     *
+     * @param target Update properties in this object from some source
+     * @param sourceFn A function that, when invoked, will return properties that will replace properties with the same name in the target.
+     * @returns {object} The target object
+     */
+    qq.override = function(target, sourceFn) {
+        var super_ = {},
+            source = sourceFn(super_);
 
-    return promise;
-};
-
-qq.extend = function(first, second, extendNested) {
-    "use strict";
-
-    qq.each(second, function(prop, val) {
-        if (extendNested && qq.isObject(val)) {
-            if (first[prop] === undefined) {
-                first[prop] = {};
+        qq.each(source, function(srcPropName, srcPropVal) {
+            if (target[srcPropName] !== undefined) {
+                super_[srcPropName] = target[srcPropName];
             }
-            qq.extend(first[prop], val, true);
-        }
-        else {
-            first[prop] = val;
-        }
-    });
 
-    return first;
-};
+            target[srcPropName] = srcPropVal;
+        });
 
-/**
- * Allow properties in one object to override properties in another,
- * keeping track of the original values from the target object.
- *
- * Note that the pre-overriden properties to be overriden by the source will be passed into the `sourceFn` when it is invoked.
- *
- * @param target Update properties in this object from some source
- * @param sourceFn A function that, when invoked, will return properties that will replace properties with the same name in the target.
- * @returns {object} The target object
- */
-qq.override = function(target, sourceFn) {
-    var super_ = {},
-        source = sourceFn(super_);
-
-    qq.each(source, function(srcPropName, srcPropVal) {
-        if (target[srcPropName] !== undefined) {
-            super_[srcPropName] = target[srcPropName];
-        }
-
-        target[srcPropName] = srcPropVal;
-    });
-
-    return target;
-};
-
-/**
- * Searches for a given element in the array, returns -1 if it is not present.
- * @param {Number} [from] The index at which to begin the search
- */
-qq.indexOf = function(arr, elt, from){
-    "use strict";
-
-    if (arr.indexOf) {
-        return arr.indexOf(elt, from);
-    }
-
-    from = from || 0;
-    var len = arr.length;
-
-    if (from < 0) {
-        from += len;
-    }
-
-    for (; from < len; from+=1){
-        if (arr.hasOwnProperty(from) && arr[from] === elt){
-            return from;
-        }
-    }
-    return -1;
-};
-
-//this is a version 4 UUID
-qq.getUniqueId = function(){
-    "use strict";
-
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        /*jslint eqeq: true, bitwise: true*/
-        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-        return v.toString(16);
-    });
-};
-
-//
-// Browsers and platforms detection
-
-qq.ie       = function(){
-    "use strict";
-    return navigator.userAgent.indexOf('MSIE') !== -1;
-};
-qq.ie7      = function(){
-    "use strict";
-    return navigator.userAgent.indexOf('MSIE 7') !== -1;
-};
-qq.ie10     = function(){
-    "use strict";
-    return navigator.userAgent.indexOf('MSIE 10') !== -1;
-};
-qq.safari   = function(){
-    "use strict";
-    return navigator.vendor !== undefined && navigator.vendor.indexOf("Apple") !== -1;
-};
-qq.chrome   = function(){
-    "use strict";
-    return navigator.vendor !== undefined && navigator.vendor.indexOf('Google') !== -1;
-};
-qq.opera   = function(){
-    "use strict";
-    return navigator.vendor !== undefined && navigator.vendor.indexOf('Opera') !== -1;
-};
-qq.firefox  = function(){
-    "use strict";
-    return (navigator.userAgent.indexOf('Mozilla') !== -1 && navigator.vendor !== undefined && navigator.vendor === '');
-};
-qq.windows  = function(){
-    "use strict";
-    return navigator.platform === "Win32";
-};
-qq.android = function(){
-    "use strict";
-    return navigator.userAgent.toLowerCase().indexOf('android') !== -1;
-};
-qq.ios7 = function() {
-    "use strict";
-    return qq.ios() && navigator.userAgent.indexOf(" OS 7_") !== -1;
-};
-qq.ios = function() {
-    "use strict";
-    return navigator.userAgent.indexOf("iPad") !== -1
-        || navigator.userAgent.indexOf("iPod") !== -1
-        || navigator.userAgent.indexOf("iPhone") !== -1;
-};
-
-//
-// Events
-
-qq.preventDefault = function(e){
-    "use strict";
-    if (e.preventDefault){
-        e.preventDefault();
-    } else{
-        e.returnValue = false;
-    }
-};
-
-/**
- * Creates and returns element from html string
- * Uses innerHTML to create an element
- */
-qq.toElement = (function(){
-    "use strict";
-    var div = document.createElement('div');
-    return function(html){
-        div.innerHTML = html;
-        var element = div.firstChild;
-        div.removeChild(element);
-        return element;
+        return target;
     };
-}());
 
-//key and value are passed to callback for each entry in the iterable item
-qq.each = function(iterableItem, callback) {
-    "use strict";
-    var keyOrIndex, retVal;
+    /**
+     * Searches for a given element in the array, returns -1 if it is not present.
+     * @param {Number} [from] The index at which to begin the search
+     */
+    qq.indexOf = function(arr, elt, from){
+        if (arr.indexOf) {
+            return arr.indexOf(elt, from);
+        }
 
-    if (iterableItem) {
-        // Iterate through [`Storage`](http://www.w3.org/TR/webstorage/#the-storage-interface) items
-        if (window.Storage && iterableItem.constructor === window.Storage) {
-            for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
-                retVal = callback(iterableItem.key(keyOrIndex), iterableItem.getItem(iterableItem.key(keyOrIndex)));
-                if (retVal === false) {
-                    break;
-                }
+        from = from || 0;
+        var len = arr.length;
+
+        if (from < 0) {
+            from += len;
+        }
+
+        for (; from < len; from+=1){
+            if (arr.hasOwnProperty(from) && arr[from] === elt){
+                return from;
             }
         }
-        // `DataTransferItemList` & `NodeList` objects are array-like and should be treated as arrays
-        // when iterating over items inside the object.
-        else if (qq.isArray(iterableItem) || qq.isItemList(iterableItem) || qq.isNodeList(iterableItem)) {
-            for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
-                retVal = callback(keyOrIndex, iterableItem[keyOrIndex]);
-                if (retVal === false) {
-                    break;
+        return -1;
+    };
+
+    //this is a version 4 UUID
+    qq.getUniqueId = function(){
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+            /*jslint eqeq: true, bitwise: true*/
+            var r = Math.random()*16|0, v = c == "x" ? r : (r&0x3|0x8);
+            return v.toString(16);
+        });
+    };
+
+    //
+    // Browsers and platforms detection
+
+    qq.ie       = function(){
+        return navigator.userAgent.indexOf("MSIE") !== -1;
+    };
+    qq.ie7      = function(){
+        return navigator.userAgent.indexOf("MSIE 7") !== -1;
+    };
+    qq.ie10     = function(){
+        return navigator.userAgent.indexOf("MSIE 10") !== -1;
+    };
+    qq.safari   = function(){
+        return navigator.vendor !== undefined && navigator.vendor.indexOf("Apple") !== -1;
+    };
+    qq.chrome   = function(){
+        return navigator.vendor !== undefined && navigator.vendor.indexOf("Google") !== -1;
+    };
+    qq.opera   = function(){
+        return navigator.vendor !== undefined && navigator.vendor.indexOf("Opera") !== -1;
+    };
+    qq.firefox  = function(){
+        return (navigator.userAgent.indexOf("Mozilla") !== -1 && navigator.vendor !== undefined && navigator.vendor === "");
+    };
+    qq.windows  = function(){
+        return navigator.platform === "Win32";
+    };
+    qq.android = function(){
+        return navigator.userAgent.toLowerCase().indexOf("android") !== -1;
+    };
+    qq.ios7 = function() {
+        return qq.ios() && navigator.userAgent.indexOf(" OS 7_") !== -1;
+    };
+    qq.ios = function() {
+        /*jshint -W014 */
+        return navigator.userAgent.indexOf("iPad") !== -1
+            || navigator.userAgent.indexOf("iPod") !== -1
+            || navigator.userAgent.indexOf("iPhone") !== -1;
+    };
+
+    //
+    // Events
+
+    qq.preventDefault = function(e){
+        if (e.preventDefault){
+            e.preventDefault();
+        } else{
+            e.returnValue = false;
+        }
+    };
+
+    /**
+     * Creates and returns element from html string
+     * Uses innerHTML to create an element
+     */
+    qq.toElement = (function(){
+        var div = document.createElement("div");
+        return function(html){
+            div.innerHTML = html;
+            var element = div.firstChild;
+            div.removeChild(element);
+            return element;
+        };
+    }());
+
+    //key and value are passed to callback for each entry in the iterable item
+    qq.each = function(iterableItem, callback) {
+        var keyOrIndex, retVal;
+
+        if (iterableItem) {
+            // Iterate through [`Storage`](http://www.w3.org/TR/webstorage/#the-storage-interface) items
+            if (window.Storage && iterableItem.constructor === window.Storage) {
+                for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
+                    retVal = callback(iterableItem.key(keyOrIndex), iterableItem.getItem(iterableItem.key(keyOrIndex)));
+                    if (retVal === false) {
+                        break;
+                    }
                 }
             }
-        }
-        else if (qq.isString(iterableItem)) {
-            for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
-                retVal = callback(keyOrIndex, iterableItem.charAt(keyOrIndex));
-                if (retVal === false) {
-                    break;
-                }
-            }
-        }
-        else {
-            for (keyOrIndex in iterableItem) {
-                if (Object.prototype.hasOwnProperty.call(iterableItem, keyOrIndex)) {
+            // `DataTransferItemList` & `NodeList` objects are array-like and should be treated as arrays
+            // when iterating over items inside the object.
+            else if (qq.isArray(iterableItem) || qq.isItemList(iterableItem) || qq.isNodeList(iterableItem)) {
+                for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
                     retVal = callback(keyOrIndex, iterableItem[keyOrIndex]);
                     if (retVal === false) {
                         break;
                     }
                 }
             }
-        }
-    }
-};
-
-//include any args that should be passed to the new function after the context arg
-qq.bind = function(oldFunc, context) {
-    if (qq.isFunction(oldFunc)) {
-        var args =  Array.prototype.slice.call(arguments, 2);
-
-        return function() {
-            var newArgs = qq.extend([], args);
-            if (arguments.length) {
-                newArgs = newArgs.concat(Array.prototype.slice.call(arguments))
-            }
-            return oldFunc.apply(context, newArgs);
-        };
-    }
-
-    throw new Error("first parameter must be a function!");
-};
-
-/**
- * obj2url() takes a json-object as argument and generates
- * a querystring. pretty much like jQuery.param()
- *
- * how to use:
- *
- *    `qq.obj2url({a:'b',c:'d'},'http://any.url/upload?otherParam=value');`
- *
- * will result in:
- *
- *    `http://any.url/upload?otherParam=value&a=b&c=d`
- *
- * @param  Object JSON-Object
- * @param  String current querystring-part
- * @return String encoded querystring
- */
-qq.obj2url = function(obj, temp, prefixDone){
-    "use strict";
-    /*jshint laxbreak: true*/
-     var uristrings = [],
-         prefix = '&',
-         add = function(nextObj, i){
-            var nextTemp = temp
-                ? (/\[\]$/.test(temp)) // prevent double-encoding
-                ? temp
-                : temp+'['+i+']'
-                : i;
-            if ((nextTemp !== 'undefined') && (i !== 'undefined')) {
-                uristrings.push(
-                    (typeof nextObj === 'object')
-                        ? qq.obj2url(nextObj, nextTemp, true)
-                        : (Object.prototype.toString.call(nextObj) === '[object Function]')
-                        ? encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj())
-                        : encodeURIComponent(nextTemp) + '=' + encodeURIComponent(nextObj)
-                );
-            }
-        };
-
-    if (!prefixDone && temp) {
-        prefix = (/\?/.test(temp)) ? (/\?$/.test(temp)) ? '' : '&' : '?';
-        uristrings.push(temp);
-        uristrings.push(qq.obj2url(obj));
-    } else if ((Object.prototype.toString.call(obj) === '[object Array]') && (typeof obj !== 'undefined') ) {
-        qq.each(obj, function(idx, val) {
-            add(val, idx);
-        });
-    } else if ((typeof obj !== 'undefined') && (obj !== null) && (typeof obj === "object")){
-        qq.each(obj, function(prop, val) {
-            add(val, prop);
-        });
-    } else {
-        uristrings.push(encodeURIComponent(temp) + '=' + encodeURIComponent(obj));
-    }
-
-    if (temp) {
-        return uristrings.join(prefix);
-    } else {
-        return uristrings.join(prefix)
-            .replace(/^&/, '')
-            .replace(/%20/g, '+');
-    }
-};
-
-qq.obj2FormData = function(obj, formData, arrayKeyName) {
-    "use strict";
-    if (!formData) {
-        formData = new FormData();
-    }
-
-    qq.each(obj, function(key, val) {
-        key = arrayKeyName ? arrayKeyName + '[' + key + ']' : key;
-
-        if (qq.isObject(val)) {
-            qq.obj2FormData(val, formData, key);
-        }
-        else if (qq.isFunction(val)) {
-            formData.append(key, val());
-        }
-        else {
-            formData.append(key, val);
-        }
-    });
-
-    return formData;
-};
-
-qq.obj2Inputs = function(obj, form) {
-    "use strict";
-    var input;
-
-    if (!form) {
-        form = document.createElement('form');
-    }
-
-    qq.obj2FormData(obj, {
-        append: function(key, val) {
-            input = document.createElement('input');
-            input.setAttribute('name', key);
-            input.setAttribute('value', val);
-            form.appendChild(input);
-        }
-    });
-
-    return form;
-};
-
-qq.setCookie = function(name, value, days) {
-    var date = new Date(),
-        expires = "";
-
-	if (days) {
-		date.setTime(date.getTime()+(days*24*60*60*1000));
-		expires = "; expires="+date.toGMTString();
-	}
-
-	document.cookie = name+"="+value+expires+"; path=/";
-};
-
-qq.getCookie = function(name) {
-	var nameEQ = name + "=",
-        ca = document.cookie.split(';'),
-        cookie;
-
-    qq.each(ca, function(idx, part) {
-        var cookiePart = part;
-        while (cookiePart.charAt(0)==' ') {
-            cookiePart = cookiePart.substring(1, cookiePart.length);
-        }
-
-        if (cookiePart.indexOf(nameEQ) === 0) {
-            cookie = cookiePart.substring(nameEQ.length, cookiePart.length);
-            return false;
-        }
-    });
-
-    return cookie;
-};
-
-qq.getCookieNames = function(regexp) {
-    var cookies = document.cookie.split(';'),
-        cookieNames = [];
-
-    qq.each(cookies, function(idx, cookie) {
-        cookie = qq.trimStr(cookie);
-
-        var equalsIdx = cookie.indexOf("=");
-
-        if (cookie.match(regexp)) {
-            cookieNames.push(cookie.substr(0, equalsIdx));
-        }
-    });
-
-    return cookieNames;
-};
-
-qq.deleteCookie = function(name) {
-	qq.setCookie(name, "", -1);
-};
-
-qq.areCookiesEnabled = function() {
-    var randNum = Math.random() * 100000,
-        name = "qqCookieTest:" + randNum;
-    qq.setCookie(name, 1);
-
-    if (qq.getCookie(name)) {
-        qq.deleteCookie(name);
-        return true;
-    }
-    return false;
-};
-
-/**
- * Not recommended for use outside of Fine Uploader since this falls back to an unchecked eval if JSON.parse is not
- * implemented.  For a more secure JSON.parse polyfill, use Douglas Crockford's json2.js.
- */
-qq.parseJson = function(json) {
-    /*jshint evil: true*/
-    if (window.JSON && qq.isFunction(JSON.parse)) {
-        return JSON.parse(json);
-    } else {
-        return eval("(" + json + ")");
-    }
-};
-
-/**
- * Retrieve the extension of a file, if it exists.
- *
- * @param filename
- * @returns {string || undefined}
- */
-qq.getExtension = function(filename) {
-    var extIdx = filename.lastIndexOf('.') + 1;
-
-    if (extIdx > 0) {
-        return filename.substr(extIdx, filename.length - extIdx);
-    }
-};
-
-/**
- * A generic module which supports object disposing in dispose() method.
- * */
-qq.DisposeSupport = function() {
-    "use strict";
-    var disposers = [];
-
-    return {
-        /** Run all registered disposers */
-        dispose: function() {
-            var disposer;
-            do {
-                disposer = disposers.shift();
-                if (disposer) {
-                    disposer();
+            else if (qq.isString(iterableItem)) {
+                for (keyOrIndex = 0; keyOrIndex < iterableItem.length; keyOrIndex++) {
+                    retVal = callback(keyOrIndex, iterableItem.charAt(keyOrIndex));
+                    if (retVal === false) {
+                        break;
+                    }
                 }
             }
-            while (disposer);
-        },
-
-        /** Attach event handler and register de-attacher as a disposer */
-        attach: function() {
-            var args = arguments;
-            /*jslint undef:true*/
-            this.addDisposer(qq(args[0]).attach.apply(this, Array.prototype.slice.call(arguments, 1)));
-        },
-
-        /** Add disposer to the collection */
-        addDisposer: function(disposeFunction) {
-            disposers.push(disposeFunction);
+            else {
+                for (keyOrIndex in iterableItem) {
+                    if (Object.prototype.hasOwnProperty.call(iterableItem, keyOrIndex)) {
+                        retVal = callback(keyOrIndex, iterableItem[keyOrIndex]);
+                        if (retVal === false) {
+                            break;
+                        }
+                    }
+                }
+            }
         }
     };
-};
+
+    //include any args that should be passed to the new function after the context arg
+    qq.bind = function(oldFunc, context) {
+        if (qq.isFunction(oldFunc)) {
+            var args =  Array.prototype.slice.call(arguments, 2);
+
+            return function() {
+                var newArgs = qq.extend([], args);
+                if (arguments.length) {
+                    newArgs = newArgs.concat(Array.prototype.slice.call(arguments));
+                }
+                return oldFunc.apply(context, newArgs);
+            };
+        }
+
+        throw new Error("first parameter must be a function!");
+    };
+
+    /**
+     * obj2url() takes a json-object as argument and generates
+     * a querystring. pretty much like jQuery.param()
+     *
+     * how to use:
+     *
+     *    `qq.obj2url({a:'b',c:'d'},'http://any.url/upload?otherParam=value');`
+     *
+     * will result in:
+     *
+     *    `http://any.url/upload?otherParam=value&a=b&c=d`
+     *
+     * @param  Object JSON-Object
+     * @param  String current querystring-part
+     * @return String encoded querystring
+     */
+    qq.obj2url = function(obj, temp, prefixDone){
+        /*jshint laxbreak: true*/
+        var uristrings = [],
+            prefix = "&",
+            add = function(nextObj, i){
+                var nextTemp = temp
+                    ? (/\[\]$/.test(temp)) // prevent double-encoding
+                    ? temp
+                    : temp+"["+i+"]"
+                    : i;
+                if ((nextTemp !== "undefined") && (i !== "undefined")) {
+                    uristrings.push(
+                        (typeof nextObj === "object")
+                            ? qq.obj2url(nextObj, nextTemp, true)
+                            : (Object.prototype.toString.call(nextObj) === "[object Function]")
+                            ? encodeURIComponent(nextTemp) + "=" + encodeURIComponent(nextObj())
+                            : encodeURIComponent(nextTemp) + "=" + encodeURIComponent(nextObj)
+                    );
+                }
+            };
+
+        if (!prefixDone && temp) {
+            prefix = (/\?/.test(temp)) ? (/\?$/.test(temp)) ? "" : "&" : "?";
+            uristrings.push(temp);
+            uristrings.push(qq.obj2url(obj));
+        } else if ((Object.prototype.toString.call(obj) === "[object Array]") && (typeof obj !== "undefined") ) {
+            qq.each(obj, function(idx, val) {
+                add(val, idx);
+            });
+        } else if ((typeof obj !== "undefined") && (obj !== null) && (typeof obj === "object")){
+            qq.each(obj, function(prop, val) {
+                add(val, prop);
+            });
+        } else {
+            uristrings.push(encodeURIComponent(temp) + "=" + encodeURIComponent(obj));
+        }
+
+        if (temp) {
+            return uristrings.join(prefix);
+        } else {
+            return uristrings.join(prefix)
+                .replace(/^&/, "")
+                .replace(/%20/g, "+");
+        }
+    };
+
+    qq.obj2FormData = function(obj, formData, arrayKeyName) {
+        if (!formData) {
+            formData = new FormData();
+        }
+
+        qq.each(obj, function(key, val) {
+            key = arrayKeyName ? arrayKeyName + "[" + key + "]" : key;
+
+            if (qq.isObject(val)) {
+                qq.obj2FormData(val, formData, key);
+            }
+            else if (qq.isFunction(val)) {
+                formData.append(key, val());
+            }
+            else {
+                formData.append(key, val);
+            }
+        });
+
+        return formData;
+    };
+
+    qq.obj2Inputs = function(obj, form) {
+        var input;
+
+        if (!form) {
+            form = document.createElement("form");
+        }
+
+        qq.obj2FormData(obj, {
+            append: function(key, val) {
+                input = document.createElement("input");
+                input.setAttribute("name", key);
+                input.setAttribute("value", val);
+                form.appendChild(input);
+            }
+        });
+
+        return form;
+    };
+
+    qq.setCookie = function(name, value, days) {
+        var date = new Date(),
+            expires = "";
+
+        if (days) {
+            date.setTime(date.getTime()+(days*24*60*60*1000));
+            expires = "; expires="+date.toGMTString();
+        }
+
+        document.cookie = name+"="+value+expires+"; path=/";
+    };
+
+    qq.getCookie = function(name) {
+        var nameEQ = name + "=",
+            ca = document.cookie.split(";"),
+            cookie;
+
+        qq.each(ca, function(idx, part) {
+            /*jshint -W116 */
+            var cookiePart = part;
+            while (cookiePart.charAt(0) == " ") {
+                cookiePart = cookiePart.substring(1, cookiePart.length);
+            }
+
+            if (cookiePart.indexOf(nameEQ) === 0) {
+                cookie = cookiePart.substring(nameEQ.length, cookiePart.length);
+                return false;
+            }
+        });
+
+        return cookie;
+    };
+
+    qq.getCookieNames = function(regexp) {
+        var cookies = document.cookie.split(";"),
+            cookieNames = [];
+
+        qq.each(cookies, function(idx, cookie) {
+            cookie = qq.trimStr(cookie);
+
+            var equalsIdx = cookie.indexOf("=");
+
+            if (cookie.match(regexp)) {
+                cookieNames.push(cookie.substr(0, equalsIdx));
+            }
+        });
+
+        return cookieNames;
+    };
+
+    qq.deleteCookie = function(name) {
+        qq.setCookie(name, "", -1);
+    };
+
+    qq.areCookiesEnabled = function() {
+        var randNum = Math.random() * 100000,
+            name = "qqCookieTest:" + randNum;
+        qq.setCookie(name, 1);
+
+        if (qq.getCookie(name)) {
+            qq.deleteCookie(name);
+            return true;
+        }
+        return false;
+    };
+
+    /**
+     * Not recommended for use outside of Fine Uploader since this falls back to an unchecked eval if JSON.parse is not
+     * implemented.  For a more secure JSON.parse polyfill, use Douglas Crockford's json2.js.
+     */
+    qq.parseJson = function(json) {
+        /*jshint evil: true*/
+        if (window.JSON && qq.isFunction(JSON.parse)) {
+            return JSON.parse(json);
+        } else {
+            return eval("(" + json + ")");
+        }
+    };
+
+    /**
+     * Retrieve the extension of a file, if it exists.
+     *
+     * @param filename
+     * @returns {string || undefined}
+     */
+    qq.getExtension = function(filename) {
+        var extIdx = filename.lastIndexOf(".") + 1;
+
+        if (extIdx > 0) {
+            return filename.substr(extIdx, filename.length - extIdx);
+        }
+    };
+
+    /**
+     * A generic module which supports object disposing in dispose() method.
+     * */
+    qq.DisposeSupport = function() {
+        var disposers = [];
+
+        return {
+            /** Run all registered disposers */
+            dispose: function() {
+                var disposer;
+                do {
+                    disposer = disposers.shift();
+                    if (disposer) {
+                        disposer();
+                    }
+                }
+                while (disposer);
+            },
+
+            /** Attach event handler and register de-attacher as a disposer */
+            attach: function() {
+                var args = arguments;
+                /*jslint undef:true*/
+                this.addDisposer(qq(args[0]).attach.apply(this, Array.prototype.slice.call(arguments, 1)));
+            },
+
+            /** Add disposer to the collection */
+            addDisposer: function(disposeFunction) {
+                disposers.push(disposeFunction);
+            }
+        };
+    };
+}());
