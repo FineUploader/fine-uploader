@@ -1,3 +1,4 @@
+/*globals qq, MegaPixImage */
 /**
  * Draws a thumbnail of a Blob/File/URL onto an <img> or <canvas>.
  *
@@ -23,13 +24,14 @@ qq.ImageGenerator = function(log) {
     function isCanvasSupported() {
         var canvas = document.createElement("canvas");
 
-        return canvas.getContext && canvas.getContext("2d")
+        return canvas.getContext && canvas.getContext("2d");
     }
 
     // This is only meant to determine the MIME type of a renderable image file.
     // It is used to ensure images drawn from a URL that have transparent backgrounds
     // are rendered correctly, among other things.
     function determineMimeOfFileName(nameWithPath) {
+        /*jshint -W015 */
         var pathSegments = nameWithPath.split("/"),
             name = pathSegments[pathSegments.length - 1],
             extension = qq.getExtension(name);
@@ -58,7 +60,7 @@ qq.ImageGenerator = function(log) {
     // If canvas isn't supported by the UA (IE8 and older)
     // this method should not even be called.
     function isCrossOrigin(url) {
-        var targetAnchor = document.createElement('a'),
+        var targetAnchor = document.createElement("a"),
             targetProtocol, targetHostname, targetPort;
 
         targetAnchor.href = url;
@@ -108,7 +110,7 @@ qq.ImageGenerator = function(log) {
             oldDrawImage.apply(this, arguments);
             promise.success(canvas);
             context.drawImage = oldDrawImage;
-        }
+        };
     }
 
     // Fulfills a `qq.Promise` when an image has been drawn onto the target,
@@ -275,7 +277,7 @@ qq.ImageGenerator = function(log) {
         generate: function(fileBlobOrUrl, container, options) {
             if (qq.isString(fileBlobOrUrl)) {
                 log("Attempting to update thumbnail based on server response.");
-                return drawFromUrl(fileBlobOrUrl, container, options || {})
+                return drawFromUrl(fileBlobOrUrl, container, options || {});
             }
             else {
                 log("Attempting to draw client-side image preview.");
