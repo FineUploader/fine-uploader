@@ -1,3 +1,5 @@
+/*global qq, define */
+/*jshint strict:false,bitwise:false,nonew:false,asi:true,-W064,-W116,-W089 */
 /**
  * Mega pixel image rendering library for iOS6 Safari
  *
