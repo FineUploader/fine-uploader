@@ -1,3 +1,4 @@
+/* global qq */
 qq.FileButtonsClickHandler = function(s) {
     "use strict";
 
@@ -37,7 +38,7 @@ qq.FileButtonsClickHandler = function(s) {
 
     qq.extend(spec, s);
 
-    spec.eventType = 'click';
+    spec.eventType = "click";
     spec.onHandled = examineEvent;
     spec.attachTo = spec.templating.getFileList();
 
