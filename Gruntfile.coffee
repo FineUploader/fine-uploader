@@ -463,19 +463,10 @@ module.exports = (grunt) ->
     #dest: "#{customBuildDest}/src/<%= pkg.name %>-<%= pkg.version %>.min.css"
 
         jshint:
-            source: ["#{paths.src}/js/*.js"]
+            source: ["#{paths.src}/js/**/*.js"]
             tests: ["#{paths.test}unit/*.js"]
             options:
-                validthis: true
-                laxcomma: true
-                laxbreak: true
-                browser: true
-                eqnull: true
-                debug: true
-                devel: true
-                boss: true
-                expr: true
-                asi: true
+                jshintrc: true
 
         custom:
             options:
