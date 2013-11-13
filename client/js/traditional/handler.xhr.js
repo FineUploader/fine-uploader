@@ -1,20 +1,30 @@
 /*globals qq, File, XMLHttpRequest, FormData, Blob*/
 qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, logCallback) {
     "use strict";
-    
+
     var uploadComplete = uploadCompleteCallback,
         log = logCallback,
         fileState = [],
         cookieItemDelimiter = "|",
         chunkFiles = options.chunking.enabled && qq.supportedFeatures.chunking,
         resumeEnabled = options.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
-        resumeId = getResumeId(),
         multipart = options.forceMultipart || options.paramsInBody,
         internalApi = {},
-        publicApi;
+        publicApi, resumeId;
 
+    function getResumeId() {
+        if (options.resume.id !== null &&
+            options.resume.id !== undefined &&
+            !qq.isFunction(options.resume.id) &&
+            !qq.isObject(options.resume.id)) {
 
-     function addChunkingSpecificParams(id, params, chunkData) {
+            return options.resume.id;
+        }
+    }
+
+    resumeId = getResumeId();
+
+    function addChunkingSpecificParams(id, params, chunkData) {
         var size = publicApi.getSize(id),
             name = publicApi.getName(id);
 
@@ -164,7 +174,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
         toSend = setParamsAndGetEntityToSend(params, xhr, chunkData.blob, id);
         setHeaders(id, xhr);
 
-        log('Sending chunked upload request for item ' + id + ": bytes " + (chunkData.start+1) + "-" + chunkData.end + " of " + size);
+        log("Sending chunked upload request for item " + id + ": bytes " + (chunkData.start+1) + "-" + chunkData.end + " of " + size);
         xhr.send(toSend);
     }
 
@@ -239,7 +249,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
             }
         }
         catch(error) {
-            log('Error when attempting to parse xhr response text (' + error.message + ')', 'error');
+            log("Error when attempting to parse xhr response text (" + error.message + ")", "error");
             response = {};
         }
 
@@ -247,7 +257,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
     }
 
     function handleResetResponse(id) {
-        log('Server has ordered chunking effort to be restarted on next attempt for item ID ' + id, 'error');
+        log("Server has ordered chunking effort to be restarted on next attempt for item ID " + id, "error");
 
         if (resumeEnabled) {
             deletePersistedChunkData(id);
@@ -262,7 +272,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
 
     function handleResetResponseOnResumeAttempt(id) {
         fileState[id].attemptingResume = false;
-        log("Server has declared that it cannot handle resume for item ID " + id + " - starting from the first chunk", 'error');
+        log("Server has declared that it cannot handle resume for item ID " + id + " - starting from the first chunk", "error");
         handleResetResponse(id);
         publicApi.upload(id, true);
     }
@@ -369,7 +379,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
                 };
             }
             else {
-                log('Ignoring previously stored resume/chunk cookie for ' + filename + " - old cookie format", "warn");
+                log("Ignoring previously stored resume/chunk cookie for " + filename + " - old cookie format", "warn");
             }
         }
     }
@@ -389,16 +399,6 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
         return cookieName;
     }
 
-    function getResumeId() {
-        if (options.resume.id !== null &&
-            options.resume.id !== undefined &&
-            !qq.isFunction(options.resume.id) &&
-            !qq.isObject(options.resume.id)) {
-
-            return options.resume.id;
-        }
-    }
-
     function calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex) {
         var currentChunkIndex;
 
@@ -415,7 +415,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
         fileState[id].estTotalRequestsSize = persistedChunkInfoForResume.estTotalRequestsSize;
         fileState[id].initialRequestOverhead = persistedChunkInfoForResume.initialRequestOverhead;
         fileState[id].attemptingResume = true;
-        log('Resuming ' + name + " at partition index " + firstChunkIndex);
+        log("Resuming " + name + " at partition index " + firstChunkIndex);
 
         calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
     }
@@ -433,7 +433,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
                     onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume);
                 },
                 function() {
-                    log("onResume promise fulfilled - failure indicated.  Will not resume.")
+                    log("onResume promise fulfilled - failure indicated.  Will not resume.");
                     calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
                 }
             );
@@ -494,7 +494,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
         toSend = setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id);
         setHeaders(id, xhr);
 
-        log('Sending upload request for ' + id);
+        log("Sending upload request for " + id);
         xhr.send(toSend);
     }
 
