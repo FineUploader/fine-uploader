@@ -1,5 +1,5 @@
-/** Generic class for sending non-upload ajax requests and handling the associated responses **/
 /*globals qq, XDomainRequest*/
+/** Generic class for sending non-upload ajax requests and handling the associated responses **/
 qq.AjaxRequester = function (o) {
     "use strict";
 
