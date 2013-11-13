@@ -1,4 +1,8 @@
+/*globals qq */
+/*jshint -W117 */
 qq.WindowReceiveMessage = function(o) {
+    "use strict";
+
     var options = {
             log: function(message, level) {}
         },
