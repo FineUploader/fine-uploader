@@ -1,3 +1,4 @@
+/*globals qq */
 /**
  * Upload handler used by the upload to S3 module that assumes the current user agent does not have any support for the
  * File API, and, therefore, makes use of iframes and forms to submit the files directly to S3 buckets via the associated
@@ -12,7 +13,6 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
     "use strict";
 
     var fileState = [],
-        uploadCompleteCallback = uploadCompleteCallback,
         log = logCallback,
         onCompleteCallback = options.onComplete,
         onUpload = options.onUpload,
@@ -71,13 +71,14 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
 
         }
         catch(error) {
-            log('Error when attempting to parse form upload response (' + error.message + ")", 'error');
+            log("Error when attempting to parse form upload response (" + error.message + ")", "error");
         }
 
         return false;
     }
 
     function generateAwsParams(id) {
+        /*jshint -W040 */
         var customParams = paramsStore.getParams(id);
 
         customParams[filenameParam] = publicApi.getName(id);
@@ -136,13 +137,13 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
 
             // Register a callback when the response comes in from S3
             internalApi.attachLoadEvent(iframe, function(response) {
-                log('iframe loaded');
+                log("iframe loaded");
 
                 // If the common response handler has determined success or failure immediately
                 if (response) {
                     // If there is something fundamentally wrong with the response (such as iframe content is not accessible)
                     if (response.success === false) {
-                        log('Amazon likely rejected the upload request', 'error');
+                        log("Amazon likely rejected the upload request", "error");
                     }
                 }
                 // The generic response (iframe onload) handler was not able to make a determination regarding the success of the request
@@ -152,14 +153,14 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
 
                     // If the more specific response handle detected a problem with the response from S3
                     if (response.success === false) {
-                        log('A success response was received by Amazon, but it was invalid in some way.', 'error');
+                        log("A success response was received by Amazon, but it was invalid in some way.", "error");
                     }
                 }
 
                 handleFinishedUpload(id, iframe, fileName, response);
             });
 
-            log('Sending upload request for ' + id);
+            log("Sending upload request for " + id);
             form.submit();
             qq(form).remove();
         });
@@ -187,7 +188,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
                 name = publicApi.getName(id);
 
             if (!input){
-                throw new Error('file with passed id was not added, or already uploaded or cancelled');
+                throw new Error("file with passed id was not added, or already uploaded or cancelled");
             }
 
             if (publicApi.isValid(id)) {
