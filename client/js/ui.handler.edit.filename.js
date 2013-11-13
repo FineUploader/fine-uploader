@@ -1,3 +1,4 @@
+/*globals qq */
 // Handles edit-related events on a file item (FineUploader mode).  This is meant to be a parent handler.
 // Children will delegate to this handler when specific edit-related actions are detected.
 qq.FilenameEditHandler = function(s, inheritedInternalApi) {
@@ -15,7 +16,7 @@ qq.FilenameEditHandler = function(s, inheritedInternalApi) {
 
     function getFilenameSansExtension(fileId) {
         var filenameSansExt = spec.onGetName(fileId),
-            extIdx = filenameSansExt.lastIndexOf('.');
+            extIdx = filenameSansExt.lastIndexOf(".");
 
         if (extIdx > 0) {
             filenameSansExt = filenameSansExt.substr(0, extIdx);
@@ -49,19 +50,19 @@ qq.FilenameEditHandler = function(s, inheritedInternalApi) {
 
     // The name has been updated if the filename edit input loses focus.
     function registerInputBlurHandler(inputEl, fileId) {
-        inheritedInternalApi.getDisposeSupport().attach(inputEl, 'blur', function() {
-            handleNameUpdate(inputEl, fileId)
+        inheritedInternalApi.getDisposeSupport().attach(inputEl, "blur", function() {
+            handleNameUpdate(inputEl, fileId);
         });
     }
 
     // The name has been updated if the user presses enter.
     function registerInputEnterKeyHandler(inputEl, fileId) {
-        inheritedInternalApi.getDisposeSupport().attach(inputEl, 'keyup', function(event) {
+        inheritedInternalApi.getDisposeSupport().attach(inputEl, "keyup", function(event) {
 
             var code = event.keyCode || event.which;
 
             if (code === 13) {
-                handleNameUpdate(inputEl, fileId)
+                handleNameUpdate(inputEl, fileId);
             }
         });
     }
