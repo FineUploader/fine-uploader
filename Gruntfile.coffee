@@ -87,12 +87,14 @@ module.exports = (grunt) ->
         coffeelint:
             options:
                 indentation:
-                    level: 'ignore'
+                    level: 'warn'
                 no_trailing_whitespace:
+                    level: 'warn'
+                no_backticks:
                     level: 'ignore'
                 max_line_length:
                     level: 'ignore'
-            grunt: './Gruntfile.coffee'
+            grunt: ['./Gruntfile.coffee', 'lib/grunt/**/*.coffee']
 
         compress:
             jquery:
