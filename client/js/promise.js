@@ -45,14 +45,14 @@ qq.Promise = function() {
 
             if (successCallbacks.length) {
                 qq.each(successCallbacks, function(idx, callback) {
-                    callback.apply(null, successArgs)
-                })
+                    callback.apply(null, successArgs);
+                });
             }
 
             if(doneCallbacks.length) {
                 qq.each(doneCallbacks, function(idx, callback) {
-                    callback.apply(null, successArgs)
-                })
+                    callback.apply(null, successArgs);
+                });
             }
 
             return this;
@@ -65,13 +65,13 @@ qq.Promise = function() {
             if (failureCallbacks.length) {
                 qq.each(failureCallbacks, function(idx, callback) {
                     callback.apply(null, failureArgs);
-                })
+                });
             }
 
             if(doneCallbacks.length) {
                 qq.each(doneCallbacks, function(idx, callback) {
                     callback.apply(null, failureArgs);
-                })
+                });
             }
 
             return this;
@@ -80,5 +80,7 @@ qq.Promise = function() {
 };
 
 qq.isPromise = function(maybePromise) {
+    "use strict";
+
     return maybePromise && maybePromise.then && maybePromise.done;
 };
