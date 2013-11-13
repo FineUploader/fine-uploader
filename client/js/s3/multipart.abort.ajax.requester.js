@@ -1,3 +1,4 @@
+/*globals qq */
 /**
  * Ajax requester used to send an ["Abort Multipart Upload"](http://docs.aws.amazon.com/AmazonS3/latest/API/mpUploadAbort.html)
  * request to S3 via the REST API.
