@@ -1,3 +1,4 @@
+/*globals qq */
 /**
  * EXIF image data parser.  Currently only parses the Orientation tag value,
  * but this may be expanded to other tags in the future.
@@ -7,6 +8,8 @@
  * @constructor
  */
 qq.Exif = function(fileOrBlob, log) {
+    "use strict";
+
     // Orientation is the only tag parsed here at this time.
     var TAG_IDS = [274],
         TAG_INFO = {
