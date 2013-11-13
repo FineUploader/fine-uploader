@@ -1,3 +1,4 @@
+/*globals qq */
 // Child of FilenameEditHandler.  Used to detect click events on filename display elements.
 qq.FilenameClickHandler = function(s) {
     "use strict";
@@ -7,12 +8,12 @@ qq.FilenameClickHandler = function(s) {
             templating: null,
             log: function(message, lvl) {},
             classes: {
-                file: 'qq-upload-file',
-                editNameIcon: 'qq-edit-filename-icon'
+                file: "qq-upload-file",
+                editNameIcon: "qq-edit-filename-icon"
             },
             onGetUploadStatus: function(fileId) {},
             onGetName: function(fileId) {}
-    };
+        };
 
     qq.extend(spec, s);
 
@@ -32,7 +33,7 @@ qq.FilenameClickHandler = function(s) {
         }
     }
 
-    spec.eventType = 'click';
+    spec.eventType = "click";
     spec.onHandled = examineEvent;
 
     return qq.extend(this, new qq.FilenameEditHandler(spec, inheritedInternalApi));
