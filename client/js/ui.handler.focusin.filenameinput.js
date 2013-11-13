@@ -1,3 +1,4 @@
+/*globals qq */
 // Child of FilenameEditHandler.  Used to detect focusin events on file edit input elements.
 qq.FilenameInputFocusInHandler = function(s, inheritedInternalApi) {
     "use strict";
@@ -6,7 +7,7 @@ qq.FilenameInputFocusInHandler = function(s, inheritedInternalApi) {
             templating: null,
             onGetUploadStatus: function(fileId) {},
             log: function(message, lvl) {}
-    };
+        };
 
     if (!inheritedInternalApi) {
         inheritedInternalApi = {};
@@ -25,7 +26,7 @@ qq.FilenameInputFocusInHandler = function(s, inheritedInternalApi) {
         }
     }
 
-    spec.eventType = 'focusin';
+    spec.eventType = "focusin";
     spec.onHandled = handleInputFocus;
 
     qq.extend(spec, s);
