@@ -25,10 +25,10 @@ what sorts of files can and can not be uploaded.
 
 {{ options_table(
     (
-        ("maxHeight", "`Number`", "0", "Restrict images to a maximum height (wherever possible)."),
-        ("maxWidth", "`Number`", "0", "Restrict images to a maximum width (wherever possible)."),
-        ("minHeight", "`Number`", "0", "Restrict images to a minimum height (wherever possible)."),
-        ("minWidth", "`Number`", "0", "Restrict images to a minimum width (wherever possible)."),
+        ("maxHeight", "`Number`", "0", "Restrict images to a maximum height in pixels (wherever possible)."),
+        ("maxWidth", "`Number`", "0", "Restrict images to a maximum width in pixels (wherever possible)."),
+        ("minHeight", "`Number`", "0", "Restrict images to a minimum height in pixels (wherever possible)."),
+        ("minWidth", "`Number`", "0", "Restrict images to a minimum width in pixels (wherever possible)."),
     )
 ) }}
 
