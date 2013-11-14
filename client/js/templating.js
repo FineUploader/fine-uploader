@@ -674,13 +674,13 @@ qq.Templating = function(spec) {
                             previewGeneration[id].success();
                         },
                         function() {
+                            previewGeneration[id].failure();
+
                             // Display the "not available" placeholder img only if we are
                             // not expecting a thumbnail at a later point, such as in a server response.
                             if (!options.placeholders.waitUntilUpdate) {
                                 maybeSetDisplayNotAvailableImg(id, thumbnail);
                             }
-
-                            previewGeneration[id].failure();
                         });
                 }
             }
