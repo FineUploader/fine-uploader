@@ -1,0 +1,2 @@
+Test:
+ - Image dimension validation
