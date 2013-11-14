@@ -1050,22 +1050,26 @@ qq.basePrivateApi = {
     },
 
     _onValidateCallbackSuccess: function(items, index, params, endpoint) {
-        var nextIndex = index+1,
-            validationDescriptor = this._getValidationDescriptor(items[index]),
-            validItem = false;
+        var self = this,
+            nextIndex = index+1,
+            validationDescriptor = this._getValidationDescriptor(items[index]);
 
-        if (this._validateFileOrBlobData(items[index], validationDescriptor)) {
-            validItem = true;
-            this._upload(items[index], params, endpoint);
-        }
-
-        this._maybeProcessNextItemAfterOnValidateCallback(validItem, items, nextIndex, params, endpoint);
+        this._validateFileOrBlobData(items[index], validationDescriptor)
+            .then(
+                function() {
+                    self._upload(items[index], params, endpoint);
+                    self._maybeProcessNextItemAfterOnValidateCallback(true, items, nextIndex, params, endpoint);
+                },
+                function() {
+                    self._maybeProcessNextItemAfterOnValidateCallback(false, items, nextIndex, params, endpoint);
+                }
+            );
     },
 
     _onValidateCallbackFailure: function(items, index, params, endpoint) {
         var nextIndex = index+ 1;
 
-        this._fileOrBlobRejected(undefined, items[0].name);
+        this._fileOrBlobRejected(null, items[0].name);
 
         this._maybeProcessNextItemAfterOnValidateCallback(false, items, nextIndex, params, endpoint);
     },
@@ -1096,45 +1100,61 @@ qq.basePrivateApi = {
      *
      * @param item `File`, `Blob`, or `<input type="file">`
      * @param validationDescriptor Normalized information about the item (`size`, `name`).
-     * @returns {boolean} true if the item is valid
+     * @returns qq.Promise with appropriate callbacks invokved depending on the validity of the file
      * @private
      */
     _validateFileOrBlobData: function(item, validationDescriptor) {
-        var name = validationDescriptor.name,
+        var self = this,
+            name = validationDescriptor.name,
             size = validationDescriptor.size,
             buttonId = this._getButtonId(item),
             validationBase = this._getValidationBase(buttonId),
-            valid = true;
+            validityChecker = new qq.Promise();
+
+        validityChecker.then(
+            function() {},
+            function() {
+                self._fileOrBlobRejected(null, name);
+            });
 
         if (qq.isFileOrInput(item) && !this._isAllowedExtension(validationBase.allowedExtensions, name)) {
             this._itemError('typeError', name, item);
-            valid = false;
-
+            return validityChecker.failure();
         }
-        else if (size === 0) {
+
+        if (size === 0) {
             this._itemError('emptyError', name, item);
-            valid = false;
-
+            return validityChecker.failure();
         }
-        else if (size && validationBase.sizeLimit && size > validationBase.sizeLimit) {
+
+        if (size && validationBase.sizeLimit && size > validationBase.sizeLimit) {
             this._itemError('sizeError', name, item);
-            valid = false;
-
+            return validityChecker.failure();
         }
-        else if (size && size < validationBase.minSizeLimit) {
+
+        if (size && size < validationBase.minSizeLimit) {
             this._itemError('minSizeError', name, item);
-            valid = false;
+            return validityChecker.failure();
         }
 
-        if (!valid) {
-            this._fileOrBlobRejected(undefined, name);
+        if (qq.ImageValidation && qq.supportedFeatures.imagePreviews && qq.isFile(item)) {
+            new qq.ImageValidation(item, qq.bind(self.log, self)).validate(validationBase.image).then(
+                validityChecker.success,
+                function(errorCode) {
+                    self._itemError(errorCode + "ImageError", name, item);
+                    validityChecker.failure();
+                }
+            );
+        }
+        else {
+            validityChecker.success();
         }
 
-        return valid;
+        return validityChecker;
     },
 
     _fileOrBlobRejected: function(id) {
-        if (id !== undefined) {
+        if (id != null) {
             this._uploadData.setStatus(id, qq.status.REJECTED);
         }
     },

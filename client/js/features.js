@@ -122,6 +122,7 @@ qq.supportedFeatures = (function () {
         canDetermineSize: supportsAjaxFileUploading,
         folderSelection: supportsFolderSelection,
         imagePreviews: supportsImagePreviews,
+        imageValidation: supportsImagePreviews,
         pause: supportsChunking
     }
 

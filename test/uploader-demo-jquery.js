@@ -52,6 +52,11 @@
                     waitingPath: "/client/placeholders/waiting-generic.png",
                     notAvailablePath: "/client/placeholders/not_available-generic.png"
                 }
+            },
+            validation: {
+                image: {
+                    maxWidth: 960
+                }
             }
         }).on('error', errorHandler).on("upload", function(event, id, filename) {
                 $(this).fineUploader('setParams', {

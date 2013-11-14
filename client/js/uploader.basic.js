@@ -24,7 +24,13 @@ qq.FineUploaderBasic = function(o) {
             minSizeLimit: 0,
             itemLimit: 0,
             stopOnFirstInvalidFile: true,
-            acceptFiles: null
+            acceptFiles: null,
+            image: {
+                maxHeight: 0,
+                maxWidth: 0,
+                minHeight: 0,
+                minWidth: 0
+            }
         },
         callbacks: {
             onSubmit: function(id, name){},
@@ -54,6 +60,10 @@ qq.FineUploaderBasic = function(o) {
             emptyError: "{file} is empty, please select files again without it.",
             noFilesError: "No files to upload.",
             tooManyItemsError: "Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.",
+            maxHeightImageError: "Image is too tall.",
+            maxWidthImageError: "Image is too wide.",
+            minHeightImageError: "Image is not tall enough.",
+            minWidthImageError: "Image is not wide enough.",
             retryFailTooManyItems: "Retry failed - you have reached your file limit.",
             onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
         },
