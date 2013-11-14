@@ -122,6 +122,21 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
+            <td>IE 11</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+        </tr>
+        <tr>
             <td>IE 10</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -317,8 +332,8 @@ by upgrading to IE10 are listed as well.
     <thead>
         <tr>
             <th>Limitation</th>
-            <th>IE10 Support
-            </th>
+            <th>IE10 Support</th>
+            <th>IE11 Support</th>
             <th>Reason</th>
         </tr>
     </thead>
@@ -329,11 +344,17 @@ by upgrading to IE10 are listed as well.
             <td>
                 <span class="label label-success">Yes</span>
             </td>
+            <td>
+                <span class="label label-success">Yes</span>
+            </td>
             <td>Lack of File API support
             </td>
         </tr>
         <tr>
             <td>Lack of File API support
+            </td>
+            <td>
+                <span class="label label-success">Yes</span>
             </td>
             <td>
                 <span class="label label-success">Yes</span>
@@ -347,11 +368,17 @@ by upgrading to IE10 are listed as well.
             <td>
                 <span class="label label-success">Yes</span>
             </td>
+            <td>
+                <span class="label label-success">Yes</span>
+            </td>
             <td>Lack of File API Support
             </td>
         </tr>
         <tr>
             <td>Cannot select multiple files in the file selection dialog
+            </td>
+            <td>
+                <span class="label label-success">Yes</span>
             </td>
             <td>
                 <span class="label label-success">Yes</span>
@@ -364,11 +391,17 @@ by upgrading to IE10 are listed as well.
             <td>
                 <span class="label label-success">Yes</span>
             </td>
+            <td>
+                <span class="label label-success">Yes</span>
+            </td>
             <td><code>console.log</code> is not implemented (IE8 and older only)
             </td>
         </tr>
         <tr>
             <td>Unable to cancel uploads
+            </td>
+            <td>
+                <span class="label label-success">Yes</span>
             </td>
             <td>
                 <span class="label label-success">Yes</span>
@@ -388,6 +421,9 @@ by upgrading to IE10 are listed as well.
            <td>
                <span class="label label-success">Yes</span>
            </td>
+            <td>
+                <span class="label label-success">Yes</span>
+            </td>
            <td>IE does strange things with the response when the content-type is, for
                example, “application/json” or “text/html”. The latter is only a
                problem if you return HTML in your JSON response.
@@ -399,6 +435,9 @@ by upgrading to IE10 are listed as well.
            <td>
                <span class="label label-success">Yes</span>
            </td>
+            <td>
+                <span class="label label-success">Yes</span>
+            </td>
            <td>Not really an IE problem, but since we are forced to upload files via
                form submission, I thought I’d include it. This is really a side-effect
                of using a form submission to upload files.
@@ -406,6 +445,9 @@ by upgrading to IE10 are listed as well.
        </tr>
         <tr>
             <td>Content-size header field value does not match the actual file size
+            </td>
+            <td>
+                <span class="label label-default">x</span>
             </td>
             <td>
                 <span class="label label-default">x</span>
@@ -422,6 +464,9 @@ by upgrading to IE10 are listed as well.
             <td>
                 <span class="label label-important">No</span>
             </td>
+            <td>
+                <span class="label label-important">No</span>
+            </td>
             <td>If the response code is not 200, and the size of the response is less
                 than 512, or, apparently, sometimes, less than 256 bytes, IE replaces
                 the response with a “friendly” error message. If you insist on returning
@@ -433,6 +478,9 @@ by upgrading to IE10 are listed as well.
         </tr>
         <tr>
             <td>Cannot use a <code>&lt;button&gt;</code> element in the <code>button</code> option</td>
+            <td>
+                <span class="label label-important">No</span>
+            </td>
             <td>
                 <span class="label label-important">No</span>
             </td>
