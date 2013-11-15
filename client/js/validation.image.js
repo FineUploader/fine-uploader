@@ -1,3 +1,4 @@
+/*globals qq*/
 /**
  * Attempts to validate an image, wherever possible.
  *
@@ -78,6 +79,7 @@ qq.ImageValidation = function(blob, log) {
                     dimensionPropName = limitMatcher[2].charAt(0).toLowerCase() + limitMatcher[2].slice(1),
                     actualValue = dimensions[dimensionPropName];
 
+                /*jshint -W015*/
                 switch(limitMatcher[1]) {
                     case "min":
                         if (actualValue < limitValue) {
@@ -128,5 +130,5 @@ qq.ImageValidation = function(blob, log) {
         }
 
         return validationEffort;
-    }
+    };
 };
