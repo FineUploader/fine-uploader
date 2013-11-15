@@ -446,7 +446,6 @@ var qq = function(element) {
         return navigator.userAgent.indexOf("MSIE 10") !== -1;
     };
     qq.ie11     = function(){
-        "use strict";
         return (navigator.userAgent.indexOf("Trident") !== -1 &&
             navigator.userAgent.indexOf("rv:11") !== -1);
     };
