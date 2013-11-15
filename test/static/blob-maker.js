@@ -8,11 +8,7 @@ function downloadFileAsBlob(key, type) {
     xhr.open("GET", "http://fineuploader_unittests.s3.amazonaws.com/" + key, true);
     xhr.responseType = "arraybuffer";
 
-    xhr.onerror = function(e) {
-        console.error(this.status);
-        downloadAsync.failure();
-    };
-
+    xhr.onerror = downloadAsync.failure;
     xhr.onload = function() {
         if (this.status === 200) {
             if (blobBuilder) {
