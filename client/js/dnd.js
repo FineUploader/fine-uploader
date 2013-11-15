@@ -302,8 +302,8 @@ qq.UploadDropZone = function(o){
 
         // dt.effectAllowed crashes IE11 when files have been dragged from
         // the filesystem
-        effectTest = (qq.ie10() || qq.ie11()) ? true : dt.effectAllowed !== 'none';
-        return dt && effectTest && (dt.files || (!isSafari && dt.types.contains && dt.types.contains('Files')));
+        effectTest = (qq.ie10() || qq.ie11()) ? true : dt.effectAllowed !== "none";
+        return dt && effectTest && (dt.files || (!isSafari && dt.types.contains && dt.types.contains("Files")));
     }
 
     function isOrSetDropDisabled(isDisabled) {
@@ -322,8 +322,8 @@ qq.UploadDropZone = function(o){
             // dt.effectAllowed crashes IE11 when files have been dragged from
             // the filesystem
             var effect = (qq.ie() || qq.ie11()) ? null : e.dataTransfer.effectAllowed;
-            if (effect === 'move' || effect === 'linkMove'){
-                e.dataTransfer.dropEffect = 'move'; // for FF (only move allowed)
+            if (effect === "move" || effect === "linkMove"){
+                e.dataTransfer.dropEffect = "move"; // for FF (only move allowed)
             } else {
                 e.dataTransfer.dropEffect = "copy"; // for Chrome
             }
