@@ -69,6 +69,11 @@ var qq = function(element) {
          * Fixes opacity in IE6-8.
          */
         css: function(styles) {
+            /*jshint eqnull: true*/
+            if (element.style == null) {
+                throw new qq.Error("Can't apply style to node as it is not on the HTMLElement prototype chain!");
+            }
+
             /*jshint -W116*/
             if (styles.opacity != null){
                 if (typeof element.style.opacity !== "string" && typeof(element.filters) !== "undefined"){
