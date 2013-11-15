@@ -1100,7 +1100,7 @@ qq.basePrivateApi = {
      *
      * @param item `File`, `Blob`, or `<input type="file">`
      * @param validationDescriptor Normalized information about the item (`size`, `name`).
-     * @returns qq.Promise with appropriate callbacks invokved depending on the validity of the file
+     * @returns qq.Promise with appropriate callbacks invoked depending on the validity of the file
      * @private
      */
     _validateFileOrBlobData: function(item, validationDescriptor) {
