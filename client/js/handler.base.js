@@ -18,23 +18,23 @@ qq.UploadHandler = function(o, namespace) {
         paramsInBody: false,
         paramsStore: {},
         endpointStore: {},
-        filenameParam: 'qqfilename',
+        filenameParam: "qqfilename",
         cors: {
             expected: false,
             sendCredentials: false
         },
         maxConnections: 3, // maximum number of concurrent uploads
-        uuidParam: 'qquuid',
-        totalFileSizeParam: 'qqtotalfilesize',
+        uuidParam: "qquuid",
+        totalFileSizeParam: "qqtotalfilesize",
         chunking: {
             enabled: false,
             partSize: 2000000, //bytes
             paramNames: {
-                partIndex: 'qqpartindex',
-                partByteOffset: 'qqpartbyteoffset',
-                chunkSize: 'qqchunksize',
-                totalParts: 'qqtotalparts',
-                filename: 'qqfilename'
+                partIndex: "qqpartindex",
+                partByteOffset: "qqpartbyteoffset",
+                chunkSize: "qqchunksize",
+                totalParts: "qqtotalparts",
+                filename: "qqfilename"
             }
         },
         resume: {
@@ -80,7 +80,7 @@ qq.UploadHandler = function(o, namespace) {
     }
 
     function cancelSuccess(id) {
-        log('Cancelling ' + id);
+        log("Cancelling " + id);
         options.paramsStore.remove(id);
         dequeue(id);
     }
@@ -193,7 +193,7 @@ qq.UploadHandler = function(o, namespace) {
         },
 
         reset: function() {
-            log('Resetting upload handler');
+            log("Resetting upload handler");
             api.cancelAll();
             queue = [];
             handlerImpl.reset();

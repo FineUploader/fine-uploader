@@ -1,7 +1,10 @@
+/*globals qq */
 /**
  * This defines FineUploader mode, which is a default UI w/ drag & drop uploading.
  */
 qq.FineUploader = function(o, namespace) {
+    "use strict";
+
     // By default this should inherit instance data from FineUploaderBasic, but this can be overridden
     // if the (internal) caller defines a different parent.  The parent is also used by
     // the private and public API functions that need to delegate to a parent function.
@@ -30,19 +33,19 @@ qq.FineUploader = function(o, namespace) {
         template: "qq-template",
 
         classes: {
-            retrying: 'qq-upload-retrying',
-            retryable: 'qq-upload-retryable',
-            success: 'qq-upload-success',
-            fail: 'qq-upload-fail',
-            editable: 'qq-editable',
+            retrying: "qq-upload-retrying",
+            retryable: "qq-upload-retryable",
+            success: "qq-upload-success",
+            fail: "qq-upload-fail",
+            editable: "qq-editable",
             hide: "qq-hide",
-            dropActive: 'qq-upload-drop-area-active'
+            dropActive: "qq-upload-drop-area-active"
         },
 
         failedUploadTextDisplay: {
-            mode: 'default', //default, custom, or none
+            mode: "default", //default, custom, or none
             maxChars: 50,
-            responseProperty: 'error',
+            responseProperty: "error",
             enableTooltip: true
         },
 

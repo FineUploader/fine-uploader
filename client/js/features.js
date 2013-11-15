@@ -1,4 +1,7 @@
+/* globals qq */
 qq.supportedFeatures = (function () {
+    "use strict";
+
     var supportsUploading,
         supportsAjaxFileUploading,
         supportsFolderDrop,
@@ -18,8 +21,8 @@ qq.supportedFeatures = (function () {
             tempInput;
 
         try {
-            tempInput = document.createElement('input');
-            tempInput.type = 'file';
+            tempInput = document.createElement("input");
+            tempInput.type = "file";
             qq(tempInput).hide();
 
             if (tempInput.disabled) {
@@ -74,7 +77,7 @@ qq.supportedFeatures = (function () {
 
     function isFolderSelectionSupported() {
         // We know that folder selection is only supported in Chrome via this proprietary attribute for now
-        return document.createElement('input').webkitdirectory !== undefined;
+        return document.createElement("input").webkitdirectory !== undefined;
     }
 
 
@@ -124,6 +127,6 @@ qq.supportedFeatures = (function () {
         imagePreviews: supportsImagePreviews,
         imageValidation: supportsImagePreviews,
         pause: supportsChunking
-    }
+    };
 
 }());

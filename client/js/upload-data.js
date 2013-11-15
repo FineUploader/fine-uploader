@@ -1,4 +1,7 @@
+/*globals qq */
 qq.UploadData = function(uploaderProxy) {
+    "use strict";
+
     var data = [],
         byId = {},
         byUuid = {},

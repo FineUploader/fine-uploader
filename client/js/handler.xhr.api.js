@@ -1,3 +1,4 @@
+/* globals qq */
 /**
  * Common API exposed to creators of XHR handlers.  This is reused and possibly overriding in some cases by specific
  * XHR upload handlers.
@@ -102,7 +103,7 @@ qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, on
                 id = fileState.push({blobData: fileOrBlobData}) - 1;
             }
             else {
-                throw new Error('Passed obj in not a File or BlobData (in qq.UploadHandlerXhr)');
+                throw new Error("Passed obj in not a File or BlobData (in qq.UploadHandlerXhr)");
             }
 
             fileState[id].uuid = uuid;

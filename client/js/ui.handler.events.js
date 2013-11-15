@@ -1,3 +1,4 @@
+/*globals qq */
 // Base handler for UI (FineUploader mode) events.
 // Some more specific handlers inherit from this one.
 qq.UiEventHandler = function(s, protectedApi) {
@@ -5,7 +6,7 @@ qq.UiEventHandler = function(s, protectedApi) {
 
     var disposer = new qq.DisposeSupport(),
         spec = {
-            eventType: 'click',
+            eventType: "click",
             attachTo: null,
             onHandled: function(target, event) {}
         },

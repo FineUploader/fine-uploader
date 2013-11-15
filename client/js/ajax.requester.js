@@ -1,5 +1,5 @@
+/*globals qq, XDomainRequest*/
 /** Generic class for sending non-upload ajax requests and handling the associated responses **/
-/*globals qq, XMLHttpRequest*/
 qq.AjaxRequester = function (o) {
     "use strict";
 
@@ -7,8 +7,8 @@ qq.AjaxRequester = function (o) {
         queue = [],
         requestData = [],
         options = {
-            validMethods: ['POST'],
-            method: 'POST',
+            validMethods: ["POST"],
+            method: "POST",
             contentType: "application/x-www-form-urlencoded",
             maxConnections: 3,
             customHeaders: {},
@@ -187,10 +187,10 @@ qq.AjaxRequester = function (o) {
 
         setHeaders(id);
 
-        log('Sending ' + method + " request for " + id);
+        log("Sending " + method + " request for " + id);
 
         if (payload) {
-            xhr.send(payload)
+            xhr.send(payload);
         }
         else if (shouldParamsBeInQueryString || !params) {
             xhr.send();
@@ -210,6 +210,7 @@ qq.AjaxRequester = function (o) {
         var endpoint = options.endpointStore.getEndpoint(id),
             addToPath = requestData[id].addToPath;
 
+        /*jshint -W116,-W041 */
         if (addToPath != undefined) {
             endpoint += "/" + addToPath;
         }
@@ -237,7 +238,7 @@ qq.AjaxRequester = function (o) {
     function getXdrLoadHandler(id) {
         return function () {
             onComplete(id);
-        }
+        };
     }
 
     // This will be called by IE to indicate **failure** for an associated
@@ -245,7 +246,7 @@ qq.AjaxRequester = function (o) {
     function getXdrErrorHandler(id) {
         return function () {
             onComplete(id, true);
-        }
+        };
     }
 
     function setHeaders(id) {
@@ -301,7 +302,7 @@ qq.AjaxRequester = function (o) {
     }
 
 
-    shouldParamsBeInQueryString = options.method === 'GET' || options.method === 'DELETE';
+    shouldParamsBeInQueryString = options.method === "GET" || options.method === "DELETE";
 
     return {
         // Start the process of sending the request.  The ID refers to the file associated with the request.

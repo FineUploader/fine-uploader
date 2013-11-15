@@ -8,7 +8,7 @@ qq.DragAndDrop = function(o) {
         droppedFiles = [],
         disposeSupport = new qq.DisposeSupport();
 
-     options = {
+    options = {
         dropZoneElements: [],
         allowMultipleItems: true,
         classes: {
@@ -19,10 +19,8 @@ qq.DragAndDrop = function(o) {
 
     qq.extend(options, o, true);
 
-    setupDragDrop();
-
     function uploadDroppedFiles(files, uploadDropZone) {
-        options.callbacks.dropLog('Grabbed ' + files.length + " dropped files.");
+        options.callbacks.dropLog("Grabbed " + files.length + " dropped files.");
         uploadDropZone.dropDisabled(false);
         options.callbacks.processingDroppedFilesComplete(files);
     }
@@ -77,7 +75,7 @@ qq.DragAndDrop = function(o) {
 
         if (dataTransfer.files.length > 1 && !options.allowMultipleItems) {
             options.callbacks.processingDroppedFilesComplete([]);
-            options.callbacks.dropError('tooManyFilesError', "");
+            options.callbacks.dropError("tooManyFilesError", "");
             uploadDropZone.dropDisabled(false);
             handleDataTransferPromise.failure();
         }
@@ -152,7 +150,7 @@ qq.DragAndDrop = function(o) {
         var fileDrag;
 
         qq.each(dragEvent.dataTransfer.types, function(key, val) {
-            if (val === 'Files') {
+            if (val === "Files") {
                 fileDrag = true;
                 return false;
             }
@@ -162,42 +160,47 @@ qq.DragAndDrop = function(o) {
     }
 
     function leavingDocumentOut(e) {
-        return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) // null coords for Chrome and Safari Windows
-            || (qq.firefox() && !e.relatedTarget); // null e.relatedTarget for Firefox
+        /* jshint -W041, eqeqeq:false */
+            // null coords for Chrome and Safari Windows
+        return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) ||
+            // null e.relatedTarget for Firefox
+            (qq.firefox() && !e.relatedTarget);
     }
 
     function setupDragDrop() {
         var dropZones = options.dropZoneElements;
 
         qq.each(dropZones, function(idx, dropZone) {
-           var uploadDropZone = setupDropzone(dropZone);
+            var uploadDropZone = setupDropzone(dropZone);
 
             // IE <= 9 does not support the File API used for drag+drop uploads
             if (dropZones.length && (!qq.ie() || qq.ie10())) {
-                disposeSupport.attach(document, 'dragenter', function(e) {
+                disposeSupport.attach(document, "dragenter", function(e) {
                     if (!uploadDropZone.dropDisabled() && isFileDrag(e)) {
                         qq.each(dropZones, function(idx, dropZone) {
-                            qq(dropZone).css({display: 'block'});
+                            qq(dropZone).css({display: "block"});
                         });
                     }
                 });
             }
         });
 
-        disposeSupport.attach(document, 'dragleave', function(e) {
+        disposeSupport.attach(document, "dragleave", function(e) {
             if (leavingDocumentOut(e)) {
                 qq.each(dropZones, function(idx, dropZone) {
                     qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
                 });
             }
         });
-        disposeSupport.attach(document, 'drop', function(e){
+        disposeSupport.attach(document, "drop", function(e){
             qq.each(dropZones, function(idx, dropZone) {
                 qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
             });
             e.preventDefault();
         });
     }
+
+    setupDragDrop();
 
     return {
         setupExtraDropzone: function(element) {
@@ -226,6 +229,8 @@ qq.DragAndDrop = function(o) {
 };
 
 qq.DragAndDrop.callbacks = function() {
+    "use strict";
+
     return {
         processingDroppedFiles: function() {},
         processingDroppedFilesComplete: function(files) {},
@@ -235,7 +240,7 @@ qq.DragAndDrop.callbacks = function() {
         dropLog: function(message, level) {
             qq.log(message, level);
         }
-    }
+    };
 };
 
 qq.UploadDropZone = function(o){
@@ -265,13 +270,13 @@ qq.UploadDropZone = function(o){
 
             // for these cases we need to catch onDrop to reset dropArea
             if (dragover_should_be_canceled){
-               disposeSupport.attach(document, 'dragover', function(e){
+                disposeSupport.attach(document, "dragover", function(e){
                     e.preventDefault();
                 });
             } else {
-                disposeSupport.attach(document, 'dragover', function(e){
+                disposeSupport.attach(document, "dragover", function(e){
                     if (e.dataTransfer){
-                        e.dataTransfer.dropEffect = 'none';
+                        e.dataTransfer.dropEffect = "none";
                         e.preventDefault();
                     }
                 });
@@ -309,7 +314,7 @@ qq.UploadDropZone = function(o){
     }
 
     function attachEvents(){
-        disposeSupport.attach(element, 'dragover', function(e){
+        disposeSupport.attach(element, "dragover", function(e){
             if (!isValidFileDrag(e)) {
                 return;
             }
@@ -320,14 +325,14 @@ qq.UploadDropZone = function(o){
             if (effect === 'move' || effect === 'linkMove'){
                 e.dataTransfer.dropEffect = 'move'; // for FF (only move allowed)
             } else {
-                e.dataTransfer.dropEffect = 'copy'; // for Chrome
+                e.dataTransfer.dropEffect = "copy"; // for Chrome
             }
 
             e.stopPropagation();
             e.preventDefault();
         });
 
-        disposeSupport.attach(element, 'dragenter', function(e){
+        disposeSupport.attach(element, "dragenter", function(e){
             if (!isOrSetDropDisabled()) {
                 if (!isValidFileDrag(e)) {
                     return;
@@ -336,7 +341,7 @@ qq.UploadDropZone = function(o){
             }
         });
 
-        disposeSupport.attach(element, 'dragleave', function(e){
+        disposeSupport.attach(element, "dragleave", function(e){
             if (!isValidFileDrag(e)) {
                 return;
             }
@@ -352,7 +357,7 @@ qq.UploadDropZone = function(o){
             options.onLeaveNotDescendants(e);
         });
 
-        disposeSupport.attach(element, 'drop', function(e){
+        disposeSupport.attach(element, "drop", function(e){
             if (!isOrSetDropDisabled()) {
                 if (!isValidFileDrag(e)) {
                     return;

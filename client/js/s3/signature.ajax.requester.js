@@ -46,7 +46,7 @@ qq.s3.SignatureAjaxRequester = function(o) {
                 response = qq.parseJson(responseJson);
             }
             catch (error) {
-                options.log('Error attempting to parse signature response: ' + error, "error");
+                options.log("Error attempting to parse signature response: " + error, "error");
             }
         }
 

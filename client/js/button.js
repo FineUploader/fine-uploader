@@ -31,15 +31,15 @@ qq.UploadButton = function(o) {
             folders: false,
 
             // `name` attribute of `<input type="file">`
-            name: 'qqfile',
+            name: "qqfile",
 
             // Called when the browser invokes the onchange handler on the `<input type="file">`
             onChange: function(input) {},
 
             // **This option will be removed** in the future as the :hover CSS pseudo-class is available on all supported browsers
-            hoverClass: 'qq-upload-button-hover',
+            hoverClass: "qq-upload-button-hover",
 
-            focusClass: 'qq-upload-button-focus'
+            focusClass: "qq-upload-button-focus"
         },
         input, buttonId;
 
@@ -71,39 +71,39 @@ qq.UploadButton = function(o) {
         input.setAttribute("name", options.name);
 
         qq(input).css({
-            position: 'absolute',
+            position: "absolute",
             // in Opera only 'browse' button
             // is clickable and it is located at
             // the right side of the input
             right: 0,
             top: 0,
-            fontFamily: 'Arial',
+            fontFamily: "Arial",
             // 4 persons reported this, the max values that worked for them were 243, 236, 236, 118
-            fontSize: '118px',
+            fontSize: "118px",
             margin: 0,
             padding: 0,
-            cursor: 'pointer',
+            cursor: "pointer",
             opacity: 0
         });
 
         options.element.appendChild(input);
 
-        disposeSupport.attach(input, 'change', function(){
+        disposeSupport.attach(input, "change", function(){
             options.onChange(input);
         });
 
         // **These event handlers will be removed** in the future as the :hover CSS pseudo-class is available on all supported browsers
-        disposeSupport.attach(input, 'mouseover', function(){
+        disposeSupport.attach(input, "mouseover", function(){
             qq(options.element).addClass(options.hoverClass);
         });
-        disposeSupport.attach(input, 'mouseout', function(){
+        disposeSupport.attach(input, "mouseout", function(){
             qq(options.element).removeClass(options.hoverClass);
         });
 
-        disposeSupport.attach(input, 'focus', function(){
+        disposeSupport.attach(input, "focus", function(){
             qq(options.element).addClass(options.focusClass);
         });
-        disposeSupport.attach(input, 'blur', function(){
+        disposeSupport.attach(input, "blur", function(){
             qq(options.element).removeClass(options.focusClass);
         });
 
@@ -111,7 +111,7 @@ qq.UploadButton = function(o) {
         // which is unacceptable in our case, disable keyboard access
         if (window.attachEvent) {
             // it is IE or Opera
-            input.setAttribute('tabIndex', "-1");
+            input.setAttribute("tabIndex", "-1");
         }
 
         return input;
@@ -119,10 +119,10 @@ qq.UploadButton = function(o) {
 
     // Make button suitable container for input
     qq(options.element).css({
-        position: 'relative',
-        overflow: 'hidden',
+        position: "relative",
+        overflow: "hidden",
         // Make sure browse button is in the right side in Internet Explorer
-        direction: 'ltr'
+        direction: "ltr"
     });
 
     input = createInput();

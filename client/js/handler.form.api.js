@@ -1,3 +1,4 @@
+/* globals qq */
 /**
  * Common APIs exposed to creators of upload via form/iframe handlers.  This is reused and possibly overridden
  * in some cases by specific form upload handlers.
@@ -45,7 +46,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
         if (iframe) {
             // To cancel request set src to something else.  We use src="javascript:false;"
             // because it doesn't trigger ie6 prompt on https
-            iframe.setAttribute('src', 'java' + String.fromCharCode(115) + 'cript:false;'); //deal with "JSLint: javascript URL" warning, which apparently cannot be turned off
+            iframe.setAttribute("src", "java" + String.fromCharCode(115) + "cript:false;"); //deal with "JSLint: javascript URL" warning, which apparently cannot be turned off
 
             qq(iframe).remove();
         }
@@ -67,7 +68,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
 
         // When the iframe has loaded (after the server responds to an upload request)
         // declare the attempt a failure if we don't receive a valid message shortly after the response comes in.
-        detachLoadEvents[fileId] = qq(iframe).attach('load', function() {
+        detachLoadEvents[fileId] = qq(iframe).attach("load", function() {
             if (fileState[fileId].input) {
                 log("Received iframe load event for CORS upload request (iframe name " + iframeName + ")");
 
@@ -117,11 +118,11 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
      * @returns {HTMLIFrameElement} The created iframe
      */
     function initIframeForUpload(name) {
-        var iframe = qq.toElement('<iframe src="javascript:false;" name="' + name + '" />');
+        var iframe = qq.toElement("<iframe src='javascript:false;' name='" + name + "' />");
 
-        iframe.setAttribute('id', name);
+        iframe.setAttribute("id", name);
 
-        iframe.style.display = 'none';
+        iframe.style.display = "none";
         document.body.appendChild(iframe);
 
         return iframe;
@@ -175,7 +176,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
                 }
             }
             catch(error) {
-                log('Error when attempting to parse iframe upload response (' + error.message + ')', 'error');
+                log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
                 response = {};
             }
 
@@ -197,7 +198,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
                 params = spec.params,
                 paramsInBody = spec.paramsInBody,
                 targetName = spec.targetName,
-                form = qq.toElement('<form method="' + method + '" enctype="multipart/form-data"></form>'),
+                form = qq.toElement("<form method='" + method + "' enctype='multipart/form-data'></form>"),
                 url = endpoint;
 
             if (paramsInBody) {
@@ -207,9 +208,9 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
                 url = qq.obj2url(params, endpoint);
             }
 
-            form.setAttribute('action', url);
-            form.setAttribute('target', targetName);
-            form.style.display = 'none';
+            form.setAttribute("action", url);
+            form.setAttribute("target", targetName);
+            form.style.display = "none";
             document.body.appendChild(form);
 
             return form;
@@ -231,8 +232,8 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
                 registerPostMessageCallback(iframe, callback);
             }
             else {
-                detachLoadEvents[iframe.id] = qq(iframe).attach('load', function(){
-                    log('Received response for ' + iframe.id);
+                detachLoadEvents[iframe.id] = qq(iframe).attach("load", function(){
+                    log("Received response for " + iframe.id);
 
                     // when we remove iframe from dom
                     // the request stops, but in IE load
@@ -255,7 +256,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
                     }
                     catch (error) {
                         //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
-                        log('Error when attempting to access iframe during handling of upload response (' + error.message + ")", 'error');
+                        log("Error when attempting to access iframe during handling of upload response (" + error.message + ")", "error");
                         responseDescriptor = {success: false};
                     }
 
@@ -284,7 +285,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
         add: function(fileInput) {
             var id = fileState.push({input: fileInput}) - 1;
 
-            fileInput.setAttribute('name', inputName);
+            fileInput.setAttribute("name", inputName);
 
             fileState[id].uuid = qq.getUniqueId();
 
@@ -320,8 +321,8 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
         },
 
         isValid: function(id) {
-            return fileState[id] !== undefined
-                && fileState[id].input !== undefined;
+            return fileState[id] !== undefined &&
+                fileState[id].input !== undefined;
         },
 
         reset: function() {

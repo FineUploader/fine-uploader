@@ -1,3 +1,4 @@
+/*globals qq */
 /**
  * Upload handler used by the upload to S3 module that depends on File API support, and, therefore, makes use of
  * `XMLHttpRequest` level 2 to upload `File`s and `Blob`s directly to S3 buckets via the associated AWS API.
@@ -143,6 +144,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     // Determine if the upload should be restarted on the next retry attempt
     // based on the error code returned in the response from AWS.
     function shouldResetOnRetry(errorCode) {
+        /*jshint -W014 */
         return errorCode === "EntityTooSmall"
             || errorCode === "InvalidPart"
             || errorCode === "InvalidPartOrder"
@@ -167,12 +169,13 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             // This is the response we plan on passing to external callbacks
             responseToBubble = errorDetails || parseResponse(id),
             paused = fileState[id].paused,
+            /*jshint -W116*/
             isError = !paused && (errorDetails != null || responseToExamine.success !== true);
 
         // If this upload failed, we might want to completely start the upload over on retry in some cases.
         if (isError) {
             if (shouldResetOnRetry(responseToExamine.code)) {
-                log('This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.', 'error');
+                log("This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.", "error");
                 maybeDeletePersistedChunkData(id);
                 delete fileState[id].loaded;
                 delete fileState[id].chunking;
@@ -230,7 +233,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             }
         }
         catch(error) {
-            log('Error when attempting to parse xhr response text (' + error.message + ')', 'error');
+            log("Error when attempting to parse xhr response text (" + error.message + ")", "error");
         }
 
         return response;
@@ -307,7 +310,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
         // Delegate to a function the sets up the XHR request and notifies us when it is ready to be sent, along w/ the payload.
         prepareForSend(id, fileOrBlob).then(function(toSend) {
-            log('Sending upload request for ' + id);
+            log("Sending upload request for " + id);
             xhr.send(toSend);
         });
     }
@@ -322,6 +325,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
      * @returns {qq.Promise}
      */
     function generateAwsParams(id) {
+        /*jshint -W040 */
         var customParams = paramsStore.getParams(id);
         customParams[filenameParam] = publicApi.getName(id);
 
@@ -561,7 +565,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
      * @returns {number} The 0-based index of the next file chunk to be sent to S3
      */
     function getNextPartIdxToSend(id) {
-        return fileState[id].chunking.lastSent >= 0 ? fileState[id].chunking.lastSent + 1 : 0
+        return fileState[id].chunking.lastSent >= 0 ? fileState[id].chunking.lastSent + 1 : 0;
     }
 
     /**

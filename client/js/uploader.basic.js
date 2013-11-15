@@ -1,4 +1,7 @@
+/*globals qq */
 qq.FineUploaderBasic = function(o) {
+    "use strict";
+
     // These options define FineUploaderBasic mode.
     this._options = {
         debug: false,
@@ -8,15 +11,15 @@ qq.FineUploaderBasic = function(o) {
         disableCancelForFormUploads: false,
         autoUpload: true,
         request: {
-            endpoint: '/server/upload',
+            endpoint: "/server/upload",
             params: {},
             paramsInBody: true,
             customHeaders: {},
             forceMultipart: true,
-            inputName: 'qqfile',
-            uuidName: 'qquuid',
-            totalFileSizeName: 'qqtotalfilesize',
-            filenameParam: 'qqfilename'
+            inputName: "qqfile",
+            uuidName: "qquuid",
+            totalFileSizeName: "qqtotalfilesize",
+            filenameParam: "qqfilename"
         },
         validation: {
             allowedExtensions: [],
@@ -71,21 +74,21 @@ qq.FineUploaderBasic = function(o) {
             enableAuto: false,
             maxAutoAttempts: 3,
             autoAttemptDelay: 5,
-            preventRetryResponseProperty: 'preventRetry'
+            preventRetryResponseProperty: "preventRetry"
         },
         classes: {
-            buttonHover: 'qq-upload-button-hover',
-            buttonFocus: 'qq-upload-button-focus'
+            buttonHover: "qq-upload-button-hover",
+            buttonFocus: "qq-upload-button-focus"
         },
         chunking: {
             enabled: false,
             partSize: 2000000,
             paramNames: {
-                partIndex: 'qqpartindex',
-                partByteOffset: 'qqpartbyteoffset',
-                chunkSize: 'qqchunksize',
-                totalFileSize: 'qqtotalfilesize',
-                totalParts: 'qqtotalparts'
+                partIndex: "qqpartindex",
+                partByteOffset: "qqpartbyteoffset",
+                chunkSize: "qqchunksize",
+                totalFileSize: "qqtotalfilesize",
+                totalParts: "qqtotalparts"
             }
         },
         resume: {
@@ -98,18 +101,18 @@ qq.FineUploaderBasic = function(o) {
         },
         formatFileName: function(fileOrBlobName) {
             if (fileOrBlobName !== undefined && fileOrBlobName.length > 33) {
-                fileOrBlobName = fileOrBlobName.slice(0, 19) + '...' + fileOrBlobName.slice(-14);
+                fileOrBlobName = fileOrBlobName.slice(0, 19) + "..." + fileOrBlobName.slice(-14);
             }
             return fileOrBlobName;
         },
         text: {
             defaultResponseError: "Upload failure reason unknown",
-            sizeSymbols: ['kB', 'MB', 'GB', 'TB', 'PB', 'EB']
+            sizeSymbols: ["kB", "MB", "GB", "TB", "PB", "EB"]
         },
         deleteFile : {
             enabled: false,
             method: "DELETE",
-            endpoint: '/server/upload',
+            endpoint: "/server/upload",
             customHeaders: {},
             params: {}
         },
@@ -119,11 +122,11 @@ qq.FineUploaderBasic = function(o) {
             allowXdr: false
         },
         blobs: {
-            defaultName: 'misc_data'
+            defaultName: "misc_data"
         },
         paste: {
             targetElement: null,
-            defaultName: 'pasted_image'
+            defaultName: "pasted_image"
         },
         camera: {
             ios: false,

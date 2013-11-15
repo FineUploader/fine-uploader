@@ -2,7 +2,7 @@
 (function($) {
     "use strict";
     var $el,
-        pluginOptions = ['uploaderType', 'endpointType'];
+        pluginOptions = ["uploaderType", "endpointType"];
 
     function init(options) {
         if (options) {
@@ -17,8 +17,8 @@
     }
 
     function getNewUploaderInstance(params) {
-        var uploaderType = pluginOption('uploaderType'),
-            namespace = pluginOption('endpointType');
+        var uploaderType = pluginOption("uploaderType"),
+            namespace = pluginOption("endpointType");
 
         // If the integrator has defined a specific type of uploader to load, use that, otherwise assume `qq.FineUploader`
         if (uploaderType) {
@@ -34,7 +34,7 @@
         }
         else {
             if (namespace) {
-                return new qq[namespace]["FineUploader"](params);
+                return new qq[namespace].FineUploader(params);
             }
 
             return new qq.FineUploader(params);
@@ -42,14 +42,14 @@
     }
 
     function dataStore(key, val) {
-        var data = $el.data('fineuploader');
+        var data = $el.data("fineuploader");
 
         if (val) {
             if (data === undefined) {
                 data = {};
             }
             data[key] = val;
-            $el.data('fineuploader', data);
+            $el.data("fineuploader", data);
         }
         else {
             if (data === undefined) {
@@ -62,7 +62,7 @@
     //the underlying Fine Uploader instance is stored in jQuery's data stored, associated with the element
     // tied to this instance of the plug-in
     function uploader(instanceToStore) {
-        return dataStore('uploader', instanceToStore);
+        return dataStore("uploader", instanceToStore);
     }
 
     function pluginOption(option, optionVal) {
@@ -93,6 +93,7 @@
                 nonJqueryCallbackRetVal = nonJqueryCallback.apply(this, originalArgs);
                 jqueryEventCallbackRetVal = callbackEventTarget.triggerHandler(name, transformedArgs);
 
+                /*jshint -W116*/
                 if (nonJqueryCallbackRetVal != null) {
                     return nonJqueryCallbackRetVal;
                 }
@@ -108,7 +109,7 @@
         var xformed, arrayVals;
 
         if (dest === undefined) {
-            if (source.uploaderType !== 'basic') {
+            if (source.uploaderType !== "basic") {
                 xformed = { element : $el[0] };
             }
             else {
@@ -183,9 +184,9 @@
         var transformedVal = val;
 
         // If the command is returning an `HTMLElement` or `HTMLDocument`, wrap it in a `jQuery` object
-        if(val != null && typeof val === "object"
-            && (val.nodeType === 1 || val.nodeType === 9)
-            && val.cloneNode) {
+        /*jshint -W116*/
+        if (val != null && typeof val === "object" &&
+           (val.nodeType === 1 || val.nodeType === 9) && val.cloneNode) {
 
             transformedVal = $(val);
         }
@@ -206,11 +207,11 @@
                     return false;
                 }
             }
-            else if (typeof optionsOrCommand === 'object' || !optionsOrCommand) {
+            else if (typeof optionsOrCommand === "object" || !optionsOrCommand) {
                 init.apply(self, selfArgs);
             }
             else {
-                $.error('Method ' +  optionsOrCommand + ' does not exist on jQuery.fineUploader');
+                $.error("Method " +  optionsOrCommand + " does not exist on jQuery.fineUploader");
             }
         });
 

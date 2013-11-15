@@ -82,12 +82,14 @@ module.exports = (grunt) ->
         coffeelint:
             options:
                 indentation:
-                    level: 'ignore'
+                    level: 'warn'
                 no_trailing_whitespace:
+                    level: 'warn'
+                no_backticks:
                     level: 'ignore'
                 max_line_length:
                     level: 'ignore'
-            grunt: './Gruntfile.coffee'
+            grunt: ['./Gruntfile.coffee', 'lib/grunt/**/*.coffee']
 
         compress:
             jquery:
@@ -458,19 +460,10 @@ module.exports = (grunt) ->
     #dest: "#{customBuildDest}/src/<%= pkg.name %>-<%= pkg.version %>.min.css"
 
         jshint:
-            source: ["#{paths.src}/js/*.js"]
+            source: ["#{paths.src}/js/**/*.js"]
             tests: ["#{paths.test}unit/*.js"]
             options:
-                validthis: true
-                laxcomma: true
-                laxbreak: true
-                browser: true
-                eqnull: true
-                debug: true
-                devel: true
-                boss: true
-                expr: true
-                asi: true
+                jshintrc: true
 
         custom:
             options:
@@ -702,7 +695,7 @@ module.exports = (grunt) ->
 
     grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'bower', 'build', 'copy:test']
 
-    grunt.registerTask 'build', 'Build from latest source', ['concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
+    grunt.registerTask 'build', 'Build from latest source', ['jshint:source', 'concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
     grunt.registerTask 'build_stripped', 'Build from latest source w/ test artifacts stripped out', ['concat', 'strip_code:build', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
 
     grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build_stripped', 'copy:dist', 'shell:version_dist_templates', 'compress:jquery', 'compress:jqueryS3', 'compress:core', 'compress:coreS3' ]
