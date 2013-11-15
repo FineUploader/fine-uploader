@@ -5,7 +5,7 @@ function downloadFileAsBlob(key, type) {
         downloadAsync = new qq.Promise(),
         blobBuilder = BlobBuilder && new BlobBuilder();
 
-    xhr.open("GET", "http://fineuploader_unittests.s3.amazonaws.com/" + key, true);
+    xhr.open("GET", "https://fineuploader_unittests.s3.amazonaws.com/" + key, true);
     xhr.responseType = "arraybuffer";
 
     xhr.onerror = downloadAsync.failure;
@@ -16,7 +16,7 @@ function downloadFileAsBlob(key, type) {
                 downloadAsync.success(blobBuilder.getBlob(type));
             }
             else {
-                downloadAsync.success(new Blob([this.response], type));
+                downloadAsync.success(new Blob([this.response], {type: type}));
             }
         }
         else {

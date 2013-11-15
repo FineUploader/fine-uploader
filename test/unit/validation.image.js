@@ -1,4 +1,5 @@
-if (qq.supportedFeatures.imageValidation) {
+// The file fails to download when using the Android emulator via Selenium, so we have to exclude it here.
+if (qq.supportedFeatures.imageValidation && !qq.android()) {
     describe("validation.image.js", function() {
         this.timeout(4000);
 
@@ -21,7 +22,7 @@ if (qq.supportedFeatures.imageValidation) {
                     downloadAsync.success();
                 },
                 function() {
-                    assert.fail("Failed to download test file!");
+                    assert.fail(null, null, "Failed to download test file!");
                     done();
                     downloadAsync.failure();
                 });
