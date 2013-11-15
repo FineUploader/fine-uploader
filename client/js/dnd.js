@@ -178,7 +178,10 @@ qq.DragAndDrop = function(o) {
                 disposeSupport.attach(document, "dragenter", function(e) {
                     if (!uploadDropZone.dropDisabled() && isFileDrag(e)) {
                         qq.each(dropZones, function(idx, dropZone) {
-                            qq(dropZone).css({display: "block"});
+                            // We can't apply styles to non-HTMLElements, since they lack the `style` property
+                            if (dropZone instanceof HTMLElement) {
+                                qq(dropZone).css({display: "block"});
+                            }
                         });
                     }
                 });
