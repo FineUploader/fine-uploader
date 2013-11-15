@@ -33,7 +33,7 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
             response = internalApi.parseJsonResponse(id, innerHtml);
         }
         catch(error) {
-            log('Error when attempting to parse form upload response (' + error.message + ")", 'error');
+            log("Error when attempting to parse form upload response (" + error.message + ")", "error");
             response = {success: false};
         }
 
@@ -71,7 +71,7 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
                 form;
 
             if (!input){
-                throw new Error('file with passed id was not added, or already uploaded or cancelled');
+                throw new Error("file with passed id was not added, or already uploaded or cancelled");
             }
 
             options.onUpload(id, publicApi.getName(id));
@@ -80,7 +80,7 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
             form.appendChild(input);
 
             internalApi.attachLoadEvent(iframe, function(responseFromMessage){
-                log('iframe loaded');
+                log("iframe loaded");
 
                 var response = responseFromMessage ? responseFromMessage : getIframeContentJson(id, iframe);
 
@@ -100,7 +100,7 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
                 uploadComplete(id);
             });
 
-            log('Sending upload request for ' + id);
+            log("Sending upload request for " + id);
             form.submit();
             qq(form).remove();
         }
