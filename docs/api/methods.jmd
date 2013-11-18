@@ -42,7 +42,7 @@
         ("getNetUploads", "", "`Number`", "Returns the number of items that have both been successfully uploaded and not deleted."),
         ("getResumableFilesData", "", "`Array`", "Returns the array of potentially resumable items. Each resumable file is represented by an object with the following properties: `name`: filename, `size`: size, `uuid`: unique id, `partIdx`: index of the part where the resume will start from."),
         ("getSize", "`Integer` id", "`String`", "Return the size of the item  with the associated id"),
-        ("getUploads", "`Object` filter", "`Array` or `Object`", "Return information about all the items that have been submitted to the uploader. The objects being iterated over will have the following properties: `id`, `uuid`, `originalName`, `name`, `status`, and `size`."  For information on filtering via the `filter` parameter, see the [upload status feature page](../features/statistics-and-status-updates.html)),
+        ("getUploads", "`Object` filter", "`Array` or `Object`", "Return information about all the items that have been submitted to the uploader. The objects being iterated over will have the following properties: `id`, `uuid`, `originalName`, `name`, `status`, and `size`.  For information on filtering via the `filter` parameter, see the [upload status feature page](../features/statistics-and-status-updates.html)."),
         ("getUuid", "`Integer` id", "`String`", "Retrieve the UUID of the item with the associated id"),
         ("log", "`String` message", "", "Output a message to the JavaScript console, if possible."),
         ("pauseUpload", "`Integer` id", "`Boolean`", "Attempts to pause an in-progress upload.  Returns `true` if the attempt was successful."),
