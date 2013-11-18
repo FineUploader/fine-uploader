@@ -993,8 +993,6 @@
         _onSubmitCallbackSuccess: function(id, name) {
             var buttonId;
 
-            this._uploadData.setStatus(id, qq.status.SUBMITTED);
-
             if (qq.supportedFeatures.ajaxUploading) {
                 buttonId = this._handler.getFile(id).qqButtonId;
             }
@@ -1007,6 +1005,7 @@
             }
 
             this._onSubmit.apply(this, arguments);
+            this._uploadData.setStatus(id, qq.status.SUBMITTED);
             this._onSubmitted.apply(this, arguments);
             this._options.callbacks.onSubmitted.apply(this, arguments);
 
