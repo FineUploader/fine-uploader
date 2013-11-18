@@ -162,8 +162,8 @@ var uploads = myUploader.getUploads({
 #### Determine if all submitted files are "done"
 
 How can I determine if all of my uploads are complete?  This is very much a frequently asked question.
-Luckily, is quite simple to make this determination with the `getUploads` API method.  The following line
-of code is all that is needed to make this determination:
+Luckily, is quite simple to make this determination with the `getUploads` API method.  The following
+code is all that is needed to make this determination:
 
 ```javascript
 var areAllUploadsDone = uploader.getUploads({
