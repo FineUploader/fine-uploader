@@ -34,15 +34,15 @@
         also optionally specify a maximum height/width for the thumbnail.  The returned promise will be fulfilled by
         passing the container back into the success callback after the thumbnail has rendered.  If the thumbnail
         cannot be generated, failure callbacks will be invoked instead, passing the container and an error message."),
-        ("getRemainingAllowedItems", "", "`Integer`", "Returns the number of remaining allowed items that may be
-        submitted for upload.  This takes into account the `validation.itemLimit`.  This will return `null`
-        if an `itemLimit` is not set."),
         ("getButton", "`Integer` id", "`HTMLElement`", "Returns the button container element associated with a file,
         or undefined if the file was not submitted via a Fine Uploader controlled upload button."),
         ("getFile", "`Integer` id", "`File` or `Blob`", "Returns the item associated with the id. File API browsers only"),
         ("getInProgress", "", "", "Returns the number of items that are either currently uploading or queued. If called inside of the 'cancel' event handler this method will return a value that includes the upload associated with the 'cancel' event handler. This is because the upload will not be cancelled until the event handler returns."),
         ("getName", "`Integer` id", "`String`", "Returns the name of the item with the associated id"),
         ("getNetUploads", "", "`Number`", "Returns the number of items that have both been successfully uploaded and not deleted."),
+        ("getRemainingAllowedItems", "", "`Integer`", "Returns the number of remaining allowed items that may be
+        submitted for upload.  This takes into account the `validation.itemLimit`.  This will return `null`
+        if an `itemLimit` is not set."),
         ("getResumableFilesData", "", "`Array`", "Returns the array of potentially resumable items. Each resumable file is represented by an object with the following properties: `name`: filename, `size`: size, `uuid`: unique id, `partIdx`: index of the part where the resume will start from."),
         ("getSize", "`Integer` id", "`String`", "Return the size of the item  with the associated id"),
         ("getUploads", "`Object` filter", "`Array` or `Object`", "Return information about all the items that have been submitted to the uploader. The objects being iterated over will have the following properties: `id`, `uuid`, `originalName`, `name`, `status`, and `size`.  For information on filtering via the `filter` parameter, see the [upload status feature page](../features/statistics-and-status-updates.html)."),
