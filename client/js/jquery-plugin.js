@@ -91,7 +91,13 @@
                 });
 
                 nonJqueryCallbackRetVal = nonJqueryCallback.apply(this, originalArgs);
-                jqueryEventCallbackRetVal = callbackEventTarget.triggerHandler(name, transformedArgs);
+
+                try {
+                    jqueryEventCallbackRetVal = callbackEventTarget.triggerHandler(name, transformedArgs);
+                }
+                catch (error) {
+                    qq.log("Caught error in Fine Uploader jQuery event handler: " + error.message, "error");
+                }
 
                 /*jshint -W116*/
                 if (nonJqueryCallbackRetVal != null) {
