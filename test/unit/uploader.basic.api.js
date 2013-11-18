@@ -359,4 +359,30 @@ describe('uploader.basic.api.js', function () {
         });
     });
 
+    describe("getRemainingAllowedItems", function() {
+        var uploader;
+
+        function setupUploader(allowedItems) {
+            uploader = new qq.FineUploaderBasic({
+                validation: {
+                    itemLimit: allowedItems
+                }
+            });
+        }
+
+        it("reports the correct number of remaining allowed items w/out item limit", function() {
+            setupUploader(0);
+            uploader._netUploadedOrQueued = 3;
+
+            assert.equal(uploader.getRemainingAllowedItems(), null);
+        });
+
+        it ("reports the correct number of remaining items w/ an item limit", function() {
+            setupUploader(3);
+            uploader._netUploadedOrQueued = 2;
+
+            assert.equal(uploader.getRemainingAllowedItems(), 1);
+        });
+    });
+
 });

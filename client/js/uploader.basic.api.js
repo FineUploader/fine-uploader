@@ -312,6 +312,16 @@
             }
 
             return false;
+        },
+
+        getRemainingAllowedItems: function() {
+            var allowedItems = this._options.validation.itemLimit;
+
+            if (allowedItems > 0) {
+                return this._options.validation.itemLimit - this._netUploadedOrQueued;
+            }
+
+            return null;
         }
     };
 
