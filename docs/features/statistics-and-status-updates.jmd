@@ -17,24 +17,24 @@ and status updates on your uploads.
 The status values correspond to those found in the `qq.status` object.
 For reference, here are valid status values:
 
-* `SUBMITTED`
-* `QUEUED`
-* `UPLOADING`
-* `UPLOAD_RETRYING`
-* `UPLOAD_FAILED`
-* `UPLOAD_SUCCESSFUL`
-* `CANCELLED`
-* `REJECTED`
-* `DELETED`
-* `DELETING`
-* `DELETE_FAILED`
-* `PAUSED`
+* `SUBMITTED` - Selected file has been successfully submitted to the uploader.  In UI mode, it is also now represented in the DOM.
+* `QUEUED` - Uploads are in progress, but this one has not yet started due to lack of available connections.   It is waiting in line for an available connection before an attempt is made to upload it.
+* `UPLOADING` - File is currently uploading (in progress).
+* `UPLOAD_RETRYING` - The state when an upload retry is about to occur, just before the upload retry it attempted.  The file will likely only be in this state for a brief moment.
+* `UPLOAD_FAILED` - The upload has officially failed to upload, after all auto-retry attempts have been exhausted.
+* `UPLOAD_SUCCESSFUL` - The upload has officially succeeded.
+* `CANCELLED` - The upload has been cancelled.
+* `REJECTED` - The submitted file has failed validation, either via the internal validation checks, or via a `validate`, `validateBatch`, or `submit` event callback.
+* `DELETED` - The file has been successfully deleted from the server.
+* `DELETING` - A delete attempt is in progress.
+* `DELETE_FAILED` - The last delete attempt failed.
+* `PAUSED` - The file was in progress, but is now paused.
 
 ----
 
 {{ methods_table(
     (
-       ("getUploads", "`Function` [filter]", "`Array`", "Return information about all the items that have been submitted to the uploader. The objects being iterated over will have the following properties: `id`, `uuid`, `originalName`, `name`, `status`, and `size`."),
+       ("getUploads", "`Object` filter", "`Array` or `Object`", "Return information about all the items that have been submitted to the uploader. The objects being iterated over will have the following properties: `id`, `uuid`, `originalName`, `name`, `status`, and `size`.  You can also filter the results by passing in an object with an `id`, `uuid` or `status` property.  Each of these filter values may be an array as well."),
     )
 ) }}
 
@@ -43,8 +43,9 @@ The API method allows you the retrieve information about all items submitted to
 the uploader. If you invoke this method without any arguments, information on
 all items will be returned.
 
-Note that you can filter by ID(s) OR UUID(s) OR status. All valid status values
-are defined in the qq.status object. Also, please note that the size property
+Note that you can filter by ID(s) OR UUID(s) OR status.  You can include multiple
+ID, UUID, or status values as an array as well. All valid status values
+are defined in the `qq.status` object. Also, please note that the `size` property
 will only be included if the user agent supports the File API (that is, if
 qq.supportedFeatures.canDetermineSize evaluates to true).
 
