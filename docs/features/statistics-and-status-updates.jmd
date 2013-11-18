@@ -14,6 +14,11 @@ and status updates on your uploads.
     )
 ) }}
 
+With this, we can register a callback that allows us to be notified
+when any submitted item changes status.  The concept is simple: this will be
+invoked whenever any submitted file changes state. The ID, old status, and the
+new status will be included in the callback parameters.
+
 The status values correspond to those found in the `qq.status` object.
 For reference, here are valid status values:
 
@@ -39,9 +44,67 @@ For reference, here are valid status values:
 ) }}
 
 
+### Examples
+
+#### Simple status query
+
 The API method allows you the retrieve information about all items submitted to
 the uploader. If you invoke this method without any arguments, information on
-all items will be returned.
+all items will be returned.  For example, suppose we have submitted only two
+files to the uploader, and both have uploaded successfully. If we wanted to retrieve
+information about these files, the following code should be executed.  Note that I
+have illustrated the expected return value as well:
+
+```javascript
+var uploads = myUploader.getUploads();
+
+//the uploads return value will look like this:
+[
+  {
+    id: 0,
+    name: "some_name",
+    size: 12345,
+    uuid: "some_uuid",
+    status: "upload successful"
+  },
+  {
+    id: 1,
+    name: "some_other_name",
+    size: 67890,
+    uuid: "some_other_uuid",
+    status: "upload successful"
+  }
+]
+
+```
+
+Now, suppose we delete the second files via Fine Uploader. If we invoke a new-argument getUploads() again,
+we receive the following in return:
+
+```javascript
+var uploads = myUploader.getUploads();
+
+//the uploads return value will look like this:
+[
+  {
+    id: 0,
+    name: "some_name",
+    size: 12345,
+    uuid: "some_uuid",
+    status: "upload successful"
+  },
+  {
+    id: 1,
+    name: "some_other_name",
+    size: 67890,
+    uuid: "some_other_uuid",
+    status: "deleted"
+  }
+]
+```
+
+
+#### Filtering results
 
 Note that you can filter by ID(s) OR UUID(s) OR status.  You can include multiple
 ID, UUID, or status values as an array as well. All valid status values
@@ -49,14 +112,70 @@ are defined in the `qq.status` object. Also, please note that the `size` propert
 will only be included if the user agent supports the File API (that is, if
 qq.supportedFeatures.canDetermineSize evaluates to true).
 
-Along the same lines, we can register a callback that allows us to be notified
-when any submitted item changes status. This callback, as mentioned earlier, is
-onStatusChange(id, oldStatus, newStatus). The concept is simple: this will be
-invoked whenever any submitted file changes state. The ID, old status, and the
-new status will be included in the callback parameters. Again, see `qq.status`
-for all valid status values.
+Suppose we only want to compile a list of all deleted files for this instance, we can do this:
 
-[For more information, see the associated blog post](http://blog.fineuploader.com/2013/05/24/query-fine-uploader-for-upload-stats/)
+```javascript
+var uploads = myUploader.getUploads({
+  status: qq.status.DELETED
+});
+
+//the uploads return value will look like this:
+[
+  {
+    id: 1,
+    name: "some_other_name",
+    size: 67890,
+    uuid: "some_other_uuid",
+    status: "deleted"
+  }
+]
+```
+
+Now, suppose we have submitted another file, but we have cancelled it.  Maybe we only want
+information about canceled OR deleted items:
+
+```javascript
+var uploads = myUploader.getUploads({
+  status: [qq.status.DELETED, qq.status.CANCELLED]
+});
+
+//the uploads return value will look like this:
+[
+  {
+    id: 1,
+    name: "some_other_name",
+    size: 67890,
+    uuid: "some_other_uuid",
+    status: "deleted"
+  },
+    {
+    id: 2,
+    name: "some_other_name_2",
+    size: 11111,
+    uuid: "some_other_uuid2",
+    status: "cancelled"
+  }
+]
+```
+
+
+#### Determine if all submitted files are "done"
+
+How can I determine if all of my uploads are complete?  This is very much a frequently asked question.
+Luckily, is quite simple to make this determination with the `getUploads` API method.  The following line
+of code is all that is needed to make this determination:
+
+```javascript
+var areAllUploadsDone = uploader.getUploads({
+    status: [
+        qq.status.UPLOADING,
+        qq.status.UPLOAD_RETRYING,
+        qq.status.QUEUED
+    ]
+}).length === 0
+```
+
+The above code should be executed inside of an `complete` event/callback handler.
 
 {% endmarkdown %}
 {% endblock %}
