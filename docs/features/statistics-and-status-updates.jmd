@@ -170,12 +170,20 @@ var areAllUploadsDone = uploader.getUploads({
     status: [
         qq.status.UPLOADING,
         qq.status.UPLOAD_RETRYING,
-        qq.status.QUEUED
+        qq.status.QUEUED,
+        qq.status.SUBMITTED,
+        qq.status.SUBMITTING,
+        qq.status.SUBMITTED,
+        qq.status.PAUSED
     ]
-}).length === 0
+}).length === 0;
+
+if (areAllUploadsDone) {
+   //do something here
+}
 ```
 
-The above code should be executed inside of an `complete` event/callback handler.
+The above code is most appropriate for a `statusChange` event/callback handler.
 
 {% endmarkdown %}
 {% endblock %}
