@@ -293,7 +293,7 @@ describe('uploader.basic.api.js', function () {
                     }
                 };
 
-                assert.ok(qq.isPromise(fineuploader._handleCheckedCallback(spec)));
+                assert.ok(fineuploader._handleCheckedCallback(spec) instanceof qq.Promise);
         });
 
         it ("handles failed promissory callbacks", function(done) {
@@ -317,7 +317,7 @@ describe('uploader.basic.api.js', function () {
                     }
                 };
 
-            assert.ok(qq.isPromise(fineuploader._handleCheckedCallback(spec)));
+            assert.ok(fineuploader._handleCheckedCallback(spec) instanceof qq.Promise);
         });
 
         it("does auto retry if upload is not paused", function() {

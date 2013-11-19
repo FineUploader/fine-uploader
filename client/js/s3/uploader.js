@@ -52,7 +52,7 @@
         _onComplete: function(id, name, result, xhr) {
             var parentRetVal = qq.FineUploader.prototype._onComplete.apply(this, arguments);
 
-            if (qq.isPromise(parentRetVal)) {
+            if (parentRetVal instanceof qq.Promise) {
                 this._templating.hideProgress(id);
                 this._templating.setStatusText(id, this._options.text.waitingForResponse);
             }

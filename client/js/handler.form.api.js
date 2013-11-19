@@ -10,7 +10,6 @@
  * @param onCancel Invoked when a request is handled to cancel an in-progress upload.  Invoked before the upload is actually cancelled.
  * @param onUuidChanged Callback to be invoked when the internal UUID is altered.
  * @param log Method used to send messages to the log.
- * @returns {} Various methods
  * @constructor
  */
 qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, onCancel, onUuidChanged, log) {
@@ -21,7 +20,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
         onloadCallbacks = {},
         detachLoadEvents = {},
         postMessageCallbackTimers = {},
-        publicApi;
+        publicApi = this;
 
 
     /**
@@ -281,7 +280,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
 
 // PUBLIC API
 
-    publicApi = {
+    qq.extend(this, {
         add: function(fileInput) {
             var id = fileState.push({input: fileInput}) - 1;
 
@@ -303,7 +302,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
             if (fileState[id].newName !== undefined) {
                 return fileState[id].newName;
             }
-            else if (publicApi.isValid(id)) {
+            else if (this.isValid(id)) {
                 // get input value and remove path to normalize
                 return fileState[id].input.value.replace(/.*(\/|\\)/, "");
             }
@@ -338,15 +337,15 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
         },
 
         cancel: function(id) {
-            var onCancelRetVal = onCancel(id, publicApi.getName(id));
+            var onCancelRetVal = onCancel(id, this.getName(id));
 
-            if (qq.isPromise(onCancelRetVal)) {
+            if (onCancelRetVal instanceof qq.Promise) {
                 return onCancelRetVal.then(function() {
-                    publicApi.expunge(id);
+                    this.expunge(id);
                 });
             }
             else if (onCancelRetVal !== false) {
-                publicApi.expunge(id);
+                this.expunge(id);
                 return true;
             }
 
@@ -362,7 +361,5 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
             fileState[id].uuid = newUuid;
             onUuidChanged(id, newUuid);
         }
-    };
-
-    return publicApi;
+    });
 };

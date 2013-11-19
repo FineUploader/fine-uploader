@@ -3,7 +3,7 @@ describe('promise.js', function () {
     describe('isPromise', function () {
         it("returns true for a new'd promise", function () {
             var promise = new qq.Promise(); 
-            assert.ok(qq.isPromise(promise), 
+            assert.ok(promise instanceof qq.Promise,
                'a `new qq.Promise()` should be a promise');
         });
     });

@@ -431,7 +431,7 @@
             var self = this,
                 callbackRetVal = details.callback();
 
-            if (qq.isPromise(callbackRetVal)) {
+            if (callbackRetVal instanceof qq.Promise) {
                 this.log(details.name + " - waiting for " + details.name + " promise to be fulfilled for " + details.identifier);
                 return callbackRetVal.then(
                     function(successParam) {
@@ -540,7 +540,7 @@
 
                         // If the internal `_onComplete` handler returns a promise, don't invoke the `onComplete` callback
                         // until the promise has been fulfilled.
-                        if (qq.isPromise(retVal)) {
+                        if (retVal instanceof  qq.Promise) {
                             retVal.done(function() {
                                 self._options.callbacks.onComplete(id, name, result, xhr);
                             });

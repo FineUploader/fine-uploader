@@ -11,8 +11,8 @@ qq.FilenameEditHandler = function(s, inheritedInternalApi) {
             onGetName: function(fileId) {},
             onSetName: function(fileId, newName) {},
             onEditingStatusChange: function(fileId, isEditing) {}
-        },
-        publicApi;
+        };
+
 
     function getFilenameSansExtension(fileId) {
         var filenameSansExt = spec.onGetName(fileId),
@@ -71,7 +71,7 @@ qq.FilenameEditHandler = function(s, inheritedInternalApi) {
 
     spec.attachTo = spec.templating.getFileList();
 
-    publicApi = qq.extend(this, new qq.UiEventHandler(spec, inheritedInternalApi));
+    qq.extend(this, new qq.UiEventHandler(spec, inheritedInternalApi));
 
     qq.extend(inheritedInternalApi, {
         handleFilenameEdit: function(id, target, focusInput) {
@@ -89,6 +89,4 @@ qq.FilenameEditHandler = function(s, inheritedInternalApi) {
             registerInputEnterKeyHandler(newFilenameInputEl, id);
         }
     });
-
-    return publicApi;
 };

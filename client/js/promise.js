@@ -8,7 +8,7 @@ qq.Promise = function() {
         doneCallbacks = [],
         state = 0;
 
-    return {
+    qq.extend(this, {
         then: function(onSuccess, onFailure) {
             if (state === 0) {
                 if (onSuccess) {
@@ -76,11 +76,5 @@ qq.Promise = function() {
 
             return this;
         }
-    };
-};
-
-qq.isPromise = function(maybePromise) {
-    "use strict";
-
-    return maybePromise && maybePromise.then && maybePromise.done;
+    });
 };

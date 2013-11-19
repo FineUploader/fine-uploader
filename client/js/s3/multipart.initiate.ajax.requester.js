@@ -4,7 +4,6 @@
  * request to S3 via the REST API.
  *
  * @param o Options from the caller - will override the defaults.
- * @returns {{send: Function}}
  * @constructor
  */
 qq.s3.InitiateMultipartAjaxRequester = function(o) {
@@ -149,7 +148,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
     });
 
 
-    return {
+    qq.extend(this, {
         /**
          * Sends the "Initiate MPU" request to AWS via the REST API.  First, though, we must get a signature from the
          * local server for the request.  If all is successful, the uploadId from AWS will be passed into the promise's
@@ -173,5 +172,5 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
 
             return promise;
         }
-    };
+    });
 };

@@ -30,6 +30,5 @@ qq.FilenameInputFocusInHandler = function(s, inheritedInternalApi) {
     spec.onHandled = handleInputFocus;
 
     qq.extend(spec, s);
-
-    return qq.extend(this, new qq.FilenameEditHandler(spec, inheritedInternalApi));
+    qq.extend(this, new qq.FilenameEditHandler(spec, inheritedInternalApi));
 };

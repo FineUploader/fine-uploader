@@ -24,7 +24,7 @@ qq.Identify = function(fileOrBlob, log) {
         return identifiable;
     }
 
-    return {
+    qq.extend(this, {
         isPreviewable: function() {
             var idenitifer = new qq.Promise(),
                 previewable = false,
@@ -55,5 +55,5 @@ qq.Identify = function(fileOrBlob, log) {
 
             return idenitifer;
         }
-    };
+    });
 };

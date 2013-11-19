@@ -30,7 +30,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         chunkingPossible = options.chunking.enabled && qq.supportedFeatures.chunking,
         resumeEnabled = options.resume.enabled && chunkingPossible && qq.supportedFeatures.resume && window.localStorage !== undefined,
         internalApi = {},
-        publicApi,
+        publicApi = this,
         policySignatureRequester = new qq.s3.SignatureAjaxRequester({
             expectingPolicy: true,
             signatureSpec: signature,
@@ -733,7 +733,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     }
 
 
-    publicApi = new qq.UploadHandlerXhrApi(
+    qq.extend(this, new qq.UploadHandlerXhrApi(
         internalApi,
         fileState,
         chunkingPossible ? options.chunking : null,
@@ -741,14 +741,14 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         options.onCancel,
         onUuidChanged,
         log
-    );
+    ));
 
 
     removeExpiredChunkingRecords();
 
 
     // Base XHR API overrides
-    return qq.override(publicApi, function(super_) {
+    qq.override(this, function(super_) {
         return {
             add: function(fileOrBlobData) {
                 var id = super_.add(fileOrBlobData);

@@ -36,5 +36,5 @@ qq.FilenameClickHandler = function(s) {
     spec.eventType = "click";
     spec.onHandled = examineEvent;
 
-    return qq.extend(this, new qq.FilenameEditHandler(spec, inheritedInternalApi));
+    qq.extend(this, new qq.FilenameEditHandler(spec, inheritedInternalApi));
 };

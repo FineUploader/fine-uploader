@@ -5,7 +5,6 @@
  * property (by default) in an "application/json" response.
  *
  * @param o Options associated with all requests.
- * @returns {{sendSuccessRequest: Function}} API method used to initiate the request.
  * @constructor
  */
 qq.s3.UploadSuccessAjaxRequester = function(o) {
@@ -87,7 +86,7 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
     });
 
 
-    return {
+    qq.extend(this, {
         /**
          * Sends a request to the server, notifying it that a recently submitted file was successfully sent to S3.
          *
@@ -110,5 +109,5 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
 
             return promise;
         }
-    };
+    });
 };

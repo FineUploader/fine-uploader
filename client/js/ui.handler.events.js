@@ -9,20 +9,20 @@ qq.UiEventHandler = function(s, protectedApi) {
             eventType: "click",
             attachTo: null,
             onHandled: function(target, event) {}
-        },
-        // This makes up the "public" API methods that will be accessible
-        // to instances constructing a base or child handler
-        publicApi = {
-            addHandler: function(element) {
-                addHandler(element);
-            },
-
-            dispose: function() {
-                disposer.dispose();
-            }
         };
 
 
+    // This makes up the "public" API methods that will be accessible
+    // to instances constructing a base or child handler
+    qq.extend(this, {
+        addHandler: function(element) {
+            addHandler(element);
+        },
+
+        dispose: function() {
+            disposer.dispose();
+        }
+    });
 
     function addHandler(element) {
         disposer.attach(element, spec.eventType, function(event) {
@@ -53,6 +53,4 @@ qq.UiEventHandler = function(s, protectedApi) {
     if (spec.attachTo) {
         addHandler(spec.attachTo);
     }
-
-    return publicApi;
 };

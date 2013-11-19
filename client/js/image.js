@@ -2,12 +2,10 @@
 /**
  * Draws a thumbnail of a Blob/File/URL onto an <img> or <canvas>.
  *
- * @returns {{generate: Function}}
  * @constructor
  */
 qq.ImageGenerator = function(log) {
     "use strict";
-    var api;
 
     function isImg(el) {
         return el.tagName.toLowerCase() === "img";
@@ -263,7 +261,7 @@ qq.ImageGenerator = function(log) {
     }
 
 
-    api = {
+    qq.extend(this, {
         /**
          * Generate a thumbnail.  Depending on the arguments, this may either result in
          * a client-side rendering of an image (if a `Blob` is supplied) or a server-generated
@@ -284,15 +282,13 @@ qq.ImageGenerator = function(log) {
                 return draw(fileBlobOrUrl, container, options || {});
             }
         }
-    };
+    });
 
     /*<testing>*/
-    api._testing = {};
-    api._testing.isImg = isImg;
-    api._testing.isCanvas = isCanvas;
-    api._testing.isCrossOrigin = isCrossOrigin;
-    api._testing.determineMimeOfFileName = determineMimeOfFileName;
+    this._testing = {};
+    this._testing.isImg = isImg;
+    this._testing.isCanvas = isCanvas;
+    this._testing.isCrossOrigin = isCrossOrigin;
+    this._testing.determineMimeOfFileName = determineMimeOfFileName;
     /*</testing>*/
-
-    return api;
 };

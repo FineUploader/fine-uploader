@@ -4,7 +4,6 @@
  * request to S3 via the REST API.
  *
  * @param o Options passed by the creator, to overwrite any default option values.
- * @returns {{send: Function}} Used to send the request.
  * @constructor
  */
 qq.s3.CompleteMultipartAjaxRequester = function(o) {
@@ -155,7 +154,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
     });
 
 
-    return {
+    qq.extend(this, {
         /**
          * Sends the "Complete" request and fulfills the returned promise when the success of this request is known.
          *
@@ -184,5 +183,5 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
 
             return promise;
         }
-    };
+    });
 };

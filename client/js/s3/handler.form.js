@@ -12,7 +12,8 @@
 qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, logCallback) {
     "use strict";
 
-    var fileState = [],
+    var publicApi = this,
+        fileState = [],
         log = logCallback,
         onCompleteCallback = options.onComplete,
         onUpload = options.onUpload,
@@ -31,8 +32,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
             cors: options.cors,
             log: log
         }),
-        internalApi = {},
-        publicApi;
+        internalApi = {};
 
 
     if (successRedirectUrl === undefined) {
@@ -180,18 +180,18 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         uploadCompleteCallback(id);
     }
 
-    publicApi = new qq.UploadHandlerFormApi(internalApi, fileState, false, "file", options.onCancel, onUuidChanged, log);
+    qq.extend(this, new qq.UploadHandlerFormApi(internalApi, fileState, false, "file", options.onCancel, onUuidChanged, log));
 
-    qq.extend(publicApi, {
+    qq.extend(this, {
         upload: function(id) {
             var input = fileState[id].input,
-                name = publicApi.getName(id);
+                name = this.getName(id);
 
             if (!input){
                 throw new Error("file with passed id was not added, or already uploaded or cancelled");
             }
 
-            if (publicApi.isValid(id)) {
+            if (this.isValid(id)) {
                 if (fileState[id].key) {
                     handleUpload(id);
                 }
@@ -210,6 +210,4 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
             return fileState[id].key;
         }
     });
-
-    return publicApi;
 };

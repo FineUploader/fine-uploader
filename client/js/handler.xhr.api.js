@@ -10,13 +10,12 @@
  * @param onCancel Invoked when a request is handled to cancel an in-progress upload.  Invoked before the upload is actually cancelled.
  * @param onUuidChanged Callback to be invoked when the internal UUID is altered.
  * @param log Method used to send messages to the log.
- * @returns Various methods
  * @constructor
  */
 qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, onCancel, onUuidChanged, log) {
     "use strict";
 
-    var publicApi;
+    var publicApi = this;
 
 
     function getChunk(fileOrBlob, startByte, endByte) {
@@ -87,7 +86,7 @@ qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, on
         }
     });
 
-    publicApi = {
+    qq.extend(this, {
         /**
          * Adds File or Blob to the queue
          * Returns id to use with upload, cancel
@@ -112,7 +111,7 @@ qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, on
         },
 
         getName: function(id) {
-            if (publicApi.isValid(id)) {
+            if (this.isValid(id)) {
                 var file = fileState[id].file,
                     blobData = fileState[id].blobData,
                     newName = fileState[id].newName;
@@ -188,15 +187,15 @@ qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, on
         },
 
         cancel: function(id) {
-            var onCancelRetVal = onCancel(id, publicApi.getName(id));
+            var onCancelRetVal = onCancel(id, this.getName(id));
 
-            if (qq.isPromise(onCancelRetVal)) {
+            if (onCancelRetVal instanceof qq.Promise) {
                 return onCancelRetVal.then(function() {
-                    publicApi.expunge(id);
+                    this.expunge(id);
                 });
             }
             else if (onCancelRetVal !== false) {
-                publicApi.expunge(id);
+                this.expunge(id);
                 return true;
             }
 
@@ -213,13 +212,11 @@ qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, on
             var xhr = fileState[id].xhr;
 
             if(xhr) {
-                log(qq.format("Aborting XHR upload for {} '{}' due to pause instruction.", id, publicApi.getName(id)));
+                log(qq.format("Aborting XHR upload for {} '{}' due to pause instruction.", id, this.getName(id)));
                 fileState[id].paused = true;
                 xhr.abort();
                 return true;
             }
         }
-    };
-
-    return publicApi;
+    });
 };

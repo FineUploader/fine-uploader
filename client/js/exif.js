@@ -4,7 +4,6 @@
  * but this may be expanded to other tags in the future.
  *
  * @param fileOrBlob Attempt to parse EXIF data in this `Blob`
- * @returns {{parse: Function}}
  * @constructor
  */
 qq.Exif = function(fileOrBlob, log) {
@@ -17,8 +16,7 @@ qq.Exif = function(fileOrBlob, log) {
                 name: "Orientation",
                 bytes: 2
             }
-        },
-        api;
+        };
 
     // Convert a little endian (hex string) to big endian (decimal).
     function parseLittleEndian(hex) {
@@ -161,7 +159,7 @@ qq.Exif = function(fileOrBlob, log) {
         return vals;
     }
 
-    api = {
+    qq.extend(this, {
         /**
          * Attempt to parse the EXIF header for the `Blob` associated with this instance.
          *
@@ -200,12 +198,10 @@ qq.Exif = function(fileOrBlob, log) {
 
             return parser;
         }
-    };
+    });
 
     /*<testing>*/
-    api._testing = {};
-    api._testing.parseLittleEndian = parseLittleEndian;
+    this._testing = {};
+    this._testing.parseLittleEndian = parseLittleEndian;
     /*</testing>*/
-
-    return api;
 };

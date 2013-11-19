@@ -331,7 +331,7 @@
             }
 
             // The parent may need to perform some async operation before we can accurately determine the status of the upload.
-            if (qq.isPromise(parentRetVal)) {
+            if (parentRetVal instanceof qq.Promise) {
                 parentRetVal.done(function(newResult) {
                     completeUpload(newResult);
                 });
@@ -446,7 +446,7 @@
 
             retVal = this._options.showConfirm(confirmMessage);
 
-            if (qq.isPromise(retVal)) {
+            if (retVal instanceof qq.Promise) {
                 retVal.then(function () {
                     self._sendDeleteRequest.apply(self, deleteRequestArgs);
                 });

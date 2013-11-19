@@ -5,8 +5,8 @@ qq.UploadData = function(uploaderProxy) {
     var data = [],
         byId = {},
         byUuid = {},
-        byStatus = {},
-        api;
+        byStatus = {};
+
 
     function getDataByIds(ids) {
         if (qq.isArray(ids)) {
@@ -53,7 +53,7 @@ qq.UploadData = function(uploaderProxy) {
         return statusResults;
     }
 
-    api = {
+    qq.extend(this, {
         added: function(id) {
             var uuid = uploaderProxy.getUuid(id),
                 name = uploaderProxy.getName(id),
@@ -138,9 +138,7 @@ qq.UploadData = function(uploaderProxy) {
 
             data[dataIndex].name = newName;
         }
-    };
-
-    return api;
+    });
 };
 
 qq.status = {

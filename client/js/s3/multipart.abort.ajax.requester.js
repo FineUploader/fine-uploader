@@ -4,7 +4,6 @@
  * request to S3 via the REST API.
 
  * @param o
- * @returns {{send: Function}}
  * @constructor
  */
 qq.s3.AbortMultipartAjaxRequester = function(o) {
@@ -110,7 +109,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
     });
 
 
-    return {
+    qq.extend(this, {
         /**
          * Sends the "Abort" request.
          *
@@ -126,5 +125,5 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
                     .send();
             });
         }
-    };
+    });
 };

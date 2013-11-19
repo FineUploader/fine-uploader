@@ -129,7 +129,7 @@ qq.UploadButton = function(o) {
 
 
     // Exposed API
-    return {
+    qq.extend(this, {
         getInput: function() {
             return input;
         },
@@ -163,7 +163,7 @@ qq.UploadButton = function(o) {
             qq(options.element).removeClass(options.focusClass);
             input = createInput();
         }
-    };
+    });
 };
 
 qq.UploadButton.BUTTON_ID_ATTR_NAME = "qq-button-id";

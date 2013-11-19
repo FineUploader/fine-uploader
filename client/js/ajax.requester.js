@@ -304,7 +304,7 @@ qq.AjaxRequester = function (o) {
 
     shouldParamsBeInQueryString = options.method === "GET" || options.method === "DELETE";
 
-    return {
+    qq.extend(this, {
         // Start the process of sending the request.  The ID refers to the file associated with the request.
         initTransport: function(id) {
             var path, params, headers, payload;
@@ -343,5 +343,5 @@ qq.AjaxRequester = function (o) {
                 }
             };
         }
-    };
+    });
 };

@@ -11,5 +11,5 @@ qq.FilenameInputFocusHandler = function(spec) {
     spec.eventType = "focus";
     spec.attachTo = null;
 
-    return qq.extend(this, new qq.FilenameInputFocusInHandler(spec, {}));
+    qq.extend(this, new qq.FilenameInputFocusInHandler(spec, {}));
 };

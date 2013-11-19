@@ -209,7 +209,7 @@
                 keyname = keynameFunc(id);
 
 
-            if (qq.isPromise(keyname)) {
+            if (keyname instanceof qq.Promise) {
                 keyname.then(onSuccess, onFailure);
             }
             /*jshint -W116*/

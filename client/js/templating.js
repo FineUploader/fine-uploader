@@ -6,7 +6,6 @@
  * Wherever possible, this module asserts total control over template elements present in the DOM.
  *
  * @param spec Specification object used to control various templating behaviors
- * @returns various API methods
  * @constructor
  */
 qq.Templating = function(spec) {
@@ -63,7 +62,6 @@ qq.Templating = function(spec) {
         },
         previewGeneration = {},
         log,
-        api,
         isEditElementsExist,
         isRetryElementExist,
         templateHtml,
@@ -384,7 +382,7 @@ qq.Templating = function(spec) {
 
     cacheThumbnailPlaceholders();
 
-    api = {
+    qq.extend(this, {
         render: function() {
             log("Rendering template in DOM.");
 
@@ -402,7 +400,7 @@ qq.Templating = function(spec) {
         },
 
         reset: function() {
-            api.render();
+            this.render();
         },
 
         clearFiles: function() {
@@ -436,7 +434,7 @@ qq.Templating = function(spec) {
             hide(getContinue(id));
 
             if (isCancelDisabled) {
-                api.hideCancel(id);
+                this.hideCancel(id);
             }
         },
 
@@ -585,8 +583,8 @@ qq.Templating = function(spec) {
         },
 
         uploadPaused: function(id) {
-            api.setStatusText(id, options.text.paused);
-            api.allowContinueButton(id);
+            this.setStatusText(id, options.text.paused);
+            this.allowContinueButton(id);
             hide(getSpinner(id));
         },
 
@@ -608,8 +606,8 @@ qq.Templating = function(spec) {
         },
 
         uploadContinued: function(id) {
-            api.setStatusText(id, "");
-            api.allowPause(id);
+            this.setStatusText(id, "");
+            this.allowPause(id);
             show(getSpinner(id));
         },
 
@@ -717,7 +715,5 @@ qq.Templating = function(spec) {
                 }
             }
         }
-    };
-
-    return api;
+    });
 };

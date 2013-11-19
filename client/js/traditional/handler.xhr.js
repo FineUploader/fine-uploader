@@ -10,7 +10,8 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
         resumeEnabled = options.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
         multipart = options.forceMultipart || options.paramsInBody,
         internalApi = {},
-        publicApi, resumeId;
+        publicApi = this,
+        resumeId;
 
     function getResumeId() {
         if (options.resume.id !== null &&
@@ -426,7 +427,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
             onResumeRetVal;
 
         onResumeRetVal = options.onResume(id, name, internalApi.getChunkDataForCallback(firstChunkDataForResume));
-        if (qq.isPromise(onResumeRetVal)) {
+        if (onResumeRetVal instanceof qq.Promise) {
             log("Waiting for onResume promise to be fulfilled for " + id);
             onResumeRetVal.then(
                 function() {
@@ -514,7 +515,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
     }
 
 
-    publicApi = new qq.UploadHandlerXhrApi(
+    qq.extend(this, new qq.UploadHandlerXhrApi(
         internalApi,
         fileState,
         chunkFiles ? options.chunking : null,
@@ -522,10 +523,10 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
         options.onCancel,
         onUuidChanged,
         log
-    );
+    ));
 
     // Base XHR API overrides
-    qq.override(publicApi, function(super_) {
+    qq.override(this, function(super_) {
         return {
             add: function(fileOrBlobData) {
                 var id = super_.add(fileOrBlobData),
@@ -583,6 +584,4 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
             }
         };
     });
-
-    return publicApi;
 };

@@ -49,7 +49,7 @@ qq.DeleteFileAjaxRequester = function(o) {
     });
 
 
-    return {
+    qq.extend(this, {
         sendDelete: function(id, uuid, additionalMandatedParams) {
             var additionalOptions = additionalMandatedParams || {};
 
@@ -68,5 +68,5 @@ qq.DeleteFileAjaxRequester = function(o) {
                     .send();
             }
         }
-    };
+    });
 };

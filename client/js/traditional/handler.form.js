@@ -6,7 +6,7 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
         uploadComplete = uploadCompleteCallback,
         log = logCallback,
         internalApi = {},
-        publicApi;
+        publicApi = this;
 
 
     /**
@@ -61,12 +61,12 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
         });
     }
 
-    publicApi = new qq.UploadHandlerFormApi(internalApi, fileState, options.cors.expected, options.inputName, options.onCancel, onUuidChanged, log);
+    qq.extend(this, new qq.UploadHandlerFormApi(internalApi, fileState, options.cors.expected, options.inputName, options.onCancel, onUuidChanged, log));
 
-    return qq.extend(publicApi, {
+    qq.extend(this, {
         upload: function(id) {
             var input = fileState[id].input,
-                fileName = publicApi.getName(id),
+                fileName = this.getName(id),
                 iframe = internalApi.createIframe(id),
                 form;
 
@@ -74,7 +74,7 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
                 throw new Error("file with passed id was not added, or already uploaded or cancelled");
             }
 
-            options.onUpload(id, publicApi.getName(id));
+            options.onUpload(id, this.getName(id));
 
             form = createForm(id, iframe);
             form.appendChild(input);

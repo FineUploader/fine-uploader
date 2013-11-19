@@ -9,7 +9,7 @@ qq.UploadHandler = function(o, namespace) {
     "use strict";
 
     var queue = [],
-        options, log, handlerImpl, api;
+        options, log, handlerImpl;
 
     // Default options, can be overridden by the user
     options = {
@@ -93,7 +93,7 @@ qq.UploadHandler = function(o, namespace) {
     }
 
 
-    api = {
+    qq.extend(this, {
         /**
          * Adds file or file input to the queue
          * @returns id
@@ -133,7 +133,7 @@ qq.UploadHandler = function(o, namespace) {
         cancel: function(id) {
             var cancelRetVal = handlerImpl.cancel(id);
 
-            if (qq.isPromise(cancelRetVal)) {
+            if (cancelRetVal instanceof qq.Promise) {
                 cancelRetVal.then(function() {
                     cancelSuccess(id);
                 });
@@ -194,7 +194,7 @@ qq.UploadHandler = function(o, namespace) {
 
         reset: function() {
             log("Resetting upload handler");
-            api.cancelAll();
+            this.cancelAll();
             queue = [];
             handlerImpl.reset();
         },
@@ -234,7 +234,7 @@ qq.UploadHandler = function(o, namespace) {
          * @returns {*} Some identifier used by a 3rd-party service involved in the upload process
          */
         getThirdPartyFileId: function(id) {
-            if (handlerImpl.getThirdPartyFileId && api.isValid(id)) {
+            if (handlerImpl.getThirdPartyFileId && this.isValid(id)) {
                 return handlerImpl.getThirdPartyFileId(id);
             }
         },
@@ -245,14 +245,12 @@ qq.UploadHandler = function(o, namespace) {
          * @returns {boolean} true if the upload was paused
          */
         pause: function(id) {
-            if (handlerImpl.pause && api.isValid(id) && handlerImpl.pause(id)) {
+            if (handlerImpl.pause && this.isValid(id) && handlerImpl.pause(id)) {
                 dequeue(id);
                 return true;
             }
         }
-    };
+    });
 
     determineHandlerImpl();
-
-    return api;
 };

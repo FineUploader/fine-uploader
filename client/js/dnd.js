@@ -205,7 +205,7 @@ qq.DragAndDrop = function(o) {
 
     setupDragDrop();
 
-    return {
+    qq.extend(this, {
         setupExtraDropzone: function(element) {
             options.dropZoneElements.push(element);
             setupDropzone(element);
@@ -228,7 +228,7 @@ qq.DragAndDrop = function(o) {
                 dropZone.dispose();
             });
         }
-    };
+    });
 };
 
 qq.DragAndDrop.callbacks = function() {
@@ -375,7 +375,7 @@ qq.UploadDropZone = function(o){
     disableDropOutside();
     attachEvents();
 
-    return {
+    qq.extend(this, {
         dropDisabled: function(isDisabled) {
             return isOrSetDropDisabled(isDisabled);
         },
@@ -383,5 +383,5 @@ qq.UploadDropZone = function(o){
         dispose: function() {
             disposeSupport.dispose();
         }
-    };
+    });
 };
