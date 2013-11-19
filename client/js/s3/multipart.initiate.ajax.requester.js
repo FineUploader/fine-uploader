@@ -4,7 +4,6 @@
  * request to S3 via the REST API.
  *
  * @param o Options from the caller - will override the defaults.
- * @returns {{send: Function}}
  * @constructor
  */
 qq.s3.InitiateMultipartAjaxRequester = function(o) {
@@ -31,7 +30,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
 
     qq.extend(options, o);
 
-    getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequestor({
+    getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequester({
         signatureSpec: options.signatureSpec,
         cors: options.cors,
         log: options.log
@@ -54,8 +53,6 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             key = options.getKey(id),
             toSign;
 
-        headers["x-amz-date"] = new Date().toUTCString();
-        headers["Content-Type"] = options.getContentType(id);
         headers["x-amz-acl"] = options.acl;
 
         if (options.reducedRedundancy) {
@@ -68,42 +65,22 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             headers[qq.s3.util.AWS_PARAM_PREFIX + name] = encodeURIComponent(val);
         });
 
-        toSign = {headers: getStringToSign(headers, bucket, key)};
+        toSign = getSignatureAjaxRequester.constructStringToSign
+            (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_INITIATE, bucket, key)
+            .withContentType(options.getContentType(id))
+            .withHeaders(headers)
+            .getToSign();
+
+        headers = toSign.headers;
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
-        getSignatureAjaxRequester.getSignature(id, toSign).then(function(response) {
+        getSignatureAjaxRequester.getSignature(id, {headers: toSign.stringToSign}).then(function(response) {
             headers.Authorization = "AWS " + options.accessKey + ":" + response.signature;
-            promise.success(headers);
+            promise.success(headers, toSign.endOfUrl);
         }, promise.failure);
 
         return promise;
     }
-
-    /**
-     * @param headers All headers to be sent with the initiate request
-     * @param bucket Bucket where the file parts will reside
-     * @param key S3 Object name for the file
-     * @returns {string} The string that must be signed by the local server before sending the initiate request
-     */
-    function getStringToSign(headers, bucket, key) {
-        var headerNames = [],
-            headersAsString = "";
-
-        qq.each(headers, function(name, val) {
-            if (name !== "Content-Type") {
-                headerNames.push(name);
-            }
-        });
-
-        headerNames.sort();
-
-        qq.each(headerNames, function(idx, name) {
-            headersAsString += name + ":" + headers[name] + "\n";
-        });
-
-        return "POST\n\n" + headers["Content-Type"] + "\n\n" + headersAsString + "/" + bucket + "/" + key + "?uploads";
-    }
-
 
     /**
      * Called by the base ajax requester when the response has been received.  We definitively determine here if the
@@ -158,7 +135,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         }
     }
 
-    requester = new qq.AjaxRequestor({
+    requester = new qq.AjaxRequester({
         method: options.method,
         contentType: null,
         endpointStore: options.endpointStore,
@@ -171,7 +148,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
     });
 
 
-    return {
+    qq.extend(this, {
         /**
          * Sends the "Initiate MPU" request to AWS via the REST API.  First, though, we must get a signature from the
          * local server for the request.  If all is successful, the uploadId from AWS will be passed into the promise's
@@ -181,17 +158,19 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
          * @returns {qq.Promise}
          */
         send: function(id) {
-            var promise = new qq.Promise(),
-                addToPath = options.getKey(id) + "?uploads";
+            var promise = new qq.Promise();
 
-            getHeaders(id).then(function(headers) {
+            getHeaders(id).then(function(headers, endOfUrl) {
                 options.log("Submitting S3 initiate multipart upload request for " + id);
 
                 pendingInitiateRequests[id] = promise;
-                requester.send(id, addToPath, null, headers);
+                requester.initTransport(id)
+                    .withPath(endOfUrl)
+                    .withHeaders(headers)
+                    .send();
             }, promise.failure);
 
             return promise;
         }
-    };
+    });
 };

@@ -1,11 +1,10 @@
-describe('ui.handler.click.drc.js', function () {
+describe('ui.handler.click.filebuttons.js', function () {
 
     describe('click handlers', function () {
     
         it('delete, retry, and cancel click handlers', function (done) {
             var fileId = 123,
-                $container, $fileItem, $cancelLink, $deleteLink, $retryLink, templating;
-            //expect(3);
+                $container, $fileItem, $cancelLink, $deleteLink, $retryLink, $pauseLink, $continueLink, templating;
 
             $fixture.append('<div class="testcontainer"></div>');
 
@@ -13,12 +12,21 @@ describe('ui.handler.click.drc.js', function () {
             $container.append('<div class="fileitem"></div>');
 
             $fileItem = $container.find('.fileitem');
+
             $fileItem.append('<a class="test-cancel"></a>');
             $cancelLink = $fileItem.find('.test-cancel');
+
             $fileItem.append('<a class="test-delete"></a>');
             $deleteLink = $fileItem.find('.test-delete');
+
             $fileItem.append('<a class="test-retry"></a>');
             $retryLink = $fileItem.find('.test-retry');
+
+            $fileItem.append('<a class="test-pause"></a>');
+            $pauseLink = $fileItem.find(".test-pause");
+
+            $fileItem.append('<a class="test-continue"></a>');
+            $continueLink = $fileItem.find(".test-continue");
 
             $fileItem[0].qqFileId = fileId;
 
@@ -32,12 +40,18 @@ describe('ui.handler.click.drc.js', function () {
                 isRetry: function(el) {
 
                 },
-                isDelete: function(el) {
+                isDeleteButton: function(el) {
+
+                },
+                isPause: function(el) {
+
+                },
+                isContinueButton: function(el) {
 
                 }
             };
 
-            var handler = new qq.DeleteRetryOrCancelClickHandler({
+            var handler = new qq.FileButtonsClickHandler({
                 templating: templating,
                 classes: {
                     cancel: 'test-cancel',
@@ -53,6 +67,12 @@ describe('ui.handler.click.drc.js', function () {
                 },
                 onRetry: function(id) {
                     assert.equal(id, fileId, "retried upload");
+                },
+                onPause: function(id) {
+                    assert.equal(id, fileId, "paused upload");
+                },
+                onContinue: function(id) {
+                    assert.equal(id, fileId, "continued upload");
                 }
             });
 

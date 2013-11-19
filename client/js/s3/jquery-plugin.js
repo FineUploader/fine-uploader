@@ -10,7 +10,7 @@
     "use strict";
 
     $.fn.fineUploaderS3 = function(optionsOrCommand) {
-        if (typeof optionsOrCommand === 'object') {
+        if (typeof optionsOrCommand === "object") {
 
             // This option is used to tell the plug-in wrapper to instantiate the appropriate S3-namespace modules.
             optionsOrCommand.endpointType = "s3";

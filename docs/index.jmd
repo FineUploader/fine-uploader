@@ -88,6 +88,7 @@ be documented.
 * [Handling Errors](features/handling-errors.html)
 * [Multiple Upload Buttons](features/extra-buttons.html)
 * [Paste to Upload](features/paste-to-upload.html)
+* [Pause In-Progress Uploads](features/pause.html)
 * [Progress Bars](features/progress-bars.html)
 * [Previews & Thumbnails](features/thumbnails.html)
 * [Request Parameters](features/request-parameters.html)

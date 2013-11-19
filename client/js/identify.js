@@ -1,4 +1,7 @@
+/*globals qq */
 qq.Identify = function(fileOrBlob, log) {
+    "use strict";
+
     var PREVIEWABLE_MAGIC_BYTES = {
             "image/jpeg": "ffd8ff",
             "image/gif": "474946",
@@ -21,7 +24,7 @@ qq.Identify = function(fileOrBlob, log) {
         return identifiable;
     }
 
-    return {
+    qq.extend(this, {
         isPreviewable: function() {
             var idenitifer = new qq.Promise(),
                 previewable = false,
@@ -52,5 +55,5 @@ qq.Identify = function(fileOrBlob, log) {
 
             return idenitifer;
         }
-    }
+    });
 };

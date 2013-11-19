@@ -41,9 +41,9 @@ qq.PasteSupport = function(o) {
     qq.extend(options, o);
     registerPasteHandler();
 
-    return {
+    qq.extend(this, {
         reset: function() {
             unregisterPasteHandler();
         }
-    };
+    });
 };

@@ -6,18 +6,18 @@
 
 Currently, Fine Uploader supports the following browsers:
 
-* Internet Explorer >=7
+* Internet Explorer 7+
 * Firefox
 * Chrome
-* Android >=2.3.x
-* iOS >=6.0
-* Safari >=5 (OS X)
+* Chrome mobile (iOS & Android)
+* Opera 15+
+* Android 2.3.x+
+* iOS 6+
+* Safari 5+ (OS X)
 
 We plan on supporting the following browsers/OSes in the very near future:
 
-* Mobile versions of Chrome and Firefox (these probably already work now)
-* Internet Explorer 11
-* Opera
+* Mobile Firefox (probably already works)
 * Opera Mini
 * Firefox OS
 * Dolphin
@@ -41,11 +41,63 @@ Note: Any features not listed here are supported in all browsers.
             <th>Size Validation</th>
             <th>Progress reporting</th>
             <th>Image Previews</th>
+            <th>Image Validation</th>
+            <th>Pause Uploads</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>Chrome</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+        </tr>
+        <tr>
+            <td>Chrome for iOS 6+</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+        </tr>
+        <tr>
+            <td>Chrome for Android 4+</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
+        </tr>
+        <tr>
+            <td>Opera 15+</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -71,6 +123,24 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+        </tr>
+        <tr>
+            <td>IE 11</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>IE 10</td>
@@ -81,6 +151,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -99,6 +171,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>IE 8</td>
@@ -113,9 +187,13 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>IE 7</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -135,13 +213,15 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>Android
@@ -149,7 +229,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -157,10 +237,12 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>iOS
-                6</td>
+                6+</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
@@ -168,6 +250,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -183,6 +267,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -202,6 +288,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
         </tr>
     </tbody>
 </table>
@@ -236,6 +324,8 @@ Feature     | Description
 `uploadCors` | Are cross-domain uploads supported?
 `canDetermineSize` | Can file size be determined client-side?
 `imagePreviews` | Is client-side image preview generation possible?
+`imageValidation` | Can we validate image properties client-side?
+`pause` | Can chunked file uploads be paused?
 
 
 ## Mobile Safari (iOS)
@@ -258,61 +348,57 @@ by upgrading to IE10 are listed as well.
     <thead>
         <tr>
             <th>Limitation</th>
-            <th>IE10 Support
-            </th>
             <th>Reason</th>
+            <th>Supported/Fixed in IE10+</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>No progress indicator
             </td>
+            <td>Lack of File API support
+            </td>
             <td>
                 <span class="label label-success">Yes</span>
-            </td>
-            <td>Lack of File API support
             </td>
         </tr>
         <tr>
             <td>Lack of File API support
             </td>
+            <td>Only multipart form requests may be used to send files via form submission
+            </td>
             <td>
                 <span class="label label-success">Yes</span>
-            </td>
-            <td>Only multipart form requests may be used to send files via form submission
             </td>
         </tr>
         <tr>
             <td>Size restriction options not enforced
             </td>
+            <td>Lack of File API Support
+            </td>
             <td>
                 <span class="label label-success">Yes</span>
-            </td>
-            <td>Lack of File API Support
             </td>
         </tr>
         <tr>
             <td>Cannot select multiple files in the file selection dialog
             </td>
+            <td>The <code>&lt;input&gt;</code> element does not support the <code>multiple</code> attribute</td>
             <td>
                 <span class="label label-success">Yes</span>
             </td>
-            <td>The <code>&lt;input&gt;</code> element does not support the <code>multiple</code> attribute</td>
         </tr>
         <tr>
             <td>No logging
             </td>
+            <td><code>console.log</code> is not implemented (IE8 and older only)
+            </td>
             <td>
                 <span class="label label-success">Yes</span>
-            </td>
-            <td><code>console.log</code> is not implemented (IE8 and older only)
             </td>
         </tr>
         <tr>
             <td>Unable to cancel uploads
-            </td>
-            <td>
-                <span class="label label-success">Yes</span>
             </td>
             <td>Not really an IE problem, but since we are forced to upload files via
                 form submission, I thought I’d include it. There may be a way to
@@ -322,46 +408,46 @@ by upgrading to IE10 are listed as well.
                 using the form uploader, I’ll probably remove the cancel link when
                 the form uploader is in use.
             </td>
+            <td>
+                <span class="label label-success">Yes</span>
+            </td>
         </tr>
        <tr>
            <td>Requires response of type <code>text/plain</code>
-           </td>
-           <td>
-               <span class="label label-success">Yes</span>
            </td>
            <td>IE does strange things with the response when the content-type is, for
                example, “application/json” or “text/html”. The latter is only a
                problem if you return HTML in your JSON response.
            </td>
+           <td>
+               <span class="label label-success">Yes</span>
+           </td>
        </tr>
        <tr>
            <td>Cannot determine response code
-           </td>
-           <td>
-               <span class="label label-success">Yes</span>
            </td>
            <td>Not really an IE problem, but since we are forced to upload files via
                form submission, I thought I’d include it. This is really a side-effect
                of using a form submission to upload files.
            </td>
+            <td>
+                <span class="label label-success">Yes</span>
+            </td>
        </tr>
         <tr>
             <td>Content-size header field value does not match the actual file size
-            </td>
-            <td>
-                <span class="label label-default">x</span>
             </td>
             <td>This isn’t technically an IE issue, but I’m going to call it one since
                 we are forced to use multipart request in IE. The content-size for
                 multipart data requests does not refer only to the file. Rather,
                 it refers to the the total size of all sections in the request.
             </td>
+            <td>
+                <span class="label label-default">N/A</span>
+            </td>
         </tr>
         <tr>
             <td>Cannot parse JSON response if response code is not 200
-            </td>
-            <td>
-                <span class="label label-important">No</span>
             </td>
             <td>If the response code is not 200, and the size of the response is less
                 than 512, or, apparently, sometimes, less than 256 bytes, IE replaces
@@ -371,13 +457,16 @@ by upgrading to IE10 are listed as well.
                 messages” setting or by padding the response JSON with whitespace
                 as described
             </td>
+            <td>
+                <span class="label label-default">N/A</span>
+            </td>
         </tr>
         <tr>
             <td>Cannot use a <code>&lt;button&gt;</code> element in the <code>button</code> option</td>
-            <td>
-                <span class="label label-important">No</span>
-            </td>
             <td>The button receives the click event instead of the child <code>&lt;input&gt;</code> element</td>
+            <td>
+                <span class="label label-default">N/A</span>
+            </td>
         </tr>
     </tbody>
 </table>

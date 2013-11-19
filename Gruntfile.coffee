@@ -1,20 +1,16 @@
 ###
-    ______ _              _    _       _                 _
- |    ____(_)            | |  | |     | |               | |
- | |__     _ _ __   ___  | |  | |_ __ | | ___   __ _  __| | ___ _ __
- |    __| | | '_ \ / _ \ | |  | | '_ \| |/ _ \ / _` |/ _` |/ _ \ '__|
- | |      | | | | |  __/ | |__| | |_) | | (_) | (_| | (_| |  __/ |
- |_|      |_|_| |_|\___|  \____/| .__/|_|\___/ \__,_|\__,_|\___|_|
-                                | |
-                                |_|
+    Fine Uploader
+    -------------
 
- Gruntfile
+    Gruntfile
+
 ###
 
 module.exports = (grunt) ->
 
     fs = require 'fs'
     uuid = require 'uuid'
+    async = require 'async'
 
     # Utilities
     # ==========
@@ -86,12 +82,14 @@ module.exports = (grunt) ->
         coffeelint:
             options:
                 indentation:
-                    level: 'ignore'
+                    level: 'warn'
                 no_trailing_whitespace:
+                    level: 'warn'
+                no_backticks:
                     level: 'ignore'
                 max_line_length:
                     level: 'ignore'
-            grunt: './Gruntfile.coffee'
+            grunt: ['./Gruntfile.coffee', 'lib/grunt/**/*.coffee']
 
         compress:
             jquery:
@@ -462,19 +460,10 @@ module.exports = (grunt) ->
     #dest: "#{customBuildDest}/src/<%= pkg.name %>-<%= pkg.version %>.min.css"
 
         jshint:
-            source: ["#{paths.src}/js/*.js"]
+            source: ["#{paths.src}/js/**/*.js"]
             tests: ["#{paths.test}unit/*.js"]
             options:
-                validthis: true
-                laxcomma: true
-                laxbreak: true
-                browser: true
-                eqnull: true
-                debug: true
-                devel: true
-                boss: true
-                expr: true
-                asi: true
+                jshintrc: true
 
         custom:
             options:
@@ -594,13 +583,13 @@ module.exports = (grunt) ->
                 files: ["#{paths.src}/js/*.js", "#{paths.src}/js/s3/*.js"]
                 tasks: [
                     'dev'
-                    'test-unit'
+                    'tests:local'
                 ]
             test:
                 files: ["#{paths.test}/unit/*.js", "#{paths.test}/unit/s3/*.js"]
                 tasks: [
                     'jshint:tests'
-                    'test-unit'
+                    'tests:local'
                 ]
             grunt:
                 files: ['./Gruntfile.coffee']
@@ -624,10 +613,10 @@ module.exports = (grunt) ->
             default:
                 configFile: 'karma-sauce.conf.coffee'
                 browsers: [
-                    ['SL-chrome-28-Linux', 'SL-firefox-21-Linux', 'SL-safari-6-OS_X_10.8'],
-                    ['SL-internet_explorer-10-Windows_8', 'SL-internet_explorer-9-Windows_7', 'SL-internet_explorer-8-Windows_7'],
                     ['SL-android-4.0-Linux', 'SL-iphone-6-OS_X_10.8', 'SL-safari-5-OS_X_10.6'],
-                    ['SL-internet_explorer-7-Windows_XP']
+                    ['SL-chrome-28-Linux', 'SL-firefox-21-Linux', 'SL-safari-6-OS_X_10.8'],
+                    ['SL-internet_explorer-11-Windows_8.1', 'SL-internet_explorer-10-Windows_8', 'SL-internet_explorer-9-Windows_7'],
+                    ['SL-internet_explorer-8-Windows_7', 'SL-internet_explorer-7-Windows_XP']
                 ]
 
         mochaWebdriver:
@@ -696,16 +685,17 @@ module.exports = (grunt) ->
 
     # Tasks
     # ==========
-    grunt.registerTask 'test:unit', 'Run unit tests locally with Karma', ['dev', 'tests:local']
-    grunt.registerTask 'test:unit:sauce', 'Run tests with Karma on SauceLabs', ['dev', 'saucetests:default']
-    grunt.registerTask 'test:func', 'Run functional tests locally', ['dev', 'mochaWebdriver:local']
-    grunt.registerTask 'test:func:sauce', 'Run functional tests on SauceLabs', ['dev', 'mochaWebdriver:sauce']
 
-    grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'saucetests:default']
+    grunt.registerTask 'test:unit', 'Run unit tests locally with Karma', ['dev', 'tests:local']
+    grunt.registerTask 'test:unit:sauce', 'Run tests with Karma on SauceLabs', ['dev', 'wait_for_sauce', 'saucetests:default']
+    grunt.registerTask 'test:func', 'Run functional tests locally', ['dev', 'mochaWebdriver:local']
+    grunt.registerTask 'test:func:sauce', 'Run functional tests on SauceLabs', ['dev', 'wait_for_sauce', 'mochaWebdriver:sauce']
+
+    grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'wait_for_sauce', 'saucetests:default']
 
     grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'bower', 'build', 'copy:test']
 
-    grunt.registerTask 'build', 'Build from latest source', ['concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
+    grunt.registerTask 'build', 'Build from latest source', ['jshint:source', 'concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
     grunt.registerTask 'build_stripped', 'Build from latest source w/ test artifacts stripped out', ['concat', 'strip_code:build', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
 
     grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build_stripped', 'copy:dist', 'shell:version_dist_templates', 'compress:jquery', 'compress:jqueryS3', 'compress:core', 'compress:coreS3' ]

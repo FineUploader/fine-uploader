@@ -1,4 +1,7 @@
+/* globals qq */
 qq.supportedFeatures = (function () {
+    "use strict";
+
     var supportsUploading,
         supportsAjaxFileUploading,
         supportsFolderDrop,
@@ -18,8 +21,8 @@ qq.supportedFeatures = (function () {
             tempInput;
 
         try {
-            tempInput = document.createElement('input');
-            tempInput.type = 'file';
+            tempInput = document.createElement("input");
+            tempInput.type = "file";
             qq(tempInput).hide();
 
             if (tempInput.disabled) {
@@ -35,13 +38,13 @@ qq.supportedFeatures = (function () {
 
     //only way to test for Filesystem API support since webkit does not expose the DataTransfer interface
     function isChrome21OrHigher() {
-        return qq.chrome() &&
+        return (qq.chrome() || qq.opera()) &&
             navigator.userAgent.match(/Chrome\/[2][1-9]|Chrome\/[3-9][0-9]/) !== undefined;
     }
 
     //only way to test for complete Clipboard API support at this time
     function isChrome14OrHigher() {
-        return qq.chrome() &&
+        return (qq.chrome() || qq.opera()) &&
             navigator.userAgent.match(/Chrome\/[1][4-9]|Chrome\/[2-9][0-9]/) !== undefined;
     }
 
@@ -74,7 +77,7 @@ qq.supportedFeatures = (function () {
 
     function isFolderSelectionSupported() {
         // We know that folder selection is only supported in Chrome via this proprietary attribute for now
-        return document.createElement('input').webkitdirectory !== undefined;
+        return document.createElement("input").webkitdirectory !== undefined;
     }
 
 
@@ -121,7 +124,9 @@ qq.supportedFeatures = (function () {
         deleteFileCors: supportsDeleteFileCors,
         canDetermineSize: supportsAjaxFileUploading,
         folderSelection: supportsFolderSelection,
-        imagePreviews: supportsImagePreviews
-    }
+        imagePreviews: supportsImagePreviews,
+        imageValidation: supportsImagePreviews,
+        pause: supportsChunking
+    };
 
 }());

@@ -293,7 +293,7 @@ describe('uploader.basic.api.js', function () {
                     }
                 };
 
-                assert.ok(qq.isPromise(fineuploader._handleCheckedCallback(spec)));
+                assert.ok(fineuploader._handleCheckedCallback(spec) instanceof qq.Promise);
         });
 
         it ("handles failed promissory callbacks", function(done) {
@@ -317,7 +317,71 @@ describe('uploader.basic.api.js', function () {
                     }
                 };
 
-            assert.ok(qq.isPromise(fineuploader._handleCheckedCallback(spec)));
+            assert.ok(fineuploader._handleCheckedCallback(spec) instanceof qq.Promise);
+        });
+
+        it("does auto retry if upload is not paused", function() {
+            fineuploader = new qq.FineUploaderBasic({
+                element: $uploader[0],
+                retry: {
+                    enableAuto: true
+                }
+            });
+
+            fineuploader._uploadData = {
+                retrieve: function() {
+                    return {
+                        status: qq.status.UPLOADING
+                    }
+                }
+            };
+
+            assert.ok(fineuploader._shouldAutoRetry(0));
+        });
+
+        it("does not auto retry if upload is paused", function() {
+            fineuploader = new qq.FineUploaderBasic({
+                element: $uploader[0],
+                retry: {
+                    enableAuto: true
+                }
+            });
+
+            fineuploader._uploadData = {
+                retrieve: function() {
+                    return {
+                        status: qq.status.PAUSED
+                    }
+                }
+            };
+
+            assert.ok(!fineuploader._shouldAutoRetry(0));
+        });
+    });
+
+    describe("getRemainingAllowedItems", function() {
+        var uploader;
+
+        function setupUploader(allowedItems) {
+            uploader = new qq.FineUploaderBasic({
+                validation: {
+                    itemLimit: allowedItems
+                }
+            });
+        }
+
+        it("reports the correct number of remaining allowed items w/out item limit", function() {
+            setupUploader(0);
+            uploader._netUploadedOrQueued = 3;
+
+            assert.equal(uploader.getRemainingAllowedItems(), null);
+        });
+
+        it ("reports the correct number of remaining items w/ an item limit", function() {
+            setupUploader(3);
+            uploader._netUploadedOrQueued = 2;
+
+            assert.equal(uploader.getRemainingAllowedItems(), 1);
         });
     });
 

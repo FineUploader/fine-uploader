@@ -16,7 +16,7 @@ Uploader instance.
 
 {{ alert(
 """This feature is only supported by browsers that feature the [Clipboard API](http://www.w3.org/TR/clipboard-apis/).
-Currently, only Chrome supports this completely.", "info", "Note:") }}
+Currently, only Chrome & Opera 15+ support this completely.", "info", "Note:") }}
 
 
 ## Options

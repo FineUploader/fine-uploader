@@ -52,6 +52,9 @@
                     waitingPath: "/client/placeholders/waiting-generic.png",
                     notAvailablePath: "/client/placeholders/not_available-generic.png"
                 }
+            },
+            validation: {
+                itemLimit: 3
             }
         }).on('error', errorHandler).on("upload", function(event, id, filename) {
                 $(this).fineUploader('setParams', {
@@ -89,6 +92,15 @@
                 params: {
                     foo: "bar"
                 }
+            },
+            chunking: {
+                enabled: true
+            },
+            resume: {
+                enabled: true
+            },
+            retry: {
+                enableAuto: true
             },
             thumbnails: {
                 placeholders: {

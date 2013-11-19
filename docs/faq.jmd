@@ -34,12 +34,6 @@ See the [Internet Explorer Limitations]({{ URL_ROOT }}/integrating/limitations-i
 **A:** Some browsers (IE9 and older, along with Android 2.3.x and older) do not support the File API the `multiple` attribute on file input elements.
 These are all required to give you the best possible experience.
 
-**Q:** Why isn't Opera supported?
-**A:** Market share for Opera is incredibly low, and I have found annoying bugs in Opera that have taken up an unnecessary amount of my
-time in the past.  For such a small minority of users, I have decided that it is not worth my time.  There are many better options as far
-as browsers are concerned.  There are plans to support the newest version of Opera, based on Chromium.  See [issue #721](https://github.com/Widen/fine-uploader/issues/721)
-for more details.
-
 **Q:** Why isn't Safari for Windows supported?
 **A:** There is really no reason to use Safari for Windows.   Webkit is better represented on that platform in Chrome.
 Apple doesn't appear to be interested in maintaining Safari for Windows anymore either.  Switch to Chrome.
@@ -47,15 +41,16 @@ Apple doesn't appear to be interested in maintaining Safari for Windows anymore 
 **Q:** Why isn't IOS5 supported?
 **A:** IOS5 doesn't even support file input elements.
 
-**Q:** Why isn't folder drag & drop uploading supported in any browser other than Chrome 21+?
+**Q:** Why isn't folder drag & drop uploading supported in any browser other than Chrome 21+ & Opera 15+?
 **A:** Chrome 21 was the first browser version to implement the HTML5 Filesystem API.  This is required to handle dropped folders.
-Currently, no other browsers support this API.
+Currently, no other browsers support this API.  Opera 15+ is based on Chromium as well, giving it feature parity with
+Chrome.
 
 **Q:** I have created a \<button\> element for my uploader button, but this doesn't seem to work in IE.  Why?
 **A:** In IE, the button element receives the click event, instead of the child input element.  Use a \<div\> or a \<span\> or an \<a\> instead.
 
 **Q:** Why do I only see a "Processing..." message next to a file (in FineUploader mode for the traditional uploader)
-in Chrome & Safari after the last byte has been sent but the server has yet to respond?
+in Chrome, Safari, & Opera after the last byte has been sent but the server has yet to respond?
 **A:** The implementation of the onProgress notification that tells us the status of the bytes sent to the server varies from browser to browser, unfortunately.
 Webkit browsers have elected to follow the "spirit" of the W3C spec, while Firefox, and (I beleive) IE10, obey the spec in the most strict sense.  I have discussed
 this in some detail [in the "processing" status message feature case](https://github.com/Widen/fine-uploader/issues/404#issuecomment-10124160).
@@ -71,9 +66,9 @@ pass the original file name in a parameter.
 
 **Q:** How can I prevent users from dropping folders into browsers that do not support folder uploading?
 **A:** There is no reliable way to prevent users from dropping folders into the drop zone of any browser other than
-Chrome 21+, currently.  This is due to the fact that there is no way to reliably detect if a folder has been dropped
+Chrome 21+ & Opera 15+, currently.  This is due to the fact that there is no way to reliably detect if a folder has been dropped
 unless the user agent implements the [Filesystem API](http://www.w3.org/TR/file-system-api/). Folder dropping is only
-supported in Chrome 21+, since this is the only browser that implements the Filesystem API.  You can parse the user
+supported in Chrome 21+ & Opera 15+, since these are the only browsers that implement the Filesystem API.  You can parse the user
 agent string to determine if folder dropping is supported, and then inform your users in your application's UI.
 Theoretically, you could check for the appropriate function on the [DataTransfer](http://www.w3.org/TR/2011/WD-html5-20110113/dnd.html#the-datatransfer-interface)
 object prototype, but this would not work cross-browser, since webkit does not expose this interface, unfortunately.

@@ -1,9 +1,12 @@
+/*globals qq */
 qq.UploadData = function(uploaderProxy) {
+    "use strict";
+
     var data = [],
         byId = {},
         byUuid = {},
-        byStatus = {},
-        api;
+        byStatus = {};
+
 
     function getDataByIds(ids) {
         if (qq.isArray(ids)) {
@@ -50,7 +53,7 @@ qq.UploadData = function(uploaderProxy) {
         return statusResults;
     }
 
-    api = {
+    qq.extend(this, {
         added: function(id) {
             var uuid = uploaderProxy.getUuid(id),
                 name = uploaderProxy.getName(id),
@@ -135,9 +138,7 @@ qq.UploadData = function(uploaderProxy) {
 
             data[dataIndex].name = newName;
         }
-    };
-
-    return api;
+    });
 };
 
 qq.status = {
@@ -146,6 +147,7 @@ qq.status = {
     REJECTED: "rejected",
     QUEUED: "queued",
     CANCELED: "canceled",
+    PAUSED: "paused",
     UPLOADING: "uploading",
     UPLOAD_RETRYING: "retrying upload",
     UPLOAD_SUCCESSFUL: "upload successful",

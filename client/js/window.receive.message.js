@@ -1,4 +1,8 @@
+/*globals qq */
+/*jshint -W117 */
 qq.WindowReceiveMessage = function(o) {
+    "use strict";
+
     var options = {
             log: function(message, level) {}
         },
@@ -6,7 +10,7 @@ qq.WindowReceiveMessage = function(o) {
 
     qq.extend(options, o);
 
-    return {
+    qq.extend(this, {
         receiveMessage : function(id, callback) {
             var onMessageCallbackWrapper = function(event) {
                     callback(event.data);
@@ -28,5 +32,5 @@ qq.WindowReceiveMessage = function(o) {
                 }
             }
         }
-    };
+    });
 };

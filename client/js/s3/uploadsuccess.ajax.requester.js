@@ -5,7 +5,6 @@
  * property (by default) in an "application/json" response.
  *
  * @param o Options associated with all requests.
- * @returns {{sendSuccessRequest: Function}} API method used to initiate the request.
  * @constructor
  */
 qq.s3.UploadSuccessAjaxRequester = function(o) {
@@ -47,28 +46,28 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
             // since XDomainRequest (used in IE9 and IE8) doesn't give you access to the
             // response body for an "error" response.
             if (isError || (parsedResponse && (parsedResponse.error || parsedResponse.success === false))) {
-                options.log('Upload success request was rejected by the server.', 'error');
+                options.log("Upload success request was rejected by the server.", "error");
                 promise.failure(qq.extend(parsedResponse, failureIndicator));
             }
             else {
-                options.log('Upload success was acknowledged by the server.');
+                options.log("Upload success was acknowledged by the server.");
                 promise.success(qq.extend(parsedResponse, successIndicator));
             }
         }
         catch (error) {
             // This will be executed if a JSON response is not present.  This is not mandatory, so account for this properly.
             if (isError) {
-                options.log(qq.format('Your server indicated failure in its AWS upload success request response for id {}!', id), 'error');
+                options.log(qq.format("Your server indicated failure in its AWS upload success request response for id {}!", id), "error");
                 promise.failure(failureIndicator);
             }
             else {
-                options.log('Upload success was acknowledged by the server.');
+                options.log("Upload success was acknowledged by the server.");
                 promise.success(successIndicator);
             }
         }
     }
 
-    requester = new qq.AjaxRequestor({
+    requester = new qq.AjaxRequester({
         method: options.method,
         endpointStore: {
             getEndpoint: function() {
@@ -87,7 +86,7 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
     });
 
 
-    return {
+    qq.extend(this, {
         /**
          * Sends a request to the server, notifying it that a recently submitted file was successfully sent to S3.
          *
@@ -101,10 +100,14 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
             var promise = new qq.Promise();
 
             options.log("Submitting upload success request/notification for " + id);
-            requester.send(id, null, spec);
+
+            requester.initTransport(id)
+                .withParams(spec)
+                .send();
+
             pendingRequests[id] = promise;
 
             return promise;
         }
-    };
+    });
 };

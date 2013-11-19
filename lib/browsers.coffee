@@ -27,6 +27,10 @@ browsers =
       version: "6"
     ,
       browserName: "internet explorer"
+      platform: "Windows 8.1"
+      version: "11"
+    ,
+      browserName: "internet explorer"
       platform: "Windows 8"
       version: "10"
     ,

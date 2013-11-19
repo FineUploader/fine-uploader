@@ -18,6 +18,7 @@
     <li><a href="#request-option_1">request</a></li>
     <li><a href="#text-option_1">text</a></li>
     <li><a href="#validation-option">validation</a></li>
+    <li><a href="#validationimage-option">validation.image</a></li>
 </ul>
 {% endblock %}
 
@@ -151,6 +152,10 @@ always used and shared among all buttons for a particular instance.""", "info", 
         ("emptyError", "`String`", "'{file} is empty, please select files again without it.'", "Text passed to the error event handler if a submitted item is zero bits."),
         ("sizeError", "`String`", "'{file} is too large, maximum file size is {sizeLimit}.'", "Text passed to the error event handler if a submitted item is too large."),
         ("typeError", "`String`", "'{file} has an invalid extension. Valid extension(s): {extensions}.'", "Text passed to the error event handler if an invalid file type is detected."),
+        ("maxHeightImageError", "`String`", "'Image is too tall.'", "Text passed to the error event handler if an image is too tall."),
+        ("maxWidthImageError", "`String`", "'Image is too wide.'", "Text passed to the error event handler if an image is too wide."),
+        ("minHeightImageError", "`String`", "'Image is not tall enough.'", "Text passed to the error event handler if an image is not tall enough."),
+        ("minWidthImageError", "`String`", "'Image is not wide enough.'", "Text passed to the error event handler if an image is not wide enough."),
         ("minSizeError", "`String`", "'{file} is too small, minimum file size is {minSizeLimit}.'", "Text passed to the error event handler if the item is too small."),
         ("noFilesError", "`String`", "'No files to upload.'", "Text passed to the error event handler if any empty array of items is submitted."),
         ("onLeave", "`String`", "'The files are being uploaded, if you leave now the upload will be cancelled.'", "Text displayed to the user when they attempt to leave the page while uploads are still in progress."),
@@ -246,6 +251,17 @@ always used and shared among all buttons for a particular instance.""", "info", 
         ("minSizeLimit", "`Number`", "`0`", "The minimum allowable size, in bytes, for an item."),
         ("sizeLimit", "`Number`", "`0`", "The maximum allowable size, in bytes, for an item."),
         ("stopOnFirstInvalidFile", "`Boolean`", "`true`", "When `true` the first invalid item will stop processing further files.")
+    )
+) }}
+
+### `validation.image` option
+
+{{ options_table(
+    (
+        ("maxHeight", "`Number`", "0", "Restrict images to a maximum height in pixels (wherever possible)."),
+        ("maxWidth", "`Number`", "0", "Restrict images to a maximum width in pixels (wherever possible)."),
+        ("minHeight", "`Number`", "0", "Restrict images to a minimum height in pixels (wherever possible)."),
+        ("minWidth", "`Number`", "0", "Restrict images to a minimum width in pixels (wherever possible)."),
     )
 ) }}
 

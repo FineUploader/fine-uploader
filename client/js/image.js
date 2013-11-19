@@ -1,12 +1,11 @@
+/*globals qq, MegaPixImage */
 /**
  * Draws a thumbnail of a Blob/File/URL onto an <img> or <canvas>.
  *
- * @returns {{generate: Function}}
  * @constructor
  */
 qq.ImageGenerator = function(log) {
     "use strict";
-    var api;
 
     function isImg(el) {
         return el.tagName.toLowerCase() === "img";
@@ -23,13 +22,14 @@ qq.ImageGenerator = function(log) {
     function isCanvasSupported() {
         var canvas = document.createElement("canvas");
 
-        return canvas.getContext && canvas.getContext("2d")
+        return canvas.getContext && canvas.getContext("2d");
     }
 
     // This is only meant to determine the MIME type of a renderable image file.
     // It is used to ensure images drawn from a URL that have transparent backgrounds
     // are rendered correctly, among other things.
     function determineMimeOfFileName(nameWithPath) {
+        /*jshint -W015 */
         var pathSegments = nameWithPath.split("/"),
             name = pathSegments[pathSegments.length - 1],
             extension = qq.getExtension(name);
@@ -58,7 +58,7 @@ qq.ImageGenerator = function(log) {
     // If canvas isn't supported by the UA (IE8 and older)
     // this method should not even be called.
     function isCrossOrigin(url) {
-        var targetAnchor = document.createElement('a'),
+        var targetAnchor = document.createElement("a"),
             targetProtocol, targetHostname, targetPort;
 
         targetAnchor.href = url;
@@ -108,7 +108,7 @@ qq.ImageGenerator = function(log) {
             oldDrawImage.apply(this, arguments);
             promise.success(canvas);
             context.drawImage = oldDrawImage;
-        }
+        };
     }
 
     // Fulfills a `qq.Promise` when an image has been drawn onto the target,
@@ -175,7 +175,6 @@ qq.ImageGenerator = function(log) {
 
             function() {
                 log("Not previewable");
-                //TODO optionally include placeholder image
                 drawPreview.failure(container, "Not previewable");
             }
         );
@@ -262,7 +261,7 @@ qq.ImageGenerator = function(log) {
     }
 
 
-    api = {
+    qq.extend(this, {
         /**
          * Generate a thumbnail.  Depending on the arguments, this may either result in
          * a client-side rendering of an image (if a `Blob` is supplied) or a server-generated
@@ -276,22 +275,20 @@ qq.ImageGenerator = function(log) {
         generate: function(fileBlobOrUrl, container, options) {
             if (qq.isString(fileBlobOrUrl)) {
                 log("Attempting to update thumbnail based on server response.");
-                return drawFromUrl(fileBlobOrUrl, container, options || {})
+                return drawFromUrl(fileBlobOrUrl, container, options || {});
             }
             else {
                 log("Attempting to draw client-side image preview.");
                 return draw(fileBlobOrUrl, container, options || {});
             }
         }
-    };
+    });
 
     /*<testing>*/
-    api._testing = {};
-    api._testing.isImg = isImg;
-    api._testing.isCanvas = isCanvas;
-    api._testing.isCrossOrigin = isCrossOrigin;
-    api._testing.determineMimeOfFileName = determineMimeOfFileName;
+    this._testing = {};
+    this._testing.isImg = isImg;
+    this._testing.isCanvas = isCanvas;
+    this._testing.isCrossOrigin = isCrossOrigin;
+    this._testing.determineMimeOfFileName = determineMimeOfFileName;
     /*</testing>*/
-
-    return api;
 };

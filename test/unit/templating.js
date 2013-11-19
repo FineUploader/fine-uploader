@@ -1,5 +1,6 @@
 describe("templating.js", function() {
     var $template, templating,
+        PAUSED_TEXT = "Testing - Paused",
         HIDE_CSS = "test-hide",
         EDITABLE_CSS = "test-editable",
         emptyTemplate = '<div class="qq-uploader-selector qq-uploader">' +
@@ -31,6 +32,8 @@ describe("templating.js", function() {
                                     '<a class="qq-upload-cancel-selector qq-upload-cancel" href="#">Cancel</a>' +
                                     '<a class="qq-upload-retry-selector qq-upload-retry" href="#">Retry</a>' +
                                     '<a class="qq-upload-delete-selector qq-upload-delete" href="#">Delete</a>' +
+                                    '<a class="qq-upload-pause-selector" href="#">Pause</a>' +
+                                    '<a class="qq-upload-continue-selector" href="#">Continue</a>' +
                                     '<span class="qq-upload-status-text-selector qq-upload-status-text"></span>' +
                                 '</li>' +
                             '</ul>' +
@@ -64,6 +67,9 @@ describe("templating.js", function() {
             classes: {
                 hide: HIDE_CSS,
                 editable: EDITABLE_CSS
+            },
+            text: {
+                paused: PAUSED_TEXT
             }
         });
         templating.render();
@@ -99,12 +105,17 @@ describe("templating.js", function() {
             templating.resetProgress(0);
             templating.showCancel(0);
             templating.hideCancel(0);
-            templating.showDelete(0);
-            templating.hideDelete(0);
+            templating.showDeleteButton(0);
+            templating.hideDeleteButton(0);
             templating.updateSize(0, "100MB");
             templating.setStatusText(0, "test");
             templating.hideSpinner(0);
             templating.showSpinner(0);
+            templating.allowPause(0);
+            templating.allowContinueButton(0);
+            templating.hidePause(0);
+            templating.uploadContinued(0);
+            templating.uploadPaused(0);
             templating.removeFile(0);
         });
     });
@@ -175,10 +186,10 @@ describe("templating.js", function() {
         });
 
         it("hides and shows delete link", function() {
-            templating.hideDelete(0);
+            templating.hideDeleteButton(0);
             assert.ok($(fileContainer0).find(".qq-upload-delete-selector").hasClass(HIDE_CSS));
 
-            templating.showDelete(0);
+            templating.showDeleteButton(0);
             assert.ok(!$(fileContainer0).find(".qq-upload-delete-selector").hasClass(HIDE_CSS));
         });
 
@@ -207,6 +218,33 @@ describe("templating.js", function() {
                 assert.ok(!$fixture.find(".qq-drop-processing-selector").hasClass(HIDE_CSS));
             });
         }
+
+        it("toggles visibility of pause/continue buttons correctly", function() {
+            templating.allowPause(0);
+            assert.ok(!$fixture.find(".qq-upload-pause-selector").hasClass(HIDE_CSS));
+            assert.ok($fixture.find(".qq-upload-continue-selector").hasClass(HIDE_CSS));
+
+            templating.allowContinueButton(0);
+            assert.ok($fixture.find(".qq-upload-pause-selector").hasClass(HIDE_CSS));
+            assert.ok(!$fixture.find(".qq-upload-continue-selector").hasClass(HIDE_CSS));
+        });
+
+        it("Updates status text, buttons, & spinner on pause & continue correctly", function() {
+            var $status = $fixture.find(".qq-upload-status-text-selector");
+
+            templating.uploadPaused(0);
+            assert.equal($status.text(), PAUSED_TEXT);
+            assert.ok($fixture.find(".qq-upload-pause-selector").hasClass(HIDE_CSS));
+            assert.ok(!$fixture.find(".qq-upload-continue-selector").hasClass(HIDE_CSS));
+            assert.ok($fixture.find(".qq-upload-spinner-selector").hasClass(HIDE_CSS));
+
+
+            templating.uploadContinued(0);
+            assert.equal($status.text(), "");
+            assert.ok($fixture.find(".qq-upload-continue-selector").hasClass(HIDE_CSS));
+            assert.ok(!$fixture.find(".qq-upload-pause-selector").hasClass(HIDE_CSS));
+            assert.ok(!$fixture.find(".qq-upload-spinner-selector").hasClass(HIDE_CSS));
+        });
     });
 
     describe("file elements are two levels below the file container", function() {

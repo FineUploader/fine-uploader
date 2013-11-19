@@ -21,6 +21,17 @@ what sorts of files can and can not be uploaded.
     )
 ) }}
 
+### `validation.image` option
+
+{{ options_table(
+    (
+        ("maxHeight", "`Number`", "0", "Restrict images to a maximum height in pixels (wherever possible)."),
+        ("maxWidth", "`Number`", "0", "Restrict images to a maximum width in pixels (wherever possible)."),
+        ("minHeight", "`Number`", "0", "Restrict images to a minimum height in pixels (wherever possible)."),
+        ("minWidth", "`Number`", "0", "Restrict images to a minimum width in pixels (wherever possible)."),
+    )
+) }}
+
 ## Events
 {{ events_table(
     (
@@ -49,7 +60,7 @@ Also note that a `BlobData` object has two properties:
 }
 ```
 
-## Validation on Name
+## Validation on File Name
 
 Until Fine Uploader is able to detect file mimetype client-side, validation
 on name is the best way to ensure that only the correct sorts of files get
@@ -59,15 +70,26 @@ Validation on name can be controlled by modifying the `validation` settings,
 as documented above. The most important options are: `allowedExtensions` and
 `acceptFiles`.
 
-## Validation on Size
+## Validation on File Size
 
 Size validation is available in File API browsers only. Size can be restricted
 via the `sizeLimit` or `minSizeLimit` options in the `validation` settings.
 
-## Validation on Type
+## Image Validation
 
-Definitive validation on file type is not *yet* possible in Fine Uploader. However,
-client-side file identification is in the works for future releases.
+As of 4.1, the ability to restrict submitted images based on width and height is possible.  See the `validation.image`
+option for specifics.  Keep in mind that this feature was created with processed images in mind, and not images
+sent directly from a camera.  Some browsers may natively report width and height swapped for JPEGs (from cameras) based
+on the orientation of the camera.  Those uploading pictures directly from cameras have no control over the
+dimensions of the image, so it doesn't seem to make much sense to impose these restrictions if you expect your users
+to upload images directly via a camera.  In that case, it likely makes more sense to allow the user to scale the image
+first (before submitting the file) or simply impose a file size restriction.
+
+Also, this feature is dependant on the preview generation feature, and therefore is only supported in modern browsers.
+Check the browser support matrix or the `qq.supportedFeatures.imageValidation` flag for more specific information.
+If image dimension validation is important to your application, you will also need a server-side fallback to account
+for older browsers and TIFFs (if allowed, since TIFFs are only previewable in Safari).
+
 
 
 {% endmarkdown %}
