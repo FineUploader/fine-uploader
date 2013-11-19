@@ -1419,7 +1419,12 @@
                 var acceptIosCamera = "image/*;capture=camera",
                     button = this._options.camera.button,
                     buttonId = button ? this._getButtonId(button) : this._defaultButtonId,
-                    optionRoot = buttonId ? this._extraButtonSpecs[buttonId] : this._options;
+                    optionRoot = this._options;
+
+                // If we are not targeting the default button, it is an "extra" button
+                if (buttonId && buttonId !== this._defaultButtonId) {
+                    optionRoot = this._extraButtonSpecs[buttonId];
+                }
 
                 // Camera access won't work in iOS if the `multiple` attribute is present on the file input
                 optionRoot.multiple = false;
