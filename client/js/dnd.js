@@ -367,6 +367,7 @@ qq.UploadDropZone = function(o){
                 }
 
                 e.preventDefault();
+                e.stopPropagation();
                 options.onDrop(e);
             }
         });
