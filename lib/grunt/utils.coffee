@@ -82,6 +82,7 @@ module.exports =
         fuDeleteFileUiModule: false
         fuEditFilenameModule: false
         fuImagePreviewModule: false
+        fuImageValidationModule: false
         fuSrcJquery: false
         fuSrcS3Jquery: false
         fuSrcJqueryDnd: false
@@ -98,6 +99,7 @@ module.exports =
     formula = _.filter _.keys(includes), (k) -> includes[k] is true
     grunt.log.writeln ">> FORMULA: " + formula
     mods = modules.mergeModules.apply @, formula
+    mods = _.uniq mods, true
 
     src = @concat mods
     grunt.file.write dest_filename, src
