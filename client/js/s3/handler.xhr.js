@@ -568,30 +568,6 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         return fileState[id].chunking.lastSent >= 0 ? fileState[id].chunking.lastSent + 1 : 0;
     }
 
-    /**
-     * @param id File ID
-     * @returns {string} The query string portion of the URL used to direct multipart upload requests
-     */
-    function getNextChunkUrlParams(id) {
-        // Amazon part indexing starts at 1
-        var idx = getNextPartIdxToSend(id) + 1,
-            uploadId = fileState[id].chunking.uploadId;
-
-        return qq.format("?partNumber={}&uploadId={}", idx, uploadId);
-    }
-
-    /**
-     * @param id File ID
-     * @returns {string} The entire URL to use when sending a multipart upload PUT request for the next chunk to be sent
-     */
-    function getNextChunkUrl(id) {
-        var domain = options.endpointStore.getEndpoint(id),
-            urlParams = getNextChunkUrlParams(id),
-            key = getUrlSafeKey(id);
-
-        return qq.format("{}/{}{}", domain, key, urlParams);
-    }
-
     // Either initiate an upload for the next chunk for an associated file, or initiate a
     // "Complete Multipart Upload" request if there are no more parts to be sent.
     function maybeUploadNextChunk(id) {
@@ -630,13 +606,15 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         var idx = getNextPartIdxToSend(id),
             name = publicApi.getName(id),
             xhr = fileState[id].xhr,
-            url = getNextChunkUrl(id),
             totalFileSize = publicApi.getSize(id),
-            chunkData = internalApi.getChunkData(id, idx);
+            chunkData = internalApi.getChunkData(id, idx),
+            domain = options.endpointStore.getEndpoint(id);
 
         // Add appropriate headers to the multipart upload request.
         // Once these have been determined (asynchronously) attach the headers and send the chunk.
-        addChunkedHeaders(id).then(function(headers) {
+        addChunkedHeaders(id).then(function(headers, endOfUrl) {
+            var url = domain + "/" + endOfUrl;
+
             options.onUploadChunk(id, name, internalApi.getChunkDataForCallback(chunkData));
 
             xhr.upload.onprogress = function(e) {
@@ -677,19 +655,19 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             endpoint = options.endpointStore.getEndpoint(id),
             bucket = qq.s3.util.getBucket(endpoint),
             key = getUrlSafeKey(id),
-            date = new Date().toUTCString(),
-            queryString = getNextChunkUrlParams(id),
             promise = new qq.Promise(),
-            toSign;
+            toSign = restSignatureRequester.constructStringToSign
+                (restSignatureRequester.REQUEST_TYPE.MULTIPART_UPLOAD, bucket, key)
+                .withPartNum(getNextPartIdxToSend(id) + 1)
+                .withUploadId(fileState[id].chunking.uploadId)
+                .getToSign();
 
-        headers["x-amz-date"] = date;
-
-        toSign = {headers: "PUT\n\n\n\n" + "x-amz-date:" + date + "\n" + "/" + bucket + "/" + key + queryString};
+        headers = toSign.headers;
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
-        restSignatureRequester.getSignature(id, toSign).then(function(response) {
+        restSignatureRequester.getSignature(id, {headers: toSign.stringToSign}).then(function(response) {
             headers.Authorization = "AWS " + options.accessKey + ":" + response.signature;
-            promise.success(headers);
+            promise.success(headers, toSign.endOfUrl);
         }, promise.failure);
 
         return promise;
