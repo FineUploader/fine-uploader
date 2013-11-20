@@ -49,7 +49,7 @@ with that upload present in your bucket.
 domains will host your Fine Uploader instance, include these in the AllowedOrigin tag value.
 * You can (and probably should) make the AllowedHeader condition(s) a bit more restrictive.  If you do, you will always
 need to allow the following headers: "origin" and "content-type".  If you have the chunking feature enabled, you will also
-need to include: "x-amz-acl", "x-amx-meta-qqfilename", "x-amz-date", and "authorization".  If you have chunking enabled,
+need to include: "x-amz-acl", "x-amz-meta-qqfilename", "x-amz-date", and "authorization".  If you have chunking enabled,
 you will also need to authorize headers for any custom parameters (user metadata) you want to attach to the object in S3.
 All parameters are sent as headers in the "Initiate Multipart Upload" request sent by Fine Uploader with a prefix of
 "x-amz-meta-".
