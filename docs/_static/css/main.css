@@ -55,12 +55,16 @@ h3
 {
     color: #00ABC7;
 }
-h1, h2, h3, h4, h5
+h2, h3, h4, h5
 {
-    margin-top: -40px !important;
-    padding-top: 60px !important;
+    margin-top: -40px;
+    padding-top: 60px;
 }
 
+.alert .alert-heading
+{
+    padding-top: 0px;
+}
 
 .navbar-inverse .brand, .navbar-inverse .nav > li > a,
 .navbar-inverse .nav-collapse .nav > li > a,
