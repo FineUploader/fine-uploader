@@ -93,8 +93,8 @@ qq.ImageGenerator = function(log) {
         img.onerror = function() {
             img.onload = null;
             img.onerror = null;
-            log("Problem drawing preview!", "error");
-            promise.failure(img, "Problem drawing preview!");
+            log("Problem drawing thumbnail!", "error");
+            promise.failure(img, "Problem drawing thumbnail!");
         };
     }
 
@@ -139,6 +139,9 @@ qq.ImageGenerator = function(log) {
             identifier = new qq.Identify(fileOrBlob, log),
             maxSize = options.maxSize,
             megapixErrorHandler = function() {
+                container.onerror = null;
+                container.onload = null;
+                log("Could not render preview, file may be too large!", "error");
                 drawPreview.failure(container, "Browser cannot render image!");
             };
 
