@@ -146,6 +146,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         contentType: "application/xml; charset=UTF-8",
         endpointStore: options.endpointStore,
         maxConnections: options.maxConnections,
+        allowXRequestedWithAndCacheControl: false, //These headers are not necessary & would break some installations if added
         log: options.log,
         onComplete: handleCompleteRequestComplete,
         successfulResponseCodes: {

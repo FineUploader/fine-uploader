@@ -15,6 +15,7 @@ qq.AjaxRequester = function (o) {
             endpointStore: {},
             paramsStore: {},
             mandatedParams: {},
+            allowXRequestedWithAndCacheControl: true,
             successfulResponseCodes: {
                 "DELETE": [200, 202, 204],
                 "POST": [200, 204]
@@ -256,18 +257,20 @@ qq.AjaxRequester = function (o) {
             method = options.method,
             allHeaders = {};
 
-        // If this is a CORS request and a simple method with simple headers are used
-        // on an `XMLHttpRequest`, exclude these specific non-simple headers
-        // in an attempt to prevent preflighting.  `XDomainRequest` does not support setting
-        // request headers, so we will take this into account as well.
+        // If XDomainRequest is being used, we can't set headers, so just ignore this block.
         if (!isXdr(xhr)) {
-            if (!options.cors.expected || (!isSimpleMethod() || containsNonSimpleHeaders(customHeaders))) {
-                xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-                xhr.setRequestHeader("Cache-Control", "no-cache");
+            // Only attempt to add X-Requested-With & Cache-Control if permitted
+            if (options.allowXRequestedWithAndCacheControl) {
+                // Do not add X-Requested-With & Cache-Control if this is a cross-origin request
+                // OR the cross-origin request contains a non-simple method or header.
+                // This is done to ensure a preflight is not triggered exclusively based on the
+                // addition of these 2 non-simple headers.
+                if (!options.cors.expected || (!isSimpleMethod() || containsNonSimpleHeaders(customHeaders))) {
+                    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                    xhr.setRequestHeader("Cache-Control", "no-cache");
+                }
             }
 
-            // Note that we can't set the Content-Type when using this transport XDR, and it is
-            // not relevant unless we will be including the params in the payload.
             if (options.contentType && (method === "POST" || method === "PUT")) {
                 xhr.setRequestHeader("Content-Type", options.contentType);
             }

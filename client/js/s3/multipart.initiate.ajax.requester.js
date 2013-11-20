@@ -140,6 +140,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         contentType: null,
         endpointStore: options.endpointStore,
         maxConnections: options.maxConnections,
+        allowXRequestedWithAndCacheControl: false, //These headers are not necessary & would break some installations if added
         log: options.log,
         onComplete: handleInitiateRequestComplete,
         successfulResponseCodes: {
