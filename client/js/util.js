@@ -464,7 +464,7 @@ var qq = function(element) {
         return navigator.vendor !== undefined && navigator.vendor.indexOf("Opera") !== -1;
     };
     qq.firefox  = function(){
-        return (navigator.userAgent.indexOf("Mozilla") !== -1 && navigator.vendor !== undefined && navigator.vendor === "");
+        return (!qq.ie11() && navigator.userAgent.indexOf("Mozilla") !== -1 && navigator.vendor !== undefined && navigator.vendor === "");
     };
     qq.windows  = function(){
         return navigator.platform === "Win32";
