@@ -246,10 +246,20 @@ var qq = function(element) {
     qq.format = function(str) {
 
         var args =  Array.prototype.slice.call(arguments, 1),
-            newStr = str;
+            newStr = str,
+            nextIdxToReplace = newStr.indexOf("{}");
 
         qq.each(args, function(idx, val) {
-            newStr = newStr.replace(/{}/, val);
+            var strBefore = newStr.substring(0, nextIdxToReplace),
+                strAfter = newStr.substr(nextIdxToReplace+2);
+
+            newStr = strBefore + val + strAfter;
+            nextIdxToReplace = newStr.indexOf("{}", nextIdxToReplace + val.length);
+
+            // End the loop if we have run out of tokens (when the arguments exceed the # of tokens)
+            if (nextIdxToReplace < 0) {
+                return false;
+            }
         });
 
         return newStr;

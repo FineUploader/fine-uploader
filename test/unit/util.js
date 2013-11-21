@@ -832,5 +832,20 @@ describe('util.js', function () {
         });
     });
 
+    describe("qq.format", function() {
+        it("should format a simple string correctly", function() {
+            assert.equal(qq.format("hello {}, how are {}?", "ray", "you"), "hello ray, how are you?");
+        });
+
+        it ("should format a string correctly even if it contains  injected values with curly brackets", function() {
+            assert.equal(qq.format("hello {}, how are {}?", "{} ray", "you"), "hello {} ray, how are you?");
+            assert.equal(qq.format("hello {}, how are {}?", "{} ray{}", "{you}"), "hello {} ray{}, how are {you}?");
+        });
+
+        it("should fail gracefully if not enough tokens to replace", function() {
+            assert.equal(qq.format("hello {}, how are {}?", "ray"), "hello ray, how are {}?");
+        })
+    });
+
 }); // Util
 
