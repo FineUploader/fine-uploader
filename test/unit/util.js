@@ -844,7 +844,11 @@ describe('util.js', function () {
 
         it("should fail gracefully if not enough tokens to replace", function() {
             assert.equal(qq.format("hello {}, how are {}?", "ray"), "hello ray, how are {}?");
-        })
+        });
+
+        it("should format a string correctly with tokens at start or end", function() {
+            assert.equal(qq.format("{} was here {}", "ray", "today"), "ray was here today");
+        });
     });
 
 }); // Util
