@@ -5,7 +5,7 @@ testRunnerId = if process.env.TRAVIS_BRANCH? then "travis #{process.env.TRAVIS_B
 
 module.exports = (config, options = {}) ->
   config.set
-    files: modules.mergeModules 'karmaModules', 'fuSrcBuild', 'fuIframeXssResponse', 'fuUnit'
+    files: modules.mergeModules 'karmaModules', 'fuSrcBuild', 'fuIframeXssResponse', 'testHelperModules', 'fuUnit'
     basePath: ""
     autoWatch: true
     preprocessors:

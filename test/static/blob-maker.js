@@ -1,30 +1,35 @@
-function downloadFileAsBlob(key, type) {
-    var BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder ||
-                         window.MozBlobBuilder || window.MSBlobBuilder,
-        xhr = new XMLHttpRequest(),
-        downloadAsync = new qq.Promise(),
-        blobBuilder = BlobBuilder && new BlobBuilder();
+var qqtest = qqtest || {};
+$.extend(qqtest, {
+    canDownloadFileAsBlob: !qq.android() && qq.supportedFeatures.ajaxUploading,
 
-    xhr.open("GET", "https://fineuploader_unittests.s3.amazonaws.com/" + key, true);
-    xhr.responseType = "arraybuffer";
+    downloadFileAsBlob: function(key, type) {
+        var BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder ||
+                             window.MozBlobBuilder || window.MSBlobBuilder,
+            xhr = new XMLHttpRequest(),
+            downloadAsync = new qq.Promise(),
+            blobBuilder = BlobBuilder && new BlobBuilder();
 
-    xhr.onerror = downloadAsync.failure;
-    xhr.onload = function() {
-        if (this.status === 200) {
-            if (blobBuilder) {
-                blobBuilder.append(this.response);
-                downloadAsync.success(blobBuilder.getBlob(type));
+        xhr.open("GET", "https://fineuploader_unittests.s3.amazonaws.com/" + key, true);
+        xhr.responseType = "arraybuffer";
+
+        xhr.onerror = downloadAsync.failure;
+        xhr.onload = function() {
+            if (this.status === 200) {
+                if (blobBuilder) {
+                    blobBuilder.append(this.response);
+                    downloadAsync.success(blobBuilder.getBlob(type));
+                }
+                else {
+                    downloadAsync.success(new Blob([this.response], {type: type}));
+                }
             }
             else {
-                downloadAsync.success(new Blob([this.response], {type: type}));
+                downloadAsync.failure();
             }
-        }
-        else {
-            downloadAsync.failure();
-        }
-    };
+        };
 
-    xhr.send();
+        xhr.send();
 
-    return downloadAsync;
-}
+        return downloadAsync;
+    }
+}, true);

@@ -1,5 +1,5 @@
 // The file fails to download when using the Android emulator via Selenium, so we have to exclude it here.
-if (qq.supportedFeatures.imageValidation && !qq.android()) {
+if (qq.supportedFeatures.imageValidation && qqtest.canDownloadFileAsBlob) {
     describe("validation.image.js", function() {
         this.timeout(4000);
 
@@ -17,7 +17,7 @@ if (qq.supportedFeatures.imageValidation && !qq.android()) {
                 downloadAsync.success();
             }
             else {
-                downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
+                qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
                     testImgBlob = blob;
                     downloadAsync.success();
                 },
@@ -47,7 +47,7 @@ if (qq.supportedFeatures.imageValidation && !qq.android()) {
                     done();
                 },
                 function(code) {
-                    assert.equal(code, expectedErrorCode)
+                    assert.equal(code, expectedErrorCode);
                     done();
                 });
             });
