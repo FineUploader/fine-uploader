@@ -16,7 +16,7 @@ describe("exif.js", function () {
             function testOrientation(key, expectedOrientation, done) {
                 qqtest.downloadFileAsBlob(key, "image/jpeg").then(function(blob) {
                     new qq.Exif(blob, function() {}).parse().then(function(tagVals) {
-                        assert.equal(expectedOrientation, tagVals.Orientation);
+                        assert.equal(tagVals.Orientation, expectedOrientation);
                         done();
                     }, function() {
                         assert.fail("Failed to extract EXIF data!");
