@@ -1,4 +1,4 @@
-if (qqtest.canDownloadFileAsBlob) {
+if (qq.supportedFeatures.imagePreviews && qqtest.canDownloadFileAsBlob) {
     describe("identify.js", function() {
 
         function testPreviewability(expectedToBePreviewable, key, expectedMime, done) {
