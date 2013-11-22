@@ -1,6 +1,6 @@
 var qqtest = qqtest || {};
 $.extend(qqtest, {
-    canDownloadFileAsBlob: !qq.android() && qq.supportedFeatures.ajaxUploading,
+    canDownloadFileAsBlob: !qq.android() && qq.supportedFeatures.ajaxUploading && Boolean(window.FileReader),
 
     downloadFileAsBlob: function(key, type) {
         var BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder ||
