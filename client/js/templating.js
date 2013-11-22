@@ -130,7 +130,8 @@ qq.Templating = function(spec) {
             }
         }
 
-        // Omit the drop processing element from the DOM if DnD is not supported by the UA.
+        // Omit the drop processing element from the DOM if DnD is not supported by the UA,
+        // or the drag and drop module is not found.
         // NOTE: We are consciously not removing the drop zone if the UA doesn't support DnD
         // to support layouts where the drop zone is also a container for visible elements,
         // such as the file list.
