@@ -10,7 +10,7 @@ if (qq.supportedFeatures.imageValidation && qqtest.canDownloadFileAsBlob) {
             log = function() {},
             testImgBlob;
 
-        function maybeDownloadFile(done) {
+        function maybeDownloadFile() {
             var downloadAsync = new qq.Promise();
 
             if (testImgBlob) {
@@ -23,7 +23,6 @@ if (qq.supportedFeatures.imageValidation && qqtest.canDownloadFileAsBlob) {
                 },
                 function() {
                     assert.fail(null, null, "Failed to download test file!");
-                    done();
                     downloadAsync.failure();
                 });
             }
@@ -32,7 +31,7 @@ if (qq.supportedFeatures.imageValidation && qqtest.canDownloadFileAsBlob) {
         }
 
         function validate(done, expectedErrorCode, limits) {
-            maybeDownloadFile(done).then(function() {
+            maybeDownloadFile().then(function() {
                 var imageValidator = new qq.ImageValidation(testImgBlob, log),
                     result = imageValidator.validate(limits);
 
