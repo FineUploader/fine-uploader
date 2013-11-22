@@ -849,6 +849,10 @@ describe('util.js', function () {
         it("should format a string correctly with tokens at start or end", function() {
             assert.equal(qq.format("{} was here {}", "ray", "today"), "ray was here today");
         });
+
+        it("should format a string correctly with non-strings as parameters", function() {
+            assert.equal(qq.format("Number: {}, boolean: {}, Object: {}, Array: {}", 1, true, {one: "two"}, [1,2,3]), "Number: 1, boolean: true, Object: [object Object], Array: 1,2,3");
+        });
     });
 
 }); // Util
