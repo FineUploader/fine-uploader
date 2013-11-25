@@ -25,7 +25,6 @@
         ("clearStoredFiles", "", "", "Clears the internal list of stored items. Only applies with `autoUpload` is `false`"),
         ("continueUpload", "`Integer` id", "`Boolean`", "Attempts to continue a paused upload.  Returns `true` if the attempt was successful."),
         ("deleteFile", "`Integer` id", "", "Delete the file with the corresponding id off the server"),
-        ("deleteFile", "`Integer` id", "", "Delete the file with the corresponding id off the server"),
         ("drawThumbnail", "`Integer` id, `<img>` or `<canvas>` targetContainer[, `Integer` maxSize][, `Boolean` fromServer]",
         "`qq.Promise`", "Draws a thumbnail.  If you set the `fromServer` parameter to false, or leave it `undefined`,
         a preview will be generated from the `Blob`/`File` provided by the browser.  If client-side preview generation is
