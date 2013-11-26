@@ -7,32 +7,11 @@ if (qq.supportedFeatures.imageValidation && qqtest.canDownloadFileAsBlob) {
             testImgType = "image/jpeg",
             testImgWidth = 615,
             testImgHeight = 484,
-            log = function() {},
-            testImgBlob;
-
-        function maybeDownloadFile() {
-            var downloadAsync = new qq.Promise();
-
-            if (testImgBlob) {
-                downloadAsync.success();
-            }
-            else {
-                qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
-                    testImgBlob = blob;
-                    downloadAsync.success();
-                },
-                function() {
-                    assert.fail(null, null, "Failed to download test file!");
-                    downloadAsync.failure();
-                });
-            }
-
-            return downloadAsync;
-        }
+            log = function() {};
 
         function validate(done, expectedErrorCode, limits) {
-            maybeDownloadFile().then(function() {
-                var imageValidator = new qq.ImageValidation(testImgBlob, log),
+            qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
+                var imageValidator = new qq.ImageValidation(blob, log),
                     result = imageValidator.validate(limits);
 
                 result.then(function() {

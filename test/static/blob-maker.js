@@ -1,34 +1,52 @@
+/*globals qq, assert*/
 var qqtest = qqtest || {};
 $.extend(qqtest, {
     canDownloadFileAsBlob: !qq.android() && qq.supportedFeatures.ajaxUploading && Boolean(window.FileReader),
 
+    _downloadedFiles: {},
+
     downloadFileAsBlob: function(key, type) {
+        "use strict";
+
         var BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder ||
                              window.MozBlobBuilder || window.MSBlobBuilder,
             xhr = new XMLHttpRequest(),
             downloadAsync = new qq.Promise(),
-            blobBuilder = BlobBuilder && new BlobBuilder();
+            blobBuilder = BlobBuilder && new BlobBuilder(),
+            self = this;
 
-        xhr.open("GET", "https://fineuploader_unittests.s3.amazonaws.com/" + key, true);
-        xhr.responseType = "arraybuffer";
+        if (self._downloadedFiles[key]) {
+            downloadAsync.success(self._downloadedFiles[key]);
+        }
+        else {
+            xhr.open("GET", "https://fineuploader_unittests.s3.amazonaws.com/" + key, true);
+            xhr.responseType = "arraybuffer";
 
-        xhr.onerror = downloadAsync.failure;
-        xhr.onload = function() {
-            if (this.status === 200) {
-                if (blobBuilder) {
-                    blobBuilder.append(this.response);
-                    downloadAsync.success(blobBuilder.getBlob(type));
+            xhr.onerror = function() {
+                assert.fail(null, null, "Failed to download test file!");
+                downloadAsync.failure();
+            };
+
+            xhr.onload = function() {
+                if (this.status === 200) {
+                    if (blobBuilder) {
+                        blobBuilder.append(this.response);
+                        self._downloadedFiles[key] = blobBuilder.getBlob(type);
+                    }
+                    else {
+                        self._downloadedFiles[key] = new Blob([this.response], {type: type});
+                    }
+
+                    downloadAsync.success(self._downloadedFiles[key]);
                 }
                 else {
-                    downloadAsync.success(new Blob([this.response], {type: type}));
+                    assert.fail(null, null, "Failed to download test file!");
+                    downloadAsync.failure();
                 }
-            }
-            else {
-                downloadAsync.failure();
-            }
-        };
+            };
 
-        xhr.send();
+            xhr.send();
+        }
 
         return downloadAsync;
     }
