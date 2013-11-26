@@ -190,7 +190,141 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+        describe("file rejection via internal validation", function() {
+            function setupUploader(limits, numBlobs, statusChangeLogic) {
+                var uploader = new qq.FineUploaderBasic({
+                    autoUpload: false,
+                    validation: limits,
+                    callbacks: {
+                        onStatusChange: function() {
+                            statusChangeLogic.apply(uploader, arguments);
+                        }
+                    }
+                });
+
+                maybeDownloadFile().then(function(blob) {
+                    numBlobs = [].concat(numBlobs);
+                    qq.each(numBlobs, function(idx, num) {
+                        var blobs = [],
+                            i;
+
+                        for (i = 0; i < num; i++) {
+                            blobs.push(blob);
+                        }
+
+                        uploader.addBlobs(blobs);
+                    });
+                });
+            }
+
+            // Skip until #1059 is addresssed
+            it.skip("prevents too many items from being submitted at once", function(done) {
+                var rejectedFiles = 0;
+
+                setupUploader({itemLimit: 2}, 2, function(id, oldStatus, newStatus) {
+                    newStatus === qq.status.REJECTED && rejectedFiles++;
+
+                    if (rejectedFiles === 3) {
+                        assert.equal(this.getUploads().length, 3);
+                        assert.equal(this.getUploads({status: qq.status.REJECTED}).length, 3);
+                        done();
+                    }
+                });
+            });
+
+            // Skip until #1059 is addresssed
+            it.skip("prevents too many items from being submitted over multiple submissions", function(done) {
+                setupUploader({itemLimit: 2}, [2, 1], function(id, oldStatus, newStatus) {
+                    if (newStatus === qq.status.REJECTED) {
+                        assert.equal(this.getUploads().length, 3);
+                        assert.equal(this.getUploads({status: qq.status.SUBMITTED}).length, 2);
+                        assert.equal(this.getUploads({status: qq.status.REJECTED}).length, 1);
+                        done();
+                    }
+                });
+            });
+
+            // Skip until #1059 is addresssed
+            it.skip("prevents files that are too large from being submitted", function(done) {
+                setupUploader({sizeLimit: 3265}, 1, function(id, oldStatus, newStatus) {
+                    if (newStatus === qq.status.REJECTED) {
+                        assert.equal(this.getUploads().length, 1);
+                        assert.equal(this.getUploads({status: qq.status.REJECTED}).length, 1);
+                        done();
+                    }
+                });
+            });
+
+            it("allow files that are not too large to be submitted", function(done) {
+                setupUploader({sizeLimit: 3266}, 1, function(id, oldStatus, newStatus) {
+                    if (newStatus === qq.status.SUBMITTED) {
+                        assert.equal(this.getUploads().length, 1);
+                        assert.equal(this.getUploads({status: qq.status.SUBMITTED}).length, 1);
+                        done();
+                    }
+                });
+            });
+
+            // Skip until #1059 is addresssed
+            it.skip("don't allow files that are too small to be submitted", function(done) {
+                setupUploader({minSizeLimit: 3267}, 1, function(id, oldStatus, newStatus) {
+                    if (newStatus === qq.status.REJECTED) {
+                        assert.equal(this.getUploads().length, 1);
+                        assert.equal(this.getUploads({status: qq.status.REJECTED}).length, 1);
+                        done();
+                    }
+                });
+            });
+
+            it("allow files that are not too small to be submitted", function(done) {
+                setupUploader({minSizeLimit: 3266}, 1, function(id, oldStatus, newStatus) {
+                    if (newStatus === qq.status.SUBMITTED) {
+                        assert.equal(this.getUploads().length, 1);
+                        assert.equal(this.getUploads({status: qq.status.SUBMITTED}).length, 1);
+                        done();
+                    }
+                });
+            });
+
+            describe("stopOnFirstInvalidFile tests", function() {
+                function setupStopOnFirstInvalidFileUploader(stopOnFirstInvalidFile) {
+                    var expectedSubmitted = stopOnFirstInvalidFile ? 1 : 2,
+                        expectedRejected = stopOnFirstInvalidFile ? 2 : 1,
+                        uploader = new qq.FineUploaderBasic({
+                        autoUpload: false,
+                        validation: {
+                            sizeLimit: 3266,
+                            stopOnFirstInvalidFile: stopOnFirstInvalidFile
+                        },
+                        callbacks: {
+                            onStatusChange: function(id, oldStatus, newStatus) {
+                                if (uploader.getUploads({status: qq.status.SUBMITTED}).length === expectedSubmitted &&
+                                    uploader.getUploads({status: qq.status.REJECTED}).length === expectedRejected) {
+
+                                    assert.ok(true);
+                                    done();
+                                }
+                            }
+                        }
+                    });
+
+                    maybeDownloadFile().then(function(blob1) {
+                        qqtest.downloadFileAsBlob("down.jpg", "image/jpeg").then(function(blob2) {
+                            uploader.addBlobs([blob1, blob2, blob1]);
+                        });
+                    });
+                }
+
+                // Skip until #1059 is addresssed
+                it.skip("Rejects all files after (and including) the invalid file by default", function(done) {
+                    setupStopOnFirstInvalidFileUploader(true);
+                });
+
+                // Skip until #1059 is addresssed
+                it.skip("Rejects only files that are invalid", function(done) {
+                    setupStopOnFirstInvalidFileUploader(false);
+                });
+            });
+        });
     });
-
-
 }
