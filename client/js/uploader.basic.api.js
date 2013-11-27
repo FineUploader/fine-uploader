@@ -522,7 +522,6 @@
                 options = {
                     debug: this._options.debug,
                     maxConnections: this._options.maxConnections,
-                    inputName: this._options.request.inputName,
                     cors: this._options.cors,
                     demoMode: this._options.demoMode,
                     paramsStore: this._paramsStore,
