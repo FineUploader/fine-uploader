@@ -1,6 +1,7 @@
 if (qqtest.canDownloadFileAsBlob) {
     describe("simple file uploads, mocked server/XHR", function() {
-        var xhr,
+        var testUploadEndpoint = "/test/upload",
+            xhr,
             oldWrapCallbacks,
             requests;
 
@@ -33,12 +34,12 @@ if (qqtest.canDownloadFileAsBlob) {
         }
 
         it("handles a simple successful single MPE file upload request correctly", function(done) {
-            assert.expect(16, done);
+            assert.expect(18, done);
 
             var uploader = new qq.FineUploaderBasic({
                 autoUpload: false,
                 request: {
-                    endpoint: "/test/upload"
+                    endpoint: testUploadEndpoint
                 },
                 callbacks: {
                     onUpload: function(id, name) {
@@ -64,20 +65,58 @@ if (qqtest.canDownloadFileAsBlob) {
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                 mockXhr();
 
-                var requestParams;
+                var request,
+                    requestParams;
 
                 uploader.addBlobs({name: "test", blob: blob});
                 uploader.uploadStoredFiles();
 
                 assert.equal(requests.length, 1, "Wrong # of requests");
-                requestParams = requests[0].requestBody.fields;
+                request = requests[0];
+                requestParams = request.requestBody.fields;
 
                 assert.equal(requestParams.qquuid, uploader.getUuid(0), "Wrong UUID param sent with request");
                 assert.equal(requestParams.qqfilename, uploader.getName(0), "Wrong filename param sent with request");
                 assert.equal(requestParams.qqtotalfilesize, uploader.getSize(0), "Wrong file size param sent with request");
                 assert.ok(qq.isBlob(requestParams.qqfile), "File is incorrect");
+                assert.equal(request.method, "POST", "Wrong request method");
+                assert.equal(request.url, testUploadEndpoint, "Wrong request url");
 
                 requests[0].respond(200, null, JSON.stringify({success: true}));
+            });
+        });
+
+        it("properly passes overridden default param names along with the request", function(done) {
+            var inputParamName = "testinputname",
+                uuidParamName = "testuuidname",
+                totalFileSizeParamName = "testtotalfilesize",
+                filenameParamName = "testfilename",
+                uploader = new qq.FineUploaderBasic({
+                    request: {
+                        endpoint: testUploadEndpoint,
+                        inputName: inputParamName,
+                        uuidName: uuidParamName,
+                        totalFileSizeName: totalFileSizeParamName,
+                        filenameParam: filenameParamName
+                    }
+            });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                mockXhr();
+
+                var request, requestParams;
+
+                uploader.addBlobs(blob);
+
+                assert.equal(requests.length, 1, "Wrong # of requests");
+                request = requests[0];
+                requestParams = request.requestBody.fields;
+
+                assert.equal(requestParams[uuidParamName], uploader.getUuid(0), "Wrong UUID param sent with request");
+                assert.equal(requestParams[filenameParamName], uploader.getName(0), "Wrong filename param sent with request");
+                assert.equal(requestParams[totalFileSizeParamName], uploader.getSize(0), "Wrong file size param sent with request");
+                assert.ok(qq.isBlob(requestParams[inputParamName]), "File is incorrect");
+                done();
             });
         });
     });
