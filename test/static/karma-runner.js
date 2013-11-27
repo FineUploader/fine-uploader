@@ -52,6 +52,11 @@ var $fixture;
         };
     });
 
+    before(function() {
+        // "Turn off" the before unload handler since this may cause the tests to stall when run in a browser
+        qq.FineUploaderBasic.prototype._preventLeaveInProgress = function() {};
+    });
+
     beforeEach(function() {
         assert.reset();
         $fixture = $("<div id='mocha-fixture'></div>");
