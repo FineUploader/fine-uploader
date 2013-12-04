@@ -245,7 +245,7 @@ always used and shared among all buttons for a particular instance.""", "info", 
 
 {{ options_table(
     (
-        ("acceptFiles", "comma-separated Strings", "`null`", "Used by the file selection dialog. Restrict the valid file types that appear in the selection dialog by listing valid content-type specifiers here. See docs on the [accept attribute of the `<input>` element](https://developer.mozilla.org/en-USHTML/Element/Input)"),
+        ("acceptFiles", "comma-separated Strings", "`null`", "Used by the file selection dialog. Restrict the valid file types that appear in the selection dialog by listing valid content-type specifiers here. See docs on the [accept attribute of the `<input>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input)"),
         ("allowedExtensions", "Array of Strings", "`[]`", "Specify file valid file extensions here to restrict uploads to specific types."),
         ("itemLimit", "`Number`", "`0`", "Maximum number of items that can be potentially uploaded in this session. Will reject all items that are added or retried after this limit is reached."),
         ("minSizeLimit", "`Number`", "`0`", "The minimum allowable size, in bytes, for an item."),
