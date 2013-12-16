@@ -33,13 +33,13 @@ if (qqtest.canDownloadFileAsBlob) {
             xhr && xhr.restore();
         }
 
-        it("handles a simple successful single MPE file upload request correctly", function(done) {
-            assert.expect(18, done);
-
+        function getSimpleUploader(autoUpload, mpe) {
             var uploader = new qq.FineUploaderBasic({
-                autoUpload: false,
+                autoUpload: autoUpload,
                 request: {
-                    endpoint: testUploadEndpoint
+                    endpoint: testUploadEndpoint,
+                    paramsInBody: mpe,
+                    forceMultipart: mpe
                 },
                 callbacks: {
                     onUpload: function(id, name) {
@@ -61,6 +61,14 @@ if (qqtest.canDownloadFileAsBlob) {
                     }
                 }
             });
+
+            return uploader;
+        }
+
+        it("handles a simple successful single MPE file upload request correctly", function(done) {
+            assert.expect(18, done);
+
+            var uploader = getSimpleUploader(false, true);
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                 mockXhr();
@@ -89,32 +97,7 @@ if (qqtest.canDownloadFileAsBlob) {
         it("handles a simple successful single non-MPE file upload request correctly", function(done) {
             assert.expect(17, done);
 
-            var uploader = new qq.FineUploaderBasic({
-                request: {
-                    endpoint: testUploadEndpoint,
-                    forceMultipart: false,
-                    paramsInBody: false
-                },
-                callbacks: {
-                    onUpload: function(id, name) {
-                        assert.equal(id, 0, "Wrong ID sent to onUpload");
-                        assert.equal(name, "test", "Wrong name sent to onUpload");
-                    },
-                    onComplete: function(id, name, response, xhr) {
-                        assert.deepEqual(response, {success: true}, "Server response parsing failed");
-                        assert.equal(uploader.getUploads().length, 1, "Expected only 1 file");
-                        assert.equal(uploader.getUploads({status: qq.status.UPLOAD_SUCCESSFUL}).length, 1, "Expected 1 successful file");
-                        assert.ok(xhr != null, "XHR not passed to onComplete");
-                        assert.equal(uploader.getNetUploads(), 1, "Wrong # of net uploads");
-                    },
-                    onProgress: function(id, name, uploaded, total) {
-                        assert.equal(id, 0, "Wrong ID sent to onProgress");
-                        assert.equal(name, "test", "Wrong name sent to onProgress");
-                        assert.ok(uploaded > 0, "Invalid onProgress uploaded param");
-                        assert.ok(total > 0, "Invalid onProgress total param");
-                    }
-                }
-            });
+            var uploader = getSimpleUploader(true, false);
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                 mockXhr();
