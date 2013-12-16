@@ -86,6 +86,57 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+        it("handles a simple successful single non-MPE file upload request correctly", function(done) {
+            assert.expect(17, done);
+
+            var uploader = new qq.FineUploaderBasic({
+                request: {
+                    endpoint: testUploadEndpoint,
+                    forceMultipart: false,
+                    paramsInBody: false
+                },
+                callbacks: {
+                    onUpload: function(id, name) {
+                        assert.equal(id, 0, "Wrong ID sent to onUpload");
+                        assert.equal(name, "test", "Wrong name sent to onUpload");
+                    },
+                    onComplete: function(id, name, response, xhr) {
+                        assert.deepEqual(response, {success: true}, "Server response parsing failed");
+                        assert.equal(uploader.getUploads().length, 1, "Expected only 1 file");
+                        assert.equal(uploader.getUploads({status: qq.status.UPLOAD_SUCCESSFUL}).length, 1, "Expected 1 successful file");
+                        assert.ok(xhr != null, "XHR not passed to onComplete");
+                        assert.equal(uploader.getNetUploads(), 1, "Wrong # of net uploads");
+                    },
+                    onProgress: function(id, name, uploaded, total) {
+                        assert.equal(id, 0, "Wrong ID sent to onProgress");
+                        assert.equal(name, "test", "Wrong name sent to onProgress");
+                        assert.ok(uploaded > 0, "Invalid onProgress uploaded param");
+                        assert.ok(total > 0, "Invalid onProgress total param");
+                    }
+                }
+            });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                mockXhr();
+
+                var request, purlUrl;
+
+                uploader.addBlobs({name: "test", blob: blob});
+
+                assert.equal(requests.length, 1, "Wrong # of requests");
+                request = requests[0];
+                purlUrl = purl(request.url);
+
+                assert.equal(request.requestHeaders["X-Mime-Type"], "image/jpeg", "Wrong X-Mime-Type");
+                assert.equal(purlUrl.param("qquuid"), uploader.getUuid(0), "Wrong UUID param sent with request");
+                assert.equal(purlUrl.param("qqfilename"), uploader.getName(0), "Wrong filename param sent with request");
+                assert.equal(request.method, "POST", "Wrong request method");
+                assert.equal(purlUrl.attr("path"), testUploadEndpoint, "Wrong request url");
+
+                requests[0].respond(200, null, JSON.stringify({success: true}));
+            });
+        });
+
         it("properly passes overridden default param names along with the request", function(done) {
             var inputParamName = "testinputname",
                 uuidParamName = "testuuidname",
