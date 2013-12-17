@@ -219,7 +219,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
         fileState[id].attemptingResume = false;
         fileState[id].loaded += chunkData.size + getLastRequestOverhead(id);
 
-        options.onUploadChunkSuccess(id, chunkData, response, xhr);
+        options.onUploadChunkSuccess(id, internalApi.getChunkDataForCallback(chunkData), response, xhr);
 
         if (fileState[id].remainingChunkIdxs.length > 0) {
             uploadNextChunk(id);
