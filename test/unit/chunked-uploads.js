@@ -50,7 +50,7 @@ if (qqtest.canDownloadFileAsBlob) {
             customParams = customParams || {};
             chunkingParamNames = chunkingParamNames || new qq.FineUploaderBasic({})._options.chunking.paramNames;
 
-            assert.expect(2 + (expectedChunks * (14 + (Object.keys(customParams).length))), done);
+            assert.expect(2 + (expectedChunks * (18 + (Object.keys(customParams).length))), done);
 
             var uploader = new qq.FineUploaderBasic({
                     request: {
@@ -107,11 +107,10 @@ if (qqtest.canDownloadFileAsBlob) {
                                 assert.equal(requestParams[key], val, qq.format("Wrong value for {} param", key));
                             });
 
-                            // TODO uncomment these when #1073 is fixed.
-//                        assert.equal(chunkData.partIndex, chunksSucceeded - 1, "Wrong partIndex passed to onUploadChunkSuccess");
-//                        assert.equal(chunkData.startByte, (chunksSent - 1) * chunkSize + 1, "Wrong startByte passed to onUploadChunkSuccess");
-//                        assert.equal(chunkData.endByte, chunksSucceeded === expectedChunks ? expectedFileSize : chunkData.startByte + chunkSize-1, "Wrong startByte passed to onUploadChunk");
-//                        assert.equal(chunkData.totalParts, expectedChunks, "Wrong totalParts passed to onUploadChunkSuccess");
+                            assert.equal(chunkData.partIndex, chunksSucceeded - 1, "Wrong partIndex passed to onUploadChunkSuccess");
+                            assert.equal(chunkData.startByte, (chunksSent - 1) * chunkSize + 1, "Wrong startByte passed to onUploadChunkSuccess");
+                            assert.equal(chunkData.endByte, chunksSucceeded === expectedChunks ? expectedFileSize : chunkData.startByte + chunkSize-1, "Wrong startByte passed to onUploadChunk");
+                            assert.equal(chunkData.totalParts, expectedChunks, "Wrong totalParts passed to onUploadChunkSuccess");
                         },
                         onComplete: function (id) {
                             assert.equal(expectedChunks, chunksSent, "Wrong # of chunks sent.");
