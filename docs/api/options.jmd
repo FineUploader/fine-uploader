@@ -203,7 +203,7 @@ always used and shared among all buttons for a particular instance.""", "info", 
 
 {{ options_table(
     (
-        ("autoAttemptsDelay", "`Number`", "`5`", "The number of seconds to wait between auto retry attempts."),
+        ("autoAttemptDelay", "`Number`", "`5`", "The number of seconds to wait between auto retry attempts."),
         ("enableAuto", "`Boolean`", "`false`", "Enable or disable retrying uploads that receive any error or non-200 response."),
         ("maxAutoAttempts", "`Number`", "`3`", "The maximum number of times to attempt to retry a failed upload."),
         ("preventRetryResponseProperty", "`String`", "`'preventRetry'`", "This property will be looked for in the server response and, if found and `true`, will indicate that no more retries should be attempted for this item."),
