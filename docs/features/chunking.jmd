@@ -55,7 +55,7 @@ chunked uploads.
 Since each chunk comes in as a separate request, the server should save the chunk
 to a temporary location. The filename should be saved using the `qquuid` parameter
 to guarantee there are no collisions with other chunks. After all chunks have
-been received for a file (i.e., `qqpartindex == qqtotalparts`) then you should
+been received for a file (i.e., `qqpartindex == qqtotalparts - 1`) then you should
 combine all the chunks (in order) to recreate the original file.
 
 Fine Uploader will also keep an eye out for a `reset` JSON property in the
