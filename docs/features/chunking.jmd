@@ -48,10 +48,6 @@ with a multipart encoded request, you must read the `qqfilename` property.
 Custom parameters can be sent with each chunk. Those parameters can be set and
 modified in the `chunking.paramNames` option documented below.
 
-The most code to handle chunking will take be written on the backend as
-integrators need to ensure their server is ready and able to handle
-chunked uploads.
-
 Since each chunk comes in as a separate request, the server should save the chunk
 to a temporary location. The filename should be saved using the `qquuid` parameter
 to guarantee there are no collisions with other chunks. After all chunks have
