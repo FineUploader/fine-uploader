@@ -11,6 +11,7 @@
             maxConnections: 3,
             disableCancelForFormUploads: false,
             autoUpload: true,
+
             request: {
                 endpoint: "/server/upload",
                 params: {},
@@ -22,6 +23,7 @@
                 totalFileSizeName: "qqtotalfilesize",
                 filenameParam: "qqfilename"
             },
+
             validation: {
                 allowedExtensions: [],
                 sizeLimit: 0,
@@ -36,6 +38,7 @@
                     minWidth: 0
                 }
             },
+
             callbacks: {
                 onSubmit: function(id, name){},
                 onSubmitted: function(id, name){},
@@ -57,6 +60,7 @@
                 onPasteReceived: function(blob) {},
                 onStatusChange: function(id, oldStatus, newStatus) {}
             },
+
             messages: {
                 typeError: "{file} has an invalid extension. Valid extension(s): {extensions}.",
                 sizeError: "{file} is too large, maximum file size is {sizeLimit}.",
@@ -71,16 +75,19 @@
                 retryFailTooManyItems: "Retry failed - you have reached your file limit.",
                 onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
             },
+
             retry: {
                 enableAuto: false,
                 maxAutoAttempts: 3,
                 autoAttemptDelay: 5,
                 preventRetryResponseProperty: "preventRetry"
             },
+
             classes: {
                 buttonHover: "qq-upload-button-hover",
                 buttonFocus: "qq-upload-button-focus"
             },
+
             chunking: {
                 enabled: false,
                 partSize: 2000000,
@@ -92,6 +99,7 @@
                     totalParts: "qqtotalparts"
                 }
             },
+
             resume: {
                 enabled: false,
                 id: null,
@@ -100,16 +108,19 @@
                     resuming: "qqresume"
                 }
             },
+
             formatFileName: function(fileOrBlobName) {
                 if (fileOrBlobName !== undefined && fileOrBlobName.length > 33) {
                     fileOrBlobName = fileOrBlobName.slice(0, 19) + "..." + fileOrBlobName.slice(-14);
                 }
                 return fileOrBlobName;
             },
+
             text: {
                 defaultResponseError: "Upload failure reason unknown",
                 sizeSymbols: ["kB", "MB", "GB", "TB", "PB", "EB"]
             },
+
             deleteFile : {
                 enabled: false,
                 method: "DELETE",
@@ -117,18 +128,22 @@
                 customHeaders: {},
                 params: {}
             },
+
             cors: {
                 expected: false,
                 sendCredentials: false,
                 allowXdr: false
             },
+
             blobs: {
                 defaultName: "misc_data"
             },
+
             paste: {
                 targetElement: null,
                 defaultName: "pasted_image"
             },
+
             camera: {
                 ios: false,
 
