@@ -14,12 +14,8 @@ describe('util.js', function () {
         });
     }); // hide
 
-    describe('attach', function () {
-        it.skip('attaches an event to an element', function () {});
-    });
-
     describe('detach',function () {
-        it.skip('detaches an event from an element', function () {
+        it('detaches an event from an element', function () {
             $fixture.append("<div id='foo'></div>");
             $el = $fixture.find("#foo");
             el = qq($el[0]);
@@ -101,29 +97,6 @@ describe('util.js', function () {
             assert.equal($fixture.find("#bar").length, 0, "#bar should have been removed");
         });
     });
-
-    describe.skip('css', function () {
-        it('applies css styles to DOM elements', function () {
-            $fixture = $("#qunit-fixture");
-            $fixture.append("<div id='foo'></div>");
-
-            $el = $fixture.find("#foo");
-            el = qq($el[0]);
-
-            //qq(el).css({ display: 'block' });
-            el.css({ display: 'block' });
-            assert.equal($("#foo").css('display'), 'block');
-
-            el.css({ display: 'inline' });
-            assert.equal($("#foo").css('display'), 'inline');
-
-            // @TODO: bug here?
-            el.css({ float: 'left' });
-
-            assert.equal($("#foo").css('display'), 'inline');
-            assert.equal($("#foo").css('float'), 'left');
-        });
-    }); // css
 
     describe('hasClass', function () {
         it('asks an element whether it has a class', function () {
@@ -755,17 +728,6 @@ describe('util.js', function () {
         });
     }); //
 
-    describe('isBlob', function () {
-        it.skip('identifies BLOBs, if possible', function () {
-            try {
-                var blob = new Blob([1, 2, 3, 4, 5, 6, 7, 8], { type: 'application/octet-binary' });
-                assert.ok(qq.isBlob(blob));
-            } catch (ex) {
-                assert.ok(true);
-            }
-        });
-    }); //
-
     describe('getExtension', function() {
         it('extract extension from file when an extension exists', function() {
             var filename = "foo.bar.txt";
@@ -788,7 +750,7 @@ describe('util.js', function () {
             disposer.dispose();
         });
 
-        it.skip("attaches event handler and register de-attacher as disposer", function () {
+        it("attaches event handler and register de-attacher as disposer", function () {
             var disposer;
             disposer = new qq.DisposeSupport();
             el = document.createElement('div');

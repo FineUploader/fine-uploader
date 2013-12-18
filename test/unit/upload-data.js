@@ -1,34 +1,5 @@
 describe("upload-data.js", function () {
 
-    it.skip("has working callbacks", 9, function() {
-       /* jshint -W080 */
-        var id, expectedOldStatus, expectedNewStatus, onStatusChange;
-
-        id = 0;
-        expectedOldStatus = undefined;
-        expectedNewStatus = qq.status.SUBMITTING;
-        onStatusChange = function(relatedId, oldStatus, newStatus) {
-            assert.equal(relatedId, id, "make sure status change is for correct item");
-            assert.equal(oldStatus, expectedOldStatus, "make sure old status is as expected");
-            assert.equal(newStatus, expectedNewStatus, "make sure new status is as expected");
-        };
-
-        var uploadData = helpme.createUploadData(onStatusChange);
-
-        uploadData.added(id);
-
-        expectedOldStatus = expectedNewStatus;
-        expectedNewStatus = qq.status.UPLOAD_SUCCESSFUL;
-
-        uploadData.setStatus(id, qq.status.UPLOAD_SUCCESSFUL)
-
-
-        expectedOldStatus = expectedNewStatus;
-        expectedNewStatus = qq.status.DELETED;
-
-        uploadData.setStatus(id, qq.status.DELETED);
-    });
-
     it("allows overriden uuids", function() {
         var uploadData = helpme.createUploadData();
 
