@@ -1,0 +1,26 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Initialize File List" %}
+{% block content %}
+{% markdown %}
+# Initialize File List {: .page-header }
+
+### Summary
+TODO
+
+### Use Cases
+TODO
+
+### Fine Uploader UI Support
+TODO
+
+### Fine Uploader Core Support
+TODO
+
+### File Uploader S3 Support
+TODO
+
+### Server
+TODO
+
+{% endmarkdown %}
+{% endblock %}

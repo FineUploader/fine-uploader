@@ -16,6 +16,7 @@
     <li><a href="#resumeparamnames-option">resume.paramNames</a></li>
     <li><a href="#retry-option_1">retry</a></li>
     <li><a href="#request-option_1">request</a></li>
+    <li><a href="#session-option">session</a></li>
     <li><a href="#text-option_1">text</a></li>
     <li><a href="#validation-option">validation</a></li>
     <li><a href="#validationimage-option">validation.image</a></li>
@@ -225,6 +226,19 @@ always used and shared among all buttons for a particular instance.""", "info", 
         ("uuidName", "`String`", "`'qquuid'`", "The name of the parameter the uniquely identifies each associated item. The value is a [Level 4 UUID](http://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_.28random.29)."),
         ("totalFileSizeName", "`String`", "`'qqtotalfilesize'`", "The name of the parameter passed that specifies the total file size in bytes."),
         ("filenameParam", "`String`", "`'qqfilename'`", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent."),
+    )
+) }}
+
+----
+
+### `session` option
+
+See the [Initialize File List feature page](../features/session.html) for more details.
+
+{{ options_table(
+    (
+        ("endpoint", "`String`", "`null`", "If non-null, Fine Uploader will send a GET request on startup to this endpoint, expecting a JSON response containing data about the initial file list to populate."),
+        ("refreshOnReset", "`Boolean`", "`true`", "Set this to `false` if you do not want the file list to be retrieved from the server as part of a reset."),
     )
 ) }}
 
