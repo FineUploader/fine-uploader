@@ -130,8 +130,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             });
 
-            // Skip until #1059 is addresssed
-            it.skip("Ignores a submitted file that is rejected by returning false in a validate callback", function(done) {
+            it("Ignores a submitted file that is rejected by returning false in a validate callback", function(done) {
                 qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
                     var uploader = setupUploader("validate", blob);
 
@@ -142,15 +141,13 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             });
 
-            // Skip until #1059 is addresssed
-            it.skip("Ignores a submitted file that is rejected by returning a promise and failing it in a validate callback", function(done) {
+            it("Ignores a submitted file that is rejected by returning a promise and failing it in a validate callback", function(done) {
                 qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
                     setupUploader("validate", blob, done);
                 });
             });
 
-            // Skip until #1059 is addresssed
-            it.skip("Ignores a submitted file that is rejected by returning false in a validateBatch callback", function(done) {
+            it("Ignores a submitted file that is rejected by returning false in a validateBatch callback", function(done) {
                 qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
                     var uploader = setupUploader("validateBatch", blob);
 
@@ -161,8 +158,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             });
 
-            // Skip until #1059 is addresssed
-            it.skip("Ignores a submitted file that is rejected by returning a promise and failing it in a validateBatch callback", function(done) {
+            it("Ignores a submitted file that is rejected by returning a promise and failing it in a validateBatch callback", function(done) {
                 qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
                     setupUploader("validateBatch", blob, done);
                 });
@@ -196,11 +192,10 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             }
 
-            // Skip until #1059 is addresssed
-            it.skip("prevents too many items from being submitted at once", function(done) {
+            it("prevents too many items from being submitted at once", function(done) {
                 var rejectedFiles = 0;
 
-                setupUploader({itemLimit: 2}, 2, function(id, oldStatus, newStatus) {
+                setupUploader({itemLimit: 2}, 3, function(id, oldStatus, newStatus) {
                     newStatus === qq.status.REJECTED && rejectedFiles++;
 
                     if (rejectedFiles === 3) {
@@ -211,10 +206,15 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             });
 
-            // Skip until #1059 is addresssed
-            it.skip("prevents too many items from being submitted over multiple submissions", function(done) {
+            it("prevents too many items from being submitted over multiple submissions", function(done) {
+                var submitted = 0,
+                    rejected = 0;
+
                 setupUploader({itemLimit: 2}, [2, 1], function(id, oldStatus, newStatus) {
-                    if (newStatus === qq.status.REJECTED) {
+                    newStatus === qq.status.SUBMITTED && submitted++;
+                    newStatus === qq.status.REJECTED && rejected++;
+
+                    if (submitted === 2 && rejected === 1) {
                         assert.equal(this.getUploads().length, 3);
                         assert.equal(this.getUploads({status: qq.status.SUBMITTED}).length, 2);
                         assert.equal(this.getUploads({status: qq.status.REJECTED}).length, 1);
@@ -223,8 +223,24 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             });
 
-            // Skip until #1059 is addresssed
-            it.skip("prevents files that are too large from being submitted", function(done) {
+            it("itemLimit sanity check - ensure internal item count is properly decremented after files have been rejected", function(done) {
+                var submitted = 0,
+                    rejected = 0;
+
+                setupUploader({itemLimit: 2}, [1, 2, 1], function(id, oldStatus, newStatus) {
+                    newStatus === qq.status.SUBMITTED && submitted++;
+                    newStatus === qq.status.REJECTED && rejected++;
+
+                    if (submitted === 2 && rejected === 2) {
+                        assert.equal(this.getUploads().length, 4);
+                        assert.equal(this.getUploads({status: qq.status.SUBMITTED}).length, 2);
+                        assert.equal(this.getUploads({status: qq.status.REJECTED}).length, 2);
+                        done();
+                    }
+                });
+            });
+
+            it("prevents files that are too large from being submitted", function(done) {
                 setupUploader({sizeLimit: 3265}, 1, function(id, oldStatus, newStatus) {
                     if (newStatus === qq.status.REJECTED) {
                         assert.equal(this.getUploads().length, 1);
@@ -244,8 +260,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             });
 
-            // Skip until #1059 is addresssed
-            it.skip("don't allow files that are too small to be submitted", function(done) {
+            it("don't allow files that are too small to be submitted", function(done) {
                 setupUploader({minSizeLimit: 3267}, 1, function(id, oldStatus, newStatus) {
                     if (newStatus === qq.status.REJECTED) {
                         assert.equal(this.getUploads().length, 1);
@@ -266,7 +281,7 @@ if (qqtest.canDownloadFileAsBlob) {
             });
 
             describe("stopOnFirstInvalidFile tests", function() {
-                function setupStopOnFirstInvalidFileUploader(stopOnFirstInvalidFile) {
+                function setupStopOnFirstInvalidFileUploader(stopOnFirstInvalidFile, done) {
                     var expectedSubmitted = stopOnFirstInvalidFile ? 1 : 2,
                         expectedRejected = stopOnFirstInvalidFile ? 2 : 1,
                         uploader = new qq.FineUploaderBasic({
@@ -294,14 +309,12 @@ if (qqtest.canDownloadFileAsBlob) {
                     });
                 }
 
-                // Skip until #1059 is addresssed
-                it.skip("Rejects all files after (and including) the invalid file by default", function(done) {
-                    setupStopOnFirstInvalidFileUploader(true);
+                it("Rejects all files after (and including) the invalid file by default", function(done) {
+                    setupStopOnFirstInvalidFileUploader(true, done);
                 });
 
-                // Skip until #1059 is addresssed
-                it.skip("Rejects only files that are invalid", function(done) {
-                    setupStopOnFirstInvalidFileUploader(false);
+                it("Rejects only files that are invalid", function(done) {
+                    setupStopOnFirstInvalidFileUploader(false, done);
                 });
             });
         });
