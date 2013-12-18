@@ -157,7 +157,14 @@
             // contain an invisible `<input type="file">` created by Fine Uploader.
             // Optional properties of each object include `multiple`, `validation`,
             // and `folders`.
-            extraButtons: []
+            extraButtons: [],
+
+            // Depends on the session module.  Used to query the server for an initial file list
+            // during initialization and optionally after a `reset`.
+            session: {
+                endpoint: null,
+                refreshOnReset: true
+            }
         };
 
         // Replace any default options with user defined ones
