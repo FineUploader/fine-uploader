@@ -1,5 +1,4 @@
 /*globals qq, XMLHttpRequest*/
-/** Generic class for sending non-upload ajax requests and handling the associated responses **/
 qq.DeleteFileAjaxRequester = function(o) {
     "use strict";
 
