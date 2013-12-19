@@ -1,5 +1,5 @@
 /*globals qq*/
-qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, logCallback) {
+qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, getName, logCallback) {
     "use strict";
 
     var fileState = [],
@@ -47,7 +47,7 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
         var params = options.paramsStore.getParams(id),
             method = options.demoMode ? "GET" : "POST",
             endpoint = options.endpointStore.getEndpoint(id),
-            name = fileState[id].newName || publicApi.getName(id);
+            name = getName(id);
 
         params[options.uuidName] = fileState[id].uuid;
         params[options.filenameParam] = name;
@@ -61,12 +61,12 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
         });
     }
 
-    qq.extend(this, new qq.UploadHandlerFormApi(internalApi, fileState, options.cors.expected, options.inputName, options.onCancel, onUuidChanged, log));
+    qq.extend(this, new qq.UploadHandlerFormApi(internalApi, fileState, options.cors.expected, options.inputName, options.onCancel, onUuidChanged, getName, log));
 
     qq.extend(this, {
         upload: function(id) {
             var input = fileState[id].input,
-                fileName = this.getName(id),
+                fileName = getName(id),
                 iframe = internalApi.createIframe(id),
                 form;
 
@@ -74,7 +74,7 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
                 throw new Error("file with passed id was not added, or already uploaded or cancelled");
             }
 
-            options.onUpload(id, this.getName(id));
+            options.onUpload(id, getName(id));
 
             form = createForm(id, iframe);
             form.appendChild(input);

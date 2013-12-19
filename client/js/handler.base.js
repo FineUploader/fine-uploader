@@ -54,7 +54,8 @@ qq.UploadHandler = function(o, namespace) {
         onUploadChunkSuccess: function(id, chunkData, response, xhr){},
         onAutoRetry: function(id, fileName, response, xhr){},
         onResume: function(id, fileName, chunkData){},
-        onUuidChanged: function(id, newUuid){}
+        onUuidChanged: function(id, newUuid){},
+        getName: function(id) {}
 
     };
     qq.extend(options, o);
@@ -89,7 +90,7 @@ qq.UploadHandler = function(o, namespace) {
         var handlerType = namespace ? qq[namespace] : qq,
             handlerModuleSubtype = qq.supportedFeatures.ajaxUploading ? "Xhr" : "Form";
 
-        handlerImpl = new handlerType["UploadHandler" + handlerModuleSubtype](options, dequeue, options.onUuidChanged, log);
+        handlerImpl = new handlerType["UploadHandler" + handlerModuleSubtype](options, dequeue, options.onUuidChanged, options.getName, log);
     }
 
 
@@ -98,8 +99,8 @@ qq.UploadHandler = function(o, namespace) {
          * Adds file or file input to the queue
          * @returns id
          **/
-        add: function(file) {
-            return handlerImpl.add(file);
+        add: function(id, uuid, file) {
+            return handlerImpl.add.apply(this, arguments);
         },
 
         /**
@@ -156,19 +157,6 @@ qq.UploadHandler = function(o, namespace) {
             });
 
             queue = [];
-        },
-
-        /**
-         * Returns name of the file identified by id
-         */
-        getName: function(id) {
-            return handlerImpl.getName(id);
-        },
-
-        // Update/change the name of the associated file.
-        // This updated name should be sent as a parameter.
-        setName: function(id, newName) {
-            handlerImpl.setName(id, newName);
         },
 
         /**

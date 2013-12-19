@@ -7,9 +7,10 @@
  * @param options Options passed from the base handler
  * @param uploadCompleteCallback Callback to invoke when the upload has completed, regardless of success.
  * @param onUuidChanged Callback to invoke when the associated items UUID has changed by order of the server.
+ * @param getName Reteives the current name of the associated file
  * @param logCallback Used to posting log messages.
  */
-qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, logCallback) {
+qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, getName, logCallback) {
     "use strict";
 
     var publicApi = this,
@@ -81,7 +82,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         /*jshint -W040 */
         var customParams = paramsStore.getParams(id);
 
-        customParams[filenameParam] = publicApi.getName(id);
+        customParams[filenameParam] = getName(id);
 
         return qq.s3.util.generateAwsParams({
                 endpoint: endpointStore.getEndpoint(id),
@@ -105,7 +106,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         var promise = new qq.Promise(),
             method = options.demoMode ? "GET" : "POST",
             endpoint = options.endpointStore.getEndpoint(id),
-            fileName = publicApi.getName(id);
+            fileName = getName(id);
 
         generateAwsParams(id).then(function(params) {
             var form = internalApi.initFormForUpload({
@@ -126,7 +127,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
     }
 
     function handleUpload(id) {
-        var fileName = publicApi.getName(id),
+        var fileName = getName(id),
             iframe = internalApi.createIframe(id),
             input = fileState[id].input;
 
@@ -180,12 +181,12 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         uploadCompleteCallback(id);
     }
 
-    qq.extend(this, new qq.UploadHandlerFormApi(internalApi, fileState, false, "file", options.onCancel, onUuidChanged, log));
+    qq.extend(this, new qq.UploadHandlerFormApi(internalApi, fileState, false, "file", options.onCancel, onUuidChanged, getName, log));
 
     qq.extend(this, {
         upload: function(id) {
             var input = fileState[id].input,
-                name = this.getName(id);
+                name = getName(id);
 
             if (!input){
                 throw new Error("file with passed id was not added, or already uploaded or cancelled");

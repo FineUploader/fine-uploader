@@ -9,10 +9,11 @@
  * @param inputName Name of the file input field/parameter.
  * @param onCancel Invoked when a request is handled to cancel an in-progress upload.  Invoked before the upload is actually cancelled.
  * @param onUuidChanged Callback to be invoked when the internal UUID is altered.
+ * @param getName Reteives the current name of the associated file
  * @param log Method used to send messages to the log.
  * @constructor
  */
-qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, onCancel, onUuidChanged, log) {
+qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, onCancel, onUuidChanged, getName, log) {
     "use strict";
 
     var formHandlerInstanceId = qq.getUniqueId(),
@@ -281,42 +282,21 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
 // PUBLIC API
 
     qq.extend(this, {
-        add: function(fileInput) {
-            var id = fileState.push({input: fileInput}) - 1;
+        add: function(id, uuid, fileInput) {
+            fileState[id] = {input: fileInput};
 
             fileInput.setAttribute("name", inputName);
 
-            fileState[id].uuid = qq.getUniqueId();
+            fileState[id].uuid = uuid;
 
             // remove file input from DOM
             if (fileInput.parentNode){
                 qq(fileInput).remove();
             }
-
-            return id;
-        },
-
-        getName: function(id) {
-            /*jslint regexp: true*/
-
-            if (fileState[id].newName !== undefined) {
-                return fileState[id].newName;
-            }
-            else if (this.isValid(id)) {
-                // get input value and remove path to normalize
-                return fileState[id].input.value.replace(/.*(\/|\\)/, "");
-            }
-            else {
-                log(id + " is not a valid item ID.", "error");
-            }
         },
 
         getInput: function(id) {
             return fileState[id].input;
-        },
-
-        setName: function(id, newName) {
-            fileState[id].newName = newName;
         },
 
         isValid: function(id) {
@@ -337,7 +317,7 @@ qq.UploadHandlerFormApi = function(internalApi, fileState, isCors, inputName, on
         },
 
         cancel: function(id) {
-            var onCancelRetVal = onCancel(id, this.getName(id));
+            var onCancelRetVal = onCancel(id, getName(id));
 
             if (onCancelRetVal instanceof qq.Promise) {
                 return onCancelRetVal.then(function() {

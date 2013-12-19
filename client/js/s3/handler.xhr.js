@@ -8,9 +8,10 @@
  * @param options Options passed from the base handler
  * @param uploadCompleteCallback Callback to invoke when the upload has completed, regardless of success.
  * @param onUuidChanged Callback to invoke when the associated items UUID has changed by order of the server.
- * @param logCallback Used to posting log messages.
+ * @param getName Reteives the current name of the associated file
+ * @param log Used to posting log messages.
  */
-qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, log) {
+qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, getName, log) {
     "use strict";
 
     var fileState = [],
@@ -59,7 +60,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
                 return getUrlSafeKey(id);
             },
             getName: function(id) {
-                return publicApi.getName(id);
+                return getName(id);
             }
         }),
         completeMultipartRequester = new qq.s3.CompleteMultipartAjaxRequester({
@@ -162,7 +163,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
      */
     function uploadCompleted(id, errorDetails, requestXhr) {
         var xhr = requestXhr || fileState[id].xhr,
-            name = publicApi.getName(id),
+            name = getName(id),
             size = publicApi.getSize(id),
             // This is the response we will use internally to determine if we need to do something special in case of a failure
             responseToExamine = parseResponse(id, requestXhr),
@@ -269,7 +270,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     }
 
     function handleStartUploadSignal(id, retry) {
-        var name = publicApi.getName(id);
+        var name = getName(id);
 
         if (publicApi.isValid(id)) {
             maybePrepareForResume(id);
@@ -296,7 +297,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     // Starting point for incoming requests for simple (non-chunked) uploads.
     function handleSimpleUpload(id) {
         var xhr = fileState[id].xhr,
-            name = publicApi.getName(id),
+            name = getName(id),
             fileOrBlob = publicApi.getFile(id);
 
         xhr.upload.onprogress = function(e){
@@ -327,7 +328,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     function generateAwsParams(id) {
         /*jshint -W040 */
         var customParams = paramsStore.getParams(id);
-        customParams[filenameParam] = publicApi.getName(id);
+        customParams[filenameParam] = getName(id);
 
         return qq.s3.util.generateAwsParams({
                 endpoint: endpointStore.getEndpoint(id),
@@ -404,7 +405,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
             // If we haven't found this item in local storage, give up
             if (persistedData) {
-                log(qq.format("Identified file with ID {} and name of {} as resumable.", id, publicApi.getName(id)));
+                log(qq.format("Identified file with ID {} and name of {} as resumable.", id, getName(id)));
 
                 persistedData = JSON.parse(persistedData);
 
@@ -425,7 +426,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             localStorageId = getLocalStorageId(id);
 
             persistedData = {
-                name: publicApi.getName(id),
+                name: getName(id),
                 size: publicApi.getSize(id),
                 uuid: publicApi.getUuid(id),
                 key: getActualKey(id),
@@ -510,7 +511,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
      * @returns {string} Identifier for this item that may appear in the browser's local storage
      */
     function getLocalStorageId(id) {
-        var name = publicApi.getName(id),
+        var name = getName(id),
             size = publicApi.getSize(id),
             chunkSize = options.chunking.partSize,
             endpoint = options.endpointStore.getEndpoint(id),
@@ -604,7 +605,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     // Initiate the process to send the next chunk for a file.  This assumes there IS a "next" chunk.
     function uploadNextChunk(id) {
         var idx = getNextPartIdxToSend(id),
-            name = publicApi.getName(id),
+            name = getName(id),
             xhr = fileState[id].xhr,
             totalFileSize = publicApi.getSize(id),
             chunkData = internalApi.getChunkData(id, idx),
@@ -740,6 +741,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         handleStartUploadSignal,
         options.onCancel,
         onUuidChanged,
+        getName,
         log
     ));
 
@@ -750,14 +752,12 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     // Base XHR API overrides
     qq.override(this, function(super_) {
         return {
-            add: function(fileOrBlobData) {
-                var id = super_.add(fileOrBlobData);
+            add: function(id, uuid, fileOrBlobData) {
+                super_.add.apply(this, arguments);
 
                 if (resumeEnabled) {
                     maybePrepareForResume(id);
                 }
-
-                return id;
             },
 
             getResumableFilesData: function() {

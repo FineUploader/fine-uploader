@@ -9,10 +9,11 @@
  * @param onUpload Used to call the specific XHR upload handler when an upload has been request.
  * @param onCancel Invoked when a request is handled to cancel an in-progress upload.  Invoked before the upload is actually cancelled.
  * @param onUuidChanged Callback to be invoked when the internal UUID is altered.
+ * @param getName Reteives the current name of the associated file
  * @param log Method used to send messages to the log.
  * @constructor
  */
-qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, onCancel, onUuidChanged, log) {
+qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, onCancel, onUuidChanged, getName, log) {
     "use strict";
 
     var publicApi = this;
@@ -89,52 +90,19 @@ qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, on
     qq.extend(this, {
         /**
          * Adds File or Blob to the queue
-         * Returns id to use with upload, cancel
          **/
-        add: function(fileOrBlobData){
-            var id,
-                uuid = qq.getUniqueId();
-
+        add: function(id, uuid, fileOrBlobData) {
             if (qq.isFile(fileOrBlobData)) {
-                id = fileState.push({file: fileOrBlobData}) - 1;
+                fileState[id] = {file: fileOrBlobData};
             }
             else if (qq.isBlob(fileOrBlobData.blob)) {
-                id = fileState.push({blobData: fileOrBlobData}) - 1;
+                fileState[id] =  {blobData: fileOrBlobData};
             }
             else {
                 throw new Error("Passed obj in not a File or BlobData (in qq.UploadHandlerXhr)");
             }
 
             fileState[id].uuid = uuid;
-
-            return id;
-        },
-
-        getName: function(id) {
-            if (this.isValid(id)) {
-                var file = fileState[id].file,
-                    blobData = fileState[id].blobData,
-                    newName = fileState[id].newName;
-
-                if (newName !== undefined) {
-                    return newName;
-                }
-                else if (file) {
-                    // fix missing name in Safari 4
-                    //NOTE: fixed missing name firefox 11.0a2 file.fileName is actually undefined
-                    return (file.fileName !== null && file.fileName !== undefined) ? file.fileName : file.name;
-                }
-                else {
-                    return blobData.name;
-                }
-            }
-            else {
-                log(id + " is not a valid item ID.", "error");
-            }
-        },
-
-        setName: function(id, newName) {
-            fileState[id].newName = newName;
         },
 
         getSize: function(id) {
@@ -187,7 +155,7 @@ qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, on
         },
 
         cancel: function(id) {
-            var onCancelRetVal = onCancel(id, this.getName(id));
+            var onCancelRetVal = onCancel(id, getName(id));
 
             if (onCancelRetVal instanceof qq.Promise) {
                 return onCancelRetVal.then(function() {
@@ -212,7 +180,7 @@ qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, on
             var xhr = fileState[id].xhr;
 
             if(xhr) {
-                log(qq.format("Aborting XHR upload for {} '{}' due to pause instruction.", id, this.getName(id)));
+                log(qq.format("Aborting XHR upload for {} '{}' due to pause instruction.", id, getName(id)));
                 fileState[id].paused = true;
                 xhr.abort();
                 return true;

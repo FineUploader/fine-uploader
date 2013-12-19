@@ -30,7 +30,7 @@ if (qqtest.canDownloadFileAsBlob) {
         }
 
         function unmockXhr() {
-            xhr && xhr.restore();
+            xhr && xhr.restore && xhr.restore();
         }
 
         function getSimpleUploader(autoUpload, mpe) {
@@ -151,6 +151,61 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(requestParams[totalFileSizeParamName], uploader.getSize(0), "Wrong file size param sent with request");
                 assert.ok(qq.isBlob(requestParams[inputParamName]), "File is incorrect");
                 done();
+            });
+        });
+
+        it("handles overriden UUID via API", function(done) {
+            assert.expect(1, done);
+
+            var uploader = new qq.FineUploaderBasic({
+                autoUpload: false
+            });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                uploader.addBlobs(blob);
+                uploader.setUuid(0, "123");
+                assert.equal(uploader.getUuid(0), "123");
+            });
+        });
+
+        it("handles overriden UUID via response", function(done) {
+            var newUuid = "12345";
+
+            assert.expect(1, done);
+
+            var uploader = new qq.FineUploaderBasic({
+                request: {
+                    endpoint: testUploadEndpoint
+                },
+                callbacks: {
+                    onComplete: function(id, name, response, xhr) {
+                        assert.equal(uploader.getUuid(0), newUuid, "New UUID is not as expected");
+                    }
+                }
+            });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                mockXhr();
+
+                uploader.addBlobs(blob);
+
+                requests[0].respond(200, null, JSON.stringify({success: true, newUuid: newUuid}));
+            });
+        });
+
+        it("handles overriden name via API", function(done) {
+            var newName = "newname123";
+
+            assert.expect(1, done);
+
+            var uploader = new qq.FineUploaderBasic({
+                autoUpload: false
+            });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                uploader.addBlobs(blob);
+                uploader.setName(0, newName);
+                assert.equal(uploader.getName(0), newName);
             });
         });
     });

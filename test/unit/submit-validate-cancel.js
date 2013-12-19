@@ -57,16 +57,16 @@ if (qqtest.canDownloadFileAsBlob) {
             qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
                 uploader.addBlobs({blob: blob, name: expectedName});
 
-                assert.deepEqual(callbackOrder, expectedCallbackOrder, "Callbacks invoked in wrong order");
-                assert.deepEqual(statusChangeOrder, expectedStatusChangeOrder, "Status changed in wrong order");
-                assert.equal(uploader.getName(0), expectedName, "Wrong filename");
-                assert.equal(uploader.getNetUploads(), 0, "Wrong # of net uploads");
-                assert.equal(uploader.getSize(0), expectedFileSize, "Wrong file size");
-                assert.equal(uploader.getUploads().length, 1, "Wrong number of uploads");
-                assert.equal(uploader.getUploads({id: 0}).name, expectedName, "Wrong filename");
-                assert.equal(uploader.getUploads({id: 0}).originalName, expectedName, "Wrong original name");
-                assert.equal(uploader.getUploads({id: 0}).size, expectedFileSize, "Wrong file size");
-                assert.equal(uploader.getUploads({id: 0}).status, qq.status.SUBMITTED, "Wrong status");
+                assert.deepEqual(callbackOrder, expectedCallbackOrder);
+                assert.deepEqual(statusChangeOrder, expectedStatusChangeOrder);
+                assert.equal(uploader.getName(0), expectedName);
+                assert.equal(uploader.getNetUploads(), 0);
+                assert.equal(uploader.getSize(0), expectedFileSize);
+                assert.equal(uploader.getUploads().length, 1);
+                assert.equal(uploader.getUploads({id: 0}).name, expectedName);
+                assert.equal(uploader.getUploads({id: 0}).originalName, expectedName);
+                assert.equal(uploader.getUploads({id: 0}).size, expectedFileSize);
+                assert.equal(uploader.getUploads({id: 0}).status, qq.status.SUBMITTED);
 
                 done();
             });

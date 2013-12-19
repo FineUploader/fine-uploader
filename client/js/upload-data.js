@@ -3,23 +3,22 @@ qq.UploadData = function(uploaderProxy) {
     "use strict";
 
     var data = [],
-        byId = {},
         byUuid = {},
         byStatus = {};
 
 
-    function getDataByIds(ids) {
-        if (qq.isArray(ids)) {
+    function getDataByIds(idOrIds) {
+        if (qq.isArray(idOrIds)) {
             var entries = [];
 
-            qq.each(ids, function(idx, id) {
-                entries.push(data[byId[id]]);
+            qq.each(idOrIds, function(idx, id) {
+                entries.push(data[id]);
             });
 
             return entries;
         }
 
-        return data[byId[ids]];
+        return data[idOrIds];
     }
 
     function getDataByUuids(uuids) {
@@ -54,14 +53,19 @@ qq.UploadData = function(uploaderProxy) {
     }
 
     qq.extend(this, {
-        added: function(id) {
-            var uuid = uploaderProxy.getUuid(id),
-                name = uploaderProxy.getName(id),
-                size = uploaderProxy.getSize(id),
-                status = qq.status.SUBMITTING;
+        /**
+         * Adds a new file to the data cache for tracking purposes.
+         *
+         * @param uuid Initial UUID for this file.
+         * @param name Initial name of this file.
+         * @param size Size of this file, -1 if this cannot be determined
+         * @param status Initial `qq.status` for this file.  If null/undefined, `qq.status.SUBMITTING`.
+         * @returns {number} Internal ID for this file.
+         */
+        addFile: function(uuid, name, size, status) {
+            status = status || qq.status.SUBMITTING;
 
-            var index = data.push({
-                id: id,
+            var id = data.push({
                 name: name,
                 originalName: name,
                 uuid: uuid,
@@ -69,16 +73,17 @@ qq.UploadData = function(uploaderProxy) {
                 status: status
             }) - 1;
 
-            byId[id] = index;
-
-            byUuid[uuid] = index;
+            data[id].id = id;
+            byUuid[uuid] = id;
 
             if (byStatus[status] === undefined) {
                 byStatus[status] = [];
             }
-            byStatus[status].push(index);
+            byStatus[status].push(id);
 
-            uploaderProxy.onStatusChange(id, undefined, status);
+            uploaderProxy.onStatusChange(id, null, status);
+
+            return id;
         },
 
         retrieve: function(optionalFilter) {
@@ -102,41 +107,36 @@ qq.UploadData = function(uploaderProxy) {
 
         reset: function() {
             data = [];
-            byId = {};
             byUuid = {};
             byStatus = {};
         },
 
         setStatus: function(id, newStatus) {
-            var dataIndex = byId[id],
-                oldStatus = data[dataIndex].status,
-                byStatusOldStatusIndex = qq.indexOf(byStatus[oldStatus], dataIndex);
+            var oldStatus = data[id].status,
+                byStatusOldStatusIndex = qq.indexOf(byStatus[oldStatus], id);
 
             byStatus[oldStatus].splice(byStatusOldStatusIndex, 1);
 
-            data[dataIndex].status = newStatus;
+            data[id].status = newStatus;
 
             if (byStatus[newStatus] === undefined) {
                 byStatus[newStatus] = [];
             }
-            byStatus[newStatus].push(dataIndex);
+            byStatus[newStatus].push(id);
 
             uploaderProxy.onStatusChange(id, oldStatus, newStatus);
         },
 
         uuidChanged: function(id, newUuid) {
-            var dataIndex = byId[id],
-                oldUuid = data[dataIndex].uuid;
+            var oldUuid = data[id].uuid;
 
-            data[dataIndex].uuid = newUuid;
-            byUuid[newUuid] = dataIndex;
+            data[id].uuid = newUuid;
+            byUuid[newUuid] = id;
             delete byUuid[oldUuid];
         },
 
-        nameChanged: function(id, newName) {
-            var dataIndex = byId[id];
-
-            data[dataIndex].name = newName;
+        updateName: function(id, newName) {
+            data[id].name = newName;
         }
     });
 };

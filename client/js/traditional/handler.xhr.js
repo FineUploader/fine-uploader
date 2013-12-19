@@ -1,5 +1,5 @@
 /*globals qq, File, XMLHttpRequest, FormData, Blob*/
-qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, logCallback) {
+qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, getName, logCallback) {
     "use strict";
 
     var uploadComplete = uploadCompleteCallback,
@@ -27,7 +27,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
 
     function addChunkingSpecificParams(id, params, chunkData) {
         var size = publicApi.getSize(id),
-            name = publicApi.getName(id);
+            name = getName(id);
 
         params[options.chunking.paramNames.partIndex] = chunkData.part;
         params[options.chunking.paramNames.partByteOffset] = chunkData.start;
@@ -65,7 +65,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
             method = options.demoMode ? "GET" : "POST",
             endpoint = options.endpointStore.getEndpoint(id),
             url = endpoint,
-            name = fileState[id].newName || publicApi.getName(id),
+            name = getName(id),
             size = publicApi.getSize(id);
 
         params[options.uuidName] = fileState[id].uuid;
@@ -121,7 +121,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
     }
 
     function handleCompletedItem(id, response, xhr) {
-        var name = publicApi.getName(id),
+        var name = getName(id),
             size = publicApi.getSize(id);
 
         fileState[id].attemptingResume = false;
@@ -141,7 +141,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
             chunkData = internalApi.getChunkData(id, chunkIdx),
             xhr = internalApi.createXhr(id),
             size = publicApi.getSize(id),
-            name = publicApi.getName(id),
+            name = getName(id),
             toSend, params;
 
         if (fileState[id].loaded === undefined) {
@@ -279,7 +279,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
     }
 
     function handleNonResetErrorResponse(id, response, xhr) {
-        var name = publicApi.getName(id);
+        var name = getName(id);
 
         if (options.onAutoRetry(id, name, response, xhr)) {
             return;
@@ -358,7 +358,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
 
     function getPersistedChunkData(id) {
         var chunkCookieValue = qq.getCookie(getChunkDataCookieName(id)),
-            filename = publicApi.getName(id),
+            filename = getName(id),
             sections, uuid, partIndex, lastByteSent, initialRequestOverhead, estTotalRequestsSize;
 
         if (chunkCookieValue) {
@@ -386,7 +386,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
     }
 
     function getChunkDataCookieName(id) {
-        var filename = publicApi.getName(id),
+        var filename = getName(id),
             fileSize = publicApi.getSize(id),
             maxChunkSize = options.chunking.partSize,
             cookieName;
@@ -422,7 +422,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
     }
 
     function handlePossibleResumeAttempt(id, persistedChunkInfoForResume, firstChunkIndex) {
-        var name = publicApi.getName(id),
+        var name = getName(id),
             firstChunkDataForResume = internalApi.getChunkData(id, persistedChunkInfoForResume.part),
             onResumeRetVal;
 
@@ -475,7 +475,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
 
     function handleStandardFileUpload(id) {
         var fileOrBlob = fileState[id].file || fileState[id].blobData.blob,
-            name = publicApi.getName(id),
+            name = getName(id),
             xhr, params, toSend;
 
         fileState[id].loaded = 0;
@@ -500,7 +500,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
     }
 
     function handleUploadSignal(id, retry) {
-        var name = publicApi.getName(id);
+        var name = getName(id);
 
         if (publicApi.isValid(id)) {
             options.onUpload(id, name);
@@ -522,15 +522,17 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, l
         handleUploadSignal,
         options.onCancel,
         onUuidChanged,
+        getName,
         log
     ));
 
     // Base XHR API overrides
     qq.override(this, function(super_) {
         return {
-            add: function(fileOrBlobData) {
-                var id = super_.add(fileOrBlobData),
-                    persistedChunkData;
+            add: function(id, uuid, fileOrBlobData) {
+                var persistedChunkData;
+
+                super_.add.apply(this, arguments);
 
                 if (resumeEnabled) {
                     persistedChunkData = getPersistedChunkData(id);

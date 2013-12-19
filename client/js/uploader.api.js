@@ -437,7 +437,7 @@
 
         _showDeleteConfirm: function(id, uuid, mandatedParams) {
             /*jshint -W004 */
-            var fileName = this._handler.getName(id),
+            var fileName = this.getName(id),
                 confirmMessage = this._options.deleteFile.confirmMessage.replace(/\{filename\}/g, fileName),
                 uuid = this.getUuid(id),
                 deleteRequestArgs = arguments,

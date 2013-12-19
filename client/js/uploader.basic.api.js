@@ -205,12 +205,11 @@
         },
 
         getName: function(id) {
-            return this._handler.getName(id);
+            return this._uploadData.retrieve({id: id}).name;
         },
 
         setName: function(id, newName) {
-            this._handler.setName(id, newName);
-            this._uploadData.nameChanged(id, newName);
+            this._uploadData.updateName(id, newName);
         },
 
         getFile: function(fileOrBlobId) {
@@ -363,9 +362,24 @@
 
         // Updates internal state when a new file has been received, and adds it along with its ID to a passed array.
         _handleNewFile: function(file, newFileWrapperList) {
-            var id = this._handler.add(file);
-            this._uploadData.added(id);
+            var size = -1,
+                uuid = qq.getUniqueId(),
+                name = qq.getFilename(file),
+                id;
+
+            if (file.size >= 0) {
+                size = file.size;
+            }
+            else if (file.blob) {
+                size = file.blob.size;
+            }
+
+            id = this._uploadData.addFile(uuid, name, size);
+
+            this._handler.add(id, uuid, file);
+
             this._netUploadedOrQueued++;
+
             newFileWrapperList.push({id: id, file: file});
         },
 
@@ -612,6 +626,9 @@
                     },
                     onUuidChanged: function(id, newUuid) {
                         self._uploadData.uuidChanged(id, newUuid);
+                    },
+                    getName: function(id) {
+                        return self.getName(id);
                     }
                 };
 
@@ -819,7 +836,7 @@
         },
 
         _onDeleteComplete: function(id, xhrOrXdr, isError) {
-            var name = this._handler.getName(id);
+            var name = this.getName(id);
 
             if (isError) {
                 this._uploadData.setStatus(id, qq.status.DELETE_FAILED);
@@ -941,7 +958,7 @@
                 return false;
             }
             else if (this._handler.isValid(id)) {
-                var fileName = this._handler.getName(id);
+                var fileName = this.getName(id);
 
                 if (this._options.callbacks.onManualRetry(id, fileName) === false) {
                     return false;
@@ -1015,7 +1032,7 @@
         },
 
         _upload: function(id, params, endpoint) {
-            var name = this._handler.getName(id);
+            var name = this.getName(id);
 
             if (params) {
                 this.setParams(params, id);

@@ -775,6 +775,22 @@ var qq = function(element) {
         }
     };
 
+    qq.getFilename = function(blobOrFileInput) {
+        /*jslint regexp: true*/
+
+        if (qq.isInput(blobOrFileInput)) {
+            // get input value and remove path to normalize
+            return blobOrFileInput.value.replace(/.*(\/|\\)/, "");
+        }
+        else if (qq.isFile(blobOrFileInput)) {
+            if (blobOrFileInput.fileName !== null && blobOrFileInput.fileName !== undefined) {
+                return blobOrFileInput.fileName;
+            }
+        }
+
+        return blobOrFileInput.name;
+    };
+
     /**
      * A generic module which supports object disposing in dispose() method.
      * */
