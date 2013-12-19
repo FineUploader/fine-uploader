@@ -120,9 +120,8 @@
             this._uploadData.reset();
             this._buttonIdsForFileIds = [];
 
-            if (this._pasteHandler) {
-                this._pasteHandler.reset();
-            }
+            this._pasteHandler && this._pasteHandler.reset();
+            this._refreshSessionData();
         },
 
         addFiles: function(filesOrInputs, params, endpoint) {
@@ -335,6 +334,33 @@
      * Defines the private (internal) API for FineUploaderBasic mode.
      */
     qq.basePrivateApi = {
+        // Attempts to refresh session data only if the `qq.Session` module exists
+        // and a session endpoint has been specified.  The `onSessionRequestComplete`
+        // callback will be invoked once the refresh is complete.
+        _refreshSessionData: function() {
+            var self = this,
+                options = this._options.session;
+
+            /* jshint eqnull:true */
+            if (qq.Session && this._options.session.endpoint != null) {
+                if (!this._session) {
+                    qq.extend(options, this._options.cors);
+                    options.log = this.log;
+
+                    this._session = new qq.Session(options);
+                }
+
+                this._session.refresh().then(function(response, xhrOrXdr) {
+
+                    self._options.callbacks.onSessionRequestComplete(response, true, xhrOrXdr);
+
+                }, function(response, xhrOrXdr) {
+
+                    self._options.callbacks.onSessionRequestComplete(response, false, xhrOrXdr);
+                });
+            }
+        },
+
         // Updates internal state when a new file has been received, and adds it along with its ID to a passed array.
         _handleNewFile: function(file, newFileWrapperList) {
             var id = this._handler.add(file);

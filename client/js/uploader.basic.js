@@ -58,7 +58,8 @@
                 onDelete: function(id){},
                 onDeleteComplete: function(id, xhrOrXdr, isError){},
                 onPasteReceived: function(blob) {},
-                onStatusChange: function(id, oldStatus, newStatus) {}
+                onStatusChange: function(id, oldStatus, newStatus) {},
+                onSessionRequestComplete: function(response, success, xhrOrXdr) {}
             },
 
             messages: {
@@ -163,6 +164,8 @@
             // during initialization and optionally after a `reset`.
             session: {
                 endpoint: null,
+                params: {},
+                customHeaders: {},
                 refreshOnReset: true
             }
         };
@@ -217,6 +220,7 @@
         this._preventLeaveInProgress();
 
         this._imageGenerator = qq.ImageGenerator && new qq.ImageGenerator(qq.bind(this.log, this));
+        this._refreshSessionData();
     };
 
     // Define the private & public API methods.

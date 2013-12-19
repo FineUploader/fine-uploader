@@ -156,6 +156,16 @@ Called just before a file upload is resumed.  See the `uploadChunk` event for mo
 
 ----
 
+onSessionRequestComplete: function(response, success, xhrOrXdr) {}
+
+#### sessionRequestComplete
+
+**Parameters**: Object response, Boolean success, XMLHttpRequest || XDomainRequest xhrOrXdr
+
+Invoked when a session request has completed.
+
+----
+
 #### statusChange
 
 **Parameters**: Integer id, String oldStatus, String newStatus

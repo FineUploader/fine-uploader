@@ -18,7 +18,8 @@ qq.AjaxRequester = function (o) {
             allowXRequestedWithAndCacheControl: true,
             successfulResponseCodes: {
                 "DELETE": [200, 202, 204],
-                "POST": [200, 204]
+                "POST": [200, 204],
+                "GET": [200]
             },
             cors: {
                 expected: false,
@@ -26,8 +27,7 @@ qq.AjaxRequester = function (o) {
             },
             log: function (str, level) {},
             onSend: function (id) {},
-            onComplete: function (id, xhrOrXdr, isError) {},
-            onCancel: function (id) {}
+            onComplete: function (id, xhrOrXdr, isError) {}
         };
 
     qq.extend(options, o);
