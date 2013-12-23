@@ -12,6 +12,7 @@ qq.Session = function(spec) {
         params: {},
         customHeaders: {},
         cors: {},
+        addFileRecord: function(sessionData) {},
         log: function(message, level) {}
     };
 
@@ -31,11 +32,19 @@ qq.Session = function(spec) {
 
         if (success) {
             qq.each(fileItems, function(idx, fileItem) {
-                // TODO Create ID for the file item (need to abstract this out of the handlers)
-                // TODO Need to delegate UUID, size, name retrieval out of handlers to uploadData module
-                // TODO Populate UUID, size, name, delete endpoint, thumbnail url, delete params
-                // TODO Add file item to uploadData module
-                // TODO Ensure file item is rendered in UI mode w/ size, name, delete button, success indicator, preview
+                /* jshint eqnull:true */
+                if (fileItem.uuid == null) {
+                    options.log(qq.format("Session response item {} did not include a valid UUID - ignoring.", idx), "error");
+                }
+                else if (fileItem.name == null) {
+                    options.log(qq.format("Session response item {} did not include a valid name - ignoring.", idx), "error");
+                }
+                else {
+                    options.addFileRecord(fileItem);
+                    return true;
+                }
+
+                return false;
             });
         }
 

@@ -69,6 +69,9 @@
         // This will hold callbacks for failed uploadSuccess requests that will be invoked on retry.
         // Indexed by file ID.
         this._failedSuccessRequestCallbacks = [];
+
+        // Holds S3 keys for file representations constructed from a session request.
+        this._cannedKeys = {};
     };
 
     // Inherit basic public & private API methods.
@@ -82,7 +85,12 @@
          * @returns {*} Key name associated w/ the file, if one exists
          */
         getKey: function(id) {
-            return this._handler.getThirdPartyFileId(id);
+            /* jshint eqnull:true */
+            if (this._cannedKeys[id] == null) {
+                return this._handler.getThirdPartyFileId(id);
+            }
+
+            return this._cannedKeys[id];
         },
 
         /**
@@ -331,6 +339,21 @@
             };
 
             qq.FineUploaderBasic.prototype._onSubmitDelete.call(this, id, onSuccessCallback, additionalMandatedParams);
+        },
+
+        _addCannedFile: function(sessionData) {
+            var id;
+
+            /* jshint eqnull:true */
+            if (sessionData.s3Key == null) {
+                throw new qq.Error("Did not find s3Key property in server session response.  This is required!");
+            }
+            else {
+                id = qq.FineUploaderBasic.prototype._addCannedFile.apply(this, arguments);
+                this._cannedKeys[id] = sessionData.s3Key;
+            }
+
+            return id;
         }
     });
 }());

@@ -344,7 +344,9 @@
             if (qq.Session && this._options.session.endpoint != null) {
                 if (!this._session) {
                     qq.extend(options, this._options.cors);
-                    options.log = this.log;
+
+                    options.log = qq.bind(this.log, this);
+                    options.addFileRecord = qq.bind(this._addCannedFile, this);
 
                     this._session = new qq.Session(options);
                 }
@@ -358,6 +360,23 @@
                     self._options.callbacks.onSessionRequestComplete(response, false, xhrOrXdr);
                 });
             }
+        },
+
+        // Updates internal state with a file record (not backed by a live file).  Returns the assigned ID.
+        _addCannedFile: function(sessionData) {
+            var id = this._uploadData.addFile(sessionData.uuid, sessionData.name, sessionData.size,
+                qq.status.UPLOAD_SUCCESSFUL);
+
+            sessionData.deleteFileEndpoint && this.setDeleteFileEndpoint(sessionData.deleteFileEndpoint, id);
+            sessionData.deleteFileParams && this.setDeleteFileParams(sessionData.deleteFileParams, id);
+
+            if (sessionData.thumbnailUrl) {
+                this._thumbnailUrls[id] = sessionData.thumbnailUrl;
+            }
+
+            this._netUploaded++;
+
+            return id;
         },
 
         // Updates internal state when a new file has been received, and adds it along with its ID to a passed array.

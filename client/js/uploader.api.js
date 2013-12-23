@@ -312,13 +312,7 @@
                 templating.hideSpinner(id);
 
                 if (result.success) {
-                    if (self._isDeletePossible()) {
-                        templating.showDeleteButton(id);
-                    }
-
-                    qq(templating.getFileContainer(id)).addClass(self._classes.success);
-
-                    self._maybeUpdateThumbnail(id);
+                    self._markFileAsSuccessful(id);
                 }
                 else {
                     qq(templating.getFileContainer(id)).addClass(self._classes.fail);
@@ -342,6 +336,18 @@
             }
 
             return parentRetVal;
+        },
+
+        _markFileAsSuccessful: function(id) {
+            var templating = this._templating;
+
+            if (this._isDeletePossible()) {
+                templating.showDeleteButton(id);
+            }
+
+            qq(templating.getFileContainer(id)).addClass(this._classes.success);
+
+            this._maybeUpdateThumbnail(id);
         },
 
         _onUpload: function(id, name){
@@ -456,13 +462,9 @@
             }
         },
 
-        _addToList: function(id, name) {
+        _addToList: function(id, name, canned) {
             var prependData,
                 prependIndex = 0;
-
-            if (this._options.disableCancelForFormUploads && !qq.supportedFeatures.ajaxUploading) {
-                this._templating.disableCancel();
-            }
 
             if (this._options.display.prependFiles) {
                 if (this._totalFilesInBatch > 1 && this._filesInBatchAddedToUi > 0) {
@@ -474,13 +476,25 @@
                 };
             }
 
-            if (!this._options.multiple) {
-                this._handler.cancelAll();
-                this._clearList();
+            if (!canned) {
+                if (this._options.disableCancelForFormUploads && !qq.supportedFeatures.ajaxUploading) {
+                    this._templating.disableCancel();
+                }
+
+                if (!this._options.multiple) {
+                    this._handler.cancelAll();
+                    this._clearList();
+                }
             }
 
             this._templating.addFile(id, this._options.formatFileName(name), prependData);
-            this._templating.generatePreview(id, this.getFile(id));
+
+            if (canned) {
+                this._thumbnailUrls[id] && this._templating.updateThumbnail(id, this._thumbnailUrls[id]);
+            }
+            else {
+                this._templating.generatePreview(id, this.getFile(id));
+            }
 
             this._filesInBatchAddedToUi += 1;
 
@@ -498,11 +512,13 @@
             var size = this.getSize(id),
                 sizeForDisplay = this._formatSize(size);
 
-            if (loadedSize !== undefined && totalSize !== undefined) {
-                sizeForDisplay = this._formatProgress(loadedSize, totalSize);
-            }
+            if (size >= 0) {
+                if (loadedSize !== undefined && totalSize !== undefined) {
+                    sizeForDisplay = this._formatProgress(loadedSize, totalSize);
+                }
 
-            this._templating.updateSize(id, sizeForDisplay);
+                this._templating.updateSize(id, sizeForDisplay);
+            }
         },
 
         _formatProgress: function (uploadedSize, totalSize) {
@@ -593,6 +609,17 @@
             var thumbnailUrl = this._thumbnailUrls[fileId];
 
             this._templating.updateThumbnail(fileId, thumbnailUrl);
+        },
+
+        _addCannedFile: function(sessionData) {
+            var id = this._parent.prototype._addCannedFile.apply(this, arguments);
+
+            this._addToList(id, this.getName(id), true);
+            this._templating.hideSpinner(id);
+            this._templating.hideCancel(id);
+            this._markFileAsSuccessful(id);
+
+            return id;
         }
     };
 }());

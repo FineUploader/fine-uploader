@@ -183,7 +183,9 @@ qq.UploadHandler = function(o, namespace) {
         },
 
         expunge: function(id) {
-            return handlerImpl.expunge(id);
+            if (this.isValid(id)) {
+                return handlerImpl.expunge(id);
+            }
         },
 
         /**
