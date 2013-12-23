@@ -52,10 +52,15 @@ qq.SessionAjaxRequester = function(spec) {
 
     qq.extend(this, {
         queryServer: function() {
+            var params = qq.extend({}, options.params);
+
+            // cache buster, particularly for IE & iOS
+            params.qqcache = new Date().getTime();
+
             options.log("Session query request.");
 
             requester.initTransport("sessionRefresh")
-                .withParams(options.params)
+                .withParams(params)
                 .send();
         }
     });

@@ -351,14 +351,16 @@
                     this._session = new qq.Session(options);
                 }
 
-                this._session.refresh().then(function(response, xhrOrXdr) {
+                setTimeout(function() {
+                    self._session.refresh().then(function(response, xhrOrXdr) {
 
-                    self._options.callbacks.onSessionRequestComplete(response, true, xhrOrXdr);
+                        self._options.callbacks.onSessionRequestComplete(response, true, xhrOrXdr);
 
-                }, function(response, xhrOrXdr) {
+                    }, function(response, xhrOrXdr) {
 
-                    self._options.callbacks.onSessionRequestComplete(response, false, xhrOrXdr);
-                });
+                        self._options.callbacks.onSessionRequestComplete(response, false, xhrOrXdr);
+                    });
+                }, 0);
             }
         },
 

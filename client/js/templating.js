@@ -61,6 +61,8 @@ qq.Templating = function(spec) {
             thumbnail: "qq-thumbnail-selector"
         },
         previewGeneration = {},
+        cachedThumbnailNotAvailableImg = new qq.Promise(),
+        cachedWaitingForThumbnailImg = new qq.Promise(),
         log,
         isEditElementsExist,
         isRetryElementExist,
@@ -68,9 +70,7 @@ qq.Templating = function(spec) {
         container,
         fileList,
         showThumbnails,
-        serverScale,
-        cachedThumbnailNotAvailableImg,
-        cachedWaitingForThumbnailImg;
+        serverScale;
 
     /**
      * Grabs the HTML from the script tag holding the template markup.  This function will also adjust
@@ -300,23 +300,31 @@ qq.Templating = function(spec) {
             if (notAvailableUrl) {
                 options.imageGenerator.generate(notAvailableUrl, new Image(), spec).then(
                     function(updatedImg) {
-                        cachedThumbnailNotAvailableImg = updatedImg;
+                        cachedThumbnailNotAvailableImg.success(updatedImg);
                     },
                     function() {
+                        cachedThumbnailNotAvailableImg.failure();
                         log("Problem loading 'not available' placeholder image at " + notAvailableUrl, "error");
                     }
                 );
+            }
+            else {
+                cachedThumbnailNotAvailableImg.failure();
             }
 
             if (waitingUrl) {
                 options.imageGenerator.generate(waitingUrl, new Image(), spec).then(
                     function(updatedImg) {
-                        cachedWaitingForThumbnailImg = updatedImg;
+                        cachedWaitingForThumbnailImg.success(updatedImg);
                     },
                     function() {
+                        cachedWaitingForThumbnailImg.failure();
                         log("Problem loading 'waiting for thumbnail' placeholder image at " + waitingUrl, "error");
                     }
                 );
+            }
+            else {
+                cachedWaitingForThumbnailImg.failure();
             }
         }
     }
@@ -324,17 +332,19 @@ qq.Templating = function(spec) {
     // Displays a "waiting for thumbnail" type placeholder image
     // iff we were able to load it during initialization of the templating module.
     function displayWaitingImg(thumbnail) {
-        if (cachedWaitingForThumbnailImg) {
-            maybeScalePlaceholderViaCss(cachedWaitingForThumbnailImg, thumbnail);
-            thumbnail.src = cachedWaitingForThumbnailImg.src;
-            show(thumbnail);
-        }
-        // In some browsers (such as IE9 and older) an img w/out a src attribute
-        // are displayed as "broken" images, so we sohuld just hide the img tag
-        // if we aren't going to display the "waiting" placeholder.
-        else {
+        cachedWaitingForThumbnailImg.then(function(img) {
+            maybeScalePlaceholderViaCss(img, thumbnail);
+            /* jshint eqnull:true */
+            if (thumbnail.getAttribute("src") == null) {
+                thumbnail.src = img.src;
+                show(thumbnail);
+            }
+        }, function() {
+            // In some browsers (such as IE9 and older) an img w/out a src attribute
+            // are displayed as "broken" images, so we sohuld just hide the img tag
+            // if we aren't going to display the "waiting" placeholder.
             hide(thumbnail);
-        }
+        });
     }
 
     // Displays a "thumbnail not available" type placeholder image
@@ -343,19 +353,19 @@ qq.Templating = function(spec) {
     function maybeSetDisplayNotAvailableImg(id, thumbnail) {
         var previewing = previewGeneration[id] || new qq.Promise().failure();
 
-        if (cachedThumbnailNotAvailableImg) {
+        cachedThumbnailNotAvailableImg.then(function(img) {
             previewing.then(
                 function() {
                     delete previewGeneration[id];
                 },
                 function() {
-                    maybeScalePlaceholderViaCss(cachedThumbnailNotAvailableImg, thumbnail);
-                    thumbnail.src = cachedThumbnailNotAvailableImg.src;
+                    maybeScalePlaceholderViaCss(img, thumbnail);
+                    thumbnail.src = img.src;
                     show(thumbnail);
                     delete previewGeneration[id];
                 }
             );
-        }
+        });
     }
 
     // Ensures a placeholder image does not exceed any max size specified
@@ -693,7 +703,7 @@ qq.Templating = function(spec) {
             }
         },
 
-        updateThumbnail: function(id, thumbnailUrl) {
+        updateThumbnail: function(id, thumbnailUrl, showWaitingImg) {
             var thumbnail = getThumbnail(id),
                 spec = {
                     maxSize: thumbnailMaxSize,
@@ -702,6 +712,10 @@ qq.Templating = function(spec) {
 
             if (thumbnail) {
                 if (thumbnailUrl) {
+                    if (showWaitingImg) {
+                        displayWaitingImg(thumbnail);
+                    }
+
                     return options.imageGenerator.generate(thumbnailUrl, thumbnail, spec).then(
                         function() {
                             show(thumbnail);

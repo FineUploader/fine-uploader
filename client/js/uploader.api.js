@@ -490,7 +490,7 @@
             this._templating.addFile(id, this._options.formatFileName(name), prependData);
 
             if (canned) {
-                this._thumbnailUrls[id] && this._templating.updateThumbnail(id, this._thumbnailUrls[id]);
+                this._thumbnailUrls[id] && this._templating.updateThumbnail(id, this._thumbnailUrls[id], true);
             }
             else {
                 this._templating.generatePreview(id, this.getFile(id));
