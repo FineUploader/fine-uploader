@@ -179,7 +179,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 },
                 callbacks: {
                     onComplete: function(id, name, response, xhr) {
-                        assert.equal(uploader.getUuid(0), newUuid, "New UUID is not as expected");
+                        assert.equal(uploader.getUuid(0), newUuid);
                     }
                 }
             });

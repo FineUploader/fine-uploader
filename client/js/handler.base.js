@@ -92,7 +92,7 @@ qq.UploadHandler = function(o, namespace) {
 
         handlerImpl = new handlerType["UploadHandler" + handlerModuleSubtype](
             options,
-            {onUploadComplete: dequeue, onUuidChanged: options.onUuidChanged, getName: options.getName, log: log}
+            {onUploadComplete: dequeue, onUuidChanged: options.onUuidChanged, getName: options.getName, getUuid: options.getUuid, log: log}
         );
     }
 
@@ -102,7 +102,7 @@ qq.UploadHandler = function(o, namespace) {
          * Adds file or file input to the queue
          * @returns id
          **/
-        add: function(id, uuid, file) {
+        add: function(id, file) {
             return handlerImpl.add.apply(this, arguments);
         },
 
@@ -192,14 +192,6 @@ qq.UploadHandler = function(o, namespace) {
 
         expunge: function(id) {
             return handlerImpl.expunge(id);
-        },
-
-        getUuid: function(id) {
-            return handlerImpl.getUuid(id);
-        },
-
-        setUuid: function(id, newUuid) {
-            return handlerImpl.setUuid(id, newUuid);
         },
 
         /**

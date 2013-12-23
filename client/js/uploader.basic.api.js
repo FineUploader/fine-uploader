@@ -189,11 +189,11 @@
         },
 
         getUuid: function(id) {
-            return this._handler.getUuid(id);
+            return this._uploadData.retrieve({id: id}).uuid;
         },
 
         setUuid: function(id, newUuid) {
-            return this._handler.setUuid(id, newUuid);
+            return this._uploadData.uuidChanged(id, newUuid);
         },
 
         getResumableFilesData: function() {
@@ -375,7 +375,7 @@
             }
 
             id = this._uploadData.addFile(uuid, name, size);
-            this._handler.add(id, uuid, file);
+            this._handler.add(id, file);
 
             this._netUploadedOrQueued++;
 
@@ -624,10 +624,14 @@
                         return self._onAutoRetry.apply(self, arguments);
                     },
                     onUuidChanged: function(id, newUuid) {
-                        self._uploadData.uuidChanged(id, newUuid);
+                        self.log("Server requested UUID change from '" + self.getUuid(id) + "' to '" + newUuid + "'");
+                        self.setUuid(id, newUuid);
                     },
                     getName: function(id) {
                         return self.getName(id);
+                    },
+                    getUuid: function(id) {
+                        return self.getUuid(id);
                     }
                 };
 

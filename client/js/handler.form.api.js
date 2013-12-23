@@ -22,6 +22,7 @@ qq.UploadHandlerFormApi = function(internalApi, spec, proxy) {
         onCancel = proxy.onCancel,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
+        getUuid = proxy.getUuid,
         log = proxy.log,
         corsMessageReceiver = new qq.WindowReceiveMessage({log: log});
 
@@ -64,7 +65,7 @@ qq.UploadHandlerFormApi = function(internalApi, spec, proxy) {
     function registerPostMessageCallback(iframe, callback) {
         var iframeName = iframe.id,
             fileId = getFileIdForIframeName(iframeName),
-            uuid = fileState[fileId].uuid;
+            uuid = getUuid(fileId);
 
         onloadCallbacks[uuid] = callback;
 
@@ -174,7 +175,7 @@ qq.UploadHandlerFormApi = function(internalApi, spec, proxy) {
                 response = qq.parseJson(innerHtmlOrMessage);
 
                 if (response.newUuid !== undefined) {
-                    publicApi.setUuid(id, response.newUuid);
+                    onUuidChanged(id, response.newUuid);
                 }
             }
             catch(error) {
@@ -284,12 +285,10 @@ qq.UploadHandlerFormApi = function(internalApi, spec, proxy) {
 // PUBLIC API
 
     qq.extend(this, {
-        add: function(id, uuid, fileInput) {
+        add: function(id, fileInput) {
             fileState[id] = {input: fileInput};
 
             fileInput.setAttribute("name", inputName);
-
-            fileState[id].uuid = uuid;
 
             // remove file input from DOM
             if (fileInput.parentNode){
@@ -314,10 +313,6 @@ qq.UploadHandlerFormApi = function(internalApi, spec, proxy) {
             return expungeFile(id);
         },
 
-        getUuid: function(id) {
-            return fileState[id].uuid;
-        },
-
         cancel: function(id) {
             var onCancelRetVal = onCancel(id, getName(id));
 
@@ -336,12 +331,6 @@ qq.UploadHandlerFormApi = function(internalApi, spec, proxy) {
 
         upload: function(id) {
             // implementation-specific
-        },
-
-        setUuid: function(id, newUuid) {
-            log("Server requested UUID change from '" + fileState[id].uuid + "' to '" + newUuid + "'");
-            fileState[id].uuid = newUuid;
-            onUuidChanged(id, newUuid);
         }
     });
 };

@@ -14,6 +14,7 @@ qq.UploadHandlerForm = function(options, proxy) {
         uploadCompleteCallback = proxy.onUploadComplete,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
+        getUuid = proxy.getUuid,
         uploadComplete = uploadCompleteCallback,
         log = proxy.log,
         internalApi = {};
@@ -59,7 +60,7 @@ qq.UploadHandlerForm = function(options, proxy) {
             endpoint = options.endpointStore.getEndpoint(id),
             name = getName(id);
 
-        params[options.uuidName] = fileState[id].uuid;
+        params[options.uuidName] = getUuid(id);
         params[options.filenameParam] = name;
 
         return internalApi.initFormForUpload({
@@ -73,7 +74,7 @@ qq.UploadHandlerForm = function(options, proxy) {
 
     qq.extend(this, new qq.UploadHandlerFormApi(internalApi,
         {fileState: fileState, isCors: options.cors.expected, inputName: options.inputName},
-        {onCancel: options.onCancel, onUuidChanged: onUuidChanged, getName: getName, log: log}));
+        {onCancel: options.onCancel, onUuidChanged: onUuidChanged, getName: getName, getUuid: getUuid, log: log}));
 
     qq.extend(this, {
         upload: function(id) {

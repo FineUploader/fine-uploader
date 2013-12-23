@@ -14,6 +14,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
         uploadCompleteCallback = proxy.onUploadComplete,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
+        getUuid = proxy.getUuid,
         log = proxy.log,
         onCompleteCallback = options.onComplete,
         onUpload = options.onUpload,
@@ -182,7 +183,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
 
     qq.extend(this, new qq.UploadHandlerFormApi(internalApi,
         {fileState: fileState, isCors: false, inputName: "file"},
-        {onCancel: options.onCancel, onUuidChanged: onUuidChanged, getName: getName, log: log}));
+        {onCancel: options.onCancel, onUuidChanged: onUuidChanged, getName: getName, getUuid: getUuid, log: log}));
 
     qq.extend(this, {
         upload: function(id) {

@@ -12,6 +12,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     var uploadComplete = proxy.onUploadComplete,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
+        getUuid = proxy.getUuid,
         log = proxy.log,
         fileState = [],
         cookieItemDelimiter = "|",
@@ -77,7 +78,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
             name = getName(id),
             size = publicApi.getSize(id);
 
-        params[spec.uuidName] = fileState[id].uuid;
+        params[spec.uuidName] = getUuid(id);
         params[spec.filenameParam] = name;
 
 
@@ -255,7 +256,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
             response = qq.parseJson(xhr.responseText);
 
             if (response.newUuid !== undefined) {
-                publicApi.setUuid(id, response.newUuid);
+                onUuidChanged(id, response.newUuid);
             }
         }
         catch(error) {
@@ -343,7 +344,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     }
 
     function persistChunkData(id, chunkData) {
-        var fileUuid = publicApi.getUuid(id),
+        var fileUuid = getUuid(id),
             lastByteSent = fileState[id].loaded,
             initialRequestOverhead = fileState[id].initialRequestOverhead,
             estTotalRequestsSize = fileState[id].estTotalRequestsSize,
@@ -527,13 +528,13 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     qq.extend(this, new qq.UploadHandlerXhrApi(
         internalApi,
         {fileState: fileState, chunking: chunkFiles ? spec.chunking : null},
-        {onUpload: handleUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName, log: log}
+        {onUpload: handleUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName, getUuid: getUuid, log: log}
     ));
 
     // Base XHR API overrides
     qq.override(this, function(super_) {
         return {
-            add: function(id, uuid, fileOrBlobData) {
+            add: function(id, fileOrBlobData) {
                 var persistedChunkData;
 
                 super_.add.apply(this, arguments);
@@ -542,7 +543,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
                     persistedChunkData = getPersistedChunkData(id);
 
                     if (persistedChunkData) {
-                        fileState[id].uuid = persistedChunkData.uuid;
+                        onUuidChanged(id, persistedChunkData.uuid);
                     }
                 }
 

@@ -18,6 +18,7 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
         onCancel = proxy.onCancel,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
+        getUuid = proxy.getUuid,
         log = proxy.log;
 
 
@@ -93,7 +94,7 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
         /**
          * Adds File or Blob to the queue
          **/
-        add: function(id, uuid, fileOrBlobData) {
+        add: function(id, fileOrBlobData) {
             if (qq.isFile(fileOrBlobData)) {
                 fileState[id] = {file: fileOrBlobData};
             }
@@ -101,10 +102,8 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
                 fileState[id] =  {blobData: fileOrBlobData};
             }
             else {
-                throw new Error("Passed obj in not a File or BlobData (in qq.UploadHandlerXhr)");
+                throw new Error("Passed obj is not a File or BlobData (in qq.UploadHandlerXhr)");
             }
-
-            fileState[id].uuid = uuid;
         },
 
         getSize: function(id) {
@@ -144,10 +143,6 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
             delete fileState[id];
         },
 
-        getUuid: function(id) {
-            return fileState[id].uuid;
-        },
-
         /**
          * Sends the file identified by id to the server
          */
@@ -170,12 +165,6 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
             }
 
             return false;
-        },
-
-        setUuid: function(id, newUuid) {
-            log("Server requested UUID change from '" + fileState[id].uuid + "' to '" + newUuid + "'");
-            fileState[id].uuid = newUuid;
-            onUuidChanged(id, newUuid);
         },
 
         pause: function(id) {

@@ -15,6 +15,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         uploadCompleteCallback = proxy.onUploadComplete,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
+        getUuid = proxy.getUuid,
         log = proxy.log,
         expectedStatus = 200,
         onProgress = spec.onProgress,
@@ -410,7 +411,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
 
                 persistedData = JSON.parse(persistedData);
 
-                fileState[id].uuid = persistedData.uuid;
+                onUuidChanged(id, persistedData.uuid);
                 setKey(id, persistedData.key);
                 fileState[id].loaded = persistedData.loaded;
                 fileState[id].chunking = persistedData.chunking;
@@ -429,7 +430,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
             persistedData = {
                 name: getName(id),
                 size: publicApi.getSize(id),
-                uuid: publicApi.getUuid(id),
+                uuid: getUuid(id),
                 key: getActualKey(id),
                 loaded: fileState[id].loaded,
                 chunking: fileState[id].chunking,
@@ -738,7 +739,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
     qq.extend(this, new qq.UploadHandlerXhrApi(
         internalApi,
         {fileState: fileState, chunking: chunkingPossible ? spec.chunking : null},
-        {onUpload: handleStartUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName, log: log}
+        {onUpload: handleStartUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName, getUuid: getUuid, log: log}
     ));
 
 
@@ -748,7 +749,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
     // Base XHR API overrides
     qq.override(this, function(super_) {
         return {
-            add: function(id, uuid, fileOrBlobData) {
+            add: function(id, fileOrBlobData) {
                 super_.add.apply(this, arguments);
 
                 if (resumeEnabled) {
