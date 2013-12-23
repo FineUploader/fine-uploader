@@ -1,12 +1,22 @@
 /*globals qq*/
-qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, getName, logCallback) {
+/**
+ * Upload handler used that assumes the current user agent does not have any support for the
+ * File API, and, therefore, makes use of iframes and forms to submit the files directly to
+ * a generic server.
+ *
+ * @param options Options passed from the base handler
+ * @param proxy Callbacks & methods used to query for or push out data/changes
+ */
+qq.UploadHandlerForm = function(options, proxy) {
     "use strict";
 
     var fileState = [],
+        uploadCompleteCallback = proxy.onUploadComplete,
+        onUuidChanged = proxy.onUuidChanged,
+        getName = proxy.getName,
         uploadComplete = uploadCompleteCallback,
-        log = logCallback,
-        internalApi = {},
-        publicApi = this;
+        log = proxy.log,
+        internalApi = {};
 
 
     /**
@@ -61,7 +71,9 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
         });
     }
 
-    qq.extend(this, new qq.UploadHandlerFormApi(internalApi, fileState, options.cors.expected, options.inputName, options.onCancel, onUuidChanged, getName, log));
+    qq.extend(this, new qq.UploadHandlerFormApi(internalApi,
+        {fileState: fileState, isCors: options.cors.expected, inputName: options.inputName},
+        {onCancel: options.onCancel, onUuidChanged: onUuidChanged, getName: getName, log: log}));
 
     qq.extend(this, {
         upload: function(id) {

@@ -5,42 +5,43 @@
  *
  * If chunking is supported and enabled, the S3 Multipart Upload REST API is utilized.
  *
- * @param options Options passed from the base handler
- * @param uploadCompleteCallback Callback to invoke when the upload has completed, regardless of success.
- * @param onUuidChanged Callback to invoke when the associated items UUID has changed by order of the server.
- * @param getName Reteives the current name of the associated file
- * @param log Used to posting log messages.
+ * @param spec Options passed from the base handler
+ * @param proxy Callbacks & methods used to query for or push out data/changes
  */
-qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, getName, log) {
+qq.s3.UploadHandlerXhr = function(spec, proxy) {
     "use strict";
 
     var fileState = [],
+        uploadCompleteCallback = proxy.onUploadComplete,
+        onUuidChanged = proxy.onUuidChanged,
+        getName = proxy.getName,
+        log = proxy.log,
         expectedStatus = 200,
-        onProgress = options.onProgress,
-        onComplete = options.onComplete,
-        onUpload = options.onUpload,
-        onGetKeyName = options.getKeyName,
-        filenameParam = options.filenameParam,
-        paramsStore = options.paramsStore,
-        endpointStore = options.endpointStore,
-        accessKey = options.accessKey,
-        acl = options.objectProperties.acl,
-        reducedRedundancy = options.objectProperties.reducedRedundancy,
-        validation = options.validation,
-        signature = options.signature,
-        chunkingPossible = options.chunking.enabled && qq.supportedFeatures.chunking,
-        resumeEnabled = options.resume.enabled && chunkingPossible && qq.supportedFeatures.resume && window.localStorage !== undefined,
+        onProgress = spec.onProgress,
+        onComplete = spec.onComplete,
+        onUpload = spec.onUpload,
+        onGetKeyName = spec.getKeyName,
+        filenameParam = spec.filenameParam,
+        paramsStore = spec.paramsStore,
+        endpointStore = spec.endpointStore,
+        accessKey = spec.accessKey,
+        acl = spec.objectProperties.acl,
+        reducedRedundancy = spec.objectProperties.reducedRedundancy,
+        validation = spec.validation,
+        signature = spec.signature,
+        chunkingPossible = spec.chunking.enabled && qq.supportedFeatures.chunking,
+        resumeEnabled = spec.resume.enabled && chunkingPossible && qq.supportedFeatures.resume && window.localStorage !== undefined,
         internalApi = {},
         publicApi = this,
         policySignatureRequester = new qq.s3.SignatureAjaxRequester({
             expectingPolicy: true,
             signatureSpec: signature,
-            cors: options.cors,
+            cors: spec.cors,
             log: log
         }),
         restSignatureRequester = new qq.s3.SignatureAjaxRequester({
             signatureSpec: signature,
-            cors: options.cors,
+            cors: spec.cors,
             log: log
         }),
         initiateMultipartRequester = new qq.s3.InitiateMultipartAjaxRequester({
@@ -48,10 +49,10 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             endpointStore: endpointStore,
             paramsStore: paramsStore,
             signatureSpec: signature,
-            accessKey: options.accessKey,
+            accessKey: spec.accessKey,
             acl: acl,
             reducedRedundancy: reducedRedundancy,
-            cors: options.cors,
+            cors: spec.cors,
             log: log,
             getContentType: function(id) {
                 return publicApi.getFile(id).type;
@@ -66,8 +67,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         completeMultipartRequester = new qq.s3.CompleteMultipartAjaxRequester({
             endpointStore: endpointStore,
             signatureSpec: signature,
-            accessKey: options.accessKey,
-            cors: options.cors,
+            accessKey: spec.accessKey,
+            cors: spec.cors,
             log: log,
             getKey: function(id) {
                 return getUrlSafeKey(id);
@@ -76,8 +77,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         abortMultipartRequester = new qq.s3.AbortMultipartAjaxRequester({
             endpointStore: endpointStore,
             signatureSpec: signature,
-            accessKey: options.accessKey,
-            cors: options.cors,
+            accessKey: spec.accessKey,
+            cors: spec.cors,
             log: log,
             getKey: function(id) {
                 return getUrlSafeKey(id);
@@ -184,7 +185,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
         }
 
         // If this upload failed AND we are expecting an auto-retry, we are not done yet.  Otherwise, we are done.
-        if (!isError || !options.onAutoRetry(id, name, responseToBubble, xhr)) {
+        if (!isError || !spec.onAutoRetry(id, name, responseToBubble, xhr)) {
             log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
 
             // If the upload has not failed and has not been paused, clean up state date
@@ -491,7 +492,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
     // Deletes any local storage records that are "expired".
     function removeExpiredChunkingRecords() {
-        var expirationDays = options.resume.recordsExpireIn;
+        var expirationDays = spec.resume.recordsExpireIn;
 
         iterateResumeRecords(function(key, uploadData) {
             var expirationDate = new Date(uploadData.lastUpdated);
@@ -513,8 +514,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
     function getLocalStorageId(id) {
         var name = getName(id),
             size = publicApi.getSize(id),
-            chunkSize = options.chunking.partSize,
-            endpoint = options.endpointStore.getEndpoint(id),
+            chunkSize = spec.chunking.partSize,
+            endpoint = spec.endpointStore.getEndpoint(id),
             bucket = qq.s3.util.getBucket(endpoint);
 
         return qq.format("qqs3resume-{}-{}-{}-{}", name, size, chunkSize, bucket);
@@ -609,20 +610,20 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
             xhr = fileState[id].xhr,
             totalFileSize = publicApi.getSize(id),
             chunkData = internalApi.getChunkData(id, idx),
-            domain = options.endpointStore.getEndpoint(id);
+            domain = spec.endpointStore.getEndpoint(id);
 
         // Add appropriate headers to the multipart upload request.
         // Once these have been determined (asynchronously) attach the headers and send the chunk.
         addChunkedHeaders(id).then(function(headers, endOfUrl) {
             var url = domain + "/" + endOfUrl;
 
-            options.onUploadChunk(id, name, internalApi.getChunkDataForCallback(chunkData));
+            spec.onUploadChunk(id, name, internalApi.getChunkDataForCallback(chunkData));
 
             xhr.upload.onprogress = function(e) {
                 if (e.lengthComputable) {
                     var totalLoaded = e.loaded + fileState[id].loaded;
 
-                    options.onProgress(id, name, totalLoaded, totalFileSize);
+                    spec.onProgress(id, name, totalLoaded, totalFileSize);
                 }
             };
 
@@ -653,7 +654,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
      */
     function addChunkedHeaders(id) {
         var headers = {},
-            endpoint = options.endpointStore.getEndpoint(id),
+            endpoint = spec.endpointStore.getEndpoint(id),
             bucket = qq.s3.util.getBucket(endpoint),
             key = getUrlSafeKey(id),
             promise = new qq.Promise(),
@@ -667,7 +668,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
         restSignatureRequester.getSignature(id, {headers: toSign.stringToSign}).then(function(response) {
-            headers.Authorization = "AWS " + options.accessKey + ":" + response.signature;
+            headers.Authorization = "AWS " + spec.accessKey + ":" + response.signature;
             promise.success(headers, toSign.endOfUrl);
         }, promise.failure);
 
@@ -719,7 +720,7 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
             maybePersistChunkedState(id);
 
-            options.onUploadChunkSuccess(id, internalApi.getChunkDataForCallback(chunkData), response, xhr);
+            spec.onUploadChunkSuccess(id, internalApi.getChunkDataForCallback(chunkData), response, xhr);
 
             // We might not be done with this file...
             maybeUploadNextChunk(id);
@@ -736,13 +737,8 @@ qq.s3.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged
 
     qq.extend(this, new qq.UploadHandlerXhrApi(
         internalApi,
-        fileState,
-        chunkingPossible ? options.chunking : null,
-        handleStartUploadSignal,
-        options.onCancel,
-        onUuidChanged,
-        getName,
-        log
+        {fileState: fileState, chunking: chunkingPossible ? spec.chunking : null},
+        {onUpload: handleStartUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName, log: log}
     ));
 
 

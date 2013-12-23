@@ -90,7 +90,10 @@ qq.UploadHandler = function(o, namespace) {
         var handlerType = namespace ? qq[namespace] : qq,
             handlerModuleSubtype = qq.supportedFeatures.ajaxUploading ? "Xhr" : "Form";
 
-        handlerImpl = new handlerType["UploadHandler" + handlerModuleSubtype](options, dequeue, options.onUuidChanged, options.getName, log);
+        handlerImpl = new handlerType["UploadHandler" + handlerModuleSubtype](
+            options,
+            {onUploadComplete: dequeue, onUuidChanged: options.onUuidChanged, getName: options.getName, log: log}
+        );
     }
 
 

@@ -5,17 +5,16 @@
  * AWS API.
  *
  * @param options Options passed from the base handler
- * @param uploadCompleteCallback Callback to invoke when the upload has completed, regardless of success.
- * @param onUuidChanged Callback to invoke when the associated items UUID has changed by order of the server.
- * @param getName Reteives the current name of the associated file
- * @param logCallback Used to posting log messages.
+ * @param proxy Callbacks & methods used to query for or push out data/changes
  */
-qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, getName, logCallback) {
+qq.s3.UploadHandlerForm = function(options, proxy) {
     "use strict";
 
-    var publicApi = this,
-        fileState = [],
-        log = logCallback,
+    var fileState = [],
+        uploadCompleteCallback = proxy.onUploadComplete,
+        onUuidChanged = proxy.onUuidChanged,
+        getName = proxy.getName,
+        log = proxy.log,
         onCompleteCallback = options.onComplete,
         onUpload = options.onUpload,
         onGetKeyName = options.getKeyName,
@@ -181,7 +180,9 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
         uploadCompleteCallback(id);
     }
 
-    qq.extend(this, new qq.UploadHandlerFormApi(internalApi, fileState, false, "file", options.onCancel, onUuidChanged, getName, log));
+    qq.extend(this, new qq.UploadHandlerFormApi(internalApi,
+        {fileState: fileState, isCors: false, inputName: "file"},
+        {onCancel: options.onCancel, onUuidChanged: onUuidChanged, getName: getName, log: log}));
 
     qq.extend(this, {
         upload: function(id) {

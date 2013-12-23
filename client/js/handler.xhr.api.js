@@ -4,19 +4,21 @@
  * XHR upload handlers.
  *
  * @param internalApi Object that will be filled with internal API methods
- * @param fileState An array containing objects that describe files tracked by the XHR upload handler.
- * @param chunking Properties that describe chunking option values.  Null if chunking is not enabled or possible.
- * @param onUpload Used to call the specific XHR upload handler when an upload has been request.
- * @param onCancel Invoked when a request is handled to cancel an in-progress upload.  Invoked before the upload is actually cancelled.
- * @param onUuidChanged Callback to be invoked when the internal UUID is altered.
- * @param getName Reteives the current name of the associated file
- * @param log Method used to send messages to the log.
+ * @param spec Options/static values used to configure this handler
+ * @param proxy Callbacks & methods used to query for or push out data/changes
  * @constructor
  */
-qq.UploadHandlerXhrApi = function(internalApi, fileState, chunking, onUpload, onCancel, onUuidChanged, getName, log) {
+qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
     "use strict";
 
-    var publicApi = this;
+    var publicApi = this,
+        fileState = spec.fileState,
+        chunking = spec.chunking,
+        onUpload = proxy.onUpload,
+        onCancel = proxy.onCancel,
+        onUuidChanged = proxy.onUuidChanged,
+        getName = proxy.getName,
+        log = proxy.log;
 
 
     function getChunk(fileOrBlob, startByte, endByte) {

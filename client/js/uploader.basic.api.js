@@ -375,7 +375,6 @@
             }
 
             id = this._uploadData.addFile(uuid, name, size);
-
             this._handler.add(id, uuid, file);
 
             this._netUploadedOrQueued++;

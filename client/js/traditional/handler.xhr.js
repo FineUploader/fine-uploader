@@ -1,25 +1,34 @@
-/*globals qq, File, XMLHttpRequest, FormData, Blob*/
-qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, getName, logCallback) {
+/*globals qq*/
+/**
+ * Upload handler used to upload to traditional endpoints.  It depends on File API support, and, therefore,
+ * makes use of `XMLHttpRequest` level 2 to upload `File`s and `Blob`s to a generic server.
+ *
+ * @param spec Options passed from the base handler
+ * @param proxy Callbacks & methods used to query for or push out data/changes
+ */
+qq.UploadHandlerXhr = function(spec, proxy) {
     "use strict";
 
-    var uploadComplete = uploadCompleteCallback,
-        log = logCallback,
+    var uploadComplete = proxy.onUploadComplete,
+        onUuidChanged = proxy.onUuidChanged,
+        getName = proxy.getName,
+        log = proxy.log,
         fileState = [],
         cookieItemDelimiter = "|",
-        chunkFiles = options.chunking.enabled && qq.supportedFeatures.chunking,
-        resumeEnabled = options.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
-        multipart = options.forceMultipart || options.paramsInBody,
+        chunkFiles = spec.chunking.enabled && qq.supportedFeatures.chunking,
+        resumeEnabled = spec.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
+        multipart = spec.forceMultipart || spec.paramsInBody,
         internalApi = {},
         publicApi = this,
         resumeId;
 
     function getResumeId() {
-        if (options.resume.id !== null &&
-            options.resume.id !== undefined &&
-            !qq.isFunction(options.resume.id) &&
-            !qq.isObject(options.resume.id)) {
+        if (spec.resume.id !== null &&
+            spec.resume.id !== undefined &&
+            !qq.isFunction(spec.resume.id) &&
+            !qq.isObject(spec.resume.id)) {
 
-            return options.resume.id;
+            return spec.resume.id;
         }
     }
 
@@ -29,23 +38,23 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
         var size = publicApi.getSize(id),
             name = getName(id);
 
-        params[options.chunking.paramNames.partIndex] = chunkData.part;
-        params[options.chunking.paramNames.partByteOffset] = chunkData.start;
-        params[options.chunking.paramNames.chunkSize] = chunkData.size;
-        params[options.chunking.paramNames.totalParts] = chunkData.count;
-        params[options.totalFileSizeName] = size;
+        params[spec.chunking.paramNames.partIndex] = chunkData.part;
+        params[spec.chunking.paramNames.partByteOffset] = chunkData.start;
+        params[spec.chunking.paramNames.chunkSize] = chunkData.size;
+        params[spec.chunking.paramNames.totalParts] = chunkData.count;
+        params[spec.totalFileSizeName] = size;
 
         /**
          * When a Blob is sent in a multipart request, the filename value in the content-disposition header is either "blob"
          * or an empty string.  So, we will need to include the actual file name as a param in this case.
          */
         if (multipart) {
-            params[options.filenameParam] = name;
+            params[spec.filenameParam] = name;
         }
     }
 
     function addResumeSpecificParams(params) {
-        params[options.resume.paramNames.resuming] = true;
+        params[spec.resume.paramNames.resuming] = true;
     }
 
     function getChunk(fileOrBlob, startByte, endByte) {
@@ -62,40 +71,40 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
 
     function setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id) {
         var formData = new FormData(),
-            method = options.demoMode ? "GET" : "POST",
-            endpoint = options.endpointStore.getEndpoint(id),
+            method = spec.demoMode ? "GET" : "POST",
+            endpoint = spec.endpointStore.getEndpoint(id),
             url = endpoint,
             name = getName(id),
             size = publicApi.getSize(id);
 
-        params[options.uuidName] = fileState[id].uuid;
-        params[options.filenameParam] = name;
+        params[spec.uuidName] = fileState[id].uuid;
+        params[spec.filenameParam] = name;
 
 
         if (multipart) {
-            params[options.totalFileSizeName] = size;
+            params[spec.totalFileSizeName] = size;
         }
 
         //build query string
-        if (!options.paramsInBody) {
+        if (!spec.paramsInBody) {
             if (!multipart) {
-                params[options.inputName] = name;
+                params[spec.inputName] = name;
             }
             url = qq.obj2url(params, endpoint);
         }
 
         xhr.open(method, url, true);
 
-        if (options.cors.expected && options.cors.sendCredentials) {
+        if (spec.cors.expected && spec.cors.sendCredentials) {
             xhr.withCredentials = true;
         }
 
         if (multipart) {
-            if (options.paramsInBody) {
+            if (spec.paramsInBody) {
                 qq.obj2FormData(params, formData);
             }
 
-            formData.append(options.inputName, fileOrBlob);
+            formData.append(spec.inputName, fileOrBlob);
             return formData;
         }
 
@@ -103,7 +112,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
     }
 
     function setHeaders(id, xhr) {
-        var extraHeaders = options.customHeaders,
+        var extraHeaders = spec.customHeaders,
             fileOrBlob = fileState[id].file || fileState[id].blobData.blob;
 
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
@@ -126,8 +135,8 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
 
         fileState[id].attemptingResume = false;
 
-        options.onProgress(id, name, size, size);
-        options.onComplete(id, name, response, xhr);
+        spec.onProgress(id, name, size, size);
+        spec.onComplete(id, name, response, xhr);
 
         if (fileState[id]) {
             delete fileState[id].xhr;
@@ -159,13 +168,13 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
                 var totalLoaded = e.loaded + fileState[id].loaded,
                     estTotalRequestsSize = calcAllRequestsSizeForChunkedUpload(id, chunkIdx, e.total);
 
-                options.onProgress(id, name, totalLoaded, estTotalRequestsSize);
+                spec.onProgress(id, name, totalLoaded, estTotalRequestsSize);
             }
         };
 
-        options.onUploadChunk(id, name, internalApi.getChunkDataForCallback(chunkData));
+        spec.onUploadChunk(id, name, internalApi.getChunkDataForCallback(chunkData));
 
-        params = options.paramsStore.getParams(id);
+        params = spec.paramsStore.getParams(id);
         addChunkingSpecificParams(id, params, chunkData);
 
         if (fileState[id].attemptingResume) {
@@ -219,7 +228,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
         fileState[id].attemptingResume = false;
         fileState[id].loaded += chunkData.size + getLastRequestOverhead(id);
 
-        options.onUploadChunkSuccess(id, internalApi.getChunkDataForCallback(chunkData), response, xhr);
+        spec.onUploadChunkSuccess(id, internalApi.getChunkDataForCallback(chunkData), response, xhr);
 
         if (fileState[id].remainingChunkIdxs.length > 0) {
             uploadNextChunk(id);
@@ -281,7 +290,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
     function handleNonResetErrorResponse(id, response, xhr) {
         var name = getName(id);
 
-        if (options.onAutoRetry(id, name, response, xhr)) {
+        if (spec.onAutoRetry(id, name, response, xhr)) {
             return;
         }
         else {
@@ -344,7 +353,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
                 cookieItemDelimiter + lastByteSent +
                 cookieItemDelimiter + initialRequestOverhead +
                 cookieItemDelimiter + estTotalRequestsSize,
-            cookieExpDays = options.resume.cookiesExpireIn;
+            cookieExpDays = spec.resume.cookiesExpireIn;
 
         qq.setCookie(cookieName, cookieValue, cookieExpDays);
     }
@@ -388,7 +397,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
     function getChunkDataCookieName(id) {
         var filename = getName(id),
             fileSize = publicApi.getSize(id),
-            maxChunkSize = options.chunking.partSize,
+            maxChunkSize = spec.chunking.partSize,
             cookieName;
 
         cookieName = "qqfilechunk" + cookieItemDelimiter + encodeURIComponent(filename) + cookieItemDelimiter + fileSize + cookieItemDelimiter + maxChunkSize;
@@ -426,7 +435,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
             firstChunkDataForResume = internalApi.getChunkData(id, persistedChunkInfoForResume.part),
             onResumeRetVal;
 
-        onResumeRetVal = options.onResume(id, name, internalApi.getChunkDataForCallback(firstChunkDataForResume));
+        onResumeRetVal = spec.onResume(id, name, internalApi.getChunkDataForCallback(firstChunkDataForResume));
         if (onResumeRetVal instanceof qq.Promise) {
             log("Waiting for onResume promise to be fulfilled for " + id);
             onResumeRetVal.then(
@@ -485,13 +494,13 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
         xhr.upload.onprogress = function(e){
             if (e.lengthComputable){
                 fileState[id].loaded = e.loaded;
-                options.onProgress(id, name, e.loaded, e.total);
+                spec.onProgress(id, name, e.loaded, e.total);
             }
         };
 
         xhr.onreadystatechange = getReadyStateChangeHandler(id, xhr);
 
-        params = options.paramsStore.getParams(id);
+        params = spec.paramsStore.getParams(id);
         toSend = setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id);
         setHeaders(id, xhr);
 
@@ -503,7 +512,7 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
         var name = getName(id);
 
         if (publicApi.isValid(id)) {
-            options.onUpload(id, name);
+            spec.onUpload(id, name);
 
             if (chunkFiles) {
                 handleFileChunkingUpload(id, retry);
@@ -517,13 +526,8 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
 
     qq.extend(this, new qq.UploadHandlerXhrApi(
         internalApi,
-        fileState,
-        chunkFiles ? options.chunking : null,
-        handleUploadSignal,
-        options.onCancel,
-        onUuidChanged,
-        getName,
-        log
+        {fileState: fileState, chunking: chunkFiles ? spec.chunking : null},
+        {onUpload: handleUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName, log: log}
     ));
 
     // Base XHR API overrides
@@ -552,11 +556,11 @@ qq.UploadHandlerXhr = function(options, uploadCompleteCallback, onUuidChanged, g
                 if (chunkFiles && resumeEnabled) {
                     if (resumeId === undefined) {
                         matchingCookieNames = qq.getCookieNames(new RegExp("^qqfilechunk\\" + cookieItemDelimiter + ".+\\" +
-                            cookieItemDelimiter + "\\d+\\" + cookieItemDelimiter + options.chunking.partSize + "="));
+                            cookieItemDelimiter + "\\d+\\" + cookieItemDelimiter + spec.chunking.partSize + "="));
                     }
                     else {
                         matchingCookieNames = qq.getCookieNames(new RegExp("^qqfilechunk\\" + cookieItemDelimiter + ".+\\" +
-                            cookieItemDelimiter + "\\d+\\" + cookieItemDelimiter + options.chunking.partSize + "\\" +
+                            cookieItemDelimiter + "\\d+\\" + cookieItemDelimiter + spec.chunking.partSize + "\\" +
                             cookieItemDelimiter + resumeId + "="));
                     }
 
