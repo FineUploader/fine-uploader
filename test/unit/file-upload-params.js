@@ -1,9 +1,7 @@
 if (qqtest.canDownloadFileAsBlob) {
     describe("sending params with upload requests", function() {
-        var testUploadEndpoint = "/test/upload",
-            xhr,
-            oldWrapCallbacks,
-            requests,
+        var fileTestHelper = helpme.setupFileTests(),
+            testUploadEndpoint = "/test/upload",
             params = {
                 foo: "bar",
                 one: 2,
@@ -11,34 +9,6 @@ if (qqtest.canDownloadFileAsBlob) {
                     return "thereturn";
                 }
             };
-
-        beforeEach(function() {
-            mockFormData();
-
-            requests = [];
-            oldWrapCallbacks = qq.FineUploaderBasic.prototype._wrapCallbacks;
-
-            // "Turn off" wrapping of callbacks that squelches errors.  We need AssertionErrors in callbacks to bubble.
-            qq.FineUploaderBasic.prototype._wrapCallbacks = function() {};
-        });
-
-        afterEach(function() {
-            unmockXhr();
-            unmockFormData();
-
-            qq.FineUploaderBasic.prototype._wrapCallbacks = oldWrapCallbacks;
-        });
-
-        function mockXhr() {
-            xhr = sinon.useFakeXMLHttpRequest();
-            xhr.onCreate = function(req) {
-                requests.push(req);
-            };
-        }
-
-        function unmockXhr() {
-            xhr && xhr.restore();
-        }
 
         function getSimpleParamsUploader(mpe, paramsAsOptions) {
             var uploader = new qq.FineUploaderBasic({
@@ -59,7 +29,7 @@ if (qqtest.canDownloadFileAsBlob) {
             assert.expect(4, done);
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                mockXhr();
+                fileTestHelper.mockXhr();
 
                 var request,
                     requestParams,
@@ -69,8 +39,8 @@ if (qqtest.canDownloadFileAsBlob) {
                 uploader.addBlobs({name: "test", blob: blob});
                 uploader.uploadStoredFiles();
 
-                assert.equal(requests.length, 1, "Wrong # of requests");
-                request = requests[0];
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                request = fileTestHelper.getRequests()[0];
                 requestParams = request.requestBody.fields;
                 purlUrl = purl(request.url);
 
@@ -78,7 +48,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(mpe ? requestParams.one : purlUrl.param("one"), theparams.one, "'one' param value incorrect");
                 assert.equal(mpe ? requestParams.thefunc : purlUrl.param("thefunc"), theparams.thefunc(), "'thefunc' param value incorrect");
 
-                requests[0].respond(200, null, JSON.stringify({success: true}));
+                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
             });
         }
 

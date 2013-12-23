@@ -72,6 +72,49 @@ var helpme = (function () {
             };
                    
             var uploader = new qq.FineUploader(options); 
+        },
+
+        setupFileTests: function() {
+            var testUploadEndpoint = "/test/upload",
+                xhr,
+                oldWrapCallbacks,
+                requests;
+
+            beforeEach(function() {
+                mockFormData();
+
+                requests = [];
+                oldWrapCallbacks = qq.FineUploaderBasic.prototype._wrapCallbacks;
+
+                // "Turn off" wrapping of callbacks that squelches errors.  We need AssertionErrors in callbacks to bubble.
+                qq.FineUploaderBasic.prototype._wrapCallbacks = function() {};
+            });
+
+            afterEach(function() {
+                unmockXhr();
+                unmockFormData();
+
+                qq.FineUploaderBasic.prototype._wrapCallbacks = oldWrapCallbacks;
+            });
+
+            function mockXhr() {
+                xhr = sinon.useFakeXMLHttpRequest();
+                xhr.onCreate = function(req) {
+                    requests.push(req);
+                };
+            }
+
+            function unmockXhr() {
+                xhr && xhr.restore && xhr.restore();
+            }
+
+            return {
+                getRequests: function() {
+                    return requests;
+                },
+
+                mockXhr: mockXhr
+            };
         }
     };
 

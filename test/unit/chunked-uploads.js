@@ -1,9 +1,7 @@
 if (qqtest.canDownloadFileAsBlob) {
     describe("chunked uploads", function() {
-        var testUploadEndpoint = "/test/upload",
-            xhr,
-            oldWrapCallbacks,
-            requests,
+        var fileTestHelper = helpme.setupFileTests(),
+            testUploadEndpoint = "/test/upload",
             expectedFileSize = 3266,
             expectedChunks = 3,
             chunkSize = Math.round(expectedFileSize / expectedChunks),
@@ -17,34 +15,6 @@ if (qqtest.canDownloadFileAsBlob) {
                 partIndex: "testpartindex",
                 totalParts: "testtotalparts"
             };
-
-        beforeEach(function() {
-            mockFormData();
-
-            requests = [];
-            oldWrapCallbacks = qq.FineUploaderBasic.prototype._wrapCallbacks;
-
-            // "Turn off" wrapping of callbacks that squelches errors.  We need AssertionErrors in callbacks to bubble.
-            qq.FineUploaderBasic.prototype._wrapCallbacks = function() {};
-        });
-
-        afterEach(function() {
-            unmockXhr();
-            unmockFormData();
-
-            qq.FineUploaderBasic.prototype._wrapCallbacks = oldWrapCallbacks;
-        });
-
-        function mockXhr() {
-            xhr = sinon.useFakeXMLHttpRequest();
-            xhr.onCreate = function(req) {
-                requests.push(req);
-            };
-        }
-
-        function unmockXhr() {
-            xhr && xhr.restore();
-        }
 
         function testChunkedUpload(mpe, customParams, chunkingParamNames, done) {
             customParams = customParams || {};
@@ -66,7 +36,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     },
                     callbacks: {
                         onUploadChunk: function (id, name, chunkData) {
-                            var request = requests[requests.length - 1];
+                            var request = fileTestHelper.getRequests()[fileTestHelper.getRequests().length - 1];
 
                             chunksSent++;
 
@@ -82,7 +52,7 @@ if (qqtest.canDownloadFileAsBlob) {
                             }, 10);
                         },
                         onUploadChunkSuccess: function (id, chunkData, response, xhr) {
-                            var request = requests[requests.length - 1],
+                            var request = fileTestHelper.getRequests()[fileTestHelper.getRequests().length - 1],
                                 requestParams;
 
                             chunksSucceeded++;
@@ -122,7 +92,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 chunksSucceeded = 0;
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
-                mockXhr();
+                fileTestHelper.mockXhr();
                 uploader.addBlobs({name: "test", blob: blob});
             });
         }
@@ -150,7 +120,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     },
                     callbacks: {
                         onUploadChunk: function (id, name, chunkData) {
-                            var request = requests[requests.length - 1];
+                            var request = fileTestHelper.getRequests()[fileTestHelper.getRequests().length - 1];
 
                             chunksSent++;
 
@@ -186,7 +156,7 @@ if (qqtest.canDownloadFileAsBlob) {
                             assert.equal(attemptNumber, 1, "Wrong auto retry attempt #");
                         },
                         onUploadChunkSuccess: function (id, chunkData, response, xhr) {
-                            var request = requests[requests.length - 1],
+                            var request = fileTestHelper.getRequests()[fileTestHelper.getRequests().length - 1],
                                 requestParams = request.requestBody.fields;
 
                             chunksSucceeded++;
@@ -210,7 +180,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 chunksSucceeded = 0;
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
-                mockXhr();
+                fileTestHelper.mockXhr();
                 uploader.addBlobs({name: "test", blob: blob});
             });
         }

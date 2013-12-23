@@ -1,10 +1,8 @@
 if (qqtest.canDownloadFileAsBlob) {
     describe("deleting files", function() {
-        var testUploadEndpoint = "/test/upload",
+        var fileTestHelper = helpme.setupFileTests(),
+            testUploadEndpoint = "/test/upload",
             testDeleteEndpoint = "/test/deletefile",
-            xhr,
-            oldWrapCallbacks,
-            requests,
             deleteParams = {
                 foo: "bar",
                 one: 2,
@@ -12,34 +10,6 @@ if (qqtest.canDownloadFileAsBlob) {
                     return "thereturn";
                 }
             };
-
-        beforeEach(function() {
-            mockFormData();
-
-            requests = [];
-            oldWrapCallbacks = qq.FineUploaderBasic.prototype._wrapCallbacks;
-
-            // "Turn off" wrapping of callbacks that squelches errors.  We need AssertionErrors in callbacks to bubble.
-            qq.FineUploaderBasic.prototype._wrapCallbacks = function() {};
-        });
-
-        afterEach(function() {
-            unmockXhr();
-            unmockFormData();
-
-            qq.FineUploaderBasic.prototype._wrapCallbacks = oldWrapCallbacks;
-        });
-
-        function mockXhr() {
-            xhr = sinon.useFakeXMLHttpRequest();
-            xhr.onCreate = function(req) {
-                requests.push(req);
-            };
-        }
-
-        function unmockXhr() {
-            xhr && xhr.restore();
-        }
 
         function testDeleteFile(expectedMethod, deleteEnabled, successful, reject, expectedParams, sendParamsViaOptions, done) {
             expectedParams = expectedParams || {};
@@ -82,12 +52,12 @@ if (qqtest.canDownloadFileAsBlob) {
 
                         uploader.deleteFile(id);
 
-                        deleteRequest = requests[1];
+                        deleteRequest = fileTestHelper.getRequests()[1];
 
                         if (deleteEnabled && !reject) {
                             deleteRequestPurl = purl(deleteRequest.url);
 
-                            assert.equal(requests.length, 2, "Wrong # of requests");
+                            assert.equal(fileTestHelper.getRequests().length, 2, "Wrong # of requests");
                             assert.equal(deleteRequest.method, expectedMethod, "Wrong method for delete request");
 
                             if (expectedMethod === "DELETE") {
@@ -158,14 +128,14 @@ if (qqtest.canDownloadFileAsBlob) {
             }
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                mockXhr();
+                fileTestHelper.mockXhr();
 
                 var request;
 
                 uploader.addBlobs({name: "test", blob: blob});
 
-                assert.equal(requests.length, 1, "Wrong # of requests");
-                request = requests[0];
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                request = fileTestHelper.getRequests()[0];
                 request.respond(200, null, JSON.stringify({success: true}));
             });
         }

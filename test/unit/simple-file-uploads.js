@@ -1,37 +1,7 @@
 if (qqtest.canDownloadFileAsBlob) {
     describe("simple file uploads, mocked server/XHR", function() {
         var testUploadEndpoint = "/test/upload",
-            xhr,
-            oldWrapCallbacks,
-            requests;
-
-        beforeEach(function() {
-            mockFormData();
-
-            requests = [];
-            oldWrapCallbacks = qq.FineUploaderBasic.prototype._wrapCallbacks;
-
-            // "Turn off" wrapping of callbacks that squelches errors.  We need AssertionErrors in callbacks to bubble.
-            qq.FineUploaderBasic.prototype._wrapCallbacks = function() {};
-        });
-
-        afterEach(function() {
-            unmockXhr();
-            unmockFormData();
-
-            qq.FineUploaderBasic.prototype._wrapCallbacks = oldWrapCallbacks;
-        });
-
-        function mockXhr() {
-            xhr = sinon.useFakeXMLHttpRequest();
-            xhr.onCreate = function(req) {
-                requests.push(req);
-            };
-        }
-
-        function unmockXhr() {
-            xhr && xhr.restore && xhr.restore();
-        }
+            fileTestHelper = helpme.setupFileTests();
 
         function getSimpleUploader(autoUpload, mpe) {
             var uploader = new qq.FineUploaderBasic({
@@ -71,7 +41,7 @@ if (qqtest.canDownloadFileAsBlob) {
             var uploader = getSimpleUploader(false, true);
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                mockXhr();
+                fileTestHelper.mockXhr();
 
                 var request,
                     requestParams;
@@ -79,8 +49,8 @@ if (qqtest.canDownloadFileAsBlob) {
                 uploader.addBlobs({name: "test", blob: blob});
                 uploader.uploadStoredFiles();
 
-                assert.equal(requests.length, 1, "Wrong # of requests");
-                request = requests[0];
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                request = fileTestHelper.getRequests()[0];
                 requestParams = request.requestBody.fields;
 
                 assert.equal(requestParams.qquuid, uploader.getUuid(0), "Wrong UUID param sent with request");
@@ -90,7 +60,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(request.method, "POST", "Wrong request method");
                 assert.equal(request.url, testUploadEndpoint, "Wrong request url");
 
-                requests[0].respond(200, null, JSON.stringify({success: true}));
+                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
             });
         });
 
@@ -100,14 +70,14 @@ if (qqtest.canDownloadFileAsBlob) {
             var uploader = getSimpleUploader(true, false);
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                mockXhr();
+                fileTestHelper.mockXhr();
 
                 var request, purlUrl;
 
                 uploader.addBlobs({name: "test", blob: blob});
 
-                assert.equal(requests.length, 1, "Wrong # of requests");
-                request = requests[0];
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                request = fileTestHelper.getRequests()[0];
                 purlUrl = purl(request.url);
 
                 assert.equal(request.requestHeaders["X-Mime-Type"], "image/jpeg", "Wrong X-Mime-Type");
@@ -116,7 +86,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(request.method, "POST", "Wrong request method");
                 assert.equal(purlUrl.attr("path"), testUploadEndpoint, "Wrong request url");
 
-                requests[0].respond(200, null, JSON.stringify({success: true}));
+                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
             });
         });
 
@@ -136,14 +106,14 @@ if (qqtest.canDownloadFileAsBlob) {
             });
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                mockXhr();
+                fileTestHelper.mockXhr();
 
                 var request, requestParams;
 
                 uploader.addBlobs(blob);
 
-                assert.equal(requests.length, 1, "Wrong # of requests");
-                request = requests[0];
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                request = fileTestHelper.getRequests()[0];
                 requestParams = request.requestBody.fields;
 
                 assert.equal(requestParams[uuidParamName], uploader.getUuid(0), "Wrong UUID param sent with request");
@@ -185,11 +155,11 @@ if (qqtest.canDownloadFileAsBlob) {
             });
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                mockXhr();
+                fileTestHelper.mockXhr();
 
                 uploader.addBlobs(blob);
 
-                requests[0].respond(200, null, JSON.stringify({success: true, newUuid: newUuid}));
+                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true, newUuid: newUuid}));
             });
         });
 
