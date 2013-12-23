@@ -18,7 +18,7 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
         onCancel = proxy.onCancel,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
-        getUuid = proxy.getUuid,
+        getSize = proxy.getSize,
         log = proxy.log;
 
 
@@ -55,7 +55,7 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
          */
         getTotalChunks: function(id) {
             if (chunking) {
-                var fileSize = publicApi.getSize(id),
+                var fileSize = getSize(id),
                     chunkSize = chunking.partSize;
 
                 return Math.ceil(fileSize / chunkSize);
@@ -64,7 +64,7 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
 
         getChunkData: function(id, chunkIndex) {
             var chunkSize = chunking.partSize,
-                fileSize = publicApi.getSize(id),
+                fileSize = getSize(id),
                 fileOrBlob = publicApi.getFile(id),
                 startBytes = chunkSize * chunkIndex,
                 endBytes = startBytes+chunkSize >= fileSize ? fileSize : startBytes+chunkSize,
@@ -103,18 +103,6 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
             }
             else {
                 throw new Error("Passed obj is not a File or BlobData (in qq.UploadHandlerXhr)");
-            }
-        },
-
-        getSize: function(id) {
-            /*jshint eqnull: true*/
-            var fileOrBlob = fileState[id].file || fileState[id].blobData.blob;
-
-            if (qq.isFileOrInput(fileOrBlob)) {
-                return fileOrBlob.fileSize != null ? fileOrBlob.fileSize : fileOrBlob.size;
-            }
-            else {
-                return fileOrBlob.size;
             }
         },
 

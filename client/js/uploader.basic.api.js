@@ -201,7 +201,7 @@
         },
 
         getSize: function(id) {
-            return this._handler.getSize(id);
+            return this._uploadData.retrieve({id: id}).size;
         },
 
         getName: function(id) {
@@ -627,12 +627,9 @@
                         self.log("Server requested UUID change from '" + self.getUuid(id) + "' to '" + newUuid + "'");
                         self.setUuid(id, newUuid);
                     },
-                    getName: function(id) {
-                        return self.getName(id);
-                    },
-                    getUuid: function(id) {
-                        return self.getUuid(id);
-                    }
+                    getName: qq.bind(self.getName, self),
+                    getUuid: qq.bind(self.getUuid, self),
+                    getSize: qq.bind(self.getSize, self)
                 };
 
             qq.each(this._options.request, function(prop, val) {

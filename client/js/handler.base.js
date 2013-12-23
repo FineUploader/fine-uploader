@@ -92,7 +92,8 @@ qq.UploadHandler = function(o, namespace) {
 
         handlerImpl = new handlerType["UploadHandler" + handlerModuleSubtype](
             options,
-            {onUploadComplete: dequeue, onUuidChanged: options.onUuidChanged, getName: options.getName, getUuid: options.getUuid, log: log}
+            {onUploadComplete: dequeue, onUuidChanged: options.onUuidChanged,
+                getName: options.getName, getUuid: options.getUuid, getSize: options.getSize, log: log}
         );
     }
 
@@ -160,15 +161,6 @@ qq.UploadHandler = function(o, namespace) {
             });
 
             queue = [];
-        },
-
-        /**
-         * Returns size of the file identified by id
-         */
-        getSize: function(id){
-            if (handlerImpl.getSize) {
-                return handlerImpl.getSize(id);
-            }
         },
 
         getFile: function(id) {

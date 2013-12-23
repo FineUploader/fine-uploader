@@ -13,6 +13,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
         getUuid = proxy.getUuid,
+        getSize = proxy.getSize,
         log = proxy.log,
         fileState = [],
         cookieItemDelimiter = "|",
@@ -36,7 +37,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     resumeId = getResumeId();
 
     function addChunkingSpecificParams(id, params, chunkData) {
-        var size = publicApi.getSize(id),
+        var size = getSize(id),
             name = getName(id);
 
         params[spec.chunking.paramNames.partIndex] = chunkData.part;
@@ -76,7 +77,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
             endpoint = spec.endpointStore.getEndpoint(id),
             url = endpoint,
             name = getName(id),
-            size = publicApi.getSize(id);
+            size = getSize(id);
 
         params[spec.uuidName] = getUuid(id);
         params[spec.filenameParam] = name;
@@ -132,7 +133,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     function handleCompletedItem(id, response, xhr) {
         var name = getName(id),
-            size = publicApi.getSize(id);
+            size = getSize(id);
 
         fileState[id].attemptingResume = false;
 
@@ -150,7 +151,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         var chunkIdx = fileState[id].remainingChunkIdxs[0],
             chunkData = internalApi.getChunkData(id, chunkIdx),
             xhr = internalApi.createXhr(id),
-            size = publicApi.getSize(id),
+            size = getSize(id),
             name = getName(id),
             toSend, params;
 
@@ -193,7 +194,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         var chunkData = internalApi.getChunkData(id, chunkIdx),
             blobSize = chunkData.size,
             overhead = requestSize - blobSize,
-            size = publicApi.getSize(id),
+            size = getSize(id),
             chunkCount = chunkData.count,
             initialRequestOverhead = fileState[id].initialRequestOverhead,
             overheadDiff = overhead - initialRequestOverhead;
@@ -397,7 +398,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     function getChunkDataCookieName(id) {
         var filename = getName(id),
-            fileSize = publicApi.getSize(id),
+            fileSize = getSize(id),
             maxChunkSize = spec.chunking.partSize,
             cookieName;
 
@@ -528,7 +529,8 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     qq.extend(this, new qq.UploadHandlerXhrApi(
         internalApi,
         {fileState: fileState, chunking: chunkFiles ? spec.chunking : null},
-        {onUpload: handleUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName, getUuid: getUuid, log: log}
+        {onUpload: handleUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName,
+            getSize: getSize, getUuid: getUuid, log: log}
     ));
 
     // Base XHR API overrides

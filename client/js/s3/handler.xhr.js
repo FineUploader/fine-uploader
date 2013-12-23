@@ -16,6 +16,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
         getUuid = proxy.getUuid,
+        getSize = proxy.getSize,
         log = proxy.log,
         expectedStatus = 200,
         onProgress = spec.onProgress,
@@ -166,7 +167,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
     function uploadCompleted(id, errorDetails, requestXhr) {
         var xhr = requestXhr || fileState[id].xhr,
             name = getName(id),
-            size = publicApi.getSize(id),
+            size = getSize(id),
             // This is the response we will use internally to determine if we need to do something special in case of a failure
             responseToExamine = parseResponse(id, requestXhr),
             // This is the response we plan on passing to external callbacks
@@ -429,7 +430,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
 
             persistedData = {
                 name: getName(id),
-                size: publicApi.getSize(id),
+                size: getSize(id),
                 uuid: getUuid(id),
                 key: getActualKey(id),
                 loaded: fileState[id].loaded,
@@ -514,7 +515,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
      */
     function getLocalStorageId(id) {
         var name = getName(id),
-            size = publicApi.getSize(id),
+            size = getSize(id),
             chunkSize = spec.chunking.partSize,
             endpoint = spec.endpointStore.getEndpoint(id),
             bucket = qq.s3.util.getBucket(endpoint);
@@ -609,7 +610,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         var idx = getNextPartIdxToSend(id),
             name = getName(id),
             xhr = fileState[id].xhr,
-            totalFileSize = publicApi.getSize(id),
+            totalFileSize = getSize(id),
             chunkData = internalApi.getChunkData(id, idx),
             domain = spec.endpointStore.getEndpoint(id);
 
@@ -739,7 +740,8 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
     qq.extend(this, new qq.UploadHandlerXhrApi(
         internalApi,
         {fileState: fileState, chunking: chunkingPossible ? spec.chunking : null},
-        {onUpload: handleStartUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName, getUuid: getUuid, log: log}
+        {onUpload: handleStartUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName,
+            getSize: getSize, getUuid: getUuid, log: log}
     ));
 
 
