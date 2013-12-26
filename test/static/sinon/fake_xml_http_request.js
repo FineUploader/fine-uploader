@@ -263,7 +263,7 @@
                     this.dispatchEvent(new sinon.Event("loadend", false, false, this));
                     this.upload.dispatchEvent(new sinon.Event("load", false, false, this));
                     try {
-                        this.upload.dispatchEvent(new ProgressEvent("progress", {loaded: 100, total: 100}));
+                        window.ProgressEvent && this.upload.dispatchEvent(new ProgressEvent("progress", {loaded: 100, total: 100}));
                     }
                     catch (ex) {
                         this.upload.dispatchEvent(document.createEvent("ProgressEvent"));
