@@ -121,7 +121,7 @@
             this._buttonIdsForFileIds = [];
 
             this._pasteHandler && this._pasteHandler.reset();
-            this._refreshSessionData();
+            this._options.session.refreshOnReset && this._refreshSessionData();
         },
 
         addFiles: function(filesOrInputs, params, endpoint) {
@@ -377,6 +377,7 @@
             }
 
             this._netUploaded++;
+            this._netUploadedOrQueued++;
 
             return id;
         },

@@ -209,7 +209,7 @@ var qq = function(element) {
      */
     qq.isArray = function(value) {
         return Object.prototype.toString.call(value) === "[object Array]" ||
-            (window.ArrayBuffer && value.buffer && value.buffer.constructor === ArrayBuffer);
+            (value && window.ArrayBuffer && value.buffer && value.buffer.constructor === ArrayBuffer);
     };
 
     // Looks for an object on a `DataTransfer` object that is associated with drop events when utilizing the Filesystem API.

@@ -29,7 +29,13 @@ qq.SessionAjaxRequester = function(spec) {
 
         /* jshint eqnull:true */
         if (xhrOrXdr.responseText != null) {
-            response = qq.parseJson(xhrOrXdr.responseText);
+            try {
+                response = qq.parseJson(xhrOrXdr.responseText);
+            }
+            catch(err) {
+                options.log("Problem parsing session response: " + err.message, "error");
+                isError = true;
+            }
         }
 
         options.onComplete(response, !isError, xhrOrXdr);
@@ -55,7 +61,7 @@ qq.SessionAjaxRequester = function(spec) {
             var params = qq.extend({}, options.params);
 
             // cache buster, particularly for IE & iOS
-            params.qqcache = new Date().getTime();
+            params.qqtimestamp = new Date().getTime();
 
             options.log("Session query request.");
 

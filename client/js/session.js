@@ -28,27 +28,37 @@ qq.Session = function(spec) {
     }
 
     function handleFileItems(fileItems, success, xhrOrXdr, promise) {
-        success = isJsonResponseValid(fileItems);
+        var someItemsIgnored = false;
+
+        success = success && isJsonResponseValid(fileItems);
 
         if (success) {
             qq.each(fileItems, function(idx, fileItem) {
                 /* jshint eqnull:true */
                 if (fileItem.uuid == null) {
+                    someItemsIgnored = true;
                     options.log(qq.format("Session response item {} did not include a valid UUID - ignoring.", idx), "error");
                 }
                 else if (fileItem.name == null) {
+                    someItemsIgnored = true;
                     options.log(qq.format("Session response item {} did not include a valid name - ignoring.", idx), "error");
                 }
                 else {
-                    options.addFileRecord(fileItem);
-                    return true;
+                    try {
+                        options.addFileRecord(fileItem);
+                        return true;
+                    }
+                    catch(err) {
+                        someItemsIgnored = true;
+                        options.log(err.message, "error");
+                    }
                 }
 
                 return false;
             });
         }
 
-        promise[success ? "success" : "failure"](fileItems, xhrOrXdr);
+        promise[success && !someItemsIgnored ? "success" : "failure"](fileItems, xhrOrXdr);
     }
 
     // Initiate a call to the server that will be used to populate the initial file list.
