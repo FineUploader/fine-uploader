@@ -1,5 +1,8 @@
+/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 if (qqtest.canDownloadFileAsBlob) {
     describe("sending params with upload requests", function() {
+        "use strict";
+
         var fileTestHelper = helpme.setupFileTests(),
             testUploadEndpoint = "/test/upload",
             params = {

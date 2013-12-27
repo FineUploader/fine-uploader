@@ -1,4 +1,6 @@
+/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 describe("exif.js", function () {
+    "use strict";
 
     describe("parseLittleEndian", function() {
         it("converts little endian hex string to big endian decimal", function () {

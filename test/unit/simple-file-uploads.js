@@ -1,5 +1,8 @@
+/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 if (qqtest.canDownloadFileAsBlob) {
     describe("simple file uploads, mocked server/XHR", function() {
+        "use strict";
+
         var testUploadEndpoint = "/test/upload",
             fileTestHelper = helpme.setupFileTests();
 
@@ -20,6 +23,7 @@ if (qqtest.canDownloadFileAsBlob) {
                         assert.deepEqual(response, {success: true}, "Server response parsing failed");
                         assert.equal(uploader.getUploads().length, 1, "Expected only 1 file");
                         assert.equal(uploader.getUploads({status: qq.status.UPLOAD_SUCCESSFUL}).length, 1, "Expected 1 successful file");
+                        /* jshint eqnull:true */
                         assert.ok(xhr != null, "XHR not passed to onComplete");
                         assert.equal(uploader.getNetUploads(), 1, "Wrong # of net uploads");
                     },
@@ -103,7 +107,8 @@ if (qqtest.canDownloadFileAsBlob) {
                         totalFileSizeName: totalFileSizeParamName,
                         filenameParam: filenameParamName
                     }
-            });
+                }
+            );
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                 fileTestHelper.mockXhr();

@@ -1,5 +1,8 @@
+/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 if (qqtest.canDownloadFileAsBlob) {
     describe("chunked uploads", function() {
+        "use strict";
+
         var fileTestHelper = helpme.setupFileTests(),
             testUploadEndpoint = "/test/upload",
             expectedFileSize = 3266,

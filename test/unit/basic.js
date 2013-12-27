@@ -1,5 +1,8 @@
-describe('uploader.basic.js', function () {
-    var $fineUploader, $button, $extraButton;
+/* globals describe, beforeEach, $fixture, qq, assert, it */
+describe("uploader.basic.js", function () {
+    "use strict";
+
+    var $fineUploader, $button, $extraButton, $extraButton2, $extraButton3;
 
     function getFileInput($containerEl) {
         return $containerEl.find("INPUT")[0];
@@ -23,7 +26,7 @@ describe('uploader.basic.js', function () {
     });
 
     it("Excludes the multiple attribute on the file input element by default only in iOS7 AND when MOV files can be submitted", function() {
-        new qq.FineUploaderBasic({
+        var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0],
             validation: {
@@ -35,7 +38,7 @@ describe('uploader.basic.js', function () {
     });
 
     it("Includes the multiple attribute on the file input element by default in all supported browsers (even iOS7) when MOV files cannot be submitted", function() {
-        new qq.FineUploaderBasic({
+        var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0],
             validation: {
@@ -47,7 +50,7 @@ describe('uploader.basic.js', function () {
     });
 
     it("Includes the multiple attribute on the file input element by default (where supported) except in iOS7 with the default alloweExtensions value", function() {
-        new qq.FineUploaderBasic({
+        var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0]
         });
@@ -56,7 +59,7 @@ describe('uploader.basic.js', function () {
     });
 
     it("Excludes the multiple attribute on the file input element if requested", function() {
-        new qq.FineUploaderBasic({
+        var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0],
             multiple: false
@@ -66,7 +69,7 @@ describe('uploader.basic.js', function () {
     });
 
     it("Excludes or includes the multiple attribute on 'extra' file input elements appropriately, taking OS and extraButton properties into consideration", function() {
-        new qq.FineUploaderBasic({
+        var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0],
             validation: {

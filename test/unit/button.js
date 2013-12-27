@@ -1,5 +1,8 @@
-describe('button.js', function () {
-    it('constructor works', function () {
+/* globals describe, beforeEach, $fixture, qq, assert, it */
+describe("button.js", function () {
+    "use strict";
+
+    it("constructor works", function () {
         $fixture.append("<div id='foo'></div>");
 
         var button = new qq.UploadButton({
@@ -13,16 +16,16 @@ describe('button.js', function () {
         var $input = $(input);
 
         assert.notEqual(input, null,
-            'a newed up upload button should have a non-null input element');
-        assert.equal($input.attr('type'), 'file',
-                     'the input type should be `file`')
-        assert.equal($input.attr('accept'), "image/*,video/*,.test",
-                    'uploader should valid which files are accepted');
-        assert.equal($input.attr('name'), "testFile",
-                    'the name of the upload button should be set');
+            "a newed up upload button should have a non-null input element");
+        assert.equal($input.attr("type"), "file",
+                     "the input type should be `file`");
+        assert.equal($input.attr("accept"), "image/*,video/*,.test",
+                    "uploader should valid which files are accepted");
+        assert.equal($input.attr("name"), "testFile",
+                    "the name of the upload button should be set");
     });
 
-    it('reset works', function () {
+    it("reset works", function () {
         $fixture.append("<div id='foo'></div>");
 
         var button = new qq.UploadButton({
@@ -34,7 +37,7 @@ describe('button.js', function () {
 
         button.reset();
         assert.notEqual($input[0], button.getInput(),
-               'resetting the button should clear the element from the DOM');
+               "resetting the button should clear the element from the DOM");
     });
 
     it("does add an internal tracker ID to the input button, and re-adds it on reset", function() {
@@ -45,6 +48,7 @@ describe('button.js', function () {
         }),
             buttonId = button.getButtonId();
 
+        /* jshint eqnull:true */
         assert.ok(buttonId != null);
         assert.equal(button.getInput().getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME), buttonId);
 
@@ -54,8 +58,8 @@ describe('button.js', function () {
         assert.equal(button.getInput().getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME), buttonId);
     });
 
-    it('sets and removes hover class', function() {
-        var hoverclass = 'qq-upload-button-hover';
+    it("sets and removes hover class", function() {
+        var hoverclass = "qq-upload-button-hover";
         var $button = $fixture.appendTo("<div id='button'></div>");
 
         var button = new qq.UploadButton({
@@ -63,21 +67,20 @@ describe('button.js', function () {
             hoverClass: hoverclass
         });
 
-        $button.simulate('mouseenter', function (e) {
-            var classes = $(this).attr('class').split(' ');
+        $button.simulate("mouseenter", function (e) {
+            var classes = $(this).attr("class").split(" ");
             assert.ok($.inArray(hoverclass, classes));
 
-            $button.simulate('mouseleave', function (e) {
-                classes = $(this).attr('class').split(' ');
-                assert.ok(!$.inArray(hoverClass, classes));
-                done();
+            $button.simulate("mouseleave", function (e) {
+                classes = $(this).attr("class").split(" ");
+                assert.ok(!$.inArray(hoverclass, classes));
             });
         });
 
     });
 
     if (qq.supportedFeatures.ajaxUploading) {
-        it('sets multiple attribute', function () {
+        it("sets multiple attribute", function () {
             var $button = $fixture.appendTo("<div></div>");
 
             var input;
@@ -87,16 +90,16 @@ describe('button.js', function () {
             });
 
             input = button.getInput();
-            assert.ok(!input.hasAttribute('multiple'));
+            assert.ok(!input.hasAttribute("multiple"));
 
             button.setMultiple(true);
-            assert.ok(input.hasAttribute('multiple'));
+            assert.ok(input.hasAttribute("multiple"));
         });
     }
 
     if (qq.supportedFeatures.ajaxUploading) {
-        it('sets accept files', function () {
-            var $button = $fixture.appendTo("<div></div>")
+        it("sets accept files", function () {
+            var $button = $fixture.appendTo("<div></div>");
 
             var input;
             var button = new qq.UploadButton({
@@ -104,10 +107,10 @@ describe('button.js', function () {
             });
 
             input = button.getInput();
-            assert.ok(!input.hasAttribute('accept'));
+            assert.ok(!input.hasAttribute("accept"));
 
             button.setAcceptFiles("audio/*");
-            assert.equal(input.getAttribute('accept'), 'audio/*');
+            assert.equal(input.getAttribute("accept"), "audio/*");
         });
     }
 

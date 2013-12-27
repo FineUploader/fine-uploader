@@ -1,19 +1,21 @@
-describe('ui.handler.click.filename.js', function () {
+/* globals describe, beforeEach, afterEach, $fixture, qq, assert, it, qqtest, helpme, purl */
+describe("ui.handler.click.filename.js", function () {
+    "use strict";
 
     var fileId = 123,
         $container, $fileItem, $filenameDiv, templating;
 
     beforeEach(function () {
-        $fixture.append('<div class="testcontainer"></div>');
+        $fixture.append("<div class='testcontainer'></div>");
 
-        $container = $fixture.find('.testcontainer');
-        $container.append('<div class="fileitem"></div>');
+        $container = $fixture.find(".testcontainer");
+        $container.append("<div class='fileitem'></div>");
 
-        $fileItem = $container.find('.fileitem');
-        $fileItem.append('<div class="test-file" file-id="123"></div>');
-        $fileItem.append('<input class="test-input">');
+        $fileItem = $container.find(".fileitem");
+        $fileItem.append("<div class='test-file' file-id='123'></div>");
+        $fileItem.append("<input class='test-input'>");
 
-        $filenameDiv = $fileItem.find('.test-file');
+        $filenameDiv = $fileItem.find(".test-file");
 
         templating = {
             getFileList: function() {
@@ -28,17 +30,17 @@ describe('ui.handler.click.filename.js', function () {
                 return $(el).attr("file-id");
             },
             getEditInput: function(id) {
-                return $container.find('INPUT')[0];
+                return $container.find("INPUT")[0];
             }
         };
     });
 
-    it('does not allow editing when upload is in progress', function () {
+    it("does not allow editing when upload is in progress", function () {
 
         var handler = new qq.FilenameClickHandler({
             templating: templating,
             classes: {
-                file: 'test-file'
+                file: "test-file"
             },
             onGetName: function() { return "test"; },
             onSetName: function(fileId, newName) {},
@@ -48,21 +50,21 @@ describe('ui.handler.click.filename.js', function () {
             }
         });
 
-        $filenameDiv.simulate('click');
+        $filenameDiv.simulate("click");
     });
 
     function testFilenameInputBlur(origName, origNameSansExt, newName, newNameSansExt, simulateArgs) {
 
-        it('filename click handler - file submitted w/ blur event = ' + simulateArgs, function (done) {
+        it("filename click handler - file submitted w/ blur event = " + simulateArgs, function (done) {
 
             var actualName = origName,
-                $input = $container.find('INPUT'),
+                $input = $container.find("INPUT"),
                 editing;
 
             var handler = new qq.FilenameClickHandler({
                 templating: templating,
                 classes: {
-                    file: 'test-file'
+                    file: "test-file"
                 },
                 onGetName: function() { return actualName; },
                 onSetName: function(fileId, name) {
@@ -97,9 +99,9 @@ describe('ui.handler.click.filename.js', function () {
             $filenameDiv.text(actualName);
 
             //this shouldn't allow the user to change the filename
-            $container.simulate('click');
+            $container.simulate("click");
 
-            $filenameDiv.simulate('click');
+            $filenameDiv.simulate("click");
 
             assert.equal($input.val(), origNameSansExt, "filename input should equal original filename sans extension initially");
 
@@ -115,24 +117,24 @@ describe('ui.handler.click.filename.js', function () {
 
     // Can't get this test to pass in FF on SauceLabs only.  Fails sometimes in Safari as well.
     if (!qq.firefox() && !qq.safari()) {
-        testFilenameInputBlur("test.foo.bar", "test.foo", "blahblah.bar", "blahblah", ['blur']);
-        testFilenameInputBlur("test", "test", "blahblah", "blahblah", ['blur']);
+        testFilenameInputBlur("test.foo.bar", "test.foo", "blahblah.bar", "blahblah", ["blur"]);
+        testFilenameInputBlur("test", "test", "blahblah", "blahblah", ["blur"]);
     }
 
-    testFilenameInputBlur("test.foo.bar", "test.foo", "blahblah.bar", "blahblah", ['keyup', {keyCode: $.simulate.keyCode.ENTER}]);
-    testFilenameInputBlur("test", "test", "blahblah", "blahblah", ['keyup', {keyCode: $.simulate.keyCode.ENTER}]);
+    testFilenameInputBlur("test.foo.bar", "test.foo", "blahblah.bar", "blahblah", ["keyup", {keyCode: $.simulate.keyCode.ENTER}]);
+    testFilenameInputBlur("test", "test", "blahblah", "blahblah", ["keyup", {keyCode: $.simulate.keyCode.ENTER}]);
 
 
-    it('handles undefined or empty filename submitted', function () {
+    it("handles undefined or empty filename submitted", function () {
 
         var actualName = "test.foo.bar",
             origNameSansExt = "test.foo",
-            $input = $container.find('INPUT');
+            $input = $container.find("INPUT");
 
         var handler = new qq.FilenameClickHandler({
             templating: templating,
             classes: {
-                file: 'test-file'
+                file: "test-file"
             },
             onGetName: function() { return actualName; },
             onGetUploadStatus: function(fileId) { return qq.status.SUBMITTED; },
@@ -142,11 +144,11 @@ describe('ui.handler.click.filename.js', function () {
         //Fine Uploader would normally already have this set
         $filenameDiv.text(actualName);
 
-        $filenameDiv.simulate('click');
+        $filenameDiv.simulate("click");
 
         assert.equal($input.val(), origNameSansExt, "filename input should equal original filename sans extension initially");
 
         $input.val("");
-        $input.simulate('blur');
+        $input.simulate("blur");
     });
 });

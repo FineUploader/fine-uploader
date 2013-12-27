@@ -461,7 +461,7 @@ module.exports = (grunt) ->
 
         jshint:
             source: ["#{paths.src}/js/**/*.js"]
-            tests: ["#{paths.test}unit/*.js"]
+            tests: ["#{paths.test}/unit/*.js"]
             options:
                 jshintrc: true
 
@@ -695,7 +695,7 @@ module.exports = (grunt) ->
 
     grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'bower', 'build', 'copy:test']
 
-    grunt.registerTask 'build', 'Build from latest source', ['jshint:source', 'concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
+    grunt.registerTask 'build', 'Build from latest source', ['jshint:source', 'jshint:tests', 'concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
     grunt.registerTask 'build_stripped', 'Build from latest source w/ test artifacts stripped out', ['concat', 'strip_code:build', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
 
     grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build_stripped', 'copy:dist', 'shell:version_dist_templates', 'compress:jquery', 'compress:jqueryS3', 'compress:core', 'compress:coreS3' ]

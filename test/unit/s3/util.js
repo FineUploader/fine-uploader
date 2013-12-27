@@ -1,7 +1,9 @@
+/* globals describe, beforeEach, qq, assert, it, purl */
+describe("s3/util.js", function () {
+    "use strict";
 
-describe('s3/util.js', function () {
-    describe('getBucket', function () {
-        it('extract bucket from an accepted S3 endpoint', function () {
+    describe("getBucket", function () {
+        it("extract bucket from an accepted S3 endpoint", function () {
             var endpointsAndBuckets = {
                 "http://foo.s3.amazonaws.com": "foo",
                 "foo.s3.amazonaws.com": "foo",
@@ -65,64 +67,64 @@ describe('s3/util.js', function () {
         });
     });
 
-    describe('enforceSizeLimits', function () {
+    describe("enforceSizeLimits", function () {
         var policy;
 
         beforeEach(function () {
             policy = {conditions: []};
         });
 
-        it('Only add content-length-range param if necessary', function () {
+        it("Only add content-length-range param if necessary", function () {
             qq.s3.util.enforceSizeLimits(policy, 0, 0);
             assert.ok(policy.conditions[0] === undefined);
         });
 
-        it('non-zero min and max', function () {
+        it("non-zero min and max", function () {
             qq.s3.util.enforceSizeLimits(policy, 100, 102);
             assert.equal(policy.conditions[0][1], "100");
             assert.equal(policy.conditions[0][2], "102");
         });
 
-        it('zero min, non-zero max', function () {
+        it("zero min, non-zero max", function () {
             qq.s3.util.enforceSizeLimits(policy, 0, 100);
             assert.equal(policy.conditions[0][1], "0");
             assert.equal(policy.conditions[0][2], "100");
         });
 
-        it('non-zero min, zero max', function () {
+        it("non-zero min, zero max", function () {
             qq.s3.util.enforceSizeLimits(policy, 100, 0);
             assert.equal(policy.conditions[0][1], "100");
             assert.equal(policy.conditions[0][2], "9007199254740992");
         });
     });
 
-    describe('getSuccessRedirectAbsoluteUrl', function() {
+    describe("getSuccessRedirectAbsoluteUrl", function() {
         var purlUrl, protocol, host, dir;
 
         beforeEach(function() {
             purlUrl = purl(window.location.href);
-            protocol = purlUrl.attr('protocol');
-            host = purlUrl.attr('host') + ':' + purlUrl.attr('port');
-            dir = purlUrl.attr('directory');
+            protocol = purlUrl.attr("protocol");
+            host = purlUrl.attr("host") + ":" + purlUrl.attr("port");
+            dir = purlUrl.attr("directory");
         });
 
-        it('relative url input', function() {
+        it("relative url input", function() {
             var derivedAbsoluteUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl("server/upload");
             assert.equal(derivedAbsoluteUrl, protocol + "://" + host + dir + "server/upload");
         });
 
-        it('relative url input - root', function() {
+        it("relative url input - root", function() {
             var derivedAbsoluteUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl("/server/upload");
             assert.equal(derivedAbsoluteUrl, protocol + "://" + host + "/server/upload");
         });
 
-        it ('absolute url input', function() {
+        it ("absolute url input", function() {
             assert.equal(qq.s3.util.getSuccessRedirectAbsoluteUrl("http://1.2.3.4:8080/foo/bar"), "http://1.2.3.4:8080/foo/bar");
-        })
+        });
     });
 
-    describe('parseIframeResponse', function() {
-        it('invalid iframe location', function() {
+    describe("parseIframeResponse", function() {
+        it("invalid iframe location", function() {
             var fakeIframe = {
                 contentDocument: {
                     location: {
@@ -134,7 +136,7 @@ describe('s3/util.js', function () {
             assert.ok(qq.s3.util.parseIframeResponse(fakeIframe) === undefined);
         });
 
-        it('valid iframe location', function() {
+        it("valid iframe location", function() {
             var fakeIframe = {
                     contentDocument: {
                         location: {
@@ -165,7 +167,7 @@ describe('s3/util.js', function () {
 
         it("follows RFC 3986 exactly", function() {
             assert.equal(qq.s3.util.encodeQueryStringParam("Are you 'Ray'?  If so, back to work (*now*)!"),
-            "Are+you+%27Ray%27%3F++If+so%2C+back+to+work+%28%2Anow%2A%29%21")
+            "Are+you+%27Ray%27%3F++If+so%2C+back+to+work+%28%2Anow%2A%29%21");
         });
     });
 });

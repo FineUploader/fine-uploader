@@ -1,5 +1,8 @@
+/* globals describe, before, after, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 if (qqtest.canDownloadFileAsBlob) {
     describe("autoUpload = false tests for validation, submission, and cancel features", function() {
+        "use strict";
+
         var oldWrapCallbacks,
             testImgKey = "up.jpg",
             testImgType = "image/jpeg",
@@ -324,36 +327,37 @@ if (qqtest.canDownloadFileAsBlob) {
                 var cancelledIds = [],
                     uploader = new qq.FineUploaderBasic({
                     autoUpload: false,
-                        callbacks: {
-                            onCancel: function(id) {
-                                cancelledIds.push(id);
-                            },
-                            onStatusChange: function() {
-                                if (uploader.getUploads({status: qq.status.SUBMITTED}).length === 2) {
-                                    // We need to wait until just after this status is set before we can cancel
-                                    // uploads due to the way FU internal code handles this.  This is probably
-                                    // ok as we would not expect this to be called programmatically in a
-                                    // callback handler like this.
-                                    setTimeout(function() {
-                                        if (batch) {
-                                            uploader.cancelAll();
-                                        }
-                                        else {
-                                            uploader.cancel(0);
-                                            uploader.cancel(1);
-                                        }
-                                    }, 0);
-                                }
+                    callbacks: {
+                        onCancel: function(id) {
+                            cancelledIds.push(id);
+                        },
+                        onStatusChange: function() {
+                            if (uploader.getUploads({status: qq.status.SUBMITTED}).length === 2) {
+                                // We need to wait until just after this status is set before we can cancel
+                                // uploads due to the way FU internal code handles this.  This is probably
+                                // ok as we would not expect this to be called programmatically in a
+                                // callback handler like this.
+                                setTimeout(function() {
+                                    if (batch) {
+                                        uploader.cancelAll();
+                                    }
+                                    else {
+                                        uploader.cancel(0);
+                                        uploader.cancel(1);
+                                    }
+                                }, 0);
+                            }
 
-                                if (uploader.getUploads({status: qq.status.CANCELED}).length === 2) {
-                                    assert.deepEqual(cancelledIds, [0, 1]);
-                                    assert.equal(uploader.getUploads().length, 2);
-                                    assert.equal(uploader.getUploads({status: qq.status.CANCELED}).length, 2);
-                                    done();
-                                }
+                            if (uploader.getUploads({status: qq.status.CANCELED}).length === 2) {
+                                assert.deepEqual(cancelledIds, [0, 1]);
+                                assert.equal(uploader.getUploads().length, 2);
+                                assert.equal(uploader.getUploads({status: qq.status.CANCELED}).length, 2);
+                                done();
                             }
                         }
-                });
+                    }
+                }
+            );
 
                 qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
                     uploader.addBlobs([blob, blob]);

@@ -1,4 +1,7 @@
-describe('uploader.basic.api.js', function () {
+/* globals describe, beforeEach, afterEach, $fixture, qq, assert, it, qqtest, helpme, purl */
+describe("uploader.basic.api.js", function () {
+    "use strict";
+
     var $uploader, fineuploader;
 
     beforeEach(function () {
@@ -6,9 +9,10 @@ describe('uploader.basic.api.js', function () {
         $uploader = $fixture.find("#fine-uploader");
     });
 
-    it('resets multiple buttons to their original states', function () {
+    it("resets multiple buttons to their original states", function () {
         var $btn1 = $fixture.appendTo("<div></div>"),
-            $btn2 = $fixture.appendTo("<div></div>")
+            $btn2 = $fixture.appendTo("<div></div>"),
+            i, button;
 
         var fineuploader = new qq.FineUploaderBasic({
             element: $uploader[0],
@@ -16,35 +20,35 @@ describe('uploader.basic.api.js', function () {
                 {
                     element: $btn1[0],
                     multiple: false,
-                    accept: ''
+                    accept: ""
                 },
                 {
                     element: $btn2[0],
                     multiple: false,
-                    accept: ''
+                    accept: ""
                 }
             ]
         });
 
-        for (var i = 0; i < fineuploader._buttons.length - 1; i++) {
-            var button = fineuploader._buttons[i];
+        for (i = 0; i < fineuploader._buttons.length - 1; i++) {
+            button = fineuploader._buttons[i];
             button.setMultiple(true);
-            button.setAcceptFiles('audio/*');
+            button.setAcceptFiles("audio/*");
         }
 
         fineuploader.reset();
 
         if (qq.supportedFeatures.ajaxUploading) {
-            for (var i = 0; i < fineuploader._buttons.length - 1; i++) {
-                var button = fineuploader._buttons[i],
-                    input = button.getInput();
-                assert.ok(!input.hasAttribute('multiple'));
-                assert.ok(!input.hasAttribute('accept'));
+            for (i = 0; i < fineuploader._buttons.length - 1; i++) {
+                var input = button.getInput();
+                button = fineuploader._buttons[i];
+                assert.ok(!input.hasAttribute("multiple"));
+                assert.ok(!input.hasAttribute("accept"));
             }
         }
     });
 
-    describe('formatFileName', function () {
+    describe("formatFileName", function () {
 
         beforeEach(function () {
             fineuploader = new qq.FineUploaderBasic({
@@ -52,7 +56,7 @@ describe('uploader.basic.api.js', function () {
             });
         });
 
-        it('shortens a long (> 33 chars) filename', function () {
+        it("shortens a long (> 33 chars) filename", function () {
             var filename = "EWDPYZFAMDDOLNQEJXVUEWDPYZFAMDDOLN";
             var filename_fmt = fineuploader._options.formatFileName(filename);
             assert.equal(filename_fmt,
@@ -60,7 +64,7 @@ describe('uploader.basic.api.js', function () {
                 "expect filename to be shortened");
         });
 
-        it('refuses to shorten a short (<= 33 chars) filename', function () {
+        it("refuses to shorten a short (<= 33 chars) filename", function () {
             var filename = "abcdefg";
             var filename_fmt = fineuploader._options.formatFileName(filename);
             assert.equal(filename_fmt,
@@ -69,7 +73,7 @@ describe('uploader.basic.api.js', function () {
         });
     });
 
-    describe('setParams', function () {
+    describe("setParams", function () {
 
         beforeEach(function () {
             fineuploader = new qq.FineUploaderBasic({
@@ -77,24 +81,24 @@ describe('uploader.basic.api.js', function () {
             });
         });
 
-        it('resets', function () {
-            var params = {"hello": "world"}
-            fineuploader.setParams(params, 'foo');
-            assert.deepEqual(fineuploader._paramsStore.getParams('foo'), params,
+        it("resets", function () {
+            var params = {"hello": "world"};
+            fineuploader.setParams(params, "foo");
+            assert.deepEqual(fineuploader._paramsStore.getParams("foo"), params,
                 "the request parameters should be set");
             fineuploader._paramsStore.reset();
-            assert.deepEqual(fineuploader._paramsStore.getParams('foo'), {},
+            assert.deepEqual(fineuploader._paramsStore.getParams("foo"), {},
                 "the request parameters should be reset");
         });
 
-        it('set simple key-value parameters', function () {
-            var params = {"hello": "world"}
+        it("set simple key-value parameters", function () {
+            var params = {"hello": "world"};
             fineuploader.setParams(params);
             assert.deepEqual(fineuploader._options.request.params, params,
                 "the request parameters should be set");
         });
 
-        it('set nested objects as parameters', function () {
+        it("set nested objects as parameters", function () {
             var params = {
                 "hello": {
                     "confusing": "world"
@@ -105,27 +109,28 @@ describe('uploader.basic.api.js', function () {
                 "the request parameters should be set");
         });
 
-        it('set function return values as parameters', function () {
+        it("set function return values as parameters", function () {
             var params = {
                 hello_func: function () {
                     return 42;
                 }
-            }
+            };
+
             fineuploader.setParams(params);
             assert.deepEqual(fineuploader._options.request.params, params,
                 "the request parameters should be set");
         });
 
-        it('allows changing parameters for a specific file id', function () {
-            var params = {"hello": "world"}
-            fineuploader.setParams(params, 'foo');
-            assert.deepEqual(fineuploader._paramsStore.getParams('foo'), params,
+        it("allows changing parameters for a specific file id", function () {
+            var params = {"hello": "world"};
+            fineuploader.setParams(params, "foo");
+            assert.deepEqual(fineuploader._paramsStore.getParams("foo"), params,
                 "the request parameters should be set");
 
         });
 
-        it('allows changing paramters for all files', function () {
-            var params = {"hello": "world"}
+        it("allows changing paramters for all files", function () {
+            var params = {"hello": "world"};
             fineuploader.setParams(params);
             assert.deepEqual(fineuploader._paramsStore.getParams(), params,
                 "the request parameters should be set");
@@ -133,7 +138,7 @@ describe('uploader.basic.api.js', function () {
 
     });
 
-    describe('setEndpoint', function () {
+    describe("setEndpoint", function () {
         var defaultEndpoint = "a/b/c";
 
         beforeEach(function () {
@@ -146,8 +151,8 @@ describe('uploader.basic.api.js', function () {
             });
         });
 
-        it('resets', function () {
-            var endpoint = '/endpoint';
+        it("resets", function () {
+            var endpoint = "/endpoint";
             fineuploader.setEndpoint(endpoint, 0);
             var ep = fineuploader._endpointStore.getEndpoint(0);
             assert.deepEqual(ep,
@@ -158,8 +163,8 @@ describe('uploader.basic.api.js', function () {
             assert.deepEqual(ep, fineuploader._options.request.endpoint, "the endpoint should be reset");
         });
 
-        it('set a new endpoint', function () {
-            var endpoint = '/endpoint';
+        it("set a new endpoint", function () {
+            var endpoint = "/endpoint";
             fineuploader.setEndpoint(endpoint, 0);
             var ep = fineuploader._endpointStore.getEndpoint(0);
 
@@ -167,7 +172,7 @@ describe('uploader.basic.api.js', function () {
 
             qq.each(fineuploader._extraButtonSpecs, function(id, spec) {
                 assert.equal(spec.endpoint, defaultEndpoint, "endpoint for extra button was changed unexpectedly!");
-            })
+            });
         });
     });
 
@@ -293,7 +298,7 @@ describe('uploader.basic.api.js', function () {
                     }
                 };
 
-                assert.ok(fineuploader._handleCheckedCallback(spec) instanceof qq.Promise);
+            assert.ok(fineuploader._handleCheckedCallback(spec) instanceof qq.Promise);
         });
 
         it ("handles failed promissory callbacks", function(done) {
@@ -332,7 +337,7 @@ describe('uploader.basic.api.js', function () {
                 retrieve: function() {
                     return {
                         status: qq.status.UPLOADING
-                    }
+                    };
                 }
             };
 
@@ -351,7 +356,7 @@ describe('uploader.basic.api.js', function () {
                 retrieve: function() {
                     return {
                         status: qq.status.PAUSED
-                    }
+                    };
                 }
             };
 

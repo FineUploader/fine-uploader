@@ -1,5 +1,8 @@
+/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 if (qqtest.canDownloadFileAsBlob) {
     describe("deleting files", function() {
+        "use strict";
+
         var fileTestHelper = helpme.setupFileTests(),
             testUploadEndpoint = "/test/upload",
             testDeleteEndpoint = "/test/deletefile",
@@ -85,6 +88,7 @@ if (qqtest.canDownloadFileAsBlob) {
                             deleteRequest.respond(successful ? 200 : 500, null, null);
                         }
                         else {
+                            /* jshint eqnull:true */
                             assert.ok(deleteRequest == null, "delete request may have been sent");
                         }
                     },
@@ -104,9 +108,10 @@ if (qqtest.canDownloadFileAsBlob) {
                         assert.equal(id, 0, "Wrong ID passed to onDelete");
                     },
                     onDeleteComplete: function(id, xhr, isError) {
+                        /* jshint eqnull:true */
                         assert.equal(id, 0, "Wrong ID passed to onDeleteComplete");
                         assert.ok(xhr != null, "Invalid XHR passed to onDeleteComplete");
-                        assert.ok(isError === !successful, "Unexpected delete status");
+                        assert.ok(isError !== successful, "Unexpected delete status");
                         assert.deepEqual(statuses, expectedStatusOrder, "Unexpected status");
                     },
                     onStatusChange: function(id, oldStatus, newStatus) {

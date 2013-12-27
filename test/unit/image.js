@@ -1,11 +1,14 @@
+/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 describe("image.js", function() {
+    "use strict";
+
     var imageGenerator,
-        isIe7 = navigator.userAgent.indexOf('MSIE 7') !== -1,
-        isIe8 = navigator.userAgent.indexOf('MSIE 8') !== -1,
-        canvasSupported = function() {
-            var elem = document.createElement('canvas');
-            return !!(elem.getContext && elem.getContext('2d'));
-        }();
+        isIe7 = navigator.userAgent.indexOf("MSIE 7") !== -1,
+        isIe8 = navigator.userAgent.indexOf("MSIE 8") !== -1,
+        canvasSupported = (function() {
+            var elem = document.createElement("canvas");
+            return !!(elem.getContext && elem.getContext("2d"));
+        }());
 
     beforeEach(function() {
         imageGenerator = new qq.ImageGenerator({
@@ -60,7 +63,6 @@ describe("image.js", function() {
                 "http://example.com/hmm/ha/test.tiff": "image/tiff",
                 "http://example.com/hmm/ha/test.tif": "image/tiff",
                 "test.tif": "image/tiff",
-                "test.tif": "image/tiff",
                 "http://example.com/hmm/ha/test": null,
                 "test": null
             };
@@ -68,6 +70,6 @@ describe("image.js", function() {
             qq.each(pathsAndExpectedTypes, function(path, expectedType) {
                 assert.equal(imageGenerator._testing.determineMimeOfFileName(path), expectedType);
             });
-        })
+        });
     });
 });

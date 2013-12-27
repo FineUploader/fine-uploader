@@ -1,8 +1,12 @@
+/* globals describe, beforeEach, afterEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 describe("templating.js", function() {
+    "use strict";
+
     var $template, templating,
         PAUSED_TEXT = "Testing - Paused",
         HIDE_CSS = "test-hide",
         EDITABLE_CSS = "test-editable",
+        /* jshint quotmark:false */
         emptyTemplate = '<div class="qq-uploader-selector qq-uploader">' +
                             '<ul class="qq-upload-list-selector qq-upload-list">' +
                                 '<li></li>' +
@@ -55,7 +59,7 @@ describe("templating.js", function() {
                                     '</div>' +
                                 '</li>' +
                             '</ul>' +
-                        '</div>'
+                        '</div>';
 
     function renderTemplate(content) {
         $template = $('<script id="qq-template" type="text/template"></script>');
@@ -85,6 +89,7 @@ describe("templating.js", function() {
 
             templating.clearFiles();
             templating.addFile(0, "foobar");
+            /* jshint eqnull:true */
             assert.ok(templating.getFileList() != null);
             templating.markFilenameEditable(0);
             templating.updateFilename(0, "test");
@@ -146,10 +151,12 @@ describe("templating.js", function() {
         it("has edit filename & retry features enabled, also button present if applicable", function() {
             assert.ok(templating.isEditFilenamePossible());
             assert.ok(templating.isRetryPossible());
+            /* jshint eqnull:true */
             assert.ok(templating.getButton() != null);
         });
 
         it("adds & removes file entries", function() {
+            /* jshint eqnull:true */
             assert.ok(templating.getFileContainer(0) != null);
             templating.removeFile(0);
             assert.ok(templating.getFileContainer(0) == null);

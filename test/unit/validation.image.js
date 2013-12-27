@@ -1,6 +1,9 @@
+/* globals describe, beforeEach, afterEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 // The file fails to download when using the Android emulator via Selenium, so we have to exclude it here.
 if (qq.supportedFeatures.imageValidation && qqtest.canDownloadFileAsBlob) {
     describe("validation.image.js", function() {
+        "use strict";
+
         this.timeout(4000);
 
         var testImgKey = "GPN-2000-001635.jpg",

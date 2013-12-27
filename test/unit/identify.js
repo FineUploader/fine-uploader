@@ -1,5 +1,7 @@
+/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 if (qq.supportedFeatures.imagePreviews && qqtest.canDownloadFileAsBlob) {
     describe("identify.js", function() {
+        "use strict";
 
         function testPreviewability(expectedToBePreviewable, key, expectedMime, done) {
             qqtest.downloadFileAsBlob(key, expectedMime).then(function(blob) {

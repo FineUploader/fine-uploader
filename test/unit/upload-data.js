@@ -1,4 +1,6 @@
+/* globals describe, beforeEach, afterEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 describe("upload-data.js", function () {
+    "use strict";
 
     it("allows overriden uuids", function() {
         var uploadData = helpme.createUploadData();
