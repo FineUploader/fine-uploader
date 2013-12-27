@@ -159,9 +159,9 @@ Called just before a file upload is resumed.  See the `uploadChunk` event for mo
 
 #### sessionRequestComplete
 
-**Parameters**: Object response, Boolean success, XMLHttpRequest || XDomainRequest xhrOrXdr
+**Parameters**: Array response, Boolean success, XMLHttpRequest || XDomainRequest xhrOrXdr
 
-Invoked when a session request has completed.  The `response` will be either an `Object` containing the response data
+Invoked when a session request has completed.  The `response` will be either an `Array` containing the response data
 or `null` if the response did not contain valid JSON.  The `success` parameter will be `false` if ANY of the file items
 represented in the response could not be parsed (due to bad syntax, missing name/UUID property, etc).
 
