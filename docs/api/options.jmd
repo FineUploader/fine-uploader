@@ -233,7 +233,7 @@ always used and shared among all buttons for a particular instance.""", "info", 
 
 ### `session` option
 
-See the [Initialize File List feature page](../features/session.html) for more details.
+See the [Initial File List feature page](../features/session.html) for more details.
 
 {{ options_table(
     (
