@@ -1,8 +1,9 @@
-/*globals qq, document*/
+/*globals qq, document, CustomEvent*/
 qq.DragAndDrop = function(o) {
     "use strict";
 
     var options,
+        HIDE_ZONES_EVENT_NAME = "qq-hidezones",
         HIDE_BEFORE_ENTER_ATTR = "qq-hide-dropzone",
         uploadDropZones = [],
         droppedFiles = [],
@@ -117,6 +118,7 @@ qq.DragAndDrop = function(o) {
 
     function setupDropzone(dropArea) {
         var dropZone = new qq.UploadDropZone({
+            HIDE_ZONES_EVENT_NAME: HIDE_ZONES_EVENT_NAME,
             element: dropArea,
             onEnter: function(e){
                 qq(dropArea).addClass(options.classes.dropActive);
@@ -126,9 +128,6 @@ qq.DragAndDrop = function(o) {
                 qq(dropArea).removeClass(options.classes.dropActive);
             },
             onDrop: function(e){
-                qq(dropArea).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropArea).hide();
-                qq(dropArea).removeClass(options.classes.dropActive);
-
                 handleDataTransfer(e.dataTransfer, dropZone).done(function() {
                     uploadDroppedFiles(droppedFiles, dropZone);
                 });
@@ -195,11 +194,19 @@ qq.DragAndDrop = function(o) {
                 });
             }
         });
+
         disposeSupport.attach(document, "drop", function(e){
             qq.each(dropZones, function(idx, dropZone) {
                 qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
             });
             e.preventDefault();
+        });
+
+        disposeSupport.attach(document, HIDE_ZONES_EVENT_NAME, function(e) {
+            qq.each(options.dropZoneElements, function(idx, zone) {
+                qq(zone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(zone).hide();
+                qq(zone).removeClass(options.classes.dropActive);
+            });
         });
     }
 
@@ -249,7 +256,8 @@ qq.DragAndDrop.callbacks = function() {
 qq.UploadDropZone = function(o){
     "use strict";
 
-    var options, element, preventDrop, dropOutsideDisabled, disposeSupport = new qq.DisposeSupport();
+    var disposeSupport = new qq.DisposeSupport(),
+        options, element, preventDrop, dropOutsideDisabled;
 
     options = {
         element: null,
@@ -316,6 +324,29 @@ qq.UploadDropZone = function(o){
         return preventDrop;
     }
 
+    function triggerHidezonesEvent() {
+        var hideZonesEvent;
+
+        function triggerUsingOldApi() {
+            hideZonesEvent = document.createEvent("Event");
+            hideZonesEvent.initEvent(options.HIDE_ZONES_EVENT_NAME, true, true);
+        }
+
+        if (window.CustomEvent) {
+            try {
+                hideZonesEvent = new CustomEvent(options.HIDE_ZONES_EVENT_NAME);
+            }
+            catch (err) {
+                triggerUsingOldApi();
+            }
+        }
+        else {
+            triggerUsingOldApi();
+        }
+
+        document.dispatchEvent(hideZonesEvent);
+    }
+
     function attachEvents(){
         disposeSupport.attach(element, "dragover", function(e){
             if (!isValidFileDrag(e)) {
@@ -360,7 +391,7 @@ qq.UploadDropZone = function(o){
             options.onLeaveNotDescendants(e);
         });
 
-        disposeSupport.attach(element, "drop", function(e){
+        disposeSupport.attach(element, "drop", function(e) {
             if (!isOrSetDropDisabled()) {
                 if (!isValidFileDrag(e)) {
                     return;
@@ -369,6 +400,8 @@ qq.UploadDropZone = function(o){
                 e.preventDefault();
                 e.stopPropagation();
                 options.onDrop(e);
+
+                triggerHidezonesEvent();
             }
         });
     }
