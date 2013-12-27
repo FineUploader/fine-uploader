@@ -14,6 +14,7 @@
     <li><a href="#pastereceived">pasteReceived</a></li>
     <li><a href="#progress">progress</a></li>
     <li><a href="#resume">resume</a></li>
+    <li><a href="#sessionrequestcomplete">sessionRequestComplete</a></li>
     <li><a href="#statuschange">statusChange</a></li>
     <li><a href="#submit">submit</a></li>
     <li><a href="#submitdelete">submitDelete</a></li>
@@ -156,13 +157,15 @@ Called just before a file upload is resumed.  See the `uploadChunk` event for mo
 
 ----
 
-onSessionRequestComplete: function(response, success, xhrOrXdr) {}
-
 #### sessionRequestComplete
 
 **Parameters**: Object response, Boolean success, XMLHttpRequest || XDomainRequest xhrOrXdr
 
-Invoked when a session request has completed.
+Invoked when a session request has completed.  The `response` will be either an `Object` containing the response data
+or `null` if the response did not contain valid JSON.  The `success` parameter will be `false` if ANY of the file items
+represented in the response could not be parsed (due to bad syntax, missing name/UUID property, etc).
+
+See the [Initial File List feature page](../features/session.html) for more details.
 
 ----
 

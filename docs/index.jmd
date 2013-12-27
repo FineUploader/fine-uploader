@@ -86,6 +86,7 @@ be documented.
 * [Drag and Drop](features/drag-and-drop.html)
 * [Filename Editing](features/filename-edit.html)
 * [Handling Errors](features/handling-errors.html)
+* [Initial File Lists](features/session.html)
 * [Multiple Upload Buttons](features/extra-buttons.html)
 * [Paste to Upload](features/paste-to-upload.html)
 * [Pause In-Progress Uploads](features/pause.html)
