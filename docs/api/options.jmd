@@ -42,9 +42,9 @@ mode you are in and keep that in mind when determining which options do what.
         ("formatFileName", "`Function`", "", "Provide a function to control the display of file names.  The default function limits the name displayed in the UI to 33 characters plus 3 ellipses separating the first and last several characters.  The unformatted file name is passed into the function when it is invoked."),
         ("maxConnections", "`Number`", "`3`", "Maxmimum allowable concurrent requests"),
         ("multiple", "`Boolean`", "`true`", "When `true` this will prevent the user from simultaneously selecting or dropping more than one item."),
-        ("showMessage", "`String` message", "", "Provide a function here to display a message to the user when the uploader receives an error or the user attempts to leave the page."),
-        ("showConfirm", "`String` message", "", "Provide a function here to prompt the user to confirm deletion of a file."),
-        ("showPrompt", "`String` message", "", "Provide a function here to prompt the user for a filename when pasting file(s)."),
+        ("showMessage", "`Function` message", "", "Provide a (promissory) function here to display a message to the user when the uploader receives an error or the user attempts to leave the page."),
+        ("showConfirm", "`Function` message", "", "Provide a (promissory) function here to prompt the user to confirm deletion of a file."),
+        ("showPrompt", "`Function` message", "", "Provide a (promissory) function here to prompt the user for a filename when pasting file(s)."),
     )
 ) }}
 

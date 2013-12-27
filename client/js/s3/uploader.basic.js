@@ -68,7 +68,7 @@
 
         // This will hold callbacks for failed uploadSuccess requests that will be invoked on retry.
         // Indexed by file ID.
-        this._failedSuccessRequestCallbacks = [];
+        this._failedSuccessRequestCallbacks = {};
 
         // Holds S3 keys for file representations constructed from a session request.
         this._cannedKeys = {};
