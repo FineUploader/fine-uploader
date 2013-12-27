@@ -49,6 +49,8 @@ Here are the following properties of each `Object` that Fine Uploader recognizes
 The response will be converted into a JavaScript `Array` and passed to your `sessionRequestComplete` event handler.
 So, any non-standard object properties passed with your server response will also be passed to your event handler.
 
+Cross-origin endpoints are supported in all browsers other than IE7.
+
 Your server must respond with a status of 200.
 
 {% endmarkdown %}

@@ -239,7 +239,7 @@ See the [Initial File List feature page](../features/session.html) for more deta
     (
         ("endpoint", "`String`", "`null`", "If non-null, Fine Uploader will send a GET request on startup to this endpoint, expecting a JSON response containing data about the initial file list to populate."),
         ("params", "`Object`", "`{}`", "Any parameters you would like passed with the associated GET request to your server."),
-        ("customHeaders", "`Object`", "`{}`", "Any additional headers you would like included with the GET request sent to your server."),
+        ("customHeaders", "`Object`", "`{}`", "Any additional headers you would like included with the GET request sent to your server.  Ignored in IE9 and IE8 if the endpoint is cross-origin."),
         ("refreshOnReset", "`Boolean`", "`true`", "Set this to `false` if you do not want the file list to be retrieved from the server as part of a reset."),
     )
 ) }}
