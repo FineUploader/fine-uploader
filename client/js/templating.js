@@ -456,12 +456,14 @@ qq.Templating = function(spec) {
         getFileId: function(el) {
             var currentNode = el;
 
-            /*jshint -W116*/
-            while (currentNode.getAttribute(FILE_ID_ATTR) == null) {
-                currentNode = currentNode.parentNode;
-            }
+            if (currentNode) {
+                /*jshint -W116*/
+                while (currentNode.getAttribute(FILE_ID_ATTR) == null) {
+                    currentNode = currentNode.parentNode;
+                }
 
-            return parseInt(currentNode.getAttribute(FILE_ID_ATTR));
+                return parseInt(currentNode.getAttribute(FILE_ID_ATTR));
+            }
         },
 
         getFileList: function() {

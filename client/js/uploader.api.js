@@ -56,6 +56,10 @@
 
             continued && this._templating.uploadContinued(id);
             return continued;
+        },
+
+        getId: function(fileContainerOrChildEl) {
+            return this._templating.getFileId(fileContainerOrChildEl);
         }
     };
 
