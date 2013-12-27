@@ -1,5 +1,4 @@
-/* Global beforeEach for mocha unit tests */
-/* globals assert, qq, beforeEach, afterEach */
+/* globals assert, qq, before, beforeEach, afterEach */
 var $fixture;
 
 (function() {

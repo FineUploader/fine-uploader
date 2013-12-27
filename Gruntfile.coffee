@@ -461,7 +461,7 @@ module.exports = (grunt) ->
 
         jshint:
             source: ["#{paths.src}/js/**/*.js"]
-            tests: ["#{paths.test}/unit/*.js"]
+            tests: ["#{paths.test}/unit/**/*.js","#{paths.test}/static/local/*.js"]
             options:
                 jshintrc: true
 

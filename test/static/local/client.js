@@ -1,4 +1,6 @@
+/* globals mocha */
 function FancyJSON(runner) {
+    "use strict";
 
     var root = null;
     var result = {};
@@ -61,11 +63,11 @@ function FancyJSON(runner) {
 
     }
 
-    runner.on('suite', function(suite) {
+    runner.on("suite", function(suite) {
         if(suite.parent.root) { root = suite.parent; }
     });
 
-    runner.on('end', function() {
+    runner.on("end", function() {
         recurse(root, result);
         window.jsonReport = result;
     });
@@ -74,6 +76,7 @@ function FancyJSON(runner) {
 
 
 function mochaSaucePlease(fn) {
+    "use strict";
 
     (function(runner) {
 
@@ -105,7 +108,7 @@ function mochaSaucePlease(fn) {
 
         // The Grid view needs more info about failures
         var failed = [];
-        runner.on('fail', function(test, err) {
+        runner.on("fail", function(test, err) {
             failed.push({
                 title: test.title,
                 fullTitle: test.fullTitle(),
@@ -117,10 +120,10 @@ function mochaSaucePlease(fn) {
         });
 
         // implement custom reporter for console to read back from Sauce
-        runner.on('end', function() {
+        runner.on("end", function() {
             runner.stats.failed = failed;
             //runner.stats.xUnitReport = xUnitReport;
-            runner.stats.jsonReport = jsonReport;
+            runner.stats.jsonReport = window.jsonReport;
             window.mochaResults = runner.stats;
             window.chocoReady = true;
         });

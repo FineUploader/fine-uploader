@@ -332,18 +332,18 @@ var sinon = (function (buster) {
             buster = { format: require("buster-format") };
         } catch (e) {}
         module.exports = sinon;
-        module.exports.spy = require("./../../../../../Downloads/Sinon.JS-master/lib/sinon/spy");
-        module.exports.spyCall = require("./../../../../../Downloads/Sinon.JS-master/lib/sinon/call");
-        module.exports.behavior = require("./../../../../../Downloads/Sinon.JS-master/lib/sinon/behavior");
-        module.exports.stub = require("./../../../../../Downloads/Sinon.JS-master/lib/sinon/stub");
-        module.exports.mock = require("./../../../../../Downloads/Sinon.JS-master/lib/sinon/mock");
-        module.exports.collection = require("./../../../../../Downloads/Sinon.JS-master/lib/sinon/collection");
-        module.exports.assert = require("./../../../../../Downloads/Sinon.JS-master/lib/sinon/assert");
-        module.exports.sandbox = require("./../../../../../Downloads/Sinon.JS-master/lib/sinon/sandbox");
-        module.exports.test = require("./../../../../../Downloads/Sinon.JS-master/lib/sinon/test");
-        module.exports.testCase = require("./../../../../../Downloads/Sinon.JS-master/lib/sinon/test_case");
-        module.exports.assert = require("./../../../../../Downloads/Sinon.JS-master/lib/sinon/assert");
-        module.exports.match = require("./../../../../../Downloads/Sinon.JS-master/lib/sinon/match");
+        module.exports.spy = require("./../../../../../../Downloads/Sinon.JS-master/lib/sinon/spy");
+        module.exports.spyCall = require("./../../../../../../Downloads/Sinon.JS-master/lib/sinon/call");
+        module.exports.behavior = require("./../../../../../../Downloads/Sinon.JS-master/lib/sinon/behavior");
+        module.exports.stub = require("./../../../../../../Downloads/Sinon.JS-master/lib/sinon/stub");
+        module.exports.mock = require("./../../../../../../Downloads/Sinon.JS-master/lib/sinon/mock");
+        module.exports.collection = require("./../../../../../../Downloads/Sinon.JS-master/lib/sinon/collection");
+        module.exports.assert = require("./../../../../../../Downloads/Sinon.JS-master/lib/sinon/assert");
+        module.exports.sandbox = require("./../../../../../../Downloads/Sinon.JS-master/lib/sinon/sandbox");
+        module.exports.test = require("./../../../../../../Downloads/Sinon.JS-master/lib/sinon/test");
+        module.exports.testCase = require("./../../../../../../Downloads/Sinon.JS-master/lib/sinon/test_case");
+        module.exports.assert = require("./../../../../../../Downloads/Sinon.JS-master/lib/sinon/assert");
+        module.exports.match = require("./../../../../../../Downloads/Sinon.JS-master/lib/sinon/match");
     }
 
     if (buster) {

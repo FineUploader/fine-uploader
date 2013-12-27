@@ -1,8 +1,6 @@
-/**
- * A variety of helper functions to help me.
- */
-
+/* globals qq, beforeEach, afterEach, sinon, mockFormData, unmockFormData */
 var helpme = (function () {
+    "use strict";
 
     var obj = {
     
@@ -56,9 +54,9 @@ var helpme = (function () {
                 paramsInBody: true,
                 customHeaders: {},
                 forceMultipart: true,
-                inputName: 'qqfile',
-                uuidName: 'qquuid',
-                totalFileSizeName: 'qqtotalfilesize'
+                inputName: "qqfile",
+                uuidName: "qquuid",
+                totalFileSizeName: "qqtotalfilesize"
             };
             var default_validation = {
                 allowedExtensions: [],
@@ -71,7 +69,7 @@ var helpme = (function () {
             var default_retry = {
             };
                    
-            var uploader = new qq.FineUploader(options); 
+            var uploader = new qq.FineUploader(options);
         },
 
         setupFileTests: function() {
