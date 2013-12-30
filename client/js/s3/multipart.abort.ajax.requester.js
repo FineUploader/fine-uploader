@@ -14,7 +14,6 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
             method: "DELETE",
             endpointStore: null,
             signatureSpec: null,
-            accessKey: null,
             maxConnections: 3,
             getKey: function(id) {},
             log: function(str, level) {}
@@ -24,7 +23,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
     qq.extend(options, o);
 
     // Transport for requesting signatures (for the "Complete" requests) from the local server
-    getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequester({
+    getSignatureAjaxRequester = new qq.s3.RequestSigner({
         signatureSpec: options.signatureSpec,
         cors: options.cors,
         log: options.log
@@ -53,7 +52,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
         getSignatureAjaxRequester.getSignature(id, {headers: toSign.stringToSign}).then(function(response) {
-            headers.Authorization = "AWS " + options.accessKey + ":" + response.signature;
+            headers.Authorization = "AWS " + options.signatureSpec.credentialsProvider.get().accessKey + ":" + response.signature;
             promise.success(headers, toSign.endOfUrl);
         }, promise.failure);
 

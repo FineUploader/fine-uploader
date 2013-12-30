@@ -1,14 +1,19 @@
-/*globals qq*/
+/* globals qq, CryptoJS */
 /**
- * Sends a POST request to the server in an attempt to solicit signatures for various S3-related requests.  This include
- * (but are not limited to) HTML Form Upload requests and Multipart Uploader requests (via the S3 REST API).
- * This module also parses the response and attempts to determine if the effort was successful.
+ * Handles signature determination for HTML Form Upload requests and Multipart Uploader requests (via the S3 REST API).
+ *
+ * If the S3 requests are to be signed server side, this module will send a POST request to the server in an attempt
+ * to solicit signatures for various S3-related requests.  This module also parses the response and attempts
+ * to determine if the effort was successful.
+ *
+ * If the S3 requests are to be signed client-side, without the help of a server, this module will utilize CryptoJS to
+ * sign the requests directly in the browser and send them off to S3.
  *
  * @param o Options associated with all such requests
  * @returns {{getSignature: Function}} API method used to initiate the signature request.
  * @constructor
  */
-qq.s3.SignatureAjaxRequester = function(o) {
+qq.s3.RequestSigner = function(o) {
     "use strict";
 
     var requester,
@@ -18,6 +23,7 @@ qq.s3.SignatureAjaxRequester = function(o) {
             expectingPolicy: false,
             method: "POST",
             signatureSpec: {
+                credentialsProvider: {},
                 endpoint: null,
                 customHeaders: {}
             },
@@ -35,7 +41,6 @@ qq.s3.SignatureAjaxRequester = function(o) {
     function handleSignatureReceived(id, xhrOrXdr, isError) {
         var responseJson = xhrOrXdr.responseText,
             pendingSignatureData = pendingSignatures[id],
-            expectingPolicy = pendingSignatureData.expectingPolicy,
             promise = pendingSignatureData.promise,
             errorMessage, response;
 
@@ -59,7 +64,7 @@ qq.s3.SignatureAjaxRequester = function(o) {
         }
         // Make sure the response contains policy & signature properties
         else if (response) {
-            if (expectingPolicy && !response.policy) {
+            if (options.expectingPolicy && !response.policy) {
                 isError = true;
                 errorMessage = "Response does not include the base64 encoded policy!";
             }
@@ -128,6 +133,27 @@ qq.s3.SignatureAjaxRequester = function(o) {
         };
     }
 
+    function signPolicy(policy, signatureEffort) {
+        var policyStr = JSON.stringify(policy),
+            policyWordArray = CryptoJS.enc.Utf8.parse(policyStr),
+            base64Policy = CryptoJS.enc.Base64.stringify(policyWordArray),
+            policyHmacSha1 = CryptoJS.HmacSHA1(base64Policy, options.signatureSpec.credentialsProvider.get().secretKey),
+            policyHmacSha1Base64 = CryptoJS.enc.Base64.stringify(policyHmacSha1);
+
+        signatureEffort.success({
+            policy: base64Policy,
+            signature: policyHmacSha1Base64
+        });
+    }
+
+    function signApiRequest(headersStr, signatureEffort) {
+        var headersWordArray = CryptoJS.enc.Utf8.parse(headersStr),
+            headersHmacSha1 = CryptoJS.HmacSHA1(headersWordArray, options.signatureSpec.credentialsProvider.get().secretKey),
+            headersHmacSha1Base64 = CryptoJS.enc.Base64.stringify(headersHmacSha1);
+
+        signatureEffort.success({signature: headersHmacSha1Base64});
+    }
+
     requester = new qq.AjaxRequester({
         method: options.method,
         contentType: "application/json; charset=utf-8",
@@ -159,20 +185,29 @@ qq.s3.SignatureAjaxRequester = function(o) {
          */
         getSignature: function(id, toBeSigned) {
             var params = toBeSigned,
-                promise = new qq.Promise();
+                signatureEffort = new qq.Promise();
 
-            options.log("Submitting S3 signature request for " + id);
+            if (options.signatureSpec.credentialsProvider.get().secretKey && window.CryptoJS) {
+                if (toBeSigned.headers) {
+                    signApiRequest(toBeSigned.headers, signatureEffort);
+                }
+                else {
+                    signPolicy(toBeSigned, signatureEffort);
+                }
+            }
+            else {
+                options.log("Submitting S3 signature request for " + id);
 
-            requester.initTransport(id)
-                .withParams(params)
-                .send();
+                requester.initTransport(id)
+                    .withParams(params)
+                    .send();
 
-            pendingSignatures[id] = {
-                promise: promise,
-                expectingPolicy: options.expectingPolicy
-            };
+                pendingSignatures[id] = {
+                    promise: signatureEffort
+                };
+            }
 
-            return promise;
+            return signatureEffort;
         },
 
         constructStringToSign: function(type, bucket, key) {
@@ -215,7 +250,7 @@ qq.s3.SignatureAjaxRequester = function(o) {
     });
 };
 
-qq.s3.SignatureAjaxRequester.prototype.REQUEST_TYPE = {
+qq.s3.RequestSigner.prototype.REQUEST_TYPE = {
     MULTIPART_INITIATE: "multipart_initiate",
     MULTIPART_COMPLETE: "multipart_complete",
     MULTIPART_ABORT: "multipart_abort",

@@ -10,6 +10,7 @@
     qq.s3.FineUploaderBasic = function(o) {
         var options = {
             request: {
+                // public key (required for server-side signing, ignored if `credentials` have been provided)
                 accessKey: null,
                 // Making this configurable in the traditional uploader was probably a bad idea.
                 // Let's just set this to "uuid" in the S3 uploader and not document the fact that this can be changed.
@@ -25,6 +26,19 @@
                 reducedRedundancy: false
             },
 
+            credentials: {
+                // Public key (required).
+                accessKey: null,
+                // Private key (required).
+                secretKey: null,
+                // Expiration date for the credentials (required).
+                expiration: null,
+                // Temporary credentials session token.
+                // Only required for temporary credentials obtained via AssumeRoleWithWebIdentity API.
+                sessionToken: null
+            },
+
+            // optional/ignored if `credentials` is provided
             signature: {
                 endpoint: null,
                 customHeaders: {}
@@ -60,6 +74,9 @@
 
         // Replace any default options with user defined ones
         qq.extend(options, o, true);
+
+        this._currentCredentials = qq.extend({}, options.credentials);
+        this._currentCredentials.accessKey = this._currentCredentials.accessKey || options.request.accessKey;
 
         // Call base module
         qq.FineUploaderBasic.call(this, options);
@@ -111,6 +128,10 @@
             }
         },
 
+        setCredentials: function(credentials) {
+            this._currentCredentials = credentials;
+        },
+
         /**
          * Ensures the parent's upload handler creator passes any additional S3-specific options to the handler as well
          * as information required to instantiate the specific handler based on the current browser's capabilities.
@@ -119,17 +140,18 @@
          * @private
          */
         _createUploadHandler: function() {
-            var additionalOptions = {
-                objectProperties: this._options.objectProperties,
-                signature: this._options.signature,
-                iframeSupport: this._options.iframeSupport,
-                getKeyName: qq.bind(this._determineKeyName, this),
-                // pass size limit validation values to include in the request so AWS enforces this server-side
-                validation: {
-                    minSizeLimit: this._options.validation.minSizeLimit,
-                    maxSizeLimit: this._options.validation.sizeLimit
-                }
-            };
+            var self = this,
+                additionalOptions = {
+                    objectProperties: this._options.objectProperties,
+                    signature: this._options.signature,
+                    iframeSupport: this._options.iframeSupport,
+                    getKeyName: qq.bind(this._determineKeyName, this),
+                    // pass size limit validation values to include in the request so AWS enforces this server-side
+                    validation: {
+                        minSizeLimit: this._options.validation.minSizeLimit,
+                        maxSizeLimit: this._options.validation.sizeLimit
+                    }
+                };
 
             // We assume HTTP if it is missing from the start of the endpoint string.
             qq.override(this._endpointStore, function(super_) {
@@ -145,6 +167,12 @@
                     }
                 };
             });
+
+            additionalOptions.signature.credentialsProvider = {
+                get: function() {
+                    return self._currentCredentials;
+                }
+            };
 
             return qq.FineUploaderBasic.prototype._createUploadHandler.call(this, additionalOptions, "s3");
         },

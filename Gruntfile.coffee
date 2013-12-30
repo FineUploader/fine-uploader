@@ -464,6 +464,7 @@ module.exports = (grunt) ->
             tests: ["#{paths.test}/unit/**/*.js","#{paths.test}/static/local/*.js"]
             options:
                 jshintrc: true
+                ignores: ["#{paths.src}/js/third-party/**/*.js"]
 
         custom:
             options:
