@@ -336,6 +336,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
                 type: fileState[id].type,
                 key: getActualKey(id),
                 accessKey: credentialsProvider.get().accessKey,
+                sessionToken: credentialsProvider.get().sessionToken,
                 acl: acl,
                 expectedStatus: expectedStatus,
                 minFileSize: validation.minSizeLimit,

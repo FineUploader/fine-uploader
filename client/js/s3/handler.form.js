@@ -89,6 +89,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
                 params: customParams,
                 key: fileState[id].key,
                 accessKey: credentialsProvider.get().accessKey,
+                sessionToken: credentialsProvider.get().sessionToken,
                 acl: acl,
                 minFileSize: validation.minSizeLimit,
                 maxFileSize: validation.maxSizeLimit,

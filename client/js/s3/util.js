@@ -48,7 +48,7 @@ qq.s3.util = qq.s3.util || (function() {
         /**
          * Create a policy document to be signed and sent along with the S3 upload request.
          *
-         * @param spec Object with properties: `endpoint`, `key`, `acl`, `type`, `expectedStatus`, `params`, `minFileSize`, and `maxFileSize`.
+         * @param spec Object with properties use to construct the policy document.
          * @returns {Object} Policy doc.
          */
         getPolicy: function(spec) {
@@ -60,6 +60,7 @@ qq.s3.util = qq.s3.util || (function() {
                 type = spec.type,
                 expirationDate = new Date(),
                 expectedStatus = spec.expectedStatus,
+                sessionToken = spec.sessionToken,
                 params = spec.params,
                 successRedirectUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl(spec.successRedirectUrl),
                 minFileSize = spec.minFileSize,
@@ -85,6 +86,10 @@ qq.s3.util = qq.s3.util || (function() {
 
             if (reducedRedundancy) {
                 conditions.push({"x-amz-storage-class": "REDUCED_REDUNDANCY"});
+            }
+
+            if (sessionToken) {
+                conditions.push({"x-amz-security-token": sessionToken});
             }
 
             conditions.push({key: key});
@@ -121,6 +126,7 @@ qq.s3.util = qq.s3.util || (function() {
                 customParams = spec.params,
                 promise = new qq.Promise(),
                 policyJson = qq.s3.util.getPolicy(spec),
+                sessionToken = spec.sessionToken,
                 type = spec.type,
                 key = spec.key,
                 accessKey = spec.accessKey,
@@ -147,6 +153,10 @@ qq.s3.util = qq.s3.util || (function() {
 
             if (reducedRedundancy) {
                 awsParams["x-amz-storage-class"] = "REDUCED_REDUNDANCY";
+            }
+
+            if (sessionToken) {
+                awsParams["x-amz-security-token"] = sessionToken;
             }
 
             awsParams.acl = acl;
