@@ -76,7 +76,6 @@
         qq.extend(options, o, true);
 
         this._currentCredentials = this.setCredentials(this._currentCredentials);
-        this._currentCredentials.accessKey = this._currentCredentials.accessKey || options.request.accessKey;
 
         // Call base module
         qq.FineUploaderBasic.call(this, options);
