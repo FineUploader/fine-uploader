@@ -34,7 +34,7 @@
                 // Expiration date for the credentials (required).
                 expiration: null,
                 // Temporary credentials session token.
-                // Only required for temporary credentials obtained via AssumeRoleWithWebIdentity API.
+                // Only required for temporary credentials obtained via AssumeRoleWithWebIdentity.
                 sessionToken: null
             },
 
@@ -129,7 +129,7 @@
         },
 
         setCredentials: function(credentials) {
-            this._currentCredentials = credentials;
+            this._currentCredentials = qq.extend({}, credentials);
         },
 
         /**
