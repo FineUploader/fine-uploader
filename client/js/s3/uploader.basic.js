@@ -129,7 +129,7 @@
         },
 
         setCredentials: function(credentials) {
-            if (credentials.secretKey) {
+            if (credentials && credentials.secretKey) {
                 if (!credentials.accessKey) {
                     this.log("Invalid credentials: no accessKey", "error");
                 }
@@ -146,7 +146,7 @@
                 }
             }
 
-            this._currentCredentials = qq.extend({}, credentials);
+            this._currentCredentials = qq.extend({accessKey: this._options.request.accessKey}, credentials);
         },
 
         /**
