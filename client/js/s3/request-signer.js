@@ -253,11 +253,25 @@ qq.s3.RequestSigner = function(o) {
                 },
 
                 getToSign: function() {
+                    var sessionToken = credentialsProvider.get().sessionToken,
+                        toSignAndEndOfUrl;
+
                     headers["x-amz-date"] = new Date().toUTCString();
-                    var toSignAndEndOfUrl = getToSignAndEndOfUrl(type, bucket, key, contentType, headers, uploadId, partNum);
+
+                    if (sessionToken) {
+                        headers["x-amz-security-token"] = sessionToken;
+                    }
+
+                    toSignAndEndOfUrl = getToSignAndEndOfUrl(type, bucket, key, contentType, headers, uploadId, partNum);
 
                     return {
-                        headers: contentType ? qq.extend(headers, {"Content-Type": contentType}) : headers,
+                        headers: (function() {
+                            if (contentType) {
+                                headers["Content-Type"] = contentType;
+                            }
+
+                            return headers;
+                        }()),
                         endOfUrl: toSignAndEndOfUrl.endOfUrl,
                         stringToSign: toSignAndEndOfUrl.toSign
                     };
