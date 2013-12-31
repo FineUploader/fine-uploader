@@ -69,13 +69,17 @@
 
             cors: {
                 allowXdr: true
+            },
+
+            callbacks: {
+                onCredentialsExpired: function() {}
             }
         };
 
         // Replace any default options with user defined ones
         qq.extend(options, o, true);
 
-        this._currentCredentials = this.setCredentials(this._currentCredentials);
+        this.setCredentials(options.credentials, true);
 
         // Call base module
         qq.FineUploaderBasic.call(this, options);
@@ -127,13 +131,13 @@
             }
         },
 
-        setCredentials: function(credentials) {
+        setCredentials: function(credentials, ignoreEmpty) {
             if (credentials && credentials.secretKey) {
                 if (!credentials.accessKey) {
-                    this.log("Invalid credentials: no accessKey", "error");
+                    throw new qq.Error("Invalid credentials: no accessKey");
                 }
                 else if (!credentials.expiration) {
-                    this.log("Invalid credentials: no expiration", "error");
+                    throw new qq.Error("Invalid credentials: no expiration");
                 }
                 else {
                     this._currentCredentials = qq.extend({}, credentials);
@@ -144,8 +148,9 @@
                     }
                 }
             }
-
-            this._currentCredentials = qq.extend({accessKey: this._options.request.accessKey}, credentials);
+            else if (!ignoreEmpty) {
+                throw new qq.Error("Invalid credentials parameter!");
+            }
         },
 
         /**
@@ -187,6 +192,33 @@
             additionalOptions.signature.credentialsProvider = {
                 get: function() {
                     return self._currentCredentials;
+                },
+
+                onExpired: function() {
+                    var updateCredentials = new qq.Promise(),
+                        callbackRetVal = self._options.callbacks.onCredentialsExpired();
+
+                    if (callbackRetVal instanceof qq.Promise) {
+                        callbackRetVal.then(function(credentials) {
+                            try {
+                                self.setCredentials(credentials);
+                                updateCredentials.success();
+                            }
+                            catch (error) {
+                                self.log("Invalid credentials returned from onCredentialsExpired callback! (" + error.message + ")", "error");
+                                updateCredentials.failure("onCredentialsExpired did not return valid credentials.");
+                            }
+                        }, function(errorMsg) {
+                            self.log("onCredentialsExpired callback indicated failure! (" + errorMsg + ")", "error");
+                            updateCredentials.failure("onCredentialsExpired callback failed.");
+                        });
+                    }
+                    else {
+                        self.log("onCredentialsExpired callback did not return a promise!", "error");
+                        updateCredentials.failure("Unexpected return value for onCredentialsExpired.");
+                    }
+
+                    return updateCredentials;
                 }
             };
 

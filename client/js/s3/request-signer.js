@@ -34,9 +34,11 @@ qq.s3.RequestSigner = function(o) {
                 sendCredentials: false
             },
             log: function(str, level) {}
-        };
+        },
+        credentialsProvider;
 
     qq.extend(options, o, true);
+    credentialsProvider = options.signatureSpec.credentialsProvider;
 
     function handleSignatureReceived(id, xhrOrXdr, isError) {
         var responseJson = xhrOrXdr.responseText,
@@ -133,11 +135,20 @@ qq.s3.RequestSigner = function(o) {
         };
     }
 
+    function determineSignatureClientSide(toBeSigned, signatureEffort) {
+        if (toBeSigned.headers) {
+            signApiRequest(toBeSigned.headers, signatureEffort);
+        }
+        else {
+            signPolicy(toBeSigned, signatureEffort);
+        }
+    }
+
     function signPolicy(policy, signatureEffort) {
         var policyStr = JSON.stringify(policy),
             policyWordArray = CryptoJS.enc.Utf8.parse(policyStr),
             base64Policy = CryptoJS.enc.Base64.stringify(policyWordArray),
-            policyHmacSha1 = CryptoJS.HmacSHA1(base64Policy, options.signatureSpec.credentialsProvider.get().secretKey),
+            policyHmacSha1 = CryptoJS.HmacSHA1(base64Policy, credentialsProvider.get().secretKey),
             policyHmacSha1Base64 = CryptoJS.enc.Base64.stringify(policyHmacSha1);
 
         signatureEffort.success({
@@ -148,7 +159,7 @@ qq.s3.RequestSigner = function(o) {
 
     function signApiRequest(headersStr, signatureEffort) {
         var headersWordArray = CryptoJS.enc.Utf8.parse(headersStr),
-            headersHmacSha1 = CryptoJS.HmacSHA1(headersWordArray, options.signatureSpec.credentialsProvider.get().secretKey),
+            headersHmacSha1 = CryptoJS.HmacSHA1(headersWordArray, credentialsProvider.get().secretKey),
             headersHmacSha1Base64 = CryptoJS.enc.Base64.stringify(headersHmacSha1);
 
         signatureEffort.success({signature: headersHmacSha1Base64});
@@ -187,12 +198,18 @@ qq.s3.RequestSigner = function(o) {
             var params = toBeSigned,
                 signatureEffort = new qq.Promise();
 
-            if (options.signatureSpec.credentialsProvider.get().secretKey && window.CryptoJS) {
-                if (toBeSigned.headers) {
-                    signApiRequest(toBeSigned.headers, signatureEffort);
+            if (credentialsProvider.get().secretKey && window.CryptoJS) {
+                if (credentialsProvider.get().expiration.getTime() > Date.now()) {
+                    determineSignatureClientSide(toBeSigned, signatureEffort);
                 }
+                // If credentials are expired, ask for new ones before attempting to sign request
                 else {
-                    signPolicy(toBeSigned, signatureEffort);
+                    credentialsProvider.onExpired().then(function() {
+                        determineSignatureClientSide(toBeSigned, signatureEffort);
+                    }, function(errorMsg) {
+                        options.log("Attempt to update expired credentials apparently failed! Unable to sign request.  ", "error");
+                        signatureEffort.failure("Unable to sign request - expired credentials.");
+                    });
                 }
             }
             else {
