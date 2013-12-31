@@ -31,7 +31,7 @@
                 accessKey: null,
                 // Private key (required).
                 secretKey: null,
-                // Expiration date for the credentials (required).
+                // Expiration date for the credentials (required).  May be an ISO string or a `Date`.
                 expiration: null,
                 // Temporary credentials session token.
                 // Only required for temporary credentials obtained via AssumeRoleWithWebIdentity.
@@ -75,7 +75,7 @@
         // Replace any default options with user defined ones
         qq.extend(options, o, true);
 
-        this._currentCredentials = qq.extend({}, options.credentials);
+        this._currentCredentials = this.setCredentials(this._currentCredentials);
         this._currentCredentials.accessKey = this._currentCredentials.accessKey || options.request.accessKey;
 
         // Call base module
@@ -129,6 +129,23 @@
         },
 
         setCredentials: function(credentials) {
+            if (credentials.secretKey) {
+                if (!credentials.accessKey) {
+                    this.log("Invalid credentials: no accessKey", "error");
+                }
+                else if (!credentials.expiration) {
+                    this.log("Invalid credentials: no expiration", "error");
+                }
+                else {
+                    this._currentCredentials = qq.extend({}, credentials);
+
+                    // Ensure expiration is a `Date`.  If initially a string, assuming it is in ISO format.
+                    if (qq.isString(credentials.expiration)) {
+                        this._currentCredentials.expiration = new Date(credentials.expiration);
+                    }
+                }
+            }
+
             this._currentCredentials = qq.extend({}, credentials);
         },
 
