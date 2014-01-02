@@ -41,7 +41,7 @@ mode you are in and keep that in mind when determining which options do what.
         ("disableCancelForFormUploads", "`Boolean`", "`false`", "When `true` the cancel link does not appear next to files when the form uploader is used."),
         ("formatFileName", "`Function`", "", "Provide a function to control the display of file names.  The default function limits the name displayed in the UI to 33 characters plus 3 ellipses separating the first and last several characters.  The unformatted file name is passed into the function when it is invoked."),
         ("maxConnections", "`Number`", "`3`", "Maxmimum allowable concurrent requests"),
-        ("multiple", "`Boolean`", "`true`", "When `true` this will prevent the user from simultaneously selecting or dropping more than one item."),
+        ("multiple", "`Boolean`", "`false`", "When `true` this will prevent the user from simultaneously selecting or dropping more than one item."),
         ("showMessage", "`Function` message", "", "Provide a (promissory) function here to display a message to the user when the uploader receives an error or the user attempts to leave the page."),
         ("showConfirm", "`Function` message", "", "Provide a (promissory) function here to prompt the user to confirm deletion of a file."),
         ("showPrompt", "`Function` message", "", "Provide a (promissory) function here to prompt the user for a filename when pasting file(s)."),
@@ -261,7 +261,7 @@ See the [Initial File List feature page](../features/session.html) for more deta
 
 {{ options_table(
     (
-        ("acceptFiles", "comma-separated Strings", "`null`", "Used by the file selection dialog. Restrict the valid file types that appear in the selection dialog by listing valid content-type specifiers here. See docs on the [accept attribute of the `<input>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input)"),
+        ("acceptFiles", "`Array` of `Strings`", "`null`", "Used by the file selection dialog. Restrict the valid file types that appear in the selection dialog by listing valid content-type specifiers here. See docs on the [accept attribute of the `<input>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input)"),
         ("allowedExtensions", "Array of Strings", "`[]`", "Specify file valid file extensions here to restrict uploads to specific types."),
         ("itemLimit", "`Number`", "`0`", "Maximum number of items that can be potentially uploaded in this session. Will reject all items that are added or retried after this limit is reached."),
         ("minSizeLimit", "`Number`", "`0`", "The minimum allowable size, in bytes, for an item."),
