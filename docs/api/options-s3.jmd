@@ -90,12 +90,17 @@ alert("The `resume.paramNames` option does **not** apply to S3.")
     )
 ) }}
 
+{{
+alert("The `request.customHeaders` option does **not** apply to S3.")
+}}
+
 ### `signature` option
 
 {{ options_table(
     (
         ("endpoint", "`String`", "`null`", "The endpoint that Fine Uploader can use to send policy documents
         (HTML form uploads) or other strings to sign (REST requests) before sending requests off to S3."),
+        ("customHeaders", "`Object`", "`{}`", "Additional headers sent along with each signature request."),
     )
 ) }}
 
@@ -107,6 +112,7 @@ alert("The `resume.paramNames` option does **not** apply to S3.")
 has been succcessfully uploaded to S3. The parameters include the key, name, UUID, and bucket associated with the file."),
         ("params", "`Object`", "`{}`", "Any additional parameters to attach to upload success file requests.
         Note that Fine Uploader will still send the bucket, key, filename, and UUID as well"),
+        ("customHeaders", "`Object`", "`{}`", "Additional headers sent along with each upload success request."),
     )
 ) }}
 

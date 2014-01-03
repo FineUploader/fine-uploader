@@ -84,6 +84,7 @@ These are simple JS objects that have the following properties:
 {{ methods_table(
     (
         ("addExtraDropzone", "`HTMLElement` element", "", "Used to mark an element as a drop zone."),
+        ("getDropTarget", "`Integer` id", "`HTMLElement`", "Returns the (drop zone) element where the file was dropped.  Undefined if no drop event was involved."),
         ("getId", "`HTMLElement` element", "`Number`", "Returns the ID of the associated file, given a file container element or a child of a file container element."),
         ("getItemByFileId", "`Integer` id", "`HTMLElement`", "Returns the element associated with the provided `id`."),
         ("removeExtraDropzone", "`HTMLElement` element", "", "Used to un-mark an element as a drop zone."),

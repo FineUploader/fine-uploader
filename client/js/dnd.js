@@ -23,7 +23,7 @@ qq.DragAndDrop = function(o) {
     function uploadDroppedFiles(files, uploadDropZone) {
         options.callbacks.dropLog("Grabbed " + files.length + " dropped files.");
         uploadDropZone.dropDisabled(false);
-        options.callbacks.processingDroppedFilesComplete(files);
+        options.callbacks.processingDroppedFilesComplete(files, uploadDropZone.getElement());
     }
 
     function traverseFileTree(entry) {
@@ -243,7 +243,7 @@ qq.DragAndDrop.callbacks = function() {
 
     return {
         processingDroppedFiles: function() {},
-        processingDroppedFilesComplete: function(files) {},
+        processingDroppedFilesComplete: function(files, targetEl) {},
         dropError: function(code, errorSpecifics) {
             qq.log("Drag & drop error code '" + code + " with these specifics: '" + errorSpecifics + "'", "error");
         },
@@ -416,6 +416,10 @@ qq.UploadDropZone = function(o){
 
         dispose: function() {
             disposeSupport.dispose();
+        },
+
+        getElement: function() {
+            return element;
         }
     });
 };
