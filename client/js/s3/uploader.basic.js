@@ -297,7 +297,7 @@
                     this.log("Failed to retrieve key name for " + id, "error");
                     failureCallback();
                 },
-                keyname = keynameFunc(id);
+                keyname = keynameFunc.call(this, id);
 
 
             if (keyname instanceof qq.Promise) {
