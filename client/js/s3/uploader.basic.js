@@ -79,7 +79,9 @@
         // Replace any default options with user defined ones
         qq.extend(options, o, true);
 
-        this.setCredentials(options.credentials, true);
+        if (!this.setCredentials(options.credentials, true)) {
+            this._currentCredentials.accessKey = options.request.accessKey;
+        }
 
         // Call base module
         qq.FineUploaderBasic.call(this, options);
@@ -147,9 +149,14 @@
                         this._currentCredentials.expiration = new Date(credentials.expiration);
                     }
                 }
+
+                return true;
             }
             else if (!ignoreEmpty) {
                 throw new qq.Error("Invalid credentials parameter!");
+            }
+            else {
+                this._currentCredentials = {};
             }
         },
 
