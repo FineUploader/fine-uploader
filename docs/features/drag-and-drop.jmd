@@ -111,7 +111,7 @@ $('#myDropZone').fineUploaderDnd({
     .on('processingDroppedFiles', function(event) {
         //TODO: display some sort of a "processing" or spinner graphic
     })
-    .on('processingDroppedFilesComplete', function(event, files) {
+    .on('processingDroppedFilesComplete', function(event, files, dropTarget) {
         //TODO: hide spinner/processing graphic
 
         $('#fineUploaderBasicContainer').fineUploader('addFiles', files); //this submits the dropped files to Fine Uploader
