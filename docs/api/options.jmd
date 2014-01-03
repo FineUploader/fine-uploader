@@ -159,7 +159,7 @@ always used and shared among all buttons for a particular instance.""", "info", 
         ("minWidthImageError", "`String`", "'Image is not wide enough.'", "Text passed to the error event handler if an image is not wide enough."),
         ("minSizeError", "`String`", "'{file} is too small, minimum file size is {minSizeLimit}.'", "Text passed to the error event handler if the item is too small."),
         ("noFilesError", "`String`", "'No files to upload.'", "Text passed to the error event handler if any empty array of items is submitted."),
-        ("onLeave", "`String`", "'The files are being uploaded, if you leave now the upload will be cancelled.'", "Text displayed to the user when they attempt to leave the page while uploads are still in progress."),
+        ("onLeave", "`String`", "'The files are being uploaded, if you leave now the upload will be canceled.'", "Text displayed to the user when they attempt to leave the page while uploads are still in progress."),
         ("retryFailTooManyItemsError", "`String`", "'Retry failed - you have reached your file limit.'", "Text passed to the error event handler if a retry attempt is declared a failed due to a violation of the `validation.itemLimit` rule."),
         ("tooManyItemsError", "`String`", "'Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.'", "Text passed to the error event handler if a submit is ignored due to a violation of the `validation.itemLimit` rules."),
     )

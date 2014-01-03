@@ -28,7 +28,7 @@ For reference, here are valid status values:
 * `UPLOAD_RETRYING` - The state when an upload retry is about to occur, just before the upload retry it attempted.  The file will likely only be in this state for a brief moment.
 * `UPLOAD_FAILED` - The upload has officially failed to upload, after all auto-retry attempts have been exhausted.
 * `UPLOAD_SUCCESSFUL` - The upload has officially succeeded.
-* `CANCELLED` - The upload has been cancelled.
+* `CANCELED` - The upload has been canceled.
 * `REJECTED` - The submitted file has failed validation, either via the internal validation checks, or via a `validate`, `validateBatch`, or `submit` event callback.
 * `DELETED` - The file has been successfully deleted from the server.
 * `DELETING` - A delete attempt is in progress.
@@ -131,12 +131,12 @@ var uploads = myUploader.getUploads({
 ]
 ```
 
-Now, suppose we have submitted another file, but we have cancelled it.  Maybe we only want
+Now, suppose we have submitted another file, but we have canceled it.  Maybe we only want
 information about canceled OR deleted items:
 
 ```javascript
 var uploads = myUploader.getUploads({
-  status: [qq.status.DELETED, qq.status.CANCELLED]
+  status: [qq.status.DELETED, qq.status.CANCELED]
 });
 
 //the uploads return value will look like this:
@@ -153,7 +153,7 @@ var uploads = myUploader.getUploads({
     name: "some_other_name_2",
     size: 11111,
     uuid: "some_other_uuid2",
-    status: "cancelled"
+    status: "canceled"
   }
 ]
 ```

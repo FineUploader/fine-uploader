@@ -324,12 +324,12 @@ if (qqtest.canDownloadFileAsBlob) {
 
         describe("cancelling uploads", function() {
             function runCancelTest(batch, done) {
-                var cancelledIds = [],
+                var canceledIds = [],
                     uploader = new qq.FineUploaderBasic({
                     autoUpload: false,
                     callbacks: {
                         onCancel: function(id) {
-                            cancelledIds.push(id);
+                            canceledIds.push(id);
                         },
                         onStatusChange: function() {
                             if (uploader.getUploads({status: qq.status.SUBMITTED}).length === 2) {
@@ -349,7 +349,7 @@ if (qqtest.canDownloadFileAsBlob) {
                             }
 
                             if (uploader.getUploads({status: qq.status.CANCELED}).length === 2) {
-                                assert.deepEqual(cancelledIds, [0, 1]);
+                                assert.deepEqual(canceledIds, [0, 1]);
                                 assert.equal(uploader.getUploads().length, 2);
                                 assert.equal(uploader.getUploads({status: qq.status.CANCELED}).length, 2);
                                 done();

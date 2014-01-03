@@ -84,7 +84,7 @@ qq.UploadHandlerForm = function(options, proxy) {
                 form;
 
             if (!input){
-                throw new Error("file with passed id was not added, or already uploaded or cancelled");
+                throw new Error("file with passed id was not added, or already uploaded or canceled");
             }
 
             options.onUpload(id, getName(id));

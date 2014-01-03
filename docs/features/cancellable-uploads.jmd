@@ -7,9 +7,9 @@
 
 Fine Uploader allows for the cancellation of in-progress uploads.
 
-Uploads can be cancelled programmatically by calling the `cancel` or `cancelAll`
+Uploads can be canceled programmatically by calling the `cancel` or `cancelAll`
 API methods.  The 'cancel' event will be fired and handled by a callback whenever
-an item is cancelled.
+an item is canceled.
 
 In Fine Uploader UI mode, cancelling an upload will remove that element from
 the DOM as well.
@@ -28,8 +28,8 @@ The 'cancel' event allows integrators to assign an action to be completed eeach 
 
 {{ events_table(
     (
-        ("cancel", "`Integer` id, `String` name", "Called when the item has been cancelled.
-        You may return `false` to prevent the upload from being cancelled.  You may also return a [`qq.Promise`](async-tasks-and-promises.html)."),
+        ("cancel", "`Integer` id, `String` name", "Called when the item has been canceled.
+        You may return `false` to prevent the upload from being canceled.  You may also return a [`qq.Promise`](async-tasks-and-promises.html)."),
     )
 ) }}
 
