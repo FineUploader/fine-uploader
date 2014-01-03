@@ -35,7 +35,7 @@ can be overridden.
         ("listElement", "`String`", "`null`", "Container for the item list."),
         ("multiple", "`Boolean`", "`true`", "When `false` this will prevent the user from simultaneously
         selecting or dropping more than one item. Dropping or selecting another item will clear the upload list.
-        If another is already uploading, it will be cancelled. To ignore rather than cancel, simply
+        If another is already uploading, it will be canceled. To ignore rather than cancel, simply
         return `false` in the 'validate' or 'submit' event handlers."),
         ("template", "`String` or `Element`", "'qq-template'", "This points to the script tag that contains the
         template to use for one or more Fine Uploader UI instances.  You can either specify a string, which is the

@@ -71,7 +71,7 @@ qq.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChanged, 
                 form;
 
             if (!input){
-                throw new Error("file with passed id was not added, or already uploaded or cancelled");
+                throw new Error("file with passed id was not added, or already uploaded or canceled");
             }
 
             options.onUpload(id, this.getName(id));

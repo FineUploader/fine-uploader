@@ -36,7 +36,7 @@
         ("getButton", "`Integer` id", "`HTMLElement`", "Returns the button container element associated with a file,
         or undefined if the file was not submitted via a Fine Uploader controlled upload button."),
         ("getFile", "`Integer` id", "`File` or `Blob`", "Returns the item associated with the id. File API browsers only"),
-        ("getInProgress", "", "", "Returns the number of items that are either currently uploading or queued. If called inside of the 'cancel' event handler this method will return a value that includes the upload associated with the 'cancel' event handler. This is because the upload will not be cancelled until the event handler returns."),
+        ("getInProgress", "", "", "Returns the number of items that are either currently uploading or queued. If called inside of the 'cancel' event handler this method will return a value that includes the upload associated with the 'cancel' event handler. This is because the upload will not be canceled until the event handler returns."),
         ("getName", "`Integer` id", "`String`", "Returns the name of the item with the associated id"),
         ("getNetUploads", "", "`Number`", "Returns the number of items that have both been successfully uploaded and not deleted."),
         ("getRemainingAllowedItems", "", "`Integer`", "Returns the number of remaining allowed items that may be

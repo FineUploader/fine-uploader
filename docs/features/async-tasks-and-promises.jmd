@@ -68,7 +68,7 @@ showPrompt: function(message, defaultValue) {
 
     bootbox.prompt("Enter a value", "Cancel", "Confirm", function(result) {
         if (result === null || qq.trimStr(result).length === 0) {
-            promise.failure("User cancelled prompt dialog or entered an empty string.");
+            promise.failure("User canceled prompt dialog or entered an empty string.");
         }
         else {
             promise.success(result);

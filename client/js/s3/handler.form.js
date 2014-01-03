@@ -188,7 +188,7 @@ qq.s3.UploadHandlerForm = function(options, uploadCompleteCallback, onUuidChange
                 name = this.getName(id);
 
             if (!input){
-                throw new Error("file with passed id was not added, or already uploaded or cancelled");
+                throw new Error("file with passed id was not added, or already uploaded or canceled");
             }
 
             if (this.isValid(id)) {

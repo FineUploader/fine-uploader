@@ -69,7 +69,7 @@
                 minHeightImageError: "Image is not tall enough.",
                 minWidthImageError: "Image is not wide enough.",
                 retryFailTooManyItems: "Retry failed - you have reached your file limit.",
-                onLeave: "The files are being uploaded, if you leave now the upload will be cancelled."
+                onLeave: "The files are being uploaded, if you leave now the upload will be canceled."
             },
             retry: {
                 enableAuto: false,

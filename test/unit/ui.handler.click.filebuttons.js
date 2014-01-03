@@ -63,7 +63,7 @@ describe('ui.handler.click.filebuttons.js', function () {
                     assert.equal(id, fileId, "deleted file");
                 },
                 onCancel: function(id) {
-                    assert.equal(id, fileId, "cancelled upload");
+                    assert.equal(id, fileId, "canceled upload");
                 },
                 onRetry: function(id) {
                     assert.equal(id, fileId, "retried upload");

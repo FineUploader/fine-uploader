@@ -48,9 +48,9 @@ Called before each automatic retry attempt for a failed item.
 
 **Parameters**: Integer id, String name
 
-Called when the item has been cancelled.
+Called when the item has been canceled.
 
-Return `false` to prevent the upload from being cancelled. Also can return a
+Return `false` to prevent the upload from being canceled. Also can return a
 `qq.Promise` if non-blocking work is required
 here. Calling `failure()` on the promise is equivalent to returning `false`.
 If using a Promise, then processing of the cancel request will be
@@ -171,7 +171,7 @@ For reference, the status':
 * `UPLOAD_RETRYING`
 * `UPLOAD_FAILED`
 * `UPLOAD_SUCCESSFUL`
-* `CANCELLED`
+* `CANCELED`
 * `REJECTED`
 * `DELETED`
 * `DELETING`
