@@ -60,6 +60,12 @@
 
         getId: function(fileContainerOrChildEl) {
             return this._templating.getFileId(fileContainerOrChildEl);
+        },
+
+        getDropTarget: function(fileId) {
+            var file = this.getFile(fileId);
+
+            return file.qqDropTarget;
         }
     };
 
@@ -119,11 +125,15 @@
                     processingDroppedFiles: function() {
                         templating.showDropProcessing();
                     },
-                    processingDroppedFilesComplete: function(files) {
+                    processingDroppedFilesComplete: function(files, targetEl) {
                         templating.hideDropProcessing();
 
+                        qq.each(files, function(idx, file) {
+                            file.qqDropTarget = targetEl;
+                        });
+
                         if (files) {
-                            self.addFiles(files);
+                            self.addFiles(files, null, null);
                         }
                     },
                     dropError: function(code, errorData) {

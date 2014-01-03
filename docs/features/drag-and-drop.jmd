@@ -72,7 +72,7 @@ you are running this in UI mode, then take a look at the `dragAndDrop` options d
 {{ events_table(
     (
         ("processingDroppedFiles", "", "Invoked when the module has started processing the set of dropped files."),
-        ("processingDroppedFilesComplete", "Array of `Files`", "Invoked when the module has finished processing."),
+        ("processingDroppedFilesComplete", "Array of `Files`", "`HTMLElement` dropTarget" "Invoked when the module has finished processing.  The last parameter is the drop zone target element."),
         ("dropError", "`String` errorCode, `String` errorRelatedData",  "Called when processing the drop fails for any reason."),
         ("dropLog", "`String` message, `String` logLevel", "Invoked when a message is logged.")
     )
@@ -140,7 +140,7 @@ var dragAndDropModule = new qq.DragAndDrop({
           processingDroppedFiles: function() {
             //TODO: display some sort of a "processing" or spinner graphic
           },
-          processingDroppedFilesComplete: function(files) {
+          processingDroppedFilesComplete: function(files, dropTarget) {
             //TODO: hide spinner/processing graphic
 
             fineUploaderBasicInstance.addFiles(files); //this submits the dropped files to Fine Uploader
