@@ -17,7 +17,6 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             endpointStore: null,
             paramsStore: null,
             signatureSpec: null,
-            accessKey: null,
             acl: "private",
             reducedRedundancy: false,
             maxConnections: 3,
@@ -30,7 +29,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
 
     qq.extend(options, o);
 
-    getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequester({
+    getSignatureAjaxRequester = new qq.s3.RequestSigner({
         signatureSpec: options.signatureSpec,
         cors: options.cors,
         log: options.log
@@ -75,7 +74,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
         getSignatureAjaxRequester.getSignature(id, {headers: toSign.stringToSign}).then(function(response) {
-            headers.Authorization = "AWS " + options.accessKey + ":" + response.signature;
+            headers.Authorization = "AWS " + options.signatureSpec.credentialsProvider.get().accessKey + ":" + response.signature;
             promise.success(headers, toSign.endOfUrl);
         }, promise.failure);
 

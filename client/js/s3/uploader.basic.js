@@ -10,6 +10,7 @@
     qq.s3.FineUploaderBasic = function(o) {
         var options = {
             request: {
+                // public key (required for server-side signing, ignored if `credentials` have been provided)
                 accessKey: null,
                 // Making this configurable in the traditional uploader was probably a bad idea.
                 // Let's just set this to "uuid" in the S3 uploader and not document the fact that this can be changed.
@@ -25,6 +26,19 @@
                 reducedRedundancy: false
             },
 
+            credentials: {
+                // Public key (required).
+                accessKey: null,
+                // Private key (required).
+                secretKey: null,
+                // Expiration date for the credentials (required).  May be an ISO string or a `Date`.
+                expiration: null,
+                // Temporary credentials session token.
+                // Only required for temporary credentials obtained via AssumeRoleWithWebIdentity.
+                sessionToken: null
+            },
+
+            // optional/ignored if `credentials` is provided
             signature: {
                 endpoint: null,
                 customHeaders: {}
@@ -55,11 +69,19 @@
 
             cors: {
                 allowXdr: true
+            },
+
+            callbacks: {
+                onCredentialsExpired: function() {}
             }
         };
 
         // Replace any default options with user defined ones
         qq.extend(options, o, true);
+
+        if (!this.setCredentials(options.credentials, true)) {
+            this._currentCredentials.accessKey = options.request.accessKey;
+        }
 
         // Call base module
         qq.FineUploaderBasic.call(this, options);
@@ -111,6 +133,33 @@
             }
         },
 
+        setCredentials: function(credentials, ignoreEmpty) {
+            if (credentials && credentials.secretKey) {
+                if (!credentials.accessKey) {
+                    throw new qq.Error("Invalid credentials: no accessKey");
+                }
+                else if (!credentials.expiration) {
+                    throw new qq.Error("Invalid credentials: no expiration");
+                }
+                else {
+                    this._currentCredentials = qq.extend({}, credentials);
+
+                    // Ensure expiration is a `Date`.  If initially a string, assuming it is in ISO format.
+                    if (qq.isString(credentials.expiration)) {
+                        this._currentCredentials.expiration = new Date(credentials.expiration);
+                    }
+                }
+
+                return true;
+            }
+            else if (!ignoreEmpty) {
+                throw new qq.Error("Invalid credentials parameter!");
+            }
+            else {
+                this._currentCredentials = {};
+            }
+        },
+
         /**
          * Ensures the parent's upload handler creator passes any additional S3-specific options to the handler as well
          * as information required to instantiate the specific handler based on the current browser's capabilities.
@@ -119,17 +168,18 @@
          * @private
          */
         _createUploadHandler: function() {
-            var additionalOptions = {
-                objectProperties: this._options.objectProperties,
-                signature: this._options.signature,
-                iframeSupport: this._options.iframeSupport,
-                getKeyName: qq.bind(this._determineKeyName, this),
-                // pass size limit validation values to include in the request so AWS enforces this server-side
-                validation: {
-                    minSizeLimit: this._options.validation.minSizeLimit,
-                    maxSizeLimit: this._options.validation.sizeLimit
-                }
-            };
+            var self = this,
+                additionalOptions = {
+                    objectProperties: this._options.objectProperties,
+                    signature: this._options.signature,
+                    iframeSupport: this._options.iframeSupport,
+                    getKeyName: qq.bind(this._determineKeyName, this),
+                    // pass size limit validation values to include in the request so AWS enforces this server-side
+                    validation: {
+                        minSizeLimit: this._options.validation.minSizeLimit,
+                        maxSizeLimit: this._options.validation.sizeLimit
+                    }
+                };
 
             // We assume HTTP if it is missing from the start of the endpoint string.
             qq.override(this._endpointStore, function(super_) {
@@ -145,6 +195,39 @@
                     }
                 };
             });
+
+            additionalOptions.signature.credentialsProvider = {
+                get: function() {
+                    return self._currentCredentials;
+                },
+
+                onExpired: function() {
+                    var updateCredentials = new qq.Promise(),
+                        callbackRetVal = self._options.callbacks.onCredentialsExpired();
+
+                    if (callbackRetVal instanceof qq.Promise) {
+                        callbackRetVal.then(function(credentials) {
+                            try {
+                                self.setCredentials(credentials);
+                                updateCredentials.success();
+                            }
+                            catch (error) {
+                                self.log("Invalid credentials returned from onCredentialsExpired callback! (" + error.message + ")", "error");
+                                updateCredentials.failure("onCredentialsExpired did not return valid credentials.");
+                            }
+                        }, function(errorMsg) {
+                            self.log("onCredentialsExpired callback indicated failure! (" + errorMsg + ")", "error");
+                            updateCredentials.failure("onCredentialsExpired callback failed.");
+                        });
+                    }
+                    else {
+                        self.log("onCredentialsExpired callback did not return a promise!", "error");
+                        updateCredentials.failure("Unexpected return value for onCredentialsExpired.");
+                    }
+
+                    return updateCredentials;
+                }
+            };
 
             return qq.FineUploaderBasic.prototype._createUploadHandler.call(this, additionalOptions, "s3");
         },
@@ -214,7 +297,7 @@
                     this.log("Failed to retrieve key name for " + id, "error");
                     failureCallback();
                 },
-                keyname = keynameFunc(id);
+                keyname = keynameFunc.call(this, id);
 
 
             if (keyname instanceof qq.Promise) {

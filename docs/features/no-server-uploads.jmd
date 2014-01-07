@@ -1,0 +1,45 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "No-Server Uploads" %}
+{% block content %}
+{% markdown %}
+# Upload Without Server-side Code {: .page-header }
+
+### Summary
+Enabling file uploads for your web application is easier than ever with Fine Uploader S3's client-side
+request signing support.  With this feature, you don't need to worry about server-side languages.  In fact,
+you only need a server to host your HTML and JavaScript files.  You can even delegate this task to an Amazon
+S3 bucket, such as in the [official Fine Uploader S3 no-server example][1].
+
+### API
+A [`credentials` option][2] has been created for Fine Uploader S3 to support this workflow.  It allows you to
+pass temporary credentials (secret & public AWS keys) to Fine Uploader S3 during initialization.  An `expiration` date
+for the credentials must also be provided.  Additionally, if you are using temporary credentials from the
+AWS Security Token Service, you will also need to provide a `sessionToken`.
+
+When your credentials expire, your [`credentialsExpired` event handler][3] will be invoked.  You must then return a
+[`qq.Promise` object][4] and fulfill it by passing the new credentials via the `success` method on the promise.  The
+validity of credentials is checked internall by Fine Uploader S3 just before a request is sent to S3.  If the
+credentials have expired, the request will be held up until your event handler specifies a new set of credentials or
+fails its attempt to do so.
+
+An [API method, `setCredentials`][5], also exists if you would like to update initial credentials after
+Fine Uploader S3 has been initialized.  You can also utilize this method to tell Fine Uploader S3 about
+temporary credentials for the first time at some point after the uploader instance has been created.
+
+### Best Practices
+In light of the fact that this workflow requires you expose an AWS secret key client-side (making it easy for
+malicious users to gain access to your secret key), there are some precautionary measure you should take:
+
+* Do not hard-code your credentials client-side.  Your credentials should be **temporary**, with a reasonable expiration date.
+* Communication between your page and the entity that provides temporary credentials should be secured in some fashion (i.e. SSL).
+* Communication between your Fine Uploader S3 instance and your S3 bucket should be secured via SSL.
+* Consider use of an established identity provider along with AWS STS to obtain temporary credentials.  An example of this can be seen in the [official Fine Uploader S3 no-server upload example][1].
+
+[1]: https://fineuploader-s3-client-demo.s3.amazonaws.com/index.html
+[2]: ../api/options-s3.html#credentials-option
+[3]: ../api/events-s3.html#credentialsexpired
+[4]: async-tasks-and-promises.html
+[5]: ../api/methods-s3.html
+
+{% endmarkdown %}
+{% endblock %}

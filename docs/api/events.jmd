@@ -30,7 +30,7 @@
 {% block content %}
 {% markdown %}
 
-# Events <small>Traditional & S3</small> {: .page-header }
+# Events <small>Traditional</small> {: .page-header }
 
 Fine Uploader's event system enables integrators to execute any operations at
 almost any point in the upload process. Knowing how these callbacks work, and

@@ -22,13 +22,13 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
         filenameParam = options.filenameParam,
         paramsStore = options.paramsStore,
         endpointStore = options.endpointStore,
-        accessKey = options.accessKey,
         acl = options.objectProperties.acl,
         reducedRedundancy = options.objectProperties.reducedRedundancy,
         validation = options.validation,
         signature = options.signature,
         successRedirectUrl = options.iframeSupport.localBlankPagePath,
-        getSignatureAjaxRequester = new qq.s3.SignatureAjaxRequester({
+        credentialsProvider = options.signature.credentialsProvider,
+        getSignatureAjaxRequester = new qq.s3.RequestSigner({
             signatureSpec: signature,
             cors: options.cors,
             log: log
@@ -88,7 +88,8 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
                 endpoint: endpointStore.getEndpoint(id),
                 params: customParams,
                 key: fileState[id].key,
-                accessKey: accessKey,
+                accessKey: credentialsProvider.get().accessKey,
+                sessionToken: credentialsProvider.get().sessionToken,
                 acl: acl,
                 minFileSize: validation.minSizeLimit,
                 maxFileSize: validation.maxSizeLimit,

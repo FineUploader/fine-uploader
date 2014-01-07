@@ -464,6 +464,7 @@ module.exports = (grunt) ->
             tests: ["#{paths.test}/unit/**/*.js","#{paths.test}/static/local/*.js"]
             options:
                 jshintrc: true
+                ignores: ["#{paths.src}/js/third-party/**/*.js"]
 
         custom:
             options:
@@ -528,7 +529,7 @@ module.exports = (grunt) ->
                             /*!
                             * <%= pkg.title %>
                             *
-                            * Copyright 2013, <%= pkg.author %> info@fineuploader.com
+                            * Copyright 2013-2014, <%= pkg.author %> info@fineuploader.com
                             *
                             * Version: <%= pkg.version %>
                             *
@@ -542,6 +543,10 @@ module.exports = (grunt) ->
                             *   MegaPixImageModule (MIT)
                             *       https://github.com/stomita/ios-imagefile-megapixel
                             *       Copyright (c) 2012 Shinichi Tomita <shinichi.tomita@gmail.com>
+                            *
+                            *   CryptoJS
+                            *       code.google.com/p/crypto-js/wiki/License
+                            *       (c) 2009-2013 by Jeff Mott. All rights reserved.
                             */ \n\n'''
             customfoot:
                 files:

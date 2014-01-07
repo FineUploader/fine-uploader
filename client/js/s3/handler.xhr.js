@@ -26,7 +26,6 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         filenameParam = spec.filenameParam,
         paramsStore = spec.paramsStore,
         endpointStore = spec.endpointStore,
-        accessKey = spec.accessKey,
         acl = spec.objectProperties.acl,
         reducedRedundancy = spec.objectProperties.reducedRedundancy,
         validation = spec.validation,
@@ -35,13 +34,14 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         resumeEnabled = spec.resume.enabled && chunkingPossible && qq.supportedFeatures.resume && window.localStorage !== undefined,
         internalApi = {},
         publicApi = this,
-        policySignatureRequester = new qq.s3.SignatureAjaxRequester({
+        credentialsProvider = spec.signature.credentialsProvider,
+        policySignatureRequester = new qq.s3.RequestSigner({
             expectingPolicy: true,
             signatureSpec: signature,
             cors: spec.cors,
             log: log
         }),
-        restSignatureRequester = new qq.s3.SignatureAjaxRequester({
+        restSignatureRequester = new qq.s3.RequestSigner({
             signatureSpec: signature,
             cors: spec.cors,
             log: log
@@ -51,7 +51,6 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
             endpointStore: endpointStore,
             paramsStore: paramsStore,
             signatureSpec: signature,
-            accessKey: spec.accessKey,
             acl: acl,
             reducedRedundancy: reducedRedundancy,
             cors: spec.cors,
@@ -69,7 +68,6 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         completeMultipartRequester = new qq.s3.CompleteMultipartAjaxRequester({
             endpointStore: endpointStore,
             signatureSpec: signature,
-            accessKey: spec.accessKey,
             cors: spec.cors,
             log: log,
             getKey: function(id) {
@@ -79,7 +77,6 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         abortMultipartRequester = new qq.s3.AbortMultipartAjaxRequester({
             endpointStore: endpointStore,
             signatureSpec: signature,
-            accessKey: spec.accessKey,
             cors: spec.cors,
             log: log,
             getKey: function(id) {
@@ -338,7 +335,8 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
                 params: customParams,
                 type: fileState[id].type,
                 key: getActualKey(id),
-                accessKey: accessKey,
+                accessKey: credentialsProvider.get().accessKey,
+                sessionToken: credentialsProvider.get().sessionToken,
                 acl: acl,
                 expectedStatus: expectedStatus,
                 minFileSize: validation.minSizeLimit,
@@ -670,7 +668,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
         restSignatureRequester.getSignature(id, {headers: toSign.stringToSign}).then(function(response) {
-            headers.Authorization = "AWS " + spec.accessKey + ":" + response.signature;
+            headers.Authorization = "AWS " + credentialsProvider.get().accessKey + ":" + response.signature;
             promise.success(headers, toSign.endOfUrl);
         }, promise.failure);
 

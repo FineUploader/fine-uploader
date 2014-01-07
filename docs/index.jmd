@@ -88,6 +88,7 @@ be documented.
 * [Handling Errors](features/handling-errors.html)
 * [Initial File Lists](features/session.html)
 * [Multiple Upload Buttons](features/extra-buttons.html)
+* [No-Server Uploads](features/no-server-uploads.html)
 * [Paste to Upload](features/paste-to-upload.html)
 * [Pause In-Progress Uploads](features/pause.html)
 * [Progress Bars](features/progress-bars.html)
@@ -128,7 +129,8 @@ information is integral.
     <div class="span4">
 {% markdown %}
 #### Events
-* [Traditional & S3](api/events.html)
+* [Traditional](api/events.html)
+* [S3](api/events-s3.html)
 {% endmarkdown %}
     </div>
 </div>
