@@ -36,8 +36,8 @@ malicious users to gain access to your secret key), there are some precautionary
 * Consider use of an established identity provider along with AWS STS to obtain temporary credentials.  An example of this can be seen in the [official Fine Uploader S3 no-server upload example][1].
 
 [1]: https://fineuploader-s3-client-demo.s3.amazonaws.com/index.html
-[2]: ../api/options-s3,html#credentials-option
-[3]: ../api/event-s3.html#credentialsexpired
+[2]: ../api/options-s3.html#credentials-option
+[3]: ../api/events-s3.html#credentialsexpired
 [4]: async-tasks-and-promises.html
 [5]: ../api/methods-s3.html
 
