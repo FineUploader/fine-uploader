@@ -23,6 +23,7 @@ promise instance:
 
 * `onSubmit`
 * `onCancel`
+* `onCredentialsExpired`
 * `onResume`
 * `onValidateBatch`
 * `onValidate`

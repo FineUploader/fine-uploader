@@ -5,6 +5,7 @@
     <li><a href="#core-mode"><b>Core</b></a></li>
     <li><a href="#chunking-option">chunking</a></li>
     <li><a href="#cors-option">cors</a></li>
+    <li><a href="#credentials-option">credentials</a></li>
     <li><a href="#iframesupport-option">iframeSupport</a></li>
     <li><a href="#objectproperties-option">objectProperties</a></li>
     <li><a href="#resume-option">resume</a></li>
@@ -48,6 +49,19 @@ alert("The `chunking.paramNames` option does **not** apply to S3.")
     )
 ) }}
 
+### `credentials` option
+Used to support a client-side, no-server uploading workflow.  It is expected that the credentials provided here
+are both temporary and associated with a heavily secured IAM role/user.
+
+{{ options_table(
+    (
+        ("accessKey", "`String`", "`null`", "Temporary public AWS key."),
+        ("secretKey", "`String`", "`null`", "Temporary secret AWS key."),
+        ("expiration", "`String` or `Date`", "`null`", "Expiration date for temporary credentials.  May be an ISO 8601 String or a `Date` object."),
+        ("sessionToken", "`String`", "`null`", "Session token associated with the temporary credentials."),
+    )
+) }}
+
 ### `iframeSupport` option
 
 {{ options_table(
@@ -84,9 +98,9 @@ alert("The `resume.paramNames` option does **not** apply to S3.")
 {{ options_table(
     (
         ("endpoint", "`String`", "`null`", "URL for your S3 bucket.  All valid bucket URLs documented by Amazon are supported, including custom domains.  SSL is also supported."),
-        ("accessKey", "`String`", "`null`", "Your AWS public key. **NOT YOUR SECRET KEY**."),
+        ("accessKey", "`String`", "`null`", "Your AWS public key. **NOT YOUR SECRET KEY**.   Ignored if `credentials` have been provided"),
         ("params", "`Object`", "`{}`", "Parameters passed along with each upload request."),
-        ("filenameParam", "`String`", "`'qqfilename'`", "Part of the parameter name that contains the name of the associated file which may differ from the key name. Prefixed with 'x-amz-meta-' by Fine Uploader."),
+        ("filenameParam", "`String`", "qqfilename", "Part of the parameter name that contains the name of the associated file which may differ from the key name. Prefixed with 'x-amz-meta-' by Fine Uploader."),
     )
 ) }}
 
