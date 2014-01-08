@@ -63,10 +63,10 @@ if (exports)
                 browserName: browser.browserName
                 version: browser.version
                 platform: browser.platform
-    return b
+        return b
 
     exports.sauceBrowserKeys = do ->
         res = []
         for k of sauceBrowsers
             res.push k
-    return res
+        return res
