@@ -40,7 +40,7 @@ $.extend(qqtest, {
                     downloadAsync.success(self._downloadedFiles[key]);
                 }
                 else {
-                    assert.fail(null, null, "Failed to download test file!");
+                    assert.fail(null, null, "Failed to download test file! Status: " + this.status);
                     downloadAsync.failure();
                 }
             };

@@ -26,10 +26,10 @@ browsers =
         platform: "OS X 10.8"
         version: "6"
     ,
-        browserName: "iphone"
-        platform: "OS X 10.9"
-        version: "7"
-    ,
+#        browserName: "iphone"
+#        platform: "OS X 10.9"
+#        version: "7"
+#    ,
         browserName: "internet explorer"
         platform: "Windows 8.1"
         version: "11"
