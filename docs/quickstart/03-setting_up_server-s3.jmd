@@ -5,13 +5,6 @@
 {% markdown %}
 # Server Set-Up <small>Amazon S3</small>{: .page-header}
 
-{{ alert(
-"""This section of the tutorial is aimed at beginners looking to create their
-own upload server. Note that this example does not apply to S3 uploads. For
-more information on uploading to Amazon's Simple Storage Service,
-read the [Fine Uploader S3 server documentation](../endpoint_handlers/amazon-s3.html).""",
-"warn") }}
-
 For this tutorial we are going to use [Node.js](http://nodejs.org/) to develop
 a simple server which will accept uploads from our Fine Uploader instance. If
 you don't have Node.js, now's the time to [get it](http://nodejs.org/download/).
@@ -30,7 +23,7 @@ Let's rock! First, download [express](https://npmjs.org/package/express) and the
 
 Now let's download our server:
 
-`wget -O server.js https://raw.github.com/Widen/fine-uploader-server/3.8/nodejs/s3/s3handler.js`
+`wget -O server.js https://raw.github.com/Widen/fine-uploader-server/master/nodejs/s3/s3handler.js`
 
 Then set relevant environment variables:
 
