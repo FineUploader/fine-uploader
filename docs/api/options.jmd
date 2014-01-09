@@ -16,6 +16,7 @@ $(document).ready(function() {
     renderOptionsSidebarNav(['core']);
 });
 </script>
+{% endblock %}
 
 {% block content %}
 <div class="all-options">
