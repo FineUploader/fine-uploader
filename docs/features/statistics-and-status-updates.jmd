@@ -8,12 +8,6 @@
 Fine Uploader provides API methods and other options to facilitate statistics
 and status updates on your uploads.
 
-{{ events_table(
-    (
-        ("statusChange", "`Integer` id, `String` oldStatus, `String` newStatus", "Invoked whenever the status changes for any item submitted to the upload."),
-    )
-) }}
-
 With this, we can register a callback that allows us to be notified
 when any submitted item changes status.  The concept is simple: this will be
 invoked whenever any submitted file changes state. The ID, old status, and the
@@ -36,13 +30,6 @@ For reference, here are valid status values:
 * `PAUSED` - The file was in progress, but is now paused.
 
 ----
-
-{{ methods_table(
-    (
-       ("getUploads", "`Object` filter", "`Array` or `Object`", "Return information about all the items that have been submitted to the uploader. The objects being iterated over will have the following properties: `id`, `uuid`, `originalName`, `name`, `status`, and `size`.  You can also filter the results by passing in an object with an `id`, `uuid` or `status` property.  Each of these filter values may be an array as well."),
-    )
-) }}
-
 
 ### Examples
 

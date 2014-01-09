@@ -18,42 +18,6 @@ Uploader instance.
 """This feature is only supported by browsers that feature the [Clipboard API](http://www.w3.org/TR/clipboard-apis/).
 Currently, only Chrome & Opera 15+ support this completely.", "info", "Note:") }}
 
-
-## Options
-
-### `paste` option (Core mode)
-
-{{ options_table(
-    (
-       ("defaultName", "`String`", "'pasted_image'", "The default name given to pasted images."),
-       ("targetElement", "`HTMLElement`", "`null`", "Enable this feature by providing any `HTMLElement` here.")
-    )
-) }}
-
-### `paste` option (UI mode)
-Note that all core mode options are also available.
-
-{{ options_table(
-    (
-       ("promptForName", "`Boolean`", "`false`", "If set to true, the `showPrompt` function will be called in an attempt
-       to ask the user to provide a name for the associated pasted image. See the styling documentation for more
-       details on overriding `showPrompt`."),
-       ("namePromptMessage", "`String`", "'Please name this image'", "Text that will appear in the `showPrompt` dialog,
-       asking the user to name the pasted image. Note that an appropriate extension will always been appended to the
-       name supplied by the user automatically. If you override the `pasteReceived` event handler AND set this option to
-       true, your callback will be ignored.")
-    )
-) }}
-
-## Events
-
-{{ events_table(
-    (
-        ("pasteReceived", "`Blob` blob", "Called when a pasted image has been received, but before it is uploaded. You
-        may return false to prevent the paste from being processed.  You may also return a [`qq.Promise`](async-tasks-and-promises.html)."),
-    )
-) }}
-
 [For more information, see the associated blog post](http://blog.fineuploader.com/2013/03/04/upload-an-image-via-paste-in-3-4/)
 
 {% endmarkdown %}

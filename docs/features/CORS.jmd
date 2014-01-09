@@ -21,19 +21,6 @@ object. `XDomainRequest` does not support setting the 'Content-Type' header
 frameworks you are going to actually need to parse the request payload
 programmatically rather than relying on the framework to do it for you.
 """, "warn") }}
-
-## Options
-
-### `cors` option
-
-{{ options_table(
-    (
-        ("expected", "`Boolean`", "`false`", "Enable or disable cross-domain requests."),
-        ("sendCredentials", "`Boolean`", "`false`", "Enable or disable sending credentials along with each cross-domain request. Ignored if `allowXdr` is `true` and IE9 or older is being used."),
-        ("allowXdr", "`Boolean`", "`false`", "Enable or disable cross-origin requests from IE9 and older where [XDomainRequest](https://developer.mozilla.org/en-US/docs/HTTP/Access_control_CORS#Note) must be used."),
-    )
-) }}
-
 [For more information, see the associated blog post](http://blog.fineuploader.com/2013/01/31/cors-support-in-3-3/)
 
 {% endmarkdown %}

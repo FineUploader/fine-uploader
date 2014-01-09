@@ -18,31 +18,6 @@ their uploads.
 the server-side guidelines for either [traditional](../endpoint_handlers/traditional.html) or [Amazon S3](../endpoint_handlers/amazon-s3.html) upload
 endpoints.""", "warn") }}
 
-## Events
-
-{{ events_table(
-    (
-        ("submit", "`Integer` id, `String` name", "Called whenever an item has been submitted to the uploader is now a candidate for uploading."),
-        ("submitted", "`Integer` id, `String` name", "Called whenever an item has been accepted by the uploader.
-        This occurs after all validation checks have passed.  When using Fine Uploader UI mode, this also occurs
-        AFTER the associated file item has been adde to the DOM."),
-        ("complete", "`Integer` id, `String` name, `Object` reponseJSON, `XMLHttpRequest` or `XDomainRequest` xhrOrXdr", "Called whenever attempt to
-        upload an item have completed.  The `success` property on `responseJSON` will allow you to determine
-        if the attempt was successful or not."),
-        ("upload", "`Integer` id, `String` name", "Called just _before_ an upload begins on an item."),
-    )
-) }}
-
-## Methods
-
-{{ methods_table(
-    (
-        ("addFiles", "filesOrInputs[, params[, endpoint]]", "", "Submit one or more `File` objects to the uploader"),
-        ("addBlobs", "blobDataArray[, params[, endpoint]]", "", "Submit `Blob` or `BlobData` objects to the uploader"),
-        ("uploadStoredFiles", "", "", "Begin uploading all queued items. `NoFilesError` if there are no items to upload."),
-    )
-) }}
-
 {{
 alert("`addFiles` accepts `File`s, `input` elements, or a collection of any of these types
  provdided the collection object contains an (integer) index property for each contained item.")

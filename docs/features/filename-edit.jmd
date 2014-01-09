@@ -20,23 +20,6 @@ Be sure to read this parameter when naming your file server-side.
 alert("You will want to have `autoUpload` disabled when using the edit filename feature.")
 }}
 
-## `editFilename` option
-
-{{ options_table(
-    (
-        ("enabled", "boolean", "`false`", "If set to `true`, users are allowed to edit the name of a submitted files before upload."),
-    )
-) }}
-
-## Methods
-
-{{ methods_table(
-    (
-        ("getName", "`Integer` id", "`String`", "Returns the name of the item with the associated id"),
-        ("setName", "`Integer` id, `String` newName", "", "Provide an alternative name for the associated item"),
-    )
-) }}
-
 [For more information, see the associated blog post](http://blog.fineuploader.com/2013/06/23/3-7-edit-override-file-names/)
 
 {% endmarkdown %}

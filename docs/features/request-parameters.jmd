@@ -13,35 +13,9 @@ provided by Fine Uploader.
 Request parameters can be modified foremost by changing the values of the
 following options found in the `request` option:
 
-### `request` option
-These deal specifically with the traditional (non-S3) uploader.
-
-{{ options_table(
-    (
-        ("endpoint", "`String`", "`'/server/upload'`", "The endpoint to send upload requests to."),
-        ("params", "`Object`", "`{}`", "The parameters that shall be sent with each upload request."),
-        ("paramsInBody", "`Boolean`", "`true`", "Enable or disable sending parameters in the request body. If `false`, parameters are sent in the URL. Otherwise, parameters are sent in the request body."),
-        ("customHeaders", "`Object`", "`{}`", "Additional headers sent along with each POST request."),
-        ("forceMultipart", "`Boolean`", "`true`", "Force all uploads to use multipart encoding"),
-        ("inputName", "`String`", "`'qqfile'`", "The attribute of the input element which will contain the file name. Not applicable to non AJAX uploads."),
-        ("uuidName", "`String`", "`'qquuid'`", "The name of the parameter the uniquely identifies each associated item. The value is a [Level 4 UUID](http://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_.28random.29)."),
-        ("totalFileSizeName", "`String`", "`'qqtotalfilesize'`", "The name of the parameter passed that specifies the total file size in bytes."),
-        ("filenameParam", "`String`", "`'qqfilename'`", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent."),
-    )
-) }}
-
 ### Fine Uploader S3's `request` option
 The request option properties are a bit different if you are using Fine Uploader S3.  Here are the only properties of
 the `request` option used by Fine Uploader S3.
-
-{{ options_table(
-    (
-        ("endpoint", "`String`", "`null`", "URL for your S3 bucket.  All valid bucket URLs documented by Amazon are supported, including custom domains.  SSL is also supported."),
-        ("accessKey", "`String`", "`null`", "Your AWS public key. **NOT YOUR SECRET KEY**."),
-        ("params", "`Object`", "`{}`", "The parameters that shall be sent with each upload request."),
-        ("filenameParam", "`String`", "`'qqfilename'`", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent.")
-    )
-) }}
 
 ----
 
@@ -107,13 +81,6 @@ also be modified for a file in the `manualRetry` and `autoRetry` events.
 
 `setParams` can change the parameters for a all files, or for a single file by
 providing an optional `id` parameter.
-
-{{ methods_table(
-    (
-        ("setParams", "`newParams[, id]`", "", "Set the parameters sent along with the request after initializing the uploader. Takes an optional `id` parameter which will only change the parameters for a single file."),
-        ("setDeleteFileParams", "`newParams[, id]`", "", "Set the parameters sent along with a delete request. Takes an optional `id` parameter which will only change the parameters for a single file.")
-    )
-) }}
 
 {{ alert(
 """Once you change parameters for a specific file, subsequent calls to `setParams` without an `id` will **not** affect this file.
