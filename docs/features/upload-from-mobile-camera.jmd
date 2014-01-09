@@ -11,12 +11,6 @@ Note that due to limitations related to camera access in iOS, setting this to tr
 multiple files at once.")
 }}
 
-{{ options_table(
-    (
-        ("camera", "`Boolean`", "`false`", "Enable or disable camera access on iOS."),
-    )
-) }}
-
 [For more information, see the associated blog post](http://blog.fineuploader.com/2013/05/09/upload-directly-via-a-camera-on-mobile-devices/)
 
 {% endmarkdown %}

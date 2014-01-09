@@ -1,13 +1,6 @@
-{% macro modal_btn_group() -%}
-<div class="btn-group code-snippet">
-    <button class="btn">Core</button>
-    <button class="btn">UI</button>
-    <button class="btn">jQuery Core</button>
-    <button class="btn">jQuery UI</button>
-    <button class="btn">S3</button>
-</div>
-{%- endmacro %}
-
+{#
+    Tables
+#}
 {% macro code_table(headings, rows, title=None) -%}
 {% if title %}
 <h2>{{ title }}</h2>
@@ -48,18 +41,192 @@
 {%- endmacro %}
 #}
 
-{% macro snippet(options, element="#fine-uploader", endpoint="/server/upload", callbacks={}, modes=['Core', 'UI', 'jQuery Core', 'jQuery UI', 'S3']) -%}
 {#
- This macro will take the same parameters as Fine Uploader, but it will generate
- an example code snippet for each sort of FineUploader type (core, UI, jquery, etc.)
+    Labels
 #}
-
-{#
-{% for mode in modes %}
-    {% if mode == 'Core' %}
-
+{% macro code_label(type, val=None) %}
+{% set type_label_mapping = {
+    "object": {
+        "link": "",
+    },
+    "array": {
+        "link": "",
+    },
+    "function": {
+        "link": ""
+    },
+    "integer": {
+        "link": ""
+    },
+    "string": {
+        "link": ""
+    },
+    "boolean": {
+        "link": ""
+    },
+    "htmlelement": {
+        "link": ""
+    },
+    "qq.promise": {
+        "link": ""
+    },
+    "xmlhttprequest": {
+        "link": ""
+    },
+    "undefined": {
+        "link": ""
+    },
+    "null": {
+        "link": ""
+    },
+    "other": {
+        "link": ""
+    }
+} %}
+{% if "," in type %}
+    {% set label_types = type.split(",") %}
+    {% if val == None %}
+        {% for label_type in label_types %}
+            {% if loop.first %}
+                {{code_label(label_type.strip(" "), val)}}
+                or
+            {% else %}
+                {{code_label(label_type)}}
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        {{code_label(label_types[0], val)}}
     {% endif %}
-{% endfor %}
-#}
+{% elif " or " in type %}
+    {% set label_types = type.split(" or ") %}
+    {% if val == None %}
+        {% for label_type in label_types %}
+            {% if loop.first %}
+                {{code_label(label_type.strip(" "), val)}}
+                or
+            {% else %}
+                {{code_label(label_type)}}
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        {{code_label(label_types[0], val)}}
+    {% endif %}
+{% else %}
+    {% set label_type = type_label_mapping.get(type.lower(), 'other') %}
+    {% set text = type if val == None else val %}
+    <span class="label label-{{type.lower()}}">{{text|safe}}</span>
+{% endif %}
+{% endmacro %}
 
+{#
+    api_param
+
+    This macro will generate the correct HTML structure to document an API
+    method as found on api/methods.jmd and api/methods-ui.jmd
+#}
+{#
+    api_param
+
+    This macro will generate the correct HTML structure for a parameter in
+    the api_methods documentation.
+#}
+{% macro api_param(name, type, description) -%}
+<span class="method-param row-fluid">
+    <dd class="method-param-type span2">{{code_label(type)}}</dd>
+    <dt class="method-param-name span2"><em>{{name}}</em></dt>
+    <dd class="method-param-description span8">{% markdown %}{{description}}{% endmarkdown %}</dd>
+</span>
+<hr/>
 {%- endmacro %}
+
+{#
+    api_return
+
+    This macro will generate the correct HTML structure for a return in
+    the api_methods documentation.
+#}
+{% macro api_return(type, description) -%}
+<span class="method-return row-fluid">
+    <dt class="span2"><b>Returns:</b></dt>
+    <dd class="method-return-type span2">{{code_label(type)}}</dd>
+    <dd class="method-return-description span8">{{description}}</dd>
+</span>
+<hr/>
+{%- endmacro %}
+
+{% macro api_method_or_event(type, header, title, description, params=None, returns=None) -%}
+<span class="{{type}} row-fluid">
+    <h4 id="{{header}}"><a style="color: #f87436;" href="#{{header}}">{{title}}</a></h4>
+    <span class="{{type}}-description">
+        {% markdown %}{{description}}{% endmarkdown %}
+    </span>
+    {% if params %}
+    <h5>Parameters: </h5>
+    <dl class="{{type}}-params row-fluid">
+        {% for param in params %}
+            {% if param is mapping %}
+                {{ api_param(param.name, param.type, param.description) }}
+            {% else %}
+                {% for sub_params in param %}
+                    {{ api_param(sub_params.name, sub_params.type, sub_params.description) }}
+                    {% if not loop.last %}
+                    <p> or ... </p>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    </dl>
+    {% if returns %}
+    <dl class="{{type}}-return row-fluid">
+        {% for return in returns %}
+            {{api_return(return.type, return.description)}}
+        {% endfor %}
+    </dl>
+    {% endif %}
+    {% if returns is undefined and params is undefined %}
+    <hr/>
+    {% endif %}
+</span>
+{%- endmacro %}
+
+{% macro api_option(header, title, description, type, default_value) -%}
+<div class="option row-fluid">
+    <h4 id="{{header}}"><a style="color: #f87436" href="#{{header}}">{{title}}</a></h4>
+    <span class="option-description row-fluid">
+        {% markdown %}{{description|safe}}{% endmarkdown %}
+    </span>
+    <dl>
+        <div class="row-fluid">
+            <dt class="span2"><b>Type:</b></dt>
+            <dd class="span10 option-type">{{code_label(type)}}</dd>
+        </div>
+
+        <div class="row-fluid">
+            <dt class="span2"><b>Default Value:</b></dt>
+            <dd class="span10 option-default-value">{{code_label(type, default_value)}}</dd>
+        </div>
+    </dl>
+<hr>
+</div>
+{%- endmacro %}
+
+{% macro api_parent_option(header, title, description, sub_options) -%}
+<div class="option-parent row-fluid">
+    <h3 id="{{header}}"><a style="color: #00ABC7;" href="#{{header}}">{{title}}</a></h3>
+    <span class="option-description row-fluid">
+        {% markdown %}{{description|safe}}{% endmarkdown %}
+    </span>
+    {% for sub_option in sub_options %}
+    {{ api_option(*sub_option) }}
+    {% endfor %}
+</div>
+{% endmacro -%}
+
+{% macro api_event(header, title, description, params, returns) %}
+    {{ api_method_or_event('event', header, title, description, params, returns) }}
+{% endmacro %}
+
+{% macro api_method(header, title, description, params, returns) %}
+    {{ api_method_or_event('method', header, title, description, params, returns) }}
+{% endmacro %}

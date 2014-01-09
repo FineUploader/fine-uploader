@@ -15,26 +15,7 @@ standalone drag & drop module into your project if you are using Fine Uploader's
 {{ alert("While dragging and dropping of _files_ is supported in many browsers,
 Dragging and dropping of _folders_ is currently only supported in Chrome 21+ & Opera 15+", "default", "Note") }}
 
-## `dragAndDrop` option
-
-{{ options_table(
-    (
-        ("extraDropzones", "Array", "`[ ]`", "Designate additional dropzone elements."),
-    )
-) }}
-
-## Methods
-
-{{ methods_table(
-    (
-        ("addExtraDropzone", "`HTMLElement`", "element", "Call this to add an additional drop zone."),
-        ("removeExtraDropzone", "`HTMLElement` element", "", "Call this to remove a drop zone.")
-    )
-) }}
-
-
-
-## Drag and Drop Standalone Module
+# Drag and Drop Standalone Module
 
 If you are integrating Fine Uploader and utilizing FineUploaderBasic mode,
 you are likely building you own UI entirely. In case you want to support drag
@@ -45,52 +26,131 @@ it can be easily integrated into your Fine Uploader Core mode app
 (or even any non-Fine Uploader app). This following will explain how to utilize
 this module.
 
+
 {{
 alert("This module is aimed at Fine Uploader Core mode integrators only. If
 you are running this in UI mode, then take a look at the `dragAndDrop` options defined above.", "info")
 }}
 
-### Options
+## Options
 
-{{ options_table(
+{% endmarkdown %}
+
+{{ api_option("allowMultipleItems", "allowMultipleItems", "Set to `false` if you would to prevent the user from dropping more than one item at once.", "boolean", "`true`",)}}
+{{ api_option("dropZoneElements", "dropZoneElements", "Specify all container elements that should be treated as drop zones.", "Array", "`[ ]`",)}}
+
+{{api_parent_option("classes", "classes", "",
     (
-        ("allowMultipleItems", "boolean", "`true`", "Set to `false` if you would to prevent the user from dropping more than one item at once."),
-        ("dropZoneElements", "Array", "`[ ]`", "Specify all container elements that should be treated as drop zones."),
+        ("classes.dropActive", "dropActive", "Specify a CSS class to apply to drop zone(s) when a file has entered it.", "String", "''",),
     )
-) }}
+)}}
 
-#### `classes` option
+{% markdown %}
+## Methods
+{% endmarkdown %}
 
-{{ options_table(
-    (
-        ("dropActive", "string", "`null`", "Specify a CSS class to apply to drop zone(s) when a file has entered it."),
-    )
-) }}
+{{ api_method("addExtraDropzone", "addExtraDropzone (element)", "Mark `element` as a drop zone.",
+[
+    {
+        "name": "element",
+        "type": "HTMLElement",
+        "description": "The element to mark as a drop zone."
+    }
+], null) }}
 
-### Events
+{{ api_method("removeExtraDropzone", "removeExtraDropzone (element)", "Un-mark `element` as a drop zone.",
+[
+    {
+        "name": "element",
+        "type": "HTLMElement",
+        "description": "The element to un-mark as a drop zone."
+    }
+], null) }}
 
-{{ events_table(
-    (
-        ("processingDroppedFiles", "", "Invoked when the module has started processing the set of dropped files."),
-        ("processingDroppedFilesComplete", "Array of `Files`", "`HTMLElement` dropTarget" "Invoked when the module has finished processing.  The last parameter is the drop zone target element."),
-        ("dropError", "`String` errorCode, `String` errorRelatedData",  "Called when processing the drop fails for any reason."),
-        ("dropLog", "`String` message, `String` logLevel", "Invoked when a message is logged.")
-    )
-) }}
+{% markdown %}
+## Events
 
+{% endmarkdown %}
+
+{{
+api_event("processingDroppedFiles", "processingDroppedFiles",
+"Invoked when the module has started processing the set of dropped files.", [], [])
+}}
+
+{{
+api_event("processingDroppedFilesComplete", "processingDroppedFilesComplete",
+"""Invoked when the module has finished processing.
+""",
+[
+    {
+        "name": "files",
+        "type": "Array",
+        "description": "An array of proccesed files."
+    },
+    {
+        "name": "dropTarget",
+        "type": "HTMLElement",
+        "description": "The target where this event originated from."
+    },
+])
+}}
+
+{{
+api_event("dropError", "dropError",
+"""Called when processing the drop fails for any reason.
+""",
+[
+    {
+        "name": "errorCode",
+        "type": "String",
+        "description": "The specific error code"
+    },
+    {
+        "name": "errorRelatedData",
+        "type": "String",
+        "description": "Data related to the error."
+    },
+])
+}}
+
+{{
+api_event("dropLog", "dropLog",
+"""Invoked when a message is logged.
+""",
+[
+    {
+        "name": "message",
+        "type": "String",
+        "description": "The message to log."
+    },
+])
+}}
+
+{% markdown %}
 ### Methods
+{% endmarkdown %}
 
-{{ methods_table(
-    (
-        ("dispose", "", "", "Tears down all drop zones associated with the dnd instance."),
-        ("setupExtraDropzone", "`HTMLElement` element", "", "Call this to add an additional drop zone to the DnD instance. Not available if using the jQuery plug-in wrapper."),
-        ("removeDropzone", "`HTMLElement` element", "", "Call this to remove a drop zone from the DnD instance. Not available if using the jQuery plug-in wrapper."),
-    )
-) }}
+{{ api_method("dispose", "dispose", "Tears down all drop zones associated with the dnd instance.") }}
+{{ api_method("setupExtraDropzone", "setupExtraDropzone", "Call this to add an additional drop zone to the DnD instance. Not available if using the jQuery plug-in wrapper.",
+[
+    {
+        "name": "element",
+        "type": "HTMLElement",
+        "description": "THe HTMLElement where the dropzone will be rendered inside of."
+    }
+])}}
+{{ api_method("removeDropzone", "removeDropzone", "Call this to remove a drop zone from the DnD instance. Not available if using the jQuery plug-in wrapper.",
+[
+    {
+        "name": "element",
+        "type": "HTMLElement",
+        "description": "THe HTMLElement where the dropzone will be remove from."
+    }
 
+]) }}
 
-
-### jQuery Example
+{% markdown %}
+## jQuery Example
 
 For jQuery users, a jQuery-wrapped DnD module is also available in the combined and minified Fine Uplpoader javascript file.
 This jQuery wrapper follows the same conventions as the jQuery plug-in that wraps the uploader library.  To read more
@@ -126,7 +186,7 @@ $('#fineUploaderBasicContainer').fineUploader({
 
 {{ alert("jQuery 1.7+ is required to use the `on` function.") }}
 
-### Non-jQuery Example
+## Non-jQuery Example
 
 If you are not utilizing jQuery, you can use the plain javascript DnD module.  Here is a simple example:
 

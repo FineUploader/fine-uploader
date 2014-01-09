@@ -2,22 +2,25 @@
 {% set page_title = "UI Options" %}
 
 {% block sidebar %}
-<ul class="nav nav-tabs nav-stacked">
-    <li><a href="#ui_1"><b>UI</b></a></li>
-    <li><a href="#deletefile-option">deleteFile</a></li>
-    <li><a href="#display-option">display</a></li>
-    <li><a href="#draganddrop-option">dragAndDrop</a></li>
-    <li><a href="#editfilename-option">editFilename</a></li>
-    <li><a href="#faileduploadtextdisplay-option_1">failedUploadTextDisplay</a></li>
-    <li><a href="#messages-option">messages</a></li>
-    <li><a href="#retry-option">retry</a></li>
-    <li><a href="#thumbnailsplaceholders-option">thumbnails.placeholders</a></li>
-    <li><a href="#paste-option">paste</a></li>
-    <li><a href="#text-option">text</a></li>
-</ul>
+<div id="sidebar-accordion" class="accordion">
+</div>
+{% endblock %}
+
+{% block js_head %}
+<script src="{{ ASSETS }}/js/main.js"></script>
+{% endblock %}
+
+{% block js_footer %}
+<script type="text/javascript">
+$(document).ready(function() {
+    renderOptionsSidebarNav(['ui']);
+});
+</script>
 {% endblock %}
 
 {% block content %}
+<div class="all-options">
+<div class="options-ui">
 {% markdown %}
 # Options <small>UI</small> {: .page-header }
 
@@ -29,150 +32,101 @@ pertaining specifically to the UI which Core mode does not have.
 Any options that exist in Core mode also exist in UI mode, and, in most cases,
 can be overridden.
 
-{{ options_table(
+{% endmarkdown %}
+
+{{ api_option("element", "element", "Container for the default drop zone", "String", "null") }}
+
+{{ api_option("listElement", "listElement", "Container for the item list.", "String", "null") }}
+
+{{ api_option("multiple", "multiple", "When `false` this will prevent the user from simultaneously selecting or dropping more than one item. Dropping or selecting another item will clear the upload list. If another is already uploading, it will be canceled. To ignore rather than cancel, simply return `false` in the 'validate' or 'submit' event handlers.", "Boolean", "true") }}
+
+{{ api_option("template", "template", "This points to the script tag that contains the template to use for one or more Fine Uploader UI instances.  You can either specify a string, which is the element ID (the ID of the script tag on the page) or an `Element` that points to the script tag.", "String or Element", "qq-template") }}
+
+{{ api_parent_option("deleteFile", "deleteFile",
+""" `deleteFile` is also in the Core mode options. This section defines UI specific
+options for `deleteFile`.
+""",
     (
-        ("element", "`String`", "`null`", "Container for the default drop zone"),
-        ("listElement", "`String`", "`null`", "Container for the item list."),
-        ("multiple", "`Boolean`", "`true`", "When `false` this will prevent the user from simultaneously
-        selecting or dropping more than one item. Dropping or selecting another item will clear the upload list.
-        If another is already uploading, it will be canceled. To ignore rather than cancel, simply
-        return `false` in the 'validate' or 'submit' event handlers."),
-        ("template", "`String` or `Element`", "'qq-template'", "This points to the script tag that contains the
-        template to use for one or more Fine Uploader UI instances.  You can either specify a string, which is the
-        element ID (the ID of the script tag on the page) or an `Element` that points to the script tag."),
+        ("deleteFile.confirmMessage", "confirmMessage", "The message displayed in the confirm delete dialog.", "String", "Are you sure you want to delete {filename}?",),
+        ("deleteFile.deletingFailedText", "deletingFailedText", "The status message to appear next to a file that is pending deletion.", "String", "Delete failed",),
+        ("deleteFile.deletingStatusText", "deletingStatusText", "The status message to appear next to a file that has failed to delete.", "String", "Deleting...",),
+        ("deleteFile.forceConfirm", "forceConfirm", "Bypass prompting the user for confirmation for file deletion, and continue with delete instead.", "Boolean", "false",),
     )
-) }}
+)}}
 
-----
-
-### `deleteFile` option
-
-{{ alert(
-"""`deleteFile` is also in the Core mode options. This section defines UI specific
-options for `deleteFile`""", "info", "Note:") }}
-
-{{ options_table(
+{{ api_parent_option("display", "display", "",
     (
-        ("confirmMessage", "`String`", "`'Are you sure you want to delete {filename}?'`", "The message displayed in the confirm delete dialog."),
-        ("deletingFailedText", "`String`", "`'Delete failed'`", "The status message to appear next to a file that is pending deletion."),
-        ("deletingStatusText", "`String`", "`'Deleting...'`", "The status message to appear next to a file that has failed to delete."),
-        ("forceConfirm", "`Boolean`", "`false`", ""),
+        ("display.fileSizeOnSubmit", "fileSizeOnSubmit", "Enable or disable the display of the file size next to the file after it has been submitted.", "Boolean", "false",),
+        ("display.prependFiles", "prependFiles", "When `true` batches of files are added to the top of the UI's file list. The default is to append file(s) to the bottom of the list.", "Boolean", "false",),
     )
-) }}
+)}}
 
-----
-
-### `display` option
-
-{{ options_table(
+{{ api_parent_option("dragAndDrop", "dragAndDrop", "",
     (
-        ("fileSizeOnSubmit", "`Boolean`", "`false`", "Enable or disable the display of the file size next to the file after it has been submitted."),
-        ("prependFiles", "`Boolean`", "`false`", "When `true` batches of files are added to the top of the UI's file list. The default is to append file(s) to the bottom of the list."),
+        ("dragAndDrop.extraDropzones", "extraDropzones", "Designate additional drop zones for file input.", "Array", "[]",),
     )
-) }}
+)}}
 
-----
-
-### `dragAndDrop` option
-
-{{ options_table(
+{{ api_parent_option("editFilename", "editFilename", "",
     (
-        ("extraDropzones", "`Array`", "`[]`", "Designate additional drop zones for file input."),
+        ("editFilename.enabled", "enabled", "Enable or disable the user's ability to edit the names of submitted files before upload.", "Boolean", "false",),
     )
-) }}
+)}}
 
-----
-
-### `editFilename` option
-
-{{ options_table(
+{{ api_parent_option("failedUploadTextDisplay", "failedUploadTextDisplay", "",
     (
-        ("enabled", "`Boolean`", "`false`", "Enable or disable the user's ability to edit the names of submitted files before upload."),
+        ("failedUploadTextDisplay.enableTooltip", "enableTooltip", "Enable or disable a tooltip that will display the full contents of the error message when the mouse pointer hovers over the failed item.", "Boolean", "true",),
+        ("failedUploadTextDisplay.maxChars", "maxChars", "The maximum amount of characters to display next to each item. Ignored unless `mode` is `'custom'`", "Integer", "50",),
+        ("failedUploadTextDisplay.mode", "mode", "Set the message to display next to each failed file. One of: `'default'` which displays the `failedUploadText`, `'custom'` which displays the error response from the server, or `'none'` which displays no text.", "String", "default",),
+        ("failedUploadTextDisplay.responseProperty", "responseProperty", "The property from the server response that contains the error text to display next to a failed item. Ignored unless `mode` is `'custom'`", "String", "error",),
     )
-) }}
+)}}
 
-----
-
-### `failedUploadTextDisplay` option
-
-{{ options_table(
+{{ api_parent_option("messages", "messages", "",
     (
-        ("enableTooltip", "`Boolean`", "`true`", "Enable or disable a tooltip that will display the full contents of the error message when the mouse pointer hovers over the failed item."),
-        ("maxChars", "`Number`", "`50`", "The maximum amount of characters to display next to each item. Ignored unless `mode` is `'custom'`"),
-        ("mode", "`String`", "`'default'`", "Set the message to display next to each failed file. One of: `'default'` which displays the `failedUploadText`, `'custom'` which displays the error response from the server, or `'none'` which displays no text."),
-        ("responseProperty", "`String`", "`'error'`", "The property from the server response that contains the error text to display next to a failed item. Ignored unless `mode` is `'custom'`"),
+        ("messages.tooManyFilesError", "tooManyFilesError", "Text sent to `showMessage` in the 'error' event handler when `multiple` is `false` and more than one file is dropped at once.", "String", "You may only drop one file.",),
+        ("messages.unsupportedBrowser", "unsupportedBrowser", "Text displayed to users who have ancient browsers.", "String", "Unrecoverable error - the browser does not permit uploading of any kind.",),
     )
-) }}
-
-----
-
-### `messages` option
+)}}
 
 {{ alert(
 """`messages` is also in the Core mode options. This section defines UI specific
 options for `messages`""", "info", "Note:") }}
 
-{{ options_table(
+{{ api_parent_option("retry", "retry", "",
     (
-        ("tooManyFilesError", "`String`", "`You may only drop one file.`", "Text sent to `showMessage` in the 'error' event handler when `multiple` is `false` and more than one file is dropped at once."),
-        ("unsupportedBrowser", "`String`", "`Unrecoverable error - the browser does not permit uploading of any kind.`", "Text displayed to users who have ancient browsers."),
+        ("retry.autoRetryNote", "autoRetryNote", "The text of the note that will optionally appear next to the item during automatic retry attempts. Ignored if `showAutoRetryNote` is false.", "String", "Retrying {retryNum}/{maxAuto} ...",),
+        ("retry.showButton", "showButton", "Enable or disable the showing of a button/link nex to the failed item after all retry attempts have been exchausted. Clicking the button/link will force the uploader to make another attempt.", "Boolean", "false",),
+        ("retry.showAutoRetryNote", "showAutoRetryNote", "Enable or disable a status message appearing next to the item during auto retry attempts.", "Boolean", "true",),
     )
-) }}
+)}}
 
-----
+{{ alert(
+"""`retry` is also in the Core mode options. This section defines UI specific
+options for `retry`""", "info", "Note:") }}
 
-### `retry` option
-
-{{ options_table(
+{{ api_parent_option("thumbnails.placeholders", "thumbnails.placeholders", "",
     (
-        ("autoRetryNote", "`String`", "`'Retrying {retryNum}/{maxAuto} ...'`", "The text of the note that will optionally appear next to the item during automatic retry attempts. Ignored if `showAutoRetryNote` is false."),
-        ("showButton", "`Boolean`", "`false`", "Enable or disable the showing of a button/link nex to the failed item after all retry attempts have been exchausted. Clicking the button/link will force the uploader to make another attempt."),
-        ("showAutoRetryNote", "`Boolean`", "`true`", "Enable or disable a status message appearing next to the item during auto retry attempts."),
+        ("thumbnails.placeholders.notAvailablePath", "notAvailablePath", "Absolute URL or relative path to the image to display if the preview/thumbnail could not be generated/displayed.", "String", "null",),
+        ("thumbnails.placeholders.waitingPath", "waitingPath", "Absolute URL or relative path to the image to display duringpreview generation (modern browsers) or until the server response has been parsed (older browsers).", "String", "null",),
+        ("thumbnails.placeholders.waitUntilResponse", "waitUntilResponse", "Set this to `true` if you want the 'waiting' placeholder image to remain in place until the server response has been parsed.  This is useful if you expect to return thumbnail URLs in your upload responses for files types that cannot be previewed.  This option is ignored in older browsers where client-side previews cannot be generated.", "Boolean", "false",),
     )
-) }}
+)}}
 
-----
-
-### `thumbnails.placeholders` option
-
-{{ options_table(
+{{ api_parent_option("paste", "paste", "",
     (
-        ("waitUntilResponse", "`Boolean`", "`false`", "Set this to `true` if you want the 'waiting' placeholder
-        image to remain in place until the server response has been parsed.  This is useful if you expect to
-        return thumbnail URLs in your upload responses for files types that cannot be previewed.  This option is
-        ignored in older browsers where client-side previews cannot be generated."),
-
-        ("notAvailablePath", "`String`", "`null`", "Absolute URL or relative path to the image to display if
-        the preview/thumbnail could not be generated/displayed."),
-
-        ("waitingPath", "`String`", "`null`", "Absolute URL or relative path to the image to display during
-        preview generation (modern browsers) or until the server response has been parsed (older browsers)."),
+        ("paste.namePromptMessage", "namePromptMessage", "Text that will appear in the `showPrompt` dialog.", "String", "Please name this image",),
+        ("paste.promptForName", "promptForName", "Enable or disable the usage of `showPrompt` by Fine Uploader to prompt the user for a filename for a pasted file.", "Boolean", "false",),
     )
-) }}
+)}}
 
-----
-
-### `paste` option
-
-{{ options_table(
+{{ api_parent_option("text", "text", "",
     (
-        ("promptForName", "`Boolean`", "`false`", "Enable or disable the usage of `showPrompt` by Fine Uploader to prompt the user for a filename for a pasted file."),
-        ("namePromptMessage", "`String`", "`'Please name this image'`", "Text that will appear in the `showPrompt` dialog."),
+        ("text.failUpload", "failUpload", "Text that appears next to a failed item", "String", "Upload failed",),
+        ("text.formatProgress", "formatProgress", "Appears next to a currently uploading item", "String", "{percent}% of {total_size}",),
+        ("text.paused", "paused", "Appears next to a paused item", "String", "Paused",),
+        ("text.waitingForResponse", "waitingForResponse", "Appears next to item once the last bytes have been sent (differs on the user-agent)", "String", "Processing...",),
     )
-) }}
+)}}
 
-----
-
-### `text` option
-
-{{ options_table(
-    (
-        ("failUpload", "`String`", "'Upload failed'", "Text that appears next to a failed item"),
-        ("formatProgress", "`String`", "'{percent}% of {total_size}'", "Appears next to a currently uploading item"),
-        ("paused", "`String`", "'Paused'", "Appears next to a paused item"),
-        ("waitingForResponse", "`String`", "'Processing...'", "Appears next to item once the last bytes have been sent (differs on the user-agent)"),
-    )
-) }}
-
-{% endmarkdown %}
 {% endblock %}
