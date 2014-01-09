@@ -147,10 +147,74 @@ a:visited
 {
     color: #0088CC;
 }
-.reference-table thead { font-weight: bold; } 
+.reference-table thead { font-weight: bold; }
 .dropdown-menu .divider { margin-right: 20px; }
 
 .dropdown-backdrop
 {
     position: static;
+}
+
+div .accordion-heading { padding: 8px; }
+dt { font-weight: normal; }
+
+.accordion-inner { padding: 9px 0px; }
+.accordion-inner .nav-list { padding-right: 2px; padding-left: 10px; }
+
+h3 a, a:hover, a:focus, :visited {
+    text-decoration: none;
+}
+
+h4 a, a:hover, a:focus, :visited {
+    text-decoration: none;
+}
+
+.label-object {
+    background-color: #00abc7;
+}
+.label-array {
+    background-color: #C71B00;
+}
+.label-function {
+    background-color: #00C71B;
+}
+.label-integer {
+    background-color: #FF5B42;
+}
+.label-string {
+    background-color: #00abc7;
+}
+.label-boolean {
+    background-color: #00859b;
+}
+.label-htmlelement {
+    background-color: #f87436;
+}
+.label-qq.promise {
+    background-color: #C700AC;
+}
+.label-xmlhttprequest {
+    background-color: #66ccdd;
+}
+.label-xmldomainrequest {
+    background-color: #66ccdd;
+}
+.label-undefined {
+    background-color: #525252;
+}
+.label-null {
+    background-color: #525252;
+}
+.label-other {
+    background-color: #7c858c;
+}
+
+.event-params > hr {
+    margin: 2px;
+}
+.method-return > hr {
+    margin: 2px;
+}
+.method-params > hr {
+    margin: 2px;
 }

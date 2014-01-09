@@ -15,47 +15,8 @@ before each chunk is sent to the server.
 Note that resuming is disabled by default, and the cookie or local storage object is stored for 7 days
 (both of these options can be easily changed).
 
-## Options
-
-### `resume` option
-
-{{ options_table(
-    (
-        ("cookiesExpireIn", "`Number`", "`7`", "The number of days before a persistent resume cookie will expire."),
-        ("enabled", "`Boolean`", "`false`", "Enable or disable the ability to resume failed or stopped chunked uploads."),
-        ("id", "`Number` or `String`", "`null`", "An additional component of the cookie name used to store the current upload session.")
-    )
-) }}
-
 {{
-    alert("The `cookiesExpireIn` property is not applicable to the S3 uploader.  Instead, use `recordsExpireIn`.")
-}}
-
-{{
-    alert("The `id` property is not applicable to the S3 uploader.")
-}}
-
-### `resume.paramNames` option
-
-{{
-    alert("These options are not applicable to the S3 uploader.")
-}}
-
-{{
-options_table(
-    (
-        ("resuming", "`String`", "`'qqresume'`", "Sent with the first request of the resume with a value of `true`."),
-    )
-)
-}}
-
-## Methods
-
-{{ methods_table(
-    (
-        ("getResumableFilesData", "", "`Array`", "Returns an array of potentially resumable items."),
-    )
-)
+    alert("The `cookiesExpireIn`, `id`, and `resume.paramNames` properties are not applicable to the S3 uploader.  Instead, use `recordsExpireIn`.")
 }}
 
 [For more information, see the associated blog post](http://blog.fineuploader.com/2013/01/01/resume-uploads-from-previous-sessions-in-3-2/)

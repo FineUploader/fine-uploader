@@ -56,7 +56,7 @@
                 {% block sidebar %}{% endblock %}
                 </div>
 
-                <div class="span10 content">
+                <div class="span9 content">
                     <span class="pull-right" style="opacity: .7; padding: 1px; margin-right: 5px;"><p>{{ PKG['version'] }}</p></span>
 
                 {% block pre_content %}{% endblock %}
@@ -68,7 +68,6 @@
 
             {% endblock %}
             </div>
-            <hr>
             {% include "_templates/footer.html" %}
         </div> <!-- /container -->
         {% block post_container %}{% endblock %}

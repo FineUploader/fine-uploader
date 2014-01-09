@@ -8,43 +8,6 @@
 Fine Uploader's validation abilities allow integrators to strictly define
 what sorts of files can and can not be uploaded.
 
-### `validation` option
-
-{{ options_table(
-    (
-        ("acceptFiles", "Comma-separated list of MIME types", "`null`", "Used by the file selection dialog. Restrict the valid file types that appear in the selection dialog by listing valid content-type specifiers here. See docs on the [accept attribute of the `<input>` element](https://developer.mozilla.org/en-USHTML/Element/Input)"),
-        ("allowedExtensions", "Array of Strings", "`[]`", "Specify file valid file extensions here to restrict uploads to specific types."),
-        ("itemLimit", "`Number`", "`0`", "Maximum number of items that can be potentially uploaded in this session. Will reject all items that are added or retried after this limit is reached."),
-        ("minSizeLimit", "`Number`", "`0`", "The minimum allowable size, in bytes, for an item."),
-        ("sizeLimit", "`Number`", "`0`", "The maximum allowable size, in bytes, for an item."),
-        ("stopOnFirstInvalidFile", "`Boolean`", "`true`", "When `true` the first invalid item will stop processing further files.")
-    )
-) }}
-
-### `validation.image` option
-
-{{ options_table(
-    (
-        ("maxHeight", "`Number`", "0", "Restrict images to a maximum height in pixels (wherever possible)."),
-        ("maxWidth", "`Number`", "0", "Restrict images to a maximum width in pixels (wherever possible)."),
-        ("minHeight", "`Number`", "0", "Restrict images to a minimum height in pixels (wherever possible)."),
-        ("minWidth", "`Number`", "0", "Restrict images to a minimum width in pixels (wherever possible)."),
-    )
-) }}
-
-## Events
-{{ events_table(
-    (
-        ("validate", "`File` or `BlobData` fileOrBlobData", "Called once for each selection, dropped, or `addFiles`
-        submitted file and for each `addBlobs` submitted `Blob`. You may return false to prevent the file from being
-        submitted.  You may also return a [`qq.Promise`](async-tasks-and-promises.html)." ),
-        ("validateBatch", "`Array` fileOrBlobDataArray", "Called once for each batch of selected, dropped or `addFiles`
-        submitted files and for each `addBlobs` submitted `Blob`s. You may return false to prevent all files in the
-        batch from being submitted.  You may also return a [`qq.Promise`](async-tasks-and-promises.html)."),
-    )
-) }}
-
-The `validate` and `validateBatch` events are thrown/called before the default
 Fine Uploader validators (defined in the options) execute.
 
 If the `validation.stopOnFirstInvalidFile` option is enabled, then neither of
@@ -89,8 +52,6 @@ Also, this feature is dependant on the preview generation feature, and therefore
 Check the browser support matrix or the `qq.supportedFeatures.imageValidation` flag for more specific information.
 If image dimension validation is important to your application, you will also need a server-side fallback to account
 for older browsers and TIFFs (if allowed, since TIFFs are only previewable in Safari).
-
-
 
 {% endmarkdown %}
 {% endblock %}

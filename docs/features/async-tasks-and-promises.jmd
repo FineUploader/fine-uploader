@@ -39,14 +39,70 @@ does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog 
 
 ## qq.Promise API
 
-{{ methods_table(
-    (
-        ("then", "`Function` successCallback, `Function` failureCallback", "`qq.promise` instance", "Register success and failure callbacks. The creator of the promise will pass any values into the provided callbacks. If success or failure has occurred before you register your callbacks, then they will be called immediately after this call has executed. Each call to `then` registers an additional set of callbacks."),
-        ("done", "`Function` callback", "`qq.promise` instance", "Register callbacks for successs OR failure. Invoked when the promise is fullfilled, regardless of result. The creator of the promise will pass any values into the provided callback. Each call to `done` registers an additional set of callbacks."),
-        ("success", "`Function` callback", "`qq.promise` instance", "Call this on a promise to indicate success. The parameter values will depend on the situation. "),
-        ("failure", "`Function` callback", "`qq.promise` instance", "Call this on a promise to indicate failure. The parameter values will depend on the situation. "),
-    )
-) }}
+{% endmarkdown %}
+{{ api_method("then", "then (successCallback, failureCallback)", "Register callbacks from success *and* failure. The promise instance that `then` is called on will pass any values into the provided callbacks. If success or failure have already occurred before these callbacks have been registered, then they will be called immediately after this call has been executed. Each subsequent call to `then` registers an additional set of callbacks.",
+[
+        {
+            "name": "successCallback",
+            "type": "Function",
+            "description": "The function to call when the promise is successfully fulfilled."
+        },
+        {
+            "name": "failureCallback",
+            "type": "Function",
+            "description": "The function to call when the promise is unsuccessfully fulfilled."
+        }
+],
+[
+    {
+        "type": "qq.Promise",
+        "description": "An instance of a promise."
+    }
+]) }}
+
+{{ api_method("done", "done (callback)", "Register callbacks for success *or* failure. Invoked when the promise is fulfilled regardless of the result. The promise instance that `done` is called on will pass any values into the provided callback. Each call to `done` registers an additional set of callbacks",
+[
+        {
+            "name": "callback",
+            "type": "Function",
+            "description": "The function to call when the promise is fulfilled, successful or not."
+        },
+],
+[
+    {
+        "type": "qq.Promise",
+        "description": "An instance of a promise."
+    }
+]) }}
+{{ api_method("success", "success (callback)", "Call this on a promise to indicate success. The parameter values will depend on the situation.",
+[
+        {
+            "name": "callback",
+            "type": "Function",
+            "description": "The function to call when all promises have been fulfilled"
+        },
+],
+[
+    {
+        "type": "qq.Promise",
+        "description": "An instance of a promise."
+    }
+]) }}
+{{ api_method("failure", "failure (callback)", "Call this on a promise to indicate success. The parameter values will depend on the situation.",
+[
+        {
+            "name": "callback",
+            "type": "Function",
+            "description": "The function to call when all promises have been fulfilled."
+        },
+],
+[
+    {
+        "type": "qq.Promise",
+        "description": "An instance of a promise."
+    }
+]) }}
+{% markdown %}
 
 ## Promissory Options
 
