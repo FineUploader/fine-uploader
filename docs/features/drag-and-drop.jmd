@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Drag and Drop" %}
+{% block sidebar %}
+{{ api_links(options=['dragAndDrop-ui',], methods=['addExtraDropzone', 'removeExtraDropzone']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 
@@ -26,7 +29,6 @@ it can be easily integrated into your Fine Uploader Core mode app
 (or even any non-Fine Uploader app). This following will explain how to utilize
 this module.
 
-
 {{
 alert("This module is aimed at Fine Uploader Core mode integrators only. If
 you are running this in UI mode, then take a look at the `dragAndDrop` options defined above.", "info")
@@ -44,28 +46,6 @@ you are running this in UI mode, then take a look at the `dragAndDrop` options d
         ("classes.dropActive", "dropActive", "Specify a CSS class to apply to drop zone(s) when a file has entered it.", "String", "''",),
     )
 )}}
-
-{% markdown %}
-## Methods
-{% endmarkdown %}
-
-{{ api_method("addExtraDropzone", "addExtraDropzone (element)", "Mark `element` as a drop zone.",
-[
-    {
-        "name": "element",
-        "type": "HTMLElement",
-        "description": "The element to mark as a drop zone."
-    }
-], null) }}
-
-{{ api_method("removeExtraDropzone", "removeExtraDropzone (element)", "Un-mark `element` as a drop zone.",
-[
-    {
-        "name": "element",
-        "type": "HTLMElement",
-        "description": "The element to un-mark as a drop zone."
-    }
-], null) }}
 
 {% markdown %}
 ## Events
