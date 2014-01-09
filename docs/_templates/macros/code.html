@@ -230,3 +230,91 @@
 {% macro api_method(header, title, description, params, returns) %}
     {{ api_method_or_event('method', header, title, description, params, returns) }}
 {% endmacro %}
+
+{% macro api_links(options=None, methods=None, events=None) -%}
+{% if options is not none or methods is not none or events is not none %}
+<div class="sidebar">
+    {% if options is iterable and options is not none %}
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a href="../api/options.html"><b>Options</b></a>
+        </div>
+        <div class="accordion-body">
+            <div class="accordon-inner">
+                <ul class="nav nav-list">
+        {% for option in options %}
+            {% if "-" in option %}
+                {% set option_type = option.split("-")[1] %}
+                {% set option = option.split("-")[0] %}
+                    {% if option_type == "ui" %}
+                    <li><a href="../api/options-ui.html#{{option}}">{{option}} (UI)</a></li>
+                    {% elif option_type == "s3" %}
+                    <li><a href="../api/options-s3.html#{{option}}">{{option}} (S3)</a></li>
+                    {% endif %}
+            {% else %}
+                <li><a href="../api/options.html#{{option}}">{{option}}</a></li>
+            {% endif %}
+        {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if methods is iterable and methods is not none %}
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a href="../api/methods.html"><b>Methods</b></a>
+        </div>
+        <div class="accordion-body">
+            <div class="accordon-inner">
+                <ul class="nav nav-list">
+        {% for method in methods %}
+            {% if "-" in method %}
+                {% set method_type = method.split("-")[1] %}
+                {% set method = method.split("-")[0] %}
+                    {% if method_type == "ui" %}
+                    <li><a href="../api/methods-ui.html#{{method}}">{{method}} (UI)</a></li>
+                    {% elif method_type == "s3" %}
+                    <li><a href="../api/methods-s3.html#{{method}}">{{method}} (S3)</a></li>
+                    {% endif %}
+            {% else %}
+                <li><a href="../api/methods.html#{{method}}">{{method}}</a></li>
+            {% endif %}
+        {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if events is iterable and events is not none %}
+    <div class="accordion-group">
+        <div class="accordion-heading">
+            <a href="../api/events.html"><b>Events</b></a>
+        </div>
+        <div class="accordion-body">
+            <div class="accordon-inner">
+                <ul class="nav nav-list">
+        {% for event in events %}
+            {% if "-" in event %}
+                {% set event_type = event.split("-")[1] %}
+                {% set event = event.split("-")[0] %}
+                    {% if event_type == "ui" %}
+                    <li><a href="../api/events-ui.html#{{event}}">{{event}} (UI)</a></li>
+                    {% elif event_type == "s3" %}
+                    <li><a href="../api/events-s3.html#{{event}}">{{event}} (S3)</a></li>
+                    {% endif %}
+            {% else %}
+                <li><a href="../api/events.html#{{event}}">{{event}}</a></li>
+            {% endif %}
+        {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endif %}
+{% endmacro -%}

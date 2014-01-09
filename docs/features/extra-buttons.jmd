@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Multiple Upload Buttons" %}
+{% block sidebar %}
+{{ api_links(options=['extraButtons', 'multiple', 'validation'], events=['validate', 'validateBatch']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 

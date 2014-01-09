@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Styling" %}
+{% block sidebar %}
+{{ api_links(methods=['showConfirm', 'showMessage', 'showPrompt']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 # Styling {: .page-header }

@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Paste to Upload" %}
+{% block sidebar %}
+{{ api_links(options=['paste', 'paste-s3'], events=['pasteReceived']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 

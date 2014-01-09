@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Progress Bars" %}
+{% block sidebar %}
+{{ api_links(events=['progress']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 

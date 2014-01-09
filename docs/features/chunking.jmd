@@ -1,5 +1,9 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Chunking" %}
+{% block sidebar %}
+{{ api_links(['chunking'], None, ['uploadChunk', 'uploadChunkSuccess']) }}
+{% endblock %}
+
 {% block content %}
 {% markdown %}
 

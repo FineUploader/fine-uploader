@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Editing Filenames" %}
+{% block sidebar %}
+{{ api_links(['editFilename'], ['getName', 'setName'], None) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 

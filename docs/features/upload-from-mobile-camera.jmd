@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Upload From Mobile Camera" %}
+{% block sidebar %}
+{{ api_links(options=['camera']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 

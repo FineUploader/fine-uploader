@@ -1,5 +1,9 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Cancellable Uploads" %}
+{% block sidebar %}
+{{ api_links(['disableCancelForFormUploads'], ['cancel', 'cancelAll'], ['cancel']) }}
+{% endblock %}
+
 {% block content %}
 {% markdown %}
 
@@ -7,22 +11,13 @@
 
 Fine Uploader allows for the cancellation of in-progress uploads.
 
-Uploads can be canceled programmatically by calling the `cancel` or `cancelAll`
-API methods.  The 'cancel' event will be fired and handled by a callback whenever
-an item is canceled.
+Uploads can be canceled programmatically by calling the [`cancel`](../../api/methods.html#cancel) or [`cancelAll`](../../api/methods.html#cancelAll) API methods.  The ['cancel'](../../api/events.html#cancel) event will be fired and handled by a callback whenever an item is canceled.
+
+The cancel button will appear if included in the template. [`disableCancelForFormUploads`](../../api/options.html#disableCancelForFormUploads)
+option can control whether the cancel button is shown or not when using the form uploader.
 
 In Fine Uploader UI mode, cancelling an upload will remove that element from
 the DOM as well.
-
-{#
-options:
-    disableCancelForFormUploads
-events:
-    cancel
-methods:
-    cancel
-    cancelAll
-#}
 
 {% endmarkdown %}
 {% endblock %}

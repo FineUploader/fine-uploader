@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Resume" %}
+{% block sidebar %}
+{{ api_links(options=['resume'], methods=['getResumableFilesData']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 

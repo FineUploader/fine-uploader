@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Handling Errors" %}
+{% block sidebar %}
+{{ api_links(['messages'], ['log'], ['error']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 

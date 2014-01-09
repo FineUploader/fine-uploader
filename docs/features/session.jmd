@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Initial File List" %}
+{% block sidebar %}
+{{ api_links(options=['deleteFile.endpoint', 'deleteFile.params', 'session'], events=['sessionRequestComplete']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 # Initial File List {: .page-header }

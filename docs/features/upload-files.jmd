@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Upload Files" %}
+{% block sidebar %}
+{{ api_links(options=['request', 'request-s3', 'credentials-s3'], methods=['addFiles', 'addBlobs', 'uploadStoredFiles'], events=['submit', 'submitted', 'complete', 'upload']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 

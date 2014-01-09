@@ -1,5 +1,10 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Request Parameters" %}
+{% block sidebar %}
+{{ api_links(options=['request', 'request-s3'], methods=['setParams', 'setDeleteFileParams'],
+events=['upload', 'manualRetry', 'autoRetry']) }}
+{% endblock %}
+
 {% block content %}
 {% markdown %}
 

@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Previews & Thumbnails" %}
+{% block sidebar %}
+{{ api_links(options=['thumbnails.placeholders-ui', 'template-ui', ], methods=['drawThumbnail']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 # Previews & Thumbnails {: .page-header }

@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Validation" %}
+{% block sidebar %}
+{{ api_links(options=['validation'], events=['validate', 'validateBatch']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 

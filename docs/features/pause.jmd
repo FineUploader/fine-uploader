@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Pause In-Progress Uploads" %}
+{% block sidebar %}
+{{ api_links(methods=['continueUpload', 'pauseUpload']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 # Pause In-Progress Uploads {: .page-header }

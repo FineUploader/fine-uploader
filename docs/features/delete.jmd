@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Deleting Files" %}
+{% block sidebar %}
+{{ api_links(['deleteFile'], ['deleteFile', 'setDeleteFileEndpoint', 'setDeleteFileParams'], ['delete', 'deleteComplete', 'submitDelete']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 

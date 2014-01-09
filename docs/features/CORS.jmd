@@ -1,5 +1,8 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "CORS" %}
+{% block sidebar %}
+{{ api_links(options=['cors']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
 
