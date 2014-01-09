@@ -58,7 +58,7 @@ if (qqtest.canDownloadFileAsBlob) {
         it("test simple upload with all credential options specified", function(done) {
             assert.expect(1, done);
 
-            var testExpiration = new Date(Date.now() + 10000),
+            var testExpiration = new Date(Date.now() + 10000).toISOString(),
                 uploader = new qq.s3.FineUploaderBasic({
                 request: {
                     endpoint: testS3Endpoint
@@ -194,3 +194,49 @@ if (qqtest.canDownloadFileAsBlob) {
         });
     });
 }
+
+describe("non-file-based tests", function() {
+    "use strict";
+
+    it("enforces mandatory credentials", function() {
+        var uploader = new qq.s3.FineUploaderBasic({});
+
+        assert.doesNotThrow(
+            function() {
+                uploader.setCredentials({
+                    accessKey: "ak",
+                    secretKey: "sk",
+                    expiration: new Date()
+                });
+            }
+        );
+
+        assert.throws(
+            function() {
+                uploader.setCredentials({
+                    accessKey: "ak",
+                    secretKey: "sk"
+                });
+            }, qq.Error
+        );
+
+        assert.throws(
+            function() {
+                uploader.setCredentials({
+                    accessKey: "ak",
+                    expiration: new Date()
+                });
+            }, qq.Error
+        );
+
+        assert.throws(
+            function() {
+                uploader.setCredentials({
+                    secretKey: "sk",
+                    expiration: new Date()
+                });
+            }, qq.Error
+        );
+    });
+
+});
