@@ -43,17 +43,15 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
             promise = new qq.Promise(),
             endpoint = options.endpointStore.getEndpoint(id),
             bucket = qq.s3.util.getBucket(endpoint),
-            toSign = getSignatureAjaxRequester.constructStringToSign
+            signatureConstructor = getSignatureAjaxRequester.constructStringToSign
                 (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_ABORT, bucket, options.getKey(id))
-                .withUploadId(uploadId)
-                .getToSign();
-
-        headers = toSign.headers;
+                .withUploadId(uploadId);
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
-        getSignatureAjaxRequester.getSignature(id, {headers: toSign.stringToSign}).then(function(response) {
+        getSignatureAjaxRequester.getSignature(id, {signatureConstructor: signatureConstructor}).then(function(response) {
+            headers = signatureConstructor.getHeaders();
             headers.Authorization = "AWS " + options.signatureSpec.credentialsProvider.get().accessKey + ":" + response.signature;
-            promise.success(headers, toSign.endOfUrl);
+            promise.success(headers, signatureConstructor.getEndOfUrl());
         }, promise.failure);
 
         return promise;

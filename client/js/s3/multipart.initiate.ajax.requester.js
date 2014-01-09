@@ -50,7 +50,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             headers = {},
             promise = new qq.Promise(),
             key = options.getKey(id),
-            toSign;
+            signatureConstructor;
 
         headers["x-amz-acl"] = options.acl;
 
@@ -64,18 +64,16 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             headers[qq.s3.util.AWS_PARAM_PREFIX + name] = encodeURIComponent(val);
         });
 
-        toSign = getSignatureAjaxRequester.constructStringToSign
+        signatureConstructor = getSignatureAjaxRequester.constructStringToSign
             (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_INITIATE, bucket, key)
             .withContentType(options.getContentType(id))
-            .withHeaders(headers)
-            .getToSign();
-
-        headers = toSign.headers;
+            .withHeaders(headers);
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
-        getSignatureAjaxRequester.getSignature(id, {headers: toSign.stringToSign}).then(function(response) {
+        getSignatureAjaxRequester.getSignature(id, {signatureConstructor: signatureConstructor}).then(function(response) {
+            headers = signatureConstructor.getHeaders();
             headers.Authorization = "AWS " + options.signatureSpec.credentialsProvider.get().accessKey + ":" + response.signature;
-            promise.success(headers, toSign.endOfUrl);
+            promise.success(headers, signatureConstructor.getEndOfUrl());
         }, promise.failure);
 
         return promise;

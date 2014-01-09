@@ -135,16 +135,27 @@ qq.s3.RequestSigner = function(o) {
         };
     }
 
-    function determineSignatureClientSide(toBeSigned, signatureEffort) {
-        if (toBeSigned.headers) {
-            signApiRequest(toBeSigned.headers, signatureEffort);
+    function determineSignatureClientSide(toBeSigned, signatureEffort, updatedAccessKey, updatedSessionToken) {
+        var updatedHeaders;
+
+        // REST API request
+        if (toBeSigned.signatureConstructor) {
+            if (updatedSessionToken) {
+                updatedHeaders = toBeSigned.signatureConstructor.getHeaders();
+                updatedHeaders[qq.s3.util.SESSION_TOKEN_PARAM_NAME] = updatedSessionToken;
+                toBeSigned.signatureConstructor.withHeaders(updatedHeaders);
+            }
+
+            signApiRequest(toBeSigned.signatureConstructor.getToSign().stringToSign, signatureEffort);
         }
+        // Form upload (w/ policy document)
         else {
-            signPolicy(toBeSigned, signatureEffort);
+            updatedSessionToken && qq.s3.util.refreshPolicyCredentials(toBeSigned, updatedSessionToken);
+            signPolicy(toBeSigned, signatureEffort, updatedAccessKey, updatedSessionToken);
         }
     }
 
-    function signPolicy(policy, signatureEffort) {
+    function signPolicy(policy, signatureEffort, updatedAccessKey, updatedSessionToken) {
         var policyStr = JSON.stringify(policy),
             policyWordArray = CryptoJS.enc.Utf8.parse(policyStr),
             base64Policy = CryptoJS.enc.Base64.stringify(policyWordArray),
@@ -154,7 +165,7 @@ qq.s3.RequestSigner = function(o) {
         signatureEffort.success({
             policy: base64Policy,
             signature: policyHmacSha1Base64
-        });
+        }, updatedAccessKey, updatedSessionToken);
     }
 
     function signApiRequest(headersStr, signatureEffort) {
@@ -205,7 +216,10 @@ qq.s3.RequestSigner = function(o) {
                 // If credentials are expired, ask for new ones before attempting to sign request
                 else {
                     credentialsProvider.onExpired().then(function() {
-                        determineSignatureClientSide(toBeSigned, signatureEffort);
+                        determineSignatureClientSide(toBeSigned,
+                            signatureEffort,
+                            credentialsProvider.get().accessKey,
+                            credentialsProvider.get().sessionToken);
                     }, function(errorMsg) {
                         options.log("Attempt to update expired credentials apparently failed! Unable to sign request.  ", "error");
                         signatureEffort.failure("Unable to sign request - expired credentials.");
@@ -214,6 +228,10 @@ qq.s3.RequestSigner = function(o) {
             }
             else {
                 options.log("Submitting S3 signature request for " + id);
+
+                if (params.signatureConstructor) {
+                    params = {headers: params.signatureConstructor.getToSign().stringToSign};
+                }
 
                 requester.initTransport(id)
                     .withParams(params)
@@ -229,7 +247,7 @@ qq.s3.RequestSigner = function(o) {
 
         constructStringToSign: function(type, bucket, key) {
             var headers = {},
-                uploadId, contentType, partNum;
+                uploadId, contentType, partNum, toSignAndEndOfUrl;
 
             return {
                 withHeaders: function(theHeaders) {
@@ -253,13 +271,12 @@ qq.s3.RequestSigner = function(o) {
                 },
 
                 getToSign: function() {
-                    var sessionToken = credentialsProvider.get().sessionToken,
-                        toSignAndEndOfUrl;
+                    var sessionToken = credentialsProvider.get().sessionToken;
 
                     headers["x-amz-date"] = new Date().toUTCString();
 
                     if (sessionToken) {
-                        headers["x-amz-security-token"] = sessionToken;
+                        headers[qq.s3.util.SESSION_TOKEN_PARAM_NAME] = sessionToken;
                     }
 
                     toSignAndEndOfUrl = getToSignAndEndOfUrl(type, bucket, key, contentType, headers, uploadId, partNum);
@@ -275,6 +292,14 @@ qq.s3.RequestSigner = function(o) {
                         endOfUrl: toSignAndEndOfUrl.endOfUrl,
                         stringToSign: toSignAndEndOfUrl.toSign
                     };
+                },
+
+                getHeaders: function() {
+                    return qq.extend({}, headers);
+                },
+
+                getEndOfUrl: function() {
+                    return toSignAndEndOfUrl && toSignAndEndOfUrl.endOfUrl;
                 }
             };
         }

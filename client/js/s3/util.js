@@ -6,6 +6,7 @@ qq.s3.util = qq.s3.util || (function() {
 
     return {
         AWS_PARAM_PREFIX: "x-amz-meta-",
+        SESSION_TOKEN_PARAM_NAME: "x-amz-security-token",
 
         /**
          * This allows for the region to be specified in the bucket's endpoint URL, or not.
@@ -89,7 +90,8 @@ qq.s3.util = qq.s3.util || (function() {
             }
 
             if (sessionToken) {
-                conditions.push({"x-amz-security-token": sessionToken});
+                conditions.push({});
+                conditions[conditions.length - 1][qq.s3.util.SESSION_TOKEN_PARAM_NAME] = sessionToken;
             }
 
             conditions.push({key: key});
@@ -108,6 +110,31 @@ qq.s3.util = qq.s3.util || (function() {
             qq.s3.util.enforceSizeLimits(policy, minFileSize, maxFileSize);
 
             return policy;
+        },
+
+        /**
+         * Update a previously constructed policy document with updated credentials.  Currently, this only requires we
+         * update the session token.  This is only relevant if requests are being signed client-side.
+         *
+         * @param policy Live policy document
+         * @param newSessionToken Updated session token.
+         */
+        refreshPolicyCredentials: function(policy, newSessionToken) {
+            var sessionTokenFound = false;
+
+            qq.each(policy.conditions, function(oldCondIdx, oldCondObj) {
+                qq.each(oldCondObj, function(oldCondName, oldCondVal) {
+                    if (oldCondName === qq.s3.util.SESSION_TOKEN_PARAM_NAME) {
+                        oldCondObj[oldCondName] = newSessionToken;
+                        sessionTokenFound = true;
+                    }
+                });
+            });
+
+            if (!sessionTokenFound) {
+                policy.conditions.push({});
+                policy.conditions[policy.conditions.length - 1][qq.s3.util.SESSION_TOKEN_PARAM_NAME] = newSessionToken;
+            }
         },
 
         /**
@@ -156,7 +183,7 @@ qq.s3.util = qq.s3.util || (function() {
             }
 
             if (sessionToken) {
-                awsParams["x-amz-security-token"] = sessionToken;
+                awsParams[qq.s3.util.SESSION_TOKEN_PARAM_NAME] = sessionToken;
             }
 
             awsParams.acl = acl;
@@ -171,9 +198,17 @@ qq.s3.util = qq.s3.util || (function() {
             // Invoke a promissory callback that should provide us with a base64-encoded policy doc and an
             // HMAC signature for the policy doc.
             signPolicyCallback(policyJson).then(
-                function(policyAndSignature) {
+                function(policyAndSignature, updatedAccessKey, updatedSessionToken) {
                     awsParams.policy = policyAndSignature.policy;
                     awsParams.signature = policyAndSignature.signature;
+
+                    if (updatedAccessKey) {
+                        awsParams.AWSAccessKeyId = updatedAccessKey;
+                    }
+                    if (updatedSessionToken) {
+                        awsParams[qq.s3.util.SESSION_TOKEN_PARAM_NAME] = updatedSessionToken;
+                    }
+
                     promise.success(awsParams);
                 },
                 function(errorMessage) {

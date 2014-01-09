@@ -658,18 +658,16 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
             bucket = qq.s3.util.getBucket(endpoint),
             key = getUrlSafeKey(id),
             promise = new qq.Promise(),
-            toSign = restSignatureRequester.constructStringToSign
+            signatureConstructor = restSignatureRequester.constructStringToSign
                 (restSignatureRequester.REQUEST_TYPE.MULTIPART_UPLOAD, bucket, key)
                 .withPartNum(getNextPartIdxToSend(id) + 1)
-                .withUploadId(fileState[id].chunking.uploadId)
-                .getToSign();
-
-        headers = toSign.headers;
+                .withUploadId(fileState[id].chunking.uploadId);
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
-        restSignatureRequester.getSignature(id, {headers: toSign.stringToSign}).then(function(response) {
+        restSignatureRequester.getSignature(id, {signatureConstructor: signatureConstructor}).then(function(response) {
+            headers = signatureConstructor.getHeaders();
             headers.Authorization = "AWS " + credentialsProvider.get().accessKey + ":" + response.signature;
-            promise.success(headers, toSign.endOfUrl);
+            promise.success(headers, signatureConstructor.getEndOfUrl());
         }, promise.failure);
 
         return promise;
