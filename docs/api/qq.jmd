@@ -15,11 +15,27 @@ The qQuery object is much like a poor man's jQuery. If you cannot or do not
 want to import a 3rd-party library such as jQuery or Zepto to do cross-browser
 DOM manipulation, then qQuery will be your friend.
 
-{{ methods_table(
-    (
-        ("qq", "element", "`qq HTMLElement`", "Selects an `HTMLElement` and returns a `qq` 'wrapped' object."),
-    )
-) }}
+{% endmarkdown %}
+{{
+api_method("qq", "qq (element)",
+"""Selects an `HTMLElement` and returns a `qq` 'wrapped object.'
+""",
+[
+    {
+        "name": "element",
+        "type": "HTMLElement",
+        "description": "A HTML element."
+    },
+],
+[
+    {
+        "type": "qq instance",
+        "description": "A 'wrapped' DOM object with a variety of cross-browser polyfills and shims as methods."
+    },
+])
+}}
+{% markdown %}
+
 
 `qq` functions similar to the `jQuery` function in terms of the operations
 it can perform. For now, though, `qq` only accepts `HTMLElements` as input.
@@ -46,71 +62,369 @@ sure to wrap any elements before calling these methods on them.
 
 ### DOM Selection and Traversal
 
-{{ methods_table(
-    (
-        ("children", "element", "`Array`", "Returns an array of all immediate children of this element."),
-        ("contains", "element", "`boolean`", "Returns `true` if the element contains the passed element."),
-        ("hasAttribute", "attribute name", "`String`", "Returns `true` if the attribute exists on the element and
-        the value of the attribute is not 'false' case-insensitive."),
-    )
+{% endmarkdown %}
+{{ api_method("qq.children", "children (element)", "Returns an array of all immediate children of this element.",
+[
+    {
+        "name": "element",
+        "type": "HTMLElement",
+        "description": "An HTMLElement or an already wrapped `qq` object."
+    }
+],
+[
+    {
+        "type": "Array",
+        "description": "An array of HTMLElements who are children of the `element` parameter."
+
+    }
+]) }}
+
+{{ api_method("qq.contains", "contains (element)", "Returns `true` if the element contains the passed element.",
+[
+    {
+        "name": "element",
+        "type": "HTMLElement",
+        "description": "An HTMLElement or an already wrapped `qq` object."
+    }
+],
+[
+    {
+        "type": "Boolean",
+        "description": "The result of the contains test."
+    }
+]
 ) }}
+
+{{ api_method("qq.hasAttribute", "hasAttribute (attributeName)", "Returns `true` if the attribute exists on the element and the value of the attribute is not 'false' case-insensitive.",
+[
+    {
+        "name": "attributeName",
+        "type": "String",
+        "description": "An attribute to test for."
+    }
+],
+[
+    {
+        "type": "Boolean",
+        "description": "The result of the `hasAttribute` test."
+    }
+]) }}
+
+{% markdown %}
 
 ### DOM Manipulation
 
-{{ methods_table(
-    (
-        ("clearText", "", "", "Clears all text for this element."),
-        ("insertBefore", "element", "", "Inserts the element directly befor the passed element in the DOM."),
-        ("remove", "element", "", "Removes this element from the DOM."),
-        ("setText", "text", "", "Set the text for this element."),
-    )
-) }}
+{% endmarkdown %}
+
+{{ api_method("qq.clearText", "clearText ()", "Clears all text for this element") }}
+{{ api_method("qq.insertBefore", "insertBefore (element)", "Inserts the element directly before the passed element in the DOM.",
+[
+    {
+        "name": "element",
+        "type": "HTMLElement",
+        "description:": "The element that will be inserted."
+    }
+]) }}
+{{ api_method("qq.remove", "remove ()", "Removes the element from the DOM.") }}
+{{ api_method("qq.setText", "setText (text)", "Sets the inner text for this element.",
+[
+    {
+        "name": "text",
+        "type": "String",
+        "description": "The text to set."
+    }
+]) }}
+
+{% markdown %}
 
 ### CSS Manipulation
 
-{{ methods_table(
-    (
-        ("addClass", "className", "", "Add a class to this element"),
-        ("css", "styles", "", "Specify css styles for this element (e.g., `{ top: 0, right: 0 }`)"),
-        ("getByClass", "className", "`Array`", "Returns an array of all descendants of this element that contain the passed class name."),
-        ("hasClass", "className", "`boolean`", "Returns true if the element has this class name"),
-        ("removeClass", "className", "", "Remove the provided class from the element."),
-    )
+{% endmarkdown %}
+{{ api_method("qq.addClass", "addClass (className)", "Add a class to this element.",
+[
+    {
+        "name": "className",
+        "type": "String",
+        "description": "The name of the class to add to the element."
+    }
+]) }}
+
+{{ api_method("qq.css", "css (styles)", "Add CSS style(s) to this element.",
+[
+    {
+        "name": "styles",
+        "type": "Object",
+        "description": "An object with styles to apply to this element."
+    }
+],
+[
+    {
+        "type": "Object",
+        "description": "Returns the current context to allow method chaining."
+    }
+]
+) }}
+
+{{ api_method("qq.getByClass", "getByClass (className)", "Returns an array of all descendants of this element that contain the passed in class name.",
+[
+    {
+        "name": "className",
+        "type": "String",
+        "description": "The name of the class to look for in each element."
+    }
+],
+[
+    {
+        "type": "Array",
+        "description": "An array of `HTMLElements`"
+    }
+]) }}
+
+{{ api_method("qq.hasClass", "hasClass (className)", "Returns `true` if the element has the class name",
+[
+    {
+        "name": "className",
+        "type": "String",
+        "description": "The name of the class to look for in each element."
+    }
+],
+[
+    {
+        "type": "Boolean",
+        "description": "Result of the `hasClass` test"
+    }
+]) }}
+
+{{ api_method("qq.hide", "hide ()", "Hide this element.",
+[],
+[
+    {
+        "type": "Object",
+        "description": "Returns the current context to allow method chaining."
+    }
+]
+) }}
+
+{{ api_method("qq.removeClass", "removeClass (className)", "Remove the provided class from the element",
+[
+    {
+        "name": "className",
+        "type": "String",
+        "description": "The name of the class to look for in each element."
+    }
+],
+[
+    {
+        "type": "Object",
+        "description": "Returns the current context to allow method chaining."
+    }
+]
+)
+}}
+
+{% markdown %}
+### Event Attaching and Detaching
+{% endmarkdown %}
+
+{{ api_method("qq.attach", "attach (event, handler)", "Attach an event handler to this element for a specific DOM event.",
+[
+    {
+        "name": "event",
+        "type": "String",
+        "description": "A valid `DOM Event`"
+    },
+    {
+        "name": "handler",
+        "type": "Function",
+        "description": "A function that will be invoked whenever the respective event occurs"
+    },
+],
+[
+    {
+        "type": "Function",
+        "description": "Call this function to detach the event."
+    }
+])}}
+
+
+{{ api_method("qq.detach", "detach (event, originalHandler)", "Detach an already attached event handler from this element for a specific DOM event.",
+[
+    {
+        "name": "event",
+        "type": "String",
+        "description": "A valid `DOM Event`"
+    },
+    {
+        "name": "originalHandler",
+        "type": "Function",
+        "description": "A function that will be detached from this event."
+    },
+],
+[
+    {
+        "type": "Object",
+        "description": "Returns the current context to allow method chaining."
+    }
+]
 )}}
 
-### Event Attaching and Detaching
 
-{{ methods_table(
-    (
-        ("attach", "type, callback", "`detach` function", "Attach an event handler to this element for a specific DOM event."),
-        ("detach", "type, originalCallback", "", "Detach an already attached event handler from this element.")
-    )
-) }}
-
+{% markdown %}
 ## Utility Functions
-
-{{ methods_table(
-    (
-        ("bind", "oldFunc, context", "`function`", "Polyfill for `Function.prototype.bind`. Pass comma-separated values after the `context parameter for all arguments to be passed into the new function (when invoked). You can still pass in additional arguments during invocation."),
-        ("each", "iterable, callback", "", "Polyfill iterator. Iterates through a collection, passing the key and value into the provided callback. `return false;` to stop iteration."),
-        ("extend", "firstObj, secondObj, extendNested", "`Object`", "Shallowly copies the parameters of `secondObj` to `firstObj`. If `extendNested` is true then a deep-copy is performed."),
-        ("format", "message", "`String`", "Returns a string, swapping argument values with the associated occurrence of {} in the passed string."),
-        ("indexOf", "array, item, startingIndex", "`number`", "Returns the index of `item` in the `array` starting the search form `startingIndex`."),
-        ("isObject", "obj", "`boolean`", "`True` if the parameter is a 'simple' object."),
-        ("isFunction", "func", "`boolean`", "`True` if the parameter is a function."),
-        ("isString", "str", "`boolean`", "`True` if the parameter is a string."),
-        ("preventDefault", "event", "", "Prevent the user agent's default action on an event. Useful inside of event handlers."),
-        ("trimStr", "str", "`string`", "Removes whitespace from both ends of a string. Poylfill for `String.prototype.trim`."),
-        ("toElement", "", "div `HTMLElement`", "Creates and returns a new `div` element"),
-        ("log", "logMessage[, logLevel]", "", "Log a message to the console. No-op if console logging is not supported. Polyfill for th user-agent's logging function corresponding to that passed logging level. Generally delegates to `console.log`"),
-        ("getUniqueId", "", "`string`", "Returns a version4 UUID"),
-        ("areCookiesEnabled", "", "`boolean`", "`True` if cookies are enabled."),
-        ("getCookie", "name", "`string`", "Returns the value of the cookie with the associated name."),
-        ("setCookie", "name, value, daysTillExpiration", "", "Sets or updates a cookie."),
-        ("deleteCookie", "name", "", "Deletes the cookie with the associated name."),
-        ("getExtension", "filename", "`string`", "Return the extension for the filename, if any."),
-    )
-) }}
-
 {% endmarkdown %}
+
+{{ api_method("qq.bind", "bind (oldFunc, context)", "polyfill for `Function.prototype.bind`. Creates a new function that, when called, has its `this` keyword set to the provided `context`. Pass comma-separated values after the `context parameter for all arguments to be passed into the new function (when invoked). you can still pass in additional arguments during invocation.",
+[
+    {
+        "name": "oldFunc",
+        "type": "Function",
+        "description": "The function that will be bound to."
+    },
+    {
+        "name": "context",
+        "type": "Object",
+        "description": "The context the function will assume."
+    },
+],
+[
+    {
+        "type": "Function",
+        "description": "A new function, same as the old one, but bound to the passed in`context`."
+    }
+]) }}
+
+{{ api_method("qq.each", "each (iterable, callback)", "polyfill iterator. iterates through a collection, passing the key and value into the provided callback. `return false;` to stop iteration.",
+[
+    {
+        "name": "iterable",
+        "type": "Array or Object",
+        "description": "The context the function will assume."
+    },
+    {
+        "name": "callback",
+        "type": "Function",
+        "description": "A function that will be called for each item returned by looping through the iterable. This function takes an index and an item."
+    }
+]) }}
+
+{{ api_method("qq.extend", "extend (firstObj, secondObj[, extendNested])", "shallowly copies the parameters of `secondobj` to `firstobj`. if `extendnested` is true then a deep-copy is performed.",
+[
+    {
+        "name": "firstObj",
+        "type": "Object",
+        "description": "The object to copy parameters to."
+    },
+    {
+        "name": "secondObj",
+        "type": "Object",
+        "description": "The object to copy parameters from."
+    },
+    {
+        "name": "extendNested",
+        "type": "Boolean",
+        "description": "If `true` then a deep-copy is performed, else a shallow-copy is."
+    },
+],
+[
+    {
+        "type": "Object",
+        "description": "The new object created by the extension."
+    }
+]) }}
+
+{{ api_method("qq.format", "format (message)", "returns a string, swapping argument values with the associated occurrence of {} in the passed string.",
+[
+    {
+        "name": "message",
+        "type": "String",
+        "description": ""
+    }
+],
+[
+    {
+       "type": "String",
+       "description": "The formatted string"
+    }
+]) }}
+
+{{ api_method("qq.indexof", "indexOf (array, item[, startingIndex])", "returns the index of `item` in the `array` starting the search from `startingindex`.",
+[
+    {
+        "name": "array",
+        "type": "Array",
+        "description": ""
+    },
+    {
+        "name": "item",
+        "type": "Object",
+        "description": ""
+    },
+    {
+        "name": "startingIndex",
+        "type": "Integer",
+        "description": ""
+    }
+],
+[
+    {
+        "type": "Integer",
+        "description": "The index of `item` in the array."
+    }
+]) }}
+
+{{ api_method("qq.isobject", "isObject (obj)", "`true` if the parameter is a 'simple' object.",
+[ { "name": "obj", "type": "Object", "description": "The 'thing' to test."}],
+[ { "type": "Boolean", "description": "Result of the `isobject` test" }]) }}
+
+{{ api_method("qq.isfunction", "isFunction (func)", "`true` if the parameter is a function.",
+[ { "name": "func", "type": "Object", "description": "The Object to test." } ],
+[ { "type": "Boolean", "description": "The result of the `isfunction` test." } ]) }}
+
+{{ api_method("qq.isstring", "isString (str)", "`true` if the parameter is a string.",
+[ { "name": "str", "type": "Object", "description": "The Object to test" } ],
+[ { "type": "Boolean", "description": "The result of the `isstring` test." } ]) }}
+
+{{ api_method("qq.preventdefault", "preventDefault (event)", "prevent the user agent's default action on an event. useful inside of event handlers.",
+[
+    {
+        "name": "event",
+        "type": "String",
+        "desciption": "The name of the default event to prevent."
+    }
+]) }}
+
+{{ api_method("qq.trimstr", "trimstr (str)", "removes whitespace from the ends of a string. poylfill for `String.prototype.trim`.",
+[ { "name": "str", "type": "String", "description": "The string to remove whitespace from." } ],
+[ { "type" : "String", "description": "The new string sans whitespace." } ]) }}
+
+{{ api_method("qq.toelement", "toElement (str)", "creates and returns a new `div` element",
+[ { "name": "str", "type": "String", "description": "Valid HTML that can be parsed by a browser." }],
+[ { "type": "HTMLElement", "description": "An newly created `HTMLElement` from the input." } ]) }}
+
+{{ api_method("qq.log", "log (logMessage[, logLevel])", "log a message to the console. no-op if console logging is not supported. polyfill for th user-agent's logging function corresponding to that passed logging level. generally delegates to `console.log`",
+[ { "name": "logmessage", "type": "String", "description": "The message to log." },
+  { "name": "logLevel", "type": "String", "description": "The logging level. Supports native browser levels (such as 'info' and 'error'), and custom levels." } ]) }}
+
+{{ api_method("qq.getUniqueId ()", "getUniqueId", "returns a version4 uuid", [],
+[ { "type": "String", "description": "A version 4 unique identifier" } ]) }}
+
+{{ api_method("qq.areCookiesEnabled ()", "areCookiesEnabled", "`true` if cookies are enabled.", [],
+[ { "type": "Boolean", "description": "The result of the are cookies enabled test." } ]) }}
+
+{{ api_method("qq.getCookie", "getCookie (name)", "returns the value of the cookie with the associated name.",
+[ { "name": "name", "type": "String", "description": "The cookie name to look for" } ],
+[ { "type": "String", "description": "The cookie as a string." } ]) }}
+
+{{ api_method("qq.setCookie", "setCookie (name, value, daysTillExpiration)", "sets or updates a cookie.",
+[ { "name": "name", "type": "String", "description": "The cookie's name." },
+  { "name": "value", "type": "String", "description": "The cookie's value." },
+  { "name": "daysTillExpiration", "type": "Integer", "description": "Number of days until this cookie expires."} ])
+}}
+
+{{ api_method("qq.deleteCookie", "deleteCookie (name)", "deletes the cookie with the associated name.",
+[ { "name": "name", "type": "String", "description": "The cookie's name." } ]) }}
+
+{{ api_method("qq.getextension", "getExtension (filename)", "return the extension for the filename, if any.", [ { "name": "filename", "type": "String", "description": "The file's name to rip the extension off of." } ],
+[ { "type": "String", "description": "The new filename" }] )}}
+
 {% endblock %}
