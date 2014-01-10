@@ -62,7 +62,8 @@
     "grunt-strip-code": "~0.1.2",
     "grunt-version": "~0.2.2",
     "karma-mocha": "~0.1.0",
-    "karma-slimerjs-launcher": "~0.1.2"
+    "karma-slimerjs-launcher": "~0.1.2",
+    "karma-ievms": "git+https://github.com/xdissent/karma-ievms.git"
   },
   "dependencies": {
     "bower": "1.2.5",
