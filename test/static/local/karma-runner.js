@@ -54,6 +54,7 @@ var $fixture;
     before(function() {
         // "Turn off" the before unload handler since this may cause the tests to stall when run in a browser
         qq.FineUploaderBasic.prototype._preventLeaveInProgress = function() {};
+        qq.s3.FineUploaderBasic.prototype._preventLeaveInProgress = function() {};
     });
 
     beforeEach(function() {
