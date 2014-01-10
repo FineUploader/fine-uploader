@@ -9,5 +9,7 @@ module.exports = (config, options = {}) ->
       singleRun: false
       testName: '[local] FineUploader: tests'
       logFile: 'fineuploader.log'
-      browsers: ['PhantomJS', 'Firefox', 'Chrome']
+      browsers: [
+          'PhantomJS'
+      ]
 
