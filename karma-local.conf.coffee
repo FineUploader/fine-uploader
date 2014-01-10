@@ -7,5 +7,5 @@ module.exports = (config, options = {}) ->
       logFile: 'fineuploader.log'
 
     config.set
-      browsers: ['PhantomJS']
+      browsers: ['PhantomJS', 'SlimerJS']
 
