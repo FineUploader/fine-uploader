@@ -7,6 +7,8 @@ qq.s3.util = qq.s3.util || (function() {
     return {
         AWS_PARAM_PREFIX: "x-amz-meta-",
         SESSION_TOKEN_PARAM_NAME: "x-amz-security-token",
+        REDUCED_REDUNDANCY_PARAM_NAME: "x-amz-storage-class",
+        REDUCED_REDUNDANCY_PARAM_VALUE: "REDUCED_REDUNDANCY",
 
         /**
          * This allows for the region to be specified in the bucket's endpoint URL, or not.
@@ -86,7 +88,8 @@ qq.s3.util = qq.s3.util || (function() {
             }
 
             if (reducedRedundancy) {
-                conditions.push({"x-amz-storage-class": "REDUCED_REDUNDANCY"});
+                conditions.push({});
+                conditions[conditions.length - 1][qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME] = qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE;
             }
 
             if (sessionToken) {
@@ -179,7 +182,7 @@ qq.s3.util = qq.s3.util || (function() {
             }
 
             if (reducedRedundancy) {
-                awsParams["x-amz-storage-class"] = "REDUCED_REDUNDANCY";
+                awsParams[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME] = qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE;
             }
 
             if (sessionToken) {

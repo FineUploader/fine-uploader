@@ -7,8 +7,7 @@ if (qqtest.canDownloadFileAsBlob) {
             testS3Endpoint = "https://mytestbucket.s3.amazonaws.com",
             testAccessKey = "testAccessKey",
             testSecretKey = "testSecretKey",
-            testSessionToken = "testSessionToken",
-            expectedFileSize = 3266;
+            testSessionToken = "testSessionToken";
 
         it("test simple upload with only mandatory credentials specified as options", function(done) {
             assert.expect(14, done);

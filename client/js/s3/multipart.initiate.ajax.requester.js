@@ -55,7 +55,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         headers["x-amz-acl"] = options.acl;
 
         if (options.reducedRedundancy) {
-            headers["x-amz-storage-class"] = "REDUCED_REDUNDANCY";
+            headers[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME] = qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE;
         }
 
         headers[qq.s3.util.AWS_PARAM_PREFIX + options.filenameParam] = encodeURIComponent(options.getName(id));
