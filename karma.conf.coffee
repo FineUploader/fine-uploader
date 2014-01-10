@@ -15,11 +15,3 @@ module.exports = (config, options = {}) ->
     reporters: ["dots"]
     captureTimeout: 60000
     colors: true
-
-  if process.env.TRAVIS
-      config.transports = ['xhr-polling']
-      # Debug logging into a file, that we print out at the end of the build.
-      config.loggers.push
-          type: 'file'
-          filename: process.env.LOGS_DIR + '/' + options.logFile || 'karma.log'
-          level: config.LOG_DEBUG

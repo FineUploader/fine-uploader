@@ -69,7 +69,7 @@
     "coffee-script": "~1.6.3",
     "glob": "~3.2.6",
     "grunt": "~0.4.1",
-    "karma": "~0.10.2",
+    "karma": "~0.10.9",
     "optimist": "~0.6.0",
     "request": "~2.21.0",
     "semver": "2.0.x",

@@ -664,8 +664,7 @@ module.exports = (grunt) ->
     # Tasks
     # ==========
 
-    grunt.registerTask 'test:unit', 'Run unit tests locally with Karma', ['dev', 'tests:local']
-    grunt.registerTask 'test:func', 'Run functional tests locally', ['dev', 'mochaWebdriver:local']
+    grunt.registerTask 'test:unit', 'Run unit tests locally with Karma', ['build', 'copy:test', 'tests:local']
 
     grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'dev', 'tests:travis']
 

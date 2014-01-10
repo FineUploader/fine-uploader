@@ -2,10 +2,12 @@
 sharedConfig = require './karma.conf'
 
 module.exports = (config, options = {}) ->
-    sharedConfig config,
-      testName: '[local] FineUploader: tests'
-      logFile: 'fineuploader.log'
+    sharedConfig config
 
     config.set
-      browsers: ['PhantomJS', 'SlimerJS']
+      autoWatch: true
+      singleRun: false
+      testName: '[local] FineUploader: tests'
+      logFile: 'fineuploader.log'
+      browsers: ['PhantomJS', 'Firefox', 'Chrome']
 

@@ -9,4 +9,4 @@ module.exports = (config, options = {}) ->
         testName: '[travis] Fine Uploader tests'
         logFile: 'fineuploader-travis.log'
         transports: ['xhr-polling']
-        browsers: ['PhantomJS', 'SlimerJS']
+        browsers: ['PhantomJS', 'Firefox']
