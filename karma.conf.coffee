@@ -6,7 +6,6 @@ module.exports = (config, options = {}) ->
   config.set
     files: modules.mergeModules 'karmaModules', 'fuSrcBuild', 'fuIframeXssResponse', 'testHelperModules', 'fuUnit'
     basePath: ""
-    autoWatch: true
     preprocessors:
         '**/*.coffee': 'coffee'
     logLevel: config.LOG_INFO

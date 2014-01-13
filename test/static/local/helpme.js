@@ -1,3 +1,8 @@
+/* global sinon:true */
+// The following is apparently required to mock XHR in some versions of IE
+function XMLHttpRequest() {} // jshint ignore:line
+XMLHttpRequest = sinon.xhr.XMLHttpRequest || undefined; // jshint ignore:line
+
 /* globals qq, beforeEach, afterEach, sinon, mockFormData, unmockFormData */
 var helpme = (function () {
     "use strict";

@@ -291,16 +291,6 @@ describe("util.js", function () {
         });
     }); // trimStr
 
-    describe("isFile", function () {
-        it("detects and identifies a file, if possible", function () {
-            try {
-                assert.ok(qq.isFile(new File()));
-            } catch (ex) {
-                assert.ok(!qq.supportedFeatures.supportsUploader);
-            }
-        });
-    }); // isFile
-
     describe("isInput", function () {
         it("detects and identifies an input of type file", function () {
             var input;
