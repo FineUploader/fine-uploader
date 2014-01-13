@@ -735,7 +735,7 @@ module.exports = (grunt) ->
                         grunt.option('browsers', [test_type])
                 else
                     grunt.option('browsers', ['Chrome'])
-                    taskList.push('tests:local')
+                taskList.push('tests:local')
 
         grunt.task.run(taskList)
 
