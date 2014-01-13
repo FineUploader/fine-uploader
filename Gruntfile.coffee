@@ -715,7 +715,6 @@ module.exports = (grunt) ->
                     'IE9 - Win7',
                     'IE10 - Win7',
                     'IE11 - Win7'
-                    'iOS'
                 ])
                 taskList.push('tests:local')
             else do ->
