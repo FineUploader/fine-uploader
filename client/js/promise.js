@@ -18,8 +18,8 @@ qq.Promise = function() {
                     failureCallbacks.push(onFailure);
                 }
             }
-            else if (state === -1 && onFailure) {
-                onFailure.apply(null, failureArgs);
+            else if (state === -1) {
+                onFailure && onFailure.apply(null, failureArgs);
             }
             else if (onSuccess) {
                 onSuccess.apply(null,successArgs);
