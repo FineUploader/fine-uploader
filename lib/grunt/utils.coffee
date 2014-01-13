@@ -21,8 +21,8 @@ module.exports =
     autoWatch = grunt.option 'autoWatch'
     singleRun = grunt.option 'singleRun'
     args = ['node_modules/karma/bin/karma', 'start', config,
-      if singleRun then '--single-run' else '--no-single-run',
-      if autoWatch then '--auto-watch' else '--no-auto-watch',
+      if singleRun then '--single-run' else '',
+      if autoWatch then '--auto-watch' else '',
       if reporters then '--reporters=' + reporters else '',
       if browsers then '--browsers=' + browsers else '',
       if port then '--port=' + port else ''

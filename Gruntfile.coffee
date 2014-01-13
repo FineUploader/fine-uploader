@@ -675,20 +675,26 @@ module.exports = (grunt) ->
     #   % grunt test:ie
     #   % grunt test:Firefox,Chrome,Opera,Safari --auto-watch --no-single-run
     #   etc...
-        taskList = ['build', 'copy:test']
+    #taskList = ['build', 'copy:test']
+        taskList = []
 
         switch test_type
-            when "travis" then taskList.push('tests:travis')
+            when "travis" then do ->
+                grunt.option('singleRun', true)
+                grunt.option('autoWatch', true)
+                taskList.push('tests:travis')
             when "server" then do ->
                 grunt.option('singleRun', false)
                 grunt.option('autoWatch', true)
                 grunt.option('browsers', [])
                 taskList.push('tests:local')
             when "headless" then do ->
+                grunt.option('autoWatch', true)
                 grunt.option('singleRun', true)
                 grunt.option('browsers', ['PhantomJS'])
                 taskList.push('tests:local')
             when "ie" then do ->
+                grunt.option('autoWatch', true)
                 grunt.option('singleRun', true)
                 taskList.push('tests:local')
                 grunt.option('browsers', [
@@ -699,10 +705,12 @@ module.exports = (grunt) ->
                     'IE11 - Win7'
                 ])
             when "ios" then do ->
-                grunt.option('singleRun', false)
+                grunt.option('autoWatch', true)
+                grunt.option('singleRun', true)
                 grunt.option('browsers', ['iOS'])
                 taskList.push('tests:local')
             when "all" then do ->
+                grunt.option('autoWatch', true)
                 grunt.option('singleRun', true)
                 grunt.option('browsers', [
                     'PhantomJS',
@@ -719,7 +727,8 @@ module.exports = (grunt) ->
                 taskList.push('tests:local')
             else do ->
                 if (test_type?)
-                    grunt.option('singleRun', true)
+                    grunt.option('singleRun', false)
+                    grunt.option('autoWatch', true)
                     if (',' in test_type)
                         tests = test_type.split(',')
                         grunt.option('browsers', tests)

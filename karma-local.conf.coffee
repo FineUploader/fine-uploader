@@ -7,5 +7,4 @@ module.exports = (config, options = {}) ->
     config.set
       testName: '[local] FineUploader: tests'
       logFile: 'fineuploader.log'
-      browsers: ['PhantomJS']
-
+      autoWatch: true
