@@ -51,5 +51,13 @@ describe("promise.js", function () {
 
             promise.failure(true);
         });
+
+        it("ensures success callback is not called if promise fails before then is invoked", function() {
+            var promise = new qq.Promise().failure();
+
+            promise.then(function() {
+                assert.ok(false, "Success callback was unexpectedly invoked");
+            });
+        });
     });
 });
