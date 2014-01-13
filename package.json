@@ -63,7 +63,10 @@
     "grunt-version": "~0.2.2",
     "karma-mocha": "~0.1.0",
     "karma-slimerjs-launcher": "~0.1.2",
-    "karma-ievms": "git+https://github.com/xdissent/karma-ievms.git"
+    "karma-opera-launcher": "~0.1.0",
+    "karma-safari-launcher": "~0.1.1",
+    "karma-ios-launcher": "0.0.3",
+    "karma-ievms": "0.0.4"
   },
   "dependencies": {
     "bower": "1.2.5",

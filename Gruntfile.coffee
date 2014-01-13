@@ -612,10 +612,6 @@ module.exports = (grunt) ->
             local: 'karma-local.conf.coffee'
             travis: 'karma-travis.conf.coffee'
 
-        autotest:
-            local: 'karma-local.conf.coffee'
-
-
         shell:
             start_saucecon:
                 command: './lib/sauce/sauce_connect_setup.sh'
@@ -663,10 +659,78 @@ module.exports = (grunt) ->
 
     # Tasks
     # ==========
+    grunt.registerTask 'test', "Run unit tests. Allows: 'travis', 'server', 'headless', 'ie', and 'all'. Can also take browser names: 'PhantomJS', 'Firefox', 'Chrome', 'Safari', etc.. Comma-delimited.", (test_type) ->
+    # To run this task:
+    #   % grunt test:<args>
+    #
+    # Where <args> is either:
+    #   * 'travis', 'server', 'headless', 'ie', 'ios', or 'all'
+    #   * a comma-delimited list of browsers.
+    #
+    # Example:
+    #   % grunt test:server
+    #   % grunt test:headless
+    #   % grunt test:PhantomJS --no-single-run
+    #   % grunt test:Firefox,Chrome,Opera,Safari
+    #   % grunt test:ie
+    #   % grunt test:Firefox,Chrome,Opera,Safari --auto-watch --no-single-run
+    #   etc...
+        taskList = ['build', 'copy:test']
 
-    grunt.registerTask 'test:unit', 'Run unit tests locally with Karma', ['build', 'copy:test', 'tests:local']
+        switch test_type
+            when "travis" then taskList.push('tests:travis')
+            when "server" then do ->
+                grunt.option('singleRun', false)
+                grunt.option('autoWatch', true)
+                grunt.option('browsers', [])
+                taskList.push('tests:local')
+            when "headless" then do ->
+                grunt.option('singleRun', true)
+                grunt.option('browsers', ['PhantomJS'])
+                taskList.push('tests:local')
+            when "ie" then do ->
+                grunt.option('singleRun', true)
+                taskList.push('tests:local')
+                grunt.option('browsers', [
+                    'IE7 - WinXP',
+                    'IE8 - WinXP',
+                    'IE9 - Win7',
+                    'IE10 - Win7',
+                    'IE11 - Win7'
+                ])
+            when "ios" then do ->
+                grunt.option('singleRun', false)
+                grunt.option('browsers', ['iOS'])
+                taskList.push('tests:local')
+            when "all" then do ->
+                grunt.option('singleRun', true)
+                grunt.option('browsers', [
+                    'PhantomJS',
+                    'Firefox',
+                    'Chrome',
+                    'Safari',
+                    'Opera',
+                    'IE7 - WinXP',
+                    'IE8 - WinXP',
+                    'IE9 - Win7',
+                    'IE10 - Win7',
+                    'IE11 - Win7'
+                    'iOS'
+                ])
+                taskList.push('tests:local')
+            else do ->
+                if (test_type?)
+                    grunt.option('singleRun', true)
+                    if (',' in test_type)
+                        tests = test_type.split(',')
+                        grunt.option('browsers', tests)
+                    else
+                        grunt.option('browsers', [test_type])
+                    taskList.push('tests:local')
 
-    grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'dev', 'tests:travis']
+        grunt.task.run(taskList)
+
+    grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'dev', 'test:travis']
 
     grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'bower', 'build', 'copy:test']
 

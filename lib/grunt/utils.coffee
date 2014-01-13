@@ -14,16 +14,20 @@ module.exports =
       https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md\n
       '''
 
-  startKarma: (config, singleRun, done) ->
+  startKarma: (config, done) ->
     browsers = grunt.option 'browsers'
     reporters = grunt.option 'reporters'
     port = grunt.option 'port'
+    autoWatch = grunt.option 'autoWatch'
+    singleRun = grunt.option 'singleRun'
     args = ['node_modules/karma/bin/karma', 'start', config,
-      if singleRun then '--single-run=true' else '',
+      if singleRun then '--single-run' else '--no-single-run',
+      if autoWatch then '--auto-watch' else '--no-auto-watch',
       if reporters then '--reporters=' + reporters else '',
       if browsers then '--browsers=' + browsers else '',
       if port then '--port=' + port else ''
     ]
+    console.log(args)
     p = spawn 'node', args
     p.stdout.pipe process.stdout
     p.stderr.pipe process.stderr
