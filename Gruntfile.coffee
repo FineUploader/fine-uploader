@@ -675,8 +675,7 @@ module.exports = (grunt) ->
     #   % grunt test:ie
     #   % grunt test:Firefox,Chrome,Opera,Safari --auto-watch --no-single-run
     #   etc...
-    #taskList = ['build', 'copy:test']
-        taskList = []
+        taskList = ['build', 'copy:test']
 
         switch test_type
             when "travis" then do ->
