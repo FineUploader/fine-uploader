@@ -1,45 +1,46 @@
 /* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 if (qqtest.canDownloadFileAsBlob) {
-    describe("chunked S3 upload tests", function() {
+    var fileTestHelper = helpme.setupFileTests(),
+        testS3Endpoint = "https://mytestbucket.s3.amazonaws.com",
+        testBucketName = "mytestbucket",
+        testAccessKey = "testAccessKey",
+        expectedFileSize = 3266,
+        expectedChunks = 2,
+        chunkSize = Math.round(expectedFileSize / expectedChunks),
+        typicalChunkingOption = {
+            enabled: true,
+            partSize: chunkSize
+        };
+
+    describe("server-side signature-based chunked S3 upload tests", function() {
         "use strict";
 
-        var fileTestHelper = helpme.setupFileTests(),
-            testS3Endpoint = "https://mytestbucket.s3.amazonaws.com",
-            testBucketName = "mytestbucket",
-            testSignatureEndoint = "/signature",
-            testAccessKey = "testAccessKey",
-            expectedFileSize = 3266,
-            expectedChunks = 2,
-            chunkSize = Math.round(expectedFileSize / expectedChunks),
-            typicalRequestOption = {
-                accessKey: testAccessKey,
-                endpoint: testS3Endpoint
-            },
-            typicalSignatureOption = {
-                endpoint: testSignatureEndoint
-            },
-            typicalChunkingOption = {
-                enabled: true,
-                partSize: chunkSize
-            },
-            startTypicalTest = function(uploader, callback) {
-                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
-                    var initiateSignatureRequest, uploadRequest, initiateToSign;
+        var startTypicalTest = function(uploader, callback) {
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                var initiateSignatureRequest, uploadRequest, initiateToSign;
 
-                    fileTestHelper.mockXhr();
-                    uploader.addBlobs({name: "test.jpg", blob: blob});
+                fileTestHelper.mockXhr();
+                uploader.addBlobs({name: "test.jpg", blob: blob});
 
-                    assert.equal(fileTestHelper.getRequests().length, 2, "Wrong # of requests");
+                assert.equal(fileTestHelper.getRequests().length, 2, "Wrong # of requests");
 
-                    uploadRequest = fileTestHelper.getRequests()[0];
-                    initiateSignatureRequest = fileTestHelper.getRequests()[1];
-                    initiateToSign = JSON.parse(initiateSignatureRequest.requestBody);
+                uploadRequest = fileTestHelper.getRequests()[0];
+                initiateSignatureRequest = fileTestHelper.getRequests()[1];
+                initiateToSign = JSON.parse(initiateSignatureRequest.requestBody);
 
-                    callback(initiateSignatureRequest, initiateToSign, uploadRequest);
-                });
-            };
+                callback(initiateSignatureRequest, initiateToSign, uploadRequest);
+            });
+        },
+        testSignatureEndoint = "/signature",
+        typicalRequestOption = {
+            accessKey: testAccessKey,
+            endpoint: testS3Endpoint
+        },
+        typicalSignatureOption = {
+            endpoint: testSignatureEndoint
+        };
 
-        it("test most basic chunked upload", function(done) {
+        it("handles a basic chunked upload", function(done) {
             assert.expect(57, done);
 
             var uploader = new qq.s3.FineUploaderBasic({
@@ -150,7 +151,7 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
-        it("test failures at every step of a chunked upload", function(done) {
+        it("handles failures at every step of a chunked upload", function(done) {
             assert.expect(78, done);
 
             var uploader = new qq.s3.FineUploaderBasic({
@@ -349,6 +350,179 @@ if (qqtest.canDownloadFileAsBlob) {
                 // successful multipart complete request
                 assert.equal(fileTestHelper.getRequests().length, 25);
                 multipartCompleteRequest = fileTestHelper.getRequests()[24];
+                assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploadId=123");
+                assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1_a</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2_a</ETag></Part></CompleteMultipartUpload>");
+                multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
+
+                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+            });
+        });
+    });
+
+    describe("client-side signature-based chunked S3 upload tests", function() {
+        "use strict";
+
+        var startTypicalTest = function(uploader, callback) {
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                    var uploadRequest;
+
+                    fileTestHelper.mockXhr();
+                    uploader.addBlobs({name: "test.jpg", blob: blob});
+
+                    assert.equal(fileTestHelper.getRequests().length, 2, "Wrong # of requests");
+
+                    uploadRequest = fileTestHelper.getRequests()[0];
+
+                    callback(uploadRequest);
+                });
+            },
+            testSecretKey = "testSecrtKey",
+            testExpiration = new Date(Date.now() + 60000),
+            typicalRequestOption = {
+                endpoint: testS3Endpoint
+            },
+            typicalCredentialsOption = {
+                accessKey: testAccessKey,
+                secretKey: testSecretKey,
+                expiration: testExpiration
+            };
+
+        it("handles a basic chunked upload", function(done) {
+            assert.expect(24, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request: typicalRequestOption,
+                    chunking: typicalChunkingOption,
+                    credentials: typicalCredentialsOption
+                }
+            );
+
+            startTypicalTest(uploader, function(uploadPartRequest) {
+                var initiateRequest,
+                    multipartCompleteRequest;
+
+                // initiate multipart upload request
+                assert.equal(fileTestHelper.getRequests().length, 2);
+                initiateRequest = fileTestHelper.getRequests()[1];
+                assert.equal(initiateRequest.method, "POST");
+                assert.equal(initiateRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploads");
+                assert.equal(initiateRequest.requestHeaders["x-amz-meta-qqfilename"], uploader.getName(0));
+                assert.equal(initiateRequest.requestHeaders["x-amz-acl"], "private");
+                assert.ok(initiateRequest.requestHeaders["x-amz-date"]);
+                assert.equal(initiateRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "Initiate MP request Authorization header invalid");
+                initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
+
+                // upload part 1 request
+                assert.equal(fileTestHelper.getRequests().length, 2);
+                assert.equal(uploadPartRequest.method, "PUT");
+                assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
+                assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
+                assert.equal(uploadPartRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "Upload part 1 request Authorization header is invalid");
+                uploadPartRequest.respond(200, {ETag: "etag1"}, null);
+
+                // upload part 2 request
+                assert.equal(fileTestHelper.getRequests().length, 2);
+                assert.equal(uploadPartRequest.method, "PUT");
+                assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
+                assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
+                assert.equal(uploadPartRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "Upload part 2 request Authorization header is invalid");
+                uploadPartRequest.respond(200, {ETag: "etag2"}, null);
+
+                // multipart complete request
+                assert.equal(fileTestHelper.getRequests().length, 3);
+                multipartCompleteRequest = fileTestHelper.getRequests()[2];
+                assert.equal(multipartCompleteRequest.method, "POST");
+                assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploadId=123");
+                assert.ok(multipartCompleteRequest.requestHeaders["x-amz-date"]);
+                assert.equal(multipartCompleteRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "MP complete request Authorization header is invalid");
+                assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2</ETag></Part></CompleteMultipartUpload>");
+                multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
+
+                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+            });
+        });
+
+        it("handles failures at every step of a chunked upload", function(done) {
+            assert.expect(33, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request: typicalRequestOption,
+                    chunking: typicalChunkingOption,
+                    credentials: typicalCredentialsOption
+                }
+            );
+
+            startTypicalTest(uploader, function(uploadPartRequest) {
+                var initiateRequest,
+                    multipartCompleteRequest;
+
+                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+
+                // failing initiate multipart upload request
+                assert.equal(fileTestHelper.getRequests().length, 2);
+                initiateRequest = fileTestHelper.getRequests()[1];
+                assert.equal(initiateRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploads");
+                initiateRequest.respond(200, null, "");
+
+                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                assert.equal(fileTestHelper.getRequests().length, 2);
+                uploader.retry(0);
+                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+
+                // successful initiate multipart upload request
+                assert.equal(fileTestHelper.getRequests().length, 4);
+                initiateRequest = fileTestHelper.getRequests()[3];
+                assert.equal(initiateRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploads");
+                initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
+
+                // failing upload part 1 request
+                assert.equal(fileTestHelper.getRequests().length, 4);
+                uploadPartRequest = fileTestHelper.getRequests()[2];
+                assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
+                uploadPartRequest.respond(404, {ETag: "etag1"}, null);
+
+                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                assert.equal(fileTestHelper.getRequests().length, 4);
+                uploader.retry(0);
+                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+
+                // successful upload part 1 request
+                assert.equal(fileTestHelper.getRequests().length, 5);
+                uploadPartRequest = fileTestHelper.getRequests()[4];
+                assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
+                uploadPartRequest.respond(200, {ETag: "etag1_a"}, null);
+
+                // failing upload part 2 request
+                assert.equal(fileTestHelper.getRequests().length, 5);
+                assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
+                uploadPartRequest.respond(404, {ETag: "etag2"}, null);
+
+                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                assert.equal(fileTestHelper.getRequests().length, 5);
+                uploader.retry(0);
+                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+
+                // successful upload part 2 request
+                assert.equal(fileTestHelper.getRequests().length, 6);
+                uploadPartRequest = fileTestHelper.getRequests()[5];
+                assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
+                uploadPartRequest.respond(200, {ETag: "etag2_a"}, null);
+
+                // failing multipart complete request
+                assert.equal(fileTestHelper.getRequests().length, 7);
+                multipartCompleteRequest = fileTestHelper.getRequests()[6];
+                assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploadId=123");
+                assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1_a</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2_a</ETag></Part></CompleteMultipartUpload>");
+                multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
+
+                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                assert.equal(fileTestHelper.getRequests().length, 7);
+                uploader.retry(0);
+                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+
+                // successful multipart complete request
+                assert.equal(fileTestHelper.getRequests().length, 9);
+                multipartCompleteRequest = fileTestHelper.getRequests()[8];
                 assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploadId=123");
                 assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1_a</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2_a</ETag></Part></CompleteMultipartUpload>");
                 multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
