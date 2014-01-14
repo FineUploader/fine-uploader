@@ -198,14 +198,32 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("handles failures at every step of a chunked upload", function(done) {
-            assert.expect(78, done);
+            assert.expect(99, done);
 
             var uploader = new qq.s3.FineUploaderBasic({
                     request: typicalRequestOption,
                     signature: typicalSignatureOption,
-                    chunking: typicalChunkingOption
+                    chunking: typicalChunkingOption,
+                    callbacks: {
+                        onComplete: function(id, name, response) {
+                            onCompleteCallbacks++;
+
+                            if (onCompleteCallbacks < 9) {
+                                assert.ok(!response.success);
+                            }
+                            else {
+                                assert.ok(response.success);
+                            }
+                        },
+                        onManualRetry: function(id, name) {
+                            //expected to be called once for each retry
+                            assert.equal(id, 0);
+                            assert.equal(name, uploader.getName(0));
+                        }
+                    }
                 }
-            );
+            ),
+                onCompleteCallbacks = 0;
 
             startTypicalTest(uploader, function(initiateSignatureRequest, initiateToSign, uploadPartRequest) {
                 var initiateRequest,
