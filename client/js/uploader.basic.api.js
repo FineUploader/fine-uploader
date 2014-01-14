@@ -1355,11 +1355,14 @@
             self = this;
 
             safeCallback = function(name, callback, args) {
+                var errorMsg;
+
                 try {
                     return callback.apply(self, args);
                 }
                 catch (exception) {
-                    self.log("Caught exception in '" + name + "' callback - " + exception.message, "error");
+                    errorMsg = exception.message || exception.toString();
+                    self.log("Caught exception in '" + name + "' callback - " + errorMsg, "error");
                 }
             };
 
