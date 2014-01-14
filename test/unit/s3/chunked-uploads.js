@@ -154,7 +154,6 @@ if (qqtest.canDownloadFileAsBlob) {
             assert.expect(78, done);
 
             var uploader = new qq.s3.FineUploaderBasic({
-                    debug: true,
                     request: typicalRequestOption,
                     signature: typicalSignatureOption,
                     chunking: typicalChunkingOption
