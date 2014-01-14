@@ -41,12 +41,58 @@ if (qqtest.canDownloadFileAsBlob) {
         };
 
         it("handles a basic chunked upload", function(done) {
-            assert.expect(57, done);
+            assert.expect(87, done);
 
-            var uploader = new qq.s3.FineUploaderBasic({
+            var uploadChunkCalled = false,
+                uploadChunkSuccessCalled = false,
+                verifyChunkData = function(onUploadChunkSuccess, chunkData) {
+                    if (onUploadChunkSuccess && uploadChunkSuccessCalled || !onUploadChunkSuccess && uploadChunkCalled) {
+                        assert.equal(chunkData.partIndex, 1);
+                        assert.equal(chunkData.startByte, chunkSize + 1);
+                        assert.equal(chunkData.endByte,  expectedFileSize);
+                        assert.equal(chunkData.totalParts, 2);
+                    }
+                    else {
+                        if (onUploadChunkSuccess) {
+                            uploadChunkSuccessCalled = true;
+                        }
+                        else {
+                            uploadChunkCalled = true;
+                        }
+
+                        assert.equal(chunkData.partIndex, 0);
+                        assert.equal(chunkData.startByte, 1);
+                        assert.equal(chunkData.endByte,  chunkSize);
+                        assert.equal(chunkData.totalParts, 2);
+                    }
+                },
+                uploader = new qq.s3.FineUploaderBasic({
                     request: typicalRequestOption,
                     signature: typicalSignatureOption,
-                    chunking: typicalChunkingOption
+                    chunking: typicalChunkingOption,
+                    callbacks: {
+                        onComplete: function(id, name, response, xhr) {
+                            assert.equal(id, 0, "Wrong ID passed to onComplete");
+                            assert.equal(name, uploader.getName(0), "Wrong name passed to onComplete");
+                            assert.ok(response, "Null response passed to onComplete");
+                            assert.ok(xhr, "Null XHR passed to onComplete");
+                        },
+                        onUploadChunk: function(id, name, chunkData) {
+                            //should be called twice each (1 for each chunk)
+                            assert.equal(id, 0, "Wrong ID passed to onUploadChunk");
+                            assert.equal(name, uploader.getName(0), "Wrong name passed to onUploadChunk");
+
+                            verifyChunkData(false, chunkData);
+                        },
+                        onUploadChunkSuccess: function(id, chunkData, response, xhr) {
+                            //should be called twice each (1 for each chunk)
+                            assert.equal(id, 0, "Wrong ID passed to onUploadChunkSuccess");
+                            assert.ok(response, "Null response paassed to onUploadChunkSuccess");
+                            assert.ok(xhr, "Null XHR paassed to onUploadChunkSuccess");
+
+                            verifyChunkData(true, chunkData);
+                        }
+                    }
                 }
             );
 
