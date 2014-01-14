@@ -87,6 +87,7 @@ module.exports =
         fuEditFilenameModule: false
         fuImagePreviewModule: false
         fuImageValidationModule: false
+        fuSessionModule: false
         fuSrcJquery: false
         fuSrcS3Jquery: false
         cryptoJs: false
