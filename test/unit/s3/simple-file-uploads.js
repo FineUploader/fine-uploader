@@ -139,6 +139,77 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+        it("respects the objectProperties.key option w/ a custom key generation function that returns a promise", function(done) {
+            assert.expect(5, done);
+
+            var customKeyPrefix = "testcustomkey_",
+                uploader = new qq.s3.FineUploaderBasic({
+                    request:typicalRequestOption,
+                    signature: typicalSignatureOption,
+                    objectProperties: {
+                        key: function(id) {
+                            return new qq.Promise().success(customKeyPrefix + this.getName(id));
+                        }
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var uploadRequestParams;
+
+                assert.equal(conditions.key, customKeyPrefix + "test.jpg");
+                assert.equal(uploader.getKey(0), customKeyPrefix + "test.jpg");
+                assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                uploadRequestParams = uploadRequest.requestBody.fields;
+                assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
+            });
+        });
+
+
+        it("respects the objectProperties.key option w/ a custom key generation function that returns a failed promise (no reason)", function(done) {
+            assert.expect(1, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request:typicalRequestOption,
+                    signature: typicalSignatureOption,
+                    objectProperties: {
+                        key: function(id) {
+                            return new qq.Promise().failure();
+                        }
+                    }
+                }
+            );
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                uploader.addBlobs({name: "test.jpg", blob: blob});
+
+                assert.equal(fileTestHelper.getRequests().length, 0, "Wrong # of requests");
+            });
+        });
+
+        it("respects the objectProperties.key option w/ a custom key generation function that returns a failed promise (w/ reason)", function(done) {
+            assert.expect(1, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request:typicalRequestOption,
+                    signature: typicalSignatureOption,
+                    objectProperties: {
+                        key: function(id) {
+                            return new qq.Promise().failure("oops");
+                        }
+                    }
+                }
+            );
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                uploader.addBlobs({name: "test.jpg", blob: blob});
+
+                assert.equal(fileTestHelper.getRequests().length, 0, "Wrong # of requests");
+            });
+        });
+
         it("respects the objectProperties.acl option w/ a custom value of 'public-read'", function(done) {
             assert.expect(3, done);
 

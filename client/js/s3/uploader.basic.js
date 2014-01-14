@@ -290,11 +290,12 @@
          * @private
          */
         _handleKeynameFunction: function(keynameFunc, id, successCallback, failureCallback) {
-            var onSuccess = function(keyname) {
+            var self = this,
+                onSuccess = function(keyname) {
                     successCallback(keyname);
                 },
-                onFailure = function() {
-                    this.log("Failed to retrieve key name for " + id, "error");
+                onFailure = function(reason) {
+                    self.log(qq.format("Failed to retrieve key name for {}.  Reason: {}", id, reason || "null"), "error");
                     failureCallback();
                 },
                 keyname = keynameFunc.call(this, id);
