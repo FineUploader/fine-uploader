@@ -80,24 +80,17 @@ var helpme = (function () {
         setupFileTests: function() {
             var testUploadEndpoint = "/test/upload",
                 xhr,
-                oldWrapCallbacks,
                 requests;
 
             beforeEach(function() {
                 mockFormData();
 
                 requests = [];
-                oldWrapCallbacks = qq.FineUploaderBasic.prototype._wrapCallbacks;
-
-                // "Turn off" wrapping of callbacks that squelches errors.  We need AssertionErrors in callbacks to bubble.
-                qq.FineUploaderBasic.prototype._wrapCallbacks = function() {};
             });
 
             afterEach(function() {
                 unmockXhr();
                 unmockFormData();
-
-                qq.FineUploaderBasic.prototype._wrapCallbacks = oldWrapCallbacks;
             });
 
             function mockXhr() {
