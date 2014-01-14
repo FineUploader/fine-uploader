@@ -734,10 +734,8 @@ module.exports = (grunt) ->
                 taskList.push('tests:local')
             else do ->
                 if (test_type?)
-                    setDefaultOption('singleRun', false)
+                    setDefaultOption('singleRun', true)
                     setDefaultOption('autoWatch', true)
-                    #grunt.option('singleRun') || false
-                    #grunt.option('autoWatch') || true
                     if (',' in test_type)
                         tests = test_type.split(',')
                         grunt.option('browsers', tests)
