@@ -89,6 +89,7 @@ module.exports =
         fuImageValidationModule: false
         fuSrcJquery: false
         fuSrcS3Jquery: false
+        cryptoJs: false
         fuSrcJqueryDnd: false
 
     if _.isArray formulae
