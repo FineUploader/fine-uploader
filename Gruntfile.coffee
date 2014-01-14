@@ -673,28 +673,36 @@ module.exports = (grunt) ->
     #   % grunt test:PhantomJS --no-single-run
     #   % grunt test:Firefox,Chrome,Opera,Safari
     #   % grunt test:ie
-    #   % grunt test:Firefox,Chrome,Opera,Safari --auto-watch --no-single-run
+    #   % grunt test:Firefox,Chrome,Opera,Safari --autoWatch=true --singleRun=true
     #   etc...
         taskList = ['build', 'copy:test']
 
+        setDefaultOption = (name, def) ->
+            if not grunt.option(name)?
+                grunt.option(name, def)
+
         switch test_type
             when "travis" then do ->
-                grunt.option('singleRun', true)
-                grunt.option('autoWatch', true)
+                setDefaultOption('singleRun', true)
+                setDefaultOption('autoWatch', true)
                 taskList.push('tests:travis')
             when "server" then do ->
-                grunt.option('singleRun', false)
-                grunt.option('autoWatch', true)
+                setDefaultOption('singleRun', false)
+                setDefaultOption('autoWatch', true)
                 grunt.option('browsers', [])
                 taskList.push('tests:local')
             when "headless" then do ->
-                grunt.option('autoWatch', true)
-                grunt.option('singleRun', true)
+                setDefaultOption('singleRun', true)
+                setDefaultOption('autoWatch', true)
+                #grunt.option('autoWatch') || true
+                #grunt.option('singleRun') || true
                 grunt.option('browsers', ['PhantomJS'])
                 taskList.push('tests:local')
             when "ie" then do ->
-                grunt.option('autoWatch', true)
-                grunt.option('singleRun', true)
+                setDefaultOption('singleRun', true)
+                setDefaultOption('autoWatch', true)
+                #grunt.option('autoWatch') || true
+                #grunt.option('singleRun') || true
                 taskList.push('tests:local')
                 grunt.option('browsers', [
                     'IE7 - WinXP',
@@ -704,13 +712,13 @@ module.exports = (grunt) ->
                     'IE11 - Win7'
                 ])
             when "ios" then do ->
-                grunt.option('autoWatch', true)
-                grunt.option('singleRun', true)
+                setDefaultOption('singleRun', true)
+                setDefaultOption('autoWatch', true)
                 grunt.option('browsers', ['iOS'])
                 taskList.push('tests:local')
             when "all" then do ->
-                grunt.option('autoWatch', true)
-                grunt.option('singleRun', true)
+                setDefaultOption('singleRun', true)
+                setDefaultOption('autoWatch', true)
                 grunt.option('browsers', [
                     'PhantomJS',
                     'Firefox',
@@ -726,15 +734,17 @@ module.exports = (grunt) ->
                 taskList.push('tests:local')
             else do ->
                 if (test_type?)
-                    grunt.option('singleRun', false)
-                    grunt.option('autoWatch', true)
+                    setDefaultOption('singleRun', false)
+                    setDefaultOption('autoWatch', true)
+                    #grunt.option('singleRun') || false
+                    #grunt.option('autoWatch') || true
                     if (',' in test_type)
                         tests = test_type.split(',')
                         grunt.option('browsers', tests)
                     else
                         grunt.option('browsers', [test_type])
                 else
-                    grunt.option('browsers', ['Chrome'])
+                    grunt.option('browsers') || ['Chrome']
                 taskList.push('tests:local')
 
         grunt.task.run(taskList)
