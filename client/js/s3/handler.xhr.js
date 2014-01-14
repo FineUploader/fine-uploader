@@ -286,6 +286,8 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
                     setKey(id, key);
                     onUpload(id, name);
                     handleUpload(id);
+                }, function(errorReason) {
+                    uploadCompleted(id, {error: errorReason});
                 });
             }
         }

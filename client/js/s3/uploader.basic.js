@@ -296,7 +296,7 @@
                 },
                 onFailure = function(reason) {
                     self.log(qq.format("Failed to retrieve key name for {}.  Reason: {}", id, reason || "null"), "error");
-                    failureCallback();
+                    failureCallback(reason);
                 },
                 keyname = keynameFunc.call(this, id);
 

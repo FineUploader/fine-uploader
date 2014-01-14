@@ -190,7 +190,7 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("respects the objectProperties.key option w/ a custom key generation function that returns a failed promise (w/ reason)", function(done) {
-            assert.expect(1, done);
+            assert.expect(3, done);
 
             var uploader = new qq.s3.FineUploaderBasic({
                     request:typicalRequestOption,
@@ -198,6 +198,12 @@ if (qqtest.canDownloadFileAsBlob) {
                     objectProperties: {
                         key: function(id) {
                             return new qq.Promise().failure("oops");
+                        }
+                    },
+                    callbacks: {
+                        onComplete: function(id, name, response, xhr) {
+                            assert.equal(response.error, "oops");
+                            assert.ok(!response.success);
                         }
                     }
                 }

@@ -171,7 +171,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
     function handleFinishedUpload(id, iframe, fileName, response) {
         internalApi.detachLoadEvent(id);
 
-        qq(iframe).remove();
+        iframe && qq(iframe).remove();
 
         if (!response.success) {
             if (options.onAutoRetry(id, fileName, response)) {
@@ -205,6 +205,8 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
                     onGetKeyName(id, name).then(function(key) {
                         fileState[id].key = key;
                         handleUpload(id);
+                    }, function(errorReason) {
+                        handleFinishedUpload(id, null, name, {error: errorReason});
                     });
                 }
             }
