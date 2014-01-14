@@ -4,3 +4,8 @@ MegaPixImage module
     Licensed under MIT (https://github.com/stomita/ios-imagefile-megapixel/blob/master/LICENSE)
     https://github.com/stomita/ios-imagefile-megapixel
     Copyright (c) 2012 Shinichi Tomita <shinichi.tomita@gmail.com>
+
+CryptoJS
+    Licensed under the New BSD License (http://opensource.org/licenses/BSD-3-Clause)
+    https://code.google.com/p/crypto-js/
+    Copyright (c) 2009-2013 Jeff Mott <Jeff.Mott.OR@gmail.com>
