@@ -432,7 +432,13 @@ A `BlobData` object:
         "type": "Integer",
         "description": "The id of a file."
     }
-], null) }}
+],
+[
+    {
+        "type": "HTMLElement",
+        "description": "The drop zone element where the file as dropped."
+    }
+]) }}
 
 {{ api_method("getId", "getId (element)", "Returns the `HTMLElement` associated with the file id.",
 [
@@ -456,7 +462,13 @@ A `BlobData` object:
         "type": "Integer",
         "description": "The file id."
     }
-], null) }}
+],
+[
+    {
+        "type": "HTMLElement",
+        "description": "The `HTMLElement` that is associated with the file id."
+    }
+]) }}
 
 {{ api_method("removeExtraDropzone", "removeExtraDropzone (element)", "Uesd to un-mark an `element` as a drop zone.",
 [
