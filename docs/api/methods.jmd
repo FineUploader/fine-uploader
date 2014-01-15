@@ -440,7 +440,7 @@ A `BlobData` object:
     }
 ]) }}
 
-{{ api_method("getId", "getId (element)", "Returns the `HTMLElement` associated with the file id.",
+{{ api_method("getId", "getId (element)", "Returns the file `id` associated with an `HTMLElement`.",
 [
     {
         "name": "element",
