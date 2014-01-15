@@ -425,7 +425,7 @@ A `BlobData` object:
     }
 ], null) }}
 
-{{ api_method("getDropTarget", "getDropTarget (id)", "Returns the (drop zone) element where the file was dropped. Undefined if not drop event was involved.",
+{{ api_method("getDropTarget", "getDropTarget (id)", "Returns the (drop zone) element where the file was dropped. Undefined if drop event was not involved.",
 [
     {
         "name": "id",
