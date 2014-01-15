@@ -274,12 +274,12 @@
                 {% set method_type = method.split("-")[1] %}
                 {% set method = method.split("-")[0] %}
                     {% if method_type == "ui" %}
-                    <li><a href="../api/methods-ui.html#{{method}}">{{method}} (UI)</a></li>
+                    <li><a href="../api/methods.html#{{method}}">{{method}} (UI)</a></li>
                     {% elif method_type == "s3" %}
                     <li><a href="../api/methods-s3.html#{{method}}">{{method}} (S3)</a></li>
                     {% endif %}
             {% else %}
-                <li><a href="../api/methods.html#{{method}}">{{method}}</a></li>
+                    <li><a href="../api/methods.html#{{method}}">{{method}}</a></li>
             {% endif %}
         {% endfor %}
                 </ul>
