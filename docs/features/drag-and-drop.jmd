@@ -1,7 +1,7 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Drag and Drop" %}
 {% block sidebar %}
-{{ api_links(options=['dragAndDrop-ui',], methods=['addExtraDropzone', 'removeExtraDropzone']) }}
+{{ api_links(options=['dragAndDrop-ui',], methods=['addExtraDropzone', 'removeExtraDropzone', 'getDropTarget-ui']) }}
 {% endblock %}
 {% block content %}
 {% markdown %}
