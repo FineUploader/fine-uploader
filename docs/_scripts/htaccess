@@ -49,7 +49,7 @@ RewriteRule ^hook.php$ hook.php [L]
 #####
 
 # set master branch as root 
-RewriteRule ^(?!branch/)(.*)$ branch/master/$1 [PT,L]
+RewriteRule ^(?!branch|tag\/)(.*)$ branch/master/$1 [PT,L]
 
 # Update: Fri Aug 16 10:11:15 CDT 2013
 # By: Mark Feltner
