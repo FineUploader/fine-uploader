@@ -6,7 +6,7 @@ Version: 4.3.0-1 (In Progress)
 
 [**Download**](http://fineuploader.com/downloads.html) |
 [**Documentation**](http://docs.fineuploader.com) |
-[**Examples**](http://fineuploader.com) |
+[**Examples**](http://fineuploader.com/demos) |
 [**Support**](http://fineuploader.com/support.html) |
 [**Blog**](http://blog.fineuploader.com/) |
 [**Changelog**](http://blog.fineuploader.com/category/changelog/)
