@@ -21,9 +21,12 @@ qq.DragAndDrop = function(o) {
     qq.extend(options, o, true);
 
     function uploadDroppedFiles(files, uploadDropZone) {
+        // We need to convert the `FileList` to an actual `Array` to avoid iteration issues
+        var filesAsArray = Array.prototype.slice.call(files);
+
         options.callbacks.dropLog("Grabbed " + files.length + " dropped files.");
         uploadDropZone.dropDisabled(false);
-        options.callbacks.processingDroppedFilesComplete(files, uploadDropZone.getElement());
+        options.callbacks.processingDroppedFilesComplete(filesAsArray, uploadDropZone.getElement());
     }
 
     function traverseFileTree(entry) {
