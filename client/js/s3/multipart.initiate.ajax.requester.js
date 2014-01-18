@@ -19,6 +19,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             signatureSpec: null,
             acl: "private",
             reducedRedundancy: false,
+            serverSideEncryption: false,
             maxConnections: 3,
             getContentType: function(id) {},
             getKey: function(id) {},
@@ -56,6 +57,10 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
 
         if (options.reducedRedundancy) {
             headers[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME] = qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE;
+        }
+
+        if (options.serverSideEncryption) {
+            headers[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME] = qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE;
         }
 
         headers[qq.s3.util.AWS_PARAM_PREFIX + options.filenameParam] = encodeURIComponent(options.getName(id));

@@ -262,6 +262,29 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+        it("respects the objectProperties.serverSideEncryption option w/ a value of true", function(done) {
+            assert.expect(3, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request:typicalRequestOption,
+                    signature: typicalSignatureOption,
+                    objectProperties: {
+                        serverSideEncryption: true
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var uploadRequestParams;
+
+                assert.equal(conditions[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE);
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                uploadRequestParams = uploadRequest.requestBody.fields;
+                assert.equal(uploadRequestParams[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE);
+            });
+        });
+
         it("respects custom headers to be sent with signature request", function(done) {
             assert.expect(2, done);
 

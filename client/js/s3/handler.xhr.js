@@ -28,6 +28,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         endpointStore = spec.endpointStore,
         acl = spec.objectProperties.acl,
         reducedRedundancy = spec.objectProperties.reducedRedundancy,
+        serverSideEncryption = spec.objectProperties.serverSideEncryption,
         validation = spec.validation,
         signature = spec.signature,
         chunkingPossible = spec.chunking.enabled && qq.supportedFeatures.chunking,
@@ -53,6 +54,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
             signatureSpec: signature,
             acl: acl,
             reducedRedundancy: reducedRedundancy,
+            serverSideEncryption: serverSideEncryption,
             cors: spec.cors,
             log: log,
             getContentType: function(id) {
@@ -344,6 +346,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
                 minFileSize: validation.minSizeLimit,
                 maxFileSize: validation.maxSizeLimit,
                 reducedRedundancy: reducedRedundancy,
+                serverSideEncryption: serverSideEncryption,
                 log: log
             },
             qq.bind(policySignatureRequester.getSignature, this, id));

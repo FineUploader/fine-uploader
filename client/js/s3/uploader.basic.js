@@ -23,7 +23,9 @@
                 // 'uuid', 'filename', or a function which may be promissory
                 key: "uuid",
 
-                reducedRedundancy: false
+                reducedRedundancy: false,
+
+                serverSideEncryption: false
             },
 
             credentials: {

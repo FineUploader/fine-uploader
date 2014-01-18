@@ -6,9 +6,14 @@ qq.s3.util = qq.s3.util || (function() {
 
     return {
         AWS_PARAM_PREFIX: "x-amz-meta-",
+
         SESSION_TOKEN_PARAM_NAME: "x-amz-security-token",
+
         REDUCED_REDUNDANCY_PARAM_NAME: "x-amz-storage-class",
         REDUCED_REDUNDANCY_PARAM_VALUE: "REDUCED_REDUNDANCY",
+
+        SERVER_SIDE_ENCRYPTION_PARAM_NAME: "x-amz-server-side-encryption",
+        SERVER_SIDE_ENCRYPTION_PARAM_VALUE: "AES256",
 
         /**
          * This allows for the region to be specified in the bucket's endpoint URL, or not.
@@ -68,7 +73,8 @@ qq.s3.util = qq.s3.util || (function() {
                 successRedirectUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl(spec.successRedirectUrl),
                 minFileSize = spec.minFileSize,
                 maxFileSize = spec.maxFileSize,
-                reducedRedundancy = spec.reducedRedundancy;
+                reducedRedundancy = spec.reducedRedundancy,
+                serverSideEncryption = spec.serverSideEncryption;
 
             policy.expiration = qq.s3.util.getPolicyExpirationDate(expirationDate);
 
@@ -95,6 +101,11 @@ qq.s3.util = qq.s3.util || (function() {
             if (sessionToken) {
                 conditions.push({});
                 conditions[conditions.length - 1][qq.s3.util.SESSION_TOKEN_PARAM_NAME] = sessionToken;
+            }
+
+            if (serverSideEncryption) {
+                conditions.push({});
+                conditions[conditions.length - 1][qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME] = qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE;
             }
 
             conditions.push({key: key});
@@ -148,7 +159,7 @@ qq.s3.util = qq.s3.util || (function() {
          * before it is sent to the server for signing.
          *
          * @param spec Object with properties: `params`, `type`, `key`, `accessKey`, `acl`, `expectedStatus`, `successRedirectUrl`,
-         * `reducedRedundancy`, and `log()`, along with any options associated with `qq.s3.util.getPolicy()`.
+         * `reducedRedundancy`, serverSideEncryption, and `log()`, along with any options associated with `qq.s3.util.getPolicy()`.
          * @returns {qq.Promise} Promise that will be fulfilled once all parameters have been determined.
          */
         generateAwsParams: function(spec, signPolicyCallback) {
@@ -164,6 +175,7 @@ qq.s3.util = qq.s3.util || (function() {
                 expectedStatus = spec.expectedStatus,
                 successRedirectUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl(spec.successRedirectUrl),
                 reducedRedundancy = spec.reducedRedundancy,
+                serverSideEncryption = spec.serverSideEncryption,
                 log = spec.log;
 
             awsParams.key = key;
@@ -183,6 +195,10 @@ qq.s3.util = qq.s3.util || (function() {
 
             if (reducedRedundancy) {
                 awsParams[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME] = qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE;
+            }
+
+            if (serverSideEncryption) {
+                awsParams[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME] = qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE;
             }
 
             if (sessionToken) {

@@ -197,6 +197,80 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+        it("ensures set reducedRedundancy and serverSideEncryption options result in proper headers/params", function(done) {
+            assert.expect(17, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request: typicalRequestOption,
+                    signature: typicalSignatureOption,
+                    chunking: typicalChunkingOption,
+                    objectProperties: {
+                        serverSideEncryption: true,
+                        reducedRedundancy: true
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(initiateSignatureRequest, initiateToSign, uploadPartRequest) {
+                var initiateRequest,
+                    uploadPartSignatureRequest1,
+                    uploadPartSignatureRequest2,
+                    uploadPartToSign1,
+                    uploadPartToSign2,
+                    uploadCompleteSignatureRequest,
+                    uploadCompleteToSign,
+                    multipartCompleteRequest;
+
+                // signature request for initiate multipart upload
+                assert.ok(initiateToSign.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE) > 0);
+                assert.ok(initiateToSign.headers.indexOf(qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME + ":" + qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE) > 0);
+                initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+
+                // initiate multipart upload request
+                initiateRequest = fileTestHelper.getRequests()[2];
+                assert.equal(initiateRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE);
+                assert.equal(initiateRequest.requestHeaders[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME], qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE);
+                initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
+
+                // signature request for upload part 1
+                uploadPartSignatureRequest1 = fileTestHelper.getRequests()[3];
+                uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
+                assert.ok(uploadPartToSign1.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE) < 0);
+                assert.ok(uploadPartToSign1.headers.indexOf(qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME + ":" + qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE) < 0);
+                uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
+
+                // upload part 1 request
+                assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME]);
+                assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME]);
+                uploadPartRequest.respond(200, {ETag: "etag1"}, null);
+
+                // signature request for upload part 2
+                uploadPartSignatureRequest2 = fileTestHelper.getRequests()[4];
+                uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest1.requestBody);
+                assert.ok(uploadPartToSign2.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE) < 0);
+                assert.ok(uploadPartToSign2.headers.indexOf(qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME + ":" + qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE) < 0);
+                uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
+
+                // upload part 2 request
+                assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME]);
+                assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME]);
+                uploadPartRequest.respond(200, {ETag: "etag1"}, null);
+
+                // signature request for multipart complete
+                uploadCompleteSignatureRequest = fileTestHelper.getRequests()[5];
+                uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
+                assert.ok(uploadCompleteToSign.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE) < 0);
+                assert.ok(uploadCompleteToSign.headers.indexOf(qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME + ":" + qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE) < 0);
+                uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+
+                // multipart complete request
+                multipartCompleteRequest = fileTestHelper.getRequests()[6];
+                assert.ok(!multipartCompleteRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME]);
+                assert.ok(!multipartCompleteRequest.requestHeaders[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME]);
+                multipartCompleteRequest.respond(200, {ETag: "etag1"}, null);
+            });
+        });
+
         it("handles failures at every step of a chunked upload", function(done) {
             assert.expect(99, done);
 
