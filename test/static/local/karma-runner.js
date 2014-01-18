@@ -68,4 +68,7 @@ var $fixture;
         $fixture.empty();
         return $fixture.remove();
     });
+
+    // `Error.captureStackTrace` may not be supported on all UAs.  Assert.js expects it to be.
+    Error.captureStackTrace = Error.captureStackTrace || function() {};
 }());
