@@ -74,7 +74,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     function setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id) {
         var formData = new FormData(),
             method = spec.demoMode ? "GET" : "POST",
-            endpoint = spec.endpointStore.getEndpoint(id),
+            endpoint = spec.endpointStore.get(id),
             url = endpoint,
             name = getName(id),
             size = getSize(id);
@@ -176,7 +176,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
         spec.onUploadChunk(id, name, internalApi.getChunkDataForCallback(chunkData));
 
-        params = spec.paramsStore.getParams(id);
+        params = spec.paramsStore.get(id);
         addChunkingSpecificParams(id, params, chunkData);
 
         if (fileState[id].attemptingResume) {
@@ -502,7 +502,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
         xhr.onreadystatechange = getReadyStateChangeHandler(id, xhr);
 
-        params = spec.paramsStore.getParams(id);
+        params = spec.paramsStore.get(id);
         toSend = setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id);
         setHeaders(id, xhr);
 

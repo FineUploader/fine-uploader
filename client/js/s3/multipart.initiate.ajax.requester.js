@@ -47,7 +47,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
      * @returns {qq.Promise}
      */
     function getHeaders(id) {
-        var bucket = qq.s3.util.getBucket(options.endpointStore.getEndpoint(id)),
+        var bucket = qq.s3.util.getBucket(options.endpointStore.get(id)),
             headers = {},
             promise = new qq.Promise(),
             key = options.getKey(id),
@@ -65,7 +65,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
 
         headers[qq.s3.util.AWS_PARAM_PREFIX + options.filenameParam] = encodeURIComponent(options.getName(id));
 
-        qq.each(options.paramsStore.getParams(id), function(name, val) {
+        qq.each(options.paramsStore.get(id), function(name, val) {
             headers[qq.s3.util.AWS_PARAM_PREFIX + name] = encodeURIComponent(val);
         });
 

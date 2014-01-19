@@ -190,11 +190,11 @@
         this._netUploaded = 0;
         this._uploadData = this._createUploadDataTracker();
 
-        this._paramsStore = this._createParamsStore("request");
-        this._deleteFileParamsStore = this._createParamsStore("deleteFile");
+        this._paramsStore = this._createStore(this._options.request.params);
+        this._deleteFileParamsStore = this._createStore(this._options.deleteFile.params);
 
-        this._endpointStore = this._createEndpointStore("request");
-        this._deleteFileEndpointStore = this._createEndpointStore("deleteFile");
+        this._endpointStore = this._createStore(this._options.request.endpoint);
+        this._deleteFileEndpointStore = this._createStore(this._options.deleteFile.endpoint);
 
         this._handler = this._createUploadHandler();
 

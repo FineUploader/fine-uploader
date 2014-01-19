@@ -55,9 +55,9 @@ qq.UploadHandlerForm = function(options, proxy) {
      * Creates form, that will be submitted to iframe
      */
     function createForm(id, iframe){
-        var params = options.paramsStore.getParams(id),
+        var params = options.paramsStore.get(id),
             method = options.demoMode ? "GET" : "POST",
-            endpoint = options.endpointStore.getEndpoint(id),
+            endpoint = options.endpointStore.get(id),
             name = getName(id);
 
         params[options.uuidName] = getUuid(id);

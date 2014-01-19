@@ -45,7 +45,7 @@ qq.SessionAjaxRequester = function(spec) {
         validMethods: ["GET"],
         method: "GET",
         endpointStore: {
-            getEndpoint: function() {
+            get: function() {
                 return options.endpoint;
             }
         },

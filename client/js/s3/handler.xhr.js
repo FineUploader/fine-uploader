@@ -331,11 +331,11 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
      */
     function generateAwsParams(id) {
         /*jshint -W040 */
-        var customParams = paramsStore.getParams(id);
+        var customParams = paramsStore.get(id);
         customParams[filenameParam] = getName(id);
 
         return qq.s3.util.generateAwsParams({
-                endpoint: endpointStore.getEndpoint(id),
+                endpoint: endpointStore.get(id),
                 params: customParams,
                 type: fileState[id].type,
                 key: getActualKey(id),
@@ -366,7 +366,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
      */
     function prepareForSend(id, fileOrBlob) {
         var formData = new FormData(),
-            endpoint = endpointStore.getEndpoint(id),
+            endpoint = endpointStore.get(id),
             url = endpoint,
             xhr = fileState[id].xhr,
             promise = new qq.Promise();
@@ -520,7 +520,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         var name = getName(id),
             size = getSize(id),
             chunkSize = spec.chunking.partSize,
-            endpoint = spec.endpointStore.getEndpoint(id),
+            endpoint = spec.endpointStore.get(id),
             bucket = qq.s3.util.getBucket(endpoint);
 
         return qq.format("qqs3resume-{}-{}-{}-{}", name, size, chunkSize, bucket);
@@ -615,7 +615,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
             xhr = fileState[id].xhr,
             totalFileSize = getSize(id),
             chunkData = internalApi.getChunkData(id, idx),
-            domain = spec.endpointStore.getEndpoint(id);
+            domain = spec.endpointStore.get(id);
 
         // Add appropriate headers to the multipart upload request.
         // Once these have been determined (asynchronously) attach the headers and send the chunk.
@@ -659,7 +659,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
      */
     function addChunkedHeaders(id) {
         var headers = {},
-            endpoint = spec.endpointStore.getEndpoint(id),
+            endpoint = spec.endpointStore.get(id),
             bucket = qq.s3.util.getBucket(endpoint),
             key = getUrlSafeKey(id),
             promise = new qq.Promise(),

@@ -17,34 +17,16 @@
         },
 
         setParams: function(params, id) {
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (id == null) {
-                this._options.request.params = params;
-            }
-            else {
-                this._paramsStore.setParams(params, id);
-            }
+            this._paramsStore.set(params, id);
         },
 
         setDeleteFileParams: function(params, id) {
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (id == null) {
-                this._options.deleteFile.params = params;
-            }
-            else {
-                this._deleteFileParamsStore.setParams(params, id);
-            }
+            this._deleteFileParamsStore.set(params, id);
         },
 
         // Re-sets the default endpoint, an endpoint for a specific file, or an endpoint for a specific button
         setEndpoint: function(endpoint, id) {
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (id == null) {
-                this._options.request.endpoint = endpoint;
-            }
-            else {
-                this._endpointStore.setEndpoint(endpoint, id);
-            }
+            this._endpointStore.set(endpoint, id);
         },
 
         getInProgress: function() {
@@ -221,13 +203,7 @@
         },
 
         setDeleteFileEndpoint: function(endpoint, id) {
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (id == null) {
-                this._options.deleteFile.endpoint = endpoint;
-            }
-            else {
-                this._deleteFileEndpointStore.setEndpoint(endpoint, id);
-            }
+            this._deleteFileEndpointStore.set(endpoint, id);
         },
 
         doesExist: function(fileOrBlobId) {
@@ -1439,65 +1415,43 @@
             return fileDescriptors;
         },
 
-        _createParamsStore: function(type) {
-            var paramsStore = {},
-                self = this;
+        _createStore: function(initialValue) {
+            var store = {},
+                catchall = initialValue,
+                copy = function(orig) {
+                    if (qq.isObject(orig)) {
+                        return qq.extend({}, orig);
+                    }
+                    return orig;
+                };
 
             return {
-                setParams: function(params, id) {
-                    var paramsCopy = {};
-                    qq.extend(paramsCopy, params);
-                    paramsStore[id] = paramsCopy;
-                },
-
-                getParams: function(id) {
+                set: function(val, id) {
                     /*jshint eqeqeq: true, eqnull: true*/
-                    var paramsCopy = {};
-
-                    if (id != null && paramsStore[id]) {
-                        qq.extend(paramsCopy, paramsStore[id]);
+                    if (id == null) {
+                        store = {};
+                        catchall = copy(val);
                     }
                     else {
-                        qq.extend(paramsCopy, self._options[type].params);
+                        store[id] = copy(val);
                     }
-
-                    return paramsCopy;
                 },
 
-                remove: function(fileId) {
-                    return delete paramsStore[fileId];
-                },
-
-                reset: function() {
-                    paramsStore = {};
-                }
-            };
-        },
-
-        _createEndpointStore: function(type) {
-            var endpointStore = {},
-            self = this;
-
-            return {
-                setEndpoint: function(endpoint, id) {
-                    endpointStore[id] = endpoint;
-                },
-
-                getEndpoint: function(id) {
+                get: function(id) {
                     /*jshint eqeqeq: true, eqnull: true*/
-                    if (id != null && endpointStore[id]) {
-                        return endpointStore[id];
+                    if (id != null && store[id]) {
+                        return copy(store[id]);
                     }
-
-                    return self._options[type].endpoint;
+                    return copy(catchall);
                 },
 
                 remove: function(fileId) {
-                    return delete endpointStore[fileId];
+                    return delete store[fileId];
                 },
 
                 reset: function() {
-                    endpointStore = {};
+                    store = {};
+                    catchall = initialValue;
                 }
             };
         },

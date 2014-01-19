@@ -52,7 +52,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
      */
     function isValidResponse(id, iframe) {
         var response,
-            endpoint = options.endpointStore.getEndpoint(id),
+            endpoint = options.endpointStore.get(id),
             bucket = qq.s3.util.getBucket(endpoint);
 
 
@@ -81,12 +81,12 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
 
     function generateAwsParams(id) {
         /*jshint -W040 */
-        var customParams = paramsStore.getParams(id);
+        var customParams = paramsStore.get(id);
 
         customParams[filenameParam] = getName(id);
 
         return qq.s3.util.generateAwsParams({
-                endpoint: endpointStore.getEndpoint(id),
+                endpoint: endpointStore.get(id),
                 params: customParams,
                 key: fileState[id].key,
                 accessKey: credentialsProvider.get().accessKey,
@@ -108,7 +108,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
     function createForm(id, iframe) {
         var promise = new qq.Promise(),
             method = options.demoMode ? "GET" : "POST",
-            endpoint = options.endpointStore.getEndpoint(id),
+            endpoint = options.endpointStore.get(id),
             fileName = getName(id);
 
         generateAwsParams(id).then(function(params) {

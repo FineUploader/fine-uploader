@@ -136,8 +136,8 @@ qq.AjaxRequester = function (o) {
             mandatedParams = options.mandatedParams,
             params;
 
-        if (options.paramsStore.getParams) {
-            params = options.paramsStore.getParams(id);
+        if (options.paramsStore.get) {
+            params = options.paramsStore.get(id);
         }
 
         if (onDemandParams) {
@@ -208,7 +208,7 @@ qq.AjaxRequester = function (o) {
     }
 
     function createUrl(id, params) {
-        var endpoint = options.endpointStore.getEndpoint(id),
+        var endpoint = options.endpointStore.get(id),
             addToPath = requestData[id].addToPath;
 
         /*jshint -W116,-W041 */

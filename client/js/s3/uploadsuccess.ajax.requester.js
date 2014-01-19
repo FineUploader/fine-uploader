@@ -70,7 +70,7 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
     requester = new qq.AjaxRequester({
         method: options.method,
         endpointStore: {
-            getEndpoint: function() {
+            get: function() {
                 return options.endpoint;
             }
         },

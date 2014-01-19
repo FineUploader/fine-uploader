@@ -88,7 +88,7 @@
         // Call base module
         qq.FineUploaderBasic.call(this, options);
 
-        this._uploadSuccessParamsStore = this._createParamsStore("uploadSuccess");
+        this._uploadSuccessParamsStore = this._createStore(this._options.uploadSuccess.params);
 
         // This will hold callbacks for failed uploadSuccess requests that will be invoked on retry.
         // Indexed by file ID.
@@ -126,13 +126,7 @@
         },
 
         setUploadSuccessParams: function(params, id) {
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (id == null) {
-                this._options.uploadSuccess.params = params;
-            }
-            else {
-                this._uploadSuccessParamsStore.setParams(params, id);
-            }
+            this._uploadSuccessParamsStore.set(params, id);
         },
 
         setCredentials: function(credentials, ignoreEmpty) {
@@ -162,6 +156,10 @@
             }
         },
 
+        setAcl: function(acl, id) {
+
+        },
+
         /**
          * Ensures the parent's upload handler creator passes any additional S3-specific options to the handler as well
          * as information required to instantiate the specific handler based on the current browser's capabilities.
@@ -186,8 +184,8 @@
             // We assume HTTP if it is missing from the start of the endpoint string.
             qq.override(this._endpointStore, function(super_) {
                 return {
-                    getEndpoint: function(id) {
-                        var endpoint = super_.getEndpoint(id);
+                    get: function(id) {
+                        var endpoint = super_.get(id);
 
                         if (endpoint.indexOf("http") < 0) {
                             return "http://" + endpoint;
@@ -337,9 +335,9 @@
                 successCustomHeaders = this._options.uploadSuccess.customHeaders,
                 cors = this._options.cors,
                 uuid = this.getUuid(id),
-                bucket = qq.s3.util.getBucket(this._endpointStore.getEndpoint(id)),
+                bucket = qq.s3.util.getBucket(this._endpointStore.get(id)),
                 promise = new qq.Promise(),
-                uploadSuccessParams = this._uploadSuccessParamsStore.getParams(id),
+                uploadSuccessParams = this._uploadSuccessParamsStore.get(id),
 
                 // If we are waiting for confirmation from the local server, and have received it,
                 // include properties from the local server response in the `response` parameter
@@ -421,7 +419,7 @@
         _onSubmitDelete: function(id, onSuccessCallback) {
             var additionalMandatedParams = {
                 key: this.getKey(id),
-                bucket: qq.s3.util.getBucket(this._endpointStore.getEndpoint(id))
+                bucket: qq.s3.util.getBucket(this._endpointStore.get(id))
             };
 
             qq.FineUploaderBasic.prototype._onSubmitDelete.call(this, id, onSuccessCallback, additionalMandatedParams);

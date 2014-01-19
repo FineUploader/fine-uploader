@@ -180,7 +180,7 @@ qq.s3.RequestSigner = function(o) {
         method: options.method,
         contentType: "application/json; charset=utf-8",
         endpointStore: {
-            getEndpoint: function() {
+            get: function() {
                 return options.signatureSpec.endpoint;
             }
         },
