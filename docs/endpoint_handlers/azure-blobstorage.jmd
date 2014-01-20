@@ -1,0 +1,9 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Azure Endpoint" %}
+{% block content %}
+{% markdown %}
+# Azure Server-Side Notes & Requirements {: .page-header }
+
+{% endmarkdown %}
+{% endblock %}
+

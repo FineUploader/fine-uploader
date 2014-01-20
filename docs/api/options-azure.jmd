@@ -1,0 +1,49 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Azure Options" %}
+
+{% block sidebar %}
+<div id="sidebar-accordion" class="accordion">
+</div>
+{% endblock %}
+
+{% block js_head %}
+<script src="{{ ASSETS }}/js/main.js"></script>
+{% endblock %}
+
+{% block js_footer %}
+<script>
+$(document).ready(function() {
+    console.log('herro')
+    renderOptionsSidebarNav(['azure-core', 'azure-ui']);
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="all-options">
+<div class="options-azure-core">
+{% markdown %}
+# Options <small>Azure</small> {: .page-header }
+
+If you are using the Azure uploader, all of Fine Uploader's options are still
+present, and most of them still function the same way. However, some of the
+options are slightly different. This page will list any new or different options
+for the Azure uploader. Any option not listed here can be assumed to have the same
+behavior for the Traditional or Azure uploader.
+
+## Core
+
+{% endmarkdown %}
+
+</div>
+
+
+<div class="options-azure-ui">
+{% markdown %}
+## UI
+{% endmarkdown %}
+
+</div>
+</div>
+
+{% endblock %}
