@@ -7,7 +7,7 @@
  * @param spec Options passed from the base handler
  * @param proxy Callbacks & methods used to query for or push out data/changes
  */
-qq.s3.UploadHandlerXhr = function(spec, proxy) {
+qq.azure.UploadHandlerXhr = function(spec, proxy) {
     "use strict";
 
 };
