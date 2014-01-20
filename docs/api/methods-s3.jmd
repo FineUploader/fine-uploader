@@ -62,6 +62,20 @@ in Fine Uploader S3, unless otherwise noted here.
     }
 ]) }}
 
+{{ api_method("setAcl", "setAcl (newAcl[, id])", "Set/update the ACL to be used for one or all file uploads.  If the ID is omitted, the new ACL targets all future files that have not yet been uploaded.",
+[
+    {
+        "name": "newAcl",
+        "type": "String",
+        "description": "Canned ACL value to be sent with the upload request.  Used by S3."
+    },
+    {
+        "name": "id",
+        "type": "Integer",
+        "description": "File ID to target the ACL."
+    }
+])}}
+
 {{ api_method("setCredentials", "setCredentials (newCredentials)", "Pass new or initial credentials.  This is used to support the no-server workflow.",
 [
     {

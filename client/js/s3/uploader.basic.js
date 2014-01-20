@@ -85,6 +85,8 @@
             this._currentCredentials.accessKey = options.request.accessKey;
         }
 
+        this._aclStore = this._createStore(options.objectProperties.acl);
+
         // Call base module
         qq.FineUploaderBasic.call(this, options);
 
@@ -157,7 +159,7 @@
         },
 
         setAcl: function(acl, id) {
-
+            this._aclStore.set(acl, id);
         },
 
         /**
@@ -171,6 +173,7 @@
             var self = this,
                 additionalOptions = {
                     objectProperties: this._options.objectProperties,
+                    aclStore: this._aclStore,
                     signature: this._options.signature,
                     iframeSupport: this._options.iframeSupport,
                     getKeyName: qq.bind(this._determineKeyName, this),

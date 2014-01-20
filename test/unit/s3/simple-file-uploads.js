@@ -216,7 +216,7 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
-        it("respects the objectProperties.acl option w/ a custom value of 'public-read'", function(done) {
+        it("respects the objectProperties.acl option w/ a custom value set via option", function(done) {
             assert.expect(3, done);
 
             var uploader = new qq.s3.FineUploaderBasic({
@@ -236,6 +236,31 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploadRequestParams = uploadRequest.requestBody.fields;
                 assert.equal(uploadRequestParams.acl, "public-read");
+            });
+        });
+
+        it("respects the objectProperties.acl option w/ a custom value set via API", function(done) {
+            assert.expect(3, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request:typicalRequestOption,
+                    signature: typicalSignatureOption,
+                    objectProperties: {
+                        acl: "public-read"
+                    }
+                }
+            );
+
+            uploader.setAcl("test-acl", 0);
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var uploadRequestParams;
+
+                assert.equal(conditions.acl, "test-acl");
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                uploadRequestParams = uploadRequest.requestBody.fields;
+                assert.equal(uploadRequestParams.acl, "test-acl");
             });
         });
 

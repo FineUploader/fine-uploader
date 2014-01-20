@@ -17,7 +17,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             endpointStore: null,
             paramsStore: null,
             signatureSpec: null,
-            acl: "private",
+            aclStore: null,
             reducedRedundancy: false,
             serverSideEncryption: false,
             maxConnections: 3,
@@ -53,7 +53,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             key = options.getKey(id),
             signatureConstructor;
 
-        headers["x-amz-acl"] = options.acl;
+        headers["x-amz-acl"] = options.aclStore.get(id);
 
         if (options.reducedRedundancy) {
             headers[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME] = qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE;
