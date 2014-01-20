@@ -29,7 +29,7 @@ If you are using the S3 uploader, all of Fine Uploader's options are still
 present, and most of them still function the same way. However, some of the
 options are slightly different. This page will list any new or different options
 for the S3 uploader. Any option not listed here can be assumed to have the same
-behavior for the Traditonal or S3 uploader.
+behavior for the Traditional or S3 uploader.
 
 ## Core
 
