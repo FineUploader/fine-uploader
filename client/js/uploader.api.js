@@ -187,9 +187,9 @@
             /*jshint -W014 */
             return this._templating.isEditFilenamePossible()
                 && !this._options.autoUpload
-                && qq.FilenameClickHandler
-                && qq.FilenameInputFocusHandler
-                && qq.FilenameInputFocusHandler;
+                && typeof qq.FilenameClickHandler != "undefined"
+                && this._options.editFilename.enabled
+                && typeof qq.FilenameInputFocusHandler != "undefined";
         },
 
         _filenameEditHandler: function() {
