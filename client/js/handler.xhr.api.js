@@ -42,11 +42,23 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
          * @returns {XMLHttpRequest}
          */
         createXhr: function(id) {
-            var xhr = qq.createXhrInstance();
+            return this.registerXhr(id, qq.createXhrInstance());
+        },
 
+        /**
+         * Registers an XHR transport instance created elsewhere.
+         *
+         * @param id ID of the associated file
+         * @param xhr XMLHttpRequest object instance
+         * @returns {XMLHttpRequest}
+         */
+        registerXhr: function(id, xhr) {
             fileState[id].xhr = xhr;
-
             return xhr;
+        },
+
+        getMimeType: function(id) {
+            return publicApi.getFile(id).type;
         },
 
         /**
