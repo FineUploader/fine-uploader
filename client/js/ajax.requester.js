@@ -27,7 +27,8 @@ qq.AjaxRequester = function (o) {
             },
             log: function (str, level) {},
             onSend: function (id) {},
-            onComplete: function (id, xhrOrXdr, isError) {}
+            onComplete: function (id, xhrOrXdr, isError) {},
+            onProgress: null
         };
 
     qq.extend(options, o);
@@ -177,6 +178,9 @@ qq.AjaxRequester = function (o) {
             xhr.onreadystatechange = getXhrReadyStateChangeHandler(id);
         }
 
+
+        registerForUploadProgress(id);
+
         // The last parameter is assumed to be ignored if we are actually using `XDomainRequest`.
         xhr.open(method, url, true);
 
@@ -196,15 +200,17 @@ qq.AjaxRequester = function (o) {
         else if (shouldParamsBeInQueryString || !params) {
             xhr.send();
         }
-        else if (params && options.contentType.toLowerCase().indexOf("application/x-www-form-urlencoded") >= 0) {
+        else if (params && options.contentType && options.contentType.toLowerCase().indexOf("application/x-www-form-urlencoded") >= 0) {
             xhr.send(qq.obj2url(params, ""));
         }
-        else if (params && options.contentType.toLowerCase().indexOf("application/json") >= 0) {
+        else if (params && options.contentType && options.contentType.toLowerCase().indexOf("application/json") >= 0) {
             xhr.send(JSON.stringify(params));
         }
         else {
             xhr.send(params);
         }
+
+        return xhr;
     }
 
     function createUrl(id, params) {
@@ -232,6 +238,18 @@ qq.AjaxRequester = function (o) {
                 onComplete(id);
             }
         };
+    }
+
+    function registerForUploadProgress(id) {
+        var onProgress = options.onProgress;
+
+        if (onProgress) {
+            getXhrOrXdr(id).upload.onprogress = function(e) {
+                if (e.lengthComputable){
+                    onProgress(id, e.loaded, e.total);
+                }
+            };
+        }
     }
 
     // This will be called by IE to indicate **success** for an associated
@@ -300,7 +318,7 @@ qq.AjaxRequester = function (o) {
 
         // if too many active connections, wait...
         if (len <= options.maxConnections) {
-            sendRequest(id);
+            return sendRequest(id);
         }
     }
 
@@ -342,7 +360,7 @@ qq.AjaxRequester = function (o) {
 
                 // Send the constructed request.
                 send: function() {
-                    prepareToSend(id, path, params, headers, payload);
+                    return prepareToSend(id, path, params, headers, payload);
                 }
             };
         }
