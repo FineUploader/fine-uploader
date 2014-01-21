@@ -67,12 +67,6 @@ options for `deleteFile`.
     )
 )}}
 
-{{ api_parent_option("editFilename", "editFilename", "",
-    (
-        ("editFilename.enabled", "enabled", "Enable or disable the user's ability to edit the names of submitted files before upload.", "Boolean", "false",),
-    )
-)}}
-
 {{ api_parent_option("failedUploadTextDisplay", "failedUploadTextDisplay", "",
     (
         ("failedUploadTextDisplay.enableTooltip", "enableTooltip", "Enable or disable a tooltip that will display the full contents of the error message when the mouse pointer hovers over the failed item.", "Boolean", "true",),
