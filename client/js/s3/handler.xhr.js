@@ -58,7 +58,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
             cors: spec.cors,
             log: log,
             getContentType: function(id) {
-                return publicApi.getFile(id).type;
+                return internalApi.getMimeType(id);
             },
             getKey: function(id) {
                 return getUrlSafeKey(id);
@@ -108,8 +108,6 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
      */
     function handleUpload(id) {
         var fileOrBlob = publicApi.getFile(id);
-
-        fileState[id].type = fileOrBlob.type;
 
         internalApi.createXhr(id);
 
@@ -337,7 +335,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         return qq.s3.util.generateAwsParams({
                 endpoint: endpointStore.get(id),
                 params: customParams,
-                type: fileState[id].type,
+                type: internalApi.getMimeType(id),
                 key: getActualKey(id),
                 accessKey: credentialsProvider.get().accessKey,
                 sessionToken: credentialsProvider.get().sessionToken,
