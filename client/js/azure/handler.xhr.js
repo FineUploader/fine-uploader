@@ -17,8 +17,11 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         onProgress = spec.onProgress,
         onComplete = spec.onComplete,
         onUpload = spec.onUpload,
+        onUuidChanged = proxy.onUuidChanged,
         onUploadCompleted = function(id, xhr, isError) {
-            onComplete(id, getName(id), {success: true}, xhr);
+            if (!isError || !spec.onAutoRetry(id, getName(id), {}, xhr)) {
+                onComplete(id, getName(id), {success: !isError}, xhr);
+            }
         },
         getName = proxy.getName,
         getUuid = proxy.getUuid,
@@ -38,16 +41,15 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
     function handleStartUploadSignal(id) {
         var fileOrBlob = publicApi.getFile(id),
             url = "about:blank", //TODO this will contain the SAS URI from the integrator's server,
-            xhr;
+            xhr = putBlob.upload(id, url, null, fileOrBlob);
 
-        xhr = putBlob.upload(id, url, {}, fileOrBlob);
         internalApi.registerXhr(id, xhr);
     }
 
     qq.extend(this, new qq.UploadHandlerXhrApi(
         internalApi,
         {fileState: fileState, chunking: false},
-        {onUpload: handleStartUploadSignal, onCancel: spec.onCancel, /*onUuidChanged: onUuidChanged,*/ getName: getName,
+        {onUpload: handleStartUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName,
             getSize: getSize, getUuid: getUuid, log: log}
     ));
 };
