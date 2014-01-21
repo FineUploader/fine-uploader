@@ -34,9 +34,9 @@ can be overridden.
 
 {% endmarkdown %}
 
-{{ api_option("element", "element", "Container for the default drop zone", "String", "null") }}
+{{ api_option("element", "element", "Container element for the default drop zone", "HTMLElement", "null") }}
 
-{{ api_option("listElement", "listElement", "Container for the item list.", "String", "null") }}
+{{ api_option("listElement", "listElement", "Container element for the item list.", "HTMLElement", "null") }}
 
 {{ api_option("multiple", "multiple", "When `false` this will prevent the user from simultaneously selecting or dropping more than one item. Dropping or selecting another item will clear the upload list. If another is already uploading, it will be canceled. To ignore rather than cancel, simply return `false` in the 'validate' or 'submit' event handlers.", "Boolean", "true") }}
 
@@ -64,12 +64,6 @@ options for `deleteFile`.
 {{ api_parent_option("dragAndDrop", "dragAndDrop", "",
     (
         ("dragAndDrop.extraDropzones", "extraDropzones", "Designate additional drop zones for file input.", "Array", "[]",),
-    )
-)}}
-
-{{ api_parent_option("editFilename", "editFilename", "",
-    (
-        ("editFilename.enabled", "enabled", "Enable or disable the user's ability to edit the names of submitted files before upload.", "Boolean", "false",),
     )
 )}}
 
