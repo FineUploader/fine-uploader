@@ -270,6 +270,14 @@
         },
 
         _onSubmit: function(id, name) {
+            var file = this.getFile(id);
+
+            if (file && file.qqPathFromRoot && this._options.dragAndDrop.reportDirectoryPaths) {
+                this._handler.addMandatoryParams(id, {
+                    qqpathfromroot: file.qqPathFromRoot
+                });
+            }
+
             this._parent.prototype._onSubmit.apply(this, arguments);
             this._addToList(id, name);
         },

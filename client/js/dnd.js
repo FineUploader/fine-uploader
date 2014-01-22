@@ -35,6 +35,7 @@ qq.DragAndDrop = function(o) {
 
         if (entry.isFile) {
             entry.file(function(file) {
+                file.qqPathFromRoot = entry.fullPath;
                 droppedFiles.push(file);
                 parseEntryPromise.success();
             },

@@ -20,7 +20,8 @@ qq.FineUploader = function(o, namespace) {
         listElement: null,
 
         dragAndDrop: {
-            extraDropzones: []
+            extraDropzones: [],
+            reportDirectoryPaths: false
         },
 
         text: {

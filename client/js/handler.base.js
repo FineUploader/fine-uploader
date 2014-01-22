@@ -9,6 +9,7 @@ qq.UploadHandler = function(o, namespace) {
     "use strict";
 
     var queue = [],
+        mandatoryParams = {},
         options, log, handlerImpl;
 
     // Default options, can be overridden by the user
@@ -60,6 +61,17 @@ qq.UploadHandler = function(o, namespace) {
     };
     qq.extend(options, o);
 
+    qq.override(options.paramsStore, function(super_) {
+        return {
+            get: function(id) {
+                if (mandatoryParams[id]) {
+                    return qq.extend(super_.get(id), mandatoryParams[id]);
+                }
+                return super_.get(id);
+            }
+        };
+    });
+
     log = options.log;
 
     /**
@@ -83,6 +95,7 @@ qq.UploadHandler = function(o, namespace) {
     function cancelSuccess(id) {
         log("Cancelling " + id);
         options.paramsStore.remove(id);
+        delete mandatoryParams[id];
         dequeue(id);
     }
 
@@ -105,6 +118,16 @@ qq.UploadHandler = function(o, namespace) {
          **/
         add: function(id, file) {
             return handlerImpl.add.apply(this, arguments);
+        },
+
+        /**
+         * Associate additional mandatory parameters to be sent with a specific file upload request.
+         * @param id ID of the associated file
+         * @param params Mandatory param(s)
+         */
+        addMandatoryParams: function(id, params) {
+            var currentMandatoryParams = mandatoryParams[id] || {};
+            mandatoryParams[id] = qq.extend(currentMandatoryParams, params);
         },
 
         /**

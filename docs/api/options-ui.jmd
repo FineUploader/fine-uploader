@@ -64,6 +64,7 @@ options for `deleteFile`.
 {{ api_parent_option("dragAndDrop", "dragAndDrop", "",
     (
         ("dragAndDrop.extraDropzones", "extraDropzones", "Designate additional drop zones for file input.", "Array", "[]",),
+        ("dragAndDrop.reportDirectoryPaths", "reportDirectoryPaths", "Designate additional drop zones for file input.", "Include the path of dropped files (relative to the top-level dropped directory).  This value will be sent along with the request as a qqpathfromroot parameter.", "false",),
     )
 )}}
 
