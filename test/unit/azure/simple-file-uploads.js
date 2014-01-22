@@ -1,0 +1,160 @@
+/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
+if (qqtest.canDownloadFileAsBlob) {
+    describe("simple Azure upload tests", function() {
+        "use strict";
+
+        var fileTestHelper = helpme.setupFileTests(),
+            testEndpoint = "https://testcontainer.com",
+            testSignatureEndoint = "http://signature-server.com/signature",
+            startTypicalTest = function(uploader, callback) {
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                    var signatureRequest;
+
+                    fileTestHelper.mockXhr();
+                    uploader.addBlobs({name: "test.jpg", blob: blob});
+
+                    assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+
+                    signatureRequest = fileTestHelper.getRequests()[0];
+
+                    callback(signatureRequest);
+                });
+            };
+
+        it("test most basic upload w/ signature request", function(done) {
+            assert.expect(9, done);
+
+            var expectedSasUri = "http://sasuri.com",
+                uploader = new qq.azure.FineUploaderBasic({
+                    request: {endpoint: testEndpoint},
+                    signature: {endpoint: testSignatureEndoint}
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest) {
+                var uploadRequest,
+                    blobName = uploader.getBlobName(0),
+                    blobUri = testEndpoint + "/" + blobName;
+
+                assert.equal(blobName, uploader.getUuid(0) + "." + qq.getExtension(uploader.getName(0)));
+                assert.equal(signatureRequest.method, "GET");
+                assert.equal(signatureRequest.url, testSignatureEndoint + "?bloburi=" + encodeURIComponent(blobUri) + "&_method=PUT");
+
+                signatureRequest.respond(200, null, expectedSasUri);
+
+                setTimeout(function() {
+                    assert.equal(fileTestHelper.getRequests().length, 2);
+                    uploadRequest = fileTestHelper.getRequests()[1];
+
+                    assert.equal(uploadRequest.url, expectedSasUri);
+                    assert.equal(uploadRequest.method, "PUT");
+                    assert.equal(uploadRequest.requestHeaders["x-ms-blob-type"], "BlockBlob");
+                    assert.equal(uploadRequest.requestHeaders["Content-Type"].indexOf("image/jpeg"), 0);
+                }, 0);
+            });
+        });
+
+        it("test most basic upload w/ signature request that includes custom headers", function(done) {
+            assert.expect(2, done);
+
+            var expectedSignatureHeaders = {
+                    foo: "bar"
+                },
+                uploader = new qq.azure.FineUploaderBasic({
+                    request: {endpoint: testEndpoint},
+                    signature: {
+                        endpoint: testSignatureEndoint,
+                        customHeaders: expectedSignatureHeaders
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest) {
+                assert.equal(signatureRequest.requestHeaders.foo, expectedSignatureHeaders.foo);
+            });
+        });
+
+        it("test most basic upload w/ signature request uses the filename as the blob name", function(done) {
+            assert.expect(3, done);
+
+            var uploader = new qq.azure.FineUploaderBasic({
+                    request: {endpoint: testEndpoint},
+                    signature: {endpoint: testSignatureEndoint},
+                    blobProperties: {name: "filename"}
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest) {
+                var blobName = uploader.getBlobName(0),
+                    blobUri = testEndpoint + "/" + blobName;
+
+                assert.equal(blobName, uploader.getName(0));
+                assert.equal(signatureRequest.url, testSignatureEndoint + "?bloburi=" + encodeURIComponent(blobUri) + "&_method=PUT");
+            });
+        });
+
+        it("test most basic upload w/ signature request uses a promissory function to determine the blob name", function(done) {
+            assert.expect(3, done);
+
+            var uploader = new qq.azure.FineUploaderBasic({
+                    request: {endpoint: testEndpoint},
+                    signature: {endpoint: testSignatureEndoint},
+                    blobProperties: {
+                        name: function(id) {
+                            return new qq.Promise().success(id + "_blobname");
+                        }
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest) {
+                var blobName = uploader.getBlobName(0),
+                    blobUri = testEndpoint + "/" + blobName;
+
+                assert.equal(blobName, "0_blobname");
+                assert.equal(signatureRequest.url, testSignatureEndoint + "?bloburi=" + encodeURIComponent(blobUri) + "&_method=PUT");
+            });
+        });
+
+        it("test basic upload w/ params", function(done) {
+            assert.expect(6, done);
+
+            var expectedParams = {
+                    foo: "bar",
+                    one: 1,
+                    bool: true,
+                    func: function() {
+                        return "thefunction";
+                    },
+                    funky: "ch@r&cters"
+                },
+                uploader = new qq.azure.FineUploaderBasic({
+                    request: {
+                        endpoint: testEndpoint,
+                        params: expectedParams
+                    },
+                    signature: {endpoint: testSignatureEndoint}
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest) {
+                var uploadRequest,
+                    blobName = uploader.getBlobName(0),
+                    blobUri = testEndpoint + "/" + blobName;
+
+                signatureRequest.respond(200, null, "http://sasuri.com");
+
+                setTimeout(function() {
+                    uploadRequest = fileTestHelper.getRequests()[1];
+
+                    assert.equal(uploadRequest.requestHeaders[qq.azure.util.AZURE_PARAM_PREFIX + "foo"], expectedParams.foo);
+                    assert.equal(uploadRequest.requestHeaders[qq.azure.util.AZURE_PARAM_PREFIX + "one"], expectedParams.one);
+                    assert.equal(uploadRequest.requestHeaders[qq.azure.util.AZURE_PARAM_PREFIX + "bool"], String(expectedParams.bool));
+                    assert.equal(uploadRequest.requestHeaders[qq.azure.util.AZURE_PARAM_PREFIX + "func"], expectedParams.func());
+                    assert.equal(uploadRequest.requestHeaders[qq.azure.util.AZURE_PARAM_PREFIX + "funky"], encodeURIComponent(expectedParams.funky));
+                }, 0);
+
+            });
+        });
+    });
+}

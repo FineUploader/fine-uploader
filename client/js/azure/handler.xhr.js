@@ -16,6 +16,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         log = proxy.log,
         cors = spec.cors,
         endpointStore = spec.endpointStore,
+        paramsStore = spec.paramsStore,
         signature = spec.signature,
         onGetBlobName = spec.onGetBlobName,
         onProgress = spec.onProgress,
@@ -69,36 +70,26 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
 
     function determineBlobUrl(id) {
         var containerUrl = endpointStore.get(id),
-            currentBlobName = fileState[id].blobName,
             promise = new qq.Promise(),
             getBlobNameSuccess = function(blobName) {
-                /* jshint eqnull:true */
-                if (currentBlobName == null) {
-                    log(qq.format("Determined blob name for ID {} to be {}", id, blobName));
-                    fileState[id].blobName = blobName;
-                }
+                fileState[id].blobName = blobName;
                 promise.success(containerUrl + "/" + blobName);
             },
             getBlobNameFailure = function(reason) {
                 promise.failure(reason);
             };
 
-        /* jshint eqnull:true */
-        if (currentBlobName == null) {
-            onGetBlobName(id).then(getBlobNameSuccess, getBlobNameFailure);
-        }
-        else {
-            getBlobNameSuccess(currentBlobName);
-        }
+        onGetBlobName(id).then(getBlobNameSuccess, getBlobNameFailure);
 
         return promise;
     }
 
     function handleStartUploadSignal(id) {
         var fileOrBlob = publicApi.getFile(id),
+            params = paramsStore.get(id),
             getSasSuccess = function(sasUri) {
                 log("GET SAS request succeeded.");
-                xhr = putBlob.upload(id, sasUri, null, fileOrBlob);
+                xhr = putBlob.upload(id, sasUri, qq.azure.util.getParamsAsHeaders(params), fileOrBlob);
                 internalApi.registerXhr(id, xhr);
             },
             getSasFailure = function(reason, getSasXhr) {

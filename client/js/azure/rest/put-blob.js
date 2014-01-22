@@ -49,12 +49,17 @@ qq.azure.PutBlob = function(o) {
     qq.extend(this, {
         method: method,
         upload: function(id, url, headers, file) {
+            var dynamicHeaders = qq.extend({}, headers);
+
             options.log("Submitting Put Blob request for " + id);
 
             endpoints[id] = url;
 
+            dynamicHeaders["Content-Type"] = file.type;
+
             return requester.initTransport(id)
                 .withPayload(file)
+                .withHeaders(dynamicHeaders)
                 .send();
         }
     });
