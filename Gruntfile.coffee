@@ -675,7 +675,7 @@ module.exports = (grunt) ->
     #   % grunt test:ie
     #   % grunt test:Firefox,Chrome,Opera,Safari --autoWatch=true --singleRun=true
     #   etc...
-        taskList = ['build', 'copy:test']
+        taskList = []
 
         setDefaultOption = (name, def) ->
             if not grunt.option(name)?
@@ -688,7 +688,7 @@ module.exports = (grunt) ->
                 taskList.push('tests:travis')
             when "server" then do ->
                 setDefaultOption('singleRun', false)
-                setDefaultOption('autoWatch', true)
+                setDefaultOption('autoWatch', false)
                 grunt.option('browsers', [])
                 taskList.push('tests:local')
             when "headless" then do ->
