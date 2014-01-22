@@ -675,7 +675,7 @@ module.exports = (grunt) ->
     #   % grunt test:ie
     #   % grunt test:Firefox,Chrome,Opera,Safari --autoWatch=true --singleRun=true
     #   etc...
-        taskList = ['build', 'copy:test']
+        taskList = []
 
         setDefaultOption = (name, def) ->
             if not grunt.option(name)?
