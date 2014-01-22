@@ -9,6 +9,15 @@
 
     qq.azure.FineUploaderBasic = function(o) {
         var options = {
+            signature: {
+                endpoint: null,
+                customHeaders: {}
+            },
+
+            // 'uuid', 'filename', or a function which may be promissory
+            blobProperties: {
+                name: "uuid"
+            }
         };
 
         // Replace any default options with user defined ones
@@ -25,7 +34,33 @@
     // Define public & private API methods for this module.
     qq.extend(qq.azure.FineUploaderBasic.prototype, {
         _createUploadHandler: function() {
-            return qq.FineUploaderBasic.prototype._createUploadHandler.call(this, null, "azure");
+            return qq.FineUploaderBasic.prototype._createUploadHandler.call(this,
+                {
+                    signature: this._options.signature,
+                    onGetBlobName: qq.bind(this._determineBlobName, this)
+                },
+                "azure");
+        },
+
+        _determineBlobName: function(id) {
+            var blobNameOptionValue = this._options.blobProperties.name,
+                uuid = this.getUuid(id),
+                filename = this.getName(id),
+                fileExtension = qq.getExtension(filename);
+
+            if (qq.isString(blobNameOptionValue)) {
+                switch(blobNameOptionValue) {
+                    case "uuid":
+                        return new qq.Promise().success(uuid + "." + fileExtension);
+                    case "filename":
+                        return new qq.Promise().success(filename);
+                    default:
+                        return new qq.Promise.failure("Invalid blobName option value - " + blobNameOptionValue);
+                }
+            }
+            else {
+                return blobNameOptionValue.call(this, id);
+            }
         }
     });
 }());

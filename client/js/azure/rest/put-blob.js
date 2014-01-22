@@ -6,6 +6,7 @@ qq.azure.PutBlob = function(o) {
     "use strict";
 
     var requester,
+        method = "PUT",
         options = {
             onProgress: function(id, loaded, total) {},
             onUpload: function(id) {},
@@ -22,11 +23,13 @@ qq.azure.PutBlob = function(o) {
     qq.extend(options, o);
 
     requester = new qq.AjaxRequester({
-        validMethods: ["PUT"],
-        method: "PUT",
-        successfulResponseCodes: {
-            "PUT": [201]
-        },
+        validMethods: [method],
+        method: method,
+        successfulResponseCodes: (function() {
+            var codes = {};
+            codes[method] = [201];
+            return codes;
+        }()),
         contentType: null,
         customHeaders: {
             "x-ms-blob-type": "BlockBlob"
@@ -44,6 +47,7 @@ qq.azure.PutBlob = function(o) {
 
 
     qq.extend(this, {
+        method: method,
         upload: function(id, url, headers, file) {
             options.log("Submitting Put Blob request for " + id);
 
