@@ -328,7 +328,7 @@ qq.AjaxRequester = function (o) {
     qq.extend(this, {
         // Start the process of sending the request.  The ID refers to the file associated with the request.
         initTransport: function(id) {
-            var path, params, headers, payload;
+            var path, params, headers, payload, cacheBuster;
 
             return {
                 // Optionally specify the end of the endpoint path for the request.
@@ -358,8 +358,18 @@ qq.AjaxRequester = function (o) {
                     return this;
                 },
 
+                // Appends a cache buster (timestamp) to the request URL as a query parameter (only if GET or DELETE)
+                withCacheBuster: function() {
+                    cacheBuster = true;
+                    return this;
+                },
+
                 // Send the constructed request.
                 send: function() {
+                    if (cacheBuster && qq.indexOf(["GET", "DELETE"], options.method) >= 0) {
+                        params.qqtimestamp = new Date().getTime();
+                    }
+
                     return prepareToSend(id, path, params, headers, payload);
                 }
             };
