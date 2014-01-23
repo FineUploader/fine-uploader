@@ -42,7 +42,9 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         },
         putBlob = new qq.azure.PutBlob({
             onProgress: progressHandler,
-            onUpload: onUpload,
+            onUpload: function(id) {
+                onUpload(id, getName(id));
+            },
             onComplete: function(id, xhr, isError) {
                 if (isError) {
                     log("Put Blob call failed for " + id, "error");
