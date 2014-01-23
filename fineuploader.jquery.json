@@ -12,7 +12,9 @@
     "amazon",
     "input",
     "form",
-    "ui"
+    "ui",
+    "azure",
+    "microsoft"
   ],
   "version": "4.3.0-3",
   "author": {
