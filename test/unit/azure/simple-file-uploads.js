@@ -156,5 +156,66 @@ if (qqtest.canDownloadFileAsBlob) {
 
             });
         });
+
+        it("triggers expected callbacks at appropriate times", function(done) {
+            assert.expect(17, done);
+
+            var expectedCallbackOrder = ["validateBatch", "validate", "submit", "submitted", "upload", "complete"],
+                actualCallbackOrder = [],
+                expectedStatusOrder = [qq.status.SUBMITTING, qq.status.SUBMITTED, qq.status.UPLOADING, qq.status.UPLOAD_SUCCESSFUL],
+                actualStatusOrder = [],
+                uploader = new qq.azure.FineUploaderBasic({
+                    request: {endpoint: testEndpoint},
+                    signature: {endpoint: testSignatureEndoint},
+                    callbacks: {
+                        onUpload: function(id, name) {
+                            actualCallbackOrder.push("upload");
+                            assert.equal(id, 0);
+                            assert.equal(name, uploader.getName(0));
+                        },
+                        onValidate: function(id, name) {
+                            actualCallbackOrder.push("validate");
+                        },
+                        onValidateBatch: function(id, name) {
+                            actualCallbackOrder.push("validateBatch");
+                        },
+                        onSubmitted: function(id, name) {
+                            actualCallbackOrder.push("submitted");
+                            assert.equal(id, 0);
+                            assert.equal(name, uploader.getName(0));
+                        },
+                        onSubmit: function(id, name) {
+                            actualCallbackOrder.push("submit");
+                            assert.equal(id, 0);
+                            assert.equal(name, uploader.getName(0));
+                        },
+                        onComplete: function(id, name, response, xhr) {
+                            actualCallbackOrder.push("complete");
+                            assert.equal(id, 0);
+                            assert.equal(name, uploader.getName(0));
+                            assert.deepEqual(response, {success: true});
+                            assert.ok(xhr);
+                            assert.deepEqual(actualCallbackOrder, expectedCallbackOrder);
+                        },
+                        onStatusChange: function(id, oldStatus, newStatus) {
+                            assert.equal(id, 0);
+                            actualStatusOrder.push(newStatus);
+                            if (newStatus === qq.status.UPLOAD_SUCCESSFUL) {
+                                assert.deepEqual(actualStatusOrder, expectedStatusOrder);
+                            }
+                        }
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest) {
+                signatureRequest.respond(200, null, "http://sasuri.com");
+
+                setTimeout(function() {
+                    var uploadRequest = fileTestHelper.getRequests()[1];
+                    uploadRequest.respond(201, null, null);
+                }, 0);
+            });
+        });
     });
 }
