@@ -26,6 +26,7 @@
 
             validation: {
                 allowedExtensions: [],
+                badExtensions: [],
                 sizeLimit: 0,
                 minSizeLimit: 0,
                 itemLimit: 0,
@@ -118,8 +119,10 @@
             },
 
             text: {
-                defaultResponseError: "Upload failure reason unknown",
-                sizeSymbols: ["kB", "MB", "GB", "TB", "PB", "EB"]
+            	defaultResponseError: "Upload failure reason unknown",
+            	useIEC: false,
+                sizeSymbols: ["kB", "MB", "GB", "TB", "PB", "EB"],
+                IECSymbols: ["KiB", "MiB", "GiB", "TiB", "PiB", "EiB"]
             },
 
             deleteFile : {
