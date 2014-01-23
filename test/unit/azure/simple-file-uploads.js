@@ -241,5 +241,82 @@ if (qqtest.canDownloadFileAsBlob) {
                 }, 0);
             });
         });
+
+        it("sends uploadSuccess request after upload succeeds", function(done) {
+            assert.expect(12, done);
+
+            var uploadSuccessUrl = "/upload/success",
+                uploadSuccessParams = {"test-param-name": "test-param-value"},
+                uploadSuccessHeaders = {"test-header-name": "test-header-value"},
+                uploader = new qq.azure.FineUploaderBasic({
+                    request: {endpoint: testEndpoint},
+                    signature: {endpoint: testSignatureEndoint},
+                    uploadSuccess: {
+                        endpoint: uploadSuccessUrl,
+                        params: uploadSuccessParams,
+                        customHeaders: uploadSuccessHeaders
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest) {
+                var uploadSuccessRequest, uploadSuccessRequestParsedBody;
+
+                signatureRequest.respond(200, null, "http://sasuri.com");
+
+                setTimeout(function() {
+                    var uploadRequest = fileTestHelper.getRequests()[1];
+                    uploadRequest.respond(201, null, "");
+
+                    assert.equal(fileTestHelper.getRequests().length, 3, "Wrong # of requests");
+                    uploadSuccessRequest = fileTestHelper.getRequests()[2];
+
+                    uploadSuccessRequestParsedBody = purl("http://test.com?" + uploadSuccessRequest.requestBody).param();
+                    assert.equal(uploadSuccessRequest.url, uploadSuccessUrl);
+                    assert.equal(uploadSuccessRequest.method, "POST");
+                    assert.equal(uploadSuccessRequest.requestHeaders["Content-Type"].indexOf("application/x-www-form-urlencoded"), 0);
+                    assert.equal(uploadSuccessRequest.requestHeaders["test-header-name"], uploadSuccessHeaders["test-header-name"]);
+                    assert.equal(uploadSuccessRequestParsedBody["test-param-name"], uploadSuccessParams["test-param-name"]);
+                    assert.equal(uploadSuccessRequestParsedBody.blobName, uploader.getBlobName(0));
+                    assert.equal(uploadSuccessRequestParsedBody.uuid, uploader.getUuid(0));
+                    assert.equal(uploadSuccessRequestParsedBody.name, uploader.getName(0));
+                    assert.equal(uploadSuccessRequestParsedBody.containerUrl, testEndpoint);
+
+                    uploadSuccessRequest.respond(200, null, null);
+                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                }, 0);
+
+            });
+        });
+
+        it("declares an upload as a failure if uploadSuccess response indicates a problem with the file", function(done) {
+            assert.expect(2, done);
+
+            var uploadSuccessUrl = "/upload/success",
+                uploader = new qq.azure.FineUploaderBasic({
+                    request: {endpoint: testEndpoint},
+                    signature: {endpoint: testSignatureEndoint},
+                    uploadSuccess: {
+                        endpoint: uploadSuccessUrl
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest) {
+                var uploadSuccessRequest, uploadSuccessRequestParsedBody;
+
+                signatureRequest.respond(200, null, "http://sasuri.com");
+
+                setTimeout(function() {
+                    var uploadRequest = fileTestHelper.getRequests()[1];
+                    uploadRequest.respond(201, null, "");
+
+                    uploadSuccessRequest = fileTestHelper.getRequests()[2];
+                    uploadSuccessRequest.respond(200, null, JSON.stringify({success: false}));
+                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                }, 0);
+
+            });
+        });
     });
 }
