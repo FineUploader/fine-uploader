@@ -381,7 +381,7 @@
 
             // Ask the local server if the file sent to S3 is ok.
             if (success && successEndpoint) {
-                successAjaxRequester = new qq.s3.UploadSuccessAjaxRequester({
+                successAjaxRequester = new qq.UploadSuccessAjaxRequester({
                     endpoint: successEndpoint,
                     customHeaders: successCustomHeaders,
                     cors: cors,

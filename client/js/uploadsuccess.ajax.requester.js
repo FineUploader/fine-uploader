@@ -1,13 +1,13 @@
 /*globals qq, XMLHttpRequest*/
 /**
- * Sends a POST request to the server to notify it of a successful upload to S3.  The server is expected to indicate success
+ * Sends a POST request to the server to notify it of a successful upload to an endpoint.  The server is expected to indicate success
  * or failure via the response status.  Specific information about the failure can be passed from the server via an `error`
  * property (by default) in an "application/json" response.
  *
  * @param o Options associated with all requests.
  * @constructor
  */
-qq.s3.UploadSuccessAjaxRequester = function(o) {
+qq.UploadSuccessAjaxRequester = function(o) {
     "use strict";
 
     var requester,
@@ -36,7 +36,7 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
 
         delete pendingRequests[id];
 
-        options.log(qq.format("Received the following response body to an AWS upload success request for id {}: {}", id, responseJson));
+        options.log(qq.format("Received the following response body to an upload success request for id {}: {}", id, responseJson));
 
         try {
             parsedResponse = qq.parseJson(responseJson);
@@ -57,7 +57,7 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
         catch (error) {
             // This will be executed if a JSON response is not present.  This is not mandatory, so account for this properly.
             if (isError) {
-                options.log(qq.format("Your server indicated failure in its AWS upload success request response for id {}!", id), "error");
+                options.log(qq.format("Your server indicated failure in its upload success request response for id {}!", id), "error");
                 promise.failure(failureIndicator);
             }
             else {
@@ -88,7 +88,7 @@ qq.s3.UploadSuccessAjaxRequester = function(o) {
 
     qq.extend(this, {
         /**
-         * Sends a request to the server, notifying it that a recently submitted file was successfully sent to S3.
+         * Sends a request to the server, notifying it that a recently submitted file was successfully sent.
          *
          * @param id ID of the associated file
          * @param spec `Object` with the properties that correspond to important values that we want to
