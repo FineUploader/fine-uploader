@@ -24,9 +24,12 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         onUpload = spec.onUpload,
         onUuidChanged = proxy.onUuidChanged,
         onUploadComplete = function(id, xhr, errorMsg) {
+            var azureError;
+
             if (errorMsg) {
-                if (!spec.onAutoRetry(id, getName(id), {error: errorMsg}, xhr)) {
-                    onComplete(id, getName(id), {success: false, error: errorMsg}, xhr);
+                azureError = parseAzureError(xhr.responseText);
+                if (!spec.onAutoRetry(id, getName(id), {error: errorMsg, azureError: azureError && azureError.message}, xhr)) {
+                    onComplete(id, getName(id), {success: false, error: errorMsg, azureError: azureError && azureError.message}, xhr);
                 }
             }
             else {
@@ -69,6 +72,32 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
             log: log
         });
 
+
+    function parseAzureError(responseText) {
+        var domParser = new DOMParser(),
+            responseDoc = domParser.parseFromString(responseText, "application/xml"),
+            errorTag = responseDoc.getElementsByTagName("Error")[0],
+            errorDetails = {},
+            codeTag, messageTag;
+
+        log("Received error response: " + responseText, "error");
+
+        if (errorTag) {
+            messageTag = errorTag.getElementsByTagName("Message")[0];
+            if (messageTag) {
+                errorDetails.message = messageTag.textContent;
+            }
+
+            codeTag = errorTag.getElementsByTagName("Code")[0];
+            if (codeTag) {
+                errorDetails.code = codeTag.textContent;
+            }
+
+            log("Parsed Azure error: " + JSON.stringify(errorDetails), "error");
+
+            return errorDetails;
+        }
+    }
 
     function determineBlobUrl(id) {
         var containerUrl = endpointStore.get(id),

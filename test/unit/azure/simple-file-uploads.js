@@ -153,7 +153,6 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.equal(uploadRequest.requestHeaders[qq.azure.util.AZURE_PARAM_PREFIX + "func"], expectedParams.func());
                     assert.equal(uploadRequest.requestHeaders[qq.azure.util.AZURE_PARAM_PREFIX + "funky"], encodeURIComponent(expectedParams.funky));
                 }, 0);
-
             });
         });
 
@@ -214,6 +213,31 @@ if (qqtest.canDownloadFileAsBlob) {
                 setTimeout(function() {
                     var uploadRequest = fileTestHelper.getRequests()[1];
                     uploadRequest.respond(201, null, null);
+                }, 0);
+            });
+        });
+
+        it("reports error message from Azure to complete callback", function(done) {
+            assert.expect(3, done);
+
+            var uploader = new qq.azure.FineUploaderBasic({
+                    request: {endpoint: testEndpoint},
+                    signature: {endpoint: testSignatureEndoint},
+                    callbacks: {
+                        onComplete: function(id, name, response, xhr) {
+                            assert.ok(response.error);
+                            assert.equal(response.azureError, "string-value");
+                        }
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest) {
+                signatureRequest.respond(200, null, "http://sasuri.com");
+
+                setTimeout(function() {
+                    var uploadRequest = fileTestHelper.getRequests()[1];
+                    uploadRequest.respond(500, null, "<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>string-value</Code><Message>string-value</Message></Error>");
                 }, 0);
             });
         });
