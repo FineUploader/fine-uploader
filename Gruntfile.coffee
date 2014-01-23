@@ -688,7 +688,7 @@ module.exports = (grunt) ->
                 taskList.push('tests:travis')
             when "server" then do ->
                 setDefaultOption('singleRun', false)
-                setDefaultOption('autoWatch', true)
+                setDefaultOption('autoWatch', false)
                 grunt.option('browsers', [])
                 taskList.push('tests:local')
             when "headless" then do ->
