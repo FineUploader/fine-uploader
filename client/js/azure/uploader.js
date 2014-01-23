@@ -11,6 +11,9 @@
 
     qq.azure.FineUploader = function(o) {
         var options = {
+            failedUploadTextDisplay: {
+                mode: "custom"
+            }
         };
 
         // Replace any default options with user defined ones
