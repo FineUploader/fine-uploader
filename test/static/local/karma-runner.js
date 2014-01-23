@@ -32,20 +32,20 @@ var $fixture;
             },
 
             ok: function() {
-                hit++;
                 super_.ok.apply(this, arguments);
+                hit++;
                 checkIfDone();
             },
 
             equal: function() {
-                hit++;
                 super_.equal.apply(this, arguments);
+                hit++;
                 checkIfDone();
             },
 
             deepEqual: function() {
-                hit++;
                 super_.deepEqual.apply(this, arguments);
+                hit++;
                 checkIfDone();
             }
         };
