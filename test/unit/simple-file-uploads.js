@@ -183,5 +183,43 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(uploader.getName(0), newName);
             });
         });
+
+        describe("QUEUED status tests to cover #1104", function() {
+            function runQueuedStatusTest(autoUpload, done) {
+                assert.expect(1, done);
+
+                var uploader = new qq.FineUploaderBasic({
+                    maxConnections: 1,
+                    autoUpload: autoUpload,
+                    request: {
+                        endpoint: testUploadEndpoint
+                    },
+                    callbacks: {
+                        onStatusChange: function(id, oldStatus, newStatus) {
+                            if (id === 1 && oldStatus === qq.status.SUBMITTED) {
+                                assert.equal(newStatus, qq.status.QUEUED);
+                            }
+                        }
+                    }
+                });
+
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                    fileTestHelper.mockXhr();
+
+                    uploader.addBlobs([blob, blob]);
+                    setTimeout(function() {
+                        autoUpload || uploader.uploadStoredFiles();
+                    }, 0);
+                });
+            }
+
+            it("reports 'waiting' files as QUEUED in auto upload mode", function(done) {
+                runQueuedStatusTest(true, done);
+            });
+
+            it("reports 'waiting' files as QUEUED in manual upload mode after call to uploadStoredFiles()", function(done) {
+                runQueuedStatusTest(false, done);
+            });
+        });
     });
 }

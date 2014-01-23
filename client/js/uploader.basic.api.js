@@ -52,7 +52,7 @@
             else {
                 while (this._storedIds.length) {
                     idToUpload = this._storedIds.shift();
-                    this._handler.upload(idToUpload);
+                    this._uploadFile(idToUpload);
                 }
             }
         },
@@ -278,10 +278,7 @@
 
             if (uploadData.status === qq.status.PAUSED) {
                 qq.log(qq.format("Paused file ID {} ({}) will be continued.  Not paused.", id, this.getName(id)));
-
-                if (!this._handler.upload(id)) {
-                    this._uploadData.setStatus(id, qq.status.QUEUED);
-                }
+                this._uploadFile(id);
                 return true;
             }
             else {
@@ -309,6 +306,12 @@
      * Defines the private (internal) API for FineUploaderBasic mode.
      */
     qq.basePrivateApi = {
+        _uploadFile: function(id) {
+            if (!this._handler.upload(id)) {
+                this._uploadData.setStatus(id, qq.status.QUEUED);
+            }
+        },
+
         // Attempts to refresh session data only if the `qq.Session` module exists
         // and a session endpoint has been specified.  The `onSessionRequestComplete`
         // callback will be invoked once the refresh is complete.
@@ -1069,9 +1072,7 @@
             this._options.callbacks.onSubmitted.apply(this, arguments);
 
             if (this._options.autoUpload) {
-                if (!this._handler.upload(id)) {
-                    this._uploadData.setStatus(id, qq.status.QUEUED);
-                }
+                this._uploadFile(id);
             }
             else {
                 this._storeForLater(id);
