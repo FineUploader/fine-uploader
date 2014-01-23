@@ -22,7 +22,7 @@ if (qqtest.canDownloadFileAsBlob) {
             };
 
         it("test most basic upload w/ signature request", function(done) {
-            assert.expect(9, done);
+            assert.expect(11, done);
 
             var expectedSasUri = "http://sasuri.com",
                 uploader = new qq.azure.FineUploaderBasic({
@@ -34,11 +34,15 @@ if (qqtest.canDownloadFileAsBlob) {
             startTypicalTest(uploader, function(signatureRequest) {
                 var uploadRequest,
                     blobName = uploader.getBlobName(0),
-                    blobUri = testEndpoint + "/" + blobName;
+                    blobUri = testEndpoint + "/" + blobName,
+                    purlSignatureUrl = purl(signatureRequest.url);
 
                 assert.equal(blobName, uploader.getUuid(0) + "." + qq.getExtension(uploader.getName(0)));
                 assert.equal(signatureRequest.method, "GET");
-                assert.equal(signatureRequest.url, testSignatureEndoint + "?bloburi=" + encodeURIComponent(blobUri) + "&_method=PUT");
+
+                assert.equal(purlSignatureUrl.param("bloburi"), blobUri);
+                assert.equal(purlSignatureUrl.param("_method"), "PUT");
+                assert.ok(purlSignatureUrl.param("qqtimestamp"));
 
                 signatureRequest.respond(200, null, expectedSasUri);
 
@@ -86,10 +90,11 @@ if (qqtest.canDownloadFileAsBlob) {
 
             startTypicalTest(uploader, function(signatureRequest) {
                 var blobName = uploader.getBlobName(0),
-                    blobUri = testEndpoint + "/" + blobName;
+                    blobUri = testEndpoint + "/" + blobName,
+                    purlSignatureUrl = purl(signatureRequest.url);
 
                 assert.equal(blobName, uploader.getName(0));
-                assert.equal(signatureRequest.url, testSignatureEndoint + "?bloburi=" + encodeURIComponent(blobUri) + "&_method=PUT");
+                assert.equal(purlSignatureUrl.param("bloburi"), blobUri);
             });
         });
 
@@ -109,10 +114,11 @@ if (qqtest.canDownloadFileAsBlob) {
 
             startTypicalTest(uploader, function(signatureRequest) {
                 var blobName = uploader.getBlobName(0),
-                    blobUri = testEndpoint + "/" + blobName;
+                    blobUri = testEndpoint + "/" + blobName,
+                    purlSignatureUrl = purl(signatureRequest.url);
 
                 assert.equal(blobName, "0_blobname");
-                assert.equal(signatureRequest.url, testSignatureEndoint + "?bloburi=" + encodeURIComponent(blobUri) + "&_method=PUT");
+                assert.equal(purlSignatureUrl.param("bloburi"), blobUri);
             });
         });
 

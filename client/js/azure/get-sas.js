@@ -68,6 +68,7 @@ qq.azure.GetSas = function(o) {
                     bloburi: blobUri,
                     _method: restVerb
                 })
+                .withCacheBuster()
                 .send();
 
             return requestPromise;
