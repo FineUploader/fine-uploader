@@ -27,6 +27,14 @@
                 params: {},
 
                 customHeaders: {}
+            },
+
+            deleteFile: {
+                // These properties are ignored as they have no effect on the delete request we send to Azure
+                method: "DELETE",
+                endpoint: null,
+                customHeaders: {},
+                params: {}
             }
         };
 
