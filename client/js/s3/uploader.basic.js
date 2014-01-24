@@ -334,7 +334,7 @@
                 bucket: qq.s3.util.getBucket(this._endpointStore.get(id))
             };
 
-            qq.FineUploaderBasic.prototype._onSubmitDelete.call(this, id, onSuccessCallback, additionalMandatedParams);
+            return qq.FineUploaderBasic.prototype._onSubmitDelete.call(this, id, onSuccessCallback, additionalMandatedParams);
         },
 
         _addCannedFile: function(sessionData) {

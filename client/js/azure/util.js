@@ -24,6 +24,32 @@ qq.azure.util = qq.azure.util || (function() {
             });
 
             return headers;
+        },
+
+        parseAzureError: function(responseText, log) {
+            var domParser = new DOMParser(),
+                responseDoc = domParser.parseFromString(responseText, "application/xml"),
+                errorTag = responseDoc.getElementsByTagName("Error")[0],
+                errorDetails = {},
+                codeTag, messageTag;
+
+            log("Received error response: " + responseText, "error");
+
+            if (errorTag) {
+                messageTag = errorTag.getElementsByTagName("Message")[0];
+                if (messageTag) {
+                    errorDetails.message = messageTag.textContent;
+                }
+
+                codeTag = errorTag.getElementsByTagName("Code")[0];
+                if (codeTag) {
+                    errorDetails.code = codeTag.textContent;
+                }
+
+                log("Parsed Azure error: " + JSON.stringify(errorDetails), "error");
+
+                return errorDetails;
+            }
         }
     };
 }());

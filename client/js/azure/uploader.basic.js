@@ -125,6 +125,67 @@
             }
 
             return id;
+        },
+
+        _createDeleteHandler: function() {
+            var self = this,
+                deleteBlobSasUri = {},
+                blobUriStore = {
+                    get: function(id) {
+                        return self._endpointStore.get(id) + "/" + self.getBlobName(id);
+                    }
+                },
+                deleteFileEndpointStore = {
+                    get: function(id) {
+                        return deleteBlobSasUri[id];
+                    }
+                },
+                getSasSuccess = function(id, sasUri) {
+                    deleteBlobSasUri[id] = sasUri;
+                    deleteBlob.send(id);
+                },
+                getSasFailure = function(id, reason, xhr) {
+                    self._onDeleteComplete(id, xhr, true);
+                    self._options.callbacks.onDeleteComplete(id, xhr, true);
+                },
+                deleteBlob = new qq.azure.DeleteBlob({
+                    endpointStore: deleteFileEndpointStore,
+                    log: qq.bind(self.log, self),
+                    onDelete: function(id) {
+                        self._onDelete(id);
+                        self._options.callbacks.onDelete(id);
+                    },
+                    onDeleteComplete: function(id, xhrOrXdr, isError) {
+                        delete deleteBlobSasUri[id];
+
+                        if (isError) {
+                            qq.azure.util.parseAzureError(xhrOrXdr.responseText, qq.bind(self.log, self));
+                        }
+
+                        self._onDeleteComplete(id, xhrOrXdr, isError);
+                        self._options.callbacks.onDeleteComplete(id, xhrOrXdr, isError);
+                    }
+                }),
+                getSas = new qq.azure.GetSas({
+                    cors: this._options.cors,
+                    endpointStore: {
+                        get: function() {
+                            return self._options.signature.endpoint;
+                        }
+                    },
+                    restRequestVerb: deleteBlob.method,
+                    log: qq.bind(self.log, self)
+                });
+
+
+
+            return {
+                sendDelete: function(id, uuid) {
+                    getSas.request(id, blobUriStore.get(id)).then(
+                        qq.bind(getSasSuccess, self, id),
+                        qq.bind(getSasFailure, self, id));
+                }
+            };
         }
     });
 }());
