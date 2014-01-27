@@ -16,7 +16,6 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
         chunking = spec.chunking,
         onUpload = proxy.onUpload,
         onCancel = proxy.onCancel,
-        onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
         getSize = proxy.getSize,
         log = proxy.log;
@@ -32,6 +31,16 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
         else if (fileOrBlob.webkitSlice) {
             return fileOrBlob.webkitSlice(startByte, endByte);
         }
+    }
+
+    function abort(id) {
+        var xhr = fileState[id].xhr,
+            ajaxRequester = fileState[id].currentAjaxRequester;
+
+        xhr.onreadystatechange = null;
+        xhr.upload.onprogress = null;
+        xhr.abort();
+        ajaxRequester && ajaxRequester.canceled && ajaxRequester.canceled(id);
     }
 
     qq.extend(internalApi, {
@@ -52,8 +61,9 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
          * @param xhr XMLHttpRequest object instance
          * @returns {XMLHttpRequest}
          */
-        registerXhr: function(id, xhr) {
+        registerXhr: function(id, xhr, ajaxRequester) {
             fileState[id].xhr = xhr;
+            fileState[id].currentAjaxRequester = ajaxRequester;
             return xhr;
         },
 
@@ -135,10 +145,7 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
         expunge: function(id) {
             var xhr = fileState[id].xhr;
 
-            if (xhr) {
-                xhr.onreadystatechange = null;
-                xhr.abort();
-            }
+            xhr && abort(id);
 
             delete fileState[id];
         },
@@ -156,10 +163,12 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
 
             if (onCancelRetVal instanceof qq.Promise) {
                 return onCancelRetVal.then(function() {
+                    fileState[id].canceled = true;
                     this.expunge(id);
                 });
             }
             else if (onCancelRetVal !== false) {
+                fileState[id].canceled = true;
                 this.expunge(id);
                 return true;
             }
@@ -173,7 +182,7 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
             if(xhr) {
                 log(qq.format("Aborting XHR upload for {} '{}' due to pause instruction.", id, getName(id)));
                 fileState[id].paused = true;
-                xhr.abort();
+                abort(id);
                 return true;
             }
         }

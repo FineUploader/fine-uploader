@@ -29,12 +29,12 @@
                 customHeaders: {}
             },
 
-            deleteFile: {
-                // These properties are ignored as they have no effect on the delete request we send to Azure
-                method: "DELETE",
-                endpoint: null,
-                customHeaders: {},
-                params: {}
+            chunking: {
+                partSize: 4000000  // If this is increased, Azure may respond with a 413
+            },
+
+            resume: {
+                recordsExpireIn: 7 // days
             }
         };
 
@@ -84,7 +84,8 @@
             return qq.FineUploaderBasic.prototype._createUploadHandler.call(this,
                 {
                     signature: this._options.signature,
-                    onGetBlobName: qq.bind(this._determineBlobName, this)
+                    onGetBlobName: qq.bind(this._determineBlobName, this),
+                    deleteBlob: qq.bind(this._deleteBlob, this, true)
                 },
                 "azure");
         },
@@ -135,7 +136,7 @@
             return id;
         },
 
-        _createDeleteHandler: function() {
+        _deleteBlob: function(relatedToCancel, id) {
             var self = this,
                 deleteBlobSasUri = {},
                 blobUriStore = {
@@ -153,8 +154,14 @@
                     deleteBlob.send(id);
                 },
                 getSasFailure = function(id, reason, xhr) {
-                    self._onDeleteComplete(id, xhr, true);
-                    self._options.callbacks.onDeleteComplete(id, xhr, true);
+                    if (relatedToCancel) {
+                        self.log("Will cancel upload, but cannot remove uncommitted parts from Azure due to issue retrieving SAS", "error");
+                        qq.FineUploaderBasic.prototype._onCancel.call(self, id, self.getName(id));
+                    }
+                    else {
+                        self._onDeleteComplete(id, xhr, true);
+                        self._options.callbacks.onDeleteComplete(id, xhr, true);
+                    }
                 },
                 deleteBlob = new qq.azure.DeleteBlob({
                     endpointStore: deleteFileEndpointStore,
@@ -167,11 +174,22 @@
                         delete deleteBlobSasUri[id];
 
                         if (isError) {
-                            qq.azure.util.parseAzureError(xhrOrXdr.responseText, qq.bind(self.log, self));
+                            if (relatedToCancel) {
+                                self.log("Will cancel upload, but failed to remove uncommitted parts from Azure.", "error");
+                            }
+                            else {
+                                qq.azure.util.parseAzureError(xhrOrXdr.responseText, qq.bind(self.log, self));
+                            }
                         }
 
-                        self._onDeleteComplete(id, xhrOrXdr, isError);
-                        self._options.callbacks.onDeleteComplete(id, xhrOrXdr, isError);
+                        if (relatedToCancel) {
+                            qq.FineUploaderBasic.prototype._onCancel.call(self, id, self.getName(id));
+                            self.log("Deleted uncommitted blob chunks for " + id);
+                        }
+                        else {
+                            self._onDeleteComplete(id, xhrOrXdr, isError);
+                            self._options.callbacks.onDeleteComplete(id, xhrOrXdr, isError);
+                        }
                     }
                 }),
                 getSas = new qq.azure.GetSas({
@@ -186,12 +204,17 @@
                 });
 
 
+            getSas.request(id, blobUriStore.get(id)).then(
+                qq.bind(getSasSuccess, self, id),
+                qq.bind(getSasFailure, self, id));
+        },
+
+        _createDeleteHandler: function() {
+            var self = this;
 
             return {
                 sendDelete: function(id, uuid) {
-                    getSas.request(id, blobUriStore.get(id)).then(
-                        qq.bind(getSasSuccess, self, id),
-                        qq.bind(getSasFailure, self, id));
+                    self._deleteBlob(false, id);
                 }
             };
         }
