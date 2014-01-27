@@ -54,6 +54,7 @@ qq.azure.GetSas = function(o) {
     });
 
 
+    qq.extend(this, requester.canceled);
     qq.extend(this, {
         request: function(id, blobUri) {
             var requestPromise = new qq.Promise(),

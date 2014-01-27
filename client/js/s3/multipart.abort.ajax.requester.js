@@ -107,6 +107,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
     });
 
 
+    qq.extend(this, requester.canceled);
     qq.extend(this, {
         /**
          * Sends the "Abort" request.

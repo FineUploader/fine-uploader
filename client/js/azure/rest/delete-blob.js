@@ -35,7 +35,7 @@ qq.azure.DeleteBlob = function(o) {
         onComplete: options.onDeleteComplete
     });
 
-
+    qq.extend(this, requester.canceled);
     qq.extend(this, {
         method: method,
         send: function(id) {

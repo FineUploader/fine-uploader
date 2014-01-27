@@ -13,7 +13,7 @@ qq.azure.PutBlob = function(o) {
             onComplete: function(id, xhr, isError) {},
             log: function(str, level) {}
         },
-        endpoints = [],
+        endpoints = {},
         endpointHandler = {
             get: function(id) {
                 return endpoints[id];
@@ -41,11 +41,15 @@ qq.azure.PutBlob = function(o) {
         },
         log: options.log,
         onSend: options.onUpload,
-        onComplete: options.onComplete,
+        onComplete: function(id, xhr, isError) {
+            delete endpoints[id];
+            options.onComplete.apply(this, arguments);
+        },
         onProgress: options.onProgress
     });
 
 
+    qq.extend(this, requester.canceled);
     qq.extend(this, {
         method: method,
         upload: function(id, url, headers, file) {

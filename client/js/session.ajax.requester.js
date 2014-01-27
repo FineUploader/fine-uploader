@@ -56,6 +56,7 @@ qq.SessionAjaxRequester = function(spec) {
     });
 
 
+    qq.extend(this, requester.canceled);
     qq.extend(this, {
         queryServer: function() {
             var params = qq.extend({}, options.params);

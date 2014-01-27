@@ -48,6 +48,7 @@ qq.DeleteFileAjaxRequester = function(o) {
     });
 
 
+    qq.extend(this, requester.canceled);
     qq.extend(this, {
         sendDelete: function(id, uuid, additionalMandatedParams) {
             var additionalOptions = additionalMandatedParams || {};

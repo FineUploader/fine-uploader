@@ -245,7 +245,7 @@ qq.AjaxRequester = function (o) {
 
         if (onProgress) {
             getXhrOrXdr(id).upload.onprogress = function(e) {
-                if (e.lengthComputable){
+                if (e.lengthComputable) {
                     onProgress(id, e.loaded, e.total);
                 }
             };
@@ -373,6 +373,10 @@ qq.AjaxRequester = function (o) {
                     return prepareToSend(id, path, params, headers, payload);
                 }
             };
+        },
+
+        canceled: function(id) {
+            dequeue(id);
         }
     });
 };

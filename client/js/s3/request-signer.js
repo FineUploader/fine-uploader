@@ -196,6 +196,7 @@ qq.s3.RequestSigner = function(o) {
     });
 
 
+    qq.extend(this, requester.canceled);
     qq.extend(this, {
         /**
          * On success, an object containing the parsed JSON response will be passed into the success handler if the

@@ -86,6 +86,7 @@ qq.UploadSuccessAjaxRequester = function(o) {
     });
 
 
+    qq.extend(this, requester.canceled);
     qq.extend(this, {
         /**
          * Sends a request to the server, notifying it that a recently submitted file was successfully sent.
