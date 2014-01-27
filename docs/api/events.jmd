@@ -28,6 +28,8 @@ almost any point in the upload process. Knowing how these callbacks work, and
 when they are called, is crucial to unlocking the full potential of
 Fine Uploader.
 
+{{ alert("When using the jQuery plugin version, event handler parameters are passed an extra [jQuery `Event`](http://api.jquery.com/category/events/event-object/) object. If using the jQuery plugin, this Event object will precede all arguments listed. See the [Integrating jQuery](../integrating/jquery) page for code examples and more details.") }}
+
 {% endmarkdown %}
 <div class="events-all">
 

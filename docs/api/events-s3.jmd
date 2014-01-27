@@ -18,6 +18,8 @@ If you plan to use the S3 uploader, then use the following table as your event
 reference.  All methods outlined in the core/traditional documentation are also available
 in Fine Uploader S3, unless otherwise noted here.
 
+{{ alert("When using the jQuery plugin version, event handler parameters are passed an extra [jQuery `Event`](http://api.jquery.com/category/events/event-object/) object. If using the jQuery plugin, this Event object will precede all arguments listed. See the [Integrating jQuery](../integrating/jquery) page for code examples and more details.") }}
+
 #### credentialsExpired
 
 Called before a request is sent to S3 if the temporary credentials have expired.  You must return
