@@ -28,7 +28,42 @@ almost any point in the upload process. Knowing how these callbacks work, and
 when they are called, is crucial to unlocking the full potential of
 Fine Uploader.
 
-{{ alert("When using the jQuery plugin version, event handler parameters are passed an extra [jQuery `Event`](http://api.jquery.com/category/events/event-object/) object. If using the jQuery plugin, this Event object will precede all arguments listed. See the [Integrating jQuery](../integrating/jquery) page for code examples and more details.") }}
+### Syntax
+
+There is a significant difference in the way events are defined between the jQuery and non-jQuery uploaders.
+
+When using the non-jQuery version, events are defined as functions in the `callbacks` option object.
+
+There are two things to keep in mind when using the jQuery plugin version. First, event handlers are defined by calling the [jQuery `.on()`](http://api.jquery.com/on/) function which will bind a function to an event. Secondly, event handler parameters are passed an extra [jQuery `Event`](http://api.jquery.com/category/events/event-object/) object. If using the jQuery plugin, this Event object will precede all arguments listed.
+
+See the [Integrating jQuery](../integrating/jquery) page for code examples and more details.
+
+#### non-jQuery
+
+When using the non-jQuery uploader, the following syntax is the correct way to define event handlers:
+
+```
+callbacks: {
+    onDelete: function(id) {
+    // ...
+    },
+    onDeleteComplete: function(id, xhr, isError) {
+    //...
+    }
+}
+```
+
+#### jQuery
+
+The syntax below is only acceptable when using the jQuery plugin for the uploader:
+
+```
+$("#my_uploader").on("deleteComplete", function(event, id, xhr, isError) {
+    //...
+}).on("delete", function(event, id) {
+    // ...
+});
+```
 
 {% endmarkdown %}
 <div class="events-all">
