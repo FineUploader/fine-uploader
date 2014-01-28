@@ -5,7 +5,7 @@ qq.AjaxRequester = function (o) {
 
     var log, shouldParamsBeInQueryString,
         queue = [],
-        requestData = [],
+        requestData = {},
         options = {
             validMethods: ["POST"],
             method: "POST",

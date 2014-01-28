@@ -176,7 +176,7 @@ qq.s3.RequestSigner = function(o) {
         signatureEffort.success({signature: headersHmacSha1Base64});
     }
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         method: options.method,
         contentType: "application/json; charset=utf-8",
         endpointStore: {
@@ -193,10 +193,9 @@ qq.s3.RequestSigner = function(o) {
         successfulResponseCodes: {
             POST: [200]
         }
-    });
+    }));
 
 
-    qq.extend(this, requester.canceled);
     qq.extend(this, {
         /**
          * On success, an object containing the parsed JSON response will be passed into the success handler if the

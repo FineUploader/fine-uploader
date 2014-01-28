@@ -67,7 +67,7 @@ qq.UploadSuccessAjaxRequester = function(o) {
         }
     }
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         method: options.method,
         endpointStore: {
             get: function() {
@@ -83,10 +83,9 @@ qq.UploadSuccessAjaxRequester = function(o) {
         successfulResponseCodes: {
             POST: [200]
         }
-    });
+    }));
 
 
-    qq.extend(this, requester.canceled);
     qq.extend(this, {
         /**
          * Sends a request to the server, notifying it that a recently submitted file was successfully sent.

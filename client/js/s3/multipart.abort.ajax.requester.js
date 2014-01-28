@@ -92,7 +92,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
     }
 
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         validMethods: ["DELETE"],
         method: options.method,
         contentType: null,
@@ -104,10 +104,9 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
         successfulResponseCodes: {
             DELETE: [204]
         }
-    });
+    }));
 
 
-    qq.extend(this, requester.canceled);
     qq.extend(this, {
         /**
          * Sends the "Abort" request.

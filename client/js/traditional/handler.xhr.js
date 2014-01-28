@@ -15,13 +15,12 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         getUuid = proxy.getUuid,
         getSize = proxy.getSize,
         log = proxy.log,
-        fileState = [],
+        fileState = {},
         cookieItemDelimiter = "|",
         chunkFiles = spec.chunking.enabled && qq.supportedFeatures.chunking,
         resumeEnabled = spec.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
         multipart = spec.forceMultipart || spec.paramsInBody,
-        internalApi = {},
-        publicApi = this,
+        handler = this,
         resumeId;
 
     function getResumeId() {
@@ -149,8 +148,8 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     function uploadNextChunk(id) {
         var chunkIdx = fileState[id].remainingChunkIdxs[0],
-            chunkData = internalApi.getChunkData(id, chunkIdx),
-            xhr = internalApi.createXhr(id),
+            chunkData = handler._getChunkData(id, chunkIdx),
+            xhr = handler._createXhr(id),
             size = getSize(id),
             name = getName(id),
             toSend, params;
@@ -174,7 +173,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
             }
         };
 
-        spec.onUploadChunk(id, name, internalApi.getChunkDataForCallback(chunkData));
+        spec.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
 
         params = spec.paramsStore.get(id);
         addChunkingSpecificParams(id, params, chunkData);
@@ -191,7 +190,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     }
 
     function calcAllRequestsSizeForChunkedUpload(id, chunkIdx, requestSize) {
-        var chunkData = internalApi.getChunkData(id, chunkIdx),
+        var chunkData = handler._getChunkData(id, chunkIdx),
             blobSize = chunkData.size,
             overhead = requestSize - blobSize,
             size = getSize(id),
@@ -225,12 +224,12 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     function handleSuccessfullyCompletedChunk(id, response, xhr) {
         var chunkIdx = fileState[id].remainingChunkIdxs.shift(),
-            chunkData = internalApi.getChunkData(id, chunkIdx);
+            chunkData = handler._getChunkData(id, chunkIdx);
 
         fileState[id].attemptingResume = false;
         fileState[id].loaded += chunkData.size + getLastRequestOverhead(id);
 
-        spec.onUploadChunkSuccess(id, internalApi.getChunkDataForCallback(chunkData), response, xhr);
+        spec.onUploadChunkSuccess(id, handler._getChunkDataForCallback(chunkData), response, xhr);
 
         if (fileState[id].remainingChunkIdxs.length > 0) {
             uploadNextChunk(id);
@@ -286,7 +285,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         fileState[id].attemptingResume = false;
         log("Server has declared that it cannot handle resume for item ID " + id + " - starting from the first chunk", "error");
         handleResetResponse(id);
-        publicApi.upload(id, true);
+        handler.upload(id, true);
     }
 
     function handleNonResetErrorResponse(id, response, xhr) {
@@ -414,7 +413,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     function calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex) {
         var currentChunkIndex;
 
-        for (currentChunkIndex = internalApi.getTotalChunks(id)-1; currentChunkIndex >= firstChunkIndex; currentChunkIndex-=1) {
+        for (currentChunkIndex = handler._getTotalChunks(id)-1; currentChunkIndex >= firstChunkIndex; currentChunkIndex-=1) {
             fileState[id].remainingChunkIdxs.unshift(currentChunkIndex);
         }
 
@@ -434,10 +433,10 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     function handlePossibleResumeAttempt(id, persistedChunkInfoForResume, firstChunkIndex) {
         var name = getName(id),
-            firstChunkDataForResume = internalApi.getChunkData(id, persistedChunkInfoForResume.part),
+            firstChunkDataForResume = handler._getChunkData(id, persistedChunkInfoForResume.part),
             onResumeRetVal;
 
-        onResumeRetVal = spec.onResume(id, name, internalApi.getChunkDataForCallback(firstChunkDataForResume));
+        onResumeRetVal = spec.onResume(id, name, handler._getChunkDataForCallback(firstChunkDataForResume));
         if (onResumeRetVal instanceof qq.Promise) {
             log("Waiting for onResume promise to be fulfilled for " + id);
             onResumeRetVal.then(
@@ -491,7 +490,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
         fileState[id].loaded = 0;
 
-        xhr = internalApi.createXhr(id);
+        xhr = handler._createXhr(id);
 
         xhr.upload.onprogress = function(e){
             if (e.lengthComputable){
@@ -513,7 +512,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     function handleUploadSignal(id, retry) {
         var name = getName(id);
 
-        if (publicApi.isValid(id)) {
+        if (handler.isValid(id)) {
             spec.onUpload(id, name);
 
             if (chunkFiles) {
@@ -526,14 +525,24 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     }
 
 
-    qq.extend(this, new qq.UploadHandlerXhrApi(
-        internalApi,
-        {fileState: fileState, chunking: chunkFiles ? spec.chunking : null},
-        {onUpload: handleUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName,
-            getSize: getSize, getUuid: getUuid, log: log}
+    qq.extend(this, new qq.AbstractUploadHandlerXhr({
+            options: {
+                fileState: fileState,
+                chunking: chunkFiles ? spec.chunking : null
+            },
+
+            proxy: {
+                onUpload: handleUploadSignal,
+                onCancel: spec.onCancel,
+                onUuidChanged: onUuidChanged,
+                getName: getName,
+                getSize: getSize,
+                getUuid: getUuid,
+                log: log
+            }
+        }
     ));
 
-    // Base XHR API overrides
     qq.override(this, function(super_) {
         return {
             add: function(id, fileOrBlobData) {

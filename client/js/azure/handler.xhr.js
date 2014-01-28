@@ -9,13 +9,11 @@
  */
 // TODO l18n for error messages returned to UI
 // TODO only chunk when necessary/desired
-// TODO More refactoring to move common stuff to common modules
 qq.azure.UploadHandlerXhr = function(spec, proxy) {
     "use strict";
 
-    var publicApi = this,
-        internalApi = {},
-        fileState = [],
+    var handler = this,
+        fileState = {},
         log = proxy.log,
         cors = spec.cors,
         endpointStore = spec.endpointStore,
@@ -41,7 +39,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
                 }
             }
             else {
-                internalApi.maybeDeletePersistedChunkData(id);
+                handler._maybeDeletePersistedChunkData(id);
                 onComplete(id, getName(id), {success: true}, xhr);
             }
         },
@@ -49,7 +47,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         getUuid = proxy.getUuid,
         getSize = proxy.getSize,
         progressHandler = function(id, loaded, total) {
-            if (shouldChunkThisFile(id)) {
+            if (handler._shouldChunkThisFile(id)) {
                 onProgress(id, getName(id), loaded + fileState[id].loaded, getSize(id));
             }
             else {
@@ -78,14 +76,14 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
             onProgress: progressHandler,
             onUpload: function(id) {
                 var partIdx = getNextPartIdxToSend(id),
-                    chunkData = internalApi.getChunkData(id, partIdx);
+                    chunkData = handler._getChunkData(id, partIdx);
 
-                onUploadChunk(id, getName(id), internalApi.getChunkDataForCallback(chunkData));
+                onUploadChunk(id, getName(id), handler._getChunkDataForCallback(chunkData));
             },
             onComplete: function(id, xhr, isError, blockId) {
                 var partIdx = getNextPartIdxToSend(id),
-                    chunkData = internalApi.getChunkData(id, partIdx),
-                    chunkDataForCallback = internalApi.getChunkDataForCallback(chunkData);
+                    chunkData = handler._getChunkData(id, partIdx),
+                    chunkDataForCallback = handler._getChunkDataForCallback(chunkData);
 
                 if (isError) {
                     log("Put Block call failed for " + id, "error");
@@ -99,7 +97,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
                     // Update the bytes loaded counter to reflect all bytes successfully transferred in the associated chunked request
                     fileState[id].loaded += chunkData.size;
 
-                    internalApi.maybePersistChunkedState(id);
+                    handler._maybePersistChunkedState(id);
                     onUploadChunkSuccess(id, chunkDataForCallback, {}, xhr);
 
                     maybeUploadNextChunk(id);
@@ -148,40 +146,14 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         return promise;
     }
 
-    /**
-     * Determine if the associated file should be chunked.
-     *
-     * @param id ID of the associated file
-     * @returns {*} true if chunking is enabled, possible, and the file can be split into more than 1 part
-     */
-    // TODO DRY - duplicated in S3 XHR
-    function shouldChunkThisFile(id) {
-        var totalChunks;
-
-        if (!fileState[id].chunking) {
-            fileState[id].chunking = {
-                blockIds: []
-            };
-            totalChunks = internalApi.getTotalChunks(id);
-            if (totalChunks > 1) {
-                fileState[id].chunking.enabled = true;
-                fileState[id].chunking.parts = totalChunks;
-            }
-            else {
-                fileState[id].chunking.enabled = false;
-            }
-        }
-
-        return fileState[id].chunking.enabled;
-    }
-
     function handleStartUploadSignal(id) {
-        if (shouldChunkThisFile(id)) {
+        if (handler._shouldChunkThisFile(id)) {
             // We might be retrying a failed in-progress upload, so it's important that we
             // don't reset this value so we don't wipe out the record of all successfully
             // uploaded chunks for this file.
             if (fileState[id].loaded === undefined) {
                 fileState[id].loaded = 0;
+                fileState[id].chunking.blockIds = [];
             }
 
             onUpload(id, getName(id));
@@ -216,12 +188,12 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
     }
 
     function handleSimpleUpload(id) {
-        var fileOrBlob = publicApi.getFile(id),
+        var fileOrBlob = handler.getFile(id),
             params = paramsStore.get(id);
 
         getSignedUrl(id, function(sasUri) {
             var xhr = putBlob.upload(id, sasUri, qq.azure.util.getParamsAsHeaders(params), fileOrBlob);
-            internalApi.registerXhr(id, xhr, putBlob);
+            handler._registerXhr(id, xhr, putBlob);
         });
     }
 
@@ -239,7 +211,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         var totalParts = fileState[id].chunking.parts,
             nextPartIdx = getNextPartIdxToSend(id);
 
-        if (publicApi.isValid(id) && nextPartIdx < totalParts) {
+        if (handler.isValid(id) && nextPartIdx < totalParts) {
             uploadNextChunk(id, nextPartIdx);
         }
         else {
@@ -249,33 +221,46 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
 
     function uploadNextChunk(id, partIdx) {
         getSignedUrl(id, function(sasUri) {
-            var chunkData = internalApi.getChunkData(id, partIdx),
+            var chunkData = handler._getChunkData(id, partIdx),
                 xhr = putBlock.upload(id, sasUri, partIdx, chunkData.blob);
 
-            internalApi.registerXhr(id, xhr, putBlock);
+            handler._registerXhr(id, xhr, putBlock);
         });
     }
 
     function combineChunks(id) {
         getSignedUrl(id, function(sasUri) {
-            var mimeType = internalApi.getMimeType(id),
+            var mimeType = handler._getMimeType(id),
                 params = paramsStore.get(id),
                 blockIds = fileState[id].chunking.blockIds,
                 customHeaders = qq.azure.util.getParamsAsHeaders(params),
                 xhr = putBlockList.send(id, sasUri, blockIds, mimeType, customHeaders);
 
-            internalApi.registerXhr(id, xhr, putBlockList);
+            handler._registerXhr(id, xhr, putBlockList);
         });
     }
 
-    qq.extend(this, new qq.NonTraditionalUploadHandlerXhrApi(
-        internalApi,
-        {namespace: "azure", fileState: fileState, chunking: chunkingPossible ? spec.chunking : null, resumeEnabled: resumeEnabled},
-        {onUpload: handleStartUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName,
-            getSize: getSize, getUuid: getUuid, getEndpoint: endpointStore.get, log: log}
+    qq.extend(this, new qq.AbstractNonTraditionalUploadHandlerXhr({
+            options: {
+                namespace: "azure",
+                fileState: fileState,
+                chunking: chunkingPossible ? spec.chunking : null,
+                resumeEnabled: resumeEnabled
+            },
+
+            proxy: {
+                onUpload: handleStartUploadSignal,
+                onCancel: spec.onCancel,
+                onUuidChanged: onUuidChanged,
+                getName: getName,
+                getSize: getSize,
+                getUuid: getUuid,
+                getEndpoint: endpointStore.get,
+                log: log
+            }
+        }
     ));
 
-    // Base XHR API overrides
     qq.override(this, function(super_) {
         return {
             expunge: function(id) {
@@ -287,7 +272,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
                     deleteBlob(id);
                 }
 
-                internalApi.maybeDeletePersistedChunkData(id);
+                handler._maybeDeletePersistedChunkData(id);
                 super_.expunge(id);
             }
         };

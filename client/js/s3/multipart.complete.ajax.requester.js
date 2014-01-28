@@ -138,7 +138,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         return new XMLSerializer().serializeToString(doc);
     }
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         method: options.method,
         contentType: "application/xml; charset=UTF-8",
         endpointStore: options.endpointStore,
@@ -149,10 +149,9 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         successfulResponseCodes: {
             POST: [200]
         }
-    });
+    }));
 
 
-    qq.extend(this, requester.canceled);
     qq.extend(this, {
         /**
          * Sends the "Complete" request and fulfills the returned promise when the success of this request is known.

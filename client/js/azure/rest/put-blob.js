@@ -22,7 +22,7 @@ qq.azure.PutBlob = function(o) {
 
     qq.extend(options, o);
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         validMethods: [method],
         method: method,
         successfulResponseCodes: (function() {
@@ -46,10 +46,9 @@ qq.azure.PutBlob = function(o) {
             options.onComplete.apply(this, arguments);
         },
         onProgress: options.onProgress
-    });
+    }));
 
 
-    qq.extend(this, requester.canceled);
     qq.extend(this, {
         method: method,
         upload: function(id, url, headers, file) {

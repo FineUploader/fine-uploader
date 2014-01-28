@@ -16,7 +16,7 @@ qq.azure.DeleteBlob = function(o) {
 
     qq.extend(options, o);
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         validMethods: [method],
         method: method,
         successfulResponseCodes: (function() {
@@ -33,9 +33,8 @@ qq.azure.DeleteBlob = function(o) {
         log: options.log,
         onSend: options.onDelete,
         onComplete: options.onDeleteComplete
-    });
+    }));
 
-    qq.extend(this, requester.canceled);
     qq.extend(this, {
         method: method,
         send: function(id) {

@@ -10,7 +10,8 @@
 qq.s3.UploadHandlerForm = function(options, proxy) {
     "use strict";
 
-    var fileState = [],
+    var handler = this,
+        fileState = {},
         uploadCompleteCallback = proxy.onUploadComplete,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
@@ -33,8 +34,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
             signatureSpec: signature,
             cors: options.cors,
             log: log
-        }),
-        internalApi = {};
+        });
 
 
     if (successRedirectUrl === undefined) {
@@ -112,7 +112,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
             fileName = getName(id);
 
         generateAwsParams(id).then(function(params) {
-            var form = internalApi.initFormForUpload({
+            var form = handler._initFormForUpload({
                 method: method,
                 endpoint: endpoint,
                 params: params,
@@ -131,7 +131,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
 
     function handleUpload(id) {
         var fileName = getName(id),
-            iframe = internalApi.createIframe(id),
+            iframe = handler._createIframe(id),
             input = fileState[id].input;
 
         createForm(id, iframe).then(function(form) {
@@ -140,7 +140,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
             form.appendChild(input);
 
             // Register a callback when the response comes in from S3
-            internalApi.attachLoadEvent(iframe, function(response) {
+            handler._attachLoadEvent(iframe, function(response) {
                 log("iframe loaded");
 
                 // If the common response handler has determined success or failure immediately
@@ -171,7 +171,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
     }
 
     function handleFinishedUpload(id, iframe, fileName, response) {
-        internalApi.detachLoadEvent(id);
+        handler._detachLoadEvent(id);
 
         iframe && qq(iframe).remove();
 
@@ -184,9 +184,22 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
         uploadCompleteCallback(id);
     }
 
-    qq.extend(this, new qq.UploadHandlerFormApi(internalApi,
-        {fileState: fileState, isCors: false, inputName: "file"},
-        {onCancel: options.onCancel, onUuidChanged: onUuidChanged, getName: getName, getUuid: getUuid, log: log}));
+    qq.extend(this, new qq.AbstractUploadHandlerForm({
+            options: {
+                fileState: fileState,
+                isCors: false,
+                inputName: "file"
+            },
+
+            proxy: {
+                onCancel: options.onCancel,
+                onUuidChanged: onUuidChanged,
+                getName: getName,
+                getUuid: getUuid,
+                log: log
+            }
+        }
+    ));
 
     qq.extend(this, {
         upload: function(id) {

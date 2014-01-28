@@ -137,7 +137,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         }
     }
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         method: options.method,
         contentType: null,
         endpointStore: options.endpointStore,
@@ -148,10 +148,9 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         successfulResponseCodes: {
             POST: [200]
         }
-    });
+    }));
 
 
-    qq.extend(this, requester.canceled);
     qq.extend(this, {
         /**
          * Sends the "Initiate MPU" request to AWS via the REST API.  First, though, we must get a signature from the

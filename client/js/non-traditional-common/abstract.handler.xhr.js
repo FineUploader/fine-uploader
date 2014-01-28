@@ -3,30 +3,69 @@
  * TODO
  * @constructor
  */
-qq.NonTraditionalUploadHandlerXhrApi = function(internalApi, spec, proxy) {
+qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
     "use strict";
 
-    var namespace = spec.namespace,
+    var handler = this,
+        options = spec.options,
+        proxy = spec.proxy,
+        chunking = options.chunking,
+        resume = options.resume,
+        namespace = options.namespace,
         onUuidChanged = proxy.onUuidChanged,
-        resumeEnabled = spec.resumeEnabled,
+        resumeEnabled = options.resumeEnabled,
         getEndpoint = proxy.getEndpoint,
         getName = proxy.getName,
         getSize = proxy.getSize,
         getUuid = proxy.getUuid,
         log = proxy.log,
-        baseHandlerXhrApi = new qq.UploadHandlerXhrApi(internalApi, spec, proxy);
+        baseHandlerXhrApi = new qq.AbstractUploadHandlerXhr(spec);
 
-    qq.extend(internalApi, {
+    qq.extend(this, baseHandlerXhrApi);
+    qq.extend(this, {
+        getResumableFilesData: function() {
+            return this._getResumableFilesData();
+        },
+
+        getThirdPartyFileId: function(id) {
+            return this._getFileState(id).key;
+        },
+
+        /**
+         * Determine if the associated file should be chunked.
+         *
+         * @param id ID of the associated file
+         * @returns {*} true if chunking is enabled, possible, and the file can be split into more than 1 part
+         */
+        _shouldChunkThisFile: function(id) {
+            var totalChunks,
+                fileState = this._getFileState(id);
+
+            if (!fileState.chunking) {
+                fileState.chunking = {};
+                totalChunks = this._getTotalChunks(id);
+                if (totalChunks > 1) {
+                    fileState.chunking.enabled = true;
+                    fileState.chunking.parts = totalChunks;
+                }
+                else {
+                    fileState.chunking.enabled = false;
+                }
+            }
+
+            return fileState.chunking.enabled;
+        },
+
         // If this is a resumable upload, grab the relevant data from storage and items in memory that track this upload
         // so we can pick up from where we left off.
-        maybePrepareForResume: function(id) {
-            var fileState = internalApi.getFileState(id),
+        _maybePrepareForResume: function(id) {
+            var fileState = this._getFileState(id),
                 localStorageId, persistedData;
 
             // Resume is enabled and possible and this is the first time we've tried to upload this file in this session,
             // so prepare for a resume attempt.
             if (resumeEnabled && fileState.key === undefined) {
-                localStorageId = internalApi.getLocalStorageId(id);
+                localStorageId = this._getLocalStorageId(id);
                 persistedData = localStorage.getItem(localStorageId);
 
                 // If we haven't found this item in local storage, give up
@@ -44,13 +83,13 @@ qq.NonTraditionalUploadHandlerXhrApi = function(internalApi, spec, proxy) {
         },
 
         // Persist any data needed to resume this upload in a new session.
-        maybePersistChunkedState: function(id) {
-            var fileState = internalApi.getFileState(id),
+        _maybePersistChunkedState: function(id) {
+            var fileState = this._getFileState(id),
                 localStorageId, persistedData;
 
             // If local storage isn't supported by the browser, or if resume isn't enabled or possible, give up
             if (resumeEnabled) {
-                localStorageId = internalApi.getLocalStorageId(id);
+                localStorageId = this._getLocalStorageId(id);
 
                 persistedData = {
                     name: getName(id),
@@ -68,11 +107,11 @@ qq.NonTraditionalUploadHandlerXhrApi = function(internalApi, spec, proxy) {
 
         // Removes a chunked upload record from local storage, if possible.
         // Returns true if the item was removed, false otherwise.
-        maybeDeletePersistedChunkData: function(id) {
+        _maybeDeletePersistedChunkData: function(id) {
             var localStorageId;
 
             if (resumeEnabled) {
-                localStorageId = internalApi.getLocalStorageId(id);
+                localStorageId = this._getLocalStorageId(id);
 
                 if (localStorageId && localStorage.getItem(localStorageId)) {
                     localStorage.removeItem(localStorageId);
@@ -85,7 +124,7 @@ qq.NonTraditionalUploadHandlerXhrApi = function(internalApi, spec, proxy) {
 
         // Iterates through all XHR handler-created resume records (in local storage),
         // invoking the passed callback and passing in the key and value of each local storage record.
-        iterateResumeRecords: function(callback) {
+        _iterateResumeRecords: function(callback) {
             if (resumeEnabled) {
                 qq.each(localStorage, function(key, item) {
                     if (key.indexOf(qq.format("qq{}resume-", namespace)) === 0) {
@@ -100,10 +139,10 @@ qq.NonTraditionalUploadHandlerXhrApi = function(internalApi, spec, proxy) {
          * @returns {Array} Array of objects containing properties useful to integrators
          * when it is important to determine which files are potentially resumable.
          */
-        getResumableFilesData: function() {
+        _getResumableFilesData: function() {
             var resumableFilesData = [];
 
-            internalApi.iterateResumeRecords(function(key, uploadData) {
+            this._iterateResumeRecords(function(key, uploadData) {
                 resumableFilesData.push({
                     name: uploadData.name,
                     size: uploadData.size,
@@ -117,10 +156,10 @@ qq.NonTraditionalUploadHandlerXhrApi = function(internalApi, spec, proxy) {
         },
 
         // Deletes any local storage records that are "expired".
-        removeExpiredChunkingRecords: function() {
-            var expirationDays = spec.resume.recordsExpireIn;
+        _removeExpiredChunkingRecords: function() {
+            var expirationDays = resume.recordsExpireIn;
 
-            internalApi.iterateResumeRecords(function(key, uploadData) {
+            this._iterateResumeRecords(function(key, uploadData) {
                 var expirationDate = new Date(uploadData.lastUpdated);
 
                 // transform updated date into expiration date
@@ -137,25 +176,13 @@ qq.NonTraditionalUploadHandlerXhrApi = function(internalApi, spec, proxy) {
          * @param id File ID
          * @returns {string} Identifier for this item that may appear in the browser's local storage
          */
-        getLocalStorageId: function(id) {
+        _getLocalStorageId: function(id) {
             var name = getName(id),
                 size = getSize(id),
-                chunkSize = spec.chunking.partSize,
+                chunkSize = chunking.partSize,
                 endpoint = getEndpoint(id);
 
             return qq.format("qq{}resume-{}-{}-{}-{}", namespace, name, size, chunkSize, endpoint);
-        }
-    });
-
-    qq.extend(this, baseHandlerXhrApi);
-
-    qq.extend(this, {
-        getResumableFilesData: function() {
-            return internalApi.getResumableFilesData();
-        },
-
-        getThirdPartyFileId: function(id) {
-            return internalApi.getFileState(id).key;
         }
     });
 
@@ -165,7 +192,7 @@ qq.NonTraditionalUploadHandlerXhrApi = function(internalApi, spec, proxy) {
                 super_.add.apply(this, arguments);
 
                 if (resumeEnabled) {
-                    internalApi.maybePrepareForResume(id);
+                    handler._maybePrepareForResume(id);
                 }
             }
         };

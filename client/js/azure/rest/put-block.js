@@ -23,7 +23,7 @@ qq.azure.PutBlock = function(o) {
 
     qq.extend(options, o);
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         validMethods: [method],
         method: method,
         successfulResponseCodes: (function() {
@@ -47,7 +47,7 @@ qq.azure.PutBlock = function(o) {
             delete blockIds[id];
         },
         onProgress: options.onProgress
-    });
+    }));
 
     function createBlockId(partNum) {
         var digits = 5,
@@ -57,7 +57,6 @@ qq.azure.PutBlock = function(o) {
         return btoa(paddedPartNum);
     }
 
-    qq.extend(this, requester.canceled);
     qq.extend(this, {
         method: method,
         upload: function(id, sasUri, partNum, blob) {

@@ -21,7 +21,7 @@ qq.azure.PutBlockList = function(o) {
 
     qq.extend(options, o);
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         validMethods: [method],
         method: method,
         successfulResponseCodes: (function() {
@@ -43,7 +43,7 @@ qq.azure.PutBlockList = function(o) {
             options.onComplete.apply(this, arguments);
             delete blockIds[id];
         }
-    });
+    }));
 
     function createRequestBody(blockIds) {
         var doc = document.implementation.createDocument(null, "BlockList", null);
@@ -61,7 +61,6 @@ qq.azure.PutBlockList = function(o) {
         return new XMLSerializer().serializeToString(doc);
     }
 
-    qq.extend(this, requester.canceled);
     qq.extend(this, {
         method: method,
         // TODO too many params - refactor this

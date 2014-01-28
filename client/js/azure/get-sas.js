@@ -39,7 +39,7 @@ qq.azure.GetSas = function(o) {
         delete requestPromises[id];
     }
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         validMethods: ["GET"],
         method: "GET",
         successfulResponseCodes: {
@@ -51,10 +51,9 @@ qq.azure.GetSas = function(o) {
         cors: options.cors,
         log: options.log,
         onComplete: sasResponseReceived
-    });
+    }));
 
 
-    qq.extend(this, requester.canceled);
     qq.extend(this, {
         request: function(id, blobUri) {
             var requestPromise = new qq.Promise(),

@@ -41,7 +41,7 @@ qq.SessionAjaxRequester = function(spec) {
         options.onComplete(response, !isError, xhrOrXdr);
     }
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         validMethods: ["GET"],
         method: "GET",
         endpointStore: {
@@ -53,10 +53,9 @@ qq.SessionAjaxRequester = function(spec) {
         log: options.log,
         onComplete: onComplete,
         cors: options.cors
-    });
+    }));
 
 
-    qq.extend(this, requester.canceled);
     qq.extend(this, {
         queryServer: function() {
             var params = qq.extend({}, options.params);
