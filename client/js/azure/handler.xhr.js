@@ -33,7 +33,11 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
 
             if (errorMsg) {
                 azureError = qq.azure.util.parseAzureError(xhr.responseText, log);
-                if (!spec.onAutoRetry(id, getName(id), {error: errorMsg, azureError: azureError && azureError.message}, xhr)) {
+                if (xhr.status === 403 || !spec.onAutoRetry(id, getName(id), {error: errorMsg, azureError: azureError && azureError.message}, xhr)) {
+                    if (xhr.status === 403) {
+                        log("Server responded with 403 - will NOT auto-retry.", "error");
+                    }
+
                     onComplete(id, getName(id), {success: false, error: errorMsg, azureError: azureError && azureError.message}, xhr);
                 }
             }
