@@ -293,7 +293,7 @@ qq.AjaxRequester = function (o) {
                 xhr.setRequestHeader("Content-Type", options.contentType);
             }
 
-            qq.extend(allHeaders, customHeaders);
+            qq.extend(allHeaders, qq.isFunction(customHeaders) ? customHeaders(id) : customHeaders);
             qq.extend(allHeaders, onDemandHeaders);
 
             qq.each(allHeaders, function (name, val) {

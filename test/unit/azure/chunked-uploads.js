@@ -72,7 +72,7 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("handles a basic chunked upload", function(done) {
-            assert.expect(54, done);
+            assert.expect(57, done);
 
             var uploadChunkCalled = false,
                 uploadChunkSuccessCalled = false,
@@ -139,6 +139,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 // upload part 1 request
                 assert.equal(fileTestHelper.getRequests().length, 2);
                 uploadRequest = fileTestHelper.getRequests()[1];
+                assert.ok(!uploadRequest.requestHeaders["x-ms-meta-qqfilename"]);
                 assert.equal(uploadRequest.method, "PUT");
                 assert.equal(uploadRequest.url, expectedSasUri + "&comp=block&blockid=" + encodeURIComponent(btoa("00000")));
                 uploadRequest.respond(201, null, null);
@@ -155,6 +156,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 // upload part 2 request
                 assert.equal(fileTestHelper.getRequests().length, 4);
                 uploadRequest = fileTestHelper.getRequests()[3];
+                assert.ok(!uploadRequest.requestHeaders["x-ms-meta-qqfilename"]);
                 assert.equal(uploadRequest.method, "PUT");
                 assert.equal(uploadRequest.url, expectedSasUri + "&comp=block&blockid=" + encodeURIComponent(btoa("00001")));
                 uploadRequest.respond(201, null, null);
@@ -174,6 +176,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(putBlockListRequest.method, "PUT");
                 assert.equal(putBlockListRequest.url, expectedSasUri + "&comp=blocklist");
                 assert.equal(putBlockListRequest.requestHeaders["x-ms-blob-content-type"], "image/jpeg");
+                assert.equal(putBlockListRequest.requestHeaders["x-ms-meta-qqfilename"], uploader.getName(0));
                 putBlockListRequest.respond(201, null, null);
 
                 assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);

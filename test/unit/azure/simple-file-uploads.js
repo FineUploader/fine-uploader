@@ -22,7 +22,7 @@ if (qqtest.canDownloadFileAsBlob) {
             };
 
         it("test most basic upload w/ signature request", function(done) {
-            assert.expect(11, done);
+            assert.expect(12, done);
 
             var expectedSasUri = "http://sasuri.com",
                 uploader = new qq.azure.FineUploaderBasic({
@@ -53,6 +53,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.equal(uploadRequest.url, expectedSasUri);
                     assert.equal(uploadRequest.method, "PUT");
                     assert.equal(uploadRequest.requestHeaders["x-ms-blob-type"], "BlockBlob");
+                    assert.equal(uploadRequest.requestHeaders["x-ms-meta-qqfilename"], uploader.getName(0));
                     assert.equal(uploadRequest.requestHeaders["Content-Type"].indexOf("image/jpeg"), 0);
                 }, 0);
             });

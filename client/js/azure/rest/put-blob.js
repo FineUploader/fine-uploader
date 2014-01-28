@@ -8,6 +8,7 @@ qq.azure.PutBlob = function(o) {
     var requester,
         method = "PUT",
         options = {
+            getParams: function(id) {},
             onProgress: function(id, loaded, total) {},
             onUpload: function(id) {},
             onComplete: function(id, xhr, isError) {},
@@ -31,8 +32,13 @@ qq.azure.PutBlob = function(o) {
             return codes;
         }()),
         contentType: null,
-        customHeaders: {
-            "x-ms-blob-type": "BlockBlob"
+        customHeaders: function(id) {
+            var params = options.getParams(id),
+                headers = qq.azure.util.getParamsAsHeaders(params);
+
+            headers["x-ms-blob-type"] = "BlockBlob";
+
+            return headers;
         },
         endpointStore: endpointHandler,
         allowXRequestedWithAndCacheControl: false,
@@ -51,18 +57,14 @@ qq.azure.PutBlob = function(o) {
 
     qq.extend(this, {
         method: method,
-        upload: function(id, url, headers, file) {
-            var dynamicHeaders = qq.extend({}, headers);
-
+        upload: function(id, url, file) {
             options.log("Submitting Put Blob request for " + id);
 
             endpoints[id] = url;
 
-            dynamicHeaders["Content-Type"] = file.type;
-
             return requester.initTransport(id)
                 .withPayload(file)
-                .withHeaders(dynamicHeaders)
+                .withHeaders({"Content-Type": file.type})
                 .send();
         }
     });

@@ -9,6 +9,7 @@ qq.azure.PutBlockList = function(o) {
         method = "PUT",
         blockIds = {},
         options = {
+            getParams: function(id) {},
             onComplete: function(id, xhr, isError) {},
             log: function(str, level) {}
         },
@@ -29,6 +30,11 @@ qq.azure.PutBlockList = function(o) {
             codes[method] = [201];
             return codes;
         }()),
+        customHeaders: function(id) {
+            var params = options.getParams(id);
+
+            return qq.azure.util.getParamsAsHeaders(params);
+        },
         contentType: "text/plain",
         endpointStore: endpointHandler,
         allowXRequestedWithAndCacheControl: false,
