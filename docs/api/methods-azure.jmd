@@ -69,13 +69,13 @@ in Fine Uploader Azure, unless otherwise noted here.
 
 ]) }}
 
-{{ api_method("setEndpoint", "setEndpoint (containerPath[, id])",
+{{ api_method("setEndpoint", "setEndpoint (containerUrl[, id])",
 "Modify the container URL where upload requests should be directed. The endpoint for a specific file or blob can be changed by passing in an optional `id` parameter. An `id` will always be a number and refers to a single file.",
 [
         {
-            "name": "containerPath",
+            "name": "containerUrl",
             "type": "String",
-            "description": "The new Azure Blob Storage container path"
+            "description": "The new Azure Blob Storage container URL"
         },
         {
             "name": "id",
