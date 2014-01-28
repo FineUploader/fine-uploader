@@ -45,7 +45,6 @@
         qq.FineUploaderBasic.call(this, options);
 
         this._uploadSuccessParamsStore = this._createStore(this._options.uploadSuccess.params);
-        this._blobNames = {};
 
          // This will hold callbacks for failed uploadSuccess requests that will be invoked on retry.
         // Indexed by file ID.
@@ -66,7 +65,7 @@
         getBlobName: function(id) {
             /* jshint eqnull:true */
             if (this._cannedBlobNames[id] == null) {
-                return this._blobNames[id];
+                return this._handler.getThirdPartyFileId(id);
             }
             return this._cannedBlobNames[id];
         },
@@ -97,27 +96,18 @@
                 filename = this.getName(id),
                 fileExtension = qq.getExtension(filename);
 
-            /* jshint eqnull:true */
-            if (this._blobNames[id] != null) {
-                return new qq.Promise().success(this._blobNames[id]);
-            }
-
             if (qq.isString(blobNameOptionValue)) {
                 switch(blobNameOptionValue) {
                     case "uuid":
-                        this._blobNames[id] = uuid + "." + fileExtension;
-                        return new qq.Promise().success(this._blobNames[id]);
+                        return new qq.Promise().success(uuid + "." + fileExtension);
                     case "filename":
-                        this._blobNames[id] = filename;
                         return new qq.Promise().success(filename);
                     default:
                         return new qq.Promise.failure("Invalid blobName option value - " + blobNameOptionValue);
                 }
             }
             else {
-                return blobNameOptionValue.call(this, id).then(function(blobName) {
-                    self._blobNames[id] = blobName;
-                });
+                return blobNameOptionValue.call(this, id);
             }
         },
 

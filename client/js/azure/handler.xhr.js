@@ -8,8 +8,8 @@
  * @param proxy Callbacks & methods used to query for or push out data/changes
  */
 // TODO l18n for error messages returned to UI
-// TODO resume support
 // TODO only chunk when necessary/desired
+// TODO More refactoring to move common stuff to common modules
 qq.azure.UploadHandlerXhr = function(spec, proxy) {
     "use strict";
 
@@ -41,6 +41,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
                 }
             }
             else {
+                internalApi.maybeDeletePersistedChunkData(id);
                 onComplete(id, getName(id), {success: true}, xhr);
             }
         },
@@ -98,7 +99,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
                     // Update the bytes loaded counter to reflect all bytes successfully transferred in the associated chunked request
                     fileState[id].loaded += chunkData.size;
 
-                    //TODO fill-in response
+                    internalApi.maybePersistChunkedState(id);
                     onUploadChunkSuccess(id, chunkDataForCallback, {}, xhr);
 
                     maybeUploadNextChunk(id);
@@ -135,7 +136,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         var containerUrl = endpointStore.get(id),
             promise = new qq.Promise(),
             getBlobNameSuccess = function(blobName) {
-                fileState[id].blobName = blobName;
+                fileState[id].key = blobName;
                 promise.success(containerUrl + "/" + blobName);
             },
             getBlobNameFailure = function(reason) {
@@ -267,11 +268,11 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         });
     }
 
-    qq.extend(this, new qq.UploadHandlerXhrApi(
+    qq.extend(this, new qq.NonTraditionalUploadHandlerXhrApi(
         internalApi,
-        {fileState: fileState, chunking: chunkingPossible ? spec.chunking : null},
+        {namespace: "azure", fileState: fileState, chunking: chunkingPossible ? spec.chunking : null, resumeEnabled: resumeEnabled},
         {onUpload: handleStartUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName,
-            getSize: getSize, getUuid: getUuid, log: log}
+            getSize: getSize, getUuid: getUuid, getEndpoint: endpointStore.get, log: log}
     ));
 
     // Base XHR API overrides
@@ -285,6 +286,8 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
                 if (relatedToCancel && blockIds.length > 0) {
                     deleteBlob(id);
                 }
+
+                internalApi.maybeDeletePersistedChunkData(id);
                 super_.expunge(id);
             }
         };

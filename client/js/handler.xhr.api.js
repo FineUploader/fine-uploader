@@ -109,6 +109,10 @@ qq.UploadHandlerXhrApi = function(internalApi, spec, proxy) {
                 endByte: chunkData.end,
                 totalParts: chunkData.count
             };
+        },
+
+        getFileState: function(id) {
+            return fileState[id];
         }
     });
 
