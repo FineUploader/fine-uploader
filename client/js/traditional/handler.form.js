@@ -11,7 +11,6 @@ qq.UploadHandlerForm = function(options, proxy) {
     "use strict";
 
     var handler = this,
-        fileState = {},
         uploadCompleteCallback = proxy.onUploadComplete,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
@@ -74,7 +73,6 @@ qq.UploadHandlerForm = function(options, proxy) {
 
     qq.extend(this, new qq.AbstractUploadHandlerForm({
             options: {
-                fileState: fileState,
                 isCors: options.cors.expected,
                 inputName: options.inputName
             },
@@ -91,7 +89,7 @@ qq.UploadHandlerForm = function(options, proxy) {
 
     qq.extend(this, {
         upload: function(id) {
-            var input = fileState[id].input,
+            var input = handler._getFileState(id).input,
                 fileName = getName(id),
                 iframe = handler._createIframe(id),
                 form;

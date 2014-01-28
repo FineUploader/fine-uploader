@@ -11,7 +11,6 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
     "use strict";
 
     var handler = this,
-        fileState = {},
         uploadCompleteCallback = proxy.onUploadComplete,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
@@ -64,7 +63,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
 
             var responseData = qq.s3.util.parseIframeResponse(iframe);
             if (responseData.bucket === bucket &&
-                responseData.key === qq.s3.util.encodeQueryStringParam(fileState[id].key)) {
+                responseData.key === qq.s3.util.encodeQueryStringParam(handler._getFileState(id).key)) {
 
                 return true;
             }
@@ -88,7 +87,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
         return qq.s3.util.generateAwsParams({
                 endpoint: endpointStore.get(id),
                 params: customParams,
-                key: fileState[id].key,
+                key: handler._getFileState(id).key,
                 accessKey: credentialsProvider.get().accessKey,
                 sessionToken: credentialsProvider.get().sessionToken,
                 acl: aclStore.get(id),
@@ -132,7 +131,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
     function handleUpload(id) {
         var fileName = getName(id),
             iframe = handler._createIframe(id),
-            input = fileState[id].input;
+            input = handler._getFileState(id).input;
 
         createForm(id, iframe).then(function(form) {
             onUpload(id, fileName);
@@ -186,7 +185,6 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
 
     qq.extend(this, new qq.AbstractUploadHandlerForm({
             options: {
-                fileState: fileState,
                 isCors: false,
                 inputName: "file"
             },
@@ -203,7 +201,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
 
     qq.extend(this, {
         upload: function(id) {
-            var input = fileState[id].input,
+            var input = handler._getFileState(id).input,
                 name = getName(id);
 
             if (!input){
@@ -211,14 +209,14 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
             }
 
             if (this.isValid(id)) {
-                if (fileState[id].key) {
+                if (handler._getFileState(id).key) {
                     handleUpload(id);
                 }
                 else {
                     // The S3 uploader module will either calculate the key or ask the server for it
                     // and will call us back once it is known.
                     onGetKeyName(id, name).then(function(key) {
-                        fileState[id].key = key;
+                        handler._getFileState(id).key = key;
                         handleUpload(id);
                     }, function(errorReason) {
                         handleFinishedUpload(id, null, name, {error: errorReason});
@@ -228,7 +226,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
         },
 
         getThirdPartyFileId: function(id) {
-            return fileState[id].key;
+            return handler._getFileState(id).key;
         }
     });
 };

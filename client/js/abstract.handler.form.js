@@ -16,7 +16,7 @@ qq.AbstractUploadHandlerForm = function(spec) {
         detachLoadEvents = {},
         postMessageCallbackTimers = {},
         isCors = options.isCors,
-        fileState = options.fileState,
+        fileState = {},
         inputName = options.inputName,
         onCancel = proxy.onCancel,
         onUuidChanged = proxy.onUuidChanged,
@@ -323,6 +323,10 @@ qq.AbstractUploadHandlerForm = function(spec) {
                 detachLoadEvents[id]();
                 delete detachLoadEvents[id];
             }
+        },
+
+        _getFileState: function(id) {
+            return fileState[id];
         }
     });
 };

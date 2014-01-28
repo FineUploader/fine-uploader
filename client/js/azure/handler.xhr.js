@@ -13,7 +13,6 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
     "use strict";
 
     var handler = this,
-        fileState = {},
         log = proxy.log,
         cors = spec.cors,
         endpointStore = spec.endpointStore,
@@ -48,10 +47,10 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         getSize = proxy.getSize,
         progressHandler = function(id, loaded, total) {
             if (handler._shouldChunkThisFile(id)) {
-                onProgress(id, getName(id), loaded + fileState[id].loaded, getSize(id));
+                onProgress(id, getName(id), loaded + handler._getFileState(id).loaded, getSize(id));
             }
             else {
-                fileState[id].loaded = loaded;
+                handler._getFileState(id).loaded = loaded;
                 onProgress(id, getName(id), loaded, total);
             }
         },
@@ -90,12 +89,12 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
                     onUploadComplete.call(this, id, xhr, "Problem uploading block");
                 }
                 else {
-                    fileState[id].chunking.blockIds.push(blockId);
+                    handler._getFileState(id).chunking.blockIds.push(blockId);
                     log("Put Block call succeeded for " + id);
-                    fileState[id].chunking.lastSent = partIdx;
+                    handler._getFileState(id).chunking.lastSent = partIdx;
 
                     // Update the bytes loaded counter to reflect all bytes successfully transferred in the associated chunked request
-                    fileState[id].loaded += chunkData.size;
+                    handler._getFileState(id).loaded += chunkData.size;
 
                     handler._maybePersistChunkedState(id);
                     onUploadChunkSuccess(id, chunkDataForCallback, {}, xhr);
@@ -134,7 +133,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         var containerUrl = endpointStore.get(id),
             promise = new qq.Promise(),
             getBlobNameSuccess = function(blobName) {
-                fileState[id].key = blobName;
+                handler._getFileState(id).key = blobName;
                 promise.success(containerUrl + "/" + blobName);
             },
             getBlobNameFailure = function(reason) {
@@ -151,9 +150,9 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
             // We might be retrying a failed in-progress upload, so it's important that we
             // don't reset this value so we don't wipe out the record of all successfully
             // uploaded chunks for this file.
-            if (fileState[id].loaded === undefined) {
-                fileState[id].loaded = 0;
-                fileState[id].chunking.blockIds = [];
+            if (handler._getFileState(id).loaded === undefined) {
+                handler._getFileState(id).loaded = 0;
+                handler._getFileState(id).chunking.blockIds = [];
             }
 
             onUpload(id, getName(id));
@@ -204,11 +203,11 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
      * @returns {number} The 0-based index of the next file chunk to be sent to S3
      */
     function getNextPartIdxToSend(id) {
-        return fileState[id].chunking.lastSent >= 0 ? fileState[id].chunking.lastSent + 1 : 0;
+        return handler._getFileState(id).chunking.lastSent >= 0 ? handler._getFileState(id).chunking.lastSent + 1 : 0;
     }
 
     function maybeUploadNextChunk(id) {
-        var totalParts = fileState[id].chunking.parts,
+        var totalParts = handler._getFileState(id).chunking.parts,
             nextPartIdx = getNextPartIdxToSend(id);
 
         if (handler.isValid(id) && nextPartIdx < totalParts) {
@@ -232,7 +231,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         getSignedUrl(id, function(sasUri) {
             var mimeType = handler._getMimeType(id),
                 params = paramsStore.get(id),
-                blockIds = fileState[id].chunking.blockIds,
+                blockIds = handler._getFileState(id).chunking.blockIds,
                 customHeaders = qq.azure.util.getParamsAsHeaders(params),
                 xhr = putBlockList.send(id, sasUri, blockIds, mimeType, customHeaders);
 
@@ -243,7 +242,6 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
     qq.extend(this, new qq.AbstractNonTraditionalUploadHandlerXhr({
             options: {
                 namespace: "azure",
-                fileState: fileState,
                 chunking: chunkingPossible ? spec.chunking : null,
                 resumeEnabled: resumeEnabled
             },
@@ -264,8 +262,8 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
     qq.override(this, function(super_) {
         return {
             expunge: function(id) {
-                var relatedToCancel = fileState[id].canceled,
-                    chunkingData = fileState[id].chunking,
+                var relatedToCancel = handler._getFileState(id).canceled,
+                    chunkingData = handler._getFileState(id).chunking,
                     blockIds = (chunkingData && chunkingData.blockIds) || [];
 
                 if (relatedToCancel && blockIds.length > 0) {

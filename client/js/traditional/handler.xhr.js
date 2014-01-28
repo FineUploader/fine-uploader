@@ -15,7 +15,6 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         getUuid = proxy.getUuid,
         getSize = proxy.getSize,
         log = proxy.log,
-        fileState = {},
         cookieItemDelimiter = "|",
         chunkFiles = spec.chunking.enabled && qq.supportedFeatures.chunking,
         resumeEnabled = spec.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
@@ -114,7 +113,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     function setHeaders(id, xhr) {
         var extraHeaders = spec.customHeaders,
-            fileOrBlob = fileState[id].file || fileState[id].blobData.blob;
+            fileOrBlob = handler._getFileState(id).file || handler._getFileState(id).blobData.blob;
 
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("Cache-Control", "no-cache");
@@ -134,31 +133,31 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         var name = getName(id),
             size = getSize(id);
 
-        fileState[id].attemptingResume = false;
+        handler._getFileState(id).attemptingResume = false;
 
         spec.onProgress(id, name, size, size);
         spec.onComplete(id, name, response, xhr);
 
-        if (fileState[id]) {
-            delete fileState[id].xhr;
+        if (handler._getFileState(id)) {
+            delete handler._getFileState(id).xhr;
         }
 
         uploadComplete(id);
     }
 
     function uploadNextChunk(id) {
-        var chunkIdx = fileState[id].remainingChunkIdxs[0],
+        var chunkIdx = handler._getFileState(id).remainingChunkIdxs[0],
             chunkData = handler._getChunkData(id, chunkIdx),
             xhr = handler._createXhr(id),
             size = getSize(id),
             name = getName(id),
             toSend, params;
 
-        if (fileState[id].loaded === undefined) {
-            fileState[id].loaded = 0;
+        if (handler._getFileState(id).loaded === undefined) {
+            handler._getFileState(id).loaded = 0;
         }
 
-        if (resumeEnabled && fileState[id].file) {
+        if (resumeEnabled && handler._getFileState(id).file) {
             persistChunkData(id, chunkData);
         }
 
@@ -166,7 +165,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
         xhr.upload.onprogress = function(e) {
             if (e.lengthComputable) {
-                var totalLoaded = e.loaded + fileState[id].loaded,
+                var totalLoaded = e.loaded + handler._getFileState(id).loaded,
                     estTotalRequestsSize = calcAllRequestsSizeForChunkedUpload(id, chunkIdx, e.total);
 
                 spec.onProgress(id, name, totalLoaded, estTotalRequestsSize);
@@ -178,7 +177,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         params = spec.paramsStore.get(id);
         addChunkingSpecificParams(id, params, chunkData);
 
-        if (fileState[id].attemptingResume) {
+        if (handler._getFileState(id).attemptingResume) {
             addResumeSpecificParams(params);
         }
 
@@ -195,27 +194,27 @@ qq.UploadHandlerXhr = function(spec, proxy) {
             overhead = requestSize - blobSize,
             size = getSize(id),
             chunkCount = chunkData.count,
-            initialRequestOverhead = fileState[id].initialRequestOverhead,
+            initialRequestOverhead = handler._getFileState(id).initialRequestOverhead,
             overheadDiff = overhead - initialRequestOverhead;
 
-        fileState[id].lastRequestOverhead = overhead;
+        handler._getFileState(id).lastRequestOverhead = overhead;
 
         if (chunkIdx === 0) {
-            fileState[id].lastChunkIdxProgress = 0;
-            fileState[id].initialRequestOverhead = overhead;
-            fileState[id].estTotalRequestsSize = size + (chunkCount * overhead);
+            handler._getFileState(id).lastChunkIdxProgress = 0;
+            handler._getFileState(id).initialRequestOverhead = overhead;
+            handler._getFileState(id).estTotalRequestsSize = size + (chunkCount * overhead);
         }
-        else if (fileState[id].lastChunkIdxProgress !== chunkIdx) {
-            fileState[id].lastChunkIdxProgress = chunkIdx;
-            fileState[id].estTotalRequestsSize += overheadDiff;
+        else if (handler._getFileState(id).lastChunkIdxProgress !== chunkIdx) {
+            handler._getFileState(id).lastChunkIdxProgress = chunkIdx;
+            handler._getFileState(id).estTotalRequestsSize += overheadDiff;
         }
 
-        return fileState[id].estTotalRequestsSize;
+        return handler._getFileState(id).estTotalRequestsSize;
     }
 
     function getLastRequestOverhead(id) {
         if (multipart) {
-            return fileState[id].lastRequestOverhead;
+            return handler._getFileState(id).lastRequestOverhead;
         }
         else {
             return 0;
@@ -223,15 +222,15 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     }
 
     function handleSuccessfullyCompletedChunk(id, response, xhr) {
-        var chunkIdx = fileState[id].remainingChunkIdxs.shift(),
+        var chunkIdx = handler._getFileState(id).remainingChunkIdxs.shift(),
             chunkData = handler._getChunkData(id, chunkIdx);
 
-        fileState[id].attemptingResume = false;
-        fileState[id].loaded += chunkData.size + getLastRequestOverhead(id);
+        handler._getFileState(id).attemptingResume = false;
+        handler._getFileState(id).loaded += chunkData.size + getLastRequestOverhead(id);
 
         spec.onUploadChunkSuccess(id, handler._getChunkDataForCallback(chunkData), response, xhr);
 
-        if (fileState[id].remainingChunkIdxs.length > 0) {
+        if (handler._getFileState(id).remainingChunkIdxs.length > 0) {
             uploadNextChunk(id);
         }
         else {
@@ -272,17 +271,17 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
         if (resumeEnabled) {
             deletePersistedChunkData(id);
-            fileState[id].attemptingResume = false;
+            handler._getFileState(id).attemptingResume = false;
         }
 
-        fileState[id].remainingChunkIdxs = [];
-        delete fileState[id].loaded;
-        delete fileState[id].estTotalRequestsSize;
-        delete fileState[id].initialRequestOverhead;
+        handler._getFileState(id).remainingChunkIdxs = [];
+        delete handler._getFileState(id).loaded;
+        delete handler._getFileState(id).estTotalRequestsSize;
+        delete handler._getFileState(id).initialRequestOverhead;
     }
 
     function handleResetResponseOnResumeAttempt(id) {
-        fileState[id].attemptingResume = false;
+        handler._getFileState(id).attemptingResume = false;
         log("Server has declared that it cannot handle resume for item ID " + id + " - starting from the first chunk", "error");
         handleResetResponse(id);
         handler.upload(id, true);
@@ -300,7 +299,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     }
 
     function onComplete(id, xhr) {
-        var state = fileState[id],
+        var state = handler._getFileState(id),
             attemptingResume = state && state.attemptingResume,
             paused = state && state.paused,
             response;
@@ -345,9 +344,9 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     function persistChunkData(id, chunkData) {
         var fileUuid = getUuid(id),
-            lastByteSent = fileState[id].loaded,
-            initialRequestOverhead = fileState[id].initialRequestOverhead,
-            estTotalRequestsSize = fileState[id].estTotalRequestsSize,
+            lastByteSent = handler._getFileState(id).loaded,
+            initialRequestOverhead = handler._getFileState(id).initialRequestOverhead,
+            estTotalRequestsSize = handler._getFileState(id).estTotalRequestsSize,
             cookieName = getChunkDataCookieName(id),
             cookieValue = fileUuid +
                 cookieItemDelimiter + chunkData.part +
@@ -360,7 +359,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     }
 
     function deletePersistedChunkData(id) {
-        if (fileState[id].file) {
+        if (handler._getFileState(id).file) {
             var cookieName = getChunkDataCookieName(id);
             qq.deleteCookie(cookieName);
         }
@@ -414,7 +413,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         var currentChunkIndex;
 
         for (currentChunkIndex = handler._getTotalChunks(id)-1; currentChunkIndex >= firstChunkIndex; currentChunkIndex-=1) {
-            fileState[id].remainingChunkIdxs.unshift(currentChunkIndex);
+            handler._getFileState(id).remainingChunkIdxs.unshift(currentChunkIndex);
         }
 
         uploadNextChunk(id);
@@ -422,10 +421,10 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     function onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume) {
         firstChunkIndex = persistedChunkInfoForResume.part;
-        fileState[id].loaded = persistedChunkInfoForResume.lastByteSent;
-        fileState[id].estTotalRequestsSize = persistedChunkInfoForResume.estTotalRequestsSize;
-        fileState[id].initialRequestOverhead = persistedChunkInfoForResume.initialRequestOverhead;
-        fileState[id].attemptingResume = true;
+        handler._getFileState(id).loaded = persistedChunkInfoForResume.lastByteSent;
+        handler._getFileState(id).estTotalRequestsSize = persistedChunkInfoForResume.estTotalRequestsSize;
+        handler._getFileState(id).initialRequestOverhead = persistedChunkInfoForResume.initialRequestOverhead;
+        handler._getFileState(id).attemptingResume = true;
         log("Resuming " + name + " at partition index " + firstChunkIndex);
 
         calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
@@ -462,10 +461,10 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         var firstChunkIndex = 0,
             persistedChunkInfoForResume;
 
-        if (!fileState[id].remainingChunkIdxs || fileState[id].remainingChunkIdxs.length === 0) {
-            fileState[id].remainingChunkIdxs = [];
+        if (!handler._getFileState(id).remainingChunkIdxs || handler._getFileState(id).remainingChunkIdxs.length === 0) {
+            handler._getFileState(id).remainingChunkIdxs = [];
 
-            if (resumeEnabled && !retry && fileState[id].file) {
+            if (resumeEnabled && !retry && handler._getFileState(id).file) {
                 persistedChunkInfoForResume = getPersistedChunkData(id);
                 if (persistedChunkInfoForResume) {
                     handlePossibleResumeAttempt(id, persistedChunkInfoForResume, firstChunkIndex);
@@ -484,17 +483,17 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     }
 
     function handleStandardFileUpload(id) {
-        var fileOrBlob = fileState[id].file || fileState[id].blobData.blob,
+        var fileOrBlob = handler._getFileState(id).file || handler._getFileState(id).blobData.blob,
             name = getName(id),
             xhr, params, toSend;
 
-        fileState[id].loaded = 0;
+        handler._getFileState(id).loaded = 0;
 
         xhr = handler._createXhr(id);
 
         xhr.upload.onprogress = function(e){
             if (e.lengthComputable){
-                fileState[id].loaded = e.loaded;
+                handler._getFileState(id).loaded = e.loaded;
                 spec.onProgress(id, name, e.loaded, e.total);
             }
         };
@@ -527,7 +526,6 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     qq.extend(this, new qq.AbstractUploadHandlerXhr({
             options: {
-                fileState: fileState,
                 chunking: chunkFiles ? spec.chunking : null
             },
 
