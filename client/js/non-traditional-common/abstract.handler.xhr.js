@@ -24,11 +24,11 @@ qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
     qq.extend(this, baseHandlerXhrApi);
     qq.extend(this, {
         getResumableFilesData: function() {
-            return this._getResumableFilesData();
+            return handler._getResumableFilesData();
         },
 
         getThirdPartyFileId: function(id) {
-            return this._getFileState(id).key;
+            return handler._getFileState(id).key;
         },
 
         /**
@@ -39,11 +39,11 @@ qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
          */
         _shouldChunkThisFile: function(id) {
             var totalChunks,
-                fileState = this._getFileState(id);
+                fileState = handler._getFileState(id);
 
             if (!fileState.chunking) {
                 fileState.chunking = {};
-                totalChunks = this._getTotalChunks(id);
+                totalChunks = handler._getTotalChunks(id);
                 if (totalChunks > 1) {
                     fileState.chunking.enabled = true;
                     fileState.chunking.parts = totalChunks;
@@ -59,13 +59,13 @@ qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
         // If this is a resumable upload, grab the relevant data from storage and items in memory that track this upload
         // so we can pick up from where we left off.
         _maybePrepareForResume: function(id) {
-            var fileState = this._getFileState(id),
+            var fileState = handler._getFileState(id),
                 localStorageId, persistedData;
 
             // Resume is enabled and possible and this is the first time we've tried to upload this file in this session,
             // so prepare for a resume attempt.
             if (resumeEnabled && fileState.key === undefined) {
-                localStorageId = this._getLocalStorageId(id);
+                localStorageId = handler._getLocalStorageId(id);
                 persistedData = localStorage.getItem(localStorageId);
 
                 // If we haven't found this item in local storage, give up
@@ -84,12 +84,12 @@ qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
 
         // Persist any data needed to resume this upload in a new session.
         _maybePersistChunkedState: function(id) {
-            var fileState = this._getFileState(id),
+            var fileState = handler._getFileState(id),
                 localStorageId, persistedData;
 
             // If local storage isn't supported by the browser, or if resume isn't enabled or possible, give up
             if (resumeEnabled) {
-                localStorageId = this._getLocalStorageId(id);
+                localStorageId = handler._getLocalStorageId(id);
 
                 persistedData = {
                     name: getName(id),
@@ -111,7 +111,7 @@ qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
             var localStorageId;
 
             if (resumeEnabled) {
-                localStorageId = this._getLocalStorageId(id);
+                localStorageId = handler._getLocalStorageId(id);
 
                 if (localStorageId && localStorage.getItem(localStorageId)) {
                     localStorage.removeItem(localStorageId);
@@ -142,7 +142,7 @@ qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
         _getResumableFilesData: function() {
             var resumableFilesData = [];
 
-            this._iterateResumeRecords(function(key, uploadData) {
+            handler._iterateResumeRecords(function(key, uploadData) {
                 resumableFilesData.push({
                     name: uploadData.name,
                     size: uploadData.size,
@@ -159,7 +159,7 @@ qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
         _removeExpiredChunkingRecords: function() {
             var expirationDays = resume.recordsExpireIn;
 
-            this._iterateResumeRecords(function(key, uploadData) {
+            handler._iterateResumeRecords(function(key, uploadData) {
                 var expirationDate = new Date(uploadData.lastUpdated);
 
                 // transform updated date into expiration date

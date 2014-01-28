@@ -30,7 +30,10 @@
             },
 
             chunking: {
-                partSize: 4000000  // If this is increased, Azure may respond with a 413
+                // If this is increased, Azure may respond with a 413
+                partSize: 4000000,
+                // Don't chunk files less than this size
+                minFileSize: 4000001
             },
 
             resume: {

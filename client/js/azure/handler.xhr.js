@@ -18,6 +18,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         endpointStore = spec.endpointStore,
         paramsStore = spec.paramsStore,
         signature = spec.signature,
+        minFileSizeForChunking = spec.chunking.minFileSize,
         chunkingPossible = spec.chunking.enabled && qq.supportedFeatures.chunking,
         deleteBlob = spec.deleteBlob,
         resumeEnabled = spec.resume.enabled && chunkingPossible && qq.supportedFeatures.resume && window.localStorage !== undefined,
@@ -276,6 +277,13 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
 
                 handler._maybeDeletePersistedChunkData(id);
                 super_.expunge(id);
+            },
+
+            _shouldChunkThisFile: function(id) {
+                if (chunkingPossible && getSize(id) >= minFileSizeForChunking) {
+                    return super_._shouldChunkThisFile(id);
+                }
+                return false;
             }
         };
     });

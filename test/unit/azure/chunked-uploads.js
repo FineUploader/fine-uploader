@@ -7,7 +7,8 @@ if (qqtest.canDownloadFileAsBlob) {
         chunkSize = Math.round(expectedFileSize / expectedChunks),
         typicalChunkingOption = {
             enabled: true,
-            partSize: chunkSize
+            partSize: chunkSize,
+            minFileSize: expectedFileSize
         };
 
     describe("server-side signature-based chunked Azure upload tests", function() {
@@ -38,6 +39,37 @@ if (qqtest.canDownloadFileAsBlob) {
         typicalSignatureOption = {
             endpoint: testSignatureEndoint
         };
+
+        it("does not chunk if file is too small", function(done) {
+            assert.expect(8, done);
+
+            var uploader = new qq.azure.FineUploaderBasic({
+                    request: typicalRequestOption,
+                    signature: typicalSignatureOption,
+                    chunking: {
+                        enabled: true,
+                        partSize: typicalChunkingOption.partSize,
+                        minFileSize: expectedFileSize + 1
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest, signatureRequestPurl) {
+                var expectedSasUri = "http://sasuri.com",
+                    uploadRequest;
+
+                // signature request for upload part 1
+                assert.equal(signatureRequestPurl.param("_method"), "PUT");
+                assert.equal(signatureRequestPurl.param("bloburi"), testContainerEndpoint + "/" + uploader.getBlobName(0));
+                signatureRequest.respond(200, null, expectedSasUri);
+
+                // upload request
+                assert.equal(fileTestHelper.getRequests().length, 2);
+                uploadRequest = fileTestHelper.getRequests()[1];
+                assert.equal(uploadRequest.method, "PUT");
+                assert.equal(uploadRequest.url, expectedSasUri);
+            });
+        });
 
         it("handles a basic chunked upload", function(done) {
             assert.expect(54, done);
