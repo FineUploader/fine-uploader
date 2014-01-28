@@ -6,7 +6,7 @@
     "use strict";
 
     qq.Error = function(message) {
-        this.message = message;
+        this.message = "[Fine Uploader " + qq.version + "] " + message;
     };
 
     qq.Error.prototype = new Error();

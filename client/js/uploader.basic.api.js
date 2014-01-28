@@ -8,10 +8,10 @@
     qq.basePublicApi = {
         log: function(str, level) {
             if (this._options.debug && (!level || level === "info")) {
-                qq.log("[FineUploader " + qq.version + "] " + str);
+                qq.log("[Fine Uploader " + qq.version + "] " + str);
             }
             else if (level && level !== "info") {
-                qq.log("[FineUploader " + qq.version + "] " + str, level);
+                qq.log("[Fine Uploader " + qq.version + "] " + str, level);
 
             }
         },

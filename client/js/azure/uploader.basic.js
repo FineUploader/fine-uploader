@@ -8,6 +8,10 @@
     "use strict";
 
     qq.azure.FineUploaderBasic = function(o) {
+        if (!qq.supportedFeatures.ajaxUploading) {
+            throw new qq.Error("Uploading directly to Azure is not possible in this browser.");
+        }
+
         var options = {
             signature: {
                 endpoint: null,
