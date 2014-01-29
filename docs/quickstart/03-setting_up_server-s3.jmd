@@ -1,5 +1,5 @@
 {% extends "_templates/base.html" %}
-{% set page_title = "Server Set-Upi S3" %}
+{% set page_title = "Server Set-Up S3" %}
 
 {% block content %}
 {% markdown %}
