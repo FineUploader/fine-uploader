@@ -112,6 +112,16 @@ module.exports = (grunt) ->
                         src: './s3.jquery.<%= pkg.name %>-<%= pkg.version %>/*'
                     }
                 ]
+            jqueryAzure:
+                options:
+                    archive: "#{paths.dist}/azure.jquery.<%= pkg.name %>-<%= pkg.version %>.zip"
+                files: [
+                    {
+                        expand: true
+                        cwd: paths.dist
+                        src: './azure.jquery.<%= pkg.name %>-<%= pkg.version %>/*'
+                    }
+                ]
             core:
                 options:
                     archive: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>.zip"
@@ -132,6 +142,16 @@ module.exports = (grunt) ->
                         src: './s3.<%= pkg.name %>-<%= pkg.version %>/*'
                     }
                 ]
+            coreAzure:
+                options:
+                    archive: "#{paths.dist}/azure.<%= pkg.name %>-<%= pkg.version %>.zip"
+                files: [
+                    {
+                        expand: true
+                        cwd: paths.dist
+                        src: './azure.<%= pkg.name %>-<%= pkg.version %>/*'
+                    }
+                ]
             custom:
                 options:
                     archive: "#{customBuildDest}/custom.<%= pkg.name %>-<%= pkg.version %>.zip"
@@ -150,12 +170,18 @@ module.exports = (grunt) ->
             coreS3:
                 src: fineUploaderModules.mergeModules 'fuS3'
                 dest: "#{paths.build}/s3.<%= pkg.name %>.js"
+            coreAzure:
+                src: fineUploaderModules.mergeModules 'fuAzure'
+                dest: "#{paths.build}/azure.<%= pkg.name %>.js"
             jquery:
                 src: fineUploaderModules.mergeModules 'fuTraditionalJquery'
                 dest: "#{paths.build}/jquery.<%= pkg.name %>.js"
             jqueryS3:
                 src: fineUploaderModules.mergeModules 'fuS3Jquery'
                 dest: "#{paths.build}/s3.jquery.<%= pkg.name %>.js"
+            jqueryAzure:
+                src: fineUploaderModules.mergeModules 'fuAzureJquery'
+                dest: "#{paths.build}/azure.jquery.<%= pkg.name %>.js"
             all:
                 src: fineUploaderModules.mergeModules 'fuAll'
                 dest: paths.build + "/all.<%= pkg.name %>.js"
@@ -189,21 +215,28 @@ module.exports = (grunt) ->
                     {
                         expand: true
                         cwd: paths.build
-                        src: ['*.js', '!all.*', '!s3.*', '!*.min.js', '!jquery*', '!*iframe*']
+                        src: ['*.js', '!all.*', '!s3.*', '!azure.*', '!*.min.js', '!jquery*', '!*iframe*']
                         dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
                         ext: '-<%= pkg.version %>.js'
                     },
                     {
                         expand: true
                         cwd: paths.build
-                        src: [ '!all.*', 's3.*.js', '!*.min.js', '!s3.jquery*', '!*iframe*']
+                        src: [ '!all.*', 's3.*.js', '!*.min.js', '!s3.jquery*', '!azure.jquery*', '!*iframe*']
                         dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>/"
                         ext: '.<%= pkg.name %>-<%= pkg.version %>.js'
                     },
                     {
                         expand: true
                         cwd: paths.build
-                        src: ['*.min.js',  '!all.*', '!s3.*', '!jquery*']
+                        src: [ '!all.*', 'azure.*.js', '!*.min.js', '!azure.jquery*', '!s3.jquery*', '!*iframe*']
+                        dest: "#{paths.dist}/azure.<%= pkg.name %>-<%= pkg.version %>/"
+                        ext: '.<%= pkg.name %>-<%= pkg.version %>.js'
+                    },
+                    {
+                        expand: true
+                        cwd: paths.build
+                        src: ['*.min.js',  '!all.*', '!s3.*', '!azure.*', '!jquery*']
                         dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>/"
                         ext: '-<%= pkg.version %>.min.js'
                     },
@@ -217,7 +250,14 @@ module.exports = (grunt) ->
                     {
                         expand: true
                         cwd: paths.build
-                        src: ['jquery*js', '!s3.*', '!*.min.js']
+                        src: ['azure.*.min.js', '!azure.jquery*']
+                        dest: "#{paths.dist}/azure.<%= pkg.name %>-<%= pkg.version %>/"
+                        ext: '.<%= pkg.name %>-<%= pkg.version %>.min.js'
+                    },
+                    {
+                        expand: true
+                        cwd: paths.build
+                        src: ['jquery*js', '!s3.*', '!azure.*', '!*.min.js']
                         dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
                         ext: '.<%= pkg.name %>-<%= pkg.version %>.js'
                     },
@@ -226,6 +266,13 @@ module.exports = (grunt) ->
                         cwd: paths.build
                         src: ['s3.jquery*js', '!*.min.js']
                         dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
+                        ext: '.jquery.<%= pkg.name %>-<%= pkg.version %>.js'
+                    },
+                    {
+                        expand: true
+                        cwd: paths.build
+                        src: ['azure.jquery*js', '!*.min.js']
+                        dest: "#{paths.dist}/azure.jquery.<%= pkg.name %>-<%= pkg.version %>/"
                         ext: '.jquery.<%= pkg.name %>-<%= pkg.version %>.js'
                     },
                     {
@@ -240,6 +287,13 @@ module.exports = (grunt) ->
                         cwd: paths.build
                         src: ['s3.jquery*min.js']
                         dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
+                        ext: '.jquery.<%= pkg.name %>-<%= pkg.version %>.min.js'
+                    },
+                    {
+                        expand: true
+                        cwd: paths.build
+                        src: ['azure.jquery*min.js']
+                        dest: "#{paths.dist}/azure.jquery.<%= pkg.name %>-<%= pkg.version %>/"
                         ext: '.jquery.<%= pkg.name %>-<%= pkg.version %>.min.js'
                     },
                     {
@@ -286,6 +340,12 @@ module.exports = (grunt) ->
                         expand: true
                         cwd: paths.src
                         src: ['*.gif', 'placeholders/*.png']
+                        dest: "#{paths.dist}/azure.<%= pkg.name %>-<%= pkg.version %>/"
+                    },
+                    {
+                        expand: true
+                        cwd: paths.src
+                        src: ['*.gif', 'placeholders/*.png']
                         dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
                     },
                     {
@@ -293,6 +353,12 @@ module.exports = (grunt) ->
                         cwd: paths.src
                         src: ['*.gif', 'placeholders/*.png']
                         dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/"
+                    },
+                    {
+                        expand: true
+                        cwd: paths.src
+                        src: ['*.gif', 'placeholders/*.png']
+                        dest: "#{paths.dist}/azure.jquery.<%= pkg.name %>-<%= pkg.version %>/"
                     },
                     {
                         expand: true
@@ -310,6 +376,12 @@ module.exports = (grunt) ->
                         expand: true
                         cwd: './'
                         src: ['LICENSE']
+                        dest: "#{paths.dist}/azure.<%= pkg.name %>-<%= pkg.version %>/"
+                    },
+                    {
+                        expand: true
+                        cwd: './'
+                        src: ['LICENSE']
                         dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/"
                     },
                     {
@@ -320,6 +392,12 @@ module.exports = (grunt) ->
                     },
                     {
                         expand: true
+                        cwd: './'
+                        src: ['LICENSE']
+                        dest: "#{paths.dist}/azure.jquery.<%= pkg.name %>-<%= pkg.version %>/"
+                    },
+                    {
+                        expand: true
                         cwd: paths.build
                         src: ['*.min.css']
                         dest: "#{paths.dist}/<%= pkg.name %>-<%= pkg.version %>"
@@ -330,6 +408,13 @@ module.exports = (grunt) ->
                         cwd: paths.build
                         src: ['*.min.css']
                         dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>"
+                        ext: '-<%= pkg.version %>.min.css'
+                    },
+                    {
+                        expand: true
+                        cwd: paths.build
+                        src: ['*.min.css']
+                        dest: "#{paths.dist}/azure.<%= pkg.name %>-<%= pkg.version %>"
                         ext: '-<%= pkg.version %>.min.css'
                     },
                     {
@@ -344,6 +429,13 @@ module.exports = (grunt) ->
                         cwd: paths.build
                         src: ['*.css', '!*.min.css']
                         dest: "#{paths.dist}/s3.<%= pkg.name %>-<%= pkg.version %>"
+                        ext: '-<%= pkg.version %>.css'
+                    },
+                    {
+                        expand: true
+                        cwd: paths.build
+                        src: ['*.css', '!*.min.css']
+                        dest: "#{paths.dist}/azure.<%= pkg.name %>-<%= pkg.version %>"
                         ext: '-<%= pkg.version %>.css'
                     },
                     {
@@ -363,6 +455,13 @@ module.exports = (grunt) ->
                     {
                         expand: true
                         cwd: paths.build
+                        src: ['*.min.css']
+                        dest: "#{paths.dist}/azure.jquery.<%= pkg.name %>-<%= pkg.version %>"
+                        ext: '-<%= pkg.version %>.min.css'
+                    },
+                    {
+                        expand: true
+                        cwd: paths.build
                         src: ['*.css', '!*.min.css']
                         dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>"
                         ext: '-<%= pkg.version %>.css'
@@ -372,6 +471,13 @@ module.exports = (grunt) ->
                         cwd: paths.build
                         src: ['*.css', '!*.min.css']
                         dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>"
+                        ext: '-<%= pkg.version %>.css'
+                    },
+                    {
+                        expand: true
+                        cwd: paths.build
+                        src: ['*.css', '!*.min.css']
+                        dest: "#{paths.dist}/azure.jquery.<%= pkg.name %>-<%= pkg.version %>"
                         ext: '-<%= pkg.version %>.css'
                     },
                     {
@@ -390,6 +496,12 @@ module.exports = (grunt) ->
                         expand: true
                         cwd: paths.html
                         src: ['*.html']
+                        dest: "#{paths.dist}/azure.<%= pkg.name %>-<%= pkg.version %>/templates/"
+                    },
+                    {
+                        expand: true
+                        cwd: paths.html
+                        src: ['*.html']
                         dest: "#{paths.dist}/jquery.<%= pkg.name %>-<%= pkg.version %>/templates/"
                     },
                     {
@@ -397,6 +509,12 @@ module.exports = (grunt) ->
                         cwd: paths.html
                         src: ['*.html']
                         dest: "#{paths.dist}/s3.jquery.<%= pkg.name %>-<%= pkg.version %>/templates/"
+                    },
+                    {
+                        expand: true
+                        cwd: paths.html
+                        src: ['*.html']
+                        dest: "#{paths.dist}/azure.jquery.<%= pkg.name %>-<%= pkg.version %>/templates/"
                     }
                 ]
             build:
@@ -483,6 +601,12 @@ module.exports = (grunt) ->
             jquery:
                 src: ['<%= concat.jquery.dest %>']
                 dest: "#{paths.build}/jquery.<%= pkg.name %>.min.js"
+            coreAzure:
+                src: ['<%= concat.coreAzure.dest %>']
+                dest: "#{paths.build}/azure.<%= pkg.name %>.min.js"
+            jqueryAzure:
+                src: ['<%= concat.jqueryAzure.dest %>']
+                dest: "#{paths.build}/azure.jquery.<%= pkg.name %>.min.js"
             coreS3:
                 src: ['<%= concat.coreS3.dest %>']
                 dest: "#{paths.build}/s3.<%= pkg.name %>.min.js"
@@ -754,7 +878,7 @@ module.exports = (grunt) ->
     grunt.registerTask 'build', 'Build from latest source', ['jshint:source', 'jshint:tests', 'concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
     grunt.registerTask 'build_stripped', 'Build from latest source w/ test artifacts stripped out', ['concat', 'strip_code:build', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
 
-    grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build_stripped', 'copy:dist', 'shell:version_dist_templates', 'compress:jquery', 'compress:jqueryS3', 'compress:core', 'compress:coreS3' ]
+    grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build_stripped', 'copy:dist', 'shell:version_dist_templates', 'compress:jquery', 'compress:jqueryS3', 'compress:jqueryAzure', 'compress:core', 'compress:coreS3', 'compress:coreAzure' ]
 
     grunt.registerTask 'custom', 'Build a custom version', (modules) ->
         util = require './lib/grunt/utils'
