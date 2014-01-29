@@ -1,6 +1,6 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-Version: 4.3.0-6 (In Progress)
+Version: 4.3.0-7 (In Progress)
 
 [![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=master)](https://travis-ci.org/Widen/fine-uploader) | [![Semver badge](http://calm-shore-6115.herokuapp.com/?label=SemVer&value=2.0.0&color=green)](http://semver.org/spec/v2.0.0.html)
 
