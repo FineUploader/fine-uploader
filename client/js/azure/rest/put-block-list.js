@@ -9,7 +9,7 @@ qq.azure.PutBlockList = function(o) {
         method = "PUT",
         blockIds = {},
         options = {
-            getParams: function(id) {},
+            getBlobMetadata: function(id) {},
             onComplete: function(id, xhr, isError) {},
             log: function(str, level) {}
         },
