@@ -69,7 +69,6 @@ qq.azure.PutBlockList = function(o) {
 
     qq.extend(this, {
         method: method,
-        // TODO too many params - refactor this
         send: function(id, sasUri, blockIds, fileMimeType) {
             var blockIdsXml = createRequestBody(blockIds);
 
