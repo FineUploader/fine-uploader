@@ -284,10 +284,10 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.equal(uploadSuccessRequest.requestHeaders["Content-Type"].indexOf("application/x-www-form-urlencoded"), 0);
                     assert.equal(uploadSuccessRequest.requestHeaders["test-header-name"], uploadSuccessHeaders["test-header-name"]);
                     assert.equal(uploadSuccessRequestParsedBody["test-param-name"], uploadSuccessParams["test-param-name"]);
-                    assert.equal(uploadSuccessRequestParsedBody.blobName, uploader.getBlobName(0));
+                    assert.equal(uploadSuccessRequestParsedBody.blob, uploader.getBlobName(0));
                     assert.equal(uploadSuccessRequestParsedBody.uuid, uploader.getUuid(0));
                     assert.equal(uploadSuccessRequestParsedBody.name, uploader.getName(0));
-                    assert.equal(uploadSuccessRequestParsedBody.containerUrl, testEndpoint);
+                    assert.equal(uploadSuccessRequestParsedBody.container, testEndpoint);
 
                     uploadSuccessRequest.respond(200, null, null);
                     assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);

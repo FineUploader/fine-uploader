@@ -79,10 +79,10 @@
 
         _getEndpointSpecificParams: function(id) {
             return {
-                blobName: this.getBlobName(id),
+                blob: this.getBlobName(id),
                 uuid: this.getUuid(id),
                 name: this.getName(id),
-                containerUrl: this._endpointStore.get(id)
+                container: this._endpointStore.get(id)
             };
         },
 
