@@ -8,7 +8,6 @@
  * @param proxy Callbacks & methods used to query for or push out data/changes
  */
 // TODO l18n for error messages returned to UI
-// TODO only chunk when necessary/desired
 qq.azure.UploadHandlerXhr = function(spec, proxy) {
     "use strict";
 
@@ -30,6 +29,11 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         onUploadChunk = spec.onUploadChunk,
         onUploadChunkSuccess = spec.onUploadChunkSuccess,
         onUuidChanged = proxy.onUuidChanged,
+        getBlobMetadata = function(id) {
+            var params = paramsStore.get(id);
+            params[filenameParam] = getName(id);
+            return params;
+        },
         onUploadComplete = function(id, xhr, errorMsg) {
             var azureError;
 
@@ -61,11 +65,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
             }
         },
         putBlob = new qq.azure.PutBlob({
-            getParams: function(id) {
-                var params = paramsStore.get(id);
-                params[filenameParam] = getName(id);
-                return params;
-            },
+            getBlobMetadata: getBlobMetadata,
             onProgress: progressHandler,
             onUpload: function(id) {
                 onUpload(id, getName(id));
@@ -116,11 +116,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
             log: log
         }),
         putBlockList = new qq.azure.PutBlockList({
-            getParams: function(id) {
-                var params = paramsStore.get(id);
-                params[filenameParam] = getName(id);
-                return params;
-            },
+            getBlobMetadata: getBlobMetadata,
             onComplete: function(id, xhr, isError) {
                 if (isError) {
                     log("Attempt to combine chunks failed for id " + id, "error");
@@ -245,14 +241,9 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
     function combineChunks(id) {
         getSignedUrl(id, function(sasUri) {
             var mimeType = handler._getMimeType(id),
-                params = paramsStore.get(id),
                 blockIds = handler._getFileState(id).chunking.blockIds,
-                customHeaders, xhr;
+                xhr = putBlockList.send(id, sasUri, blockIds, mimeType);
 
-            params[filenameParam] = getName(id);
-            customHeaders = qq.azure.util.getParamsAsHeaders(params);
-
-            xhr = putBlockList.send(id, sasUri, blockIds, mimeType, customHeaders);
             handler._registerXhr(id, xhr, putBlockList);
         });
     }

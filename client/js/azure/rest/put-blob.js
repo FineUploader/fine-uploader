@@ -8,7 +8,7 @@ qq.azure.PutBlob = function(o) {
     var requester,
         method = "PUT",
         options = {
-            getParams: function(id) {},
+            getBlobMetadata: function(id) {},
             onProgress: function(id, loaded, total) {},
             onUpload: function(id) {},
             onComplete: function(id, xhr, isError) {},
@@ -33,7 +33,7 @@ qq.azure.PutBlob = function(o) {
         }()),
         contentType: null,
         customHeaders: function(id) {
-            var params = options.getParams(id),
+            var params = options.getBlobMetadata(id),
                 headers = qq.azure.util.getParamsAsHeaders(params);
 
             headers["x-ms-blob-type"] = "BlockBlob";

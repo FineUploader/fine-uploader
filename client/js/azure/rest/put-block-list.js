@@ -31,7 +31,7 @@ qq.azure.PutBlockList = function(o) {
             return codes;
         }()),
         customHeaders: function(id) {
-            var params = options.getParams(id);
+            var params = options.getBlobMetadata(id);
 
             return qq.azure.util.getParamsAsHeaders(params);
         },
@@ -70,11 +70,8 @@ qq.azure.PutBlockList = function(o) {
     qq.extend(this, {
         method: method,
         // TODO too many params - refactor this
-        send: function(id, sasUri, blockIds, fileMimeType, customHeaders) {
-            var blockIdsXml = createRequestBody(blockIds),
-                headers = {
-                "x-ms-blob-content-type": fileMimeType
-            };
+        send: function(id, sasUri, blockIds, fileMimeType) {
+            var blockIdsXml = createRequestBody(blockIds);
 
             options.log(qq.format("Submitting Put Block List request for {}", id));
 
@@ -82,7 +79,7 @@ qq.azure.PutBlockList = function(o) {
 
             return requester.initTransport(id)
                 .withPayload(blockIdsXml)
-                .withHeaders(qq.extend(headers, customHeaders))
+                .withHeaders({"x-ms-blob-content-type": fileMimeType})
                 .send();
         }
     });
