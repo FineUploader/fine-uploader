@@ -14,6 +14,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
     var handler = this,
         log = proxy.log,
         cors = spec.cors,
+        uploadCompleteCallback = proxy.onUploadComplete,
         endpointStore = spec.endpointStore,
         paramsStore = spec.paramsStore,
         signature = spec.signature,
@@ -34,8 +35,13 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
             params[filenameParam] = getName(id);
             return params;
         },
+        notifyBaseOfUploadCompletion = function(id) {
+            handler._getFileState(id) && delete handler._getFileState(id).xhr;
+            uploadCompleteCallback(id);
+        },
         onUploadComplete = function(id, xhr, errorMsg) {
-            var azureError;
+            var azureError,
+                paused = handler._getFileState(id).paused;
 
             if (errorMsg) {
                 azureError = qq.azure.util.parseAzureError(xhr.responseText, log);
@@ -45,11 +51,19 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
                     }
 
                     onComplete(id, getName(id), {success: false, error: errorMsg, azureError: azureError && azureError.message}, xhr);
+                    notifyBaseOfUploadCompletion(id);
                 }
             }
             else {
                 handler._maybeDeletePersistedChunkData(id);
-                onComplete(id, getName(id), {success: true}, xhr);
+
+                if (paused) {
+                    qq.log(qq.format("Detected pause on {} ({}).", id, getName(id)));
+                }
+                else {
+                    onComplete(id, getName(id), {success: true}, xhr);
+                    notifyBaseOfUploadCompletion(id);
+                }
             }
         },
         getName = proxy.getName,
