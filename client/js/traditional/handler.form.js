@@ -10,14 +10,13 @@
 qq.UploadHandlerForm = function(options, proxy) {
     "use strict";
 
-    var fileState = [],
+    var handler = this,
         uploadCompleteCallback = proxy.onUploadComplete,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
         getUuid = proxy.getUuid,
         uploadComplete = uploadCompleteCallback,
-        log = proxy.log,
-        internalApi = {};
+        log = proxy.log;
 
 
     /**
@@ -41,7 +40,7 @@ qq.UploadHandlerForm = function(options, proxy) {
                 innerHtml = doc.body.firstChild.firstChild.nodeValue;
             }
 
-            response = internalApi.parseJsonResponse(id, innerHtml);
+            response = handler._parseJsonResponse(id, innerHtml);
         }
         catch(error) {
             log("Error when attempting to parse form upload response (" + error.message + ")", "error");
@@ -63,7 +62,7 @@ qq.UploadHandlerForm = function(options, proxy) {
         params[options.uuidName] = getUuid(id);
         params[options.filenameParam] = name;
 
-        return internalApi.initFormForUpload({
+        return handler._initFormForUpload({
             method: method,
             endpoint: endpoint,
             params: params,
@@ -72,15 +71,27 @@ qq.UploadHandlerForm = function(options, proxy) {
         });
     }
 
-    qq.extend(this, new qq.UploadHandlerFormApi(internalApi,
-        {fileState: fileState, isCors: options.cors.expected, inputName: options.inputName},
-        {onCancel: options.onCancel, onUuidChanged: onUuidChanged, getName: getName, getUuid: getUuid, log: log}));
+    qq.extend(this, new qq.AbstractUploadHandlerForm({
+            options: {
+                isCors: options.cors.expected,
+                inputName: options.inputName
+            },
+        
+            proxy: {
+                onCancel: options.onCancel,
+                onUuidChanged: onUuidChanged,
+                getName: getName,
+                getUuid: getUuid,
+                log: log
+            }
+        }
+    ));
 
     qq.extend(this, {
         upload: function(id) {
-            var input = fileState[id].input,
+            var input = handler._getFileState(id).input,
                 fileName = getName(id),
-                iframe = internalApi.createIframe(id),
+                iframe = handler._createIframe(id),
                 form;
 
             if (!input){
@@ -92,12 +103,12 @@ qq.UploadHandlerForm = function(options, proxy) {
             form = createForm(id, iframe);
             form.appendChild(input);
 
-            internalApi.attachLoadEvent(iframe, function(responseFromMessage){
+            handler._attachLoadEvent(iframe, function(responseFromMessage){
                 log("iframe loaded");
 
                 var response = responseFromMessage ? responseFromMessage : getIframeContentJson(id, iframe);
 
-                internalApi.detachLoadEvent(id);
+                handler._detachLoadEvent(id);
 
                 //we can't remove an iframe if the iframe doesn't belong to the same domain
                 if (!options.cors.expected) {

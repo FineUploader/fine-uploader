@@ -11,8 +11,7 @@
 qq.s3.UploadHandlerXhr = function(spec, proxy) {
     "use strict";
 
-    var fileState = [],
-        uploadCompleteCallback = proxy.onUploadComplete,
+    var uploadCompleteCallback = proxy.onUploadComplete,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
         getUuid = proxy.getUuid,
@@ -33,8 +32,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         signature = spec.signature,
         chunkingPossible = spec.chunking.enabled && qq.supportedFeatures.chunking,
         resumeEnabled = spec.resume.enabled && chunkingPossible && qq.supportedFeatures.resume && window.localStorage !== undefined,
-        internalApi = {},
-        publicApi = this,
+        handler = this,
         credentialsProvider = spec.signature.credentialsProvider,
         policySignatureRequester = new qq.s3.RequestSigner({
             expectingPolicy: true,
@@ -58,7 +56,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
             cors: spec.cors,
             log: log,
             getContentType: function(id) {
-                return publicApi.getFile(id).type;
+                return handler._getMimeType(id);
             },
             getKey: function(id) {
                 return getUrlSafeKey(id);
@@ -94,11 +92,11 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
     }
 
     function getActualKey(id) {
-        return fileState[id].key;
+        return handler._getFileState(id).key;
     }
 
     function setKey(id, key) {
-        fileState[id].key = key;
+        handler._getFileState(id).key = key;
     }
 
     /**
@@ -107,34 +105,32 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
      * @param id Associated file ID
      */
     function handleUpload(id) {
-        var fileOrBlob = publicApi.getFile(id);
+        var fileOrBlob = handler.getFile(id);
 
-        fileState[id].type = fileOrBlob.type;
+        handler._createXhr(id);
 
-        internalApi.createXhr(id);
-
-        if (shouldChunkThisFile(id)) {
+        if (handler._shouldChunkThisFile(id)) {
             // We might be retrying a failed in-progress upload, so it's important that we
             // don't reset this value so we don't wipe out the record of all successfully
             // uploaded chunks for this file.
-            if (fileState[id].loaded === undefined) {
-                fileState[id].loaded = 0;
+            if (handler._getFileState(id).loaded === undefined) {
+                handler._getFileState(id).loaded = 0;
             }
 
             handleChunkedUpload(id);
         }
         else {
-            fileState[id].loaded = 0;
+            handler._getFileState(id).loaded = 0;
             handleSimpleUpload(id);
         }
     }
 
     function getReadyStateChangeHandler(id) {
-        var xhr = fileState[id].xhr;
+        var xhr = handler._getFileState(id).xhr;
 
         return function() {
             if (xhr.readyState === 4) {
-                if (fileState[id].chunking.enabled) {
+                if (handler._getFileState(id).chunking.enabled) {
                     uploadChunkCompleted(id);
                 }
                 else {
@@ -164,14 +160,14 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
      * @param requestXhr The XHR object associated with the call, if the upload XHR is not appropriate.
      */
     function uploadCompleted(id, errorDetails, requestXhr) {
-        var xhr = requestXhr || fileState[id].xhr,
+        var xhr = requestXhr || handler._getFileState(id).xhr,
             name = getName(id),
             size = getSize(id),
             // This is the response we will use internally to determine if we need to do something special in case of a failure
             responseToExamine = parseResponse(id, requestXhr),
             // This is the response we plan on passing to external callbacks
             responseToBubble = errorDetails || parseResponse(id),
-            paused = fileState[id].paused,
+            paused = handler._getFileState(id).paused,
             /*jshint -W116*/
             isError = !paused && (errorDetails != null || responseToExamine.success !== true);
 
@@ -179,9 +175,9 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         if (isError) {
             if (shouldResetOnRetry(responseToExamine.code)) {
                 log("This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.", "error");
-                maybeDeletePersistedChunkData(id);
-                delete fileState[id].loaded;
-                delete fileState[id].chunking;
+                handler._maybeDeletePersistedChunkData(id);
+                delete handler._getFileState(id).loaded;
+                delete handler._getFileState(id).chunking;
             }
         }
 
@@ -193,9 +189,9 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
             if (!isError && !paused) {
                 responseToBubble.success = true;
                 onProgress(id, name, size, size);
-                maybeDeletePersistedChunkData(id);
-                delete fileState[id].loaded;
-                delete fileState[id].chunking;
+                handler._maybeDeletePersistedChunkData(id);
+                delete handler._getFileState(id).loaded;
+                delete handler._getFileState(id).chunking;
             }
 
             // Only declare the upload complete (to listeners) if it has not been paused.
@@ -204,7 +200,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
             }
             else {
                 onComplete(id, name, responseToBubble, xhr);
-                fileState[id] && delete fileState[id].xhr;
+                handler._getFileState(id) && delete handler._getFileState(id).xhr;
                 uploadCompleteCallback(id);
             }
         }
@@ -216,7 +212,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
      * @returns {object} Object containing the parsed response, or perhaps some error data injected in `error` and `code` properties
      */
     function parseResponse(id, requestXhr) {
-        var xhr = requestXhr || fileState[id].xhr,
+        var xhr = requestXhr || handler._getFileState(id).xhr,
             response = {},
             parsedErrorProps;
 
@@ -274,8 +270,8 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
     function handleStartUploadSignal(id, retry) {
         var name = getName(id);
 
-        if (publicApi.isValid(id)) {
-            maybePrepareForResume(id);
+        if (handler.isValid(id)) {
+            handler._maybePrepareForResume(id);
 
             if (getActualKey(id) !== undefined) {
                 onUpload(id, name);
@@ -300,13 +296,13 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
 
     // Starting point for incoming requests for simple (non-chunked) uploads.
     function handleSimpleUpload(id) {
-        var xhr = fileState[id].xhr,
+        var xhr = handler._getFileState(id).xhr,
             name = getName(id),
-            fileOrBlob = publicApi.getFile(id);
+            fileOrBlob = handler.getFile(id);
 
         xhr.upload.onprogress = function(e){
             if (e.lengthComputable){
-                fileState[id].loaded = e.loaded;
+                handler._getFileState(id).loaded = e.loaded;
                 onProgress(id, name, e.loaded, e.total);
             }
         };
@@ -337,7 +333,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         return qq.s3.util.generateAwsParams({
                 endpoint: endpointStore.get(id),
                 params: customParams,
-                type: fileState[id].type,
+                type: handler._getMimeType(id),
                 key: getActualKey(id),
                 accessKey: credentialsProvider.get().accessKey,
                 sessionToken: credentialsProvider.get().sessionToken,
@@ -368,7 +364,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         var formData = new FormData(),
             endpoint = endpointStore.get(id),
             url = endpoint,
-            xhr = fileState[id].xhr,
+            xhr = handler._getFileState(id).xhr,
             promise = new qq.Promise();
 
         generateAwsParams(id).then(
@@ -397,159 +393,6 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
 
 // ************************** Chunked Uploads ******************************
 
-
-    // If this is a resumable upload, grab the relevant data from storage and items in memory that track this upload
-    // so we can pick up from where we left off.
-    function maybePrepareForResume(id) {
-        var localStorageId, persistedData;
-
-        // Resume is enabled and possible and this is the first time we've tried to upload this file in this session,
-        // so prepare for a resume attempt.
-        if (resumeEnabled && getActualKey(id) === undefined) {
-            localStorageId = getLocalStorageId(id);
-            persistedData = localStorage.getItem(localStorageId);
-
-            // If we haven't found this item in local storage, give up
-            if (persistedData) {
-                log(qq.format("Identified file with ID {} and name of {} as resumable.", id, getName(id)));
-
-                persistedData = JSON.parse(persistedData);
-
-                onUuidChanged(id, persistedData.uuid);
-                setKey(id, persistedData.key);
-                fileState[id].loaded = persistedData.loaded;
-                fileState[id].chunking = persistedData.chunking;
-            }
-        }
-    }
-
-    // Persist any data needed to resume this upload in a new session.
-    function maybePersistChunkedState(id) {
-        var localStorageId, persistedData;
-
-        // If local storage isn't supported by the browser, or if resume isn't enabled or possible, give up
-        if (resumeEnabled) {
-            localStorageId = getLocalStorageId(id);
-
-            persistedData = {
-                name: getName(id),
-                size: getSize(id),
-                uuid: getUuid(id),
-                key: getActualKey(id),
-                loaded: fileState[id].loaded,
-                chunking: fileState[id].chunking,
-                lastUpdated: Date.now()
-            };
-
-            localStorage.setItem(localStorageId, JSON.stringify(persistedData));
-        }
-    }
-
-    // Removes a chunked upload record from local storage, if possible.
-    // Returns true if the item was removed, false otherwise.
-    function maybeDeletePersistedChunkData(id) {
-        var localStorageId;
-
-        if (resumeEnabled) {
-            localStorageId = getLocalStorageId(id);
-
-            if (localStorageId && localStorage.getItem(localStorageId)) {
-                localStorage.removeItem(localStorageId);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    // Iterates through all S3 XHR handler-created resume records (in local storage),
-    // invoking the passed callback and passing in the key and value of each local storage record.
-    function iterateResumeRecords(callback) {
-        if (resumeEnabled) {
-            qq.each(localStorage, function(key, item) {
-                if (key.indexOf("qqs3resume-") === 0) {
-                    var uploadData = JSON.parse(item);
-                    callback(key, uploadData);
-                }
-            });
-        }
-    }
-
-    /**
-     * @returns {Array} Array of objects containing properties useful to integrators
-     * when it is important to determine which files are potentially resumable.
-     */
-    function getResumableFilesData() {
-        var resumableFilesData = [];
-
-        iterateResumeRecords(function(key, uploadData) {
-            resumableFilesData.push({
-                name: uploadData.name,
-                size: uploadData.size,
-                uuid: uploadData.uuid,
-                partIdx: uploadData.chunking.lastSent + 1,
-                key: uploadData.key
-            });
-        });
-
-        return resumableFilesData;
-    }
-
-    // Deletes any local storage records that are "expired".
-    function removeExpiredChunkingRecords() {
-        var expirationDays = spec.resume.recordsExpireIn;
-
-        iterateResumeRecords(function(key, uploadData) {
-            var expirationDate = new Date(uploadData.lastUpdated);
-
-            // transform updated date into expiration date
-            expirationDate.setDate(expirationDate.getDate() + expirationDays);
-
-            if (expirationDate.getTime() <= Date.now()) {
-                log("Removing expired resume record with key " + key);
-                localStorage.removeItem(key);
-            }
-        });
-    }
-
-    /**
-     * @param id File ID
-     * @returns {string} Identifier for this item that may appear in the browser's local storage
-     */
-    function getLocalStorageId(id) {
-        var name = getName(id),
-            size = getSize(id),
-            chunkSize = spec.chunking.partSize,
-            endpoint = spec.endpointStore.get(id),
-            bucket = qq.s3.util.getBucket(endpoint);
-
-        return qq.format("qqs3resume-{}-{}-{}-{}", name, size, chunkSize, bucket);
-    }
-
-    /**
-     * Determine if the associated file should be chunked.
-     *
-     * @param id ID of the associated file
-     * @returns {*} true if chunking is enabled, possible, and the file can be split into more than 1 part
-     */
-    function shouldChunkThisFile(id) {
-        var totalChunks;
-
-        if (!fileState[id].chunking) {
-            fileState[id].chunking = {};
-            totalChunks = internalApi.getTotalChunks(id);
-            if (totalChunks > 1) {
-                fileState[id].chunking.enabled = true;
-                fileState[id].chunking.parts = totalChunks;
-            }
-            else {
-                fileState[id].chunking.enabled = false;
-            }
-        }
-
-        return fileState[id].chunking.enabled;
-    }
-
     // Starting point for incoming requests for chunked uploads.
     function handleChunkedUpload(id) {
         maybeInitiateMultipart(id).then(
@@ -572,13 +415,13 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
      * @returns {number} The 0-based index of the next file chunk to be sent to S3
      */
     function getNextPartIdxToSend(id) {
-        return fileState[id].chunking.lastSent >= 0 ? fileState[id].chunking.lastSent + 1 : 0;
+        return handler._getFileState(id).chunking.lastSent >= 0 ? handler._getFileState(id).chunking.lastSent + 1 : 0;
     }
 
     // Either initiate an upload for the next chunk for an associated file, or initiate a
     // "Complete Multipart Upload" request if there are no more parts to be sent.
     function maybeUploadNextChunk(id) {
-        var totalParts = fileState[id].chunking.parts,
+        var totalParts = handler._getFileState(id).chunking.parts,
             nextPartIdx = getNextPartIdxToSend(id);
 
         if (nextPartIdx < totalParts) {
@@ -592,8 +435,8 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
     // Sends a "Complete Multipart Upload" request and then signals completion of the upload
     // when the response to this request has been parsed.
     function completeMultipart(id) {
-        var uploadId = fileState[id].chunking.uploadId,
-            etagMap = fileState[id].chunking.etags;
+        var uploadId = handler._getFileState(id).chunking.uploadId,
+            etagMap = handler._getFileState(id).chunking.etags;
 
         completeMultipartRequester.send(id, uploadId, etagMap).then(
             // Successfully completed
@@ -612,9 +455,9 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
     function uploadNextChunk(id) {
         var idx = getNextPartIdxToSend(id),
             name = getName(id),
-            xhr = fileState[id].xhr,
+            xhr = handler._getFileState(id).xhr,
             totalFileSize = getSize(id),
-            chunkData = internalApi.getChunkData(id, idx),
+            chunkData = handler._getChunkData(id, idx),
             domain = spec.endpointStore.get(id);
 
         // Add appropriate headers to the multipart upload request.
@@ -622,11 +465,11 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         addChunkedHeaders(id).then(function(headers, endOfUrl) {
             var url = domain + "/" + endOfUrl;
 
-            spec.onUploadChunk(id, name, internalApi.getChunkDataForCallback(chunkData));
+            spec.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
 
             xhr.upload.onprogress = function(e) {
                 if (e.lengthComputable) {
-                    var totalLoaded = e.loaded + fileState[id].loaded;
+                    var totalLoaded = e.loaded + handler._getFileState(id).loaded;
 
                     spec.onProgress(id, name, totalLoaded, totalFileSize);
                 }
@@ -666,7 +509,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
             signatureConstructor = restSignatureRequester.constructStringToSign
                 (restSignatureRequester.REQUEST_TYPE.MULTIPART_UPLOAD, bucket, key)
                 .withPartNum(getNextPartIdxToSend(id) + 1)
-                .withUploadId(fileState[id].chunking.uploadId);
+                .withUploadId(handler._getFileState(id).chunking.uploadId);
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
         restSignatureRequester.getSignature(id, {signatureConstructor: signatureConstructor}).then(function(response) {
@@ -686,15 +529,15 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
      * @returns {qq.Promise} A promise that is fulfilled when the initiate request has been sent and the response has been parsed.
      */
     function maybeInitiateMultipart(id) {
-        if (!fileState[id].chunking.uploadId) {
+        if (!handler._getFileState(id).chunking.uploadId) {
             return initiateMultipartRequester.send(id).then(
                 function(uploadId) {
-                    fileState[id].chunking.uploadId = uploadId;
+                    handler._getFileState(id).chunking.uploadId = uploadId;
                 }
             );
         }
         else {
-            return new qq.Promise().success(fileState[id].chunking.uploadId);
+            return new qq.Promise().success(handler._getFileState(id).chunking.uploadId);
         }
     }
 
@@ -704,26 +547,26 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
     // We need these items to "Complete" the multipart upload after all chunks have been successfully sent.
     function uploadChunkCompleted(id) {
         var idxSent = getNextPartIdxToSend(id),
-            xhr = fileState[id].xhr,
+            xhr = handler._getFileState(id).xhr,
             response = parseResponse(id),
-            chunkData = internalApi.getChunkData(id, idxSent),
+            chunkData = handler._getChunkData(id, idxSent),
             etag;
 
         if (response.success) {
-            fileState[id].chunking.lastSent = idxSent;
+            handler._getFileState(id).chunking.lastSent = idxSent;
             etag = xhr.getResponseHeader("ETag");
 
-            if (!fileState[id].chunking.etags) {
-                fileState[id].chunking.etags = [];
+            if (!handler._getFileState(id).chunking.etags) {
+                handler._getFileState(id).chunking.etags = [];
             }
-            fileState[id].chunking.etags.push({part: idxSent+1, etag: etag});
+            handler._getFileState(id).chunking.etags.push({part: idxSent+1, etag: etag});
 
             // Update the bytes loaded counter to reflect all bytes successfully transferred in the associated chunked request
-            fileState[id].loaded += chunkData.size;
+            handler._getFileState(id).loaded += chunkData.size;
 
-            maybePersistChunkedState(id);
+            handler._maybePersistChunkedState(id);
 
-            spec.onUploadChunkSuccess(id, internalApi.getChunkDataForCallback(chunkData), response, xhr);
+            spec.onUploadChunkSuccess(id, handler._getChunkDataForCallback(chunkData), response, xhr);
 
             // We might not be done with this file...
             maybeUploadNextChunk(id);
@@ -738,35 +581,31 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
     }
 
 
-    qq.extend(this, new qq.UploadHandlerXhrApi(
-        internalApi,
-        {fileState: fileState, chunking: chunkingPossible ? spec.chunking : null},
-        {onUpload: handleStartUploadSignal, onCancel: spec.onCancel, onUuidChanged: onUuidChanged, getName: getName,
-            getSize: getSize, getUuid: getUuid, log: log}
+    qq.extend(this, new qq.AbstractNonTraditionalUploadHandlerXhr({
+            options: {
+                namespace: "s3",
+                chunking: chunkingPossible ? spec.chunking : null,
+                resumeEnabled: resumeEnabled
+            },
+
+            proxy: {
+                onUpload: handleStartUploadSignal,
+                onCancel: spec.onCancel,
+                onUuidChanged: onUuidChanged,
+                getName: getName,
+                getSize: getSize,
+                getUuid: getUuid,
+                getEndpoint: endpointStore.get,
+                log: log
+            }
+        }
     ));
 
-
-    removeExpiredChunkingRecords();
-
-
-    // Base XHR API overrides
     qq.override(this, function(super_) {
         return {
-            add: function(id, fileOrBlobData) {
-                super_.add.apply(this, arguments);
-
-                if (resumeEnabled) {
-                    maybePrepareForResume(id);
-                }
-            },
-
-            getResumableFilesData: function() {
-                return getResumableFilesData();
-            },
-
             expunge: function(id) {
-                var uploadId = fileState[id].chunking && fileState[id].chunking.uploadId,
-                    existedInLocalStorage = maybeDeletePersistedChunkData(id);
+                var uploadId = handler._getFileState(id).chunking && handler._getFileState(id).chunking.uploadId,
+                    existedInLocalStorage = handler._maybeDeletePersistedChunkData(id);
 
                 if (uploadId !== undefined && existedInLocalStorage) {
                     abortMultipartRequester.send(id, uploadId);
@@ -775,8 +614,12 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
                 super_.expunge(id);
             },
 
-            getThirdPartyFileId: function(id) {
-                return getActualKey(id);
+            _getLocalStorageId: function(id) {
+                var baseStorageId = super_._getLocalStorageId(id),
+                    endpoint = endpointStore.get(id),
+                    bucketName = qq.s3.util.getBucket(endpoint);
+
+                return baseStorageId + "-" + bucketName;
             }
         };
     });

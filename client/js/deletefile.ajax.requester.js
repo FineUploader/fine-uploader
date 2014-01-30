@@ -32,7 +32,7 @@ qq.DeleteFileAjaxRequester = function(o) {
         return {};
     }
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         validMethods: ["POST", "DELETE"],
         method: options.method,
         endpointStore: options.endpointStore,
@@ -45,7 +45,7 @@ qq.DeleteFileAjaxRequester = function(o) {
         onSend: options.onDelete,
         onComplete: options.onDeleteComplete,
         cors: options.cors
-    });
+    }));
 
 
     qq.extend(this, {

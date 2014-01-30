@@ -3,22 +3,21 @@
  * Common APIs exposed to creators of upload via form/iframe handlers.  This is reused and possibly overridden
  * in some cases by specific form upload handlers.
  *
- * @param internalApi Object that will be filled with internal API methods
- * @param spec Options/static values used to configure this handler
- * @param proxy Callbacks & methods used to query for or push out data/changes
  * @constructor
  */
-qq.UploadHandlerFormApi = function(internalApi, spec, proxy) {
+qq.AbstractUploadHandlerForm = function(spec) {
     "use strict";
 
-    var formHandlerInstanceId = qq.getUniqueId(),
+    var options = spec.options,
+        handler = this,
+        proxy = spec.proxy,
+        formHandlerInstanceId = qq.getUniqueId(),
         onloadCallbacks = {},
         detachLoadEvents = {},
         postMessageCallbackTimers = {},
-        publicApi = this,
-        isCors = spec.isCors,
-        fileState = spec.fileState,
-        inputName = spec.inputName,
+        isCors = options.isCors,
+        fileState = {},
+        inputName = options.inputName,
         onCancel = proxy.onCancel,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
@@ -45,7 +44,7 @@ qq.UploadHandlerFormApi = function(internalApi, spec, proxy) {
             corsMessageReceiver.stopReceivingMessages(id);
         }
 
-        var iframe = document.getElementById(internalApi.getIframeName(id));
+        var iframe = document.getElementById(handler._getIframeName(id));
         if (iframe) {
             // To cancel request set src to something else.  We use src="javascript:false;"
             // because it doesn't trigger ie6 prompt on https
@@ -90,7 +89,7 @@ qq.UploadHandlerFormApi = function(internalApi, spec, proxy) {
         corsMessageReceiver.receiveMessage(iframeName, function(message) {
             log("Received the following window message: '" + message + "'");
             var fileId = getFileIdForIframeName(iframeName),
-                response = internalApi.parseJsonResponse(fileId, message),
+                response = handler._parseJsonResponse(fileId, message),
                 uuid = response.uuid,
                 onloadCallback;
 
@@ -99,7 +98,7 @@ qq.UploadHandlerFormApi = function(internalApi, spec, proxy) {
                 clearTimeout(postMessageCallbackTimers[iframeName]);
                 delete postMessageCallbackTimers[iframeName];
 
-                internalApi.detachLoadEvent(iframeName);
+                handler._detachLoadEvent(iframeName);
 
                 onloadCallback = onloadCallbacks[uuid];
 
@@ -139,150 +138,6 @@ qq.UploadHandlerFormApi = function(internalApi, spec, proxy) {
         return iframeName.split("_")[0];
     }
 
-
-// INTERNAL API
-
-    qq.extend(internalApi, {
-        /**
-         * @param fileId ID of the associated file
-         * @returns {string} The `document`-unique name of the iframe
-         */
-        getIframeName: function(fileId) {
-            return fileId + "_" + formHandlerInstanceId;
-        },
-
-        /**
-         * Creates an iframe with a specific document-unique name.
-         *
-         * @param id ID of the associated file
-         * @returns {HTMLIFrameElement}
-         */
-        createIframe: function(id) {
-            var iframeName = internalApi.getIframeName(id);
-
-            return initIframeForUpload(iframeName);
-        },
-
-        /**
-         * @param id ID of the associated file
-         * @param innerHtmlOrMessage JSON message
-         * @returns {*} The parsed response, or an empty object if the response could not be parsed
-         */
-        parseJsonResponse: function(id, innerHtmlOrMessage) {
-            var response;
-
-            try {
-                response = qq.parseJson(innerHtmlOrMessage);
-
-                if (response.newUuid !== undefined) {
-                    onUuidChanged(id, response.newUuid);
-                }
-            }
-            catch(error) {
-                log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
-                response = {};
-            }
-
-            return response;
-        },
-
-        /**
-         * Generates a form element and appends it to the `document`.  When the form is submitted, a specific iframe is targeted.
-         * The name of the iframe is passed in as a property of the spec parameter, and must be unique in the `document`.  Note
-         * that the form is hidden from view.
-         *
-         * @param spec An object containing various properties to be used when constructing the form.  Required properties are
-         * currently: `method`, `endpoint`, `params`, `paramsInBody`, and `targetName`.
-         * @returns {HTMLFormElement} The created form
-         */
-        initFormForUpload: function(spec) {
-            var method = spec.method,
-                endpoint = spec.endpoint,
-                params = spec.params,
-                paramsInBody = spec.paramsInBody,
-                targetName = spec.targetName,
-                form = qq.toElement("<form method='" + method + "' enctype='multipart/form-data'></form>"),
-                url = endpoint;
-
-            if (paramsInBody) {
-                qq.obj2Inputs(params, form);
-            }
-            else {
-                url = qq.obj2url(params, endpoint);
-            }
-
-            form.setAttribute("action", url);
-            form.setAttribute("target", targetName);
-            form.style.display = "none";
-            document.body.appendChild(form);
-
-            return form;
-        },
-
-        /**
-         * This function either delegates to a more specific message handler if CORS is involved,
-         * or simply registers a callback when the iframe has been loaded that invokes the passed callback
-         * after determining if the content of the iframe is accessible.
-         *
-         * @param iframe Associated iframe
-         * @param callback Callback to invoke after we have determined if the iframe content is accessible.
-         */
-        attachLoadEvent: function(iframe, callback) {
-            /*jslint eqeq: true*/
-            var responseDescriptor;
-
-            if (isCors) {
-                registerPostMessageCallback(iframe, callback);
-            }
-            else {
-                detachLoadEvents[iframe.id] = qq(iframe).attach("load", function(){
-                    log("Received response for " + iframe.id);
-
-                    // when we remove iframe from dom
-                    // the request stops, but in IE load
-                    // event fires
-                    if (!iframe.parentNode){
-                        return;
-                    }
-
-                    try {
-                        // fixing Opera 10.53
-                        if (iframe.contentDocument &&
-                            iframe.contentDocument.body &&
-                            iframe.contentDocument.body.innerHTML == "false"){
-                            // In Opera event is fired second time
-                            // when body.innerHTML changed from false
-                            // to server response approx. after 1 sec
-                            // when we upload file with iframe
-                            return;
-                        }
-                    }
-                    catch (error) {
-                        //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
-                        log("Error when attempting to access iframe during handling of upload response (" + error.message + ")", "error");
-                        responseDescriptor = {success: false};
-                    }
-
-                    callback(responseDescriptor);
-                });
-            }
-        },
-
-        /**
-         * Called when we are no longer interested in being notified when an iframe has loaded.
-         *
-         * @param id Associated file ID
-         */
-        detachLoadEvent: function(id) {
-            if (detachLoadEvents[id] !== undefined) {
-                detachLoadEvents[id]();
-                delete detachLoadEvents[id];
-            }
-        }
-    });
-
-
-// PUBLIC API
 
     qq.extend(this, {
         add: function(id, fileInput) {
@@ -331,6 +186,147 @@ qq.UploadHandlerFormApi = function(internalApi, spec, proxy) {
 
         upload: function(id) {
             // implementation-specific
+        },
+
+        /**
+         * @param fileId ID of the associated file
+         * @returns {string} The `document`-unique name of the iframe
+         */
+        _getIframeName: function(fileId) {
+            return fileId + "_" + formHandlerInstanceId;
+        },
+
+        /**
+         * Creates an iframe with a specific document-unique name.
+         *
+         * @param id ID of the associated file
+         * @returns {HTMLIFrameElement}
+         */
+        _createIframe: function(id) {
+            var iframeName = handler._getIframeName(id);
+
+            return initIframeForUpload(iframeName);
+        },
+
+        /**
+         * @param id ID of the associated file
+         * @param innerHtmlOrMessage JSON message
+         * @returns {*} The parsed response, or an empty object if the response could not be parsed
+         */
+        _parseJsonResponse: function(id, innerHtmlOrMessage) {
+            var response;
+
+            try {
+                response = qq.parseJson(innerHtmlOrMessage);
+
+                if (response.newUuid !== undefined) {
+                    onUuidChanged(id, response.newUuid);
+                }
+            }
+            catch(error) {
+                log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
+                response = {};
+            }
+
+            return response;
+        },
+
+        /**
+         * Generates a form element and appends it to the `document`.  When the form is submitted, a specific iframe is targeted.
+         * The name of the iframe is passed in as a property of the spec parameter, and must be unique in the `document`.  Note
+         * that the form is hidden from view.
+         *
+         * @param spec An object containing various properties to be used when constructing the form.  Required properties are
+         * currently: `method`, `endpoint`, `params`, `paramsInBody`, and `targetName`.
+         * @returns {HTMLFormElement} The created form
+         */
+        _initFormForUpload: function(spec) {
+            var method = spec.method,
+                endpoint = spec.endpoint,
+                params = spec.params,
+                paramsInBody = spec.paramsInBody,
+                targetName = spec.targetName,
+                form = qq.toElement("<form method='" + method + "' enctype='multipart/form-data'></form>"),
+                url = endpoint;
+
+            if (paramsInBody) {
+                qq.obj2Inputs(params, form);
+            }
+            else {
+                url = qq.obj2url(params, endpoint);
+            }
+
+            form.setAttribute("action", url);
+            form.setAttribute("target", targetName);
+            form.style.display = "none";
+            document.body.appendChild(form);
+
+            return form;
+        },
+
+        /**
+         * This function either delegates to a more specific message handler if CORS is involved,
+         * or simply registers a callback when the iframe has been loaded that invokes the passed callback
+         * after determining if the content of the iframe is accessible.
+         *
+         * @param iframe Associated iframe
+         * @param callback Callback to invoke after we have determined if the iframe content is accessible.
+         */
+        _attachLoadEvent: function(iframe, callback) {
+            /*jslint eqeq: true*/
+            var responseDescriptor;
+
+            if (isCors) {
+                registerPostMessageCallback(iframe, callback);
+            }
+            else {
+                detachLoadEvents[iframe.id] = qq(iframe).attach("load", function(){
+                    log("Received response for " + iframe.id);
+
+                    // when we remove iframe from dom
+                    // the request stops, but in IE load
+                    // event fires
+                    if (!iframe.parentNode){
+                        return;
+                    }
+
+                    try {
+                        // fixing Opera 10.53
+                        if (iframe.contentDocument &&
+                            iframe.contentDocument.body &&
+                            iframe.contentDocument.body.innerHTML == "false"){
+                            // In Opera event is fired second time
+                            // when body.innerHTML changed from false
+                            // to server response approx. after 1 sec
+                            // when we upload file with iframe
+                            return;
+                        }
+                    }
+                    catch (error) {
+                        //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
+                        log("Error when attempting to access iframe during handling of upload response (" + error.message + ")", "error");
+                        responseDescriptor = {success: false};
+                    }
+
+                    callback(responseDescriptor);
+                });
+            }
+        },
+
+        /**
+         * Called when we are no longer interested in being notified when an iframe has loaded.
+         *
+         * @param id Associated file ID
+         */
+        _detachLoadEvent: function(id) {
+            if (detachLoadEvents[id] !== undefined) {
+                detachLoadEvents[id]();
+                delete detachLoadEvents[id];
+            }
+        },
+
+        _getFileState: function(id) {
+            return fileState[id];
         }
     });
 };

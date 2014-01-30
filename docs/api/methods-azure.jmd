@@ -1,0 +1,104 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Azure Methods" %}
+
+{% block sidebar %}
+<div id="sidebar-accordion" class="accordion">
+</div>
+{% endblock %}
+
+{% block js_head %}
+<script src="{{ ASSETS }}/js/main.js"></script>
+{% endblock %}
+
+{% block js_footer %}
+<script type="text/javascript">
+$(document).ready(function() {
+    renderMethodsSidebarNav(['azure']);
+});
+</script>
+{% endblock %}
+
+
+{% block content %}
+{% markdown %}
+# Methods <small>Azure</small>{: .page-header }
+{% endmarkdown %}
+
+<div class="all-methods" data-spy="" data-target="">
+<div class="methods-azure">
+
+{% markdown %}
+## Azure
+
+The Azure Blob Storage uploader provides many of the same API methods as the traditional
+uploader, but there are a few crucial differences to take into account.
+If you plan to use the Azure uploader, then use the following table as your API
+reference.  All methods outlined in the core or UI documentation are also available
+in Fine Uploader Azure, unless otherwise noted here.
+{% endmarkdown %}
+
+{{ api_method("getBlobName", "getBlobName (fileId)", "Retreive the blob name with the associated ID",
+[
+        {
+            "name": "fileId",
+            "type": "Integer",
+            "description": "An ID corresponding to a file."
+        },
+],
+[
+    {
+        "type": "String",
+        "description": "The blob name associated with the file ID."
+    }
+]) }}
+
+{{ api_method("getResumableFilesData", "getResumableFilesData ()", "Returns an array of potentially resumable items. Each resumable is represented by an object with the following properties:
+
+| Property | Description |
+| -------- | :---------- |
+| `name`   | filename |
+| `uuid`   | the unique id |
+| `partIdx` | the index of the part where the resume will start from |
+| `key` | The associated file's blob name in Azure Blob Storage |
+", null,
+[
+    {
+        "type": "Array",
+        "description": "An array of resumable items. "
+    }
+
+]) }}
+
+{{ api_method("setEndpoint", "setEndpoint (containerUrl[, id])",
+"Modify the container URL where upload requests should be directed. The endpoint for a specific file or blob can be changed by passing in an optional `id` parameter. An `id` will always be a number and refers to a single file.",
+[
+        {
+            "name": "containerUrl",
+            "type": "String",
+            "description": "The new Azure Blob Storage container URL"
+        },
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "An ID corresponding to a file."
+        },
+]) }}
+
+{{ api_method("setUploadSuccessParams", "setUploadSuccessParams (newParams[, id])",
+"Set additional parameters for the upload success request. Note that Fine Uploader will still send the container URL, blob name, filename, and UUID as well.",
+[
+        {
+            "name": "newParams",
+            "type": "Object",
+            "description": "The additional parameters set for the upload request."
+        },
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "A file id to apply these upload success parameters to."
+        },
+]) }}
+</div>
+</div>
+
+{% endblock %}

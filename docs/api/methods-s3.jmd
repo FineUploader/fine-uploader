@@ -52,14 +52,21 @@ in Fine Uploader S3, unless otherwise noted here.
     }
 ]) }}
 
-{{ api_method("getResumableFilesData", "getResumableFilesData ()",
-"Retrieve information about files that may be resumed during this session. Includes all properties documented in the associated [core method](methods.html#getResumableFilesData), as well as a key property.",
-[],
+{{ api_method("getResumableFilesData", "getResumableFilesData ()", "Returns an array of potentially resumable items. Each resumable is represented by an object with the following properties:
+
+| Property | Description |
+| -------- | :---------- |
+| `name`   | filename |
+| `uuid`   | the unique id |
+| `partIdx` | the index of the part where the resume will start from |
+| `key` | The associated object's S3 key |
+", null,
 [
     {
-        "type": "Object",
-        "description": "Contains information about files that may be resumed."
+        "type": "Array",
+        "description": "An array of resumable items. "
     }
+
 ]) }}
 
 {{ api_method("setAcl", "setAcl (newAcl[, id])", "Set/update the ACL to be used for one or all file uploads.  If the ID is omitted, the new ACL targets all future files that have not yet been uploaded.",
@@ -101,7 +108,7 @@ in Fine Uploader S3, unless otherwise noted here.
 ]) }}
 
 {{ api_method("setUploadSuccessParams", "setUploadSuccessParams (newParams[, id])",
-"Set additional paraemters for the upload success request. Note that Fine Uploader will still send the bucket name, key, filename, and UUID as well.",
+"Set additional parameters for the upload success request. Note that Fine Uploader will still send the bucket name, key, filename, and UUID as well.",
 [
         {
             "name": "newParams",

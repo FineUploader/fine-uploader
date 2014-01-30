@@ -1,0 +1,14 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Uploading Directly to Amazon S3" %}
+{% block sidebar %}
+{% endblock %}
+{% block content %}
+{% markdown %}
+# Uploading Directly to Amazon S3 {: .page-header }
+
+Please see [the blog post on Fine Uploader S3][s3blog].
+
+[s3blog]: http://blog.fineuploader.com/2013/08/16/fine-uploader-s3-upload-directly-to-amazon-s3-from-your-browser/
+
+{% endmarkdown %}
+{% endblock %}

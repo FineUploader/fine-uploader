@@ -8,10 +8,10 @@
     qq.basePublicApi = {
         log: function(str, level) {
             if (this._options.debug && (!level || level === "info")) {
-                qq.log("[FineUploader " + qq.version + "] " + str);
+                qq.log("[Fine Uploader " + qq.version + "] " + str);
             }
             else if (level && level !== "info") {
-                qq.log("[FineUploader " + qq.version + "] " + str, level);
+                qq.log("[Fine Uploader " + qq.version + "] " + str, level);
 
             }
         },
@@ -199,7 +199,7 @@
         },
 
         deleteFile: function(id) {
-            this._onSubmitDelete(id);
+            return this._onSubmitDelete(id);
         },
 
         setDeleteFileEndpoint: function(endpoint, id) {
@@ -817,13 +817,14 @@
             }
 
             if (this._isDeletePossible()) {
-                return this._handleCheckedCallback({
+                this._handleCheckedCallback({
                     name: "onSubmitDelete",
                     callback: qq.bind(this._options.callbacks.onSubmitDelete, this, id),
                     onSuccess: adjustedOnSuccessCallback ||
                         qq.bind(this._deleteHandler.sendDelete, this, id, uuid, additionalMandatedParams),
                     identifier: id
                 });
+                return true;
             }
             else {
                 this.log("Delete request ignored for ID " + id + ", delete feature is disabled or request not possible " +

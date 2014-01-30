@@ -32,20 +32,20 @@ var $fixture;
             },
 
             ok: function() {
-                hit++;
                 super_.ok.apply(this, arguments);
+                hit++;
                 checkIfDone();
             },
 
             equal: function() {
-                hit++;
                 super_.equal.apply(this, arguments);
+                hit++;
                 checkIfDone();
             },
 
             deepEqual: function() {
-                hit++;
                 super_.deepEqual.apply(this, arguments);
+                hit++;
                 checkIfDone();
             }
         };
@@ -55,6 +55,7 @@ var $fixture;
         // "Turn off" the before unload handler since this may cause the tests to stall when run in a browser
         qq.FineUploaderBasic.prototype._preventLeaveInProgress = function() {};
         qq.s3.FineUploaderBasic.prototype._preventLeaveInProgress = function() {};
+        qq.azure.FineUploaderBasic.prototype._preventLeaveInProgress = function() {};
     });
 
     beforeEach(function() {
