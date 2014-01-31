@@ -1417,7 +1417,7 @@
             return fileDescriptors;
         },
 
-        _createStore: function(initialValue, readoOlyValues) {
+        _createStore: function(initialValue, readOnlyValues) {
             var store = {},
                 catchall = initialValue,
                 copy = function(orig) {
@@ -1427,13 +1427,13 @@
                     return orig;
                 },
                 getReadOnlyValues = function() {
-                    if (qq.isFunction(readoOlyValues)) {
-                        return readoOlyValues();
+                    if (qq.isFunction(readOnlyValues)) {
+                        return readOnlyValues();
                     }
-                    return readoOlyValues;
+                    return readOnlyValues;
                 },
                 includeReadOnlyValues = function(existing) {
-                    if (readoOlyValues && qq.isObject(existing)) {
+                    if (readOnlyValues && qq.isObject(existing)) {
                         qq.extend(existing, getReadOnlyValues());
                     }
                 };
@@ -1522,17 +1522,31 @@
 
         },
 
-        _getFormInputsAsObject: function() {
-            var form = this._options.form.element;
-
+        _getFormInputsAsObject: function(formEl) {
             /* jshint eqnull:true */
-            if (form == null) {
+            if (formEl == null) {
                 return null;
             }
 
-            return qq.form2Obj(form);
+            return qq.form2Obj(formEl);
 
 
+        },
+
+        _maybeAttachToForm: function() {
+            var formEl = this._options.form.element;
+
+            if (formEl) {
+                if (qq.isString(formEl)) {
+                    formEl = document.getElementById(formEl);
+                }
+
+                if (formEl && !this._options.form.autoUpload) {
+                    this._options.autoUpload = false;
+                }
+            }
+
+            return formEl;
         }
     };
 }());

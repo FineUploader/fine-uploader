@@ -171,7 +171,9 @@
 
             // Send parameters associated with an existing form along with the files
             form: {
-                element: null,
+                // Element ID, HTMLElement, or null
+                element: "qq-form",
+
                 // Overrides the base `autoUpload`, unless `element` is null.
                 autoUpload: false
             }
@@ -199,7 +201,7 @@
 
         this._paramsStore = this._createStore(
             this._options.request.params,
-            qq.bind(this._getFormInputsAsObject, this, this._options.form.element)
+            qq.bind(this._getFormInputsAsObject, this, this._maybeAttachToForm())
         );
 
         this._deleteFileParamsStore = this._createStore(this._options.deleteFile.params);
@@ -232,12 +234,6 @@
 
         this._imageGenerator = qq.ImageGenerator && new qq.ImageGenerator(qq.bind(this.log, this));
         this._refreshSessionData();
-
-        // It generally only makes sense to associate a form with Fine Uploader if autoUpload
-        // is set to false.  This is overridable though, via the `form.autoUpload` option.
-        if (this._options.form.element && !this._options.form.autoUpload) {
-            this._options.autoUpload = false;
-        }
     };
 
     // Define the private & public API methods.
