@@ -855,7 +855,7 @@ describe("util.js", function () {
             assert.deepEqual(qq.form2Obj(form[0]), expectedObj);
         });
 
-        it("should ignore irrelevant input elements", function() {
+        it("should ignore only irrelevant input elements", function() {
             var form = $("<form></form>"),
                 checkbox = $("<input type='checkbox' name='test_checkbox'>"),
                 button = $("<input type='button' name='test_button' value='button'>"),
@@ -863,11 +863,14 @@ describe("util.js", function () {
                 image = $("<input type='image' name='test_image' scr='some/img'>"),
                 reset = $("<input type='reset' name='test_reset'>"),
                 submit = $("<input type='submit' name='test_submit' value='submit'>"),
+                disaledAndNotHidden = $("<input type='text' name='test_text_disabled' disabled=true>"),
+                disaledAndHidden = $("<input type='hidden' name='test_hidden_disabled' value='foo' disabled=true>"),
                 expectedObj = {
-                    test_checkbox: true
+                    test_checkbox: true,
+                    test_hidden_disabled: "foo"
                 };
 
-            form.append(checkbox).append(button).append(file).append(image).append(reset).append(submit);
+            form.append(checkbox).append(button).append(file).append(image).append(reset).append(submit).append(disaledAndNotHidden).append(disaledAndHidden);
 
             checkbox.prop("checked", expectedObj.test_checkbox);
 
