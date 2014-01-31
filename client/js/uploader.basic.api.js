@@ -1544,6 +1544,10 @@
                 if (formEl && !this._options.form.autoUpload) {
                     this._options.autoUpload = false;
                 }
+
+                if (formEl && formEl.getAttribute("action")) {
+                    this._options.request.endpoint = formEl.getAttribute("action");
+                }
             }
 
             return formEl;
