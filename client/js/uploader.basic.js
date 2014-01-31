@@ -171,7 +171,9 @@
 
             // Send parameters associated with an existing form along with the files
             form: {
-                element: null
+                element: null,
+                // Overrides the base `autoUpload`, unless `element` is null.
+                autoUpload: false
             }
         };
 
@@ -230,6 +232,12 @@
 
         this._imageGenerator = qq.ImageGenerator && new qq.ImageGenerator(qq.bind(this.log, this));
         this._refreshSessionData();
+
+        // It generally only makes sense to associate a form with Fine Uploader if autoUpload
+        // is set to false.  This is overridable though, via the `form.autoUpload` option.
+        if (this._options.form.element && !this._options.form.autoUpload) {
+            this._options.autoUpload = false;
+        }
     };
 
     // Define the private & public API methods.
