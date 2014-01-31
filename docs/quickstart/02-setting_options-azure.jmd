@@ -134,7 +134,7 @@ Now our Fine Uploader page should look something like this:
             },
             uploadSuccess: {
                 endpoint: '/success'
-            }
+            },
             retry: {
                enableAuto: true
             },
