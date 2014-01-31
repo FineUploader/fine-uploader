@@ -45,12 +45,6 @@ mode you are in and keep that in mind when determining which options do what.
 
 {{ api_option("multiple", "multiple", "When false this will prevent the user from simultaneously selecting or dropping more than one item.", "Boolean", "true") }}
 
-{{ api_option("showMessage", "showMessage", "Provide a function here to display a message to the user when the uploader receives an error or the user attempts to leave the page. The provided function may return a promise if one wishes to do asynchronous work whilst waiting for user input.", "Function", "") }}
-
-{{ api_option("showConfirm", "showConfirm", "Provide a function here to prompt the user to confirm deletion of a file. The provided function may return a promise if one wishes to do asynchronous work whilst waiting for user input.", "Function", "") }}
-
-{{ api_option("showPrompt", "showPrompt", "Provide a function here to prompt the user for a filename when pasting file(s). The provided function may return a promise if one wishes to do asynchronous work whilst waiting for user input.", "Function", "") }}
-
 {{ api_parent_option("blobs", "blobs", "",
     (
         ("blobs.defaultName", "defaultName", "The default name to be used for nameless `Blob`s.", "String", "Misc data",),
