@@ -1417,7 +1417,7 @@
             return fileDescriptors;
         },
 
-        _createStore: function(initialValue) {
+        _createStore: function(initialValue, readoOlyValues) {
             var store = {},
                 catchall = initialValue,
                 copy = function(orig) {
@@ -1425,6 +1425,17 @@
                         return qq.extend({}, orig);
                     }
                     return orig;
+                },
+                getReadOnlyValues = function() {
+                    if (qq.isFunction(readoOlyValues)) {
+                        return readoOlyValues();
+                    }
+                    return readoOlyValues;
+                },
+                includeReadOnlyValues = function(existing) {
+                    if (readoOlyValues && qq.isObject(existing)) {
+                        qq.extend(existing, getReadOnlyValues());
+                    }
                 };
 
             return {
@@ -1440,11 +1451,19 @@
                 },
 
                 get: function(id) {
+                    var values;
+
                     /*jshint eqeqeq: true, eqnull: true*/
                     if (id != null && store[id]) {
-                        return copy(store[id]);
+                        values = store[id];
                     }
-                    return copy(catchall);
+                    else {
+                        values = catchall;
+                    }
+
+                    includeReadOnlyValues(values);
+
+                    return copy(values);
                 },
 
                 remove: function(fileId) {
@@ -1500,6 +1519,19 @@
             var extraButtonSpec = this._extraButtonSpecs[buttonId];
 
             return extraButtonSpec ? extraButtonSpec.validation : this._options.validation;
+
+        },
+
+        _getFormInputsAsObject: function() {
+            var form = this._options.form.element;
+
+            /* jshint eqnull:true */
+            if (form == null) {
+                return null;
+            }
+
+            return qq.form2Obj(form);
+
 
         }
     };

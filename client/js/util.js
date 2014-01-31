@@ -277,17 +277,27 @@ var qq = function(element) {
         return qq.isFile(maybeFileOrInput) || qq.isInput(maybeFileOrInput);
     };
 
-    qq.isInput = function(maybeInput) {
+    qq.isInput = function(maybeInput, notFile) {
+        var evaluateType = function(type) {
+            var normalizedType = type.toLowerCase();
+
+            if (notFile) {
+                return normalizedType !== "file";
+            }
+
+            return normalizedType === "file";
+        };
+
         if (window.HTMLInputElement) {
             if (Object.prototype.toString.call(maybeInput) === "[object HTMLInputElement]") {
-                if (maybeInput.type && maybeInput.type.toLowerCase() === "file") {
+                if (maybeInput.type && evaluateType(maybeInput.type)) {
                     return true;
                 }
             }
         }
         if (maybeInput.tagName) {
             if (maybeInput.tagName.toLowerCase() === "input") {
-                if (maybeInput.type && maybeInput.type.toLowerCase() === "file") {
+                if (maybeInput.type && evaluateType(maybeInput.type)) {
                     return true;
                 }
             }
@@ -680,6 +690,35 @@ var qq = function(element) {
         });
 
         return form;
+    };
+
+    // TODO ignore inputs with disabled=true && type!=hidden
+    qq.form2Obj = function(form) {
+        var obj = {},
+            notIrrelevantType = function(type) {
+                var irrelevantTypes = [
+                    "button",
+                    "image",
+                    "reset",
+                    "submit"
+                ];
+
+                return qq.indexOf(irrelevantTypes, type.toLowerCase()) < 0;
+            };
+
+        qq.each(form.elements, function(idx, el) {
+            if (qq.isInput(el, true) && notIrrelevantType(el.type)) {
+                var value = el.value;
+
+                if (qq.indexOf(["checkbox", "radio"], el.type.toLowerCase()) >= 0) {
+                    value = el.checked;
+                }
+
+                obj[el.name] = value;
+            }
+        });
+
+        return obj;
     };
 
     qq.setCookie = function(name, value, days) {
