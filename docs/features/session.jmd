@@ -47,6 +47,7 @@ Here are the following properties of each `Object` that Fine Uploader recognizes
 * size: `Number` - Size of the file, in bytes.
 * deleteFileEndpoint: `String` - Endpoint for the associated delete file request.  If omitted, the `deleteFile.endpoint` is used.
 * deleteFileParams: `Object` - Parameters to send along with the associated delete file request.  If omitted, `deleteFile.params` is used.
+* thumbnailUrl: `String` - URL of an image to display next to the file.
 * *s3Key: `String` - Key of the file in your S3 bucket.  Only required if using Fine Uploader S3
 
 The response will be converted into a JavaScript `Array` and passed to your `sessionRequestComplete` event handler.
