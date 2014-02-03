@@ -89,17 +89,36 @@ qq.extend(qq.FormSupport.prototype, {
             radioOrCheckbox = function(type) {
                 return qq.indexOf(["checkbox", "radio"], type.toLowerCase()) >= 0;
             },
-            ignoreValue = function(input) {
-                if (radioOrCheckbox(input.type) && !qq(input).hasAttribute("checked")) {
+            ignoreValue = function(el) {
+                if (radioOrCheckbox(el.type) && !qq(el).hasAttribute("checked")) {
                     return true;
                 }
 
-                return qq(input).hasAttribute("disabled") && input.type.toLowerCase() !== "hidden";
+                return qq(el).hasAttribute("disabled") && el.type.toLowerCase() !== "hidden";
+            },
+            selectValue = function(select) {
+                var value = null;
+
+                qq.each(qq(select).children(), function(idx, child) {
+                    if (child.tagName.toLowerCase() === "option" && qq(child).hasAttribute("selected")) {
+                        value = child.value;
+                        return false;
+                    }
+                });
+
+                return value;
             };
 
         qq.each(form.elements, function(idx, el) {
             if (qq.isInput(el, true) && notIrrelevantType(el.type) && !ignoreValue(el)) {
                 obj[el.name] = el.value;
+            }
+            else if (el.tagName.toLowerCase() === "select" && !ignoreValue(el)) {
+                var value = selectValue(el);
+
+                if (value !== null) {
+                    obj[el.name] = value;
+                }
             }
         });
 

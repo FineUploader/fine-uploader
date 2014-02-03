@@ -10,15 +10,17 @@ describe("test form support", function() {
                 password = $("<input type='password' name='test_password'>"),
                 radio = $("<input type='radio' name='test_radio' checked='checked' value='test-radio'>"),
                 text = $("<input type='text' name='test_text'>"),
+                select = $("<select name='test_select'><option value='one'></option><option value='two' selected></option></select>"),
                 expectedObj = {
                     test_checkbox: "test-checkbox",
                     test_hidden: "hidden_text",
                     test_password: "password_text",
                     test_radio: "test-radio",
-                    test_text: "text_text"
+                    test_text: "text_text",
+                    test_select: "two"
                 };
 
-            form.append(checkbox).append(hidden).append(password).append(radio).append(text);
+            form.append(checkbox).append(hidden).append(password).append(radio).append(text).append(select);
 
             checkbox.prop("checked", expectedObj.test_checkbox);
             hidden.val("hidden_text", expectedObj.test_hidden);
