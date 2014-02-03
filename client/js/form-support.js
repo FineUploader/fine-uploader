@@ -86,19 +86,20 @@ qq.extend(qq.FormSupport.prototype, {
 
                 return qq.indexOf(irrelevantTypes, type.toLowerCase()) < 0;
             },
-            disabled = function(input) {
+            radioOrCheckbox = function(type) {
+                return qq.indexOf(["checkbox", "radio"], type.toLowerCase()) >= 0;
+            },
+            ignoreValue = function(input) {
+                if (radioOrCheckbox(input.type) && !qq(input).hasAttribute("checked")) {
+                    return true;
+                }
+
                 return qq(input).hasAttribute("disabled") && input.type.toLowerCase() !== "hidden";
             };
 
         qq.each(form.elements, function(idx, el) {
-            if (qq.isInput(el, true) && notIrrelevantType(el.type) && !disabled(el)) {
-                var value = el.value;
-
-                if (qq.indexOf(["checkbox", "radio"], el.type.toLowerCase()) >= 0) {
-                    value = el.checked;
-                }
-
-                obj[el.name] = value;
+            if (qq.isInput(el, true) && notIrrelevantType(el.type) && !ignoreValue(el)) {
+                obj[el.name] = el.value;
             }
         });
 

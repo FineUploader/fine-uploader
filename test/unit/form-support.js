@@ -5,16 +5,16 @@ describe("test form support", function() {
     describe("qq.FormSupport._form2obj", function() {
         it("should properly parse all standard input elements with values", function() {
             var form = $("<form></form>"),
-                checkbox = $("<input type='checkbox' name='test_checkbox'>"),
+                checkbox = $("<input type='checkbox' name='test_checkbox' checked='checked' value='test-checkbox'>"),
                 hidden = $("<input type='hidden' name='test_hidden'>"),
                 password = $("<input type='password' name='test_password'>"),
-                radio = $("<input type='radio' name='test_radio'>"),
+                radio = $("<input type='radio' name='test_radio' checked='checked' value='test-radio'>"),
                 text = $("<input type='text' name='test_text'>"),
                 expectedObj = {
-                    test_checkbox: true,
+                    test_checkbox: "test-checkbox",
                     test_hidden: "hidden_text",
                     test_password: "password_text",
-                    test_radio: true,
+                    test_radio: "test-radio",
                     test_text: "text_text"
                 };
 
@@ -31,38 +31,36 @@ describe("test form support", function() {
 
         it("should ignore all non-input elements", function() {
             var form = $("<form></form>"),
-                checkbox = $("<input type='checkbox' name='test_checkbox'>"),
+                text = $("<input type='text' name='test_text' value='test_text'>"),
                 label = $("<label>test</label>"),
                 span = $("<span>test2</span>"),
                 expectedObj = {
-                    test_checkbox: true
+                    test_text: "test_text"
                 };
 
-            form.append(label).append(checkbox).append(span);
-
-            checkbox.prop("checked", expectedObj.test_checkbox);
+            form.append(label).append(text).append(span);
 
             assert.deepEqual(qq.FormSupport.prototype._form2Obj(form[0]), expectedObj);
         });
 
         it("should ignore only irrelevant input elements", function() {
             var form = $("<form></form>"),
+                text = $("<input type='text' name='test_text' value='test_text'>"),
                 checkbox = $("<input type='checkbox' name='test_checkbox'>"),
+                radio = $("<input type='radio' name='test_radio'>"),
                 button = $("<input type='button' name='test_button' value='button'>"),
                 file = $("<input type='file' name='test_file'>"),
                 image = $("<input type='image' name='test_image' scr='some/img'>"),
                 reset = $("<input type='reset' name='test_reset'>"),
                 submit = $("<input type='submit' name='test_submit' value='submit'>"),
-                disaledAndNotHidden = $("<input type='text' name='test_text_disabled' disabled=true>"),
-                disaledAndHidden = $("<input type='hidden' name='test_hidden_disabled' value='foo' disabled=true>"),
+                disabledAndNotHidden = $("<input type='text' name='test_text_disabled' disabled=true>"),
+                disabledAndHidden = $("<input type='hidden' name='test_hidden_disabled' value='foo' disabled=true>"),
                 expectedObj = {
-                    test_checkbox: true,
+                    test_text: "test_text",
                     test_hidden_disabled: "foo"
                 };
 
-            form.append(checkbox).append(button).append(file).append(image).append(reset).append(submit).append(disaledAndNotHidden).append(disaledAndHidden);
-
-            checkbox.prop("checked", expectedObj.test_checkbox);
+            form.append(checkbox).append(radio).append(text).append(button).append(file).append(image).append(reset).append(submit).append(disabledAndNotHidden).append(disabledAndHidden);
 
             assert.deepEqual(qq.FormSupport.prototype._form2Obj(form[0]), expectedObj);
         });
