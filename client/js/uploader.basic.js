@@ -175,7 +175,10 @@
                 element: "qq-form",
 
                 // Overrides the base `autoUpload`, unless `element` is null.
-                autoUpload: false
+                autoUpload: false,
+
+                // true = upload files on form submission (and squelch submit event)
+                interceptSubmit: true
             }
         };
 
@@ -199,10 +202,20 @@
         this._netUploaded = 0;
         this._uploadData = this._createUploadDataTracker();
 
-        this._paramsStore = this._createStore(
-            this._options.request.params,
-            qq.bind(this._getFormInputsAsObject, this, this._maybeAttachToForm())
-        );
+        this._formSupport = qq.FormSupport && new qq.FormSupport(this._options.form, qq.bind(this.uploadStoredFiles, this));
+        if (this._formSupport && this._formSupport.attachedToForm) {
+            this._paramsStore = this._createStore(
+                this._options.request.params,  this._formSupport.getFormInputsAsObject
+            );
+
+            this._options.autoUpload = this._formSupport.newAutoUpload;
+            if (this._formSupport.newEndpoint) {
+                this._options.request.endpoint = this._formSupport.newEndpoint;
+            }
+        }
+        else {
+            this._paramsStore = this._createStore(this._options.request.params);
+        }
 
         this._deleteFileParamsStore = this._createStore(this._options.deleteFile.params);
 

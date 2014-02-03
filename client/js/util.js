@@ -692,38 +692,6 @@ var qq = function(element) {
         return form;
     };
 
-    // TODO ignore inputs with disabled=true && type!=hidden
-    qq.form2Obj = function(form) {
-        var obj = {},
-            notIrrelevantType = function(type) {
-                var irrelevantTypes = [
-                    "button",
-                    "image",
-                    "reset",
-                    "submit"
-                ];
-
-                return qq.indexOf(irrelevantTypes, type.toLowerCase()) < 0;
-            },
-            disabled = function(input) {
-                return qq(input).hasAttribute("disabled") && input.type.toLowerCase() !== "hidden";
-            };
-
-        qq.each(form.elements, function(idx, el) {
-            if (qq.isInput(el, true) && notIrrelevantType(el.type) && !disabled(el)) {
-                var value = el.value;
-
-                if (qq.indexOf(["checkbox", "radio"], el.type.toLowerCase()) >= 0) {
-                    value = el.checked;
-                }
-
-                obj[el.name] = value;
-            }
-        });
-
-        return obj;
-    };
-
     qq.setCookie = function(name, value, days) {
         var date = new Date(),
             expires = "";

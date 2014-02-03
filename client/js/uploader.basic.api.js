@@ -1519,38 +1519,6 @@
             var extraButtonSpec = this._extraButtonSpecs[buttonId];
 
             return extraButtonSpec ? extraButtonSpec.validation : this._options.validation;
-
-        },
-
-        _getFormInputsAsObject: function(formEl) {
-            /* jshint eqnull:true */
-            if (formEl == null) {
-                return null;
-            }
-
-            return qq.form2Obj(formEl);
-
-
-        },
-
-        _maybeAttachToForm: function() {
-            var formEl = this._options.form.element;
-
-            if (formEl) {
-                if (qq.isString(formEl)) {
-                    formEl = document.getElementById(formEl);
-                }
-
-                if (formEl && !this._options.form.autoUpload) {
-                    this._options.autoUpload = false;
-                }
-
-                if (formEl && formEl.getAttribute("action")) {
-                    this._options.request.endpoint = formEl.getAttribute("action");
-                }
-            }
-
-            return formEl;
         }
     };
 }());
