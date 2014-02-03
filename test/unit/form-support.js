@@ -119,7 +119,10 @@ describe("test form support", function() {
         $(form).submit();
     });
 
-    if (document.createElement("form").checkValidity) {
+    // Ignore test if Conditions API is not supported, or if this is Firefox,
+    // which will simply not trigger the submit event or allow the submit function to be invoked
+    // if the form is invalid.
+    if (document.createElement("form").checkValidity && !qq.firefox()) {
         it("doesn't upload file if form validation fails", function(done) {
             assert.expect(1, done);
 
