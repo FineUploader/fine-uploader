@@ -1,6 +1,8 @@
 /* globals describe, assert, it, qq, qqtest, helpme, $fixture, before, after */
 describe("test form support", function() {
     "use strict";
+    var fakeLog = function() {};
+
 
     describe("qq.FormSupport._form2obj", function() {
         it("should properly parse all standard input elements with values", function() {
@@ -104,35 +106,37 @@ describe("test form support", function() {
         assert.equal(uploader._options.request.endpoint, "form/action/endpoint");
     });
 
-    describe("form submit tests", function() {
-        var oldUploadStoredFiles;
 
-        before(function() {
-            oldUploadStoredFiles = qq.FineUploaderBasic.prototype.uploadStoredFiles;
+    it("uploads files on form submit by default", function(done) {
+        assert.expect(1, done);
 
-            qq.FineUploaderBasic.prototype.uploadStoredFiles = function() {
+        var startUpload = function() {
                 assert.ok(true);
-            };
-        });
+            },
+            form = document.createElement("form"),
+            formSupport = new qq.FormSupport({interceptSubmit: true, autoUpload: false, element: form}, startUpload, fakeLog);
 
-        after(function() {
-            qq.FineUploaderBasic.prototype.uploadStoredFiles = oldUploadStoredFiles;
-        });
+        $(form).submit();
+    });
 
-        it("uploads files on form submit by default", function(done) {
+    if (document.createElement("form").checkValidity) {
+        it("doesn't upload file if form validation fails", function(done) {
             assert.expect(1, done);
 
-            var form = document.createElement("form"),
-                uploader = new qq.FineUploaderBasic({
-                    form: {
-                        element: form
-                    }
-                }
-            );
+            var form = $("<form><input type='text' name='test_text' required></form>")[0],
+                startUpload = function() {
+                    assert.fail(null, null, "Files should not have been uploaded");
+                },
+                formSupport;
+
+            form.submit = function() {
+                assert.ok(true);
+            };
+            formSupport = new qq.FormSupport({interceptSubmit: true, autoUpload: false, element: form}, startUpload, fakeLog);
 
             $(form).submit();
         });
-    });
+    }
 
     if (qqtest.canDownloadFileAsBlob) {
         describe("verify params sent with upload requests", function() {

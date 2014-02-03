@@ -202,7 +202,7 @@
         this._netUploaded = 0;
         this._uploadData = this._createUploadDataTracker();
 
-        this._formSupport = qq.FormSupport && new qq.FormSupport(this._options.form, qq.bind(this.uploadStoredFiles, this));
+        this._formSupport = qq.FormSupport && new qq.FormSupport(this._options.form, qq.bind(this.uploadStoredFiles, this), this.log);
         if (this._formSupport && this._formSupport.attachedToForm) {
             this._paramsStore = this._createStore(
                 this._options.request.params,  this._formSupport.getFormInputsAsObject

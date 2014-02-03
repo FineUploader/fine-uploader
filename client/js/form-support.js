@@ -4,9 +4,10 @@
  *
  * @param options Options passed from the integrator-supplied options related to form support.
  * @param startUpload Callback to invoke when files "stored" should be uploaded.
+ * @param log Proxy for the logger
  * @constructor
  */
-qq.FormSupport = function(options, startUpload) {
+qq.FormSupport = function(options, startUpload, log) {
     "use strict";
     var self  = this,
         interceptSubmit = options.interceptSubmit,
@@ -34,7 +35,19 @@ qq.FormSupport = function(options, startUpload) {
         }
     }
 
-    function uploadOnSubmit(formEl) {
+    function validateForm(formEl, nativeSubmit) {
+        if (formEl.checkValidity && !formEl.checkValidity()) {
+            log("Form did not pass validation checks - will not upload.", "error");
+            nativeSubmit();
+        }
+        else {
+            return true;
+        }
+    }
+
+    function maybeUploadOnSubmit(formEl) {
+        var nativeSubmit = formEl.submit;
+
         qq(formEl).attach("submit", function(event) {
             event = event || window.event;
 
@@ -45,11 +58,11 @@ qq.FormSupport = function(options, startUpload) {
                 event.returnValue = false;
             }
 
-            startUpload();
+            validateForm(formEl, nativeSubmit) && startUpload();
         });
 
         formEl.submit = function() {
-            startUpload();
+            validateForm(formEl, nativeSubmit) && startUpload();
         };
     }
 
@@ -61,7 +74,7 @@ qq.FormSupport = function(options, startUpload) {
 
             if (formEl) {
                 determineNewEndpoint(formEl);
-                interceptSubmit && uploadOnSubmit(formEl);
+                interceptSubmit && maybeUploadOnSubmit(formEl);
             }
         }
 
