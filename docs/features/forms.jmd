@@ -125,6 +125,7 @@ file that integrates Fine Uploader into an existing form:
         <script>
             $("#my-uploader").fineUploader();
         </script>
+    </body>
 <html>
 ```
 
