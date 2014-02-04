@@ -141,13 +141,12 @@ The `responseJSON` will contain the raw response from the server including the
 }}
 
 {{ api_event("allComplete", "allComplete",
-"""Called when all submitted items have reached a point of termination.  A file has reached a point of termination
+"Called when all submitted items have reached a point of termination.  A file has reached a point of termination
 if it has been cancelled, rejected, or uploaded (failed or successful).  For example, if a file in the group is paused,
 and all other files in the group have uploaded successfully the allComplete event will not be invoked for the group
 until that paused file is either continued and completes the uploading process, or canceled.  This event will not be
 called if all files in the group have been cancelled or rejected (i.e. if none of the files have reached a
-[status][status] of `qq.status.UPLOAD_SUCCESSFUL` or `qq.status.UPLOAD_FAILED`).
-
+[status][status] of `qq.status.UPLOAD_SUCCESSFUL` or `qq.status.UPLOAD_FAILED`).",
     [
         {
             "name": "succeeded",
