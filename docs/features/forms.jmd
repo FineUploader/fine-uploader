@@ -8,8 +8,8 @@
 [forms]: ../api/options.html#form
 [validationattrs]: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation
 [constraintsapi]: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Forms_in_HTML?redirectlocale=en-US&redirectslug=Web%2FHTML%2FForms_in_HTML#Constraint_Validation_API
-[uploadstoredfiles]: ../api/methods.html#uploadStoredFiles
 [allcomplete]: ../api/events.html#allComplete
+[uploadstoredfiles]: ../api/methods.html#uploadStoredFiles
 
 # Integrating with Existing HTML Forms {: .page-header }
 
@@ -18,7 +18,7 @@ Say you have an existing HTML form.  Say you want to simply allow your users to 
 Fine Uploader form support will allow you to do this quite easily.  A number of conventions are in place to allow
 incredibly easy integration of Fine Uploader into your existing form.  If you follow all of these conventions, and only
 require the most basic features, you can initialize and attach Fine Uploader to your form with only one simple line of
-JavaScript!    But don't worry, any of these conventions can be overridden via the [`form` option][form].  Fine Uploader
+JavaScript!    But don't worry, any of these conventions can be overridden via the [form option][form].  Fine Uploader
 will even respect any HTML5 validation attributes set on your form elements.  Furthermore, you can include a traditional
 submit button in your form, and Fine Uploader will intercept this and upload all submitted files with the associated
 form data for you.
@@ -29,6 +29,7 @@ A set of conventions are in place that allow you to simply include a form in you
 to discover it and send all form data along with each upload request without explicitly setting any form-related
 configuration options.  This can allow you to focus more on your form, and less on JavaScript.  By default, Fine Uploader
 will:
+
 * Find your form automatically if it has an `id` attribute with a value of "qq-form".  Once it finds your form, all
 file upload requests will include any data associated with that form, automatically!
 * Ensure any HTML5 validation attributes on your form elements are respected.  If any form values are invalid, the user
@@ -40,7 +41,7 @@ need to provide a `request.endpoint` configuration value when creating your Fine
 that they are done filling out the form and choosing files.  You can allow your user to "submit" the form and trigger
 all files to be uploaded by simply providing a submit button in your form.
 
-If you don't want to rely on some of these default behaviors, you can override them.  See the [`form` option][form]
+If you don't want to rely on some of these default behaviors, you can override them.  See the [form option][form]
 for details.
 
 #### Validation
@@ -50,7 +51,7 @@ if there are validation issues, Fine Uploader will prevent the files from being 
 by the user.  Furthermore, the specific issues will be highlighted in the UI.
 
 {{ alert("Validation will only occur if you attempt to submit your form via a submit button, or by triggering the  form's submit
-function, or by triggering a submit event on the form.  If you trigger an upload via the [`uploadStoredFiles` API method][uploadstoredfiles],
+function, or by triggering a submit event on the form.  If you trigger an upload via the [uploadStoredFiles API method][uploadstoredfiles],
 the form will not be validated.", "info", "Note:") }}
 
 #### Submit support
@@ -60,7 +61,7 @@ native support for form validation, the user-selected files will be uploaded alo
 will intercept submit attempts triggered by a form submit button, invocation of the form element's `submit` function,
 or via a submit event.
 
-You can prevent Fine Uploader from intercepting submit events by adjusting the [`form.interceptSubmit` option][form].
+You can prevent Fine Uploader from intercepting submit events by adjusting the [form.interceptSubmit option][form].
 
 
 #### When are all uploads done?
