@@ -5,11 +5,10 @@
 {% block content %}
 {% markdown %}
 
-[forms]: ../api/options.html#form
+[form]: ../api/options.html#form
 [validationattrs]: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation
 [constraintsapi]: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Forms_in_HTML?redirectlocale=en-US&redirectslug=Web%2FHTML%2FForms_in_HTML#Constraint_Validation_API
 [allcomplete]: ../api/events.html#allComplete
-[uploadstoredfiles]: ../api/methods.html#uploadStoredFiles
 
 # Integrating with Existing HTML Forms {: .page-header }
 
@@ -51,7 +50,7 @@ if there are validation issues, Fine Uploader will prevent the files from being 
 by the user.  Furthermore, the specific issues will be highlighted in the UI.
 
 {{ alert("Validation will only occur if you attempt to submit your form via a submit button, or by triggering the  form's submit
-function, or by triggering a submit event on the form.  If you trigger an upload via the [uploadStoredFiles API method][uploadstoredfiles],
+function, or by triggering a submit event on the form.  If you trigger an upload via the [uploadStoredFiles API method](../api/methods.html#uploadStoredFiles),
 the form will not be validated.", "info", "Note:") }}
 
 #### Submit support
