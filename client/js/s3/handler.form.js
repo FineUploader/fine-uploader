@@ -158,6 +158,9 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
                     if (response.success === false) {
                         log("A success response was received by Amazon, but it was invalid in some way.", "error");
                     }
+                    else {
+                        qq.extend(response, qq.s3.util.parseIframeResponse(iframe));
+                    }
                 }
 
                 handleFinishedUpload(id, iframe, fileName, response);

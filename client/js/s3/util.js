@@ -307,7 +307,7 @@ qq.s3.util = qq.s3.util || (function() {
                 return {
                     bucket: match[1],
                     key: match[2],
-                    etag: match[3]
+                    etag: match[3].replace(/%22/g, "")
                 };
             }
         },

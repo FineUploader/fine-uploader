@@ -86,7 +86,7 @@
 
 
                 // combine custom params and default params
-                qq.extend(uploadSuccessParams, self._getEndpointSpecificParams(id), true);
+                qq.extend(uploadSuccessParams, self._getEndpointSpecificParams(id, result, xhr), true);
 
                 submitSuccessRequest = qq.bind(function() {
                     successAjaxRequester.sendSuccessRequest(id, uploadSuccessParams)

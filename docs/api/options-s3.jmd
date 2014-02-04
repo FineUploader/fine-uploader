@@ -106,7 +106,7 @@ alert("`request.customHeaders` does **not** apply to S3.")
     (
         ("uploadSuccess.customHeaders", "customHeaders", "Additional headers sent along with each signature request.", "Object", "{}",),
         ("uploadSuccess.endpoint", "endpoint", "An endpoint that Fine Uploader should POST to when a file has been successfully uploaded to S3.", "String", "null",),
-        ("uploadSuccess.params", "params", "Any additional parameters to attach to upload success file requests. Note that Fine Uploader will still send the bucket, key, filename, and UUID as well", "Object", "{}",),
+        ("uploadSuccess.params", "params", "Any additional parameters to attach to upload success file requests. Note that Fine Uploader will still send the bucket, key, filename, UUID, and etag (if available) as well", "Object", "{}",),
     )
 )}}
 </div>

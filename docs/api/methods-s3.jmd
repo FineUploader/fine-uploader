@@ -108,7 +108,7 @@ in Fine Uploader S3, unless otherwise noted here.
 ]) }}
 
 {{ api_method("setUploadSuccessParams", "setUploadSuccessParams (newParams[, id])",
-"Set additional parameters for the upload success request. Note that Fine Uploader will still send the bucket name, key, filename, and UUID as well.",
+"Set additional parameters for the upload success request. Note that Fine Uploader will still send the bucket name, key, filename, UUID, and etag (if available) as well.",
 [
         {
             "name": "newParams",

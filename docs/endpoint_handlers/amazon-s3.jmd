@@ -117,10 +117,11 @@ will contain the following information:
 * Key name of the associated file in S3
 * UUID of the file
 * Name of the file
+* The ETag of the object in S3 (for non-chunked uploads only)
 
 An example of the payload for this request sent by Fine Uploader would look like this:
 
-`key=f9a922bd-3007-4393-a76e-925fc009639c.txt&uuid=f9a922bd-3007-4393-a76e-925fc009639c&name=rubycsv.txt&bucket=fineuploadertest`
+`key=f9a922bd-3007-4393-a76e-925fc009639c.txt&uuid=f9a922bd-3007-4393-a76e-925fc009639c&name=rubycsv.txt&bucket=fineuploadertest&etag=123`
 
 Parsing url-encoded payloads should be trivial and handled by most web application frameworks.
 

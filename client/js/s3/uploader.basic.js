@@ -318,13 +318,22 @@
             }
         },
 
-        _getEndpointSpecificParams: function(id) {
-            return {
+        _getEndpointSpecificParams: function(id, response, maybeXhr) {
+            var params = {
                 key: this.getKey(id),
                 uuid: this.getUuid(id),
                 name: this.getName(id),
                 bucket: qq.s3.util.getBucket(this._endpointStore.get(id))
             };
+
+            if (maybeXhr && maybeXhr.getResponseHeader("ETag")) {
+                params.etag = maybeXhr.getResponseHeader("ETag");
+            }
+            else if (response.etag) {
+                params.etag = response.etag;
+            }
+
+            return params;
         },
 
         // Hooks into the base internal `_onSubmitDelete` to add key and bucket params to the delete file request.
