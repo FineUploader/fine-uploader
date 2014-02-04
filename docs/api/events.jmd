@@ -21,6 +21,8 @@ $(document).ready(function() {
 {% block content %}
 {% markdown %}
 
+[status]: ../features/statistics-and-status-updates.html
+
 # Events {: .page-header }
 
 Fine Uploader's event system enables integrators to execute any operations at
@@ -579,8 +581,6 @@ The `fileOrBlobDataArray` object has two properties: `name` and `size`. The `siz
     ])
 }}
 
-{% markdown %}
-[status]: ../features/statistics-and-status-updates.html
-{% endmarkdown %}
 </div>
+
 {% endblock %}
