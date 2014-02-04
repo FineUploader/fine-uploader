@@ -43,6 +43,7 @@
                 onSubmit: function(id, name){},
                 onSubmitted: function(id, name){},
                 onComplete: function(id, name, responseJSON, maybeXhr){},
+                onAllComplete: function(successful, failed) {},
                 onCancel: function(id, name){},
                 onUpload: function(id, name){},
                 onUploadChunk: function(id, name, chunkData){},
@@ -247,6 +248,9 @@
 
         this._imageGenerator = qq.ImageGenerator && new qq.ImageGenerator(qq.bind(this.log, this));
         this._refreshSessionData();
+
+        this._succeededSinceLastAllComplete = [];
+        this._failedSinceLastAllComplete = [];
     };
 
     // Define the private & public API methods.

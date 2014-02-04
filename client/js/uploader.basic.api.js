@@ -706,6 +706,7 @@
                 onStatusChange: function(id, oldStatus, newStatus) {
                     self._onUploadStatusChange(id, oldStatus, newStatus);
                     self._options.callbacks.onStatusChange(id, oldStatus, newStatus);
+                    self._maybeAllComplete(id, newStatus);
                 }
             });
         },
@@ -773,6 +774,41 @@
             this._maybeParseAndSendUploadError(id, name, result, xhr);
 
             return result.success ? true : false;
+        },
+
+        _maybeAllComplete: function(id, status) {
+            var self = this,
+                notFinished = this._uploadData.retrieve({
+                status: [
+                    qq.status.UPLOADING,
+                    qq.status.UPLOAD_RETRYING,
+                    qq.status.QUEUED,
+                    qq.status.SUBMITTING,
+                    qq.status.SUBMITTED,
+                    qq.status.PAUSED,
+                ]
+            }).length;
+
+            if (status === qq.status.UPLOAD_SUCCESSFUL) {
+                this._succeededSinceLastAllComplete.push(id);
+            }
+            else if (status === qq.status.UPLOAD_FAILED) {
+                this._failedSinceLastAllComplete.push(id);
+            }
+
+            if (notFinished === 0 &&
+                (this._succeededSinceLastAllComplete.length || this._failedSinceLastAllComplete.length)) {
+                // Attempt to ensure onAllComplete is not invoked before other callbacks, such as onCancel & onComplete
+                setTimeout(function() {
+                    self._options.callbacks.onAllComplete(
+                        qq.extend([], self._succeededSinceLastAllComplete),
+                        qq.extend([], self._failedSinceLastAllComplete)
+                    );
+
+                    self._succeededSinceLastAllComplete = [];
+                    self._failedSinceLastAllComplete = [];
+                }, 0);
+            }
         },
 
         _onCancel: function(id, name) {
