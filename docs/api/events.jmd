@@ -579,7 +579,8 @@ The `fileOrBlobDataArray` object has two properties: `name` and `size`. The `siz
     ])
 }}
 
+{% markdown %}
 [status]: ../features/statistics-and-status-updates.html
-
+{% endmarkdown %}
 </div>
 {% endblock %}
