@@ -104,6 +104,9 @@
 
             this._pasteHandler && this._pasteHandler.reset();
             this._options.session.refreshOnReset && this._refreshSessionData();
+
+            this._succeededSinceLastAllComplete = [];
+            this._failedSinceLastAllComplete = [];
         },
 
         addFiles: function(filesOrInputs, params, endpoint) {
@@ -306,6 +309,26 @@
      * Defines the private (internal) API for FineUploaderBasic mode.
      */
     qq.basePrivateApi = {
+        _initFormSupportAndParams: function() {
+            this._formSupport = qq.FormSupport && new qq.FormSupport(
+                this._options.form, qq.bind(this.uploadStoredFiles, this), qq.bind(this.log, this)
+            );
+
+            if (this._formSupport && this._formSupport.attachedToForm) {
+                this._paramsStore = this._createStore(
+                    this._options.request.params,  this._formSupport.getFormInputsAsObject
+                );
+
+                this._options.autoUpload = this._formSupport.newAutoUpload;
+                if (this._formSupport.newEndpoint) {
+                    this._options.request.endpoint = this._formSupport.newEndpoint;
+                }
+            }
+            else {
+                this._paramsStore = this._createStore(this._options.request.params);
+            }
+        },
+
         _uploadFile: function(id) {
             if (!this._handler.upload(id)) {
                 this._uploadData.setStatus(id, qq.status.QUEUED);

@@ -73,6 +73,7 @@ qq.FormSupport = function(options, startUpload, log) {
             }
 
             if (formEl) {
+                log("Attaching to form element.");
                 determineNewEndpoint(formEl);
                 interceptSubmit && maybeUploadOnSubmit(formEl);
             }
