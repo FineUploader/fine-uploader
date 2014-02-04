@@ -99,7 +99,7 @@ mode you are in and keep that in mind when determining which options do what.
     (
         ("extraButtons.element", "element", "REQUIRED: The container element for the upload button.", "HTMLElement", "undefined",),
         ("extraButtons.folders", "folders", "`true` to allow folders to be selected, `false` to allow files to be selected. See the browser support page for details regarding the limited user agent support for this feature.", "Boolean", "false",),
-        ("extraButtons.multiple", "multiple", "Specify to override the default `multiple` value.", "Boolean", "`true`",),
+        ("extraButtons.multiple", "multiple", "Specify to override the default `multiple` value.", "Boolean", "true",),
         ("extraButtons.validation", "validation", "Specify to override the default `validation` option specified. Any `validation` properties not specified will be inherited from the default `validation` option.", "Object", "`validation`",),
     )
 )
@@ -109,7 +109,7 @@ mode you are in and keep that in mind when determining which options do what.
     (
         ("form.element", "element", "This can be the ID of the `<form>` or a reference to the `<form>` element.", "String, HTMLElement", "qq-form",),
         ("form.autoUpload", "autoUpload", "If Fine Uploader is able to attach to a form, this value takes the place of the base `autoUpload` option.", "Boolean", "false",),
-        ("form.interceptSubmit", "interceptSubmit", "Set this to `false` if you do not want Fine Uploader to intercept attempts to submit your form.  By default, Fine Uploader will intercept submit attempts and instead upload all submitted files, including data from your form in each upload request.", "Boolean", "`true`",)
+        ("form.interceptSubmit", "interceptSubmit", "Set this to `false` if you do not want Fine Uploader to intercept attempts to submit your form.  By default, Fine Uploader will intercept submit attempts and instead upload all submitted files, including data from your form in each upload request.", "Boolean", "true",)
     )
 )
 }}
