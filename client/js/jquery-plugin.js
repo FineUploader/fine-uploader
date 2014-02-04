@@ -5,13 +5,11 @@
         pluginOptions = ["uploaderType", "endpointType"];
 
     function init(options) {
-        if (options) {
-            var xformedOpts = transformVariables(options),
-                newUploaderInstance = getNewUploaderInstance(xformedOpts);
+        var xformedOpts = transformVariables(options || {}),
+            newUploaderInstance = getNewUploaderInstance(xformedOpts);
 
-            uploader(newUploaderInstance);
-            addCallbacks(xformedOpts, newUploaderInstance);
-        }
+        uploader(newUploaderInstance);
+        addCallbacks(xformedOpts, newUploaderInstance);
 
         return $el;
     }
