@@ -83,8 +83,8 @@ describe("file list initialization tests", function() {
         }, 0);
     });
 
-    // The <img> fails to load in IE7 for some unknown reason, so we have to exclude this test
-    if (!qq.ie7()) {
+    // The <img> fails to load sometimes in older versions of IE for some unknown reason, so we have to exclude this test
+    if (!qq.ie() || qq.ie10() || qq.ie11()) {
         it("drawThumbnail renders image properly if session response includes thumbnailUrl", function(done) {
             assert.expect(3, done);
 
