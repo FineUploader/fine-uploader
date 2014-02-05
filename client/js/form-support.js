@@ -14,11 +14,21 @@ qq.FormSupport = function(options, startUpload, log) {
         formEl = options.element,
         autoUpload = options.autoUpload;
 
+    // Available on the public API associated with this module.
     qq.extend(this, {
+        // To be used by the caller to determine if the endpoint will be determined by some processing
+        // that occurs in this module, such as if the form has an action attribute.
+        // Ignore if `attachToForm === false`.
         newEndpoint: null,
+
+        // To be used by the caller to determine if auto uploading should be allowed.
+        // Ignore if `attachToForm === false`.
         newAutoUpload: autoUpload,
+
+        // true if a form was detected and is being tracked by this module
         attachedToForm: false,
 
+        // Returns an object with names and values for all valid form elements associated with the attached form.
         getFormInputsAsObject: function() {
             /* jshint eqnull:true */
             if (formEl == null) {
@@ -29,12 +39,15 @@ qq.FormSupport = function(options, startUpload, log) {
         }
     });
 
+    // If the form contains an action attribute, this should be the new upload endpoint.
     function determineNewEndpoint(formEl) {
         if (formEl.getAttribute("action")) {
             self.newEndpoint = formEl.getAttribute("action");
         }
     }
 
+    // Return true only if the form is valid, or if we cannot make this determination.
+    // If the form is invalid, ensure invalid field(s) are highlighted in the UI.
     function validateForm(formEl, nativeSubmit) {
         if (formEl.checkValidity && !formEl.checkValidity()) {
             log("Form did not pass validation checks - will not upload.", "error");
@@ -45,9 +58,11 @@ qq.FormSupport = function(options, startUpload, log) {
         }
     }
 
+    // Intercept form submit attempts, unless the integrator has told us not to do this.
     function maybeUploadOnSubmit(formEl) {
         var nativeSubmit = formEl.submit;
 
+        // Intercept and squelch submit events.
         qq(formEl).attach("submit", function(event) {
             event = event || window.event;
 
@@ -61,11 +76,15 @@ qq.FormSupport = function(options, startUpload, log) {
             validateForm(formEl, nativeSubmit) && startUpload();
         });
 
+        // The form's `submit()` function may be called instead (i.e. via jQuery.submit()).
+        // Intercept that too.
         formEl.submit = function() {
             validateForm(formEl, nativeSubmit) && startUpload();
         };
     }
 
+    // If the element value passed from the uploader is a string, assume it is an element ID - select it.
+    // The rest of the code in this module depends on this being an HTMLElement.
     function determineFormEl(formEl) {
         if (formEl) {
             if (qq.isString(formEl)) {
@@ -87,6 +106,8 @@ qq.FormSupport = function(options, startUpload, log) {
 };
 
 qq.extend(qq.FormSupport.prototype, {
+    // Converts all relevant form fields to key/value pairs.  This is meant to mimic the data a browser will
+    // construct from a given form when the form is submitted.
     _form2Obj: function(form) {
         "use strict";
         var obj = {},
