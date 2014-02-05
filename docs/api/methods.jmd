@@ -255,13 +255,15 @@ A `BlobData` object:
     {
         "name": "filter",
         "type": "Object",
-        "description": "An object which indicates which keys and values must be present in an upload to be returned.."
+        "description": "An object which indicates which keys and values must be present in an upload to be returned."
     }
 ],
 [
     {
         "type": "Array or Object",
-        "description": "A list of items or a single item that has been filtered/found."
+        "description": "A list of items or a single item that has been filtered/found.  This returns an array only when
+        there is a potential for the operation to return more than one file in the result set. This excludes queries
+        for a specific, single ID or UUID. All other queries will return an array."
     }
 
 ]) }}

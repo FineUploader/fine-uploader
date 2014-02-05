@@ -149,6 +149,10 @@ var uploads = myUploader.getUploads({
 ]
 ```
 
+{{ alert("getUploads returns an array only when there is a potential for the operation to return more than
+one file in the result set. This excludes queries for a specific, single ID or UUID. All other queries will
+return an array.", "info", "Note:") }}
+
 
 #### Determine if all submitted files are "done"
 
