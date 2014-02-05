@@ -125,17 +125,17 @@ qq.extend(qq.FormSupport.prototype, {
                 return qq.indexOf(["checkbox", "radio"], type.toLowerCase()) >= 0;
             },
             ignoreValue = function(el) {
-                if (radioOrCheckbox(el.type) && !qq(el).hasAttribute("checked")) {
+                if (radioOrCheckbox(el.type) && !el.checked) {
                     return true;
                 }
 
-                return qq(el).hasAttribute("disabled") && el.type.toLowerCase() !== "hidden";
+                return el.disabled && el.type.toLowerCase() !== "hidden";
             },
             selectValue = function(select) {
                 var value = null;
 
                 qq.each(qq(select).children(), function(idx, child) {
-                    if (child.tagName.toLowerCase() === "option" && qq(child).hasAttribute("selected")) {
+                    if (child.tagName.toLowerCase() === "option" && child.selected) {
                         value = child.value;
                         return false;
                     }
