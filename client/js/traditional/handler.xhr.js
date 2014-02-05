@@ -294,6 +294,10 @@ qq.UploadHandlerXhr = function(spec, proxy) {
             return;
         }
         else {
+            if (xhr.status !== 200) {
+                response.success = false;
+            }
+
             handleCompletedItem(id, response, xhr);
         }
     }
