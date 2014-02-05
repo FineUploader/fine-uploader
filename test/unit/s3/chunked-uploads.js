@@ -495,6 +495,28 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
             });
         });
+
+        it("converts all parameters (metadata) to lower case before sending them to S3", function(done) {
+            assert.expect(3, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request: typicalRequestOption,
+                    signature: typicalSignatureOption,
+                    chunking: typicalChunkingOption
+                }
+            );
+
+            uploader.setParams({mIxEdCaSe: "value"});
+
+            startTypicalTest(uploader, function(initiateSignatureRequest, initiateToSign, uploadPartRequest) {
+                var initiateRequest;
+
+                assert.ok(initiateToSign.headers.indexOf("x-amz-meta-mixedcase:value") >= 0);
+                initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                initiateRequest = fileTestHelper.getRequests()[2];
+                assert.equal(initiateRequest.requestHeaders["x-amz-meta-mixedcase"], "value");
+            });
+        });
     });
 
     describe("client-side signature-based chunked S3 upload tests", function() {

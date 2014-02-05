@@ -85,6 +85,29 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+        it("converts all parameters (metadata) to lower case before sending them to S3", function(done) {
+            assert.expect(3, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request: typicalRequestOption,
+                    signature: typicalSignatureOption
+                }
+            );
+
+            uploader.setParams({mIxEdCaSe: "value"});
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var uploadRequestParams;
+
+                assert.equal(conditions["x-amz-meta-mixedcase"], "value");
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                uploadRequestParams = uploadRequest.requestBody.fields;
+
+                assert.equal(uploadRequestParams["x-amz-meta-mixedcase"], "value");
+            });
+        });
+
         it("respects the objectProperties.key option w/ a value of 'filename'", function(done) {
             assert.expect(5, done);
 

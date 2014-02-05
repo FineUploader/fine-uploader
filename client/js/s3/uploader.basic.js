@@ -201,6 +201,22 @@
                 };
             });
 
+            // Param names should be lower case to avoid signature mismatches
+            qq.override(this._paramsStore, function(super_) {
+                return {
+                    get: function(id) {
+                        var oldParams = super_.get(id),
+                            modifiedParams = {};
+
+                        qq.each(oldParams, function(name, val) {
+                            modifiedParams[name.toLowerCase()] = val;
+                        });
+
+                        return modifiedParams;
+                    }
+                };
+            });
+
             additionalOptions.signature.credentialsProvider = {
                 get: function() {
                     return self._currentCredentials;
