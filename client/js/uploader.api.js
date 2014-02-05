@@ -132,7 +132,7 @@
                             file.qqDropTarget = targetEl;
                         });
 
-                        if (files) {
+                        if (files.length) {
                             self.addFiles(files, null, null);
                         }
                     },

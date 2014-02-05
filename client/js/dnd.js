@@ -131,9 +131,14 @@ qq.DragAndDrop = function(o) {
                 qq(dropArea).removeClass(options.classes.dropActive);
             },
             onDrop: function(e){
-                handleDataTransfer(e.dataTransfer, dropZone).done(function() {
-                    uploadDroppedFiles(droppedFiles, dropZone);
-                });
+                handleDataTransfer(e.dataTransfer, dropZone).then(
+                    function() {
+                        uploadDroppedFiles(droppedFiles, dropZone);
+                    },
+                    function() {
+                        options.callbacks.dropLog("Drop event DataTransfer parsing failed.  No files will be uploaded.", "error");
+                    }
+                );
             }
         });
 

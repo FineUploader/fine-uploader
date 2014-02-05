@@ -221,5 +221,20 @@ if (qqtest.canDownloadFileAsBlob) {
                 runQueuedStatusTest(false, done);
             });
         });
+
+        it("handles an empty array of files or blobs appropriately", function(done) {
+            assert.expect(2, done);
+
+            var uploader = new qq.FineUploaderBasic({
+                callbacks: {
+                    onError: function(id) {
+                        assert.ok(true);
+                    }
+                }
+            });
+
+            uploader.addBlobs([]);
+            uploader.addFiles([]);
+        });
     });
 }

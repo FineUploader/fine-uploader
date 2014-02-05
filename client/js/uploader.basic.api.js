@@ -1096,6 +1096,11 @@
         },
 
         _prepareItemsForUpload: function(items, params, endpoint) {
+            if (items.length === 0) {
+                this._itemError("noFilesError");
+                return;
+            }
+
             var validationDescriptors = this._getValidationDescriptors(items),
                 buttonId = this._getButtonId(items[0].file),
                 button = this._getButton(buttonId);
