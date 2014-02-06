@@ -331,21 +331,27 @@ describe("file list initialization tests", function() {
         }, 0);
     });
 
-    it("ignores S3 response items that do not contain a valid key", function(done) {
-        assert.expect(3, done);
+    describe("non-traditional endpoint tests", function() {
+        function runTest(namespace, requiredKeyName, done) {
+            assert.expect(3, done);
 
-        var expectedSessionResponse = [
-                {
-                    uuid: "123",
-                    name: "hi",
-                    s3Key: "raynicholus"
-                },
-                {
-                    name: "up2.jpg",
-                    uuid: "abc"
-                }
-            ],
-            uploader = new qq.s3.FineUploaderBasic({
+            var expectedSessionResponse = [
+                    {
+                        uuid: "123",
+                        name: "hi"
+                    },
+                    {
+                        name: "up2.jpg",
+                        uuid: "abc"
+                    }
+                ],
+                uploader,
+                request;
+
+
+            expectedSessionResponse[0][requiredKeyName] = "raynicholus";
+
+            uploader = new qq[namespace].FineUploaderBasic({
                 session: {
                     endpoint: sessionEndpoint
                 },
@@ -355,14 +361,21 @@ describe("file list initialization tests", function() {
                         assert.ok(!success, "session request deemed success unexpectedly");
                     }
                 }
-            }
-        ),
-            request;
+            });
 
-        setTimeout(function() {
-            request = fileHelper.getRequests()[0];
-            request.respond(200, null, JSON.stringify(expectedSessionResponse));
-            assert.equal(uploader.getUploads().length, 1, "wrong number of pre-populated uploads recorded");
-        }, 0);
+            setTimeout(function() {
+                request = fileHelper.getRequests()[0];
+                request.respond(200, null, JSON.stringify(expectedSessionResponse));
+                assert.equal(uploader.getUploads().length, 1, "wrong number of pre-populated uploads recorded");
+            }, 0);
+        }
+
+        it("ignores S3 response items that do not contain a valid key", function(done) {
+            runTest("s3", "s3Key", done);
+        });
+
+        it("ignores Azure response items that do not contain a valid blob name", function(done) {
+            runTest("azure", "blobName", done);
+        });
     });
 });
