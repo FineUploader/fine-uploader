@@ -165,25 +165,25 @@ module.exports = (grunt) ->
 
         concat:
             core:
-                src: fineUploaderModules.mergeModules 'fuTraditional'
+                src: fineUploaderModules.mergeModules true, 'fuTraditional'
                 dest: "#{paths.build}/<%= pkg.name %>.js"
             coreS3:
-                src: fineUploaderModules.mergeModules 'fuS3'
+                src: fineUploaderModules.mergeModules true, 'fuS3'
                 dest: "#{paths.build}/s3.<%= pkg.name %>.js"
             coreAzure:
-                src: fineUploaderModules.mergeModules 'fuAzure'
+                src: fineUploaderModules.mergeModules true, 'fuAzure'
                 dest: "#{paths.build}/azure.<%= pkg.name %>.js"
             jquery:
-                src: fineUploaderModules.mergeModules 'fuTraditionalJquery'
+                src: fineUploaderModules.mergeModules true, 'fuTraditionalJquery'
                 dest: "#{paths.build}/jquery.<%= pkg.name %>.js"
             jqueryS3:
-                src: fineUploaderModules.mergeModules 'fuS3Jquery'
+                src: fineUploaderModules.mergeModules true, 'fuS3Jquery'
                 dest: "#{paths.build}/s3.jquery.<%= pkg.name %>.js"
             jqueryAzure:
-                src: fineUploaderModules.mergeModules 'fuAzureJquery'
+                src: fineUploaderModules.mergeModules true, 'fuAzureJquery'
                 dest: "#{paths.build}/azure.jquery.<%= pkg.name %>.js"
             all:
-                src: fineUploaderModules.mergeModules 'fuAll'
+                src: fineUploaderModules.mergeModules true, 'fuAll'
                 dest: paths.build + "/all.<%= pkg.name %>.js"
             css:
                 src: ["#{paths.src}/*.css"]
