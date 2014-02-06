@@ -1,5 +1,6 @@
 spawn = require('child_process').spawn
 path = require 'path'
+glob = require 'glob'
 grunt = require 'grunt'
 _ = grunt.util._
 modules = require '../modules'
@@ -79,6 +80,8 @@ module.exports =
         fuSrcUi: false
         fuSrcS3: false
         fuSrcS3Ui: false
+        fuSrcAzureWithFormSupport: false
+        fuSrcAzureUi: false
         fuDeleteFileModule: false
         fuPasteModule: false
         fuDndModule: false
@@ -88,8 +91,10 @@ module.exports =
         fuImagePreviewModule: false
         fuImageValidationModule: false
         fuSessionModule: false
+        fuFormSupportModule: false
         fuSrcJquery: false
         fuSrcS3Jquery: false
+        fuSrcAzureJquery: false
         cryptoJs: false
         fuSrcJqueryDnd: false
 
