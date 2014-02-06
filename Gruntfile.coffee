@@ -768,6 +768,14 @@ module.exports = (grunt) ->
                 files:
                     src: "#{customBuildDest}/**/*.js"
 
+        nodestatic:
+            server:
+                options:
+                    port: 3000
+                    base: "test/unit/resources"
+                    headers:
+                        "Access-Control-Allow-Origin": "*"
+
     # Dependencies
     # ==========
     for name of pkg.devDependencies when name.substring(0, 6) is 'grunt-'
@@ -799,7 +807,7 @@ module.exports = (grunt) ->
     #   % grunt test:ie
     #   % grunt test:Firefox,Chrome,Opera,Safari --autoWatch=true --singleRun=true
     #   etc...
-        taskList = []
+        taskList = ["server"]
 
         setDefaultOption = (name, def) ->
             if not grunt.option(name)?
@@ -890,3 +898,5 @@ module.exports = (grunt) ->
         grunt.task.run(['uglify:custom', 'cssmin:custom', 'strip_code:custom', 'shell:version_custom_templates', 'usebanner:customhead', 'usebanner:customfoot', 'compress:custom', 'build_details'])
 
     grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', ['package']
+
+    grunt.registerTask "server", ["nodestatic"]
