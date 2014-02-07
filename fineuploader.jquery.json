@@ -33,7 +33,7 @@
   ],
   "bugs": "https://github.com/Widen/fine-uploader/issues",
   "homepage": "http://fineuploader.com",
-  "demo": "http://fineuploader.com",
+  "demo": "http://fineuploader.com/demos.html",
   "docs": "http://docs.fineuploader.com",
   "download": "http://fineuploader.com/downloads.html",
   "dependencies": {
