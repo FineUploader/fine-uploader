@@ -57,7 +57,6 @@ module.exports =
     _.map(formulae, (f) ->
       files = glob.sync(f)
       _.map(files, (file) ->
-          grunt.log.writeln "File added: " + file
           src = grunt.file.read file
           src
       ).join(grunt.util.linefeed)
