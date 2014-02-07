@@ -55,9 +55,12 @@ module.exports =
   concat: (formulae) ->
     src = ''
     _.map(formulae, (f) ->
-      grunt.log.writeln "File added: " + f
-      src = grunt.file.read f
-      src
+      files = glob.sync(f)
+      _.map(files, (file) ->
+          grunt.log.writeln "File added: " + file
+          src = grunt.file.read file
+          src
+      ).join(grunt.util.linefeed)
     ).join(grunt.util.linefeed)
 
   build: (dest, formulae) ->
