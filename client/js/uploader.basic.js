@@ -180,6 +180,18 @@
 
                 // true = upload files on form submission (and squelch submit event)
                 interceptSubmit: true
+            },
+
+            // scale images client side, upload a new file for each scaled version
+            scaling: {
+                // send the original file as well
+                sendOriginal: false,
+
+                // fox orientation for scaled images
+                orient: true,
+
+                // metadata about each requested scaled version
+                sizes: []
             }
         };
 
@@ -238,6 +250,8 @@
 
         this._succeededSinceLastAllComplete = [];
         this._failedSinceLastAllComplete = [];
+
+        this._scaler = qq.Scaler && new qq.Scaler(this._options.scaling);
     };
 
     // Define the private & public API methods.
