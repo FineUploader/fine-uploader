@@ -374,8 +374,10 @@ describe("file list initialization tests", function() {
             runTest("s3", "s3Key", done);
         });
 
-        it("ignores Azure response items that do not contain a valid blob name", function(done) {
-            runTest("azure", "blobName", done);
-        });
+        if (qq.supportedFeatures.ajaxUploading) {
+            it("ignores Azure response items that do not contain a valid blob name", function(done) {
+                runTest("azure", "blobName", done);
+            });
+        }
     });
 });
