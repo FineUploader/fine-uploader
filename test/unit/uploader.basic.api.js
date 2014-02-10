@@ -84,47 +84,17 @@ describe("uploader.basic.api.js", function () {
         it("resets", function () {
             var params = {"hello": "world"};
             fineuploader.setParams(params, "foo");
-            assert.deepEqual(fineuploader._paramsStore.getParams("foo"), params,
+            assert.deepEqual(fineuploader._paramsStore.get("foo"), params,
                 "the request parameters should be set");
             fineuploader._paramsStore.reset();
-            assert.deepEqual(fineuploader._paramsStore.getParams("foo"), {},
+            assert.deepEqual(fineuploader._paramsStore.get("foo"), {},
                 "the request parameters should be reset");
-        });
-
-        it("set simple key-value parameters", function () {
-            var params = {"hello": "world"};
-            fineuploader.setParams(params);
-            assert.deepEqual(fineuploader._options.request.params, params,
-                "the request parameters should be set");
-        });
-
-        it("set nested objects as parameters", function () {
-            var params = {
-                "hello": {
-                    "confusing": "world"
-                }
-            };
-            fineuploader.setParams(params);
-            assert.deepEqual(fineuploader._options.request.params, params,
-                "the request parameters should be set");
-        });
-
-        it("set function return values as parameters", function () {
-            var params = {
-                hello_func: function () {
-                    return 42;
-                }
-            };
-
-            fineuploader.setParams(params);
-            assert.deepEqual(fineuploader._options.request.params, params,
-                "the request parameters should be set");
         });
 
         it("allows changing parameters for a specific file id", function () {
             var params = {"hello": "world"};
             fineuploader.setParams(params, "foo");
-            assert.deepEqual(fineuploader._paramsStore.getParams("foo"), params,
+            assert.deepEqual(fineuploader._paramsStore.get("foo"), params,
                 "the request parameters should be set");
 
         });
@@ -132,7 +102,7 @@ describe("uploader.basic.api.js", function () {
         it("allows changing paramters for all files", function () {
             var params = {"hello": "world"};
             fineuploader.setParams(params);
-            assert.deepEqual(fineuploader._paramsStore.getParams(), params,
+            assert.deepEqual(fineuploader._paramsStore.get(), params,
                 "the request parameters should be set");
         });
 
@@ -154,19 +124,19 @@ describe("uploader.basic.api.js", function () {
         it("resets", function () {
             var endpoint = "/endpoint";
             fineuploader.setEndpoint(endpoint, 0);
-            var ep = fineuploader._endpointStore.getEndpoint(0);
+            var ep = fineuploader._endpointStore.get(0);
             assert.deepEqual(ep,
                 endpoint,
                 "the endpoint should be set");
             fineuploader._endpointStore.reset();
-            ep = fineuploader._endpointStore.getEndpoint(0);
+            ep = fineuploader._endpointStore.get(0);
             assert.deepEqual(ep, fineuploader._options.request.endpoint, "the endpoint should be reset");
         });
 
         it("set a new endpoint", function () {
             var endpoint = "/endpoint";
             fineuploader.setEndpoint(endpoint, 0);
-            var ep = fineuploader._endpointStore.getEndpoint(0);
+            var ep = fineuploader._endpointStore.get(0);
 
             assert.deepEqual(ep, endpoint, "the endpoint should be set");
 
@@ -390,4 +360,82 @@ describe("uploader.basic.api.js", function () {
         });
     });
 
+    describe("_createStore", function() {
+        var uploader = new qq.FineUploaderBasic({});
+
+        it("handles non-object stores properly", function() {
+            var initVal = "foo",
+                store = uploader._createStore(initVal);
+
+            assert.equal(store.get(100), initVal);
+            assert.equal(store.get(), initVal);
+
+            store.set("bar", 2);
+            store.set("three", 3);
+            assert.equal(store.get(2), "bar");
+            assert.equal(store.get(3), "three");
+            assert.equal(store.get(100), initVal);
+            assert.equal(store.get(), initVal);
+
+            store.remove(3);
+            assert.equal(store.get(2), "bar");
+            assert.equal(store.get(3), initVal);
+            assert.equal(store.get(100), initVal);
+            assert.equal(store.get(), initVal);
+
+            store.set("foobar");
+            assert.equal(store.get(2), "foobar");
+            assert.equal(store.get(3), "foobar");
+            assert.equal(store.get(100), "foobar");
+            assert.equal(store.get(), "foobar");
+
+            store.reset();
+            assert.equal(store.get(2), initVal);
+            assert.equal(store.get(3), initVal);
+            assert.equal(store.get(100), initVal);
+            assert.equal(store.get(), initVal);
+        });
+
+        it("handles object stores properly", function() {
+            var initVal = {foo: "bar"},
+                a = {a: "a"},
+                two = {two: "two"},
+                three = {three: "three"},
+                store = uploader._createStore(initVal);
+
+            assert.deepEqual(store.get(100), initVal);
+            assert.deepEqual(store.get(), initVal);
+
+            store.set(two, 2);
+            store.set(three, 3);
+            assert.deepEqual(store.get(2), two);
+            assert.deepEqual(store.get(3), three);
+            assert.deepEqual(store.get(100), initVal);
+            assert.deepEqual(store.get(), initVal);
+
+            three.test = "123";
+            assert.notDeepEqual(store.get(3), three);
+
+            store.remove(3);
+            assert.deepEqual(store.get(2), two);
+            assert.deepEqual(store.get(3), initVal);
+            assert.deepEqual(store.get(100), initVal);
+            assert.deepEqual(store.get(), initVal);
+
+            store.set(a);
+            assert.deepEqual(store.get(2), a);
+            assert.deepEqual(store.get(3), a);
+            assert.deepEqual(store.get(100), a);
+            assert.deepEqual(store.get(), a);
+
+            a.test = "123";
+            assert.notDeepEqual(store.get(2), a);
+
+            store.reset();
+            assert.deepEqual(store.get(2), initVal);
+            assert.deepEqual(store.get(3), initVal);
+            assert.deepEqual(store.get(100), initVal);
+            assert.deepEqual(store.get(), initVal);
+        });
+    });
 });

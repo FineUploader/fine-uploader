@@ -43,7 +43,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
     function getHeaders(id, uploadId) {
         var headers = {},
             promise = new qq.Promise(),
-            endpoint = options.endpointStore.getEndpoint(id),
+            endpoint = options.endpointStore.get(id),
             bucket = qq.s3.util.getBucket(endpoint),
             signatureConstructor = getSignatureAjaxRequester.constructStringToSign
                 (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_COMPLETE, bucket, options.getKey(id))
@@ -71,7 +71,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
     function handleCompleteRequestComplete(id, xhr, isError) {
         var promise = pendingCompleteRequests[id],
             domParser = new DOMParser(),
-            endpoint = options.endpointStore.getEndpoint(id),
+            endpoint = options.endpointStore.get(id),
             bucket = qq.s3.util.getBucket(endpoint),
             key = options.getKey(id),
             responseDoc = domParser.parseFromString(xhr.responseText, "application/xml"),
@@ -138,7 +138,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         return new XMLSerializer().serializeToString(doc);
     }
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         method: options.method,
         contentType: "application/xml; charset=UTF-8",
         endpointStore: options.endpointStore,
@@ -149,7 +149,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         successfulResponseCodes: {
             POST: [200]
         }
-    });
+    }));
 
 
     qq.extend(this, {

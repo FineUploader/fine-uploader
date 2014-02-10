@@ -17,8 +17,9 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             endpointStore: null,
             paramsStore: null,
             signatureSpec: null,
-            acl: "private",
+            aclStore: null,
             reducedRedundancy: false,
+            serverSideEncryption: false,
             maxConnections: 3,
             getContentType: function(id) {},
             getKey: function(id) {},
@@ -46,21 +47,25 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
      * @returns {qq.Promise}
      */
     function getHeaders(id) {
-        var bucket = qq.s3.util.getBucket(options.endpointStore.getEndpoint(id)),
+        var bucket = qq.s3.util.getBucket(options.endpointStore.get(id)),
             headers = {},
             promise = new qq.Promise(),
             key = options.getKey(id),
             signatureConstructor;
 
-        headers["x-amz-acl"] = options.acl;
+        headers["x-amz-acl"] = options.aclStore.get(id);
 
         if (options.reducedRedundancy) {
             headers[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME] = qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE;
         }
 
+        if (options.serverSideEncryption) {
+            headers[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME] = qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE;
+        }
+
         headers[qq.s3.util.AWS_PARAM_PREFIX + options.filenameParam] = encodeURIComponent(options.getName(id));
 
-        qq.each(options.paramsStore.getParams(id), function(name, val) {
+        qq.each(options.paramsStore.get(id), function(name, val) {
             headers[qq.s3.util.AWS_PARAM_PREFIX + name] = encodeURIComponent(val);
         });
 
@@ -132,7 +137,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         }
     }
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         method: options.method,
         contentType: null,
         endpointStore: options.endpointStore,
@@ -143,7 +148,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         successfulResponseCodes: {
             POST: [200]
         }
-    });
+    }));
 
 
     qq.extend(this, {

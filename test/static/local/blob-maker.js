@@ -19,7 +19,7 @@ $.extend(qqtest, {
             downloadAsync.success(self._downloadedFiles[key]);
         }
         else {
-            xhr.open("GET", "https://fineuploader_unittests.s3.amazonaws.com/" + key, true);
+            xhr.open("GET", "http://" + window.location.hostname + ":3000/" + key, true);
             xhr.responseType = "arraybuffer";
 
             xhr.onerror = function() {

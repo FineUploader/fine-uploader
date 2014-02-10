@@ -17,6 +17,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li><a href="{{ URL_ROOT }}/features/async-tasks-and-promises.html">Async Tasks & Promises</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/azure.html">Azure Blob Storage Uploads</a></li>
                             <li><a href="{{ URL_ROOT }}/features/cancellable-uploads.html">Cancelling</a></li>
                             <li><a href="{{ URL_ROOT }}/features/chunking.html">Chunking</a></li>
                             <li><a href="{{ URL_ROOT }}/features/CORS.html">CORS</a></li>
@@ -24,6 +25,7 @@
                             <li><a href="{{ URL_ROOT }}/features/drag-and-drop.html">Drag and Drop</a></li>
                             <li><a href="{{ URL_ROOT }}/features/handling-errors.html">Error Handling</a></li>
                             <li><a href="{{ URL_ROOT }}/features/filename-edit.html">Filename Editing</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/forms.html">Form Support</a></li>
                             <li><a href="{{ URL_ROOT }}/features/session.html">Initial File Lists</a></li>
                             <li><a href="{{ URL_ROOT }}/features/extra-buttons.html">Multiple Upload Buttons</a></li>
                             <li><a href="{{ URL_ROOT }}/features/no-server-uploads.html">No-Server Uploads</a></li>
@@ -34,6 +36,7 @@
                             <li><a href="{{ URL_ROOT }}/features/request-parameters.html">Request</a></li>
                             <li><a href="{{ URL_ROOT }}/features/resume.html">Resuming</a></li>
                             <li><a href="{{ URL_ROOT }}/features/retry.html">Retrying</a></li>
+                            <li><a href="{{ URL_ROOT }}/features/s3.html">S3 Uploads</a></li>
                             <li><a href="{{ URL_ROOT }}/features/statistics-and-status-updates.html">Stats & Status</a></li>
                             <li><a href="{{ URL_ROOT }}/features/styling.html">Styling</a></li>
                             <li><a href="{{ URL_ROOT }}/features/upload-files.html">Uploading</a></li>
@@ -50,10 +53,12 @@
                                 <li><a href="{{ URL_ROOT }}/api/options.html">Core</a></li>
                                 <li><a href="{{ URL_ROOT }}/api/options-ui.html">UI</a></li>
                                 <li><a href="{{ URL_ROOT }}/api/options-s3.html">S3</a></li>
+                                <li><a href="{{ URL_ROOT }}/api/options-azure.html">Azure</a></li>
                                 <li class="divider"></li>
                                 <li><b>Methods</b></li>
                                 <li><a href="{{ URL_ROOT }}/api/methods.html">Core & UI</a></li>
                                 <li><a href="{{ URL_ROOT }}/api/methods-s3.html">S3</a></li>
+                                <li><a href="{{ URL_ROOT }}/api/methods-azure.html">Azure</a></li>
                                 <li class="divider"></li>
                                 <li><b>Events</b></li>
                                 <li><a href="{{ URL_ROOT }}/api/events.html">Core & UI</a></li>
@@ -68,6 +73,7 @@
                         <ul class="dropdown-menu">
                             <ul><a href="{{ URL_ROOT }}/endpoint_handlers/traditional.html">Traditional</a></ul>
                             <ul><a href="{{ URL_ROOT }}/endpoint_handlers/amazon-s3.html">Amazon S3</a></ul>
+                            <ul><a href="{{ URL_ROOT }}/endpoint_handlers/azure.html">Azure Blob Storage</a></ul>
                         </ul>
                     </li>
 
@@ -93,20 +99,6 @@
                             {% endfor %}
                         </ul>
                     </li>
-                    <!--
-                    <li class="dropdown pull-right">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Current {{ GIT_REF_TYPE|capitalize }}: {{ GIT_REF_VAL }} <b class="caret"></b>
-                        <ul class="dropdown-menu">
-                        {% for ref_folder in ALL_GIT_REFS|dictsort %}
-                            <li><a href="/{{ ref_folder[0] }}">{{ ref_folder[0]|title }}</a></li>
-                            {% for ref in ref_folder[1].refs %}
-                                <ul><a href="/{{ ref_folder[0] }}/{{ ref.ref_val|replace("_", "/") }}">{{ ref.ref_val|title }}</a></ul>
-                            {% endfor %}
-                        {% endfor %}
-                        </ul>
-                    </li>
-                </ul>
-                -->
             </div><!--/.nav-collapse -->
         </div>
     </div>

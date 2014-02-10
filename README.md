@@ -1,12 +1,12 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-Version: 4.2.2 (Released January 23, 2014)
+Version: 4.3.0 (Released January 10, 2014)
 
 [![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=master)](https://travis-ci.org/Widen/fine-uploader) | [![Semver badge](http://calm-shore-6115.herokuapp.com/?label=SemVer&value=2.0.0&color=green)](http://semver.org/spec/v2.0.0.html)
 
 [**Download**](http://fineuploader.com/downloads.html) |
 [**Documentation**](http://docs.fineuploader.com) |
-[**Examples**](http://fineuploader.com) |
+[**Examples**](http://fineuploader.com/demos) |
 [**Support**](http://fineuploader.com/support.html) |
 [**Blog**](http://blog.fineuploader.com/) |
 [**Changelog**](http://blog.fineuploader.com/category/changelog/)

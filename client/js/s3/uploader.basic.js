@@ -23,7 +23,9 @@
                 // 'uuid', 'filename', or a function which may be promissory
                 key: "uuid",
 
-                reducedRedundancy: false
+                reducedRedundancy: false,
+
+                serverSideEncryption: false
             },
 
             credentials: {
@@ -83,10 +85,12 @@
             this._currentCredentials.accessKey = options.request.accessKey;
         }
 
+        this._aclStore = this._createStore(options.objectProperties.acl);
+
         // Call base module
         qq.FineUploaderBasic.call(this, options);
 
-        this._uploadSuccessParamsStore = this._createParamsStore("uploadSuccess");
+        this._uploadSuccessParamsStore = this._createStore(this._options.uploadSuccess.params);
 
         // This will hold callbacks for failed uploadSuccess requests that will be invoked on retry.
         // Indexed by file ID.
@@ -99,6 +103,8 @@
     // Inherit basic public & private API methods.
     qq.extend(qq.s3.FineUploaderBasic.prototype, qq.basePublicApi);
     qq.extend(qq.s3.FineUploaderBasic.prototype, qq.basePrivateApi);
+    qq.extend(qq.s3.FineUploaderBasic.prototype, qq.nonTraditionalBasePublicApi);
+    qq.extend(qq.s3.FineUploaderBasic.prototype, qq.nonTraditionalBasePrivateApi);
 
     // Define public & private API methods for this module.
     qq.extend(qq.s3.FineUploaderBasic.prototype, {
@@ -124,13 +130,7 @@
         },
 
         setUploadSuccessParams: function(params, id) {
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (id == null) {
-                this._options.uploadSuccess.params = params;
-            }
-            else {
-                this._uploadSuccessParamsStore.setParams(params, id);
-            }
+            this._uploadSuccessParamsStore.set(params, id);
         },
 
         setCredentials: function(credentials, ignoreEmpty) {
@@ -160,6 +160,10 @@
             }
         },
 
+        setAcl: function(acl, id) {
+            this._aclStore.set(acl, id);
+        },
+
         /**
          * Ensures the parent's upload handler creator passes any additional S3-specific options to the handler as well
          * as information required to instantiate the specific handler based on the current browser's capabilities.
@@ -171,6 +175,7 @@
             var self = this,
                 additionalOptions = {
                     objectProperties: this._options.objectProperties,
+                    aclStore: this._aclStore,
                     signature: this._options.signature,
                     iframeSupport: this._options.iframeSupport,
                     getKeyName: qq.bind(this._determineKeyName, this),
@@ -184,14 +189,30 @@
             // We assume HTTP if it is missing from the start of the endpoint string.
             qq.override(this._endpointStore, function(super_) {
                 return {
-                    getEndpoint: function(id) {
-                        var endpoint = super_.getEndpoint(id);
+                    get: function(id) {
+                        var endpoint = super_.get(id);
 
                         if (endpoint.indexOf("http") < 0) {
-                            return "http://" + endpoint;
+                            return "https://" + endpoint;
                         }
 
                         return endpoint;
+                    }
+                };
+            });
+
+            // Param names should be lower case to avoid signature mismatches
+            qq.override(this._paramsStore, function(super_) {
+                return {
+                    get: function(id) {
+                        var oldParams = super_.get(id),
+                            modifiedParams = {};
+
+                        qq.each(oldParams, function(name, val) {
+                            modifiedParams[name.toLowerCase()] = val;
+                        });
+
+                        return modifiedParams;
                     }
                 };
             });
@@ -313,116 +334,32 @@
             }
         },
 
-        /**
-         * When the upload has completed, if it is successful, send a request to the `successEndpoint` (if defined).
-         * This will hold up the call to the `onComplete` callback until we have determined success of the upload to S3
-         * according to the local server, if a `successEndpoint` has been defined by the integrator.
-         *
-         * @param id ID of the completed upload
-         * @param name Name of the associated item
-         * @param result Object created from the server's parsed JSON response.
-         * @param xhr Associated XmlHttpRequest, if this was used to send the request.
-         * @returns {boolean || qq.Promise} true/false if success can be determined immediately, otherwise a `qq.Promise`
-         * if we need to ask the server.
-         * @private
-         */
-        _onComplete: function(id, name, result, xhr) {
-            var success = result.success ? true : false,
-                self = this,
-                onCompleteArgs = arguments,
-                key = this.getKey(id),
-                successEndpoint = this._options.uploadSuccess.endpoint,
-                successCustomHeaders = this._options.uploadSuccess.customHeaders,
-                cors = this._options.cors,
-                uuid = this.getUuid(id),
-                bucket = qq.s3.util.getBucket(this._endpointStore.getEndpoint(id)),
-                promise = new qq.Promise(),
-                uploadSuccessParams = this._uploadSuccessParamsStore.getParams(id),
+        _getEndpointSpecificParams: function(id, response, maybeXhr) {
+            var params = {
+                key: this.getKey(id),
+                uuid: this.getUuid(id),
+                name: this.getName(id),
+                bucket: qq.s3.util.getBucket(this._endpointStore.get(id))
+            };
 
-                // If we are waiting for confirmation from the local server, and have received it,
-                // include properties from the local server response in the `response` parameter
-                // sent to the `onComplete` callback, delegate to the parent `_onComplete`, and
-                // fulfill the associated promise.
-                onSuccessFromServer = function(awsSuccessRequestResult) {
-                    delete self._failedSuccessRequestCallbacks[id];
-                    qq.extend(result, awsSuccessRequestResult);
-                    qq.FineUploaderBasic.prototype._onComplete.apply(self, onCompleteArgs);
-                    promise.success(awsSuccessRequestResult);
-                },
-
-                // If the upload success request fails, attempt to re-send the success request (via the core retry code).
-                // The entire upload may be restarted if the server returns a "reset" property with a value of true as well.
-                onFailureFromServer = function(awsSuccessRequestResult) {
-                    var callback = submitSuccessRequest;
-
-                    qq.extend(result, awsSuccessRequestResult);
-
-                    if (result && result.reset) {
-                        callback = null;
-                    }
-
-                    if (!callback) {
-                        delete self._failedSuccessRequestCallbacks[id];
-                    }
-                    else {
-                        self._failedSuccessRequestCallbacks[id] = callback;
-                    }
-
-                    if (!self._onAutoRetry(id, name, result, xhr, callback)) {
-                        qq.FineUploaderBasic.prototype._onComplete.apply(self, onCompleteArgs);
-                        promise.failure(awsSuccessRequestResult);
-                    }
-                },
-                submitSuccessRequest,
-                successAjaxRequester;
-
-            // Ask the local server if the file sent to S3 is ok.
-            if (success && successEndpoint) {
-                successAjaxRequester = new qq.s3.UploadSuccessAjaxRequester({
-                    endpoint: successEndpoint,
-                    customHeaders: successCustomHeaders,
-                    cors: cors,
-                    log: qq.bind(this.log, this)
-                });
-
-
-                // combine custom params and default params
-                qq.extend(uploadSuccessParams, {
-                    key: key,
-                    uuid: uuid,
-                    name: name,
-                    bucket: bucket
-                }, true);
-
-                submitSuccessRequest = qq.bind(function() {
-                    successAjaxRequester.sendSuccessRequest(id, uploadSuccessParams)
-                        .then(onSuccessFromServer, onFailureFromServer);
-                }, self);
-
-                submitSuccessRequest();
-
-                return promise;
+            if (maybeXhr && maybeXhr.getResponseHeader("ETag")) {
+                params.etag = maybeXhr.getResponseHeader("ETag");
+            }
+            else if (response.etag) {
+                params.etag = response.etag;
             }
 
-            // If we are not asking the local server about the file in S3, just delegate to the parent `_onComplete`.
-            return qq.FineUploaderBasic.prototype._onComplete.apply(this, arguments);
-        },
-
-        // If the failure occurred on an uplaod success request (and a reset was not ordered), try to resend that instead.
-        _manualRetry: function(id) {
-            var successRequestCallback = this._failedSuccessRequestCallbacks[id];
-
-            return qq.FineUploaderBasic.prototype._manualRetry.call(this, id, successRequestCallback);
+            return params;
         },
 
         // Hooks into the base internal `_onSubmitDelete` to add key and bucket params to the delete file request.
         _onSubmitDelete: function(id, onSuccessCallback) {
             var additionalMandatedParams = {
                 key: this.getKey(id),
-                bucket: qq.s3.util.getBucket(this._endpointStore.getEndpoint(id))
+                bucket: qq.s3.util.getBucket(this._endpointStore.get(id))
             };
 
-            qq.FineUploaderBasic.prototype._onSubmitDelete.call(this, id, onSuccessCallback, additionalMandatedParams);
+            return qq.FineUploaderBasic.prototype._onSubmitDelete.call(this, id, onSuccessCallback, additionalMandatedParams);
         },
 
         _addCannedFile: function(sessionData) {

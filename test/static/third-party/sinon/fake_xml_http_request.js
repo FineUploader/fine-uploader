@@ -59,6 +59,7 @@
         this.requestBody = null;
         this.status = 0;
         this.statusText = "";
+        this.withCredentials = false;
         this.upload = new UploadProgress();
 
         var xhr = this;

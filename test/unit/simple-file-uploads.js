@@ -221,5 +221,43 @@ if (qqtest.canDownloadFileAsBlob) {
                 runQueuedStatusTest(false, done);
             });
         });
+
+        it("handles an empty array of files or blobs appropriately", function(done) {
+            assert.expect(2, done);
+
+            var uploader = new qq.FineUploaderBasic({
+                callbacks: {
+                    onError: function(id) {
+                        assert.ok(true);
+                    }
+                }
+            });
+
+            uploader.addBlobs([]);
+            uploader.addFiles([]);
+        });
+
+        it("marks an upload as failed if the status indicates failure, even if the response body indicates success", function(done) {
+            assert.expect(2, done);
+
+            var uploader = new qq.FineUploaderBasic({
+                request: {
+                    endpoint: "/test/endpoint"
+                },
+                callbacks: {
+                    onComplete: function(id, name, response, xhr) {
+                        assert.ok(!response.success);
+                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                    }
+                }
+            });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+
+                uploader.addBlobs(blob);
+                fileTestHelper.getRequests()[0].respond(500, null, JSON.stringify({success: true}));
+            });
+        });
     });
 }

@@ -21,6 +21,8 @@ $(document).ready(function() {
 {% block content %}
 {% markdown %}
 
+[status]: ../features/statistics-and-status-updates.html
+
 # Events {: .page-header }
 
 Fine Uploader's event system enables integrators to execute any operations at
@@ -114,7 +116,7 @@ the upload may actually complete until the promise has actually be fullfilled.
 {{ api_event("complete", "complete",
 """Called when the item has finished uploading.
 
-The `responseJSON` will contain the raw response from teh server including the
+The `responseJSON` will contain the raw response from the server including the
 'success' property which indicates whether the upload succeeded.""",
     [
         {
@@ -136,6 +138,27 @@ The `responseJSON` will contain the raw response from teh server including the
             "name": "xhr",
             "type": "XMLHttpRequest or XDomainRequest",
             "description": "The object used to make the request."
+        }
+    ])
+}}
+
+{{ api_event("allComplete", "allComplete",
+"Called when all submitted items have reached a point of termination.  A file has reached a point of termination
+if it has been cancelled, rejected, or uploaded (failed or successful).  For example, if a file in the group is paused,
+and all other files in the group have uploaded successfully the allComplete event will not be invoked for the group
+until that paused file is either continued and completes the uploading process, or canceled.  This event will not be
+called if all files in the group have been cancelled or rejected (i.e. if none of the files have reached a
+[status][status] of `qq.status.UPLOAD_SUCCESSFUL` or `qq.status.UPLOAD_FAILED`).",
+    [
+        {
+            "name": "succeeded",
+            "type": "Array",
+            "description": "IDs of all files in the group that have uploaded successfully ([status][status] = `qq.status.UPLOAD_SUCCESSFUL`)."
+        },
+        {
+            "name": "failed",
+            "type": "Array",
+            "description": "IDs of all files in the group that have failed ([status][status] = `qq.status.UPLOAD_FAILED`)."
         }
     ])
 }}
@@ -559,4 +582,5 @@ The `fileOrBlobDataArray` object has two properties: `name` and `size`. The `siz
 }}
 
 </div>
+
 {% endblock %}

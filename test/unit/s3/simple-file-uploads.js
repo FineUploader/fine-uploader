@@ -85,6 +85,29 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+        it("converts all parameters (metadata) to lower case before sending them to S3", function(done) {
+            assert.expect(3, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request: typicalRequestOption,
+                    signature: typicalSignatureOption
+                }
+            );
+
+            uploader.setParams({mIxEdCaSe: "value"});
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var uploadRequestParams;
+
+                assert.equal(conditions["x-amz-meta-mixedcase"], "value");
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                uploadRequestParams = uploadRequest.requestBody.fields;
+
+                assert.equal(uploadRequestParams["x-amz-meta-mixedcase"], "value");
+            });
+        });
+
         it("respects the objectProperties.key option w/ a value of 'filename'", function(done) {
             assert.expect(5, done);
 
@@ -136,6 +159,23 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploadRequestParams = uploadRequest.requestBody.fields;
                 assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
+            });
+        });
+
+        it("ensure default is HTTPS if no scheme is included in endpoint URL", function(done) {
+            assert.expect(2, done);
+
+            var typicalRequestOptionCopy = qq.extend({}, typicalRequestOption),
+                uploader = new qq.s3.FineUploaderBasic({
+                    request: qq.extend(typicalRequestOptionCopy, {endpoint: "test.com"}),
+                    signature: typicalSignatureOption
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                assert.equal(uploadRequest.url, "https://test.com");
             });
         });
 
@@ -216,7 +256,7 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
-        it("respects the objectProperties.acl option w/ a custom value of 'public-read'", function(done) {
+        it("respects the objectProperties.acl option w/ a custom value set via option", function(done) {
             assert.expect(3, done);
 
             var uploader = new qq.s3.FineUploaderBasic({
@@ -236,6 +276,31 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploadRequestParams = uploadRequest.requestBody.fields;
                 assert.equal(uploadRequestParams.acl, "public-read");
+            });
+        });
+
+        it("respects the objectProperties.acl option w/ a custom value set via API", function(done) {
+            assert.expect(3, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request:typicalRequestOption,
+                    signature: typicalSignatureOption,
+                    objectProperties: {
+                        acl: "public-read"
+                    }
+                }
+            );
+
+            uploader.setAcl("test-acl", 0);
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var uploadRequestParams;
+
+                assert.equal(conditions.acl, "test-acl");
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                uploadRequestParams = uploadRequest.requestBody.fields;
+                assert.equal(uploadRequestParams.acl, "test-acl");
             });
         });
 
@@ -259,6 +324,29 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploadRequestParams = uploadRequest.requestBody.fields;
                 assert.equal(uploadRequestParams[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME], qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE);
+            });
+        });
+
+        it("respects the objectProperties.serverSideEncryption option w/ a value of true", function(done) {
+            assert.expect(3, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request:typicalRequestOption,
+                    signature: typicalSignatureOption,
+                    objectProperties: {
+                        serverSideEncryption: true
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var uploadRequestParams;
+
+                assert.equal(conditions[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE);
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                uploadRequestParams = uploadRequest.requestBody.fields;
+                assert.equal(uploadRequestParams[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE);
             });
         });
 
@@ -299,7 +387,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 var uploadSuccessRequest, uploadSuccessRequestParsedBody;
 
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
-                uploadRequest.respond(200, null, null);
+                uploadRequest.respond(200, {ETag: "123"}, null);
 
                 assert.equal(fileTestHelper.getRequests().length, 3, "Wrong # of requests");
                 uploadSuccessRequest = fileTestHelper.getRequests()[2];
@@ -313,6 +401,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(uploadSuccessRequestParsedBody.uuid, uploader.getUuid(0));
                 assert.equal(uploadSuccessRequestParsedBody.name, uploader.getName(0));
                 assert.equal(uploadSuccessRequestParsedBody.bucket, testBucketName);
+                assert.equal(uploadSuccessRequestParsedBody.etag, "123");
 
                 uploadSuccessRequest.respond(200, null, null);
                 assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);

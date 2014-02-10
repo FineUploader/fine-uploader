@@ -4,7 +4,7 @@ describe("file list initialization tests", function() {
 
     var fileHelper = helpme.setupFileTests(),
         sessionEndpoint = "/uploads/initial",
-        thumbnailSrc = "http://fineuploader.com/img/fineuploader-header-logo.png";
+        thumbnailSrc = "http://" + window.location.hostname + ":3000/up.jpg";
 
 
     beforeEach(function() {
@@ -83,41 +83,44 @@ describe("file list initialization tests", function() {
         }, 0);
     });
 
-    it("drawThumbnail renders image properly if session response includes thumbnailUrl", function(done) {
-        assert.expect(3, done);
+    // The <img> fails to load sometimes in older versions of IE for some unknown reason, so we have to exclude this test
+    if (!qq.ie() || qq.ie10() || qq.ie11()) {
+        it("drawThumbnail renders image properly if session response includes thumbnailUrl", function(done) {
+            assert.expect(3, done);
 
-        $fixture.append("<img id='testimg'>");
+            var img = document.createElement("img");
 
-        var expectedSessionResponse = [
-                {
-                    name: "up.jpg",
-                    uuid: "123",
-                    thumbnailUrl: thumbnailSrc
-                }
-            ],
-            uploader = new qq.FineUploaderBasic({
-                session: {
-                    endpoint: sessionEndpoint
-                },
-                callbacks: {
-                    onSessionRequestComplete: function(response, success, xhr) {
-                        assert.deepEqual(response, expectedSessionResponse, "unexpected callback response");
-                        assert.ok(success, "session request deemed failure");
+            var expectedSessionResponse = [
+                    {
+                        name: "up.jpg",
+                        uuid: "123",
+                        thumbnailUrl: thumbnailSrc
+                    }
+                ],
+                uploader = new qq.FineUploaderBasic({
+                    session: {
+                        endpoint: sessionEndpoint
+                    },
+                    callbacks: {
+                        onSessionRequestComplete: function(response, success, xhr) {
+                            assert.deepEqual(response, expectedSessionResponse, "unexpected callback response");
+                            assert.ok(success, "session request deemed failure");
 
-                        uploader.drawThumbnail(0, document.getElementById("testimg"), 0, true).then(function() {
-                            assert.equal(document.getElementById("testimg").src, thumbnailSrc, "wrong thumbnail src");
-                        }, function() {
-                            assert.fail(null, null, "Thumbnail generation failed");
-                        });
+                            uploader.drawThumbnail(0, img, 0, true).then(function() {
+                                assert.equal(img.src, thumbnailSrc, "wrong thumbnail src");
+                            }, function() {
+                                assert.fail(null, null, "Thumbnail generation failed");
+                            });
+                        }
                     }
                 }
-            }
-        );
+            );
 
-        setTimeout(function() {
-            fileHelper.getRequests()[0].respond(200, null, JSON.stringify(expectedSessionResponse));
-        }, 0);
-    });
+            setTimeout(function() {
+                fileHelper.getRequests()[0].respond(200, null, JSON.stringify(expectedSessionResponse));
+            }, 0);
+        });
+    }
 
     it("ignores response items that do not contain a valid UUID or name", function(done) {
         assert.expect(3, done);
@@ -328,21 +331,27 @@ describe("file list initialization tests", function() {
         }, 0);
     });
 
-    it("ignores S3 response items that do not contain a valid key", function(done) {
-        assert.expect(3, done);
+    describe("non-traditional endpoint tests", function() {
+        function runTest(namespace, requiredKeyName, done) {
+            assert.expect(3, done);
 
-        var expectedSessionResponse = [
-                {
-                    uuid: "123",
-                    name: "hi",
-                    s3Key: "raynicholus"
-                },
-                {
-                    name: "up2.jpg",
-                    uuid: "abc"
-                }
-            ],
-            uploader = new qq.s3.FineUploaderBasic({
+            var expectedSessionResponse = [
+                    {
+                        uuid: "123",
+                        name: "hi"
+                    },
+                    {
+                        name: "up2.jpg",
+                        uuid: "abc"
+                    }
+                ],
+                uploader,
+                request;
+
+
+            expectedSessionResponse[0][requiredKeyName] = "raynicholus";
+
+            uploader = new qq[namespace].FineUploaderBasic({
                 session: {
                     endpoint: sessionEndpoint
                 },
@@ -352,14 +361,21 @@ describe("file list initialization tests", function() {
                         assert.ok(!success, "session request deemed success unexpectedly");
                     }
                 }
-            }
-        ),
-            request;
+            });
 
-        setTimeout(function() {
-            request = fileHelper.getRequests()[0];
-            request.respond(200, null, JSON.stringify(expectedSessionResponse));
-            assert.equal(uploader.getUploads().length, 1, "wrong number of pre-populated uploads recorded");
-        }, 0);
+            setTimeout(function() {
+                request = fileHelper.getRequests()[0];
+                request.respond(200, null, JSON.stringify(expectedSessionResponse));
+                assert.equal(uploader.getUploads().length, 1, "wrong number of pre-populated uploads recorded");
+            }, 0);
+        }
+
+        it("ignores S3 response items that do not contain a valid key", function(done) {
+            runTest("s3", "s3Key", done);
+        });
+
+        it("ignores Azure response items that do not contain a valid blob name", function(done) {
+            runTest("azure", "blobName", done);
+        });
     });
 });

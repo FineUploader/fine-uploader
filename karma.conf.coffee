@@ -4,7 +4,7 @@ allBrowsers = require './lib/browsers'
 
 module.exports = (config, options = {}) ->
   config.set
-    files: modules.mergeModules 'karmaModules', 'fuSrcBuild', 'fuIframeXssResponse', 'testHelperModules', 'fuUnit'
+    files: modules.mergeModules true, 'karmaModules', 'fuSrcBuild', 'fuIframeXssResponse', 'testHelperModules', 'fuUnit'
     basePath: ""
     preprocessors:
         '**/*.coffee': 'coffee'

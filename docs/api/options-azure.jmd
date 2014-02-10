@@ -1,0 +1,113 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Azure Options" %}
+
+{% block sidebar %}
+<div id="sidebar-accordion" class="accordion">
+</div>
+{% endblock %}
+
+{% block js_head %}
+<script src="{{ ASSETS }}/js/main.js"></script>
+{% endblock %}
+
+{% block js_footer %}
+<script>
+$(document).ready(function() {
+    console.log('herro')
+    renderOptionsSidebarNav(['azure-core', 'azure-ui']);
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="all-options">
+<div class="options-azure-core">
+{% markdown %}
+# Options <small>Azure</small> {: .page-header }
+
+If you are using the Azure uploader, many of Fine Uploader's options are still
+present, and most of them still function the same way. However, some of the
+options are slightly different. This page will list any new or different options
+for the Azure uploader. Any option not listed here can be assumed to have the same
+behavior for the Traditional or Azure uploader.
+
+## Core
+
+{% endmarkdown %}
+
+{{
+alert("The `chunking.paramNames` option does **not** apply to Fine Uploader Azure.")
+}}
+{{ api_parent_option("chunking", "chunking", "",
+    (
+        ("chunking.partSize", "partSize", "The maximum size of each part, in bytes.  It is not recommenced you increase this value, as Azure will not accept parts larger than 4 MB.", "Integer", "4000000",),
+        ("chunking.minFileSize", "minFileSize", "Files smaller than this value will not be chunked.", "Integer", "4000001",),
+    )
+)}}
+
+{{ api_parent_option("cors", "cors", "",
+    (
+        ("cors.allowXdr", "allowXdr", "Enables or disables cross-domain ajax calls (if `expected` property is true) in IE9 and older.", "Boolean", "true",),
+    )
+)}}
+
+{{ api_parent_option("blobProperties", "objectProperties", "",
+    (
+        ("blobProperties.blobName", "blobName", "Describes the blob name used to identify the file in your Azure Blob Storage container. Possible values are 'uuid', 'filename' or a function.  If the value is a function, Fine Uploader Azure will pass the associated file ID as a parameter when invoking your function. If the value is a function it may return one of a [`qq.Promise`](../features/async-tasks-and-promises.html) or a `String`.", "String or Function", "uuid",),
+    )
+)}}
+
+{{
+alert("The `resume.paramNames` option does **not** apply to Fine Uploader Azure.")
+}}
+
+{{ api_parent_option("resume", "resume", "",
+    (
+        ("resume.recordsExpireIn", "recordsExpireIn", "Number of days before resumable file records expire.", "Integer", "7",),
+    )
+)}}
+
+
+{{
+alert("`request.customHeaders` does **not** apply to Fine Uploader Azure.")
+}}
+{{ api_parent_option("request", "request", "",
+    (
+        ("request.endpoint", "containerUrl", "URL for your Azure Blob Storage container.", "String", "null",),
+        ("request.params", "params", "Parameters passed along with each upload request.", "Object", "{}",),
+        ("request.filenameParam", "filenameParam", "Part of the parameter name that contains the name of the associated file which may differ from the blob name. Prefixed with 'x-ms-meta-' by Fine Uploader.", "String", "qqfilename",),
+    )
+)}}
+
+{{ api_parent_option("signature", "signature", "",
+    (
+        ("signature.customHeaders", "customHeaders", "Additional headers sent along with each signature request.", "Object", "{}",),
+        ("signature.endpoint", "endpoint", "The endpoint that Fine Uploader can use to send GET for a SAS before sending requests off to S3.  The blob URL and underlying method type associated with the underlying REST request will be included in the query string.", "String", "null",),
+    )
+)}}
+
+{{ api_parent_option("uploadSuccess", "uploadSuccess", "",
+    (
+        ("uploadSuccess.customHeaders", "customHeaders", "Additional headers sent along with each signature request.", "Object", "{}",),
+        ("uploadSuccess.endpoint", "endpoint", "An endpoint that Fine Uploader should POST to when a file has been successfully uploaded to Azure Blob Storage.", "String", "null",),
+        ("uploadSuccess.params", "params", "Any additional parameters to attach to upload success file requests. Note that Fine Uploader will still send the blob name, container URL, filename, and UUID as well", "Object", "{}",),
+    )
+)}}
+
+</div>
+
+
+<div class="options-azure-ui">
+{% markdown %}
+## UI
+{% endmarkdown %}
+{{ api_parent_option("failedUploadTextDisplay", "failedUploadTextDisplay", "",
+    (
+        ("failedUploadTextDisplay.mode", "mode", "You will most likely want to keep this at the default value of 'custom'. See the UI options documentation for more info on this option.", "String", "custom",),
+    )
+)}}
+
+</div>
+</div>
+
+{% endblock %}

@@ -6,10 +6,13 @@
 {% block content %}
 {% markdown %}
 
+[session]: session.html
+
 # Deleting Files {: .page-header }
 
 Enabling the deletion of files means your users can delete files after they have been uploaded.
-You can only delete files that have been uploaded during the current session.
+You can only delete files that have been uploaded during the current session or which have been passed in by using the
+[initial file list][session] feature.
 If you upload a file, leave the page, and come back then you cannot delete that file though Fine Uploader.
 
 A file is eligible for deletion only after it has been successfully uploaded.

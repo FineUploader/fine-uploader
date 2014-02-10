@@ -8,43 +8,25 @@
     qq.basePublicApi = {
         log: function(str, level) {
             if (this._options.debug && (!level || level === "info")) {
-                qq.log("[FineUploader " + qq.version + "] " + str);
+                qq.log("[Fine Uploader " + qq.version + "] " + str);
             }
             else if (level && level !== "info") {
-                qq.log("[FineUploader " + qq.version + "] " + str, level);
+                qq.log("[Fine Uploader " + qq.version + "] " + str, level);
 
             }
         },
 
         setParams: function(params, id) {
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (id == null) {
-                this._options.request.params = params;
-            }
-            else {
-                this._paramsStore.setParams(params, id);
-            }
+            this._paramsStore.set(params, id);
         },
 
         setDeleteFileParams: function(params, id) {
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (id == null) {
-                this._options.deleteFile.params = params;
-            }
-            else {
-                this._deleteFileParamsStore.setParams(params, id);
-            }
+            this._deleteFileParamsStore.set(params, id);
         },
 
         // Re-sets the default endpoint, an endpoint for a specific file, or an endpoint for a specific button
         setEndpoint: function(endpoint, id) {
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (id == null) {
-                this._options.request.endpoint = endpoint;
-            }
-            else {
-                this._endpointStore.setEndpoint(endpoint, id);
-            }
+            this._endpointStore.set(endpoint, id);
         },
 
         getInProgress: function() {
@@ -122,6 +104,9 @@
 
             this._pasteHandler && this._pasteHandler.reset();
             this._options.session.refreshOnReset && this._refreshSessionData();
+
+            this._succeededSinceLastAllComplete = [];
+            this._failedSinceLastAllComplete = [];
         },
 
         addFiles: function(filesOrInputs, params, endpoint) {
@@ -217,17 +202,11 @@
         },
 
         deleteFile: function(id) {
-            this._onSubmitDelete(id);
+            return this._onSubmitDelete(id);
         },
 
         setDeleteFileEndpoint: function(endpoint, id) {
-            /*jshint eqeqeq: true, eqnull: true*/
-            if (id == null) {
-                this._options.deleteFile.endpoint = endpoint;
-            }
-            else {
-                this._deleteFileEndpointStore.setEndpoint(endpoint, id);
-            }
+            this._deleteFileEndpointStore.set(endpoint, id);
         },
 
         doesExist: function(fileOrBlobId) {
@@ -330,6 +309,26 @@
      * Defines the private (internal) API for FineUploaderBasic mode.
      */
     qq.basePrivateApi = {
+        _initFormSupportAndParams: function() {
+            this._formSupport = qq.FormSupport && new qq.FormSupport(
+                this._options.form, qq.bind(this.uploadStoredFiles, this), qq.bind(this.log, this)
+            );
+
+            if (this._formSupport && this._formSupport.attachedToForm) {
+                this._paramsStore = this._createStore(
+                    this._options.request.params,  this._formSupport.getFormInputsAsObject
+                );
+
+                this._options.autoUpload = this._formSupport.newAutoUpload;
+                if (this._formSupport.newEndpoint) {
+                    this._options.request.endpoint = this._formSupport.newEndpoint;
+                }
+            }
+            else {
+                this._paramsStore = this._createStore(this._options.request.params);
+            }
+        },
+
         _uploadFile: function(id) {
             if (!this._handler.upload(id)) {
                 this._uploadData.setStatus(id, qq.status.QUEUED);
@@ -401,10 +400,27 @@
 
             id = this._uploadData.addFile(uuid, name, size);
             this._handler.add(id, file);
+            this._trackButton(id);
 
             this._netUploadedOrQueued++;
 
             newFileWrapperList.push({id: id, file: file});
+        },
+
+        // Maps a file with the button that was used to select it.
+        _trackButton: function(id) {
+            var buttonId;
+
+            if (qq.supportedFeatures.ajaxUploading) {
+                buttonId = this._handler.getFile(id).qqButtonId;
+            }
+            else {
+                buttonId = this._getButtonId(this._handler.getInput(id));
+            }
+
+            if (buttonId) {
+                this._buttonIdsForFileIds[id] = buttonId;
+            }
         },
 
         // Creates an internal object that tracks various properties of each extra button,
@@ -730,6 +746,7 @@
                 onStatusChange: function(id, oldStatus, newStatus) {
                     self._onUploadStatusChange(id, oldStatus, newStatus);
                     self._options.callbacks.onStatusChange(id, oldStatus, newStatus);
+                    self._maybeAllComplete(id, newStatus);
                 }
             });
         },
@@ -799,6 +816,41 @@
             return result.success ? true : false;
         },
 
+        _maybeAllComplete: function(id, status) {
+            var self = this,
+                notFinished = this._uploadData.retrieve({
+                status: [
+                    qq.status.UPLOADING,
+                    qq.status.UPLOAD_RETRYING,
+                    qq.status.QUEUED,
+                    qq.status.SUBMITTING,
+                    qq.status.SUBMITTED,
+                    qq.status.PAUSED,
+                ]
+            }).length;
+
+            if (status === qq.status.UPLOAD_SUCCESSFUL) {
+                this._succeededSinceLastAllComplete.push(id);
+            }
+            else if (status === qq.status.UPLOAD_FAILED) {
+                this._failedSinceLastAllComplete.push(id);
+            }
+
+            if (notFinished === 0 &&
+                (this._succeededSinceLastAllComplete.length || this._failedSinceLastAllComplete.length)) {
+                // Attempt to ensure onAllComplete is not invoked before other callbacks, such as onCancel & onComplete
+                setTimeout(function() {
+                    self._options.callbacks.onAllComplete(
+                        qq.extend([], self._succeededSinceLastAllComplete),
+                        qq.extend([], self._failedSinceLastAllComplete)
+                    );
+
+                    self._succeededSinceLastAllComplete = [];
+                    self._failedSinceLastAllComplete = [];
+                }, 0);
+            }
+        },
+
         _onCancel: function(id, name) {
             this._netUploadedOrQueued--;
 
@@ -841,13 +893,14 @@
             }
 
             if (this._isDeletePossible()) {
-                return this._handleCheckedCallback({
+                this._handleCheckedCallback({
                     name: "onSubmitDelete",
                     callback: qq.bind(this._options.callbacks.onSubmitDelete, this, id),
                     onSuccess: adjustedOnSuccessCallback ||
                         qq.bind(this._deleteHandler.sendDelete, this, id, uuid, additionalMandatedParams),
                     identifier: id
                 });
+                return true;
             }
             else {
                 this.log("Delete request ignored for ID " + id + ", delete feature is disabled or request not possible " +
@@ -1043,6 +1096,11 @@
         },
 
         _prepareItemsForUpload: function(items, params, endpoint) {
+            if (items.length === 0) {
+                this._itemError("noFilesError");
+                return;
+            }
+
             var validationDescriptors = this._getValidationDescriptors(items),
                 buttonId = this._getButtonId(items[0].file),
                 button = this._getButton(buttonId);
@@ -1077,19 +1135,6 @@
         },
 
         _onSubmitCallbackSuccess: function(id, name) {
-            var buttonId;
-
-            if (qq.supportedFeatures.ajaxUploading) {
-                buttonId = this._handler.getFile(id).qqButtonId;
-            }
-            else {
-                buttonId = this._getButtonId(this._handler.getInput(id));
-            }
-
-            if (buttonId) {
-                this._buttonIdsForFileIds[id] = buttonId;
-            }
-
             this._onSubmit.apply(this, arguments);
             this._uploadData.setStatus(id, qq.status.SUBMITTED);
             this._onSubmitted.apply(this, arguments);
@@ -1440,65 +1485,62 @@
             return fileDescriptors;
         },
 
-        _createParamsStore: function(type) {
-            var paramsStore = {},
-                self = this;
+        _createStore: function(initialValue, readOnlyValues) {
+            var store = {},
+                catchall = initialValue,
+                copy = function(orig) {
+                    if (qq.isObject(orig)) {
+                        return qq.extend({}, orig);
+                    }
+                    return orig;
+                },
+                getReadOnlyValues = function() {
+                    if (qq.isFunction(readOnlyValues)) {
+                        return readOnlyValues();
+                    }
+                    return readOnlyValues;
+                },
+                includeReadOnlyValues = function(existing) {
+                    if (readOnlyValues && qq.isObject(existing)) {
+                        qq.extend(existing, getReadOnlyValues());
+                    }
+                };
 
             return {
-                setParams: function(params, id) {
-                    var paramsCopy = {};
-                    qq.extend(paramsCopy, params);
-                    paramsStore[id] = paramsCopy;
-                },
-
-                getParams: function(id) {
+                set: function(val, id) {
                     /*jshint eqeqeq: true, eqnull: true*/
-                    var paramsCopy = {};
-
-                    if (id != null && paramsStore[id]) {
-                        qq.extend(paramsCopy, paramsStore[id]);
+                    if (id == null) {
+                        store = {};
+                        catchall = copy(val);
                     }
                     else {
-                        qq.extend(paramsCopy, self._options[type].params);
+                        store[id] = copy(val);
                     }
-
-                    return paramsCopy;
                 },
 
-                remove: function(fileId) {
-                    return delete paramsStore[fileId];
-                },
+                get: function(id) {
+                    var values;
 
-                reset: function() {
-                    paramsStore = {};
-                }
-            };
-        },
-
-        _createEndpointStore: function(type) {
-            var endpointStore = {},
-            self = this;
-
-            return {
-                setEndpoint: function(endpoint, id) {
-                    endpointStore[id] = endpoint;
-                },
-
-                getEndpoint: function(id) {
                     /*jshint eqeqeq: true, eqnull: true*/
-                    if (id != null && endpointStore[id]) {
-                        return endpointStore[id];
+                    if (id != null && store[id]) {
+                        values = store[id];
+                    }
+                    else {
+                        values = catchall;
                     }
 
-                    return self._options[type].endpoint;
+                    includeReadOnlyValues(values);
+
+                    return copy(values);
                 },
 
                 remove: function(fileId) {
-                    return delete endpointStore[fileId];
+                    return delete store[fileId];
                 },
 
                 reset: function() {
-                    endpointStore = {};
+                    store = {};
+                    catchall = initialValue;
                 }
             };
         },
@@ -1545,7 +1587,6 @@
             var extraButtonSpec = this._extraButtonSpecs[buttonId];
 
             return extraButtonSpec ? extraButtonSpec.validation : this._options.validation;
-
         }
     };
 }());

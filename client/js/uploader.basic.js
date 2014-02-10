@@ -43,6 +43,7 @@
                 onSubmit: function(id, name){},
                 onSubmitted: function(id, name){},
                 onComplete: function(id, name, responseJSON, maybeXhr){},
+                onAllComplete: function(successful, failed) {},
                 onCancel: function(id, name){},
                 onUpload: function(id, name){},
                 onUploadChunk: function(id, name, chunkData){},
@@ -167,6 +168,18 @@
                 params: {},
                 customHeaders: {},
                 refreshOnReset: true
+            },
+
+            // Send parameters associated with an existing form along with the files
+            form: {
+                // Element ID, HTMLElement, or null
+                element: "qq-form",
+
+                // Overrides the base `autoUpload`, unless `element` is null.
+                autoUpload: false,
+
+                // true = upload files on form submission (and squelch submit event)
+                interceptSubmit: true
             }
         };
 
@@ -190,11 +203,12 @@
         this._netUploaded = 0;
         this._uploadData = this._createUploadDataTracker();
 
-        this._paramsStore = this._createParamsStore("request");
-        this._deleteFileParamsStore = this._createParamsStore("deleteFile");
+        this._initFormSupportAndParams();
 
-        this._endpointStore = this._createEndpointStore("request");
-        this._deleteFileEndpointStore = this._createEndpointStore("deleteFile");
+        this._deleteFileParamsStore = this._createStore(this._options.deleteFile.params);
+
+        this._endpointStore = this._createStore(this._options.request.endpoint);
+        this._deleteFileEndpointStore = this._createStore(this._options.deleteFile.endpoint);
 
         this._handler = this._createUploadHandler();
 
@@ -221,6 +235,9 @@
 
         this._imageGenerator = qq.ImageGenerator && new qq.ImageGenerator(qq.bind(this.log, this));
         this._refreshSessionData();
+
+        this._succeededSinceLastAllComplete = [];
+        this._failedSinceLastAllComplete = [];
     };
 
     // Define the private & public API methods.

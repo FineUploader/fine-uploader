@@ -1,0 +1,16 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Server Set-Up Azure" %}
+
+{% block content %}
+{% markdown %}
+# Server Set-Up <small>Azure Blob Storage</small>{: .page-header}
+
+We have provided a [sample C# endpoint handler for Fine Uploader Azure][csharp].  If you would like
+to develop your own endpoint handler, or modify the example, you should read about [handling
+Fine Uploader Azure requests][azureserver] first.
+
+[csharp]: https://github.com/Widen/fine-uploader-server/tree/master/C%23/azure
+[azureserver]: ../endpoint_handlers/azure.html
+
+{% endmarkdown %}
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Setting Options Azure" %}
+{% block content %}
+{% markdown %}
+# Setting Fine Uploader Options <small>Azure Blob Storage</small>{: .page-header }
+
+At this point in the tutorial you should have an very simple HTML page with a
+Fine Uploader Azure instance. This section will get you started with setting some of
+the more common options of Fine Uploader.
+
+{{ alert(
+"""If you are using Fine Uploader UI, you MUST include a template in your document/markup.  You can
+use the `default.html` file  in the `templates` directory bundled with the library and customize it as desired.  See the
+[styling documentation page](../features/styling.html) for more details.""") }}
+
+## Initial Options
+
+Fine Uploader comes with a wealth of options. Most importantly, Fine Uploader
+requires you to specify the URL where it should send uploads and server
+requests to. This endpoint can be an absolute path or a relative path.  The meaning of this
+endpoint varies depending on the endpoint handler. If you are using
+Fine Uploader Azure, the endpoint should point to your Azure Blob Storage container.
+
+More information on the [`request` option here](../api/options-azure.html#request-option).
+
+{{ alert("Fine Uploader Azure does not support IE9 and older.  This is due to the fact that Azure's API does
+not allow files to be uploaded via multipart encoded POST requests, which is critical for IE9 and older support.
+If you need to support IE9 and older, you will need to load/use Fine Uploader with its traditional endpoint
+handler if the value of `qq.supportedFeatures.ajaxUploading` is `false`.") }}
+
+```javascript
+if (qq.supportedFeatures.ajaxUploading) {
+    $("#fine-uploader").fineUploaderAzure({
+        request: {
+            endpoint: 'https://{ YOUR_STORAGE_ACCOUNT_NAME }.blob.core.windows.net/{ YOUR_CONTAINER_NAME }'
+        },
+        signature: {
+            endpoint: '/signature'
+        },
+        uploadSuccess: {
+            endpoint: '/success'
+        }
+    });
+}
+```
+
+### Debug mode
+
+Debug mode is used to begin diagnosing any application errors. Debug mode can
+be enabled in the options of Fine Uploader:
+
+```javascript
+$("#fine-uploader").fineUploaderAzure({
+    debug: true,
+    /* ...other options... */
+});
+```
+
+With debug mode on, Fine Uploader will spit out log messages to the console.
+This allows you to diagnose any application errors and it is recommended to
+have this mode on during development.
+
+More information on [debugging errors here](../features/handling-errors.html).
+
+### Retrying Uploads
+
+Networks can be unreliable, and if your upload fails, Fine Uploader offers the
+ability to retry. The `retry` option can be set to enable this:
+
+```javascript
+$("#fine-uploader").fineUploaderAzure({
+    /* ...other options... */
+    retry: {
+       enableAuto: true // defaults to false
+    }
+});
+```
+
+More information on [retrying uploads here](../features/retry.html).
+
+### Deleting Files
+
+If a user has uploaded a file, but realized it was a mistake before aborting, then Fine Uploader can also help them delete files.
+
+A file is eligible for deletion only after it has been successfully uploaded.
+In Fine Uploader UI mode, if this feature is enabled, a customizable delete
+link will appear next to the file after it has successfully uploaded.  File deletion can be enabled in the Fine Uploader
+options.  You can also send a delete request via the `deleteFile` [API method](../api/methods.html).
+
+Note that Fine Uploader Azure will send delete file requests directly to Azure via the REST API.  This means that the
+`endpoint` property of the `deleteFile` feature is irrelevant.
+
+```javascript
+$("#fine-uploader").fineUploaderAzure({
+    /* ...other options... */
+    deleteFile: {
+        enabled: true // default is false
+    }
+});
+```
+
+More information on [deleting files here](../features/delete.html).
+
+## Putting it together
+
+Now our Fine Uploader page should look something like this:
+
+```html
+<html>
+  <head>
+      <link href="fineuploader-{{ PKG['version']|e }}.css" rel="stylesheet" type="text/css"/>
+  </head>
+  <body>
+
+    <!-- The element where Fine Uploader will exist. -->
+    <div id="fine-uploader">
+    </div>
+
+    <!-- jQuery version 1.10.x (if you are using the jQuery plugin -->
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
+
+    <!-- Fine Uploader-jQuery -->
+    <script src="jquery.fineuploader-{{ PKG['version']|e }}.min.js" type="text/javascript"></script>
+
+    <script>
+    // Wait until the DOM is 'ready'
+    $(document).ready(function () {
+        $("#fine-uploader").fineUploaderAzure({
+            request: {
+                endpoint: 'https://{ YOUR_STORAGE_ACCOUNT_NAME }.blob.core.windows.net/{ YOUR_CONTAINER_NAME }'
+            },
+            signature: {
+                endpoint: '/signature'
+            },
+            uploadSuccess: {
+                endpoint: '/success'
+            },
+            retry: {
+               enableAuto: true
+            },
+            deleteFile: {
+                enabled: true
+            }
+        });
+    });
+    </script>
+
+    <script type="text/template" id="qq-template">
+        <div class="qq-uploader-selector qq-uploader">
+            <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+                <span>Drop files here to upload</span>
+            </div>
+            <div class="qq-upload-button-selector qq-upload-button">
+                <div>Upload a file</div>
+            </div>
+            <span class="qq-drop-processing-selector qq-drop-processing">
+                <span>Processing dropped files...</span>
+                <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+            </span>
+            <ul class="qq-upload-list-selector qq-upload-list">
+                <li>
+                  <div class="qq-progress-bar-container-selector">
+                      <div class="qq-progress-bar-selector qq-progress-bar"></div>
+                  </div>
+                  <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                  <span class="qq-edit-filename-icon-selector qq-edit-filename-icon"></span>
+                  <span class="qq-upload-file-selector qq-upload-file"></span>
+                  <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                  <span class="qq-upload-size-selector qq-upload-size"></span>
+                  <a class="qq-upload-cancel-selector qq-upload-cancel" href="#">Cancel</a>
+                  <a class="qq-upload-retry-selector qq-upload-retry" href="#">Retry</a>
+                  <a class="qq-upload-delete-selector qq-upload-delete" href="#">Delete</a>
+                  <span class="qq-upload-status-text-selector qq-upload-status-text"></span>
+              </li>
+            </ul>
+        </div>
+    </script>
+
+  </body>
+</html>
+```
+
+[Next](03-setting_up_server-azure.html), you'll learn to use Fine Uploader Azure to handle uploads.
+{% endmarkdown %}
+{% endblock %}

@@ -43,11 +43,15 @@ Note: Any features not listed here are supported in all browsers.
             <th>Image Previews</th>
             <th>Image Validation</th>
             <th>Pause Uploads</th>
+            <th>S3 Uploads</th>
+            <th>Azure Uploads</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td>Chrome</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -77,6 +81,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>Chrome for Android 4+</td>
@@ -93,9 +99,13 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>Opera 15+</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -125,6 +135,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>IE 11</td>
@@ -135,6 +147,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -157,6 +171,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>IE 9</td>
@@ -172,6 +188,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
@@ -189,6 +207,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>IE 7</td>
@@ -204,6 +224,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
@@ -222,6 +244,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>Android
@@ -239,6 +263,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
             <td>iOS
@@ -250,6 +276,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -273,6 +301,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>Safari
@@ -289,6 +319,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
         </tr>
     </tbody>
