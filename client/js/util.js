@@ -307,7 +307,12 @@ var qq = function(element) {
     };
 
     qq.isBlob = function(maybeBlob) {
-        return window.Blob && Object.prototype.toString.call(maybeBlob) === "[object Blob]";
+        if (window.Blob && Object.prototype.toString.call(maybeBlob) === "[object Blob]") {
+            return true;
+        }
+        if (qq.BlobProxy && maybeBlob instanceof qq.BlobProxy) {
+            return true;
+        }
     };
 
     qq.isXhrUploadSupported = function() {

@@ -386,10 +386,8 @@
 
         // Updates internal state when a new file has been received, and adds it along with its ID to a passed array.
         _handleNewFile: function(file, newFileWrapperList) {
-            var size = -1,
-                uuid = qq.getUniqueId(),
-                name = qq.getFilename(file),
-                id;
+            var uuid = qq.getUniqueId(),
+                size = -1;
 
             if (file.size >= 0) {
                 size = file.size;
@@ -398,13 +396,49 @@
                 size = file.blob.size;
             }
 
-            id = this._uploadData.addFile(uuid, name, size);
+            if (this._scaler.enabled) {
+                this._handleNewFileWithScaling(file, uuid, size, newFileWrapperList);
+            }
+            else {
+                this._handleNewFileWithoutScaling(file, uuid, size, newFileWrapperList);
+            }
+        },
+
+        _handleNewFileWithoutScaling: function(file, uuid, size, fileList) {
+            var id = this._uploadData.addFile(uuid, qq.getFilename(file), size);
+
             this._handler.add(id, file);
             this._trackButton(id);
 
             this._netUploadedOrQueued++;
 
-            newFileWrapperList.push({id: id, file: file});
+            fileList.push({id: id, file: file});
+        },
+
+        _handleNewFileWithScaling: function(file, uuid, size, fileList) {
+            var self = this,
+                buttonId = file.qqButtonId || (file.blob && file.blob.qqButtonId),
+                name = qq.getFilename(file);
+
+            qq.each(this._scaler.getFileRecords(uuid, name, file), function(idx, record) {
+                var relatedBlob = file,
+                    relatedSize = size,
+                    id;
+
+                if (record.blob instanceof qq.BlobProxy) {
+                    relatedBlob = {blob: record.blob};
+                    relatedSize = -1;
+                }
+
+                id = self._uploadData.addFile(record.uuid, record.name, relatedSize);
+                self._handler.add(id, relatedBlob);
+                self._netUploadedOrQueued++;
+                fileList.push({id: id, file: relatedBlob});
+
+                if (buttonId) {
+                    self._buttonIdsForFileIds[id] = buttonId;
+                }
+            });
         },
 
         // Maps a file with the button that was used to select it.
@@ -825,7 +859,7 @@
                     qq.status.QUEUED,
                     qq.status.SUBMITTING,
                     qq.status.SUBMITTED,
-                    qq.status.PAUSED,
+                    qq.status.PAUSED
                 ]
             }).length;
 

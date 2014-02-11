@@ -251,7 +251,7 @@
         this._succeededSinceLastAllComplete = [];
         this._failedSinceLastAllComplete = [];
 
-        this._scaler = qq.Scaler && new qq.Scaler(this._options.scaling);
+        this._scaler = (qq.Scaler && new qq.Scaler(this._options.scaling)) || {};
     };
 
     // Define the private & public API methods.
