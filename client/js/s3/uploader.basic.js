@@ -193,7 +193,7 @@
                         var endpoint = super_.get(id);
 
                         if (endpoint.indexOf("http") < 0) {
-                            return "https://" + endpoint;
+                            return "http://" + endpoint;
                         }
 
                         return endpoint;

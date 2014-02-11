@@ -162,23 +162,6 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
-        it("ensure default is HTTPS if no scheme is included in endpoint URL", function(done) {
-            assert.expect(2, done);
-
-            var typicalRequestOptionCopy = qq.extend({}, typicalRequestOption),
-                uploader = new qq.s3.FineUploaderBasic({
-                    request: qq.extend(typicalRequestOptionCopy, {endpoint: "test.com"}),
-                    signature: typicalSignatureOption
-                }
-            );
-
-            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
-                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
-
-                assert.equal(uploadRequest.url, "https://test.com");
-            });
-        });
-
         it("respects the objectProperties.key option w/ a custom key generation function that returns a promise", function(done) {
             assert.expect(5, done);
 
