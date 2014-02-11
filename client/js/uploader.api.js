@@ -512,7 +512,9 @@
 
             this._filesInBatchAddedToUi += 1;
 
-            if (this._options.display.fileSizeOnSubmit && qq.supportedFeatures.ajaxUploading) {
+            if (canned ||
+                (this._options.display.fileSizeOnSubmit && qq.supportedFeatures.ajaxUploading)) {
+
                 this._displayFileSize(id);
             }
         },
