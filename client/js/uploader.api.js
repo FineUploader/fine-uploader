@@ -364,6 +364,11 @@
             this._maybeUpdateThumbnail(id);
         },
 
+        _onUploadPrep: function(id) {
+            this._parent.prototype._onUploadPrep.apply(this, arguments);
+            this._templating.showSpinner(id);
+        },
+
         _onUpload: function(id, name){
             var parentRetVal = this._parent.prototype._onUpload.apply(this, arguments);
 

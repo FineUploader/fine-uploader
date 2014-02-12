@@ -8,7 +8,8 @@
 qq.UploadHandler = function(o, namespace) {
     "use strict";
 
-    var queue = [],
+    var baseHandler = this,
+        queue = [],
         options, log, handlerImpl;
 
     // Default options, can be overridden by the user
@@ -49,6 +50,7 @@ qq.UploadHandler = function(o, namespace) {
         onProgress: function(id, fileName, loaded, total){},
         onComplete: function(id, fileName, response, xhr){},
         onCancel: function(id, fileName){},
+        onUploadPrep: function(id){}, // Called if non-trivial operations will be performed before onUpload
         onUpload: function(id, fileName){},
         onUploadChunk: function(id, fileName, chunkData){},
         onUploadChunkSuccess: function(id, chunkData, response, xhr){},
@@ -75,8 +77,30 @@ qq.UploadHandler = function(o, namespace) {
 
             if (queue.length >= max && i < max){
                 nextId = queue[max-1];
-                handlerImpl.upload(nextId);
+                startNextFileUpload(nextId);
             }
+        }
+    }
+
+    // Callend whenever a file is to be uploaded.
+    function startNextFileUpload(id) {
+        var file = baseHandler.getFile(id);
+
+        // If we don't have a file/blob yet, request it, and then submit the
+        // upload to the specific handler once the blob is available.
+        if (file && qq.BlobProxy && file instanceof qq.BlobProxy) {
+            // Blob creation may take some time, so the caller may want to update the
+            // UI to indicate that an operation is in progress, even before the actual
+            // upload begins and an onUpload callback is invoked.
+            options.onUploadPrep(id);
+
+            file.create().then(function(actualBlob) {
+                handlerImpl._getFileState(id).file = actualBlob;
+                handlerImpl.upload(id);
+            });
+        }
+        else {
+            handlerImpl.upload(id);
         }
     }
 
@@ -114,8 +138,8 @@ qq.UploadHandler = function(o, namespace) {
             var len = queue.push(id);
 
             // if too many active uploads, wait...
-            if (len <= options.maxConnections){
-                handlerImpl.upload(id);
+            if (len <= options.maxConnections) {
+                startNextFileUpload(id);
                 return true;
             }
 

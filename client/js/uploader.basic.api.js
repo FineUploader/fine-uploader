@@ -681,6 +681,7 @@
                             identifier: id
                         });
                     },
+                    onUploadPrep: qq.bind(this._onUploadPrep, this),
                     onUpload: function(id, name) {
                         self._onUpload(id, name);
                         self._options.callbacks.onUpload(id, name);
@@ -970,6 +971,10 @@
                 this._uploadData.setStatus(id, qq.status.DELETED);
                 this.log("Delete request for '" + name + "' has succeeded.");
             }
+        },
+
+        _onUploadPrep: function(id) {
+            // nothing to do in the core uploader for now
         },
 
         _onUpload: function(id, name) {

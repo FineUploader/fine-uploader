@@ -1,5 +1,14 @@
 /* globals qq */
-qq.Scaler = function(spec) {
+/**
+ * Controls generation of scaled images based on a reference image encapsulated in a `File` or `Blob`.
+ * Scaled images are generated and converted to blobs on-demand.
+ * Multiple scaled images per reference image with varying sizes and other properties are supported.
+ *
+ * @param spec Information about the scaled images to generate.
+ * @param log Logger instance
+ * @constructor
+ */
+qq.Scaler = function(spec, log) {
     "use strict";
 
     var self = this,
@@ -14,14 +23,15 @@ qq.Scaler = function(spec) {
         enabled: qq.supportedFeatures.imagePreviews && sizes.length > 0,
 
         getFileRecords: function(originalFileUuid, originalFileName, originalBlob) {
-            var records = [];
+            var self = this,
+                records = [];
 
             // Create records for each scaled version & add them to the records array, smallest first.
             qq.each(sizes, function(idx, sizeRecord) {
                 records.push({
                     uuid: qq.getUniqueId(),
                     name: self._getName(originalFileName, sizeRecord.name),
-                    blob: new qq.BlobProxy()
+                    blob: new qq.BlobProxy(originalBlob, qq.bind(self._generateScaledImage, self, sizeRecord.max, log))
                 });
             });
 
@@ -73,5 +83,70 @@ qq.extend(qq.Scaler.prototype, {
             }
             return 0;
         });
+    },
+
+    _generateScaledImage: function(size, log, sourceFile) {
+        "use strict";
+
+        var self = this,
+            scalingEffort = new qq.Promise(),
+            imageGenerator = new qq.ImageGenerator(log),
+            canvas = document.createElement("canvas");
+
+        imageGenerator.generate(sourceFile, canvas, {maxSize: size}).then(function() {
+            var dataUri = canvas.toDataURL(),
+                blob = self._dataUriToBlob(dataUri);
+
+            scalingEffort.success(blob);
+        });
+
+        return scalingEffort;
+    },
+
+
+    _dataUriToBlob: function(dataUri) {
+        "use strict";
+
+        var byteString, mimeString, arrayBuffer, intArray;
+
+        // convert base64 to raw binary data held in a string
+        if (dataUri.split(",")[0].indexOf("base64") >= 0) {
+            byteString = atob(dataUri.split(",")[1]);
+        }
+        else {
+            byteString = decodeURI(dataUri.split(",")[1]);
+        }
+
+        // extract the MIME
+        mimeString = dataUri.split(",")[0]
+            .split(":")[1]
+            .split(";")[0];
+
+        // write the bytes of the binary string to an ArrayBuffer
+        arrayBuffer = new ArrayBuffer(byteString.length);
+        intArray = new Uint8Array(arrayBuffer);
+        qq.each(byteString, function(idx, char) {
+            intArray[idx] = char.charCodeAt(0);
+        });
+
+        return this._createBlob(arrayBuffer, mimeString);
+    },
+
+    _createBlob: function(data, mime) {
+        "use strict";
+
+        var BlobBuilder = window.BlobBuilder ||
+                window.WebKitBlobBuilder ||
+                window.MozBlobBuilder ||
+                window.MSBlobBuilder,
+            blobBuilder = BlobBuilder && new BlobBuilder();
+
+        if (blobBuilder) {
+            blobBuilder.append(data);
+            return blobBuilder.getBlob(mime);
+        }
+        else {
+            return new Blob([data], {type: mime});
+        }
     }
 });
