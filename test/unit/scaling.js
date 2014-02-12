@@ -20,15 +20,18 @@ if (qq.supportedFeatures.imagePreviews) {
             var sizes = [
                     {
                         name: "small",
-                        max: 100
+                        max: 100,
+                        type: "image/jpeg"
                     },
                     {
                         name: "large",
-                        max: 300
+                        max: 300,
+                        type: "image/jpeg"
                     },
                     {
                         name: "medium",
-                        max: 200
+                        max: 200,
+                        type: "image/jpeg"
                     }
                 ],
                 originalFile = {dummy: "blob"},
@@ -94,6 +97,44 @@ if (qq.supportedFeatures.imagePreviews) {
 
                     img.src = URL.createObjectURL(scaledBlob);
                 });
+            });
+        });
+
+        it("renames the scaled files only if their MIME type differs from the reference file", function(done) {
+            assert.expect(8, done);
+
+            var sizes = [
+                    {
+                        name: "small",
+                        max: 100,
+                        type: "image/jpeg"
+                    },
+                    {
+                        name: "large",
+                        max: 300
+                    },
+                    {
+                        name: "medium",
+                        max: 200,
+                        type: "image/webp"
+                    }
+                ],
+                scaler = new qq.Scaler(({sizes: sizes}));
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                var records = scaler.getFileRecords("originalUuid", "originalName.jpEg", blob);
+
+                assert.equal(records[0].name, "originalName (small).jpEg");
+                assert.equal(records[1].name, "originalName (medium).webp");
+                assert.equal(records[2].name, "originalName (large).png");
+                assert.equal(records[3].name, "originalName.jpEg");
+
+                // leave extension-less file names alone
+                records = scaler.getFileRecords("originalUuid", "originalName", blob);
+                assert.equal(records[0].name, "originalName (small)");
+                assert.equal(records[1].name, "originalName (medium)");
+                assert.equal(records[2].name, "originalName (large)");
+                assert.equal(records[3].name, "originalName");
             });
         });
     });

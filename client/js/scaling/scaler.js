@@ -30,7 +30,11 @@ qq.Scaler = function(spec, log) {
             qq.each(sizes, function(idx, sizeRecord) {
                 records.push({
                     uuid: qq.getUniqueId(),
-                    name: self._getName(originalFileName, sizeRecord.name),
+                    name: self._getName(originalFileName, {
+                        name: sizeRecord.name,
+                        type: sizeRecord.type,
+                        refType: originalBlob.type
+                    }),
                     blob: new qq.BlobProxy(originalBlob, qq.bind(self._generateScaledImage, self, sizeRecord.max, log))
                 });
             });
@@ -49,20 +53,27 @@ qq.Scaler = function(spec, log) {
 
 qq.extend(qq.Scaler.prototype, {
     // Get a file name for a generated scaled file record, based on the provided scaled image description
-    _getName: function(originalName, scaledModifier) {
+    _getName: function(originalName, scaledVersionProperties) {
         "use strict";
 
         var startOfExt = originalName.lastIndexOf("."),
-            scaledName = "";
-
-        scaledModifier = " (" + scaledModifier + ")";
+            nameAppendage = " (" + scaledVersionProperties.name + ")",
+            versionType = scaledVersionProperties.type || "image/png",
+            referenceType = scaledVersionProperties.refType,
+            scaledName = "",
+            scaledExt = qq.getExtension(originalName);
 
         if (startOfExt >= 0) {
             scaledName = originalName.substr(0, startOfExt);
-            scaledName += scaledModifier + "." + qq.getExtension(originalName);
+
+            if (referenceType !== versionType) {
+                scaledExt = versionType.split("/")[1];
+            }
+
+            scaledName += nameAppendage + "." + scaledExt;
         }
         else {
-            scaledName = originalName + scaledModifier;
+            scaledName = originalName + nameAppendage;
         }
 
         return scaledName;
