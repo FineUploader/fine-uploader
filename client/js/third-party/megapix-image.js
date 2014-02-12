@@ -117,6 +117,8 @@
     else {
         ctx.drawImage(img, 0, 0, width, height);
     }
+
+    ctx.imageRendered && ctx.imageRendered();
   }
 
   /**

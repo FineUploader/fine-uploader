@@ -99,15 +99,16 @@ qq.ImageGenerator = function(log) {
     }
 
     function registerCanvasDrawImageListener(canvas, promise) {
-        var context = canvas.getContext("2d"),
-            oldDrawImage = context.drawImage;
+        var context = canvas.getContext("2d");
 
         // The image is drawn on the canvas by a third-party library,
-        // and we want to know when this happens so we can fulfill the associated promise.
-        context.drawImage = function() {
-            oldDrawImage.apply(this, arguments);
+        // and we want to know when this is completed.  Since the library
+        // may invoke drawImage many times in a loop, we need to be called
+        // back when the image is fully rendered.  So, we are expecting the
+        // code that draws this image to follow a convention that involves a
+        // function attached to the canvas instance be invoked when it is done.
+        context.imageRendered = function() {
             promise.success(canvas);
-            context.drawImage = oldDrawImage;
         };
     }
 
