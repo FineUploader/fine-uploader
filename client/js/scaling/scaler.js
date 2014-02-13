@@ -22,9 +22,10 @@ qq.Scaler = function(spec, log) {
         // client-side image preview generation, there is no scaling to do.
         enabled: qq.supportedFeatures.imagePreviews && sizes.length > 0,
 
-        getFileRecords: function(originalFileUuid, originalFileName, originalBlob) {
+        getFileRecords: function(originalFileUuid, originalFileName, originalBlobOrBlobData) {
             var self = this,
-                records = [];
+                records = [],
+                originalBlob = originalBlobOrBlobData.blob ? originalBlobOrBlobData.blob : originalBlobOrBlobData;
 
             // Create records for each scaled version & add them to the records array, smallest first.
             qq.each(sizes, function(idx, sizeRecord) {

@@ -117,6 +117,17 @@ qq.AbstractUploadHandlerXhr = function(spec) {
             }
         },
 
+        updateBlob: function(id, newBlob) {
+            fileState[id].file = newBlob;
+        },
+
+        // Causes handler code to re-evaluate the current blob for chunking
+        reevaluateChunking: function(id) {
+            if (chunking) {
+                delete fileState[id].chunking;
+            }
+        },
+
         /**
          * Creates an XHR instance for this file and stores it in the fileState.
          *

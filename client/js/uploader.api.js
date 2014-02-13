@@ -641,6 +641,12 @@
             this._markFileAsSuccessful(id);
 
             return id;
+        },
+
+        _setSize: function(id, newSize) {
+            this._parent.prototype._setSize.apply(this, arguments);
+
+            this._templating.updateSize(id, this._formatSize(newSize));
         }
     };
 }());

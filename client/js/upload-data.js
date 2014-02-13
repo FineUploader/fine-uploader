@@ -137,6 +137,10 @@ qq.UploadData = function(uploaderProxy) {
 
         updateName: function(id, newName) {
             data[id].name = newName;
+        },
+
+        updateSize: function(id, newSize) {
+            data[id].size = newSize;
         }
     });
 };

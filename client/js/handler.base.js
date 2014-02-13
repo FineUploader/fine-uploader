@@ -10,6 +10,8 @@ qq.UploadHandler = function(o, namespace) {
 
     var baseHandler = this,
         queue = [],
+        generationWaitingQueue = [],
+        generationDoneQueue = [],
         options, log, handlerImpl;
 
     // Default options, can be overridden by the user
@@ -57,12 +59,89 @@ qq.UploadHandler = function(o, namespace) {
         onAutoRetry: function(id, fileName, response, xhr){},
         onResume: function(id, fileName, chunkData){},
         onUuidChanged: function(id, newUuid){},
-        getName: function(id) {}
+        getName: function(id) {},
+        setSize: function(id, newSize) {}
 
     };
     qq.extend(options, o);
 
     log = options.log;
+
+    // For Blobs that are part of a group of scaled images, along with a reference image,
+    // this will ensure the blobs in the group are uploaded in the order they were triggered,
+    // even if some async processing must be completed on one or more Blobs first.
+    function startBlobUpload(id, blob) {
+        // If we don't have a file/blob yet, request it, and then submit the
+        // upload to the specific handler once the blob is available.
+        // ASSUMPTION: This condition will only ever be true if XHR uploading is supported.
+        if (blob && qq.BlobProxy && blob instanceof qq.BlobProxy) {
+            generationWaitingQueue.push(id);
+
+            // Blob creation may take some time, so the caller may want to update the
+            // UI to indicate that an operation is in progress, even before the actual
+            // upload begins and an onUpload callback is invoked.
+            options.onUploadPrep(id);
+
+            blob.create().then(function(actualBlob) {
+                // Update record associated with this file by providing the actual Blob
+                handlerImpl.updateBlob(id, actualBlob);
+
+                // Propagate the size for this generated Blob
+                options.setSize(id, actualBlob.size);
+
+                // Order handler to recalculate chunking possibility, if applicable
+                handlerImpl.reevaluateChunking(id);
+
+                maybeUploadGenerationQueueBlobs(id);
+            });
+        }
+        else {
+            if (generationWaitingQueue.length) {
+                generationWaitingQueue.push(id);
+                generationDoneQueue.push(id);
+            }
+            else {
+                handlerImpl.upload(id);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // When a Blob tied to a group of generated Blobs is ready for upload
+    // (and any async processing needed by this Blob is done) this will be called
+    // with the Blob's ID.  Since we want to ensure that these grouped Blobs are
+    // uploaded in a specific order, this will iterate through the ordered list of
+    // Blobs to upload, and only upload those that are ready, stopping when it hits one that isn't.
+    function maybeUploadGenerationQueueBlobs(id) {
+        var waitingForGenerationQueueCopy = qq.extend([], generationWaitingQueue);
+
+        generationDoneQueue.push(id);
+
+        qq.each(waitingForGenerationQueueCopy, function(idx, id) {
+            if (qq.indexOf(generationDoneQueue, id) >= 0) {
+                handlerImpl.upload(generationWaitingQueue.shift());
+            }
+            else {
+                return false;
+            }
+        });
+    }
+
+    // Called whenever a file is to be uploaded.  Returns true if the file will be uploaded at once.
+    function startUpload(id) {
+        var blobToUpload = baseHandler.getFile(id);
+
+        if (blobToUpload) {
+            return startBlobUpload(id, blobToUpload);
+        }
+        else {
+            handlerImpl.upload(id);
+            return true;
+        }
+
+    }
 
     /**
      * Removes element from queue, starts upload of next
@@ -77,30 +156,8 @@ qq.UploadHandler = function(o, namespace) {
 
             if (queue.length >= max && i < max){
                 nextId = queue[max-1];
-                startNextFileUpload(nextId);
+                startUpload(nextId);
             }
-        }
-    }
-
-    // Callend whenever a file is to be uploaded.
-    function startNextFileUpload(id) {
-        var file = baseHandler.getFile(id);
-
-        // If we don't have a file/blob yet, request it, and then submit the
-        // upload to the specific handler once the blob is available.
-        if (file && qq.BlobProxy && file instanceof qq.BlobProxy) {
-            // Blob creation may take some time, so the caller may want to update the
-            // UI to indicate that an operation is in progress, even before the actual
-            // upload begins and an onUpload callback is invoked.
-            options.onUploadPrep(id);
-
-            file.create().then(function(actualBlob) {
-                handlerImpl._getFileState(id).file = actualBlob;
-                handlerImpl.upload(id);
-            });
-        }
-        else {
-            handlerImpl.upload(id);
         }
     }
 
@@ -139,8 +196,7 @@ qq.UploadHandler = function(o, namespace) {
 
             // if too many active uploads, wait...
             if (len <= options.maxConnections) {
-                startNextFileUpload(id);
-                return true;
+                return startUpload(id);
             }
 
             return false;

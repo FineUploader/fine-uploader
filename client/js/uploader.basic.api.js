@@ -705,7 +705,8 @@
                     },
                     getName: qq.bind(self.getName, self),
                     getUuid: qq.bind(self.getUuid, self),
-                    getSize: qq.bind(self.getSize, self)
+                    getSize: qq.bind(self.getSize, self),
+                    setSize: qq.bind(self._setSize, self)
                 };
 
             qq.each(this._options.request, function(prop, val) {
@@ -1626,6 +1627,10 @@
             var extraButtonSpec = this._extraButtonSpecs[buttonId];
 
             return extraButtonSpec ? extraButtonSpec.validation : this._options.validation;
+        },
+
+        _setSize: function(id, newSize) {
+            this._uploadData.updateSize(id, newSize);
         }
     };
 }());
