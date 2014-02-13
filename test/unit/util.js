@@ -723,12 +723,6 @@ describe("util.js", function () {
         });
     }); //
 
-    describe("isBlob", function() {
-        it("identifies a BlobProxy as a blob", function() {
-            assert.ok(qq.isBlob(new qq.BlobProxy()));
-        });
-    });
-
     describe("getExtension", function() {
         it("extract extension from file when an extension exists", function() {
             var filename = "foo.bar.txt";

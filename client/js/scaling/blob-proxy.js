@@ -10,6 +10,8 @@ qq.BlobProxy = function(referenceBlob, onCreate) {
     "use strict";
 
     qq.extend(this, {
+        referenceBlob: referenceBlob,
+
         create: function() {
             return onCreate(referenceBlob);
         }

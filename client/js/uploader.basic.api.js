@@ -198,7 +198,7 @@
         },
 
         getFile: function(fileOrBlobId) {
-            return this._handler.getFile(fileOrBlobId);
+            return this._handler.getFile(fileOrBlobId) || null;
         },
 
         deleteFile: function(id) {
@@ -387,25 +387,24 @@
         // Updates internal state when a new file has been received, and adds it along with its ID to a passed array.
         _handleNewFile: function(file, newFileWrapperList) {
             var uuid = qq.getUniqueId(),
-                size = -1;
+                size = -1,
+                name = qq.getFilename(file),
+                actualFile = file.blob || file;
 
-            if (file.size >= 0) {
-                size = file.size;
-            }
-            else if (file.blob) {
-                size = file.blob.size;
+            if (actualFile.size >= 0) {
+                size = actualFile.size;
             }
 
             if (this._scaler.enabled) {
-                this._handleNewFileWithScaling(file, uuid, size, newFileWrapperList);
+                this._handleNewFileWithScaling(actualFile, name, uuid, size, newFileWrapperList);
             }
             else {
-                this._handleNewFileWithoutScaling(file, uuid, size, newFileWrapperList);
+                this._handleNewFileWithoutScaling(actualFile, name, uuid, size, newFileWrapperList);
             }
         },
 
-        _handleNewFileWithoutScaling: function(file, uuid, size, fileList) {
-            var id = this._uploadData.addFile(uuid, qq.getFilename(file), size);
+        _handleNewFileWithoutScaling: function(file, name, uuid, size, fileList) {
+            var id = this._uploadData.addFile(uuid, name, size);
 
             this._handler.add(id, file);
             this._trackButton(id);
@@ -415,10 +414,9 @@
             fileList.push({id: id, file: file});
         },
 
-        _handleNewFileWithScaling: function(file, uuid, size, fileList) {
+        _handleNewFileWithScaling: function(file, name, uuid, size, fileList) {
             var self = this,
-                buttonId = file.qqButtonId || (file.blob && file.blob.qqButtonId),
-                name = qq.getFilename(file);
+                buttonId = file.qqButtonId || (file.blob && file.blob.qqButtonId);
 
             qq.each(this._scaler.getFileRecords(uuid, name, file), function(idx, record) {
                 var relatedBlob = file,
@@ -426,7 +424,7 @@
                     id;
 
                 if (record.blob instanceof qq.BlobProxy) {
-                    relatedBlob = {blob: record.blob};
+                    relatedBlob = record.blob;
                     relatedSize = -1;
                 }
 
@@ -507,20 +505,26 @@
          * @private
          */
         _getButtonId: function(buttonOrFileInputOrFile) {
-            var inputs, fileInput;
+            var inputs, fileInput,
+                fileBlobOrInput = buttonOrFileInputOrFile;
+
+            // We want the reference file/blob here if this is a proxy (a file that will be generated on-demand later)
+            if (qq.BlobProxy && fileBlobOrInput instanceof qq.BlobProxy) {
+                fileBlobOrInput = fileBlobOrInput.referenceBlob;
+            }
 
             // If the item is a `Blob` it will never be associated with a button or drop zone.
-            if (buttonOrFileInputOrFile && !buttonOrFileInputOrFile.blob && !qq.isBlob(buttonOrFileInputOrFile)) {
-                if (qq.isFile(buttonOrFileInputOrFile)) {
-                    return buttonOrFileInputOrFile.qqButtonId;
+            if (fileBlobOrInput && !qq.isBlob(fileBlobOrInput)) {
+                if (qq.isFile(fileBlobOrInput)) {
+                    return fileBlobOrInput.qqButtonId;
                 }
-                else if (buttonOrFileInputOrFile.tagName.toLowerCase() === "input" &&
-                    buttonOrFileInputOrFile.type.toLowerCase() === "file") {
+                else if (fileBlobOrInput.tagName.toLowerCase() === "input" &&
+                    fileBlobOrInput.type.toLowerCase() === "file") {
 
-                    return buttonOrFileInputOrFile.getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME);
+                    return fileBlobOrInput.getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME);
                 }
 
-                inputs = buttonOrFileInputOrFile.getElementsByTagName("input");
+                inputs = fileBlobOrInput.getElementsByTagName("input");
 
                 qq.each(inputs, function(idx, input) {
                     if (input.getAttribute("type") === "file") {
@@ -1235,7 +1239,7 @@
         _onValidateCallbackSuccess: function(items, index, params, endpoint) {
             var self = this,
                 nextIndex = index+1,
-                validationDescriptor = this._getValidationDescriptor(items[index].file);
+                validationDescriptor = this._getValidationDescriptor(items[index]);
 
             this._validateFileOrBlobData(items[index], validationDescriptor)
                 .then(
@@ -1264,7 +1268,7 @@
                 if (validItem || !this._options.validation.stopOnFirstInvalidFile) {
                     //use setTimeout to prevent a stack overflow with a large number of files in the batch & non-promissory callbacks
                     setTimeout(function() {
-                        var validationDescriptor = self._getValidationDescriptor(items[index].file);
+                        var validationDescriptor = self._getValidationDescriptor(items[index]);
 
                         self._handleCheckedCallback({
                             name: "onValidate",
@@ -1293,10 +1297,15 @@
          */
         _validateFileOrBlobData: function(fileWrapper, validationDescriptor) {
             var self = this,
-                file = fileWrapper.file,
+                file = (function() {
+                    if (qq.BlobProxy && fileWrapper.file instanceof qq.BlobProxy) {
+                        return fileWrapper.file.referenceBlob;
+                    }
+                    return fileWrapper.file;
+                }()),
                 name = validationDescriptor.name,
                 size = validationDescriptor.size,
-                buttonId = this._getButtonId(file),
+                buttonId = this._getButtonId(fileWrapper.file),
                 validationBase = this._getValidationBase(buttonId),
                 validityChecker = new qq.Promise();
 
@@ -1465,64 +1474,29 @@
             }
         },
 
-        _parseFileOrBlobDataName: function(fileOrBlobData) {
-            var name;
-
-            if (qq.isFileOrInput(fileOrBlobData)) {
-                if (fileOrBlobData.value) {
-                    // it is a file input
-                    // get input value and remove path to normalize
-                    name = fileOrBlobData.value.replace(/.*(\/|\\)/, "");
-                } else {
-                    // fix missing properties in Safari 4 and firefox 11.0a2
-                    name = (fileOrBlobData.fileName !== null && fileOrBlobData.fileName !== undefined) ? fileOrBlobData.fileName : fileOrBlobData.name;
-                }
-            }
-            else {
-                name = fileOrBlobData.name;
-            }
-
-            return name;
-        },
-
-        _parseFileOrBlobDataSize: function(fileOrBlobData) {
-            var size;
-
-            if (qq.isFileOrInput(fileOrBlobData)) {
-                if (fileOrBlobData.value === undefined) {
-                    // fix missing properties in Safari 4 and firefox 11.0a2
-                    size = (fileOrBlobData.fileSize !== null && fileOrBlobData.fileSize !== undefined) ? fileOrBlobData.fileSize : fileOrBlobData.size;
-                }
-            }
-            else {
-                size = fileOrBlobData.blob.size;
-            }
-
-            return size;
-        },
-
-        _getValidationDescriptor: function(fileOrBlobData) {
-            var fileDescriptor = {},
-                name = this._parseFileOrBlobDataName(fileOrBlobData),
-                size = this._parseFileOrBlobDataSize(fileOrBlobData);
-
-            fileDescriptor.name = name;
-            if (size !== undefined) {
-                fileDescriptor.size = size;
-            }
-
-            return fileDescriptor;
-        },
-
         _getValidationDescriptors: function(fileWrappers) {
             var self = this,
                 fileDescriptors = [];
 
             qq.each(fileWrappers, function(idx, fileWrapper) {
-                fileDescriptors.push(self._getValidationDescriptor(fileWrapper.file));
+                fileDescriptors.push(self._getValidationDescriptor(fileWrapper));
             });
 
             return fileDescriptors;
+        },
+
+        _getValidationDescriptor: function(fileWrapper) {
+            if (qq.BlobProxy && fileWrapper.file instanceof qq.BlobProxy) {
+                return {
+                    name: qq.getFilename(fileWrapper.file.referenceBlob),
+                    size: fileWrapper.file.referenceBlob.size
+                };
+            }
+
+            return {
+                name: this.getUploads({id: fileWrapper.id}).name,
+                size: this.getUploads({id: fileWrapper.id}).size
+            };
         },
 
         _createStore: function(initialValue, readOnlyValues) {

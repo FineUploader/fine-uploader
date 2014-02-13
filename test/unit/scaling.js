@@ -141,9 +141,10 @@ if (qq.supportedFeatures.imagePreviews) {
         });
 
         it("uploads scaled files as expected: non-chunked, default options", function(done) {
-            assert.expect(9, done);
+            assert.expect(15, done);
 
-            var sizes = [
+            var referenceFileSize,
+                sizes = [
                     {
                         name: "small",
                         max: 50,
@@ -172,6 +173,8 @@ if (qq.supportedFeatures.imagePreviews) {
                     callbacks: {
                         onUpload: function(id, name) {
                             assert.ok(uploader.getSize(id) > 0);
+                            assert.ok(qq.isBlob(uploader.getFile(id)));
+                            assert.equal(uploader.getFile(id).size, referenceFileSize);
 
                             actualUploadCallbacks.push({id: id, name: name});
                             setTimeout(function() {
@@ -179,8 +182,6 @@ if (qq.supportedFeatures.imagePreviews) {
                             }, 10);
                         },
                         onAllComplete: function(successful, failed) {
-                            var uploadData = uploader.getUploads();
-
                             assert.equal(successful.length, 6);
                             assert.equal(failed.length, 0);
                             assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
@@ -190,6 +191,7 @@ if (qq.supportedFeatures.imagePreviews) {
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                 fileTestHelper.mockXhr();
+                referenceFileSize = blob.size;
                 uploader.addBlobs([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
             });
         });

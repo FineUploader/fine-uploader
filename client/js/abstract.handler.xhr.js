@@ -46,22 +46,24 @@ qq.AbstractUploadHandlerXhr = function(spec) {
         /**
          * Adds File or Blob to the queue
          **/
-        add: function(id, fileOrBlobData) {
-            if (qq.isFile(fileOrBlobData)) {
-                fileState[id] = {file: fileOrBlobData};
+        add: function(id, blobOrProxy) {
+            if (qq.isFile(blobOrProxy) || qq.isBlob(blobOrProxy)) {
+                fileState[id] = {file: blobOrProxy};
             }
-            else if (qq.isBlob(fileOrBlobData.blob)) {
-                fileState[id] =  {blobData: fileOrBlobData};
+            else if (blobOrProxy instanceof qq.BlobProxy) {
+                fileState[id] = {proxy: blobOrProxy};
             }
             else {
-                throw new Error("Passed obj is not a File or BlobData (in qq.UploadHandlerXhr)");
+                throw new Error("Passed obj is not a File, Blob, or proxy");
             }
         },
 
         getFile: function(id) {
-            if (fileState[id]) {
-                return fileState[id].file || fileState[id].blobData.blob;
-            }
+            return this.isValid(id) && fileState[id].file;
+        },
+
+        getProxy: function(id) {
+            return this.isValid(id) && fileState[id].proxy;
         },
 
         isValid: function(id) {

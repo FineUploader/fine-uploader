@@ -36,7 +36,8 @@ qq.Scaler = function(spec, log) {
                         type: sizeRecord.type,
                         refType: originalBlob.type
                     }),
-                    blob: new qq.BlobProxy(originalBlob, qq.bind(self._generateScaledImage, self, sizeRecord.max, log))
+                    blob: new qq.BlobProxy(originalBlob,
+                        qq.bind(self._generateScaledImage, self, sizeRecord.max, log))
                 });
             });
 

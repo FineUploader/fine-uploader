@@ -8,8 +8,7 @@
 qq.UploadHandler = function(o, namespace) {
     "use strict";
 
-    var baseHandler = this,
-        queue = [],
+    var queue = [],
         generationWaitingQueue = [],
         generationDoneQueue = [],
         options, log, handlerImpl;
@@ -66,6 +65,12 @@ qq.UploadHandler = function(o, namespace) {
     qq.extend(options, o);
 
     log = options.log;
+
+    // Returns a File, Blob, qq.BlobProxy, or undefined if none of this are available for the ID
+    function getBlobOrProxy(id) {
+        return (handlerImpl.getProxy && handlerImpl.getProxy(id)) ||
+            (handlerImpl.getFile && handlerImpl.getFile(id));
+    }
 
     // For Blobs that are part of a group of scaled images, along with a reference image,
     // this will ensure the blobs in the group are uploaded in the order they were triggered,
@@ -131,7 +136,7 @@ qq.UploadHandler = function(o, namespace) {
 
     // Called whenever a file is to be uploaded.  Returns true if the file will be uploaded at once.
     function startUpload(id) {
-        var blobToUpload = baseHandler.getFile(id);
+        var blobToUpload = getBlobOrProxy(id);
 
         if (blobToUpload) {
             return startBlobUpload(id, blobToUpload);
@@ -243,10 +248,14 @@ qq.UploadHandler = function(o, namespace) {
             queue = [];
         },
 
+        // Returns a File, Blob, or the Blob/File for the reference/parent file if the targeted blob is a proxy.
+        // Undefined if no file record is available.
         getFile: function(id) {
-            if (handlerImpl.getFile) {
-                return handlerImpl.getFile(id);
+            if (handlerImpl.getProxy && handlerImpl.getProxy(id)) {
+                return handlerImpl.getProxy(id).referenceBlob;
             }
+
+            return handlerImpl.getFile && handlerImpl.getFile(id);
         },
 
         getInput: function(id) {
