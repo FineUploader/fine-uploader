@@ -37,7 +37,7 @@ qq.Scaler = function(spec, log) {
                         refType: originalBlob.type
                     }),
                     blob: new qq.BlobProxy(originalBlob,
-                        qq.bind(self._generateScaledImage, self, sizeRecord.max, log))
+                        qq.bind(self._generateScaledImage, self, sizeRecord.max, orient, log))
                 });
             });
 
@@ -98,7 +98,7 @@ qq.extend(qq.Scaler.prototype, {
         });
     },
 
-    _generateScaledImage: function(size, log, sourceFile) {
+    _generateScaledImage: function(size, orient, log, sourceFile) {
         "use strict";
 
         var self = this,
@@ -106,7 +106,7 @@ qq.extend(qq.Scaler.prototype, {
             imageGenerator = new qq.ImageGenerator(log),
             canvas = document.createElement("canvas");
 
-        imageGenerator.generate(sourceFile, canvas, {maxSize: size}).then(function() {
+        imageGenerator.generate(sourceFile, canvas, {maxSize: size, orient: orient}).then(function() {
             var dataUri = canvas.toDataURL(),
                 blob = self._dataUriToBlob(dataUri);
 

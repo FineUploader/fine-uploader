@@ -139,6 +139,8 @@ qq.ImageGenerator = function(log) {
         var drawPreview = new qq.Promise(),
             identifier = new qq.Identify(fileOrBlob, log),
             maxSize = options.maxSize,
+            // jshint eqnull:true
+            orient = options.orient == null ? true : options.orient,
             megapixErrorHandler = function() {
                 container.onerror = null;
                 container.onload = null;
@@ -148,13 +150,20 @@ qq.ImageGenerator = function(log) {
 
         identifier.isPreviewable().then(
             function(mime) {
-                var exif = new qq.Exif(fileOrBlob, log),
+                // If options explicitly specify that Orientation is not desired,
+                // replace the orient task with a dummy promise that "succeeds" immediately.
+                var dummyExif = {
+                        parse: function() {
+                            return new qq.Promise().success();
+                        }
+                    },
+                    exif = orient ? new qq.Exif(fileOrBlob, log) : dummyExif,
                     mpImg = new MegaPixImage(fileOrBlob, megapixErrorHandler);
 
                 if (registerThumbnailRenderedListener(container, drawPreview)) {
                     exif.parse().then(
                         function(exif) {
-                            var orientation = exif.Orientation;
+                            var orientation = exif && exif.Orientation;
 
                             mpImg.render(container, {
                                 maxWidth: maxSize,
@@ -273,7 +282,7 @@ qq.ImageGenerator = function(log) {
          *
          * @param fileBlobOrUrl a `File`, `Blob`, or a URL pointing to the image
          * @param container <img> or <canvas> to contain the preview
-         * @param options possible properties include `maxSize` (int), `orient` (bool), and `resize` (bool)
+         * @param options possible properties include `maxSize` (int), `orient` (bool - default true), and `resize` (bool - default true)
          * @returns qq.Promise fulfilled when the preview has been drawn, or the attempt has failed
          */
         generate: function(fileBlobOrUrl, container, options) {

@@ -72,35 +72,46 @@ if (qq.supportedFeatures.imagePreviews) {
             assert.equal(records[0].name, "originalName (small)");
         });
 
-        it("generates a properly scaled image for a reference image", function(done) {
-            assert.expect(3, done);
+        describe("generates scaled image tests", function() {
+            function runScaleTest(orient, done) {
+                assert.expect(3, done);
 
-            var scalerContext = qq.extend({}, qq.Scaler.prototype),
-                scale = qq.bind(qq.Scaler.prototype._generateScaledImage, scalerContext);
+                var scalerContext = qq.extend({}, qq.Scaler.prototype),
+                    scale = qq.bind(qq.Scaler.prototype._generateScaledImage, scalerContext);
 
-            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                scale(50, function(){}, blob).then(function(scaledBlob) {
-                    var URL = window.URL && window.URL.createObjectURL ? window.URL :
-                              window.webkitURL && window.webkitURL.createObjectURL ? window.webkitURL :
-                              null,
-                        img = document.createElement("img");
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                    scale(50, orient, function(){}, blob).then(function(scaledBlob) {
+                        var URL = window.URL && window.URL.createObjectURL ? window.URL :
+                                  window.webkitURL && window.webkitURL.createObjectURL ? window.webkitURL :
+                                  null,
+                            img = document.createElement("img");
 
 
-                    assert.ok(qq.isBlob(scaledBlob));
+                        assert.ok(qq.isBlob(scaledBlob));
 
-                    img.onload = function() {
-                        assert.ok(this.width <= 50);
-                        assert.ok(this.height <= 50);
-                    };
+                        img.onload = function() {
+                            assert.ok(this.width <= 50);
+                            assert.ok(this.height <= 50);
+                        };
 
-                    img.onerror = function() {
-                        assert.fail(null, null, "Image failed to render!");
-                    };
+                        img.onerror = function() {
+                            assert.fail(null, null, "Image failed to render!");
+                        };
 
-                    img.src = URL.createObjectURL(scaledBlob);
+                        img.src = URL.createObjectURL(scaledBlob);
+                    });
                 });
+            }
+
+            it("generates a properly scaled & oriented image for a reference image", function(done) {
+                runScaleTest(true, done);
+            });
+
+            it("generates a properly scaled image for a reference image", function(done) {
+                runScaleTest(false, done);
             });
         });
+
 
         it("renames the scaled files only if their MIME type differs from the reference file", function(done) {
             assert.expect(8, done);
