@@ -3,7 +3,17 @@ if (qq.supportedFeatures.imagePreviews) {
     describe("scaling module tests", function() {
         "use strict";
 
-        var fileTestHelper = helpme.setupFileTests();
+        var fileTestHelper = helpme.setupFileTests(),
+            acknowledgeRequests = function() {
+                setTimeout(function() {
+                    qq.each(fileTestHelper.getRequests(), function(idx, req) {
+                        if (!req.ack) {
+                            req.ack = true;
+                            req.respond(200, null, JSON.stringify({success: true}));
+                        }
+                    });
+                }, 10);
+            };
 
         it("is disabled if no sizes are specified", function() {
             var scaler = new qq.Scaler({sizes: []});
@@ -104,7 +114,10 @@ if (qq.supportedFeatures.imagePreviews) {
             }
 
             it("generates a properly scaled & oriented image for a reference image", function(done) {
-                runScaleTest(true, done);
+                // Test fails in IE11 unless we delay its start a bit
+                setTimeout(function() {
+                    runScaleTest(true, done);
+                }, 10);
             });
 
             it("generates a properly scaled image for a reference image", function(done) {
@@ -225,16 +238,6 @@ if (qq.supportedFeatures.imagePreviews) {
                     {id: 3, name: "up2.jpeg"}
                 ],
                 actualUploadCallbacks = [],
-                acknowledgeRequests = function() {
-                    setTimeout(function() {
-                        qq.each(fileTestHelper.getRequests(), function(idx, req) {
-                            if (!req.ack) {
-                                req.ack = true;
-                                req.respond(200, null, JSON.stringify({success: true}));
-                            }
-                        });
-                    }, 10);
-                },
                 uploader = new qq.FineUploaderBasic({
                     request: {endpoint: "test/uploads"},
                     chunking: {
@@ -295,13 +298,11 @@ if (qq.supportedFeatures.imagePreviews) {
                         onUpload: function(id, name) {
                             assert.ok(qq.isBlob(uploader.getFile(id)));
                             assert.equal(uploader.getFile(id).size, referenceFileSize);
-
                             actualUploadCallbacks.push({id: id, name: name});
-                            setTimeout(function() {
-                                fileTestHelper.getRequests()[id].respond(200, null, JSON.stringify({success: true}));
-                            }, 10);
+                            acknowledgeRequests();
                         },
                         onAllComplete: function(successful, failed) {
+                            qq.log(successful);
                             assert.equal(successful.length, 2);
                             assert.equal(failed.length, 0);
                             assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
@@ -342,9 +343,7 @@ if (qq.supportedFeatures.imagePreviews) {
                             assert.ok(qq.isBlob(uploader.getFile(id)));
 
                             actualUploadCallbacks.push({id: id, name: name});
-                            setTimeout(function() {
-                                fileTestHelper.getRequests()[id].respond(200, null, JSON.stringify({success: true}));
-                            }, 10);
+                            acknowledgeRequests();
                         },
                         onAllComplete: function(successful, failed) {
                             assert.equal(successful.length, 3);
