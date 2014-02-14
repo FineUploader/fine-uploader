@@ -141,7 +141,7 @@ if (qq.supportedFeatures.imagePreviews) {
         });
 
         it("uploads scaled files as expected: non-chunked, default options", function(done) {
-            assert.expect(15, done);
+            assert.expect(21, done);
 
             var referenceFileSize,
                 sizes = [
@@ -183,6 +183,72 @@ if (qq.supportedFeatures.imagePreviews) {
                         },
                         onAllComplete: function(successful, failed) {
                             assert.equal(successful.length, 6);
+                            assert.equal(failed.length, 0);
+                            assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
+                        }
+                    }
+                });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+                referenceFileSize = blob.size;
+                uploader.addBlobs([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
+            });
+        });
+
+        it("uploads scaled files as expected: chunked, default options", function(done) {
+            assert.expect(15, done);
+
+            var referenceFileSize,
+                sizes = [
+                    {
+                        name: "medium",
+                        max: 400,
+                        type: "image/jpeg"
+                    }
+                ],
+                expectedUploadCallbacks = [
+                    {id: 0, name: "up (medium).jpeg"},
+                    {id: 1, name: "up.jpeg"},
+                    {id: 2, name: "up2 (medium).jpeg"},
+                    {id: 3, name: "up2.jpeg"}
+                ],
+                actualUploadCallbacks = [],
+                acknowledgeRequests = function() {
+                    setTimeout(function() {
+                        qq.each(fileTestHelper.getRequests(), function(idx, req) {
+                            if (!req.ack) {
+                                req.ack = true;
+                                req.respond(200, null, JSON.stringify({success: true}));
+                            }
+                        });
+                    }, 10);
+                },
+                uploader = new qq.FineUploaderBasic({
+                    request: {endpoint: "test/uploads"},
+                    chunking: {
+                        enabled: true,
+                        partSize: 50000
+                    },
+                    scaling: {
+                        sizes: sizes
+                    },
+                    callbacks: {
+                        onUploadChunk: function(id) {
+                            acknowledgeRequests();
+                        },
+                        onUpload: function(id, name) {
+                            assert.ok(uploader.getSize(id) > 0);
+                            assert.ok(qq.isBlob(uploader.getFile(id)));
+                            assert.equal(uploader.getFile(id).size, referenceFileSize);
+
+                            actualUploadCallbacks.push({id: id, name: name});
+                        },
+                        onComplete: function(id, name, response) {
+                            qq.log("complete: (" + id + ") " + response.success);
+                        },
+                        onAllComplete: function(successful, failed) {
+                            assert.equal(successful.length, 4);
                             assert.equal(failed.length, 0);
                             assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
                         }
