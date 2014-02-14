@@ -25,21 +25,25 @@ qq.Scaler = function(spec, log) {
         getFileRecords: function(originalFileUuid, originalFileName, originalBlobOrBlobData) {
             var self = this,
                 records = [],
-                originalBlob = originalBlobOrBlobData.blob ? originalBlobOrBlobData.blob : originalBlobOrBlobData;
+                originalBlob = originalBlobOrBlobData.blob ? originalBlobOrBlobData.blob : originalBlobOrBlobData,
+                idenitifier = new qq.Identify(originalBlob, log);
 
-            // Create records for each scaled version & add them to the records array, smallest first.
-            qq.each(sizes, function(idx, sizeRecord) {
-                records.push({
-                    uuid: qq.getUniqueId(),
-                    name: self._getName(originalFileName, {
-                        name: sizeRecord.name,
-                        type: sizeRecord.type,
-                        refType: originalBlob.type
-                    }),
-                    blob: new qq.BlobProxy(originalBlob,
-                        qq.bind(self._generateScaledImage, self, sizeRecord.max, orient, log))
+            // If the reference file cannot be rendered natively, we can't create scaled versions.
+            if (idenitifier.isPreviewableSync()) {
+                // Create records for each scaled version & add them to the records array, smallest first.
+                qq.each(sizes, function(idx, sizeRecord) {
+                    records.push({
+                        uuid: qq.getUniqueId(),
+                        name: self._getName(originalFileName, {
+                            name: sizeRecord.name,
+                            type: sizeRecord.type,
+                            refType: originalBlob.type
+                        }),
+                        blob: new qq.BlobProxy(originalBlob,
+                            qq.bind(self._generateScaledImage, self, sizeRecord.max, orient, log))
+                    });
                 });
-            });
+            }
 
             // Finally, add a record for the original file
             records.push({

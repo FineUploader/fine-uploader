@@ -36,7 +36,7 @@ if (qq.supportedFeatures.imagePreviews) {
                         type: "image/jpeg"
                     }
                 ],
-                originalFile = {dummy: "blob"},
+                originalFile = {dummy: "blob", type:"image/jpeg"},
                 scaler = new qq.Scaler(({sizes: sizes})),
                 records = scaler.getFileRecords("originalUuid", "originalName.jpeg", originalFile);
 
@@ -67,7 +67,7 @@ if (qq.supportedFeatures.imagePreviews) {
                     }
                 ],
                 scaler = new qq.Scaler(({sizes: sizes})),
-                records = scaler.getFileRecords("originalUuid", "originalName", {});
+                records = scaler.getFileRecords("originalUuid", "originalName", {type: "image/jpeg"});
 
             assert.equal(records[0].name, "originalName (small)");
         });
@@ -267,6 +267,98 @@ if (qq.supportedFeatures.imagePreviews) {
                 fileTestHelper.mockXhr();
                 referenceFileSize = blob.size;
                 uploader.addBlobs([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
+            });
+        });
+
+        it("skips the scaling workflow for files that cannot be scaled", function(done) {
+            assert.expect(7, done);
+
+            var referenceFileSize,
+                sizes = [
+                    {
+                        name: "small",
+                        max: 50,
+                        type: "image/jpeg"
+                    }
+                ],
+                expectedUploadCallbacks = [
+                    {id: 0, name: "one.txt"},
+                    {id: 1, name: "two.txt"}
+                ],
+                actualUploadCallbacks = [],
+                uploader = new qq.FineUploaderBasic({
+                    request: {endpoint: "test/uploads"},
+                    scaling: {
+                        sizes: sizes
+                    },
+                    callbacks: {
+                        onUpload: function(id, name) {
+                            assert.ok(qq.isBlob(uploader.getFile(id)));
+                            assert.equal(uploader.getFile(id).size, referenceFileSize);
+
+                            actualUploadCallbacks.push({id: id, name: name});
+                            setTimeout(function() {
+                                fileTestHelper.getRequests()[id].respond(200, null, JSON.stringify({success: true}));
+                            }, 10);
+                        },
+                        onAllComplete: function(successful, failed) {
+                            assert.equal(successful.length, 2);
+                            assert.equal(failed.length, 0);
+                            assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
+                        }
+                    }
+                });
+
+            qqtest.downloadFileAsBlob("simpletext.txt", "text/plain").then(function(blob) {
+                fileTestHelper.mockXhr();
+                referenceFileSize = blob.size;
+                uploader.addBlobs([{blob: blob, name: "one.txt"}, {blob: blob, name: "two.txt"}]);
+            });
+        });
+
+        it("skips the scaling workflow for files that cannot be scaled but still uploads scaled versions where possible", function(done) {
+            assert.expect(6, done);
+
+            var sizes = [
+                    {
+                        name: "small",
+                        max: 50,
+                        type: "image/jpeg"
+                    }
+                ],
+                expectedUploadCallbacks = [
+                    {id: 0, name: "one.txt"},
+                    {id: 1, name: "two (small).jpg"},
+                    {id: 2, name: "two.jpg"}
+                ],
+                actualUploadCallbacks = [],
+                uploader = new qq.FineUploaderBasic({
+                    request: {endpoint: "test/uploads"},
+                    scaling: {
+                        sizes: sizes
+                    },
+                    callbacks: {
+                        onUpload: function(id, name) {
+                            assert.ok(qq.isBlob(uploader.getFile(id)));
+
+                            actualUploadCallbacks.push({id: id, name: name});
+                            setTimeout(function() {
+                                fileTestHelper.getRequests()[id].respond(200, null, JSON.stringify({success: true}));
+                            }, 10);
+                        },
+                        onAllComplete: function(successful, failed) {
+                            assert.equal(successful.length, 3);
+                            assert.equal(failed.length, 0);
+                            assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
+                        }
+                    }
+                });
+
+            qqtest.downloadFileAsBlob("simpletext.txt", "text/plain").then(function(textFile) {
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(jpegFile) {
+                    fileTestHelper.mockXhr();
+                    uploader.addBlobs([{blob: textFile, name: "one.txt"}, {blob: jpegFile, name: "two.jpg"}]);
+                });
             });
         });
     });
