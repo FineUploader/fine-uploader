@@ -66,7 +66,8 @@ qq.UploadHandler = function(o, namespace) {
 
     log = options.log;
 
-    // Returns a File, Blob, qq.BlobProxy, or undefined if none of this are available for the ID
+    // Returns a qq.BlobProxy, or an actual File/Blob if no proxy is involved, or undefined
+    // if none of these are available for the ID
     function getBlobOrProxy(id) {
         return (handlerImpl.getProxy && handlerImpl.getProxy(id)) ||
             (handlerImpl.getFile && handlerImpl.getFile(id));
@@ -87,7 +88,10 @@ qq.UploadHandler = function(o, namespace) {
             // upload begins and an onUpload callback is invoked.
             options.onUploadPrep(id);
 
+            log("Attempting to generate a blob on-demand for " + id);
             blob.create().then(function(actualBlob) {
+                log("Generated an on-demand blob for " + id);
+
                 // Update record associated with this file by providing the actual Blob
                 handlerImpl.updateBlob(id, actualBlob);
 
@@ -125,7 +129,11 @@ qq.UploadHandler = function(o, namespace) {
         generationDoneQueue.push(id);
 
         qq.each(waitingForGenerationQueueCopy, function(idx, id) {
-            if (qq.indexOf(generationDoneQueue, id) >= 0) {
+            var generationDoneQueueIdx = qq.indexOf(generationDoneQueue, id);
+
+            if (generationDoneQueueIdx >= 0) {
+                log("Submitting " + id + " to be uploaded as its turn in the generation queue is up.");
+                generationDoneQueue.splice(generationDoneQueueIdx, 1);
                 handlerImpl.upload(generationWaitingQueue.shift());
             }
             else {
@@ -155,6 +163,11 @@ qq.UploadHandler = function(o, namespace) {
         var i = qq.indexOf(queue, id),
             max = options.maxConnections,
             nextId;
+
+        if (qq.BlobProxy && getBlobOrProxy(id) instanceof qq.BlobProxy) {
+            log("Generated blob upload has ended for " + id + ", disposing generated blob.");
+            delete handlerImpl._getFileState(id).file;
+        }
 
         if (i >= 0) {
             queue.splice(i, 1);

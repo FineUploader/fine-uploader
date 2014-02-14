@@ -244,9 +244,6 @@ if (qq.supportedFeatures.imagePreviews) {
 
                             actualUploadCallbacks.push({id: id, name: name});
                         },
-                        onComplete: function(id, name, response) {
-                            qq.log("complete: (" + id + ") " + response.success);
-                        },
                         onAllComplete: function(successful, failed) {
                             assert.equal(successful.length, 4);
                             assert.equal(failed.length, 0);
