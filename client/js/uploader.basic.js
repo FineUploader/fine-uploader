@@ -195,6 +195,8 @@
 
                 defaultQuality: 80,
 
+                failureText: "Failed to scale",
+
                 // metadata about each requested scaled version
                 sizes: []
             }

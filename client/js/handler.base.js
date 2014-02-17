@@ -11,7 +11,7 @@ qq.UploadHandler = function(o, namespace) {
     var queue = [],
         generationWaitingQueue = [],
         generationDoneQueue = [],
-        options, log, handlerImpl;
+        preventRetryResponse, options, log, handlerImpl;
 
     // Default options, can be overridden by the user
     options = {
@@ -60,9 +60,16 @@ qq.UploadHandler = function(o, namespace) {
         onUuidChanged: function(id, newUuid){},
         getName: function(id) {},
         setSize: function(id, newSize) {}
-
     };
     qq.extend(options, o);
+
+    preventRetryResponse = (function() {
+        var response = {};
+
+        response[options.preventRetryParam] = true;
+
+        return response;
+    }());
 
     log = options.log;
 
@@ -73,7 +80,7 @@ qq.UploadHandler = function(o, namespace) {
             (handlerImpl.getFile && handlerImpl.getFile(id));
     }
 
-    // For Blobs that are part of a group of scaled images, along with a reference image,
+    // For Blobs that are part of a group of generated images, along with a reference image,
     // this will ensure the blobs in the group are uploaded in the order they were triggered,
     // even if some async processing must be completed on one or more Blobs first.
     function startBlobUpload(id, blob) {
@@ -102,6 +109,20 @@ qq.UploadHandler = function(o, namespace) {
                 handlerImpl.reevaluateChunking(id);
 
                 maybeUploadGenerationQueueBlobs(id);
+            },
+
+            // Blob could not be generated.  Fail the upload & attempt to prevent retries.  Also bubble error message.
+            function(errorMessage) {
+                var errorResponse = {};
+
+                if (errorMessage) {
+                    errorResponse.error = errorMessage;
+                }
+
+                generationWaitingQueue.splice(qq.indexOf(generationWaitingQueue, id), 1);
+                options.onComplete(id, options.getName(id), qq.extend(errorResponse, preventRetryResponse), null);
+                maybeUploadGenerationQueueBlobs(null);
+                dequeue(id);
             });
         }
         else {
@@ -126,7 +147,7 @@ qq.UploadHandler = function(o, namespace) {
     function maybeUploadGenerationQueueBlobs(id) {
         var waitingForGenerationQueueCopy = qq.extend([], generationWaitingQueue);
 
-        generationDoneQueue.push(id);
+        id !== null && generationDoneQueue.push(id);
 
         qq.each(waitingForGenerationQueueCopy, function(idx, id) {
             var generationDoneQueueIdx = qq.indexOf(generationDoneQueue, id);
@@ -221,9 +242,12 @@ qq.UploadHandler = function(o, namespace) {
         },
 
         retry: function(id) {
-            var i = qq.indexOf(queue, id);
+            var i = qq.indexOf(queue, id),
+                blobOrProxy = getBlobOrProxy(id),
+                isProxy = qq.BlobProxy && blobOrProxy && blobOrProxy instanceof qq.BlobProxy;
+
             if (i >= 0) {
-                return handlerImpl.upload(id, true);
+                return isProxy ? startUpload(id) : handlerImpl.upload(id, true);
             }
             else {
                 return this.upload(id);

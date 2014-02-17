@@ -659,6 +659,7 @@
                     resume: this._options.resume,
                     blobs: this._options.blobs,
                     log: qq.bind(self.log, self),
+                    preventRetryParam: this._options.retry.preventRetryResponseProperty,
                     onProgress: function(id, name, loaded, total){
                         self._onProgress(id, name, loaded, total);
                         self._options.callbacks.onProgress(id, name, loaded, total);
@@ -841,6 +842,10 @@
             if (!result.success) {
                 this._netUploadedOrQueued--;
                 this._uploadData.setStatus(id, qq.status.UPLOAD_FAILED);
+
+                if (result[this._options.retry.preventRetryResponseProperty] === true) {
+                    this._preventRetries[id] = true;
+                }
             }
             else {
                 if (result.thumbnailUrl) {

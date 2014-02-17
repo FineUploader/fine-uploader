@@ -16,6 +16,7 @@ qq.Scaler = function(spec, log) {
         orient = spec.orient,
         defaultType = spec.defaultType,
         defaultQuality = spec.defaultQuality / 100,
+        failedToScaleText = spec.failureText,
         sizes = this._getSortedSizes(spec.sizes);
 
     // Revealed API for instances of this module
@@ -49,6 +50,7 @@ qq.Scaler = function(spec, log) {
                                 orient: orient,
                                 type: outputType,
                                 quality: defaultQuality,
+                                failedText: failedToScaleText,
                                 log: log
                             }))
                         }
@@ -147,6 +149,7 @@ qq.extend(qq.Scaler.prototype, {
             orient = spec.orient,
             type = spec.type,
             quality = spec.quality,
+            failedText = spec.failedText,
             scalingEffort = new qq.Promise(),
             imageGenerator = new qq.ImageGenerator(log),
             canvas = document.createElement("canvas");
@@ -156,6 +159,8 @@ qq.extend(qq.Scaler.prototype, {
                 blob = self._dataUriToBlob(dataUri);
 
             scalingEffort.success(blob);
+        }, function() {
+            scalingEffort.failure(failedText);
         });
 
         return scalingEffort;
