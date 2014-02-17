@@ -417,7 +417,6 @@ if (qq.supportedFeatures.imagePreviews) {
                                 var req = fileTestHelper.getRequests()[id],
                                     actualType = req.requestBody.fields.qqfile.type;
 
-                                qq.log(req.requestBody.fields);
                                 assert.equal(actualType, expectedScaledBlobType[id], "(" + id + ") Scaled blob type (" + actualType + ")  is incorrect.  Expected " + expectedScaledBlobType[id]);
                                 req.respond(200, null, JSON.stringify({success: true}));
                             }, 10);
