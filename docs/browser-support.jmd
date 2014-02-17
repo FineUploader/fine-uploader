@@ -356,6 +356,7 @@ Feature     | Description
 `uploadCors` | Are cross-domain uploads supported?
 `canDetermineSize` | Can file size be determined client-side?
 `imagePreviews` | Is client-side image preview generation possible?
+`tiffPreviews` | Can TIFFs be rendered natively in the current browser?
 `imageValidation` | Can we validate image properties client-side?
 `pause` | Can chunked file uploads be paused?
 

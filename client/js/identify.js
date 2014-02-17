@@ -51,7 +51,7 @@ qq.Identify = function(fileOrBlob, log) {
                     if (isIdentifiable(bytes, hex)) {
                         // Safari is the only supported browser that can deal with TIFFs natively,
                         // so, if this is a TIFF and the UA isn't Safari, declare this file "non-previewable".
-                        if (mime !== "image/tiff" || qq.safari()) {
+                        if (mime !== "image/tiff" || qq.supportedFeatures.tiffPreviews) {
                             previewable = true;
                             idenitifer.success(mime);
                         }
@@ -84,7 +84,7 @@ qq.Identify = function(fileOrBlob, log) {
 
             if (isRecognizedImage) {
                 if (fileMime === "image/tiff") {
-                    return qq.safari();
+                    return qq.supportedFeatures.tiffPreviews;
                 }
                 return true;
             }

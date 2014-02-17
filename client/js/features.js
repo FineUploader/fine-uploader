@@ -125,6 +125,7 @@ qq.supportedFeatures = (function () {
         canDetermineSize: supportsAjaxFileUploading,
         folderSelection: supportsFolderSelection,
         imagePreviews: supportsImagePreviews,
+        tiffPreviews: qq.safari(), // Not the best solution, but simple and probably accurate enough (for now)
         imageValidation: supportsImagePreviews,
         pause: supportsChunking
     };
