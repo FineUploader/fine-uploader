@@ -15,6 +15,7 @@ qq.Scaler = function(spec, log) {
         sendOriginal = spec.sendOriginal,
         orient = spec.orient,
         defaultType = spec.defaultType,
+        defaultQuality = spec.defaultQuality / 100,
         sizes = this._getSortedSizes(spec.sizes);
 
     // Revealed API for instances of this module
@@ -47,6 +48,7 @@ qq.Scaler = function(spec, log) {
                                 size: sizeRecord.max,
                                 orient: orient,
                                 type: outputType,
+                                quality: defaultQuality,
                                 log: log
                             }))
                         }
@@ -144,12 +146,13 @@ qq.extend(qq.Scaler.prototype, {
             size = spec.size,
             orient = spec.orient,
             type = spec.type,
+            quality = spec.quality,
             scalingEffort = new qq.Promise(),
             imageGenerator = new qq.ImageGenerator(log),
             canvas = document.createElement("canvas");
 
         imageGenerator.generate(sourceFile, canvas, {maxSize: size, orient: orient}).then(function() {
-            var dataUri = canvas.toDataURL(type),
+            var dataUri = canvas.toDataURL(type, quality),
                 blob = self._dataUriToBlob(dataUri);
 
             scalingEffort.success(blob);

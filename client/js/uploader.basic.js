@@ -193,6 +193,8 @@
                 // Used if a specific size object doesn't specify a type, or if the specified type is not valid.
                 defaultType: "image/png",
 
+                defaultQuality: 80,
+
                 // metadata about each requested scaled version
                 sizes: []
             }
