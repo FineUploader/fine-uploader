@@ -185,7 +185,7 @@
             // scale images client side, upload a new file for each scaled version
             scaling: {
                 // send the original file as well
-                sendOriginal: false,
+                sendOriginal: true,
 
                 // fox orientation for scaled images
                 orient: true,

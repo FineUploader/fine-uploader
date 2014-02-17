@@ -11,8 +11,7 @@
 qq.Scaler = function(spec, log) {
     "use strict";
 
-    var self = this,
-        sendOriginal = spec.sendOriginal,
+    var includeReference = spec.sendOriginal,
         orient = spec.orient,
         defaultType = spec.defaultType,
         defaultQuality = spec.defaultQuality / 100,
@@ -58,8 +57,8 @@ qq.Scaler = function(spec, log) {
                 });
             }
 
-            // Finally, add a record for the original file
-            records.push({
+            // Finally, add a record for the original file (if requested)
+            includeReference && records.push({
                 uuid: originalFileUuid,
                 name: originalFileName,
                 blob: originalBlob
