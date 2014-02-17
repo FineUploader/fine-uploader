@@ -2,21 +2,6 @@
 qq.Identify = function(fileOrBlob, log) {
     "use strict";
 
-    var PREVIEWABLE_MIME_TYPES = [
-            "image/jpeg",
-            "image/gif",
-            "image/png",
-            "image/bmp",
-            "image/tiff"
-        ],
-        PREVIEWABLE_MAGIC_BYTES = {
-            "image/jpeg": "ffd8ff",
-            "image/gif": "474946",
-            "image/png": "89504e",
-            "image/bmp": "424d",
-            "image/tiff": ["49492a00", "4d4d002a"]
-        };
-
     function isIdentifiable(magicBytes, questionableBytes) {
         var identifiable = false,
             magicBytesEntries = [].concat(magicBytes);
@@ -40,14 +25,15 @@ qq.Identify = function(fileOrBlob, log) {
          * If successful, the MIME string is passed to the success handler.
          */
         isPreviewable: function() {
-            var idenitifer = new qq.Promise(),
+            var self = this,
+                idenitifer = new qq.Promise(),
                 previewable = false,
                 name = fileOrBlob.name === undefined ? "blob" : fileOrBlob.name;
 
             log(qq.format("Attempting to determine if {} can be rendered in this browser", name));
 
             qq.readBlobToHex(fileOrBlob, 0, 4).then(function(hex) {
-                qq.each(PREVIEWABLE_MAGIC_BYTES, function(mime, bytes) {
+                qq.each(self.PREVIEWABLE_MIME_TYPES, function(mime, bytes) {
                     if (isIdentifiable(bytes, hex)) {
                         // Safari is the only supported browser that can deal with TIFFs natively,
                         // so, if this is a TIFF and the UA isn't Safari, declare this file "non-previewable".
@@ -80,7 +66,8 @@ qq.Identify = function(fileOrBlob, log) {
          */
         isPreviewableSync: function() {
             var fileMime = fileOrBlob.type,
-                isRecognizedImage = qq.indexOf(PREVIEWABLE_MIME_TYPES, fileMime) >= 0;
+                // Assumption: This will only ever be executed in browsers that support `Object.keys`.
+                isRecognizedImage = qq.indexOf(Object.keys(this.PREVIEWABLE_MIME_TYPES), fileMime) >= 0;
 
             if (isRecognizedImage) {
                 if (fileMime === "image/tiff") {
@@ -91,4 +78,12 @@ qq.Identify = function(fileOrBlob, log) {
             return false;
         }
     });
+};
+
+qq.Identify.prototype.PREVIEWABLE_MIME_TYPES = {
+    "image/jpeg": "ffd8ff",
+    "image/gif": "474946",
+    "image/png": "89504e",
+    "image/bmp": "424d",
+    "image/tiff": ["49492a00", "4d4d002a"]
 };

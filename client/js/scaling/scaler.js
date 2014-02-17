@@ -14,6 +14,7 @@ qq.Scaler = function(spec, log) {
     var self = this,
         sendOriginal = spec.sendOriginal,
         orient = spec.orient,
+        defaultType = spec.defaultType,
         sizes = this._getSortedSizes(spec.sizes);
 
     // Revealed API for instances of this module
@@ -32,16 +33,24 @@ qq.Scaler = function(spec, log) {
             if (idenitifier.isPreviewableSync()) {
                 // Create records for each scaled version & add them to the records array, smallest first.
                 qq.each(sizes, function(idx, sizeRecord) {
+                    var outputType = self._determineOutputType({defaultType: defaultType, requestedType: sizeRecord.type});
+
                     records.push({
                         uuid: qq.getUniqueId(),
                         name: self._getName(originalFileName, {
                             name: sizeRecord.name,
-                            type: sizeRecord.type,
+                            type: outputType,
                             refType: originalBlob.type
                         }),
                         blob: new qq.BlobProxy(originalBlob,
-                            qq.bind(self._generateScaledImage, self, sizeRecord.max, orient, log))
-                    });
+                            qq.bind(self._generateScaledImage, self, {
+                                size: sizeRecord.max,
+                                orient: orient,
+                                type: outputType,
+                                log: log
+                            }))
+                        }
+                    );
                 });
             }
 
@@ -58,6 +67,31 @@ qq.Scaler = function(spec, log) {
 };
 
 qq.extend(qq.Scaler.prototype, {
+    // Returns the requested type unless it's not specified or not applicable, otherwise return the default type.
+    // NOTE: We cannot reliably determine at this time if the UA supports a specific MIME type for the target format.
+    // image/jpeg and image/png are the only safe choices at this time.
+    _determineOutputType: function(spec) {
+        "use strict";
+
+        var requestedType = spec.requestedType,
+            defaultType = spec.defaultType;
+
+        if (!requestedType) {
+            return defaultType;
+        }
+
+        // If requested type is recognized, use it, as long as this recognized type is supported by the current UA
+        if (qq.indexOf(Object.keys(qq.Identify.prototype.PREVIEWABLE_MIME_TYPES), requestedType) >= 0) {
+            if (requestedType === "image/tiff") {
+                return qq.supportedFeatures.tiffPreviews ? requestedType : defaultType;
+            }
+
+            return requestedType;
+        }
+
+        return defaultType;
+    },
+
     // Get a file name for a generated scaled file record, based on the provided scaled image description
     _getName: function(originalName, scaledVersionProperties) {
         "use strict";
@@ -102,16 +136,20 @@ qq.extend(qq.Scaler.prototype, {
         });
     },
 
-    _generateScaledImage: function(size, orient, log, sourceFile) {
+    _generateScaledImage: function(spec, sourceFile) {
         "use strict";
 
         var self = this,
+            log = spec.log,
+            size = spec.size,
+            orient = spec.orient,
+            type = spec.type,
             scalingEffort = new qq.Promise(),
             imageGenerator = new qq.ImageGenerator(log),
             canvas = document.createElement("canvas");
 
         imageGenerator.generate(sourceFile, canvas, {maxSize: size, orient: orient}).then(function() {
-            var dataUri = canvas.toDataURL(),
+            var dataUri = canvas.toDataURL(type),
                 blob = self._dataUriToBlob(dataUri);
 
             scalingEffort.success(blob);

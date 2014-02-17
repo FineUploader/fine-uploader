@@ -82,7 +82,7 @@ if (qq.supportedFeatures.imagePreviews) {
             assert.equal(records[0].name, "originalName (small)");
         });
 
-        describe("generates scaled image tests", function() {
+        describe("generates simple scaled image tests", function() {
             function runScaleTest(orient, done) {
                 assert.expect(3, done);
 
@@ -90,7 +90,7 @@ if (qq.supportedFeatures.imagePreviews) {
                     scale = qq.bind(qq.Scaler.prototype._generateScaledImage, scalerContext);
 
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                    scale(50, orient, function(){}, blob).then(function(scaledBlob) {
+                    scale({size: 50, orient: orient, log: function(){}}, blob).then(function(scaledBlob) {
                         var URL = window.URL && window.URL.createObjectURL ? window.URL :
                                   window.webkitURL && window.webkitURL.createObjectURL ? window.webkitURL :
                                   null,
@@ -142,7 +142,7 @@ if (qq.supportedFeatures.imagePreviews) {
                     {
                         name: "medium",
                         max: 200,
-                        type: "image/webp"
+                        type: "image/bmp"
                     }
                 ],
                 scaler = new qq.Scaler(({sizes: sizes}));
@@ -151,7 +151,7 @@ if (qq.supportedFeatures.imagePreviews) {
                 var records = scaler.getFileRecords("originalUuid", "originalName.jpEg", blob);
 
                 assert.equal(records[0].name, "originalName (small).jpEg");
-                assert.equal(records[1].name, "originalName (medium).webp");
+                assert.equal(records[1].name, "originalName (medium).bmp");
                 assert.equal(records[2].name, "originalName (large).png");
                 assert.equal(records[3].name, "originalName.jpEg");
 
@@ -302,7 +302,6 @@ if (qq.supportedFeatures.imagePreviews) {
                             acknowledgeRequests();
                         },
                         onAllComplete: function(successful, failed) {
-                            qq.log(successful);
                             assert.equal(successful.length, 2);
                             assert.equal(failed.length, 0);
                             assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
@@ -358,6 +357,70 @@ if (qq.supportedFeatures.imagePreviews) {
                     fileTestHelper.mockXhr();
                     uploader.addBlobs([{blob: textFile, name: "one.txt"}, {blob: jpegFile, name: "two.jpg"}]);
                 });
+            });
+        });
+
+        it("generates a scaled Blob of the default type if the requested type is not specified or is not valid", function(done) {
+            assert.expect(7, done);
+
+            var sizes = [
+                    {
+                        name: "one",
+                        max: 100,
+                        type: "image/jpeg"
+                    },
+                    {
+                        name: "two",
+                        max: 101,
+                        type: "image/blah"
+                    },
+                    {
+                        name: "three",
+                        max: 102
+                    }
+                ],
+                expectedUploadCallbacks = [
+                    {id: 0, name: "test (one).jpeg"},
+                    {id: 1, name: "test (two).png"},
+                    {id: 2, name: "test (three).png"},
+                    {id: 3, name: "test.png"}
+                ],
+                expectedScaledBlobType = [
+                    "image/jpeg",
+                    "image/png",
+                    "image/png",
+                    "image/png"
+                ],
+                actualUploadCallbacks = [],
+                uploader = new qq.FineUploaderBasic({
+                    request: {endpoint: "test/uploads"},
+                    scaling: {
+                        defaultType: "image/png",
+                        sizes: sizes
+                    },
+                    callbacks: {
+                        onUpload: function(id, name) {
+                            actualUploadCallbacks.push({id: id, name: name});
+                            setTimeout(function() {
+                                var req = fileTestHelper.getRequests()[id],
+                                    actualType = req.requestBody.fields.qqfile.type;
+
+                                qq.log(req.requestBody.fields);
+                                assert.equal(actualType, expectedScaledBlobType[id], "(" + id + ") Scaled blob type (" + actualType + ")  is incorrect.  Expected " + expectedScaledBlobType[id]);
+                                req.respond(200, null, JSON.stringify({success: true}));
+                            }, 10);
+                        },
+                        onAllComplete: function(successful, failed) {
+                            assert.equal(successful.length, 4);
+                            assert.equal(failed.length, 0);
+                            assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
+                        }
+                    }
+                });
+
+            qqtest.downloadFileAsBlob("star.png", "image/png").then(function(blob) {
+                fileTestHelper.mockXhr();
+                uploader.addBlobs({blob: blob, name: "test.png"});
             });
         });
     });

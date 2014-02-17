@@ -190,6 +190,9 @@
                 // fox orientation for scaled images
                 orient: true,
 
+                // Used if a specific size object doesn't specify a type, or if the specified type is not valid.
+                defaultType: "image/png",
+
                 // metadata about each requested scaled version
                 sizes: []
             }
