@@ -121,6 +121,14 @@ options for `retry`""", "info", "Note:") }}
     )
 )}}
 
+{{ api_parent_option("scaling", "scaling", "See the [Upload Scaled Images feature page](../feature/scaling.html) for more details.",
+    (
+        ("scaling.failureText", "failureText", "Text that will appear next to a scaled image that could not be generated.  This is in addition to the behavior associated with this property provided by Fine Uploader Core.", "String", "Failed to scale",),
+        ("scaling.hideScaled", "hideScaled", "Set this to true if you do not want any scaled images to be displayed in the file list.", "Boolean", "false",),
+    )
+)
+}}
+
 {{ api_parent_option("text", "text", "",
     (
         ("text.failUpload", "failUpload", "Text that appears next to a failed item", "String", "Upload failed",),
