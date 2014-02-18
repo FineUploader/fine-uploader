@@ -312,12 +312,19 @@
         _onComplete: function(id, name, result, xhr) {
             var parentRetVal = this._parent.prototype._onComplete.apply(this, arguments),
                 templating = this._templating,
+                fileContainer = templating.getFileContainer(id),
                 self = this;
 
             function completeUpload(result) {
+                // If this file is not represented in the templating module, perhaps it was hidden intentionally.
+                // If so, don't perform any UI-related tasks related to this file.
+                if (!fileContainer) {
+                    return;
+                }
+
                 templating.setStatusText(id);
 
-                qq(templating.getFileContainer(id)).removeClass(self._classes.retrying);
+                qq(fileContainer).removeClass(self._classes.retrying);
                 templating.hideProgress(id);
 
                 if (!self._options.disableCancelForFormUploads || qq.supportedFeatures.ajaxUploading) {
@@ -329,10 +336,10 @@
                     self._markFileAsSuccessful(id);
                 }
                 else {
-                    qq(templating.getFileContainer(id)).addClass(self._classes.fail);
+                    qq(fileContainer).addClass(self._classes.fail);
 
                     if (self._templating.isRetryPossible() && !self._preventRetries[id]) {
-                        qq(templating.getFileContainer(id)).addClass(self._classes.retryable);
+                        qq(fileContainer).addClass(self._classes.retryable);
                     }
                     self._controlFailureTextDisplay(id, result);
                 }
@@ -483,7 +490,13 @@
 
         _addToList: function(id, name, canned) {
             var prependData,
-                prependIndex = 0;
+                prependIndex = 0,
+                dontDisplay = this._handler.isProxied(id) && this._options.scaling.hideScaled;
+
+            // If we don't want this file to appear in the UI, skip all of this UI-related logic.
+            if (dontDisplay) {
+                return;
+            }
 
             if (this._options.display.prependFiles) {
                 if (this._totalFilesInBatch > 1 && this._filesInBatchAddedToUi > 0) {

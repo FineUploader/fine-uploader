@@ -84,10 +84,10 @@ qq.UploadHandler = function(o, namespace) {
     // this will ensure the blobs in the group are uploaded in the order they were triggered,
     // even if some async processing must be completed on one or more Blobs first.
     function startBlobUpload(id, blob) {
-        // If we don't have a file/blob yet, request it, and then submit the
-        // upload to the specific handler once the blob is available.
+        // If we don't have a file/blob yet & no file/blob exists for this item, request it,
+        // and then submit the upload to the specific handler once the blob is available.
         // ASSUMPTION: This condition will only ever be true if XHR uploading is supported.
-        if (blob && qq.BlobProxy && blob instanceof qq.BlobProxy) {
+        if (blob && !handlerImpl.getFile(id) && qq.BlobProxy && blob instanceof qq.BlobProxy) {
             generationWaitingQueue.push(id);
 
             // Blob creation may take some time, so the caller may want to update the
@@ -129,6 +129,7 @@ qq.UploadHandler = function(o, namespace) {
             if (generationWaitingQueue.length) {
                 generationWaitingQueue.push(id);
                 generationDoneQueue.push(id);
+                options.onUploadPrep(id);
             }
             else {
                 handlerImpl.upload(id);
@@ -293,6 +294,11 @@ qq.UploadHandler = function(o, namespace) {
             }
 
             return handlerImpl.getFile && handlerImpl.getFile(id);
+        },
+
+        // Returns true if the Blob associated with the ID is related to a proxy s
+        isProxied: function(id) {
+            return !!(handlerImpl.getProxy && handlerImpl.getProxy(id));
         },
 
         getInput: function(id) {

@@ -85,6 +85,10 @@ qq.FineUploader = function(o, namespace) {
             }
         },
 
+        scaling: {
+            hideScaled: false
+        },
+
         showMessage: function(message){
             setTimeout(function() {
                 window.alert(message);

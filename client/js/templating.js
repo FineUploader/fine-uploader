@@ -203,7 +203,7 @@ qq.Templating = function(spec) {
     }
 
     function getTemplateEl(context, cssClass) {
-        return qq(context).getByClass(cssClass)[0];
+        return context && qq(context).getByClass(cssClass)[0];
     }
 
     function prependFile(el, index) {
