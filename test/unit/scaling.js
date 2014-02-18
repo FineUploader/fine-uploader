@@ -126,10 +126,7 @@ if (qq.supportedFeatures.imagePreviews) {
             }
 
             it("generates a properly scaled & oriented image for a reference image", function(done) {
-                // Test fails in IE11 unless we delay its start a bit
-                setTimeout(function() {
-                    runScaleTest(true, done);
-                }, 10);
+                runScaleTest(true, done);
             });
 
             it("generates a properly scaled image for a reference image", function(done) {
