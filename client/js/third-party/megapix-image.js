@@ -202,9 +202,13 @@
         var listeners = _this.imageLoadListeners;
         if (listeners) {
           _this.imageLoadListeners = null;
-          for (var i=0, len=listeners.length; i<len; i++) {
-            listeners[i]();
-          }
+            // IE11 doesn't reliably report actual image dimensions immediately after onload for small files,
+            // so let's push this to the end of the UI thread queue.
+            setTimeout(function() {
+                for (var i=0, len=listeners.length; i<len; i++) {
+                  listeners[i]();
+                }
+            }, 0);
         }
       };
       srcImage.onerror = errorCallback;
