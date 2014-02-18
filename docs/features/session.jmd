@@ -27,7 +27,7 @@ Fine Uploader will assign IDs to each file item as well.  Also note that file it
 counted when determining if you have reached your [`validation.itemLimit`](validation.html).
 
 ### Fine Uploader UI Support
-In addition to everything described in the above core sestion, all files loaded into Fine Uploader on startup
+In addition to everything described in the above core session, all files loaded into Fine Uploader on startup
 (or after a reset) will be displayed in Fine Uploader UI as successfully uploaded files.  If the delete file feature
 is enabled, a delete button will appear next to each file as well.
 
