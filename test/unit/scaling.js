@@ -486,5 +486,58 @@ if (qq.supportedFeatures.imagePreviews) {
                 uploader.addBlobs([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
             });
         });
+
+        it("does not attempt to upload scaled file groups that fail validation", function(done) {
+            assert.expect(9, done);
+
+            var referenceFileSize,
+                sizes = [
+                    {
+                        name: "small",
+                        max: 50
+                    },
+                    {
+                        name: "medium",
+                        max: 400
+                    }
+                ],
+                expectedUploadCallbacks = [
+                    {id: 3, name: "star (small).png"},
+                    {id: 4, name: "star (medium).png"},
+                    {id: 5, name: "star.png"}
+                ],
+                actualUploadCallbacks = [],
+                uploader = new qq.FineUploaderBasic({
+                    request: {endpoint: "test/uploads"},
+                    validation: {
+                        sizeLimit: 856,
+                        stopOnFirstInvalidFile: false
+                    },
+                    scaling: {
+                        sizes: sizes
+                    },
+                    callbacks: {
+                        onUpload: function(id, name) {
+                            assert.ok(uploader.getSize(id) > 0);
+                            assert.ok(qq.isBlob(uploader.getFile(id)));
+
+                            actualUploadCallbacks.push({id: id, name: name});
+                            acknowledgeRequests();
+                        },
+                        onAllComplete: function(successful, failed) {
+                            assert.equal(successful.length, 3);
+                            assert.equal(failed.length, 0);
+                            assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
+                        }
+                    }
+                });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(up) {
+                qqtest.downloadFileAsBlob("star.png", "image/png").then(function(star) {
+                    fileTestHelper.mockXhr();
+                    uploader.addBlobs([{blob: up, name: "up.jpg"}, {blob: star, name: "star.png"}]);
+                });
+            });
+        });
     });
 }
