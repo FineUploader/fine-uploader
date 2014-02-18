@@ -42,7 +42,7 @@ var uploader = new qq.FineUploader({
     scaling: {
         sizes: [
             {name: "small", max: 100},
-            {name: "medium", max: 300)
+            {name: "medium", max: 300}
         ]
     }
 });
@@ -82,7 +82,7 @@ var uploader = new qq.FineUploader({
 
         sizes: [
             {name: "small", max: 100},
-            {name: "medium", max: 300)
+            {name: "medium", max: 300}
         ]
     }
 });
