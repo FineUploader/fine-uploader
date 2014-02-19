@@ -473,7 +473,13 @@ if (qq.supportedFeatures.imagePreviews) {
                                     blob = req.requestBody.fields.qqfile;
 
                                 new qq.Exif(blob, function(){}).parse().then(function(tags) {
-                                    assert.fail(null, null, id + " contains EXIF data, unexpectedly");
+                                    // Some versions of Safari insert some EXIF data back into the scaled version
+                                    if (!qq.safari() || tags.Orientation) {
+                                        assert.fail(null, null, id + " contains EXIF data, unexpectedly");
+                                    }
+                                    else {
+                                        assert.ok(true);
+                                    }
                                 }, function() {
                                     assert.ok(true);
                                 });
