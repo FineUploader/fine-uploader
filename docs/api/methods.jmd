@@ -481,8 +481,7 @@ A `BlobData` object:
     }
 ], null) }}
 
-{{ api_method("scaleImage", "scaleImage (id, options)",
-"Draws a thumbnail.",
+{{ api_method("scaleImage", "scaleImage (id, options)", "Generates a scaled version of a submitted image file.",
 [
     {
         "name": "id",
@@ -492,7 +491,7 @@ A `BlobData` object:
     {
         "name": "options",
         "type": "Object",
-        "description": "Information about the scaled image to generate.  The `size` property is required (integer).  Optional properties are: `orient` (boolean, defaults to true), `type` (string, defaults to "image/png"), and `quality` (number between 0 and 100, defaults to 80)."
+        "description": "Information about the scaled image to generate.  The `size` property is required (integer).  Optional properties are: `orient` (boolean, defaults to true), `type` (string, defaults to image/png), and `quality` (number between 0 and 100, defaults to 80)."
     }
 ],
 [
