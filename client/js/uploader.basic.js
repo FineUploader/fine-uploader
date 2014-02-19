@@ -190,12 +190,15 @@
                 // fox orientation for scaled images
                 orient: true,
 
-                // Used if a specific size object doesn't specify a type, or if the specified type is not valid.
-                defaultType: "image/png",
+                // If null, scaled image type will match reference image type.  This value will be referred to
+                // for any size record that does not specific a type.
+                defaultType: null,
 
                 defaultQuality: 80,
 
                 failureText: "Failed to scale",
+
+                includeExif: false,
 
                 // metadata about each requested scaled version
                 sizes: []

@@ -48,18 +48,20 @@ var ExifRestorer = (function()
     };
     
     ExifRestorer.restore = function(origFileBase64, resizedFileBase64)
-    {    	
-        if (!origFileBase64.match("data:image/jpeg;base64,"))
+    {
+        var expectedBase64Header = "data:image/jpeg;base64,";
+
+        if (!origFileBase64.match(expectedBase64Header))
         {
         	return resizedFileBase64;
         }       
         
-        var rawImage = this.decode64(origFileBase64.replace("data:image/jpeg;base64,", ""));
+        var rawImage = this.decode64(origFileBase64.replace(expectedBase64Header, ""));
         var segments = this.slice2Segments(rawImage);
                 
         var image = this.exifManipulation(resizedFileBase64, segments);
         
-        return this.encode64(image);
+        return expectedBase64Header + this.encode64(image);
         
     };
 
@@ -144,9 +146,8 @@ var ExifRestorer = (function()
         // remove all characters that are not A-Z, a-z, 0-9, +, /, or =
         var base64test = /[^A-Za-z0-9\+\/\=]/g;
         if (base64test.exec(input)) {
-            alert("There were invalid base64 characters in the input text.\n" +
-                  "Valid base64 characters are A-Z, a-z, 0-9, '+', '/',and '='\n" +
-                  "Expect errors in decoding.");
+            throw new Error("There were invalid base64 characters in the input text.  " +
+                "Valid base64 characters are A-Z, a-z, 0-9, '+', '/',and '='");
         }
         input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
 

@@ -1,4 +1,4 @@
-/* globals qq */
+/* globals qq, ExifRestorer */
 /**
  * Controls generation of scaled images based on a reference image encapsulated in a `File` or `Blob`.
  * Scaled images are generated and converted to blobs on-demand.
@@ -16,6 +16,7 @@ qq.Scaler = function(spec, log) {
         defaultType = spec.defaultType,
         defaultQuality = spec.defaultQuality / 100,
         failedToScaleText = spec.failureText,
+        includeExif = spec.includeExif,
         sizes = this._getSortedSizes(spec.sizes);
 
     // Revealed API for instances of this module
@@ -28,13 +29,14 @@ qq.Scaler = function(spec, log) {
             var self = this,
                 records = [],
                 originalBlob = originalBlobOrBlobData.blob ? originalBlobOrBlobData.blob : originalBlobOrBlobData,
+                targetType = defaultType || originalBlob.type,
                 idenitifier = new qq.Identify(originalBlob, log);
 
             // If the reference file cannot be rendered natively, we can't create scaled versions.
             if (idenitifier.isPreviewableSync()) {
                 // Create records for each scaled version & add them to the records array, smallest first.
                 qq.each(sizes, function(idx, sizeRecord) {
-                    var outputType = self._determineOutputType({defaultType: defaultType, requestedType: sizeRecord.type});
+                    var outputType = self._determineOutputType({defaultType: targetType, requestedType: sizeRecord.type});
 
                     records.push({
                         uuid: qq.getUniqueId(),
@@ -50,6 +52,7 @@ qq.Scaler = function(spec, log) {
                                 type: outputType,
                                 quality: defaultQuality,
                                 failedText: failedToScaleText,
+                                includeExif: includeExif,
                                 log: log
                             }))
                         }
@@ -149,15 +152,32 @@ qq.extend(qq.Scaler.prototype, {
             type = spec.type,
             quality = spec.quality,
             failedText = spec.failedText,
+            includeExif = spec.includeExif && sourceFile.type === "image/jpeg" && type === "image/jpeg",
             scalingEffort = new qq.Promise(),
             imageGenerator = new qq.ImageGenerator(log),
             canvas = document.createElement("canvas");
 
         imageGenerator.generate(sourceFile, canvas, {maxSize: size, orient: orient}).then(function() {
-            var dataUri = canvas.toDataURL(type, quality),
-                blob = self._dataUriToBlob(dataUri);
+            var scaledImageDataUri = canvas.toDataURL(type, quality),
+                reader = includeExif && new FileReader(),
+                signalSuccess = function() {
+                    var blob = self._dataUriToBlob(scaledImageDataUri);
+                    scalingEffort.success(blob);
+                };
 
-            scalingEffort.success(blob);
+            if (includeExif) {
+                // Attempt to re-insert EXIF header from original image into scaled image
+                reader.onload = function () {
+                    var originalImageDataUri = reader.result;
+                    scaledImageDataUri = ExifRestorer.restore(originalImageDataUri, scaledImageDataUri);
+                    signalSuccess();
+                };
+
+                reader.readAsDataURL(sourceFile);
+            }
+            else {
+                signalSuccess();
+            }
         }, function() {
             scalingEffort.failure(failedText);
         });

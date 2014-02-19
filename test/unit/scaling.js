@@ -161,7 +161,7 @@ if (qq.supportedFeatures.imagePreviews) {
 
                 assert.equal(records[0].name, "originalName (small).jpEg");
                 assert.equal(records[1].name, "originalName (medium).bmp");
-                assert.equal(records[2].name, "originalName (large).png");
+                assert.equal(records[2].name, "originalName (large).jpEg");
                 assert.equal(records[3].name, "originalName.jpEg");
 
                 // leave extension-less file names alone
@@ -369,7 +369,7 @@ if (qq.supportedFeatures.imagePreviews) {
             });
         });
 
-        it("generates a scaled Blob of the default type if the requested type is not specified or is not valid", function(done) {
+        it("generates a scaled Blob of the original file's type if the requested type is not specified or is not valid", function(done) {
             assert.expect(7, done);
 
             var sizes = [
@@ -433,7 +433,7 @@ if (qq.supportedFeatures.imagePreviews) {
         });
 
         it("uploads scaled files as expected, excluding the original: non-chunked, default options", function(done) {
-            assert.expect(15, done);
+            assert.expect(19, done);
 
             var referenceFileSize,
                 sizes = [
@@ -469,7 +469,17 @@ if (qq.supportedFeatures.imagePreviews) {
 
                             actualUploadCallbacks.push({id: id, name: name});
                             setTimeout(function() {
-                                fileTestHelper.getRequests()[id].respond(200, null, JSON.stringify({success: true}));
+                                var req = fileTestHelper.getRequests()[id],
+                                    blob = req.requestBody.fields.qqfile;
+
+                                new qq.Exif(blob, function(){}).parse().then(function(tags) {
+                                    assert.fail(null, null, id + " contains EXIF data, unexpectedly");
+                                }, function() {
+                                    assert.ok(true);
+                                });
+
+
+                                req.respond(200, null, JSON.stringify({success: true}));
                             }, 10);
                         },
                         onAllComplete: function(successful, failed) {
@@ -542,7 +552,7 @@ if (qq.supportedFeatures.imagePreviews) {
 
         describe("scaleImage API method tests", function() {
             it("return a scaled version of an existing image file, fail a request for a missing file, fail a request for a non-image file", function(done) {
-                assert.expect(4, done);
+                assert.expect(6, done);
 
                 var referenceFileSize,
                     uploader = new qq.FineUploaderBasic({
@@ -554,6 +564,13 @@ if (qq.supportedFeatures.imagePreviews) {
                                 uploader.scaleImage(0, {size: 10}).then(function(scaledBlob) {
                                     assert.ok(qq.isBlob(scaledBlob));
                                     assert.ok(scaledBlob.size < referenceFileSize);
+                                    assert.equal(scaledBlob.type, "image/jpeg");
+
+                                    new qq.Exif(scaledBlob, function(){}).parse().then(function(tags) {
+                                        assert.fail(null, null, "scaled blob contains EXIF data, unexpectedly");
+                                    }, function() {
+                                        assert.ok(true);
+                                    });
                                 });
 
                                 // not an image
@@ -578,6 +595,51 @@ if (qq.supportedFeatures.imagePreviews) {
                         fileTestHelper.mockXhr();
                         uploader.addBlobs([{blob: up, name: "up.jpg"}, {blob: text, name: "text.txt"}]);
                     });
+                });
+            });
+        });
+
+        it("includes EXIF data in scaled image (only if requested & appropriate)", function(done) {
+            assert.expect(8, done);
+
+            var uploader = new qq.FineUploaderBasic({
+                request: {endpoint: "test/uploads"},
+                scaling: {
+                    includeExif: true,
+                    sizes: [{name: "scaled", size: 50}]
+                },
+                callbacks: {
+                    onUpload: function(id) {
+                        setTimeout(function() {
+                            var req = fileTestHelper.getRequests()[id],
+                                blob = req.requestBody.fields.qqfile;
+
+                            assert.ok(qq.isBlob(blob));
+                            new qq.Exif(blob, function(){}).parse().then(function(tags) {
+                                if (uploader.getName(id).indexOf("left") === 0) {
+                                    assert.equal(tags.Orientation, 6);
+                                }
+                                else {
+                                    assert.fail(null, null, id + " contains EXIF data, unexpectedly");
+                                }
+                            }, function() {
+                                if (uploader.getName(id).indexOf("star") === 0) {
+                                    assert.ok(true);
+                                }
+                                else {
+                                    assert.fail(null, null, id + " does not contains EXIF data, unexpectedly");
+                                }
+                            });
+                            req.respond(200, null, JSON.stringify({success: true}));
+                        }, 10);
+                    }
+                }
+            });
+
+            qqtest.downloadFileAsBlob("left.jpg", "image/jpeg").then(function(left) {
+                qqtest.downloadFileAsBlob("star.png", "image/png").then(function(star) {
+                    fileTestHelper.mockXhr();
+                    uploader.addBlobs([{blob: left, name: "left.jpg"}, {blob: star, name: "star.png"}]);
                 });
             });
         });
