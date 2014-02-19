@@ -1,6 +1,7 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Upload Scaled Images" %}
 {% block sidebar %}
+{{ api_links(options=['scaling', 'scaling-ui', ], methods=['scaleImage']) }}
 {% endblock %}
 {% block content %}
 {% markdown %}
