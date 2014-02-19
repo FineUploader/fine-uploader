@@ -141,7 +141,7 @@ A `BlobData` object:
 [
     {
         "type": "qq.Promise",
-        "description": "Fullfill by passing the container back into the success callback after the thumbnail has been rendered. If the thumbnail cannot be rendered, failure callbacks will be invoked instead, passing the container and an error message."
+        "description": "Fulfilled by passing the container back into the success callback after the thumbnail has been rendered. If the thumbnail cannot be rendered, failure callbacks will be invoked instead, passing the container and an error message."
     }
 
 ]) }}
@@ -480,6 +480,29 @@ A `BlobData` object:
         "description": "The element to un-mark as a drop zone."
     }
 ], null) }}
+
+{{ api_method("scaleImage", "scaleImage (id, options)",
+"Draws a thumbnail.",
+[
+    {
+        "name": "id",
+        "type": "Integer",
+        "description": "The id of the image file."
+    },
+    {
+        "name": "options",
+        "type": "Object",
+        "description": "Information about the scaled image to generate.  The `size` property is required (integer).  Optional properties are: `orient` (boolean, defaults to true), `type` (string, defaults to "image/png"), and `quality` (number between 0 and 100, defaults to 80)."
+    }
+],
+[
+    {
+        "type": "qq.Promise",
+        "description": "Fulfilled by passing the scaled image as a `Blob` back into the success callback after the original image has been scaled. If the scaled image cannot be generated, the failure callback will be invoked instead."
+    }
+
+]) }}
+
 
 </div>
 

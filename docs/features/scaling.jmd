@@ -25,7 +25,7 @@ Fine Uploader will create scaled versions and upload those as well.  You can tel
 like it to generate and upload.  You can specify size-specific text to append to each scaled image name.  The scaled
 image can be correctly oriented by Fine Uploader before it is sent to your server.  You can also ensure only scaled
 images, and not the original image, are uploaded.  Generating and uploading scaled versions of each submitted
-image can be as simple as specifying an array of objects with `name` and `max` properties to indicate the scaled image
+image can be as simple as specifying an array of objects with `name` and `size` properties to indicate the scaled image
 file's name and maximum size, respectively.
 
 
@@ -41,8 +41,8 @@ var uploader = new qq.FineUploader({
     ...
     scaling: {
         sizes: [
-            {name: "small", max: 100},
-            {name: "medium", max: 300}
+            {name: "small", size: 100},
+            {name: "medium", size: 300}
         ]
     }
 });
@@ -81,8 +81,8 @@ var uploader = new qq.FineUploader({
         sendOriginal: false,
 
         sizes: [
-            {name: "small", max: 100},
-            {name: "medium", max: 300}
+            {name: "small", size: 100},
+            {name: "medium", size: 300}
         ]
     }
 });

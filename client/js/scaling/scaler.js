@@ -45,7 +45,7 @@ qq.Scaler = function(spec, log) {
                         }),
                         blob: new qq.BlobProxy(originalBlob,
                             qq.bind(self._generateScaledImage, self, {
-                                size: sizeRecord.max,
+                                size: sizeRecord.size,
                                 orient: orient,
                                 type: outputType,
                                 quality: defaultQuality,
@@ -129,10 +129,10 @@ qq.extend(qq.Scaler.prototype, {
         sizes = qq.extend([], sizes);
 
         return sizes.sort(function(a, b) {
-            if (a.max > b.max) {
+            if (a.size > b.size) {
                 return 1;
             }
-            if (a.max < b.max) {
+            if (a.size < b.size) {
                 return -1;
             }
             return 0;

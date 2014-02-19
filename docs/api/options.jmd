@@ -183,7 +183,7 @@ mode you are in and keep that in mind when determining which options do what.
         ("scaling.failureText", "failureText", "Text sent to your `complete` event handler as an `error` property of the `response` param if a scaled image could not be generated.", "String", "Failed to scale",),
         ("scaling.orient", "orient", "Set this to `false` if you do not want scaled images to be re-oriented based on parsed EXIF data before they are uploaded.", "Boolean", "true",),
         ("scaling.sendOriginal", "sendOriginal", "Set this to `false` if you don't want to original file to be uploaded as well.", "Boolean", "true",),
-        ("scaling.sizes", "sizes", "An array containing size objects that describe scaled versions of each submitted image that should be generated and uploaded.  A size object must contain a `name` String property, a `max` integer property, and optionally a `type` MIME string property.", "Array", "[]",),
+        ("scaling.sizes", "sizes", "An array containing size objects that describe scaled versions of each submitted image that should be generated and uploaded.  A size object must contain a `name` String property, a `size` integer property, and optionally a `type` MIME string property.", "Array", "[]",),
     )
 )
 }}

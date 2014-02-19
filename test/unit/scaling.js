@@ -22,7 +22,7 @@ if (qq.supportedFeatures.imagePreviews) {
         });
 
         it("is disabled if the current browsers doesn't support the File API", function() {
-            var scaler = new qq.Scaler({sizes: [{max: 100}], sendOriginal: true}),
+            var scaler = new qq.Scaler({sizes: [{size: 100}], sendOriginal: true}),
                 supportsPreviews = qq.supportedFeatures.imagePreviews;
 
             assert.equal(scaler.enabled, supportsPreviews);
@@ -33,17 +33,17 @@ if (qq.supportedFeatures.imagePreviews) {
                 var sizes = [
                         {
                             name: "small",
-                            max: 100,
+                            size: 100,
                             type: "image/jpeg"
                         },
                         {
                             name: "large",
-                            max: 300,
+                            size: 300,
                             type: "image/jpeg"
                         },
                         {
                             name: "medium",
-                            max: 200,
+                            size: 200,
                             type: "image/jpeg"
                         }
                     ],
@@ -85,7 +85,7 @@ if (qq.supportedFeatures.imagePreviews) {
             var sizes = [
                     {
                         name: "small",
-                        max: 100
+                        size: 100
                     }
                 ],
                 scaler = new qq.Scaler(({sizes: sizes, sendOriginal: true})),
@@ -141,16 +141,16 @@ if (qq.supportedFeatures.imagePreviews) {
             var sizes = [
                     {
                         name: "small",
-                        max: 100,
+                        size: 100,
                         type: "image/jpeg"
                     },
                     {
                         name: "large",
-                        max: 300
+                        size: 300
                     },
                     {
                         name: "medium",
-                        max: 200,
+                        size: 200,
                         type: "image/bmp"
                     }
                 ],
@@ -180,12 +180,12 @@ if (qq.supportedFeatures.imagePreviews) {
                 sizes = [
                     {
                         name: "small",
-                        max: 50,
+                        size: 50,
                         type: "image/jpeg"
                     },
                     {
                         name: "medium",
-                        max: 400,
+                        size: 400,
                         type: "image/jpeg"
                     }
                 ],
@@ -236,7 +236,7 @@ if (qq.supportedFeatures.imagePreviews) {
                 sizes = [
                     {
                         name: "medium",
-                        max: 400,
+                        size: 400,
                         type: "image/jpeg"
                     }
                 ],
@@ -289,7 +289,7 @@ if (qq.supportedFeatures.imagePreviews) {
                 sizes = [
                     {
                         name: "small",
-                        max: 50,
+                        size: 50,
                         type: "image/jpeg"
                     }
                 ],
@@ -331,7 +331,7 @@ if (qq.supportedFeatures.imagePreviews) {
             var sizes = [
                     {
                         name: "small",
-                        max: 50,
+                        size: 50,
                         type: "image/jpeg"
                     }
                 ],
@@ -375,17 +375,17 @@ if (qq.supportedFeatures.imagePreviews) {
             var sizes = [
                     {
                         name: "one",
-                        max: 100,
+                        size: 100,
                         type: "image/jpeg"
                     },
                     {
                         name: "two",
-                        max: 101,
+                        size: 101,
                         type: "image/blah"
                     },
                     {
                         name: "three",
-                        max: 102
+                        size: 102
                     }
                 ],
                 expectedUploadCallbacks = [
@@ -439,12 +439,12 @@ if (qq.supportedFeatures.imagePreviews) {
                 sizes = [
                     {
                         name: "small",
-                        max: 50,
+                        size: 50,
                         type: "image/jpeg"
                     },
                     {
                         name: "medium",
-                        max: 400,
+                        size: 400,
                         type: "image/jpeg"
                     }
                 ],
@@ -494,11 +494,11 @@ if (qq.supportedFeatures.imagePreviews) {
                 sizes = [
                     {
                         name: "small",
-                        max: 50
+                        size: 50
                     },
                     {
                         name: "medium",
-                        max: 400
+                        size: 400
                     }
                 ],
                 expectedUploadCallbacks = [
@@ -536,6 +536,48 @@ if (qq.supportedFeatures.imagePreviews) {
                 qqtest.downloadFileAsBlob("star.png", "image/png").then(function(star) {
                     fileTestHelper.mockXhr();
                     uploader.addBlobs([{blob: up, name: "up.jpg"}, {blob: star, name: "star.png"}]);
+                });
+            });
+        });
+
+        describe("scaleImage API method tests", function() {
+            it("return a scaled version of an existing image file, fail a request for a missing file, fail a request for a non-image file", function(done) {
+                assert.expect(4, done);
+
+                var referenceFileSize,
+                    uploader = new qq.FineUploaderBasic({
+                        request: {endpoint: "test/uploads"},
+                        callbacks: {
+                            onUpload: acknowledgeRequests,
+
+                            onAllComplete: function(successful, failed) {
+                                uploader.scaleImage(0, {size: 10}).then(function(scaledBlob) {
+                                    assert.ok(qq.isBlob(scaledBlob));
+                                    assert.ok(scaledBlob.size < referenceFileSize);
+                                });
+
+                                // not an image
+                                uploader.scaleImage(1, {size: 10}).then(function() {},
+                                function() {
+                                    assert.ok(true);
+                                });
+
+                                //missing
+                                uploader.scaleImage(2, {size: 10}).then(function() {},
+                                function() {
+                                    assert.ok(true);
+                                });
+                            }
+                        }
+                    });
+
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(up) {
+                    referenceFileSize = up.size;
+
+                    qqtest.downloadFileAsBlob("simpletext.txt", "text/plain").then(function(text) {
+                        fileTestHelper.mockXhr();
+                        uploader.addBlobs([{blob: up, name: "up.jpg"}, {blob: text, name: "text.txt"}]);
+                    });
                 });
             });
         });

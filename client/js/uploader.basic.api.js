@@ -299,6 +299,48 @@
             }
 
             return null;
+        },
+
+        scaleImage: function(id, specs) {
+            var scalingEffort = new qq.Promise(),
+                file = this.getFile(id),
+                scalingOptions = {
+                    sendOriginal: false,
+                    orient: specs.orient,
+                    defaultType: specs.type,
+                    defaultQuality: specs.quality,
+                    failedToScaleText: "Unable to scale",
+                    sizes: [{name: "", size: specs.size}]
+                };
+
+            if (!qq.Scaler || !qq.supportedFeatures.imagePreviews || !file) {
+                scalingEffort.failure();
+
+                this.log("Could not generate requested scaled image for " + id + ".  " +
+                    "Scaling is either not possible in this browser, or the file could not be located.", "error");
+            }
+            else {
+                (qq.bind(function() {
+                    var name = this.getName(id),
+                        uuid = this.getUuid(id),
+                        scaler, record;
+
+                    scaler = new qq.Scaler(scalingOptions, qq.bind(this.log, this));
+
+                    // Assumption: There will never be more than one record
+                    record = scaler.getFileRecords(uuid, name, file)[0];
+
+                    if (record) {
+                        record.blob.create().then(scalingEffort.success, scalingEffort.failure);
+                    }
+                    else {
+                        this.log(id + " is not a scalable image!", "error");
+                        scalingEffort.failure();
+                    }
+                }, this)());
+            }
+
+            return scalingEffort;
         }
     };
 
