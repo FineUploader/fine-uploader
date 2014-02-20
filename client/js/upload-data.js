@@ -141,6 +141,11 @@ qq.UploadData = function(uploaderProxy) {
 
         updateSize: function(id, newSize) {
             data[id].size = newSize;
+        },
+
+        // Only applicable if this file has a parent that we may want to reference later.
+        setParentId: function(targetId, parentId) {
+            data[targetId].parentId = parentId;
         }
     });
 };

@@ -341,6 +341,20 @@
             }
 
             return scalingEffort;
+        },
+
+        // Parent ID for a specific file, or null if this is the parent, or if it has no parent.
+        getParentId: function(id) {
+            var uploadDataEntry = this.getUploads({id: id}),
+                parentId = null;
+
+            if (uploadDataEntry) {
+                if (uploadDataEntry.parentId !== undefined) {
+                    parentId = uploadDataEntry.parentId;
+                }
+            }
+
+            return parentId;
         }
     };
 
@@ -458,7 +472,9 @@
 
         _handleNewFileWithScaling: function(file, name, uuid, size, fileList) {
             var self = this,
-                buttonId = file.qqButtonId || (file.blob && file.blob.qqButtonId);
+                buttonId = file.qqButtonId || (file.blob && file.blob.qqButtonId),
+                scaledIds = [],
+                originalId = null;
 
             qq.each(this._scaler.getFileRecords(uuid, name, file), function(idx, record) {
                 var relatedBlob = file,
@@ -471,6 +487,14 @@
                 }
 
                 id = self._uploadData.addFile(record.uuid, record.name, relatedSize);
+
+                if (record.blob instanceof  qq.BlobProxy) {
+                    scaledIds.push(id);
+                }
+                else {
+                    originalId = id;
+                }
+
                 self._handler.add(id, relatedBlob);
                 self._netUploadedOrQueued++;
                 fileList.push({id: id, file: relatedBlob});
@@ -479,6 +503,35 @@
                     self._buttonIdsForFileIds[id] = buttonId;
                 }
             });
+
+            // If we are potentially uploading an original file and some scaled versions,
+            // ensure the scaled versions include reference's to the parent's UUID and size
+            // in their associated upload requests.
+            if (originalId !== null) {
+                qq.each(scaledIds, function(idx, scaledId) {
+                    var params = {
+                        qqparentuuid: self.getUuid(originalId),
+                        qqparentsize: self.getSize(originalId)
+                    };
+
+                    // Make SURE the UUID for each scaled image is sent with the upload request,
+                    // to be consistent (since we need to ensure it is sent for the original file as well).
+                    params[self._options.request.uuidName] = self.getUuid(scaledId);
+
+                    self._uploadData.setParentId(scaledId, originalId);
+                    self._paramsStore.addReadOnly(scaledId, params);
+                });
+
+                // If any scaled images are tied to this parent image, be SURE we send its UUID as an upload request
+                // parameter as well.
+                if (scaledIds.length) {
+                    (function(uuidName, paramsStore) {
+                        var param = {};
+                        param[uuidName] = self.getUuid(originalId);
+                        paramsStore.addReadOnly(originalId, param);
+                    }(self._options.request.uuidName, self._paramsStore));
+                }
+            }
         },
 
         // Maps a file with the button that was used to select it.
@@ -1549,6 +1602,7 @@
         _createStore: function(initialValue, readOnlyValues) {
             var store = {},
                 catchall = initialValue,
+                perIdReadOnlyValues = {},
                 copy = function(orig) {
                     if (qq.isObject(orig)) {
                         return qq.extend({}, orig);
@@ -1561,9 +1615,13 @@
                     }
                     return readOnlyValues;
                 },
-                includeReadOnlyValues = function(existing) {
+                includeReadOnlyValues = function(id, existing) {
                     if (readOnlyValues && qq.isObject(existing)) {
                         qq.extend(existing, getReadOnlyValues());
+                    }
+
+                    if (perIdReadOnlyValues[id]) {
+                        qq.extend(existing, perIdReadOnlyValues[id]);
                     }
                 };
 
@@ -1587,12 +1645,20 @@
                         values = store[id];
                     }
                     else {
-                        values = catchall;
+                        values = copy(catchall);
                     }
 
-                    includeReadOnlyValues(values);
+                    includeReadOnlyValues(id, values);
 
                     return copy(values);
+                },
+
+                addReadOnly: function(id, values) {
+                    // Only applicable to Object stores
+                    if (qq.isObject(store)) {
+                        perIdReadOnlyValues[id] = perIdReadOnlyValues[id] || {};
+                        qq.extend(perIdReadOnlyValues[id], values);
+                    }
                 },
 
                 remove: function(fileId) {
@@ -1601,6 +1667,7 @@
 
                 reset: function() {
                     store = {};
+                    perIdReadOnlyValues = {};
                     catchall = initialValue;
                 }
             };

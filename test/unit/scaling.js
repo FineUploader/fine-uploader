@@ -174,7 +174,7 @@ if (qq.supportedFeatures.imagePreviews) {
         });
 
         it("uploads scaled files as expected: non-chunked, default options", function(done) {
-            assert.expect(21, done);
+            assert.expect(33, done);
 
             var referenceFileSize,
                 sizes = [
@@ -211,7 +211,21 @@ if (qq.supportedFeatures.imagePreviews) {
 
                             actualUploadCallbacks.push({id: id, name: name});
                             setTimeout(function() {
-                                fileTestHelper.getRequests()[id].respond(200, null, JSON.stringify({success: true}));
+                                var req = fileTestHelper.getRequests()[id],
+                                    parentUuid = req.requestBody.fields.qqparentuuid,
+                                    parentSize = req.requestBody.fields.qqparentsize,
+                                    parentId = uploader.getParentId(id);
+
+                                if (parentId !== null) {
+                                    assert.equal(parentUuid, uploader.getUuid(parentId));
+                                    assert.equal(parentSize, uploader.getSize(parentId));
+                                }
+                                else {
+                                    assert.equal(parentUuid, undefined);
+                                    assert.equal(parentSize, undefined);
+                                }
+
+                                req.respond(200, null, JSON.stringify({success: true}));
                             }, 10);
                         },
                         onAllComplete: function(successful, failed) {

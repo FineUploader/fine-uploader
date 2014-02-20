@@ -2,6 +2,9 @@
 {% set page_title = "S3 Endpoint" %}
 {% block content %}
 {% markdown %}
+
+[scaling]: ../features/scaling.html
+
 # S3 Server-Side Notes & Requirements {: .page-header }
 
 Using the direct-to-S3 uploader module means that most of the server-side work required to parse upload requests is
@@ -53,6 +56,10 @@ need to include: "x-amz-acl", "x-amz-meta-qqfilename", "x-amz-date", and "author
 you will also need to authorize headers for any custom parameters (user metadata) you want to attach to the object in S3.
 All parameters are sent as headers in the "Initiate Multipart Upload" request sent by Fine Uploader with a prefix of
 "x-amz-meta-".
+* If you are using the [scaling feature][scaling], and you have elected to have the original/parent image uploaded,
+you will need to account for these headers in your CORS configuration as well: "x-amz-meta-qquuid",
+"x-amz-meta-qqparentuuid", and "x-amz-meta-qqparentsize".
+
 
 ### Required server-side tasks: all browsers
 The only required server-side task for all browsers is an endpoint that signs the policy document.  This endpoint
