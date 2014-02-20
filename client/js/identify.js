@@ -51,6 +51,10 @@ qq.Identify = function(fileOrBlob, log) {
                 if (!previewable) {
                     idenitifer.failure();
                 }
+            },
+            function() {
+                log("Error reading file w/ name '" + fileOrBlob.name + "'.  Not able to be rendered in this browser.");
+                idenitifer.failure();
             });
 
             return idenitifer;

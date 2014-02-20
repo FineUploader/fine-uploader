@@ -381,6 +381,8 @@ var qq = function(element) {
             promise.success(qq.arrayBufferToHex(fileReader.result));
         };
 
+        fileReader.onerror = promise.failure;
+
         fileReader.readAsArrayBuffer(initialBlob);
 
         return promise;
