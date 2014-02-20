@@ -29,14 +29,17 @@ qq.Scaler = function(spec, log) {
             var self = this,
                 records = [],
                 originalBlob = originalBlobOrBlobData.blob ? originalBlobOrBlobData.blob : originalBlobOrBlobData,
-                targetType = defaultType || originalBlob.type,
                 idenitifier = new qq.Identify(originalBlob, log);
 
             // If the reference file cannot be rendered natively, we can't create scaled versions.
             if (idenitifier.isPreviewableSync()) {
                 // Create records for each scaled version & add them to the records array, smallest first.
                 qq.each(sizes, function(idx, sizeRecord) {
-                    var outputType = self._determineOutputType({defaultType: targetType, requestedType: sizeRecord.type});
+                    var outputType = self._determineOutputType({
+                        defaultType: defaultType,
+                        requestedType: sizeRecord.type,
+                        refType: originalBlob.type
+                    });
 
                     records.push({
                         uuid: qq.getUniqueId(),
@@ -73,20 +76,30 @@ qq.Scaler = function(spec, log) {
 };
 
 qq.extend(qq.Scaler.prototype, {
-    // Returns the requested type unless it's not specified or not applicable, otherwise return the default type.
     // NOTE: We cannot reliably determine at this time if the UA supports a specific MIME type for the target format.
     // image/jpeg and image/png are the only safe choices at this time.
     _determineOutputType: function(spec) {
         "use strict";
 
         var requestedType = spec.requestedType,
-            defaultType = spec.defaultType;
+            defaultType = spec.defaultType,
+            referenceType = spec.refType;
 
+        // If a default type and requested type have not been specified, this should be a
+        // JPEG if the original type is a JPEG, otherwise, a PNG.
+        if (!defaultType && !requestedType) {
+            if (referenceType !== "image/jpeg") {
+                return "image/png";
+            }
+            return referenceType;
+        }
+
+        // A specified default type is used when a requested type is not specified.
         if (!requestedType) {
             return defaultType;
         }
 
-        // If requested type is recognized, use it, as long as this recognized type is supported by the current UA
+        // If requested type is specified, use it, as long as this recognized type is supported by the current UA
         if (qq.indexOf(Object.keys(qq.Identify.prototype.PREVIEWABLE_MIME_TYPES), requestedType) >= 0) {
             if (requestedType === "image/tiff") {
                 return qq.supportedFeatures.tiffPreviews ? requestedType : defaultType;
