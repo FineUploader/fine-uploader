@@ -22,7 +22,7 @@ if (qq.supportedFeatures.imagePreviews) {
         });
 
         it("is disabled if the current browsers doesn't support the File API", function() {
-            var scaler = new qq.Scaler({sizes: [{size: 100}], sendOriginal: true}),
+            var scaler = new qq.Scaler({sizes: [{maxSize: 100}], sendOriginal: true}),
                 supportsPreviews = qq.supportedFeatures.imagePreviews;
 
             assert.equal(scaler.enabled, supportsPreviews);
@@ -33,17 +33,17 @@ if (qq.supportedFeatures.imagePreviews) {
                 var sizes = [
                         {
                             name: "small",
-                            size: 100,
+                            maxSize: 100,
                             type: "image/jpeg"
                         },
                         {
                             name: "large",
-                            size: 300,
+                            maxSize: 300,
                             type: "image/jpeg"
                         },
                         {
                             name: "medium",
-                            size: 200,
+                            maxSize: 200,
                             type: "image/jpeg"
                         }
                     ],
@@ -85,7 +85,7 @@ if (qq.supportedFeatures.imagePreviews) {
             var sizes = [
                     {
                         name: "small",
-                        size: 100
+                        maxSize: 100
                     }
                 ],
                 scaler = new qq.Scaler(({sizes: sizes, sendOriginal: true})),
@@ -102,7 +102,7 @@ if (qq.supportedFeatures.imagePreviews) {
                     scale = qq.bind(qq.Scaler.prototype._generateScaledImage, scalerContext);
 
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                    scale({size: 50, orient: orient, log: function(){}}, blob).then(function(scaledBlob) {
+                    scale({maxSize: 50, orient: orient, log: function(){}}, blob).then(function(scaledBlob) {
                         var URL = window.URL && window.URL.createObjectURL ? window.URL :
                                   window.webkitURL && window.webkitURL.createObjectURL ? window.webkitURL :
                                   null,
@@ -141,16 +141,16 @@ if (qq.supportedFeatures.imagePreviews) {
             var sizes = [
                     {
                         name: "small",
-                        size: 100,
+                        maxSize: 100,
                         type: "image/jpeg"
                     },
                     {
                         name: "large",
-                        size: 300
+                        maxSize: 300
                     },
                     {
                         name: "medium",
-                        size: 200,
+                        maxSize: 200,
                         type: "image/bmp"
                     }
                 ],
@@ -179,7 +179,7 @@ if (qq.supportedFeatures.imagePreviews) {
             var sizes = [
                     {
                         name: "small",
-                        size: 100
+                        maxSize: 100
                     }
                 ],
                 scaler = new qq.Scaler(({sizes: sizes, sendOriginal: true}));
@@ -211,11 +211,11 @@ if (qq.supportedFeatures.imagePreviews) {
                 sizes = [
                     {
                         name: "small",
-                        size: 50
+                        maxSize: 50
                     },
                     {
                         name: "medium",
-                        size: 400
+                        maxSize: 400
                     }
                 ],
                 expectedUploadCallbacks = [
@@ -287,7 +287,7 @@ if (qq.supportedFeatures.imagePreviews) {
                 sizes = [
                     {
                         name: "small",
-                        size: 50
+                        maxSize: 50
                     }
                 ],
                 actualUploadCallbacks = [],
@@ -326,7 +326,7 @@ if (qq.supportedFeatures.imagePreviews) {
                 sizes = [
                     {
                         name: "medium",
-                        size: 400,
+                        maxSize: 400,
                         type: "image/jpeg"
                     }
                 ],
@@ -379,7 +379,7 @@ if (qq.supportedFeatures.imagePreviews) {
                 sizes = [
                     {
                         name: "small",
-                        size: 50,
+                        maxSize: 50,
                         type: "image/jpeg"
                     }
                 ],
@@ -421,7 +421,7 @@ if (qq.supportedFeatures.imagePreviews) {
             var sizes = [
                     {
                         name: "small",
-                        size: 50,
+                        maxSize: 50,
                         type: "image/jpeg"
                     }
                 ],
@@ -465,17 +465,17 @@ if (qq.supportedFeatures.imagePreviews) {
             var sizes = [
                     {
                         name: "one",
-                        size: 100,
+                        maxSize: 100,
                         type: "image/jpeg"
                     },
                     {
                         name: "two",
-                        size: 101,
+                        maxSize: 101,
                         type: "image/blah"
                     },
                     {
                         name: "three",
-                        size: 102
+                        maxSize: 102
                     }
                 ],
                 expectedUploadCallbacks = [
@@ -529,12 +529,12 @@ if (qq.supportedFeatures.imagePreviews) {
                 sizes = [
                     {
                         name: "small",
-                        size: 50,
+                        maxSize: 50,
                         type: "image/jpeg"
                     },
                     {
                         name: "medium",
-                        size: 400,
+                        maxSize: 400,
                         type: "image/jpeg"
                     }
                 ],
@@ -600,11 +600,11 @@ if (qq.supportedFeatures.imagePreviews) {
                 sizes = [
                     {
                         name: "small",
-                        size: 50
+                        maxSize: 50
                     },
                     {
                         name: "medium",
-                        size: 400
+                        maxSize: 400
                     }
                 ],
                 expectedUploadCallbacks = [
@@ -657,7 +657,7 @@ if (qq.supportedFeatures.imagePreviews) {
                             onUpload: acknowledgeRequests,
 
                             onAllComplete: function(successful, failed) {
-                                uploader.scaleImage(0, {size: 10}).then(function(scaledBlob) {
+                                uploader.scaleImage(0, {maxSize: 10}).then(function(scaledBlob) {
                                     assert.ok(qq.isBlob(scaledBlob));
                                     assert.ok(scaledBlob.size < referenceFileSize);
                                     assert.equal(scaledBlob.type, "image/jpeg");
@@ -670,13 +670,13 @@ if (qq.supportedFeatures.imagePreviews) {
                                 });
 
                                 // not an image
-                                uploader.scaleImage(1, {size: 10}).then(function() {},
+                                uploader.scaleImage(1, {maxSize: 10}).then(function() {},
                                 function() {
                                     assert.ok(true);
                                 });
 
                                 //missing
-                                uploader.scaleImage(2, {size: 10}).then(function() {},
+                                uploader.scaleImage(2, {maxSize: 10}).then(function() {},
                                 function() {
                                     assert.ok(true);
                                 });
@@ -702,7 +702,7 @@ if (qq.supportedFeatures.imagePreviews) {
                 request: {endpoint: "test/uploads"},
                 scaling: {
                     includeExif: true,
-                    sizes: [{name: "scaled", size: 50}]
+                    sizes: [{name: "scaled", maxSize: 50}]
                 },
                 callbacks: {
                     onUpload: function(id) {

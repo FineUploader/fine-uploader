@@ -50,7 +50,7 @@ qq.Scaler = function(spec, log) {
                         }),
                         blob: new qq.BlobProxy(originalBlob,
                             qq.bind(self._generateScaledImage, self, {
-                                size: sizeRecord.size,
+                                maxSize: sizeRecord.maxSize,
                                 orient: orient,
                                 type: outputType,
                                 quality: defaultQuality,
@@ -145,10 +145,10 @@ qq.extend(qq.Scaler.prototype, {
         sizes = qq.extend([], sizes);
 
         return sizes.sort(function(a, b) {
-            if (a.size > b.size) {
+            if (a.maxSize > b.maxSize) {
                 return 1;
             }
-            if (a.size < b.size) {
+            if (a.maxSize < b.maxSize) {
                 return -1;
             }
             return 0;
@@ -160,7 +160,7 @@ qq.extend(qq.Scaler.prototype, {
 
         var self = this,
             log = spec.log,
-            size = spec.size,
+            maxSize = spec.maxSize,
             orient = spec.orient,
             type = spec.type,
             quality = spec.quality,
@@ -170,7 +170,7 @@ qq.extend(qq.Scaler.prototype, {
             imageGenerator = new qq.ImageGenerator(log),
             canvas = document.createElement("canvas");
 
-        imageGenerator.generate(sourceFile, canvas, {maxSize: size, orient: orient}).then(function() {
+        imageGenerator.generate(sourceFile, canvas, {maxSize: maxSize, orient: orient}).then(function() {
             var scaledImageDataUri = canvas.toDataURL(type, quality),
                 reader = includeExif && new FileReader(),
                 signalSuccess = function() {

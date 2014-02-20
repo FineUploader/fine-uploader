@@ -310,7 +310,7 @@
                     defaultType: specs.type || null,
                     defaultQuality: specs.quality,
                     failedToScaleText: "Unable to scale",
-                    sizes: [{name: "", size: specs.size}]
+                    sizes: [{name: "", maxSize: specs.maxSize}]
                 };
 
             if (!qq.Scaler || !qq.supportedFeatures.imagePreviews || !file) {

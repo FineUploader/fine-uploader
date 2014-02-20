@@ -507,7 +507,7 @@ A `BlobData` object:
     {
         "name": "options",
         "type": "Object",
-        "description": "Information about the scaled image to generate.  The `size` property is required (integer).  Optional properties are: `orient` (boolean, defaults to true), `type` (string, defaults to the type of the reference image), and `quality` (number between 0 and 100, defaults to 80), and `includeExif` (boolean, defaults to `false`)."
+        "description": "Information about the scaled image to generate.  The `maxSize` property is required (integer).  Optional properties are: `orient` (boolean, defaults to true), `type` (string, defaults to the type of the reference image), and `quality` (number between 0 and 100, defaults to 80), and `includeExif` (boolean, defaults to `false`)."
     }
 ],
 [
