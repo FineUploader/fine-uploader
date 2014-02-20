@@ -11,10 +11,7 @@
         var options = {
             request: {
                 // public key (required for server-side signing, ignored if `credentials` have been provided)
-                accessKey: null,
-                // Making this configurable in the traditional uploader was probably a bad idea.
-                // Let's just set this to "uuid" in the S3 uploader and not document the fact that this can be changed.
-                uuidName: "uuid"
+                accessKey: null
             },
 
             objectProperties: {
