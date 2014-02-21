@@ -118,7 +118,7 @@
         ctx.drawImage(img, 0, 0, width, height);
     }
 
-    ctx.imageRendered && ctx.imageRendered();
+    canvas.qqImageRendered && canvas.qqImageRendered();
   }
 
   /**
