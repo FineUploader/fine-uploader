@@ -120,12 +120,14 @@ qq.AbstractUploadHandlerXhr = function(spec) {
         },
 
         updateBlob: function(id, newBlob) {
-            fileState[id].file = newBlob;
+            if (this.isValid(id)) {
+                fileState[id].file = newBlob;
+            }
         },
 
         // Causes handler code to re-evaluate the current blob for chunking
         reevaluateChunking: function(id) {
-            if (chunking) {
+            if (chunking && this.isValid(id)) {
                 delete fileState[id].chunking;
             }
         },

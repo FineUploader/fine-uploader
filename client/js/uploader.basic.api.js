@@ -504,6 +504,20 @@
                 }
             });
 
+            // Tag all items in this group with the IDs of all items in the group.
+            if (scaledIds.length) {
+                qq.each(scaledIds, function(idx, scaledId) {
+                    if (originalId === null) {
+                        self._uploadData.setGroupIds(scaledId, scaledIds);
+                    }
+                    else {
+                        self._uploadData.setGroupIds(scaledId, scaledIds.concat([originalId]));
+                    }
+                });
+
+                originalId !== null && self._uploadData.setGroupIds(originalId, scaledIds.concat([originalId]));
+            }
+
             // If we are potentially uploading an original file and some scaled versions,
             // ensure the scaled versions include reference's to the parent's UUID and size
             // in their associated upload requests.
@@ -759,7 +773,17 @@
                         self._onProgress(id, name, loaded, total);
                         self._options.callbacks.onProgress(id, name, loaded, total);
                     },
-                    onComplete: function(id, name, result, xhr){
+                    onComplete: function(id, name, result, xhr) {
+                        var status = self.getUploads({id: id}).status;
+
+                        // This is to deal with some observed cases where the XHR readyStateChange handler is
+                        // invoked by the browser multiple times for the same XHR instance with the same state
+                        // readyState value.  Higher level: don't invoke complete-related code if we've already
+                        // done this.
+                        if (status === qq.status.UPLOAD_SUCCESSFUL || status === qq.status.UPLOAD_FAILED) {
+                            return;
+                        }
+
                         var retVal = self._onComplete(id, name, result, xhr);
 
                         // If the internal `_onComplete` handler returns a promise, don't invoke the `onComplete` callback
@@ -806,7 +830,16 @@
                     getName: qq.bind(self.getName, self),
                     getUuid: qq.bind(self.getUuid, self),
                     getSize: qq.bind(self.getSize, self),
-                    setSize: qq.bind(self._setSize, self)
+                    setSize: qq.bind(self._setSize, self),
+                    isQueued: function(id) {
+                        var status = self.getUploads({id: id}).status;
+                        return status === qq.status.QUEUED ||
+                            status === qq.status.SUBMITTED ||
+                            status === qq.status.UPLOAD_RETRYING;
+                    },
+                    getIdsInGroup: function(id) {
+                        return self.getUploads({id: id}).groupIds;
+                    }
                 };
 
             qq.each(this._options.request, function(prop, val) {
