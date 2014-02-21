@@ -170,10 +170,13 @@ qq.extend(qq.Scaler.prototype, {
             imageGenerator = new qq.ImageGenerator(log),
             canvas = document.createElement("canvas");
 
+        log("Attempting to generate scaled version for " + sourceFile.name);
+
         imageGenerator.generate(sourceFile, canvas, {maxSize: maxSize, orient: orient}).then(function() {
             var scaledImageDataUri = canvas.toDataURL(type, quality),
                 reader = includeExif && new FileReader(),
                 signalSuccess = function() {
+                    log("Success generating scaled version for " + sourceFile.name);
                     var blob = self._dataUriToBlob(scaledImageDataUri);
                     scalingEffort.success(blob);
                 };
@@ -192,6 +195,7 @@ qq.extend(qq.Scaler.prototype, {
                 signalSuccess();
             }
         }, function() {
+            log("Failed attempt to generate scaled version for " + sourceFile.name, "error");
             scalingEffort.failure(failedText);
         });
 

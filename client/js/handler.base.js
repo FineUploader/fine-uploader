@@ -119,6 +119,8 @@ qq.UploadHandler = function(o, namespace) {
                     errorResponse.error = errorMessage;
                 }
 
+                log(qq.format("Failed to generate scaled version for ID {}.  Error message: {}.", id, errorMessage), "error");
+
                 generationWaitingQueue.splice(qq.indexOf(generationWaitingQueue, id), 1);
                 options.onComplete(id, options.getName(id), qq.extend(errorResponse, preventRetryResponse), null);
                 maybeUploadGenerationQueueBlobs(null);
@@ -194,7 +196,7 @@ qq.UploadHandler = function(o, namespace) {
         if (i >= 0) {
             queue.splice(i, 1);
 
-            if (queue.length >= max && i < max){
+            if (queue.length >= max && i < max) {
                 nextId = queue[max-1];
                 startUpload(nextId);
             }
