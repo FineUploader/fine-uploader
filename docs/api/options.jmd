@@ -176,6 +176,19 @@ mode you are in and keep that in mind when determining which options do what.
 )
 }}
 
+{{ api_parent_option("scaling", "scaling", "See the [Upload Scaled Images feature page](../feature/scaling.html) for more details.",
+    (
+        ("scaling.defaultQuality", "defaultQuality", "A value between 1 and 100 that describes the requested quality of scaled images.  Ignored unless the scaled image type target is image/jpeg.", "Integer", "80",),
+        ("scaling.defaultType", "defaultType", "Scaled images will assume this image type if you don't specify a specific type in your size object, or if the type specified in the size object is not valid.  You generally should not use any value other than image/jpeg or image/png here.  The default value of `null` will ensure the scaled image type is PNG, unless the original file is a JPEG, in which case the scaled file will also be a JPEG.  The default is probably the safest option.", "String", "null",),
+        ("scaling.failureText", "failureText", "Text sent to your `complete` event handler as an `error` property of the `response` param if a scaled image could not be generated.", "String", "Failed to scale",),
+        ("scaling.includeExif", "includeExif", "Ensure the EXIF data from the reference image is inserted into the scaled image.  Only applicable when both the reference and the target are type image/jpeg.", "Boolean", "false",),
+        ("scaling.orient", "orient", "Set this to `false` if you do not want scaled images to be re-oriented based on parsed EXIF data before they are uploaded.", "Boolean", "true",),
+        ("scaling.sendOriginal", "sendOriginal", "Set this to `false` if you don't want to original file to be uploaded as well.", "Boolean", "true",),
+        ("scaling.sizes", "sizes", "An array containing size objects that describe scaled versions of each submitted image that should be generated and uploaded.  A size object must contain a `name` String property, a `maxSize` integer property, and optionally a `type` MIME string property.", "Array", "[]",),
+    )
+)
+}}
+
 {{ api_parent_option("session", "session", "See the [Initial File List feature page](../feature/session.html) for more details.",
     (
         ("session.customHeaders", "customHeaders", "Any additional headers you would like included with the GET request sent to your server. Ignored in IE9 and IE8 if the endpoint is cross-origin.", "Object", "{}",),

@@ -2,6 +2,9 @@
 {% set page_title = "Azure Endpoint" %}
 {% block content %}
 {% markdown %}
+
+[scaling]: ../features/scaling.html
+
 # Azure Server-Side Notes & Requirements {: .page-header }
 
 Using the direct-to-Azure uploader module means that most of the server-side work required to parse upload requests is
@@ -42,6 +45,9 @@ Some notes on the above configuration:
 to clean up uncommitted blocks if an in-progress chunked upload is cancelled.
 * You will also need to include entries in the AllowedHeaders tag for any custom parameters (user metadata) you want
 to attach to the blob.  All parameters are sent as headers with a prefix of "x-ms-meta-".
+* If you are using the [scaling feature][scaling], and you are have electing to have the original/parent image
+uploaded, you will need to account for these headers in your CORS configuration as well: "x-ms-meta-qquuid",
+"x-ms-meta-qqparentuuid", and "x-ms-meta-qqparentsize".
 
 ### Required server-side tasks
 The only required server-side task for all browsers is an endpoint the returns a Shared Access Signature URI

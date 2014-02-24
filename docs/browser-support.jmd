@@ -40,7 +40,7 @@ Note: Any features not listed here are supported in all browsers.
             <th>CORS</th>
             <th>Size Validation</th>
             <th>Progress reporting</th>
-            <th>Image Previews</th>
+            <th>Image Previews/Scaling</th>
             <th>Image Validation</th>
             <th>Pause Uploads</th>
             <th>S3 Uploads</th>
@@ -356,6 +356,7 @@ Feature     | Description
 `uploadCors` | Are cross-domain uploads supported?
 `canDetermineSize` | Can file size be determined client-side?
 `imagePreviews` | Is client-side image preview generation possible?
+`tiffPreviews` | Can TIFFs be rendered natively in the current browser?
 `imageValidation` | Can we validate image properties client-side?
 `pause` | Can chunked file uploads be paused?
 

@@ -56,6 +56,7 @@ var $fixture;
         qq.FineUploaderBasic.prototype._preventLeaveInProgress = function() {};
         qq.s3.FineUploaderBasic.prototype._preventLeaveInProgress = function() {};
         qq.azure.FineUploaderBasic.prototype._preventLeaveInProgress = function() {};
+        qq.FineUploaderBasic.prototype._wrapCallbacks = function() {};
     });
 
     beforeEach(function() {

@@ -113,7 +113,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     function setHeaders(id, xhr) {
         var extraHeaders = spec.customHeaders,
-            fileOrBlob = handler._getFileState(id).file || handler._getFileState(id).blobData.blob;
+            fileOrBlob = handler.getFile(id);
 
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("Cache-Control", "no-cache");
@@ -157,7 +157,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
             handler._getFileState(id).loaded = 0;
         }
 
-        if (resumeEnabled && handler._getFileState(id).file) {
+        if (resumeEnabled && handler.getFile(id)) {
             persistChunkData(id, chunkData);
         }
 
@@ -363,7 +363,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     }
 
     function deletePersistedChunkData(id) {
-        if (handler._getFileState(id).file) {
+        if (handler.getFile(id)) {
             var cookieName = getChunkDataCookieName(id);
             qq.deleteCookie(cookieName);
         }
@@ -468,7 +468,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         if (!handler._getFileState(id).remainingChunkIdxs || handler._getFileState(id).remainingChunkIdxs.length === 0) {
             handler._getFileState(id).remainingChunkIdxs = [];
 
-            if (resumeEnabled && !retry && handler._getFileState(id).file) {
+            if (resumeEnabled && !retry && handler.getFile(id)) {
                 persistedChunkInfoForResume = getPersistedChunkData(id);
                 if (persistedChunkInfoForResume) {
                     handlePossibleResumeAttempt(id, persistedChunkInfoForResume, firstChunkIndex);
@@ -487,7 +487,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     }
 
     function handleStandardFileUpload(id) {
-        var fileOrBlob = handler._getFileState(id).file || handler._getFileState(id).blobData.blob,
+        var fileOrBlob = handler.getFile(id),
             name = getName(id),
             xhr, params, toSend;
 

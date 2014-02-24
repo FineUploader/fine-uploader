@@ -148,7 +148,7 @@ qq.Templating = function(spec) {
         // If DnD is not available then remove
         // it from the DOM as well.
         if (dropArea && !qq.DragAndDrop) {
-            qq.log("DnD module unavailable.", "info");
+            log("DnD module unavailable.", "info");
             qq(dropArea).remove();
         }
 
@@ -203,7 +203,7 @@ qq.Templating = function(spec) {
     }
 
     function getTemplateEl(context, cssClass) {
-        return qq(context).getByClass(cssClass)[0];
+        return context && qq(context).getByClass(cssClass)[0];
     }
 
     function prependFile(el, index) {
@@ -332,40 +332,56 @@ qq.Templating = function(spec) {
     // Displays a "waiting for thumbnail" type placeholder image
     // iff we were able to load it during initialization of the templating module.
     function displayWaitingImg(thumbnail) {
+        var waitingImgPlacement = new qq.Promise();
+
         cachedWaitingForThumbnailImg.then(function(img) {
             maybeScalePlaceholderViaCss(img, thumbnail);
             /* jshint eqnull:true */
-            if (thumbnail.getAttribute("src") == null) {
+            if (!thumbnail.src) {
                 thumbnail.src = img.src;
-                show(thumbnail);
+                thumbnail.onload = function() {
+                    show(thumbnail);
+                    waitingImgPlacement.success();
+                };
+            }
+            else {
+                waitingImgPlacement.success();
             }
         }, function() {
             // In some browsers (such as IE9 and older) an img w/out a src attribute
-            // are displayed as "broken" images, so we sohuld just hide the img tag
+            // are displayed as "broken" images, so we should just hide the img tag
             // if we aren't going to display the "waiting" placeholder.
             hide(thumbnail);
+            waitingImgPlacement.success();
         });
+
+        return waitingImgPlacement;
     }
 
     // Displays a "thumbnail not available" type placeholder image
     // iff we were able to load this placeholder during initialization
     // of the templating module or after preview generation has failed.
     function maybeSetDisplayNotAvailableImg(id, thumbnail) {
-        var previewing = previewGeneration[id] || new qq.Promise().failure();
+        var previewing = previewGeneration[id] || new qq.Promise().failure(),
+            notAvailableImgPlacement = new qq.Promise();
 
         cachedThumbnailNotAvailableImg.then(function(img) {
             previewing.then(
                 function() {
-                    delete previewGeneration[id];
+                    notAvailableImgPlacement.success();
                 },
                 function() {
                     maybeScalePlaceholderViaCss(img, thumbnail);
+                    thumbnail.onload = function() {
+                        notAvailableImgPlacement.success();
+                    };
                     thumbnail.src = img.src;
                     show(thumbnail);
-                    delete previewGeneration[id];
                 }
             );
         });
+
+        return notAvailableImgPlacement;
     }
 
     // Ensures a placeholder image does not exceed any max size specified
@@ -381,6 +397,49 @@ qq.Templating = function(spec) {
                 maxHeight: maxHeight
             });
         }
+    }
+
+    function useCachedPreview(targetThumbnailId, cachedThumbnailId) {
+        var targetThumnail = getThumbnail(targetThumbnailId),
+            cachedThumbnail = getThumbnail(cachedThumbnailId);
+
+        log(qq.format("ID {} is the same file as ID {}.  Will use generated thumbnail from ID {} instead.", targetThumbnailId, cachedThumbnailId, cachedThumbnailId));
+
+        // Generation of the related thumbnail may still be in progress, so, wait until it is done.
+        previewGeneration[cachedThumbnailId].then(function() {
+            log(qq.format("Now using previously generated thumbnail created for ID {} on ID {}.", cachedThumbnailId, targetThumbnailId));
+            targetThumnail.src = cachedThumbnail.src;
+            show(targetThumnail);
+        },
+        function() {
+            if (!options.placeholders.waitUntilUpdate) {
+                maybeSetDisplayNotAvailableImg(targetThumbnailId, targetThumnail);
+            }
+        });
+    }
+
+    function generateNewPreview(id, blob, spec) {
+        var thumbnail = getThumbnail(id);
+
+        previewGeneration[id] = new qq.Promise();
+
+        log("Generating new thumbnail for " + id);
+        blob.qqThumbnailId = id;
+
+        return options.imageGenerator.generate(blob, thumbnail, spec).then(
+            function() {
+                show(thumbnail);
+                previewGeneration[id].success();
+            },
+            function() {
+                previewGeneration[id].failure();
+
+                // Display the "not available" placeholder img only if we are
+                // not expecting a thumbnail at a later point, such as in a server response.
+                if (!options.placeholders.waitUntilUpdate) {
+                    maybeSetDisplayNotAvailableImg(id, thumbnail);
+                }
+            });
     }
 
 
@@ -671,8 +730,9 @@ qq.Templating = function(spec) {
             show(getSpinner(id));
         },
 
-        generatePreview: function(id, fileOrBlob) {
-            var thumbnail = getThumbnail(id),
+        generatePreview: function(id, opt_fileOrBlob) {
+            var relatedThumbnailId = opt_fileOrBlob && opt_fileOrBlob.qqThumbnailId,
+                thumbnail = getThumbnail(id),
                 spec = {
                     maxSize: thumbnailMaxSize,
                     scale: true,
@@ -680,24 +740,18 @@ qq.Templating = function(spec) {
                 };
 
             if (qq.supportedFeatures.imagePreviews) {
-                previewGeneration[id] = new qq.Promise();
-
                 if (thumbnail) {
-                    displayWaitingImg(thumbnail);
-                    return options.imageGenerator.generate(fileOrBlob, thumbnail, spec).then(
-                        function() {
-                            show(thumbnail);
-                            previewGeneration[id].success();
-                        },
-                        function() {
-                            previewGeneration[id].failure();
-
-                            // Display the "not available" placeholder img only if we are
-                            // not expecting a thumbnail at a later point, such as in a server response.
-                            if (!options.placeholders.waitUntilUpdate) {
-                                maybeSetDisplayNotAvailableImg(id, thumbnail);
-                            }
-                        });
+                    displayWaitingImg(thumbnail).done(function() {
+                        /* jshint eqnull: true */
+                        // If we've already generated an <img> for this file, use the one that exists,
+                        // don't waste resources generating a new one.
+                        if (relatedThumbnailId != null) {
+                            useCachedPreview(id, relatedThumbnailId);
+                        }
+                        else {
+                            generateNewPreview(id, opt_fileOrBlob, spec);
+                        }
+                    });
                 }
             }
             else if (thumbnail) {

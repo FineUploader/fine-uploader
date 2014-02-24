@@ -307,7 +307,9 @@ var qq = function(element) {
     };
 
     qq.isBlob = function(maybeBlob) {
-        return window.Blob && Object.prototype.toString.call(maybeBlob) === "[object Blob]";
+        if (window.Blob && Object.prototype.toString.call(maybeBlob) === "[object Blob]") {
+            return true;
+        }
     };
 
     qq.isXhrUploadSupported = function() {
@@ -378,6 +380,8 @@ var qq = function(element) {
         fileReader.onload = function() {
             promise.success(qq.arrayBufferToHex(fileReader.result));
         };
+
+        fileReader.onerror = promise.failure;
 
         fileReader.readAsArrayBuffer(initialBlob);
 

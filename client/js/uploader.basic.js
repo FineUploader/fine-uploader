@@ -180,6 +180,28 @@
 
                 // true = upload files on form submission (and squelch submit event)
                 interceptSubmit: true
+            },
+
+            // scale images client side, upload a new file for each scaled version
+            scaling: {
+                // send the original file as well
+                sendOriginal: true,
+
+                // fox orientation for scaled images
+                orient: true,
+
+                // If null, scaled image type will match reference image type.  This value will be referred to
+                // for any size record that does not specific a type.
+                defaultType: null,
+
+                defaultQuality: 80,
+
+                failureText: "Failed to scale",
+
+                includeExif: false,
+
+                // metadata about each requested scaled version
+                sizes: []
             }
         };
 
@@ -238,6 +260,11 @@
 
         this._succeededSinceLastAllComplete = [];
         this._failedSinceLastAllComplete = [];
+
+        this._scaler = (qq.Scaler && new qq.Scaler(this._options.scaling, qq.bind(this.log, this))) || {};
+        if (this._scaler.enabled) {
+            this._customNewFileHandler = qq.bind(this._scaler.handleNewFile, this._scaler);
+        }
     };
 
     // Define the private & public API methods.
