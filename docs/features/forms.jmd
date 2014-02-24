@@ -1,6 +1,7 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Support for Forms" %}
 {% block sidebar %}
+{{ api_links(options=['form']) }}
 {% endblock %}
 {% block content %}
 {% markdown %}
