@@ -174,7 +174,6 @@ qq.extend(qq.Scaler.prototype, {
 
         imageGenerator.generate(sourceFile, canvas, {maxSize: maxSize, orient: orient}).then(function() {
             var scaledImageDataUri = canvas.toDataURL(type, quality),
-                reader = includeExif && new FileReader(),
                 signalSuccess = function() {
                     log("Success generating scaled version for " + sourceFile.name);
                     var blob = self._dataUriToBlob(scaledImageDataUri);
@@ -182,14 +181,14 @@ qq.extend(qq.Scaler.prototype, {
                 };
 
             if (includeExif) {
-                // Attempt to re-insert EXIF header from original image into scaled image
-                reader.onload = function () {
-                    var originalImageDataUri = reader.result;
-                    scaledImageDataUri = ExifRestorer.restore(originalImageDataUri, scaledImageDataUri);
+                self._insertExifHeader(sourceFile, scaledImageDataUri, log).then(function(scaledImageDataUriWithExif) {
+                    scaledImageDataUri = scaledImageDataUriWithExif;
                     signalSuccess();
-                };
-
-                reader.readAsDataURL(sourceFile);
+                },
+                function() {
+                    log("Problem inserting EXIF header into scaled image.  Using scaled image w/out EXIF data.", "error");
+                    signalSuccess();
+                });
             }
             else {
                 signalSuccess();
@@ -200,6 +199,29 @@ qq.extend(qq.Scaler.prototype, {
         });
 
         return scalingEffort;
+    },
+
+    // Attempt to insert the original image's EXIF header into a scaled version.
+    _insertExifHeader: function(originalImage, scaledImageDataUri, log) {
+        "use strict";
+
+        var reader = new FileReader(),
+            insertionEffort = new qq.Promise(),
+            originalImageDataUri = "";
+
+        reader.onload = function() {
+            originalImageDataUri = reader.result;
+            insertionEffort.success(ExifRestorer.restore(originalImageDataUri, scaledImageDataUri));
+        };
+
+        reader.onerror = function() {
+            log("Problem reading " + originalImage.name + " during attempt to transfer EXIF data to scaled version.", "error");
+            insertionEffort.failure();
+        };
+
+        reader.readAsDataURL(originalImage);
+
+        return insertionEffort;
     },
 
 
