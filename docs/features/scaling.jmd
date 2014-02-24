@@ -168,6 +168,9 @@ target types may not be supported by all browsers.
 * Be careful if you set the [`validation.itemLimit` option][itemlimit].  Each Scaled image file will count towards
 this item limit.
 
+* Client-side scaling and EXIF header re-insertion operations can potentially be very resource-intensive.
+Please keep this in mind before you enable this feature, taking into account your user base and application goals.
+
 
 ### Supported Browsers
 This feature is supported on all browsers other than IE9 and older, Android 2.4 or older, and Safari 5.1 or older.
