@@ -302,45 +302,13 @@
         },
 
         scaleImage: function(id, specs) {
-            var scalingEffort = new qq.Promise(),
-                file = this.getFile(id),
-                scalingOptions = {
-                    sendOriginal: false,
-                    orient: specs.orient,
-                    defaultType: specs.type || null,
-                    defaultQuality: specs.quality,
-                    failedToScaleText: "Unable to scale",
-                    sizes: [{name: "", maxSize: specs.maxSize}]
-                };
+            var self = this;
 
-            if (!qq.Scaler || !qq.supportedFeatures.imagePreviews || !file) {
-                scalingEffort.failure();
-
-                this.log("Could not generate requested scaled image for " + id + ".  " +
-                    "Scaling is either not possible in this browser, or the file could not be located.", "error");
-            }
-            else {
-                (qq.bind(function() {
-                    var name = this.getName(id),
-                        uuid = this.getUuid(id),
-                        scaler, record;
-
-                    scaler = new qq.Scaler(scalingOptions, qq.bind(this.log, this));
-
-                    // Assumption: There will never be more than one record
-                    record = scaler.getFileRecords(uuid, name, file)[0];
-
-                    if (record) {
-                        record.blob.create().then(scalingEffort.success, scalingEffort.failure);
-                    }
-                    else {
-                        this.log(id + " is not a scalable image!", "error");
-                        scalingEffort.failure();
-                    }
-                }, this)());
-            }
-
-            return scalingEffort;
+            return qq.Scaler.prototype.scaleImage(id, specs, {
+                log: qq.bind(self.log, self),
+                getFile: qq.bind(self.getFile, self),
+                uploadData: self._uploadData
+            });
         },
 
         // Parent ID for a specific file, or null if this is the parent, or if it has no parent.
@@ -442,24 +410,29 @@
 
         // Updates internal state when a new file has been received, and adds it along with its ID to a passed array.
         _handleNewFile: function(file, newFileWrapperList) {
-            var uuid = qq.getUniqueId(),
+            var self = this,
+                uuid = qq.getUniqueId(),
                 size = -1,
                 name = qq.getFilename(file),
-                actualFile = file.blob || file;
+                actualFile = file.blob || file,
+                handler = this._customNewFileHandler ? this._customNewFileHandler : qq.bind(self._handleNewFileGeneric, self);
 
             if (actualFile.size >= 0) {
                 size = actualFile.size;
             }
 
-            if (this._scaler.enabled) {
-                this._handleNewFileWithScaling(actualFile, name, uuid, size, newFileWrapperList);
-            }
-            else {
-                this._handleNewFileWithoutScaling(actualFile, name, uuid, size, newFileWrapperList);
-            }
+            handler(actualFile, name, uuid, size, newFileWrapperList, this._options.request.uuidName, {
+                uploadData: self._uploadData,
+                paramsStore: self._paramsStore,
+                addFileToHandler: function(id, file) {
+                    self._handler.add(id, file);
+                    self._netUploadedOrQueued++;
+                    self._trackButton(id);
+                }
+            });
         },
 
-        _handleNewFileWithoutScaling: function(file, name, uuid, size, fileList) {
+        _handleNewFileGeneric: function(file, name, uuid, size, fileList) {
             var id = this._uploadData.addFile(uuid, name, size);
 
             this._handler.add(id, file);
@@ -468,84 +441,6 @@
             this._netUploadedOrQueued++;
 
             fileList.push({id: id, file: file});
-        },
-
-        _handleNewFileWithScaling: function(file, name, uuid, size, fileList) {
-            var self = this,
-                buttonId = file.qqButtonId || (file.blob && file.blob.qqButtonId),
-                scaledIds = [],
-                originalId = null;
-
-            qq.each(this._scaler.getFileRecords(uuid, name, file), function(idx, record) {
-                var relatedBlob = file,
-                    relatedSize = size,
-                    id;
-
-                if (record.blob instanceof qq.BlobProxy) {
-                    relatedBlob = record.blob;
-                    relatedSize = -1;
-                }
-
-                id = self._uploadData.addFile(record.uuid, record.name, relatedSize);
-
-                if (record.blob instanceof  qq.BlobProxy) {
-                    scaledIds.push(id);
-                }
-                else {
-                    originalId = id;
-                }
-
-                self._handler.add(id, relatedBlob);
-                self._netUploadedOrQueued++;
-                fileList.push({id: id, file: relatedBlob});
-
-                if (buttonId) {
-                    self._buttonIdsForFileIds[id] = buttonId;
-                }
-            });
-
-            // Tag all items in this group with the IDs of all items in the group.
-            if (scaledIds.length) {
-                qq.each(scaledIds, function(idx, scaledId) {
-                    if (originalId === null) {
-                        self._uploadData.setGroupIds(scaledId, scaledIds);
-                    }
-                    else {
-                        self._uploadData.setGroupIds(scaledId, scaledIds.concat([originalId]));
-                    }
-                });
-
-                originalId !== null && self._uploadData.setGroupIds(originalId, scaledIds.concat([originalId]));
-            }
-
-            // If we are potentially uploading an original file and some scaled versions,
-            // ensure the scaled versions include reference's to the parent's UUID and size
-            // in their associated upload requests.
-            if (originalId !== null) {
-                qq.each(scaledIds, function(idx, scaledId) {
-                    var params = {
-                        qqparentuuid: self.getUuid(originalId),
-                        qqparentsize: self.getSize(originalId)
-                    };
-
-                    // Make SURE the UUID for each scaled image is sent with the upload request,
-                    // to be consistent (since we need to ensure it is sent for the original file as well).
-                    params[self._options.request.uuidName] = self.getUuid(scaledId);
-
-                    self._uploadData.setParentId(scaledId, originalId);
-                    self._paramsStore.addReadOnly(scaledId, params);
-                });
-
-                // If any scaled images are tied to this parent image, be SURE we send its UUID as an upload request
-                // parameter as well.
-                if (scaledIds.length) {
-                    (function(uuidName, paramsStore) {
-                        var param = {};
-                        param[uuidName] = self.getUuid(originalId);
-                        paramsStore.addReadOnly(originalId, param);
-                    }(self._options.request.uuidName, self._paramsStore));
-                }
-            }
         },
 
         // Maps a file with the button that was used to select it.
@@ -618,7 +513,7 @@
                 fileBlobOrInput = buttonOrFileInputOrFile;
 
             // We want the reference file/blob here if this is a proxy (a file that will be generated on-demand later)
-            if (qq.BlobProxy && fileBlobOrInput instanceof qq.BlobProxy) {
+            if (fileBlobOrInput instanceof qq.BlobProxy) {
                 fileBlobOrInput = fileBlobOrInput.referenceBlob;
             }
 
@@ -1431,7 +1326,7 @@
         _validateFileOrBlobData: function(fileWrapper, validationDescriptor) {
             var self = this,
                 file = (function() {
-                    if (qq.BlobProxy && fileWrapper.file instanceof qq.BlobProxy) {
+                    if (fileWrapper.file instanceof qq.BlobProxy) {
                         return fileWrapper.file.referenceBlob;
                     }
                     return fileWrapper.file;
@@ -1619,7 +1514,7 @@
         },
 
         _getValidationDescriptor: function(fileWrapper) {
-            if (qq.BlobProxy && fileWrapper.file instanceof qq.BlobProxy) {
+            if (fileWrapper.file instanceof qq.BlobProxy) {
                 return {
                     name: qq.getFilename(fileWrapper.file.referenceBlob),
                     size: fileWrapper.file.referenceBlob.size

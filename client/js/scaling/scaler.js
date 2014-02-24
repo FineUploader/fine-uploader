@@ -11,13 +11,62 @@
 qq.Scaler = function(spec, log) {
     "use strict";
 
-    var includeReference = spec.sendOriginal,
+    var self = this,
+        includeReference = spec.sendOriginal,
         orient = spec.orient,
         defaultType = spec.defaultType,
         defaultQuality = spec.defaultQuality / 100,
         failedToScaleText = spec.failureText,
         includeExif = spec.includeExif,
-        sizes = this._getSortedSizes(spec.sizes);
+        sizes = this._getSortedSizes(spec.sizes),
+
+        getFileRecords = function(originalFileUuid, originalFileName, originalBlobOrBlobData) {
+            var self = this,
+                records = [],
+                originalBlob = originalBlobOrBlobData.blob ? originalBlobOrBlobData.blob : originalBlobOrBlobData,
+                idenitifier = new qq.Identify(originalBlob, log);
+
+            // If the reference file cannot be rendered natively, we can't create scaled versions.
+            if (idenitifier.isPreviewableSync()) {
+                // Create records for each scaled version & add them to the records array, smallest first.
+                qq.each(sizes, function(idx, sizeRecord) {
+                    var outputType = self._determineOutputType({
+                        defaultType: defaultType,
+                        requestedType: sizeRecord.type,
+                        refType: originalBlob.type
+                    });
+
+                    records.push({
+                        uuid: qq.getUniqueId(),
+                        name: self._getName(originalFileName, {
+                            name: sizeRecord.name,
+                            type: outputType,
+                            refType: originalBlob.type
+                        }),
+                        blob: new qq.BlobProxy(originalBlob,
+                            qq.bind(self._generateScaledImage, self, {
+                                maxSize: sizeRecord.maxSize,
+                                orient: orient,
+                                type: outputType,
+                                quality: defaultQuality,
+                                failedText: failedToScaleText,
+                                includeExif: includeExif,
+                                log: log
+                            }))
+                        }
+                    );
+                });
+            }
+
+            // Finally, add a record for the original file (if requested)
+            includeReference && records.push({
+                uuid: originalFileUuid,
+                name: originalFileName,
+                blob: originalBlob
+            });
+
+            return records;
+        };
 
     // Revealed API for instances of this module
     qq.extend(this, {
@@ -71,11 +120,134 @@ qq.Scaler = function(spec, log) {
             });
 
             return records;
+        },
+
+        handleNewFile: function(file, name, uuid, size, fileList, uuidParamName, api) {
+            var self = this,
+                buttonId = file.qqButtonId || (file.blob && file.blob.qqButtonId),
+                scaledIds = [],
+                originalId = null,
+                addFileToHandler = api.addFileToHandler,
+                uploadData = api.uploadData,
+                paramsStore = api.paramsStore;
+
+            qq.each(self.getFileRecords(uuid, name, file), function(idx, record) {
+                var relatedBlob = file,
+                    relatedSize = size,
+                    id;
+
+                if (record.blob instanceof qq.BlobProxy) {
+                    relatedBlob = record.blob;
+                    relatedSize = -1;
+                }
+
+                id = uploadData.addFile(record.uuid, record.name, relatedSize);
+
+                if (record.blob instanceof qq.BlobProxy) {
+                    scaledIds.push(id);
+                }
+                else {
+                    originalId = id;
+                }
+
+                addFileToHandler(id, relatedBlob);
+
+                fileList.push({id: id, file: relatedBlob});
+
+            });
+
+            // Tag all items in this group with the IDs of all items in the group.
+            if (scaledIds.length) {
+                qq.each(scaledIds, function(idx, scaledId) {
+                    if (originalId === null) {
+                        uploadData.setGroupIds(scaledId, scaledIds);
+                    }
+                    else {
+                        uploadData.setGroupIds(scaledId, scaledIds.concat([originalId]));
+                    }
+                });
+
+                originalId !== null && uploadData.setGroupIds(originalId, scaledIds.concat([originalId]));
+            }
+
+            // If we are potentially uploading an original file and some scaled versions,
+            // ensure the scaled versions include reference's to the parent's UUID and size
+            // in their associated upload requests.
+            if (originalId !== null) {
+                qq.each(scaledIds, function(idx, scaledId) {
+                    var params = {
+                        qqparentuuid: uploadData.retrieve({id: originalId}).uuid,
+                        qqparentsize: uploadData.retrieve({id: originalId}).size
+                    };
+
+                    // Make SURE the UUID for each scaled image is sent with the upload request,
+                    // to be consistent (since we need to ensure it is sent for the original file as well).
+                    params[uuidParamName] = uploadData.retrieve({id: scaledId}).uuid;
+
+                    uploadData.setParentId(scaledId, originalId);
+                    paramsStore.addReadOnly(scaledId, params);
+                });
+
+                // If any scaled images are tied to this parent image, be SURE we send its UUID as an upload request
+                // parameter as well.
+                if (scaledIds.length) {
+                    (function() {
+                        var param = {};
+                        param[uuidParamName] = uploadData.retrieve({id: originalId}).uuid;
+                        paramsStore.addReadOnly(originalId, param);
+                    }());
+                }
+            }
         }
     });
 };
 
 qq.extend(qq.Scaler.prototype, {
+    scaleImage: function(id, specs, api) {
+        "use strict";
+
+        var scalingEffort = new qq.Promise(),
+            log = api.log,
+            file = api.getFile(id),
+            uploadData = api.uploadData.retrieve({id: id}),
+            name = uploadData && uploadData.name,
+            uuid = uploadData && uploadData.uuid,
+            scalingOptions = {
+                sendOriginal: false,
+                orient: specs.orient,
+                defaultType: specs.type || null,
+                defaultQuality: specs.quality,
+                failedToScaleText: "Unable to scale",
+                sizes: [{name: "", maxSize: specs.maxSize}]
+            },
+            scaler = new qq.Scaler(scalingOptions, log);
+
+        if (!qq.Scaler || !qq.supportedFeatures.imagePreviews || !file) {
+            scalingEffort.failure();
+
+            log("Could not generate requested scaled image for " + id + ".  " +
+                "Scaling is either not possible in this browser, or the file could not be located.", "error");
+        }
+        else {
+            (qq.bind(function() {
+                var record;
+
+                // Assumption: There will never be more than one record
+                record = scaler.getFileRecords(uuid, name, file)[0];
+
+                if (record) {
+                    record.blob.create().then(scalingEffort.success, scalingEffort.failure);
+                }
+                else {
+                    log(id + " is not a scalable image!", "error");
+                    scalingEffort.failure();
+                }
+            }, this)());
+        }
+
+        return scalingEffort;
+    },
+
     // NOTE: We cannot reliably determine at this time if the UA supports a specific MIME type for the target format.
     // image/jpeg and image/png are the only safe choices at this time.
     _determineOutputType: function(spec) {

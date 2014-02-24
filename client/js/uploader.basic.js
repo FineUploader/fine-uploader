@@ -262,6 +262,9 @@
         this._failedSinceLastAllComplete = [];
 
         this._scaler = (qq.Scaler && new qq.Scaler(this._options.scaling, qq.bind(this.log, this))) || {};
+        if (this._scaler.enabled) {
+            this._customNewFileHandler = qq.bind(this._scaler.handleNewFile, this._scaler);
+        }
     };
 
     // Define the private & public API methods.

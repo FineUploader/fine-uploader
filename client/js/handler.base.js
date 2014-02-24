@@ -123,7 +123,7 @@ qq.UploadHandler = function(o, namespace) {
         // If we don't have a file/blob yet & no file/blob exists for this item, request it,
         // and then submit the upload to the specific handler once the blob is available.
         // ASSUMPTION: This condition will only ever be true if XHR uploading is supported.
-        if (blob && !handlerImpl.getFile(id) && qq.BlobProxy && blob instanceof qq.BlobProxy) {
+        if (blob && !handlerImpl.getFile(id) && blob instanceof qq.BlobProxy) {
 
             // Blob creation may take some time, so the caller may want to update the
             // UI to indicate that an operation is in progress, even before the actual
@@ -190,7 +190,7 @@ qq.UploadHandler = function(o, namespace) {
             max = options.maxConnections,
             nextId;
 
-        if (qq.BlobProxy && getProxyOrBlob(id) instanceof qq.BlobProxy) {
+        if (getProxyOrBlob(id) instanceof qq.BlobProxy) {
             log("Generated blob upload has ended for " + id + ", disposing generated blob.");
             delete handlerImpl._getFileState(id).file;
         }
@@ -249,7 +249,7 @@ qq.UploadHandler = function(o, namespace) {
         retry: function(id) {
             var i = qq.indexOf(queue, id),
                 blobOrProxy = getProxyOrBlob(id),
-                isProxy = qq.BlobProxy && blobOrProxy && blobOrProxy instanceof qq.BlobProxy;
+                isProxy = blobOrProxy && blobOrProxy instanceof qq.BlobProxy;
 
             if (i >= 0) {
                 return isProxy ? startUpload(id) : handlerImpl.upload(id, true);
