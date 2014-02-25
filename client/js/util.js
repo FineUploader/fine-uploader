@@ -464,41 +464,57 @@ var qq = function(element) {
 
     //
     // Browsers and platforms detection
-
-    qq.ie       = function(){
+    qq.ie = function() {
         return navigator.userAgent.indexOf("MSIE") !== -1;
     };
-    qq.ie7      = function(){
+
+    qq.ie7 = function() {
         return navigator.userAgent.indexOf("MSIE 7") !== -1;
     };
-    qq.ie10     = function(){
+
+    qq.ie10 = function() {
         return navigator.userAgent.indexOf("MSIE 10") !== -1;
     };
-    qq.ie11     = function(){
+
+    qq.ie11 = function() {
         return (navigator.userAgent.indexOf("Trident") !== -1 &&
             navigator.userAgent.indexOf("rv:11") !== -1);
     };
-    qq.safari   = function(){
+
+    qq.safari = function() {
         return navigator.vendor !== undefined && navigator.vendor.indexOf("Apple") !== -1;
     };
-    qq.chrome   = function(){
+
+    qq.chrome = function() {
         return navigator.vendor !== undefined && navigator.vendor.indexOf("Google") !== -1;
     };
-    qq.opera   = function(){
+
+    qq.opera = function() {
         return navigator.vendor !== undefined && navigator.vendor.indexOf("Opera") !== -1;
     };
-    qq.firefox  = function(){
+
+    qq.firefox = function() {
         return (!qq.ie11() && navigator.userAgent.indexOf("Mozilla") !== -1 && navigator.vendor !== undefined && navigator.vendor === "");
     };
-    qq.windows  = function(){
+
+    qq.windows = function() {
         return navigator.platform === "Win32";
     };
-    qq.android = function(){
+
+    qq.android = function() {
         return navigator.userAgent.toLowerCase().indexOf("android") !== -1;
     };
+
+    // We need to identify the Android stock browser via the UA string to work around various bugs in this browser,
+    // such as the one that prevents a `Blob` from being uploaded.
+    qq.androidStock = function() {
+        return qq.android() && navigator.userAgent.toLowerCase().indexOf("chrome") < 0;
+    };
+
     qq.ios7 = function() {
         return qq.ios() && navigator.userAgent.indexOf(" OS 7_") !== -1;
     };
+
     qq.ios = function() {
         /*jshint -W014 */
         return navigator.userAgent.indexOf("iPad") !== -1

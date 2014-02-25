@@ -257,6 +257,11 @@ qq.extend(qq.Scaler.prototype, {
             defaultType = spec.defaultType,
             referenceType = spec.refType;
 
+        // Android's stock browser only allows output of a PNG via a data URI.
+        if (qq.androidStock()) {
+            return "image/png";
+        }
+
         // If a default type and requested type have not been specified, this should be a
         // JPEG if the original type is a JPEG, otherwise, a PNG.
         if (!defaultType && !requestedType) {
