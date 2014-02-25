@@ -275,14 +275,14 @@ describe("templating.js", function() {
         it("updates the name in the UI after a call to setName API method", function(done) {
             assert.expect(2, done);
 
-            var fileTestHelper = helpme.setupFileTests(),
-                uploader;
+            helpme.setupFileTests();
+
+            var uploader;
 
             var template = $('<script id="qq-template" type="text/template">' + defaultTemplate + '</script>');
             $fixture.append(template);
 
             uploader = new qq.FineUploader({
-                debug: true,
                 element: $fixture[0],
                 autoUpload: false,
 
