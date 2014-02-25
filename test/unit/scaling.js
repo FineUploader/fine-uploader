@@ -702,7 +702,19 @@ if (qq.supportedFeatures.imagePreviews) {
         it("includes EXIF data in scaled image (only if requested & appropriate)", function(done) {
             assert.expect(8, done);
 
-            var uploader = new qq.FineUploaderBasic({
+            var getReqFor = function(uuid) {
+                    var theReq;
+
+                    qq.each(fileTestHelper.getRequests(), function(idx, req) {
+                        if (req.requestBody.fields.qquuid === uuid) {
+                            theReq = req;
+                            return false;
+                        }
+                    });
+
+                    return theReq;
+                },
+                uploader = new qq.FineUploaderBasic({
                 request: {endpoint: "test/uploads"},
                 scaling: {
                     includeExif: true,
@@ -711,7 +723,7 @@ if (qq.supportedFeatures.imagePreviews) {
                 callbacks: {
                     onUpload: function(id) {
                         setTimeout(function() {
-                            var req = fileTestHelper.getRequests()[id],
+                            var req = getReqFor(uploader.getUuid(id)),
                                 blob = req.requestBody.fields.qqfile,
                                 name = req.requestBody.fields.qqfilename;
 
@@ -732,7 +744,7 @@ if (qq.supportedFeatures.imagePreviews) {
                                 }
                             });
                             req.respond(200, null, JSON.stringify({success: true}));
-                        }, 100);
+                        }, 10);
                     }
                 }
             });
