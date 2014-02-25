@@ -154,7 +154,7 @@ a "qquuid" request parameter as well.  If you are using [Fine Uploader S3][s3] o
 will be associated with the file in your bucket or blob container.
 
 
-### Warnings
+### Notices
 * Do not set the [`scaling.hideScaled` option][hidescaled] to `true` AND the [`scaling.sendOriginal` option][sendoriginal]
 to `false` at the same time.  This will result in no files being represented in the UI for images that are scalable.
 
@@ -170,6 +170,11 @@ this item limit.
 
 * Client-side scaling and EXIF header re-insertion operations can potentially be very resource-intensive.
 Please keep this in mind before you enable this feature, taking into account your user base and application goals.
+
+* Android's stock browser can only output "image/png" scaled images.  Any attempt to generate a scaled image type
+other than "image/png" will be ignored.  All scaled images will always be "image/png" when using Android's stock
+browser.  This also means that EXIF data cannot be inserted into scaled images in this browser.  These restrictions
+do NOT apply to Chrome on Android.
 
 
 ### Supported Browsers
