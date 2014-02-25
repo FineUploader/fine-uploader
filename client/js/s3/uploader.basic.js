@@ -206,7 +206,7 @@
                             modifiedParams = {};
 
                         qq.each(oldParams, function(name, val) {
-                            modifiedParams[name.toLowerCase()] = val;
+                            modifiedParams[name.toLowerCase()] = qq.isFunction(val) ? val() : val;
                         });
 
                         return modifiedParams;
