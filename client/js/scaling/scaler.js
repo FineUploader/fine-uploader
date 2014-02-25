@@ -72,7 +72,7 @@ qq.Scaler = function(spec, log) {
     qq.extend(this, {
         // If no targeted sizes have been declared or if this browser doesn't support
         // client-side image preview generation, there is no scaling to do.
-        enabled: qq.supportedFeatures.imagePreviews && sizes.length > 0,
+        enabled: qq.supportedFeatures.scaling && sizes.length > 0,
 
         getFileRecords: function(originalFileUuid, originalFileName, originalBlobOrBlobData) {
             var self = this,
@@ -206,6 +206,10 @@ qq.extend(qq.Scaler.prototype, {
     scaleImage: function(id, specs, api) {
         "use strict";
 
+        if (!qq.supportedFeatures.scaling) {
+            throw new qq.Error("Scaling is not supported in this browser!");
+        }
+
         var scalingEffort = new qq.Promise(),
             log = api.log,
             file = api.getFile(id),
@@ -256,11 +260,6 @@ qq.extend(qq.Scaler.prototype, {
         var requestedType = spec.requestedType,
             defaultType = spec.defaultType,
             referenceType = spec.refType;
-
-        // Android's stock browser only allows output of a PNG via a data URI.
-        if (qq.androidStock()) {
-            return "image/png";
-        }
 
         // If a default type and requested type have not been specified, this should be a
         // JPEG if the original type is a JPEG, otherwise, a PNG.

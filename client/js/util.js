@@ -343,7 +343,7 @@ var qq = function(element) {
     };
 
     qq.isFileChunkingSupported = function() {
-        return !qq.android() && //android's impl of Blob.slice is broken
+        return !qq.androidStock() && //Android's stock browser cannot upload Blobs correctly
             qq.isXhrUploadSupported() &&
             (File.prototype.slice !== undefined || File.prototype.webkitSlice !== undefined || File.prototype.mozSlice !== undefined);
     };

@@ -171,14 +171,11 @@ this item limit.
 * Client-side scaling and EXIF header re-insertion operations can potentially be very resource-intensive.
 Please keep this in mind before you enable this feature, taking into account your user base and application goals.
 
-* Android's stock browser can only output "image/png" scaled images.  Any attempt to generate a scaled image type
-other than "image/png" will be ignored.  All scaled images will always be "image/png" when using Android's stock
-browser.  This also means that EXIF data cannot be inserted into scaled images in this browser.  These restrictions
-do NOT apply to Chrome on Android.
-
 
 ### Supported Browsers
 This feature is supported on all browsers other than IE9 and older, Android 2.4 or older, and Safari 5.1 or older.
+Note that Android's stock browser is also not supported, due to multiple long-standing bugs in that browser with
+Blobs and data URIs.  Chrome on Android is supported, though.
 
 {% endmarkdown %}
 {% endblock %}

@@ -1,5 +1,5 @@
 /* globals describe, it, qq, assert, qqtest, helpme */
-if (qq.supportedFeatures.imagePreviews) {
+if (qq.supportedFeatures.scaling) {
     describe("scaling module tests", function() {
         "use strict";
 
@@ -159,10 +159,9 @@ if (qq.supportedFeatures.imagePreviews) {
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                 var records = scaler.getFileRecords("originalUuid", "originalName.jpEg", blob);
 
-                // NOTE: Android's stock browser can only output PNGs.
-                assert.equal(records[0].name, "originalName (small)." + (qq.androidStock() ? "png" : "jpEg"));
-                assert.equal(records[1].name, "originalName (medium)." + (qq.androidStock() ? "png" : "bmp"));
-                assert.equal(records[2].name, "originalName (large)." + (qq.androidStock() ? "png" : "jpEg"));
+                assert.equal(records[0].name, "originalName (small).jpEg");
+                assert.equal(records[1].name, "originalName (medium).bmp");
+                assert.equal(records[2].name, "originalName (large).jpEg");
                 assert.equal(records[3].name, "originalName.jpEg");
 
                 // leave extension-less file names alone
@@ -189,7 +188,7 @@ if (qq.supportedFeatures.imagePreviews) {
                 qqtest.downloadFileAsBlob("star.png", "image/png").then(function(star) {
                     qqtest.downloadFileAsBlob("drop-background.gif", "image/gif").then(function(drop) {
                         var records = scaler.getFileRecords("uuid1", "up.jpeg", up);
-                        assert.equal(records[0].name, "up (small)." + (qq.androidStock() ? "png" : "jpeg"));
+                        assert.equal(records[0].name, "up (small).jpeg");
                         assert.equal(records[1].name, "up.jpeg");
 
                         records = scaler.getFileRecords("uuid2", "star.png", star);
@@ -320,62 +319,59 @@ if (qq.supportedFeatures.imagePreviews) {
             });
         });
 
-        // Support for chunking on Android within Fine Uploader is restricted at this time.
-        if (!qq.android()) {
-            it("uploads scaled files as expected: chunked, default options", function(done) {
-                assert.expect(15, done);
+        it("uploads scaled files as expected: chunked, default options", function(done) {
+            assert.expect(15, done);
 
-                var referenceFileSize,
-                    sizes = [
-                        {
-                            name: "medium",
-                            maxSize: 400,
-                            type: "image/jpeg"
-                        }
-                    ],
-                    expectedUploadCallbacks = [
-                        {id: 0, name: "up (medium).jpeg"},
-                        {id: 1, name: "up.jpeg"},
-                        {id: 2, name: "up2 (medium).jpeg"},
-                        {id: 3, name: "up2.jpeg"}
-                    ],
-                    actualUploadCallbacks = [],
-                    uploader = new qq.FineUploaderBasic({
-                        request: {endpoint: "test/uploads"},
-                        chunking: {
-                            enabled: true,
-                            partSize: 50000
+            var referenceFileSize,
+                sizes = [
+                    {
+                        name: "medium",
+                        maxSize: 400,
+                        type: "image/jpeg"
+                    }
+                ],
+                expectedUploadCallbacks = [
+                    {id: 0, name: "up (medium).jpeg"},
+                    {id: 1, name: "up.jpeg"},
+                    {id: 2, name: "up2 (medium).jpeg"},
+                    {id: 3, name: "up2.jpeg"}
+                ],
+                actualUploadCallbacks = [],
+                uploader = new qq.FineUploaderBasic({
+                    request: {endpoint: "test/uploads"},
+                    chunking: {
+                        enabled: true,
+                        partSize: 50000
+                    },
+                    scaling: {
+                        sizes: sizes
+                    },
+                    callbacks: {
+                        onUploadChunk: function(id) {
+                            acknowledgeRequests();
                         },
-                        scaling: {
-                            sizes: sizes
+                        onUpload: function(id, name) {
+                            assert.ok(uploader.getSize(id) > 0);
+                            assert.ok(qq.isBlob(uploader.getFile(id)));
+                            assert.equal(uploader.getFile(id).size, referenceFileSize);
+
+                            actualUploadCallbacks.push({id: id, name: name});
                         },
-                        callbacks: {
-                            onUploadChunk: function(id) {
-                                acknowledgeRequests();
-                            },
-                            onUpload: function(id, name) {
-                                assert.ok(uploader.getSize(id) > 0);
-                                assert.ok(qq.isBlob(uploader.getFile(id)));
-                                assert.equal(uploader.getFile(id).size, referenceFileSize);
-
-                                actualUploadCallbacks.push({id: id, name: name});
-                            },
-                            onAllComplete: function(successful, failed) {
-                                assert.equal(successful.length, 4);
-                                assert.equal(failed.length, 0);
-                                assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
-                            }
+                        onAllComplete: function(successful, failed) {
+                            assert.equal(successful.length, 4);
+                            assert.equal(failed.length, 0);
+                            assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
                         }
-                    });
-
-                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                    fileTestHelper.mockXhr();
-                    referenceFileSize = blob.size;
-                    uploader.addBlobs([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
+                    }
                 });
-            });
 
-        }
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+                referenceFileSize = blob.size;
+                uploader.addBlobs([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
+            });
+        });
+
         it("skips the scaling workflow for files that cannot be scaled", function(done) {
             assert.expect(7, done);
 
