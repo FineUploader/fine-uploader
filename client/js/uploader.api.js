@@ -44,6 +44,13 @@
             this._setupClickAndEditEventHandlers();
         },
 
+        setName: function(id, newName) {
+            var formattedFilename = this._options.formatFileName(newName);
+
+            this._parent.prototype.setName.apply(this, arguments);
+            this._templating.updateFilename(id, formattedFilename);
+        },
+
         pauseUpload: function(id) {
             var paused = this._parent.prototype.pauseUpload.apply(this, arguments);
 
@@ -208,9 +215,6 @@
                     return self.getName(fileId);
                 },
                 onSetName: function(id, newName) {
-                    var formattedFilename = self._options.formatFileName(newName);
-
-                    templating.updateFilename(id, formattedFilename);
                     self.setName(id, newName);
                 },
                 onEditingStatusChange: function(id, isEditing) {
