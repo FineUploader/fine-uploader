@@ -357,25 +357,26 @@ current user agent supports dropping folders, call `qq.supportedFeatures.folderD
 
 Feature     | Description
 ------------|------------
-`uploading` | Is uploading of any sort supported? (Note: This will return true for browsers that are not explicitly supported such as IE6)
 `ajaxUploading` | Is uploading via XHR2 supported? Indicates File API support
+`blobUploading` | Is it possible to upload `Blob` objects in this browser?
+`canDetermineSize` | Can file size be determined client-side?
+`chunking` | Is chunking supported?
 `fileDrop` | Is dragging and dropping files supported?
 `folderDrop` | Is drag and dropping folders supported?
 `folderSelection` | Can folders be selected via a file dialog?
-`chunking` | Is chunking supported?
-`resume` | Is the auto-resume feature supported?
-`uploadCustomHeaders` | Are custom headers allowed to be sent along with the upload request?
-`uploadNonMultipart` | Are non-multipart-encoded requests supported?
-`itemSizeValidation` | Is client-side file size validation supported?
-`uploadViaPaste` | Is uploading via paste supported?
-`progressBar` | Are progress bars supported?
-`uploadCors` | Are cross-domain uploads supported?
-`canDetermineSize` | Can file size be determined client-side?
 `imagePreviews` | Is client-side image preview generation possible?
+`imageValidation` | Can we validate image properties client-side?
+`itemSizeValidation` | Is client-side file size validation supported?
+`pause` | Can chunked file uploads be paused?
+`progressBar` | Are progress bars supported?
+`resume` | Is the auto-resume feature supported?
 `scaling` | Is client-side image scaling possible?
 `tiffPreviews` | Can TIFFs be rendered natively in the current browser?
-`imageValidation` | Can we validate image properties client-side?
-`pause` | Can chunked file uploads be paused?
+`uploadCors` | Are cross-domain uploads supported?
+`uploading` | Is uploading of any sort supported? (Note: This will return true for browsers that are not explicitly supported such as IE6)
+`uploadCustomHeaders` | Are custom headers allowed to be sent along with the upload request?
+`uploadNonMultipart` | Are non-multipart-encoded requests supported?
+`uploadViaPaste` | Is uploading via paste supported?
 
 
 ## Mobile Safari (iOS)

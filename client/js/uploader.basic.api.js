@@ -142,6 +142,10 @@
         },
 
         addBlobs: function(blobDataOrArray, params, endpoint) {
+            if (!qq.supportedFeatures.blobUploading) {
+                throw new qq.Error("Blob uploading is not supported in this browser!");
+            }
+
             if (blobDataOrArray) {
                 var blobDataArray = [].concat(blobDataOrArray),
                     verifiedBlobDataList = [],

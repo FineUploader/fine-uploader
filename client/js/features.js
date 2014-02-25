@@ -3,6 +3,7 @@ qq.supportedFeatures = (function () {
     "use strict";
 
     var supportsUploading,
+        supportsUploadingBlobs,
         supportsAjaxFileUploading,
         supportsFolderDrop,
         supportsChunking,
@@ -85,6 +86,8 @@ qq.supportedFeatures = (function () {
 
     supportsAjaxFileUploading = supportsUploading && qq.isXhrUploadSupported();
 
+    supportsUploadingBlobs = supportsAjaxFileUploading && !qq.androidStock();
+
     supportsFolderDrop = supportsAjaxFileUploading && isChrome21OrHigher();
 
     supportsChunking = supportsAjaxFileUploading && qq.isFileChunkingSupported();
@@ -107,28 +110,29 @@ qq.supportedFeatures = (function () {
 
 
     return {
-        uploading: supportsUploading,
         ajaxUploading: supportsAjaxFileUploading,
+        blobUploading: supportsUploadingBlobs,
+        canDetermineSize: supportsAjaxFileUploading,
+        chunking: supportsChunking,
+        deleteFileCors: supportsDeleteFileCors,
+        deleteFileCorsXdr: supportsDeleteFileXdr, //NOTE: will also return true in IE10, where XDR is also supported
+        deleteFileCorsXhr: supportsDeleteFileCorsXhr,
         fileDrop: supportsAjaxFileUploading, //NOTE: will also return true for touch-only devices.  It's not currently possible to accurately test for touch-only devices
         folderDrop: supportsFolderDrop,
-        chunking: supportsChunking,
-        resume: supportsResume,
-        uploadCustomHeaders: supportsAjaxFileUploading,
-        uploadNonMultipart: supportsAjaxFileUploading,
-        itemSizeValidation: supportsAjaxFileUploading,
-        uploadViaPaste: supportsUploadViaPaste,
-        progressBar: supportsAjaxFileUploading,
-        uploadCors: supportsUploadCors,
-        deleteFileCorsXhr: supportsDeleteFileCorsXhr,
-        deleteFileCorsXdr: supportsDeleteFileXdr, //NOTE: will also return true in IE10, where XDR is also supported
-        deleteFileCors: supportsDeleteFileCors,
-        canDetermineSize: supportsAjaxFileUploading,
         folderSelection: supportsFolderSelection,
         imagePreviews: supportsImagePreviews,
-        scaling: supportsImagePreviews && !qq.androidStock(),
-        tiffPreviews: qq.safari(), // Not the best solution, but simple and probably accurate enough (for now)
         imageValidation: supportsImagePreviews,
-        pause: supportsChunking
+        itemSizeValidation: supportsAjaxFileUploading,
+        pause: supportsChunking,
+        progressBar: supportsAjaxFileUploading,
+        resume: supportsResume,
+        scaling: supportsImagePreviews && supportsUploadingBlobs,
+        tiffPreviews: qq.safari(), // Not the best solution, but simple and probably accurate enough (for now)
+        uploading: supportsUploading,
+        uploadCors: supportsUploadCors,
+        uploadCustomHeaders: supportsAjaxFileUploading,
+        uploadNonMultipart: supportsAjaxFileUploading,
+        uploadViaPaste: supportsUploadViaPaste
     };
 
 }());
