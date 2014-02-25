@@ -580,7 +580,6 @@
                 }
                 else {
                     failureReason = this._options.text.failUpload;
-                    this.log("'" + responseProperty + "' is not a valid property on the server response.", "warn");
                 }
 
                 this._templating.setStatusText(id, shortFailureReason || failureReason);
