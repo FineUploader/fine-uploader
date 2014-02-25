@@ -1,7 +1,7 @@
 /*globals qq, assert*/
 var qqtest = qqtest || {};
 $.extend(qqtest, {
-    canDownloadFileAsBlob: !qq.androidStock() && qq.supportedFeatures.ajaxUploading && Boolean(window.FileReader),
+    canDownloadFileAsBlob: !qq.android() && qq.supportedFeatures.ajaxUploading && Boolean(window.FileReader),
 
     _downloadedFiles: {},
 
