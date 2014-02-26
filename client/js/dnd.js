@@ -195,7 +195,7 @@ qq.DragAndDrop = function(o) {
                         qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
                         qq(dropZone).removeClass(options.classes.dropActive);
                     });
-                }, 0);
+                }, 10);
             };
 
         qq.each(dropZones, function(idx, dropZone) {
