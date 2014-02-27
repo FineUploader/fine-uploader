@@ -392,7 +392,10 @@
             this._parent.prototype._onUploadChunk.apply(this, arguments);
 
             // Only display the pause button if we have finished uploading at least one chunk
-            chunkData.partIndex > 0 && this._templating.allowPause(id);
+            // & this file can be resumed
+            if (chunkData.partIndex > 0 && this._handler.isResumable(id)) {
+                this._templating.allowPause(id);
+            }
         },
 
         _onCancel: function(id, name) {

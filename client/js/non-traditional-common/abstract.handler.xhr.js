@@ -18,6 +18,7 @@ qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
         getName = proxy.getName,
         getSize = proxy.getSize,
         getUuid = proxy.getUuid,
+        getDataByUuid = proxy.getDataByUuid,
         log = proxy.log,
         baseHandlerXhrApi = new qq.AbstractUploadHandlerXhr(spec);
 
@@ -68,18 +69,30 @@ qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
                 localStorageId = handler._getLocalStorageId(id);
                 persistedData = localStorage.getItem(localStorageId);
 
-                // If we haven't found this item in local storage, give up
+                // If we found this item in local storage, maybe we should resume it.
                 if (persistedData) {
-                    log(qq.format("Identified file with ID {} and name of {} as resumable.", id, getName(id)));
-
                     persistedData = JSON.parse(persistedData);
 
-                    onUuidChanged(id, persistedData.uuid);
-                    fileState.key = persistedData.key;
-                    fileState.loaded = persistedData.loaded;
-                    fileState.chunking = persistedData.chunking;
+                    // If we found a resume record but we have already handled this file in this session,
+                    // don't try to resume it & ensure we don't persist future check data
+                    if (getDataByUuid(persistedData.uuid)) {
+                        handler._markNotResumable(id);
+                    }
+                    else {
+                        log(qq.format("Identified file with ID {} and name of {} as resumable.", id, getName(id)));
+
+                        onUuidChanged(id, persistedData.uuid);
+                        fileState.key = persistedData.key;
+                        fileState.loaded = persistedData.loaded;
+                        fileState.chunking = persistedData.chunking;
+                    }
                 }
             }
+        },
+
+        // Returns true if a candidate for resume is already uploading.
+        _isUploading: function(persistedData) {
+            return ;
         },
 
         // Persist any data needed to resume this upload in a new session.
@@ -88,7 +101,7 @@ qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
                 localStorageId, persistedData;
 
             // If local storage isn't supported by the browser, or if resume isn't enabled or possible, give up
-            if (resumeEnabled) {
+            if (resumeEnabled && handler.isResumable(id)) {
                 localStorageId = handler._getLocalStorageId(id);
 
                 persistedData = {
@@ -110,7 +123,7 @@ qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
         _maybeDeletePersistedChunkData: function(id) {
             var localStorageId;
 
-            if (resumeEnabled) {
+            if (resumeEnabled && handler.isResumable(id)) {
                 localStorageId = handler._getLocalStorageId(id);
 
                 if (localStorageId && localStorage.getItem(localStorageId)) {

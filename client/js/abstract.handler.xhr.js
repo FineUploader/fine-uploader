@@ -120,6 +120,10 @@ qq.AbstractUploadHandlerXhr = function(spec) {
             }
         },
 
+        isResumable: function(id) {
+            return !!chunking && this.isValid(id) && !fileState[id].notResumable;
+        },
+
         /**
          * Creates an XHR instance for this file and stores it in the fileState.
          *
@@ -189,6 +193,10 @@ qq.AbstractUploadHandlerXhr = function(spec) {
 
         _getFileState: function(id) {
             return fileState[id];
+        },
+
+        _markNotResumable: function(id) {
+            fileState[id].notResumable = true;
         }
     });
 };

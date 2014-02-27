@@ -16,6 +16,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
         getName = proxy.getName,
         getUuid = proxy.getUuid,
         getSize = proxy.getSize,
+        getDataByUuid = proxy.getDataByUuid,
         log = proxy.log,
         expectedStatus = 200,
         onProgress = spec.onProgress,
@@ -596,6 +597,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
                 getSize: getSize,
                 getUuid: getUuid,
                 getEndpoint: endpointStore.get,
+                getDataByUuid: getDataByUuid,
                 log: log
             }
         }

@@ -217,8 +217,15 @@ qq.UploadHandler = function(o, namespace) {
 
         handlerImpl = new handlerType["UploadHandler" + handlerModuleSubtype](
             options,
-            {onUploadComplete: dequeue, onUuidChanged: options.onUuidChanged,
-                getName: options.getName, getUuid: options.getUuid, getSize: options.getSize, log: log}
+            {
+                onUploadComplete: dequeue,
+                onUuidChanged: options.onUuidChanged,
+                getName: options.getName,
+                getUuid: options.getUuid,
+                getSize: options.getSize,
+                getDataByUuid: options.getDataByUuid,
+                log: log
+            }
         );
     }
 
@@ -358,10 +365,15 @@ qq.UploadHandler = function(o, namespace) {
          * @returns {boolean} true if the upload was paused
          */
         pause: function(id) {
-            if (handlerImpl.pause && this.isValid(id) && handlerImpl.pause(id)) {
+            if (this.isResumable(id) && handlerImpl.pause && this.isValid(id) && handlerImpl.pause(id)) {
                 dequeue(id);
                 return true;
             }
+        },
+
+        // True if the file is eligible for pause/resume.
+        isResumable: function(id) {
+            return !!handlerImpl.isResumable && handlerImpl.isResumable(id);
         }
     });
 

@@ -730,6 +730,9 @@
                     getUuid: qq.bind(self.getUuid, self),
                     getSize: qq.bind(self.getSize, self),
                     setSize: qq.bind(self._setSize, self),
+                    getDataByUuid: function(uuid) {
+                        return self.getUploads({uuid: uuid});
+                    },
                     isQueued: function(id) {
                         var status = self.getUploads({id: id}).status;
                         return status === qq.status.QUEUED ||
