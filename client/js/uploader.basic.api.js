@@ -1354,6 +1354,11 @@
                 this._itemError("typeError", name, file);
                 return validityChecker.failure();
             }
+            
+            if (qq.isFileOrInput(file) && this._isBadExtension(validationBase.badExtensions, name)) {
+                this._itemError("typeError", name, file);
+                return validityChecker.failure();
+            }
 
             if (size === 0) {
                 this._itemError("emptyError", name, file);
@@ -1400,13 +1405,14 @@
          * @private
          */
         _itemError: function(code, maybeNameOrNames, item) {
-            var message = this._options.messages[code],
+                var message = this._options.messages[code],
                 allowedExtensions = [],
+                badExtensions = [],
                 names = [].concat(maybeNameOrNames),
                 name = names[0],
                 buttonId = this._getButtonId(item),
                 validationBase = this._getValidationBase(buttonId),
-                extensionsForMessage, placeholderMatch;
+                extensionsForMessage, badExtensionsForMessage, placeholderMatch;
 
             function r(name, replacement){ message = message.replace(name, replacement); }
 
@@ -1420,12 +1426,25 @@
                 }
             });
 
+            qq.each(validationBase.badExtensions, function (idx, badExtension) {
+                    /**
+                    * If an argument is not a string, ignore it.  Added when a possible issue with MooTools hijacking the
+                    * `allowedExtensions` array was discovered.  See case #735 in the issue tracker for more details.
+                    */
+                if (qq.isString(badExtension)) {
+                    badExtensions.push(badExtension);
+                }
+            });
+
             extensionsForMessage = allowedExtensions.join(", ").toLowerCase();
+            badExtensionsForMessage = badExtensions.join(", ").toLowerCase();
 
             r("{file}", this._options.formatFileName(name));
             r("{extensions}", extensionsForMessage);
+            r("{badextensions}", badExtensionsForMessage);
             r("{sizeLimit}", this._formatSize(validationBase.sizeLimit));
             r("{minSizeLimit}", this._formatSize(validationBase.minSizeLimit));
+            r("{size}", this._formatSize(item.size));
 
             placeholderMatch = message.match(/(\{\w+\})/g);
             if (placeholderMatch !== null) {
@@ -1468,15 +1487,50 @@
 
             return valid;
         },
+        
+        _isBadExtension: function(bad, fileName) {
+            var invalid = false;
 
-        _formatSize: function(bytes){
+            if (!bad.length) {
+                return false;
+            }
+
+            qq.each(bad, function (idx, badExt) {
+                /**
+                 * If an argument is not a string, ignore it.  Added when a possible issue with MooTools hijacking the
+                 * `allowedExtensions` array was discovered.  See case #735 in the issue tracker for more details.
+                 */
+                if (qq.isString(badExt)) {
+                    /*jshint eqeqeq: true, eqnull: true*/
+                    var extRegex = new RegExp("\\." + badExt + "$", "i");
+
+                    if (fileName.match(extRegex) != null) {
+                        invalid = true;
+                        return false;
+                    }
+                }
+            });
+
+            return invalid;
+        },
+        
+        _formatSize: function (bytes)
+        {
+            var iec = this._options.text.useIEC;
+            var div = iec ? 1024 : 1000;
+            var cut = iec ? 1023 : 999;
+
             var i = -1;
-            do {
-                bytes = bytes / 1000;
+            do
+            {
+                bytes = bytes / div;
                 i++;
-            } while (bytes > 999);
+            }
+            while (bytes > cut);
 
-            return Math.max(bytes, 0.1).toFixed(1) + this._options.text.sizeSymbols[i];
+            var symbol = iec ? this._options.text.IECSymbols[i] : this._options.text.sizeSymbols[i];
+
+            return Math.max(bytes, 0.1).toFixed(1) + symbol;
         },
 
         _wrapCallbacks: function() {
