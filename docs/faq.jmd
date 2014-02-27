@@ -101,5 +101,14 @@ Theoretically, you could check for the appropriate function on the [DataTransfer
 object prototype, but this would not work cross-browser, since webkit does not expose this interface, unfortunately.
 
 <br/>
+**Q:** Why are `<input type="file">` elements I pass into the `addFiles` method removed from the DOM in IE9 and older?
+
+**A:** Internally, Fine Uploader must move these input elements to a form that targets a hidden iframe.  This form is then
+submitted to simulate a non-page-reloading upload.  The act of moving the input to the form removes it from its original
+position in the DOM.  This is unavoidable as it is not possible to clone a file input element.  You should  clone
+or re-create the <input type="file"> after submitting it via addFiles, or simply attach the input element to
+Fine Uploader via the [button](api/options.html#button) or [extraButtons](api/options.html#extraButtons) options.
+
+<br/>
 {% endmarkdown %}
 {% endblock %}
