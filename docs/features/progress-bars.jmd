@@ -8,8 +8,9 @@
 
 # Progress Bars {: .page-header }
 
-{{ alert("This feature is only available in Chrome (except on Android), Firefox, Safari, IE10+, & Opera 15+ due to their support for the
-[`ProgressEvent` interface](https://dvcs.w3.org/hg/progress/raw-file/tip/Overview.html#interface-progressevent).") }}
+{{ alert("This feature is available in Chrome (except in iOS), Firefox, Safari, IE10+, & Opera 15+ due to their support for the
+[`ProgressEvent` interface](https://dvcs.w3.org/hg/progress/raw-file/tip/Overview.html#interface-progressevent).  Note that
+progress reporting is not supported in Android's stock browser, or Chrome in iOS.") }}
 
 Seeing your uploads progress can be a satisfying feeling, especially when they
 finish. With Fine Uploader UI mode, a progress bar is included in the UI, and
