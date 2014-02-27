@@ -14,7 +14,8 @@ qq.supportedFeatures = (function () {
         supportsDeleteFileCorsXhr,
         supportsDeleteFileCors,
         supportsFolderSelection,
-        supportsImagePreviews;
+        supportsImagePreviews,
+        supportsUploadProgress;
 
 
     function testSupportsFileInputElement() {
@@ -108,6 +109,14 @@ qq.supportedFeatures = (function () {
 
     supportsImagePreviews = supportsAjaxFileUploading && window.FileReader !== undefined;
 
+    supportsUploadProgress = (function() {
+        if (supportsAjaxFileUploading) {
+            return !qq.androidStock() &&
+                !(qq.ios() && navigator.userAgent.indexOf("CriOS") >= 0);
+        }
+        return false;
+    }());
+
 
     return {
         ajaxUploading: supportsAjaxFileUploading,
@@ -124,7 +133,7 @@ qq.supportedFeatures = (function () {
         imageValidation: supportsImagePreviews,
         itemSizeValidation: supportsAjaxFileUploading,
         pause: supportsChunking,
-        progressBar: supportsAjaxFileUploading,
+        progressBar: supportsUploadProgress,
         resume: supportsResume,
         scaling: supportsImagePreviews && supportsUploadingBlobs,
         tiffPreviews: qq.safari(), // Not the best solution, but simple and probably accurate enough (for now)
