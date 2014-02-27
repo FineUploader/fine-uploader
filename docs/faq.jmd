@@ -66,9 +66,9 @@ Currently, no other browsers support this API.  Opera 15+ is based on Chromium a
 Chrome.
 
 
-**Q:** I have created a `<button\>` element for my uploader button, but this doesn't seem to work in IE.  Why?
+**Q:** I have created a `<button>` element for my uploader button, but this doesn't seem to work in IE.  Why?
 
-**A:** In IE, the button element receives the click event, instead of the child input element.  Use a `<div\>` or a `<span\>` or an `<a\>` instead.
+**A:** In IE, the button element receives the click event, instead of the child input element.  Use a `<div>` or a `<span>` or an `<a>` instead.
 
 
 **Q:** Why do I only see a "Processing..." message next to a file (in FineUploader mode for the traditional uploader)
