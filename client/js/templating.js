@@ -419,11 +419,13 @@ qq.Templating = function(spec) {
 
         // Generation of the related thumbnail may still be in progress, so, wait until it is done.
         previewGeneration[cachedThumbnailId].then(function() {
+            previewGeneration[targetThumbnailId].success();
             log(qq.format("Now using previously generated thumbnail created for ID {} on ID {}.", cachedThumbnailId, targetThumbnailId));
             targetThumnail.src = cachedThumbnail.src;
             show(targetThumnail);
         },
         function() {
+            previewGeneration[targetThumbnailId].failure();
             if (!options.placeholders.waitUntilUpdate) {
                 maybeSetDisplayNotAvailableImg(targetThumbnailId, targetThumnail);
             }
@@ -432,8 +434,6 @@ qq.Templating = function(spec) {
 
     function generateNewPreview(id, blob, spec) {
         var thumbnail = getThumbnail(id);
-
-        previewGeneration[id] = new qq.Promise();
 
         log("Generating new thumbnail for " + id);
         blob.qqThumbnailId = id;
@@ -767,6 +767,8 @@ qq.Templating = function(spec) {
             if (qq.supportedFeatures.imagePreviews) {
                 if (thumbnail) {
                     displayWaitingImg(thumbnail).done(function() {
+                        previewGeneration[id] = new qq.Promise();
+
                         /* jshint eqnull: true */
                         // If we've already generated an <img> for this file, use the one that exists,
                         // don't waste resources generating a new one.
