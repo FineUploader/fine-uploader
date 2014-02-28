@@ -739,7 +739,8 @@
                         var status = self.getUploads({id: id}).status;
                         return status === qq.status.QUEUED ||
                             status === qq.status.SUBMITTED ||
-                            status === qq.status.UPLOAD_RETRYING;
+                            status === qq.status.UPLOAD_RETRYING ||
+                            status === qq.status.PAUSED;
                     },
                     getIdsInGroup: function(id) {
                         return self.getUploads({id: id}).groupIds;
