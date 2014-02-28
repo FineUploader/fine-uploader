@@ -142,6 +142,15 @@
     margin-bottom: 3px;
 }
 
+.qq-total-progress-bar {
+    height: 25px;
+    border-radius: 9px;
+}
+
+.qq-total-progress-bar-container {
+    margin: 9px;
+}
+
 INPUT.qq-edit-filename {
     position: absolute;
     opacity: 0;
