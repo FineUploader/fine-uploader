@@ -45,6 +45,8 @@ qq.Templating = function(spec) {
             list: "qq-upload-list-selector",
             progressBarContainer: "qq-progress-bar-container-selector",
             progressBar: "qq-progress-bar-selector",
+            totalProgressBarContainer: "qq-total-progress-bar-container-selector",
+            totalProgressBar: "qq-total-progress-bar-selector",
             file: "qq-upload-file-selector",
             spinner: "qq-upload-spinner-selector",
             size: "qq-upload-size-selector",
@@ -231,6 +233,14 @@ qq.Templating = function(spec) {
     }
 
     function getProgress(id) {
+        /* jshint eqnull:true */
+        // Total progress bar
+        if (id == null) {
+            return getTemplateEl(container, selectorClasses.totalProgressBarContainer) ||
+                getTemplateEl(container, selectorClasses.totalProgressBar);
+        }
+
+        // Per-file progress bar
         return getTemplateEl(getFile(id), selectorClasses.progressBarContainer) ||
             getTemplateEl(getFile(id), selectorClasses.progressBar);
     }
@@ -276,10 +286,12 @@ qq.Templating = function(spec) {
     }
 
     function setProgressBarWidth(id, percent) {
-        var bar = getProgress(id);
+        var bar = getProgress(id),
+            /* jshint eqnull:true */
+            progressBarSelector = id == null ? selectorClasses.totalProgressBar : selectorClasses.progressBar;
 
-        if (bar && !qq(bar).hasClass(selectorClasses.progressBar)) {
-            bar = qq(bar).getByClass(selectorClasses.progressBar)[0];
+        if (bar && !qq(bar).hasClass(progressBarSelector)) {
+            bar = qq(bar).getByClass(progressBarSelector)[0];
         }
 
         bar && qq(bar).css({width: percent + "%"});
@@ -458,6 +470,7 @@ qq.Templating = function(spec) {
 
             container.innerHTML = templateHtml.template;
             hide(getDropProcessing());
+            this.hideTotalProgress();
             fileList = options.fileContainerEl || getTemplateEl(container, selectorClasses.list);
 
             log("Template rendering complete");
@@ -623,14 +636,26 @@ qq.Templating = function(spec) {
             }
         },
 
+        updateTotalProgress: function(loaded, total) {
+            this.updateProgress(null, loaded, total);
+        },
+
         hideProgress: function(id) {
             var bar = getProgress(id);
 
             bar && hide(bar);
         },
 
+        hideTotalProgress: function() {
+            this.hideProgress();
+        },
+
         resetProgress: function(id) {
             setProgressBarWidth(id, 0);
+        },
+
+        resetTotalProgress: function() {
+            this.resetProgress();
         },
 
         showCancel: function(id) {

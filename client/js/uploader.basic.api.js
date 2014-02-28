@@ -107,6 +107,8 @@
 
             this._succeededSinceLastAllComplete = [];
             this._failedSinceLastAllComplete = [];
+
+            this._totalProgress && this._totalProgress.reset();
         },
 
         addFiles: function(filesOrInputs, params, endpoint) {
@@ -818,6 +820,12 @@
                     self._onUploadStatusChange(id, oldStatus, newStatus);
                     self._options.callbacks.onStatusChange(id, oldStatus, newStatus);
                     self._maybeAllComplete(id, newStatus);
+
+                    if (self._totalProgress) {
+                        setTimeout(function() {
+                            self._totalProgress.onStatusChange(id, oldStatus, newStatus);
+                        }, 0);
+                    }
                 }
             });
         },
@@ -865,7 +873,11 @@
         },
 
         _onProgress: function(id, name, loaded, total) {
-            //nothing to do yet in core uploader
+            this._totalProgress && this._totalProgress.onIndividualProgress(id, loaded, total);
+        },
+
+        _onTotalProgress: function(loaded, total) {
+            this._options.callbacks.onTotalProgress(loaded, total);
         },
 
         _onComplete: function(id, name, result, xhr) {
@@ -893,16 +905,7 @@
 
         _maybeAllComplete: function(id, status) {
             var self = this,
-                notFinished = this._uploadData.retrieve({
-                status: [
-                    qq.status.UPLOADING,
-                    qq.status.UPLOAD_RETRYING,
-                    qq.status.QUEUED,
-                    qq.status.SUBMITTING,
-                    qq.status.SUBMITTED,
-                    qq.status.PAUSED
-                ]
-            }).length;
+                notFinished = this._getNotFinished();
 
             if (status === qq.status.UPLOAD_SUCCESSFUL) {
                 this._succeededSinceLastAllComplete.push(id);
@@ -915,15 +918,31 @@
                 (this._succeededSinceLastAllComplete.length || this._failedSinceLastAllComplete.length)) {
                 // Attempt to ensure onAllComplete is not invoked before other callbacks, such as onCancel & onComplete
                 setTimeout(function() {
-                    self._options.callbacks.onAllComplete(
-                        qq.extend([], self._succeededSinceLastAllComplete),
-                        qq.extend([], self._failedSinceLastAllComplete)
-                    );
-
-                    self._succeededSinceLastAllComplete = [];
-                    self._failedSinceLastAllComplete = [];
+                    self._onAllComplete(self._succeededSinceLastAllComplete, self._failedSinceLastAllComplete);
                 }, 0);
             }
+        },
+
+        _getNotFinished: function() {
+            return this._uploadData.retrieve({
+                status: [
+                    qq.status.UPLOADING,
+                    qq.status.UPLOAD_RETRYING,
+                    qq.status.QUEUED,
+                    qq.status.SUBMITTING,
+                    qq.status.SUBMITTED,
+                    qq.status.PAUSED
+                ]
+            }).length;
+        },
+
+        _onAllComplete: function(successful, failed) {
+            this._totalProgress && this._totalProgress.onAllComplete(successful, failed, this._preventRetries);
+
+            this._options.callbacks.onAllComplete(qq.extend([], successful), qq.extend([], failed));
+
+            this._succeededSinceLastAllComplete = [];
+            this._failedSinceLastAllComplete = [];
         },
 
         _onCancel: function(id, name) {
@@ -1654,6 +1673,7 @@
 
         _setSize: function(id, newSize) {
             this._uploadData.updateSize(id, newSize);
+            this._totalProgress && this._totalProgress.onNewSize(id);
         }
     };
 }());

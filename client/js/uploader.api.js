@@ -273,6 +273,11 @@
             this._templating.hideSpinner(id);
         },
 
+        _onAllComplete: function(successful, failed) {
+            this._parent.prototype._onAllComplete.apply(this, arguments);
+            this._templating.resetTotalProgress();
+        },
+
         _onSubmit: function(id, name) {
             this._parent.prototype._onSubmit.apply(this, arguments);
             this._addToList(id, name);
@@ -311,6 +316,11 @@
                 // If still uploading, display percentage - total size is actually the total request(s) size
                 this._displayFileSize(id, loaded, total);
             }
+        },
+
+        _onTotalProgress: function(loaded, total) {
+            this._parent.prototype._onTotalProgress.apply(this, arguments);
+            this._templating.updateTotalProgress(loaded, total);
         },
 
         _onComplete: function(id, name, result, xhr) {
@@ -401,6 +411,10 @@
         _onCancel: function(id, name) {
             this._parent.prototype._onCancel.apply(this, arguments);
             this._removeFileItem(id);
+
+            if (this._getNotFinished() === 0) {
+                this._templating.resetTotalProgress();
+            }
         },
 
         _onBeforeAutoRetry: function(id) {

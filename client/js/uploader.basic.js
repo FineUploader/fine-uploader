@@ -3,6 +3,8 @@
     "use strict";
 
     qq.FineUploaderBasic = function(o) {
+        var self = this;
+
         // These options define FineUploaderBasic mode.
         this._options = {
             debug: false,
@@ -50,6 +52,7 @@
                 onUploadChunkSuccess: function(id, chunkData, responseJSON, xhr){},
                 onResume: function(id, fileName, chunkData){},
                 onProgress: function(id, name, loaded, total){},
+                onTotalProgress: function(loaded, total){},
                 onError: function(id, name, reason, maybeXhrOrXdr) {},
                 onAutoRetry: function(id, name, attemptNumber) {},
                 onManualRetry: function(id, name) {},
@@ -264,6 +267,17 @@
         this._scaler = (qq.Scaler && new qq.Scaler(this._options.scaling, qq.bind(this.log, this))) || {};
         if (this._scaler.enabled) {
             this._customNewFileHandler = qq.bind(this._scaler.handleNewFile, this._scaler);
+        }
+
+        if (qq.TotalProgress && qq.supportedFeatures.progressBar) {
+            this._totalProgress = new qq.TotalProgress(
+                qq.bind(this._onTotalProgress, this),
+
+                function(id) {
+                    var entry = self._uploadData.retrieve({id: id});
+                    return (entry && entry.size) || 0;
+                }
+            );
         }
     };
 
