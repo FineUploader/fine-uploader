@@ -117,6 +117,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("Cache-Control", "no-cache");
+        xhr.setRequestHeader("X-CSRF-Token", $("meta[name='csrf-token']").attr("content"));
 
         if (!multipart) {
             xhr.setRequestHeader("Content-Type", "application/octet-stream");
