@@ -38,6 +38,7 @@ qq.TotalProgress = function(callback, getSize) {
 
         onAllComplete = function(successful, failed, retryable) {
             if (failed.length === 0 || noRetryableFiles(failed, retryable)) {
+                callback(totalSize, totalSize);
                 this.reset();
             }
         },
