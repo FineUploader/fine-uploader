@@ -49,7 +49,8 @@ if (qq.supportedFeatures.progressBar) {
                     actualTotalProgressUpdates = [],
                     expectedTotalProgressUpdates = [
                         {loaded: 0, total: actualFileSizes[0]},
-                        {loaded: 0, total: actualFileSizes[0] + actualFileSizes[1]},
+                        {loaded: 10, total: actualFileSizes[0]},
+                        {loaded: 10, total: actualFileSizes[0] + actualFileSizes[1]},
                         {loaded: 0, total: actualFileSizes[1]}
                     ],
 
@@ -64,6 +65,7 @@ if (qq.supportedFeatures.progressBar) {
                     tp = new qq.TotalProgress(onTotalProgress, getSize);
 
                 tp.onStatusChange(0, qq.status.SUBMITTING, qq.status.SUBMITTED);
+                tp.onIndividualProgress(0, 10, actualFileSizes[0]);
                 tp.onStatusChange(1, qq.status.SUBMITTING, qq.status.SUBMITTED);
                 tp.onStatusChange(0, qq.status.SUBMITTED, qq.status.CANCELED);
 
