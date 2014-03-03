@@ -183,5 +183,81 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(uploader.getName(0), newName);
             });
         });
+
+        describe("QUEUED status tests to cover #1104", function() {
+            function runQueuedStatusTest(autoUpload, done) {
+                assert.expect(1, done);
+
+                var uploader = new qq.FineUploaderBasic({
+                    maxConnections: 1,
+                    autoUpload: autoUpload,
+                    request: {
+                        endpoint: testUploadEndpoint
+                    },
+                    callbacks: {
+                        onStatusChange: function(id, oldStatus, newStatus) {
+                            if (id === 1 && oldStatus === qq.status.SUBMITTED) {
+                                assert.equal(newStatus, qq.status.QUEUED);
+                            }
+                        }
+                    }
+                });
+
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                    fileTestHelper.mockXhr();
+
+                    uploader.addBlobs([blob, blob]);
+                    setTimeout(function() {
+                        autoUpload || uploader.uploadStoredFiles();
+                    }, 0);
+                });
+            }
+
+            it("reports 'waiting' files as QUEUED in auto upload mode", function(done) {
+                runQueuedStatusTest(true, done);
+            });
+
+            it("reports 'waiting' files as QUEUED in manual upload mode after call to uploadStoredFiles()", function(done) {
+                runQueuedStatusTest(false, done);
+            });
+        });
+
+        it("handles an empty array of files or blobs appropriately", function(done) {
+            assert.expect(2, done);
+
+            var uploader = new qq.FineUploaderBasic({
+                callbacks: {
+                    onError: function(id) {
+                        assert.ok(true);
+                    }
+                }
+            });
+
+            uploader.addBlobs([]);
+            uploader.addFiles([]);
+        });
+
+        it("marks an upload as failed if the status indicates failure, even if the response body indicates success", function(done) {
+            assert.expect(2, done);
+
+            var uploader = new qq.FineUploaderBasic({
+                request: {
+                    endpoint: "/test/endpoint"
+                },
+                callbacks: {
+                    onComplete: function(id, name, response, xhr) {
+                        assert.ok(!response.success);
+                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                    }
+                }
+            });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+
+                uploader.addBlobs(blob);
+                fileTestHelper.getRequests()[0].respond(500, null, JSON.stringify({success: true}));
+            });
+        });
     });
 }

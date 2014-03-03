@@ -36,7 +36,7 @@ if (qq.supportedFeatures.imagePreviews && qqtest.canDownloadFileAsBlob) {
         });
 
         it("classifies tiff as previewable", function(done) {
-            testPreviewability(qq.safari(), "sample.tif", "image/tiff", done);
+            testPreviewability(qq.supportedFeatures.tiffPreviews, "sample.tif", "image/tiff", done);
         });
 
         it("marks a non-image as not previewable", function(done) {

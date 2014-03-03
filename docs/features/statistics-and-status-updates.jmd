@@ -19,6 +19,7 @@ new status will be included in the callback parameters.
 The status values correspond to those found in the `qq.status` object.
 For reference, here are valid status values:
 
+* `SUBMITTING` - Selected file is in the process of being submitted to the uploader.  Validation checks occur during this phase.
 * `SUBMITTED` - Selected file has been successfully submitted to the uploader.  In UI mode, it is also now represented in the DOM.
 * `QUEUED` - Uploads are in progress, but this one has not yet started due to lack of available connections.   It is waiting in line for an available connection before an attempt is made to upload it.
 * `UPLOADING` - File is currently uploading (in progress).
@@ -148,32 +149,17 @@ var uploads = myUploader.getUploads({
 ]
 ```
 
+{{ alert("getUploads returns an array only when there is a potential for the operation to return more than
+one file in the result set. This excludes queries for a specific, single ID or UUID. All other queries will
+return an array.", "info", "Note:") }}
+
 
 #### Determine if all submitted files are "done"
 
 How can I determine if all of my uploads are complete?  This is very much a frequently asked question.
-Luckily, is quite simple to make this determination with the `getUploads` API method.  The following
-code is all that is needed to make this determination:
+Luckily, is quite simple to make this determination by contributing [an `onAllComplete` event handler][allcomplete].
 
-```javascript
-var areAllUploadsDone = uploader.getUploads({
-    status: [
-        qq.status.UPLOADING,
-        qq.status.UPLOAD_RETRYING,
-        qq.status.QUEUED,
-        qq.status.SUBMITTED,
-        qq.status.SUBMITTING,
-        qq.status.SUBMITTED,
-        qq.status.PAUSED
-    ]
-}).length === 0;
-
-if (areAllUploadsDone) {
-   //do something here
-}
-```
-
-The above code is most appropriate for a `statusChange` event/callback handler.
+[allcomplete]: ../api/events.html#allComplete
 
 {% endmarkdown %}
 {% endblock %}

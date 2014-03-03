@@ -41,7 +41,7 @@ qq.SessionAjaxRequester = function(spec) {
         options.onComplete(response, !isError, xhrOrXdr);
     }
 
-    requester = new qq.AjaxRequester({
+    requester = qq.extend(this, new qq.AjaxRequester({
         validMethods: ["GET"],
         method: "GET",
         endpointStore: {
@@ -53,20 +53,18 @@ qq.SessionAjaxRequester = function(spec) {
         log: options.log,
         onComplete: onComplete,
         cors: options.cors
-    });
+    }));
 
 
     qq.extend(this, {
         queryServer: function() {
             var params = qq.extend({}, options.params);
 
-            // cache buster, particularly for IE & iOS
-            params.qqtimestamp = new Date().getTime();
-
             options.log("Session query request.");
 
             requester.initTransport("sessionRefresh")
                 .withParams(params)
+                .withCacheBuster()
                 .send();
         }
     });

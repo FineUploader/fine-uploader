@@ -140,7 +140,7 @@ describe("s3/util.js", function () {
             var fakeIframe = {
                     contentDocument: {
                         location: {
-                            search: "bucket=123&key=456&etag=789"
+                            search: "bucket=123&key=456&etag=%22789%22"
                         }
                     }
                 },

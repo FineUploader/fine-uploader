@@ -44,15 +44,14 @@ behavior for the Traditional or S3 uploader.
     )
 )}}
 
+{{
+alert("The `chunking.paramNames` option does **not** apply to S3.")
+}}
 {{ api_parent_option("chunking", "chunking", "",
     (
         ("chunking.partSize", "partSize", "The maximum size of each part, in bytes.", "Integer", "5242880",),
     )
 )}}
-
-{{
-alert("The `chunking.paramNames` option does **not** apply to S3.")
-}}
 
 {{ api_parent_option("cors", "cors", "",
     (
@@ -69,24 +68,25 @@ alert("The `chunking.paramNames` option does **not** apply to S3.")
 {{ api_parent_option("objectProperties", "objectProperties", "",
     (
         ("objectProperties.acl", "acl", "This value corresponds to a [canned ACL](http://docs.aws.amazon.com/AmazonS3/latest/dev/ACLOverview.html#CannedACL)", "String", "private",),
-        ("objectProperties.key", "key", "Describes the object key used to identify the file in your S3 bucket. Possible values are 'uuid', 'filename' or a function.  If the value is a function, Fine Uploader S3 will pass the associated file ID as a parameter when invoking your function. If the value is a function it may return one of a [`qq.Promise`](../features/options-s3.html) or a `String`.", "String or Function", "uuid",),
+        ("objectProperties.key", "key", "Describes the object key used to identify the file in your S3 bucket. Possible values are 'uuid', 'filename' or a function.  If the value is a function, Fine Uploader S3 will pass the associated file ID as a parameter when invoking your function. If the value is a function it may return one of a [`qq.Promise`](../features/async-tasks-and-promises.html) or a `String`.", "String or Function", "uuid",),
         ("objectProperties.reducedRedundancy", "reducedRedundancy", "Set this to true if you would like to use the reduced redundancy storage class for all objects uploaded to S3.", "Boolean", "false",),
         ("objectProperties.serverSideEncryption", "serverSideEncryption", "Set this to true if you would like all uploaded files to be encrypted by AWS.", "Boolean", "false",),
     )
 )}}
 
+{{
+alert("The `resume.paramNames` option does **not** apply to S3.")
+}}
 {{ api_parent_option("resume", "resume", "",
     (
         ("resume.recordsExpireIn", "recordsExpireIn", "Number of days before resumable file records expire.", "Integer", "7",),
     )
 )}}
 
-
 {{
-alert("The `resume.paramNames` option does **not** apply to S3.")
+alert("`request.customHeaders` does **not** apply to S3.")
 }}
-
-{{ api_parent_option("request", "request", "**Note:** `request.customHeaders` does **not** apply to S3.",
+{{ api_parent_option("request", "request", "",
     (
         ("request.accessKey", "accessKey", "Your AWS public key. **NOT YOUR SECRET KEY**. Ignored if `credentials` have been set.", "String", "null",),
         ("request.endpoint", "endpoint", "URL for your S3 bucket.  All valid bucket URLs documented by Amazon are supported, including custom domains.  SSL is also supported.", "String", "null",),
@@ -105,8 +105,8 @@ alert("The `resume.paramNames` option does **not** apply to S3.")
 {{ api_parent_option("uploadSuccess", "uploadSuccess", "",
     (
         ("uploadSuccess.customHeaders", "customHeaders", "Additional headers sent along with each signature request.", "Object", "{}",),
-        ("uploadSuccess.endpoint", "endpoint", "An endpoint that Fine Uploader should POST to when a file has been succcessfully uploaded to S3. The parameters include the key, name, UUID, and bucket associated with the file.", "String", "null",),
-        ("uploadSuccess.params", "params", "Any additional parameters to attach to upload success file requests. Note that Fine Uploader will still send the bucket, key, filename, and UUID as well", "Object", "{}",),
+        ("uploadSuccess.endpoint", "endpoint", "An endpoint that Fine Uploader should POST to when a file has been successfully uploaded to S3.", "String", "null",),
+        ("uploadSuccess.params", "params", "Any additional parameters to attach to upload success file requests. Note that Fine Uploader will still send the bucket, key, filename, UUID, and etag (if available) as well", "Object", "{}",),
     )
 )}}
 </div>

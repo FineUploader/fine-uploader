@@ -1,0 +1,181 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Upload Scaled Images" %}
+{% block sidebar %}
+{{ api_links(options=['scaling', 'scaling-ui', ], methods=['getParentId', 'scaleImage']) }}
+{% endblock %}
+{% block content %}
+{% markdown %}
+
+[s3]: s3.html
+[azure]: azure.html
+[scaling]: ../api/options.html#scaling
+[sizes]: ../api/options.html#scaling.sizes
+[defaulttype]: ../api/options.html#scaling.defaultType
+[sendOriginal]: ../api/options.html#scaling.sendOriginal
+[exif]: ../api/options.html#scaling.includeExif
+[orient]: ../api/options.html#scaling.orient
+[hidescaled]: ../api/options-ui.html#scaling.hideScaled
+[getfile]: ../api/methods.html#getFile
+[promise]: async-tasks-and-promises.html
+[data]: statistics-and-status-updates.html
+[api]: ../api/methods.html
+[itemlimit]: ../api/options.html#validation.itemLimit
+
+# Generate and Upload Scaled Images {: .page-header }
+
+### Overview
+The scaling feature allows your server to breathe a bit easier as image scaling efforts are handled client-side
+by Fine Uploader.  If your users submit any image files that can be rendered natively by the current browser,
+Fine Uploader will create scaled versions and upload those as well.  You can tell Fine Uploader which sizes you would
+like it to generate and upload.  You can specify size-specific text to append to each scaled image name.  The scaled
+image can be correctly oriented by Fine Uploader before it is sent to your server.  You can also ensure only scaled
+images, and not the original image, are uploaded.  Finally, you can ask Fine Uploader to magically insert the
+EXIF data from the original image into each scaled image.
+
+Generating and uploading scaled versions of each submitted
+image can be as simple as specifying an array of objects with `name` and `maxSize` properties to indicate the scaled image
+file's name and maximum size, respectively.
+
+
+### Basic Operation
+By default, Fine Uploader will send the original image file, along with any scaled versions you have requested via
+the [`scaling.sizes` option][sizes].  Also, by default, all scaled versions will be correctly oriented before they
+are uploaded.
+
+You must provide a `sizes` array though.  For example:
+
+```javascript
+var uploader = new qq.FineUploader({
+    ...
+    scaling: {
+        sizes: [
+            {name: "small", maxSize: 100},
+            {name: "medium", maxSize: 300}
+        ]
+    }
+});
+```
+
+The code above will result in Fine Uploader generating and uploading 2 scaled versions of each user-submitted
+image file.  The original, along with the 2 scaled versions, will appear in the UI's file list as well.  If the
+user submits a PNG named "image.png", that will be submitted, along with another file named "image (small).png",
+and "image (medium).png".
+
+The scaled versions will be scaled proportional to the original image.  In this case, the "small" version will
+be no more than 100px high or wide, and the "medium" version will be no more than 300px wide or high.
+
+Notice that the two scaled images do not initially have file sizes displayed in the UI.  This is due to the
+fact that Fine Uploader defers generation of these scaled versions until just before the images are going to be
+actually uploaded.  After a scaled image has been uploaded, the client-side generated version of this image is
+discarded to conserve browser memory.  Calls to the [`getFile` API method][getfile] will return the associated
+original file, not the scaled version.  This is due to the fact that, again, the scaled version is not kept around
+any longer than necessary to conserve memory.  Also, generating a scaled version is an asynchronous operation, which
+would require the [`getFile` API method][getfile] return a [`qq.Promise` object][promise], introducing a breaking
+change to the API.  Once a scaled image has been generated, the UI (and [upload data store][data]) will be updated
+with the generated size.
+
+Fine Uploader ensures that a group of scaled images is always uploaded in order, smallest file first.
+The original file is always sent last.
+
+
+### Only Upload Scaled Files
+To conserve bandwidth, you may only want to upload smaller, scaled versions of an original image.  Simply set the
+[`scaling.sendOriginal` option][sendoriginal] to `false`.  The above example would be changed to:
+
+```javascript
+var uploader = new qq.FineUploader({
+    ...
+    scaling: {
+        sendOriginal: false,
+
+        sizes: [
+            {name: "small", maxSize: 100},
+            {name: "medium", maxSize: 300}
+        ]
+    }
+});
+```
+
+If you instruct Fine Uploader to NOT send the original file, it will not be uploaded, represented in the
+UI, or represented in the [upload data store][data].  Effectively, the original file will be transformed into
+the specified number of scaled versions.  However, it will still be accessible via any [API methods][api]
+that require access to the original file for your convenience.  For example, calling [`getFile`][getfile]
+on a scaled image will still return the original file.
+
+
+### Hide Scaled Files in UI Mode
+If you do not want scaled versions to be represented in Fine Uploader UI's file list, simply set the Fine Uploader
+UI [`scaling.hideScaled` option][hidescaled] to `true`.  Note that this will _only_ ensure the scaled versions
+are not displayed in the UI.  They will still be uploaded and represented in the [upload data store][data].
+Since they will not be represented in the UI, this means that they cannot be deleted, canceled, or manually retried
+via Fine Uploader's default UI.  Failures of these scaled versions will obviously not be apparent to users by
+default if you elect to hide them from the UI.
+
+
+### Include EXIF Headers in Scaled Images
+If you set the [`scaling.includeExif` option][exif] to `true`, Fine Uploader will insert the EXIF header from the
+original image into each scaled image.  This option is ignored unless the original image AND the target (scaled)
+image are both of type "image/jpeg".
+
+```javascript
+var uploader = new qq.FineUploader({
+    ...
+    scaling: {
+        includeExif: true,
+
+        sizes: [
+            {name: "small", maxSize: 100},
+            {name: "medium", maxSize: 300}
+        ]
+    }
+});
+```
+
+In the above example, EXIF data from the original image will be inserted into both of the scaled images.
+Note that, by default, the scaled images will also be re-oriented according to the parsed Orientation tag in the
+original image.  If you don't want Fine Uploader to do this, you must set the [`scaling.orient` option][orient]
+to `false`.
+
+
+### Supported File Types
+Scaling can occur on JPEGs, BMPs, GIFs, and PNGs.  TIFFs are also supported, but only in Safari.  The output
+type is generally limited to JPEG and PNG.  By default, Fine Uploader will ensure that the output type matches
+the original file type, unless the original file type.  If the original file type happens to be anything other
+than a JPEG, the output type will default to PNG.  You can override this via the [`scaling` option][scaling], but
+you should probably not, unless you know what you are doing.
+
+
+### Tracking Scaled Files Server-Side
+Fine Uploader will send request parameters along with some scaled files to make it easy for you to connect them to
+the original/parent file server-side.  If you have not set the [scaling.sendOriginal option][sendOriginal]
+to `false`, "qqparentuuid" and "qqparentsize" parameters will be sent with each scaled image upload request.  These
+parameters link the scaled image to the parent/original image.  Note that the parent images will also include
+a "qquuid" request parameter as well.  If you are using [Fine Uploader S3][s3] or [Azure][azure], these parameters
+will be associated with the file in your bucket or blob container.
+
+
+### Notices
+* Do not set the [`scaling.hideScaled` option][hidescaled] to `true` AND the [`scaling.sendOriginal` option][sendoriginal]
+to `false` at the same time.  This will result in no files being represented in the UI for images that are scalable.
+
+* Scaled files hidden from the UI when the [`scaling.hideScaled` option][hidescaled] is set to `true` cannot be
+canceled, manually retried, or deleted via the UI, since they are not represented in the UI.
+
+* Be very careful when specifying a value for [`scaling.defaultType`][defaulttype], or a `type` property for one of your
+[`scaling.sizes` objects][sizes].  The only safe values are `null` (the default), "image/jpeg", and "image/png".  Other
+target types may not be supported by all browsers.
+
+* Be careful if you set the [`validation.itemLimit` option][itemlimit].  Each Scaled image file will count towards
+this item limit.
+
+* Client-side scaling and EXIF header re-insertion operations can potentially be very resource-intensive.
+Please keep this in mind before you enable this feature, taking into account your user base and application goals.
+
+
+### Supported Browsers
+This feature is supported on all browsers other than IE9 and older, Android 2.4 or older, and Safari 5.1 or older.
+Note that Android's stock browser is also not supported, due to multiple long-standing bugs in that browser with
+Blobs and data URIs.  Chrome on Android is supported, though.
+
+{% endmarkdown %}
+{% endblock %}

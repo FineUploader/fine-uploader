@@ -85,6 +85,36 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+        it("converts all parameters (metadata) to lower case before sending them to S3", function(done) {
+            assert.expect(5, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request: typicalRequestOption,
+                    signature: typicalSignatureOption
+                }
+            );
+
+            uploader.setParams({
+                mIxEdCaSe: "value",
+                mIxEdCaSeFunc: function() {
+                    return "value2";
+                }
+            });
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var uploadRequestParams;
+
+                assert.equal(conditions["x-amz-meta-mixedcase"], "value");
+                assert.equal(conditions["x-amz-meta-mixedcasefunc"], "value2");
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                uploadRequestParams = uploadRequest.requestBody.fields;
+
+                assert.equal(uploadRequestParams["x-amz-meta-mixedcase"], "value");
+                assert.equal(uploadRequestParams["x-amz-meta-mixedcasefunc"], "value2");
+            });
+        });
+
         it("respects the objectProperties.key option w/ a value of 'filename'", function(done) {
             assert.expect(5, done);
 
@@ -347,7 +377,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 var uploadSuccessRequest, uploadSuccessRequestParsedBody;
 
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
-                uploadRequest.respond(200, null, null);
+                uploadRequest.respond(200, {ETag: "123"}, null);
 
                 assert.equal(fileTestHelper.getRequests().length, 3, "Wrong # of requests");
                 uploadSuccessRequest = fileTestHelper.getRequests()[2];
@@ -361,6 +391,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(uploadSuccessRequestParsedBody.uuid, uploader.getUuid(0));
                 assert.equal(uploadSuccessRequestParsedBody.name, uploader.getName(0));
                 assert.equal(uploadSuccessRequestParsedBody.bucket, testBucketName);
+                assert.equal(uploadSuccessRequestParsedBody.etag, "123");
 
                 uploadSuccessRequest.respond(200, null, null);
                 assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);

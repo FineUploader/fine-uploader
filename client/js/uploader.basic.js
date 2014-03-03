@@ -3,6 +3,8 @@
     "use strict";
 
     qq.FineUploaderBasic = function(o) {
+        var self = this;
+
         // These options define FineUploaderBasic mode.
         this._options = {
             debug: false,
@@ -43,12 +45,14 @@
                 onSubmit: function(id, name){},
                 onSubmitted: function(id, name){},
                 onComplete: function(id, name, responseJSON, maybeXhr){},
+                onAllComplete: function(successful, failed) {},
                 onCancel: function(id, name){},
                 onUpload: function(id, name){},
                 onUploadChunk: function(id, name, chunkData){},
                 onUploadChunkSuccess: function(id, chunkData, responseJSON, xhr){},
                 onResume: function(id, fileName, chunkData){},
                 onProgress: function(id, name, loaded, total){},
+                onTotalProgress: function(loaded, total){},
                 onError: function(id, name, reason, maybeXhrOrXdr) {},
                 onAutoRetry: function(id, name, attemptNumber) {},
                 onManualRetry: function(id, name) {},
@@ -167,6 +171,40 @@
                 params: {},
                 customHeaders: {},
                 refreshOnReset: true
+            },
+
+            // Send parameters associated with an existing form along with the files
+            form: {
+                // Element ID, HTMLElement, or null
+                element: "qq-form",
+
+                // Overrides the base `autoUpload`, unless `element` is null.
+                autoUpload: false,
+
+                // true = upload files on form submission (and squelch submit event)
+                interceptSubmit: true
+            },
+
+            // scale images client side, upload a new file for each scaled version
+            scaling: {
+                // send the original file as well
+                sendOriginal: true,
+
+                // fox orientation for scaled images
+                orient: true,
+
+                // If null, scaled image type will match reference image type.  This value will be referred to
+                // for any size record that does not specific a type.
+                defaultType: null,
+
+                defaultQuality: 80,
+
+                failureText: "Failed to scale",
+
+                includeExif: false,
+
+                // metadata about each requested scaled version
+                sizes: []
             }
         };
 
@@ -190,7 +228,8 @@
         this._netUploaded = 0;
         this._uploadData = this._createUploadDataTracker();
 
-        this._paramsStore = this._createStore(this._options.request.params);
+        this._initFormSupportAndParams();
+
         this._deleteFileParamsStore = this._createStore(this._options.deleteFile.params);
 
         this._endpointStore = this._createStore(this._options.request.endpoint);
@@ -221,6 +260,25 @@
 
         this._imageGenerator = qq.ImageGenerator && new qq.ImageGenerator(qq.bind(this.log, this));
         this._refreshSessionData();
+
+        this._succeededSinceLastAllComplete = [];
+        this._failedSinceLastAllComplete = [];
+
+        this._scaler = (qq.Scaler && new qq.Scaler(this._options.scaling, qq.bind(this.log, this))) || {};
+        if (this._scaler.enabled) {
+            this._customNewFileHandler = qq.bind(this._scaler.handleNewFile, this._scaler);
+        }
+
+        if (qq.TotalProgress && qq.supportedFeatures.progressBar) {
+            this._totalProgress = new qq.TotalProgress(
+                qq.bind(this._onTotalProgress, this),
+
+                function(id) {
+                    var entry = self._uploadData.retrieve({id: id});
+                    return (entry && entry.size) || 0;
+                }
+            );
+        }
     };
 
     // Define the private & public API methods.

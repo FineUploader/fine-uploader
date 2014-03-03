@@ -1,0 +1,138 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Support for Forms" %}
+{% block sidebar %}
+{{ api_links(options=['form']) }}
+{% endblock %}
+{% block content %}
+{% markdown %}
+
+[form]: ../api/options.html#form
+[validationattrs]: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation
+[constraintsapi]: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Forms_in_HTML?redirectlocale=en-US&redirectslug=Web%2FHTML%2FForms_in_HTML#Constraint_Validation_API
+[allcomplete]: ../api/events.html#allComplete
+
+# Integrating with Existing HTML Forms {: .page-header }
+
+### Overview
+Say you have an existing HTML form.  Say you want to simply allow your users to send files along with the form data.
+Fine Uploader form support will allow you to do this quite easily.  A number of conventions are in place to allow
+incredibly easy integration of Fine Uploader into your existing form.  If you follow all of these conventions, and only
+require the most basic features, you can initialize and attach Fine Uploader to your form with only one simple line of
+JavaScript!    But don't worry, any of these conventions can be overridden via the [form option][form].  Fine Uploader
+will even respect any HTML5 validation attributes set on your form elements.  Furthermore, you can include a traditional
+submit button in your form, and Fine Uploader will intercept this and upload all submitted files with the associated
+form data for you.
+
+### Features
+#### Convention over configuration
+A set of conventions are in place that allow you to simply include a form in your document and allow Fine Uploader
+to discover it and send all form data along with each upload request without explicitly setting any form-related
+configuration options.  This can allow you to focus more on your form, and less on JavaScript.  By default, Fine Uploader
+will:
+
+* Find your form automatically if it has an `id` attribute with a value of "qq-form".  Once it finds your form, all
+file upload requests will include any data associated with that form, automatically!
+* Ensure any HTML5 validation attributes on your form elements are respected.  If any form values are invalid, the user
+will be notified and the uploads will not occur.
+* Set the `request.endpoint` option to the value of your form's `action` attribute.  This means that you don't even
+need to provide a `request.endpoint` configuration value when creating your Fine Uploader instance.
+* Intercept any attempt to submit your form and instead upload all user-selected files (along with associated form data).
+* Set Fine Uploader to "manual" upload mode.  This means that uploads will not occur until you (or your user) indicate
+that they are done filling out the form and choosing files.  You can allow your user to "submit" the form and trigger
+all files to be uploaded by simply providing a submit button in your form.
+
+If you don't want to rely on some of these default behaviors, you can override them.  See the [form option][form]
+for details.
+
+#### Validation
+Fine Uploader will respect any [validation attributes on your form elements][validationattrs], provided the current browser
+supports the [HTML5 Constraints Validation API][constraintsapi].  When an attempt is made to submit the associated form,
+if there are validation issues, Fine Uploader will prevent the files from being uploaded until the issues are resolved
+by the user.  Furthermore, the specific issues will be highlighted in the UI.
+
+{{ alert("Validation will only occur if you attempt to submit your form via a submit button, or by triggering the  form's submit
+function, or by triggering a submit event on the form.  If you trigger an upload via the [uploadStoredFiles API method](../api/methods.html#uploadStoredFiles),
+the form will not be validated.", "info", "Note:") }}
+
+#### Submit support
+Submit attempts that target your attached form will be intercepted by default.  When Fine Uploader intercepts a submit
+attempt, it will first attempt to validate the form.  If the form is valid, or if the current browser does not have
+native support for form validation, the user-selected files will be uploaded along with the form data.  Fine Uploader
+will intercept submit attempts triggered by a form submit button, invocation of the form element's `submit` function,
+or via a submit event.
+
+You can prevent Fine Uploader from intercepting submit events by adjusting the [form.interceptSubmit option][form].
+
+
+#### When are all uploads done?
+A new callback/event has been added: [`onAllComplete`][allcomplete].  This will be triggered when all selected
+files have been uploaded (successfully or not).  Fine Uploader will pass an array of all successfully uploaded file
+IDs, and an array of all failed file IDs.  If you need to notify your server when all associated files are done,
+you can safely implement this logic in a contributed `onAllComplete` event handler.
+
+#### Cross-browser
+The form support feature, like most other Fine Uploader features, works in all supported browsers (including IE7).
+
+
+### Simple example
+The simplest use-case results in a very simple example, with only one line of JavaScript!  Here is a complete HTML
+file that integrates Fine Uploader into an existing form:
+
+```html
+<html>
+    <head>
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script src="fineuploader.js"</script>
+        <link href="fineuploader.css">
+        <script type="text/template" id="qq-template">
+            <div class="qq-uploader-selector qq-uploader">
+                <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>
+                    <span>Drop files here to upload</span>
+                </div>
+                <div class="qq-upload-button-selector qq-upload-button">
+                    <div>Select Files</div>
+                </div>
+                <span class="qq-drop-processing-selector qq-drop-processing">
+                    <span>Processing dropped files...</span>
+                    <span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>
+                </span>
+                <ul class="qq-upload-list-selector qq-upload-list">
+                    <li>
+                        <div class="qq-progress-bar-container-selector">
+                            <div class="qq-progress-bar-selector qq-progress-bar"></div>
+                        </div>
+                        <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
+                        <span class="qq-upload-file-selector qq-upload-file"></span>
+                        <span class="qq-upload-size-selector qq-upload-size"></span>
+                        <a class="qq-upload-cancel-selector qq-upload-cancel" href="#">Cancel</a>
+                        <span class="qq-upload-status-text-selector qq-upload-status-text"></span>
+                    </li>
+                </ul>
+            </div>
+        </script>
+    <head>
+
+    <body>
+        <form action="server/uploads.php" id="qq-form">
+            <label>Enter your name</label>
+            <input type="text" name="user_name" required>
+            <label>Enter your email</label>
+            <input type="email" name="user_email" required>
+            <input type="submit" value="Done">
+        </form>
+
+        <div id="my-uploader"></div>
+
+        <script>
+            $("#my-uploader").fineUploader();
+        </script>
+    </body>
+<html>
+```
+
+{{ alert("Note that you do not need to use jQuery.  Fine Uploader works just fine without it (it doesn't depend on jQuery
+internally at all).  However, most web applications are likely already using jQuery, so our example reflects this
+common situation.", "info", "Note:") }}
+
+{% endmarkdown %}
+{% endblock %}

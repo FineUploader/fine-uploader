@@ -77,7 +77,7 @@ More information on [retrying uploads here](../features/retry.html).
 
 ### Deleting Files
 
-If a user has uploaded a file, but realized it was a mistake before aborting, then FineUploder can also help them delete files.
+If a user has uploaded a file, but realized it was a mistake before aborting, then Fine Uploader can also help them delete files.
 
 A file is eligible for deletion only after it has been successfully uploaded.
 In Fine Uploader UI mode, if this feature is enabled, a customizable delete

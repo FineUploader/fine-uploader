@@ -1,20 +1,49 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Progress Bars" %}
 {% block sidebar %}
-{{ api_links(events=['progress']) }}
+{{ api_links(events=['progress', 'totalProgress']) }}
 {% endblock %}
 {% block content %}
 {% markdown %}
 
 # Progress Bars {: .page-header }
 
-{{ alert("This feature is only available in Chrome (except on Android), Firefox, Safari, IE10+, & Opera 15+ due to their support for the
-[`ProgressEvent` interface](https://dvcs.w3.org/hg/progress/raw-file/tip/Overview.html#interface-progressevent).") }}
+{{ alert("This feature is available in Chrome (except in iOS), Firefox, Safari, IE10+, & Opera 15+ due to their support for the
+[`ProgressEvent` interface](https://dvcs.w3.org/hg/progress/raw-file/tip/Overview.html#interface-progressevent).  Note that
+progress reporting is not supported in Android's stock browser, or Chrome in iOS.") }}
 
 Seeing your uploads progress can be a satisfying feeling, especially when they
 finish. With Fine Uploader UI mode, a progress bar is included in the UI, and
 -- just like any other Fine Uploader UI feature -- it can be completely
 rebuilt and rebranded in Core mode.
+
+Fine Uploader provides two concepts of progress: per-file progress, and total progress.
+
+### Per-File Progress
+If using Fine Uploader UI, a progress bar will be drawn and updated for each file as the upload progresses.  Note that
+you must have the progress element in your template.  There is also a `progress` event, that can be used to feed your
+own custom progress bar if you are using Fine Uploader Core.
+
+
+### Total Progress
+Version 4.4 brings built-in total progress tracking.  If using Fine Uploader UI, a total progress bar will be rendered
+and updated automatically for you, provided you have the total progress module included in the source and the total
+progress element is present in your template.  Fine Uploader core users can easily feed their own custom total progress
+bar by listening to the `totalProgress` events that Fine Uploader will trigger.
+
+Total progress represents the upload progress of all files in the current batch of files.  Once all files have
+finished uploading (failed or successful), total progress calculations are complete and will restart once
+new files are submitted.
+
+Total progress will be updated, and the `totalProgress` event will be triggered whenever:
+* An individual file's progress changes.
+* The total size of an individual file changes (such as for scaled images, as the sizes of these are not known
+until they are generated just before the upload begins).
+* Whenever a file is added.
+* Whenever a file is canceled.
+
+In Fine Uploader UI, the total progress bar will be hidden once it reaches 100%, or once there are no longer
+any files in progress.
 
 {% endmarkdown %}
 {% endblock %}

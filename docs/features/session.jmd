@@ -27,7 +27,7 @@ Fine Uploader will assign IDs to each file item as well.  Also note that file it
 counted when determining if you have reached your [`validation.itemLimit`](validation.html).
 
 ### Fine Uploader UI Support
-In addition to everything described in the above core sestion, all files loaded into Fine Uploader on startup
+In addition to everything described in the above core session, all files loaded into Fine Uploader on startup
 (or after a reset) will be displayed in Fine Uploader UI as successfully uploaded files.  If the delete file feature
 is enabled, a delete button will appear next to each file as well.
 
@@ -47,7 +47,9 @@ Here are the following properties of each `Object` that Fine Uploader recognizes
 * size: `Number` - Size of the file, in bytes.
 * deleteFileEndpoint: `String` - Endpoint for the associated delete file request.  If omitted, the `deleteFile.endpoint` is used.
 * deleteFileParams: `Object` - Parameters to send along with the associated delete file request.  If omitted, `deleteFile.params` is used.
-* *s3Key: `String` - Key of the file in your S3 bucket.  Only required if using Fine Uploader S3
+* thumbnailUrl: `String` - URL of an image to display next to the file.
+* *s3Key: `String` - Key of the file in your S3 bucket.  Only required if using Fine Uploader S3.
+* *blobName: `String` - Name of the file in your Azure Blob Storage container.  Only required if using Fine Uploader Azure.
 
 The response will be converted into a JavaScript `Array` and passed to your `sessionRequestComplete` event handler.
 So, any non-standard object properties passed with your server response will also be passed to your event handler.

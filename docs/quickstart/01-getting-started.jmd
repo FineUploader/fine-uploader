@@ -64,6 +64,19 @@ To make use of Fine Uploader S3:
 var uploader = new qq.s3.FineUploader({/* options go here ... */});
 ```
 
+##### [Azure Blob Storage](../endpoint_handlers/azure.html)
+Fine Uploader comes with built in support that allows all files to be uploaded directly to Azure via the browser.
+To make use of Fine Uploader Azure:
+
+```javascript
+var uploader = new qq.azure.FineUploader({/* options go here ... */});
+```
+{{ alert("Fine Uploader Azure does not support IE9 and older.  This is due to the fact that Azure's API does
+not allow files to be uploaded via multipart encoded POST requests, which is critical for IE9 and older support.
+If you need to support IE9 and older, you will need to load/use Fine Uploader with its traditional endpoint
+handler if the value of `qq.supportedFeatures.ajaxUploading` is `false`.") }}
+
+
 #### [jQuery](../integrating/jquery.html)
 
 Fine Uploader is also easily used as a jQuery plugin. This plugin gives you
@@ -84,6 +97,11 @@ $("#fine-uploader").fineUploader({/* options go here... */});
 To use Fine Uploader S3 with the jQuery plugin:
 ```javascript
 $("#fine-uploader").fineUploaderS3({/* options go here... */});
+```
+
+To use Fine Uploader Azure with the jQuery plugin:
+```javascript
+$("#fine-uploader").fineUploaderAzure({/* options go here... */});
 ```
 
 {{ alert(
@@ -151,8 +169,9 @@ Next, let's check out some of Fine Uploader's options.
 
 Proceed by selecting either:
 
-* [Traditional Mode](02-setting_options.html)
-* [Amazon S3 Mode](02-setting_options-s3.html)
+* [Traditional endpoint](02-setting_options.html)
+* [Amazon S3 endpoint](02-setting_options-s3.html)
+* [Azure Blob Storage endpoint](02-setting_options-azure.html)
 
 {% endmarkdown %}
 {% endblock %}

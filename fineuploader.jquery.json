@@ -12,9 +12,11 @@
     "amazon",
     "input",
     "form",
-    "ui"
+    "ui",
+    "azure",
+    "microsoft"
   ],
-  "version": "4.3.0-3",
+  "version": "4.4.0-9",
   "author": {
     "name": "Widen Enterprises",
     "url": "http://widen.com"
@@ -31,7 +33,7 @@
   ],
   "bugs": "https://github.com/Widen/fine-uploader/issues",
   "homepage": "http://fineuploader.com",
-  "demo": "http://fineuploader.com",
+  "demo": "http://fineuploader.com/demos.html",
   "docs": "http://docs.fineuploader.com",
   "download": "http://fineuploader.com/downloads.html",
   "dependencies": {

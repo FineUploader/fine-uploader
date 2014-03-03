@@ -137,6 +137,19 @@ qq.UploadData = function(uploaderProxy) {
 
         updateName: function(id, newName) {
             data[id].name = newName;
+        },
+
+        updateSize: function(id, newSize) {
+            data[id].size = newSize;
+        },
+
+        // Only applicable if this file has a parent that we may want to reference later.
+        setParentId: function(targetId, parentId) {
+            data[targetId].parentId = parentId;
+        },
+
+        setGroupIds: function(id, groupIds) {
+            data[id].groupIds = groupIds;
         }
     });
 };

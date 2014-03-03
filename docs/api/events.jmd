@@ -21,12 +21,51 @@ $(document).ready(function() {
 {% block content %}
 {% markdown %}
 
+[status]: ../features/statistics-and-status-updates.html
+
 # Events {: .page-header }
 
 Fine Uploader's event system enables integrators to execute any operations at
 almost any point in the upload process. Knowing how these callbacks work, and
 when they are called, is crucial to unlocking the full potential of
 Fine Uploader.
+
+### Syntax
+
+There is a significant difference in the way events are defined between the jQuery and non-jQuery uploaders.
+
+When using the non-jQuery version, events are defined as functions in the `callbacks` option object.
+
+There are two things to keep in mind when using the jQuery plugin version. First, event handlers are defined by calling the [jQuery `.on()`](http://api.jquery.com/on/) function which will bind a function to an event. Secondly, event handler parameters are passed an extra [jQuery `Event`](http://api.jquery.com/category/events/event-object/) object. If using the jQuery plugin, this Event object will precede all arguments listed.
+
+See the [Integrating jQuery](../integrating/jquery) page for code examples and more details.
+
+#### non-jQuery
+
+When using the non-jQuery uploader, the following syntax is the correct way to define event handlers:
+
+```
+callbacks: {
+    onDelete: function(id) {
+    // ...
+    },
+    onDeleteComplete: function(id, xhr, isError) {
+    //...
+    }
+}
+```
+
+#### jQuery
+
+The syntax below is only acceptable when using the jQuery plugin for the uploader:
+
+```
+$("#my_uploader").on("deleteComplete", function(event, id, xhr, isError) {
+    //...
+}).on("delete", function(event, id) {
+    // ...
+});
+```
 
 {% endmarkdown %}
 <div class="events-all">
@@ -77,7 +116,7 @@ the upload may actually complete until the promise has actually be fullfilled.
 {{ api_event("complete", "complete",
 """Called when the item has finished uploading.
 
-The `responseJSON` will contain the raw response from teh server including the
+The `responseJSON` will contain the raw response from the server including the
 'success' property which indicates whether the upload succeeded.""",
     [
         {
@@ -99,6 +138,27 @@ The `responseJSON` will contain the raw response from teh server including the
             "name": "xhr",
             "type": "XMLHttpRequest or XDomainRequest",
             "description": "The object used to make the request."
+        }
+    ])
+}}
+
+{{ api_event("allComplete", "allComplete",
+"Called when all submitted items have reached a point of termination.  A file has reached a point of termination
+if it has been cancelled, rejected, or uploaded (failed or successful).  For example, if a file in the group is paused,
+and all other files in the group have uploaded successfully the allComplete event will not be invoked for the group
+until that paused file is either continued and completes the uploading process, or canceled.  This event will not be
+called if all files in the group have been cancelled or rejected (i.e. if none of the files have reached a
+[status][status] of `qq.status.UPLOAD_SUCCESSFUL` or `qq.status.UPLOAD_FAILED`).",
+    [
+        {
+            "name": "succeeded",
+            "type": "Array",
+            "description": "IDs of all files in the group that have uploaded successfully ([status][status] = `qq.status.UPLOAD_SUCCESSFUL`)."
+        },
+        {
+            "name": "failed",
+            "type": "Array",
+            "description": "IDs of all files in the group that have failed ([status][status] = `qq.status.UPLOAD_FAILED`)."
         }
     ])
 }}
@@ -379,6 +439,26 @@ been added to the DOM immediately before this callback is invoked.
     ])
 }}
 
+{{ api_event("totalProgress", "totalProgress",
+""" Called during a batch of uploads, as they progress, but only for the AJAX uploader.  This represents the total
+progress of all files in the batch.
+
+Useful for implementing an aggregate progress bar.
+""",
+    [
+        {
+            "name": "totalUploadedBytes",
+            "type": "Integer",
+            "description": "The number of bytes that have been uploaded so far in this batch."
+        },
+        {
+            "name": "totalBytes",
+            "type": "Integer",
+            "description": "The total number of bytes that comprise all files in the batch."
+        }
+    ])
+}}
+
 {{ api_event("upload", "upload", "Called just before an item begins uploading to the server.",
     [
         {
@@ -522,4 +602,5 @@ The `fileOrBlobDataArray` object has two properties: `name` and `size`. The `siz
 }}
 
 </div>
+
 {% endblock %}

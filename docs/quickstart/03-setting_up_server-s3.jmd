@@ -1,5 +1,5 @@
 {% extends "_templates/base.html" %}
-{% set page_title = "Server Set-Upi S3" %}
+{% set page_title = "Server Set-Up S3" %}
 
 {% block content %}
 {% markdown %}
@@ -19,7 +19,7 @@ though**.
 Let's rock! First, download [express](https://npmjs.org/package/express) and the
 [aws-sdk](https://npmjs.org/package/aws-sdk):
 
-`npm install -g express aws-sdk`
+`npm install express aws-sdk`
 
 Now let's download our server:
 

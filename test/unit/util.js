@@ -811,6 +811,5 @@ describe("util.js", function () {
             assert.equal(qq.format("Number: {}, boolean: {}, Object: {}, Array: {}", 1, true, {one: "two"}, [1,2,3]), "Number: 1, boolean: true, Object: [object Object], Array: 1,2,3");
         });
     });
-
 }); // Util
 

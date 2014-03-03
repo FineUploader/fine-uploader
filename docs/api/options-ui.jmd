@@ -40,6 +40,13 @@ can be overridden.
 
 {{ api_option("multiple", "multiple", "When `false` this will prevent the user from simultaneously selecting or dropping more than one item. Dropping or selecting another item will clear the upload list. If another is already uploading, it will be canceled. To ignore rather than cancel, simply return `false` in the 'validate' or 'submit' event handlers.", "Boolean", "true") }}
 
+{{ api_option("showMessage", "showMessage", "Provide a function here to display a message to the user when the uploader receives an error or the user attempts to leave the page. The provided function may return a promise if one wishes to do asynchronous work whilst waiting for user input.", "Function", "") }}
+
+{{ api_option("showConfirm", "showConfirm", "Provide a function here to prompt the user to confirm deletion of a file. The provided function may return a promise if one wishes to do asynchronous work whilst waiting for user input.", "Function", "") }}
+
+{{ api_option("showPrompt", "showPrompt", "Provide a function here to prompt the user for a filename when pasting file(s). The provided function may return a promise if one wishes to do asynchronous work whilst waiting for user input.", "Function", "") }}
+
+
 {{ api_option("template", "template", "This points to the script tag that contains the template to use for one or more Fine Uploader UI instances.  You can either specify a string, which is the element ID (the ID of the script tag on the page) or an `Element` that points to the script tag.", "String or Element", "qq-template") }}
 
 {{ api_parent_option("deleteFile", "deleteFile",
@@ -48,8 +55,8 @@ options for `deleteFile`.
 """,
     (
         ("deleteFile.confirmMessage", "confirmMessage", "The message displayed in the confirm delete dialog.", "String", "Are you sure you want to delete {filename}?",),
-        ("deleteFile.deletingFailedText", "deletingFailedText", "The status message to appear next to a file that is pending deletion.", "String", "Delete failed",),
-        ("deleteFile.deletingStatusText", "deletingStatusText", "The status message to appear next to a file that has failed to delete.", "String", "Deleting...",),
+        ("deleteFile.deletingFailedText", "deletingFailedText", "The status message to appear next to a file that has failed to delete.", "String", "Delete failed",),
+        ("deleteFile.deletingStatusText", "deletingStatusText", "The status message to appear next to a file that is pending deletion.", "String", "Deleting...",),
         ("deleteFile.forceConfirm", "forceConfirm", "Bypass prompting the user for confirmation for file deletion, and continue with delete instead.", "Boolean", "false",),
     )
 )}}
@@ -114,6 +121,14 @@ options for `retry`""", "info", "Note:") }}
         ("paste.promptForName", "promptForName", "Enable or disable the usage of `showPrompt` by Fine Uploader to prompt the user for a filename for a pasted file.", "Boolean", "false",),
     )
 )}}
+
+{{ api_parent_option("scaling", "scaling", "See the [Upload Scaled Images feature page](../feature/scaling.html) for more details.",
+    (
+        ("scaling.failureText", "failureText", "Text that will appear next to a scaled image that could not be generated.  This is in addition to the behavior associated with this property provided by Fine Uploader Core.", "String", "Failed to scale",),
+        ("scaling.hideScaled", "hideScaled", "Set this to true if you do not want any scaled images to be displayed in the file list.", "Boolean", "false",),
+    )
+)
+}}
 
 {{ api_parent_option("text", "text", "",
     (
