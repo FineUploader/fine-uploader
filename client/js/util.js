@@ -1,4 +1,5 @@
 /*globals window, navigator, document, FormData, File, HTMLInputElement, XMLHttpRequest, Blob, Storage, ActiveXObject */
+/* jshint -W079 */
 var qq = function(element) {
     "use strict";
 
