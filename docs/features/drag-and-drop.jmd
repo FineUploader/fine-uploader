@@ -65,9 +65,9 @@ api_event("processingDroppedFilesComplete", "processingDroppedFilesComplete",
     {
         "name": "files",
         "type": "Array",
-        "description": "An array of processed files.  Note that a `qqPathFromRoot` property will be added
+        "description": "An array of processed files.  Note that a `qqPath` property will be added
         to each `File` object that was dropped as part of a directory drop.  The value of this property
-        will be the path of the file relative to the dropped top-level directory."
+        will be the path of the file starting with the dropped top-level directory."
     },
     {
         "name": "dropTarget",

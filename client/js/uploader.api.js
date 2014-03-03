@@ -281,9 +281,9 @@
         _onSubmit: function(id, name) {
             var file = this.getFile(id);
 
-            if (file && file.qqPathFromRoot && this._options.dragAndDrop.reportDirectoryPaths) {
-                this._handler.addMandatoryParams(id, {
-                    qqpathfromroot: file.qqPathFromRoot
+            if (file && file.qqPath && this._options.dragAndDrop.reportDirectoryPaths) {
+                this._paramsStore.addReadOnly(id, {
+                    qqpath: file.qqPath
                 });
             }
 
