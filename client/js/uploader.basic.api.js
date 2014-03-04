@@ -113,7 +113,10 @@
 
         addFiles: function(filesOrInputs, params, endpoint) {
             var verifiedFilesOrInputs = [],
+                batchId = this._storedIds.length === 0 ? qq.getUniqueId() : this._currentBatchId,
                 fileOrInputIndex, fileOrInput, fileIndex;
+
+            this._currentBatchId = batchId;
 
             if (filesOrInputs) {
                 if (!qq.isFileList(filesOrInputs)) {
@@ -126,11 +129,11 @@
                     if (qq.isFileOrInput(fileOrInput)) {
                         if (qq.isInput(fileOrInput) && qq.supportedFeatures.ajaxUploading) {
                             for (fileIndex = 0; fileIndex < fileOrInput.files.length; fileIndex++) {
-                                this._handleNewFile(fileOrInput.files[fileIndex], verifiedFilesOrInputs);
+                                this._handleNewFile(fileOrInput.files[fileIndex], batchId, verifiedFilesOrInputs);
                             }
                         }
                         else {
-                            this._handleNewFile(fileOrInput, verifiedFilesOrInputs);
+                            this._handleNewFile(fileOrInput, batchId, verifiedFilesOrInputs);
                         }
                     }
                     else {
@@ -151,7 +154,10 @@
             if (blobDataOrArray) {
                 var blobDataArray = [].concat(blobDataOrArray),
                     verifiedBlobDataList = [],
+                    batchId = this._storedIds.length === 0 ? qq.getUniqueId() : this._currentBatchId,
                     self = this;
+
+                this._currentBatchId = batchId;
 
                 qq.each(blobDataArray, function(idx, blobData) {
                     var blobOrBlobData;
@@ -169,7 +175,7 @@
                         self.log("addBlobs: entry at index " + idx + " is not a Blob or a BlobData object", "error");
                     }
 
-                    blobOrBlobData && self._handleNewFile(blobOrBlobData, verifiedBlobDataList);
+                    blobOrBlobData && self._handleNewFile(blobOrBlobData, batchId, verifiedBlobDataList);
                 });
 
                 this._prepareItemsForUpload(verifiedBlobDataList, params, endpoint);
@@ -398,7 +404,7 @@
 
         // Updates internal state with a file record (not backed by a live file).  Returns the assigned ID.
         _addCannedFile: function(sessionData) {
-            var id = this._uploadData.addFile(sessionData.uuid, sessionData.name, sessionData.size,
+            var id = this._uploadData.addFile(sessionData.uuid, sessionData.name, sessionData.size, null, null,
                 qq.status.UPLOAD_SUCCESSFUL);
 
             sessionData.deleteFileEndpoint && this.setDeleteFileEndpoint(sessionData.deleteFileEndpoint, id);
@@ -415,19 +421,21 @@
         },
 
         // Updates internal state when a new file has been received, and adds it along with its ID to a passed array.
-        _handleNewFile: function(file, newFileWrapperList) {
+        _handleNewFile: function(file, batchId, newFileWrapperList) {
             var self = this,
                 uuid = qq.getUniqueId(),
                 size = -1,
                 name = qq.getFilename(file),
                 actualFile = file.blob || file,
-                handler = this._customNewFileHandler ? this._customNewFileHandler : qq.bind(self._handleNewFileGeneric, self);
+                handler = this._customNewFileHandler ?
+                    this._customNewFileHandler :
+                    qq.bind(self._handleNewFileGeneric, self);
 
             if (actualFile.size >= 0) {
                 size = actualFile.size;
             }
 
-            handler(actualFile, name, uuid, size, newFileWrapperList, this._options.request.uuidName, {
+            handler(actualFile, name, uuid, size, newFileWrapperList, batchId, this._options.request.uuidName, {
                 uploadData: self._uploadData,
                 paramsStore: self._paramsStore,
                 addFileToHandler: function(id, file) {
@@ -438,8 +446,8 @@
             });
         },
 
-        _handleNewFileGeneric: function(file, name, uuid, size, fileList) {
-            var id = this._uploadData.addFile(uuid, name, size);
+        _handleNewFileGeneric: function(file, name, uuid, size, fileList, batchId) {
+            var id = this._uploadData.addFile(uuid, name, size, batchId);
 
             this._handler.add(id, file);
             this._trackButton(id);
@@ -742,9 +750,8 @@
                             status === qq.status.UPLOAD_RETRYING ||
                             status === qq.status.PAUSED;
                     },
-                    getIdsInGroup: function(id) {
-                        return self.getUploads({id: id}).groupIds;
-                    }
+                    getIdsInProxyGroup: self._uploadData.getIdsInProxyGroup,
+                    getIdsInBatch: self._uploadData.getIdsInBatch
                 };
 
             qq.each(this._options.request, function(prop, val) {

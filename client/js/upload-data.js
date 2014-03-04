@@ -4,7 +4,9 @@ qq.UploadData = function(uploaderProxy) {
 
     var data = [],
         byUuid = {},
-        byStatus = {};
+        byStatus = {},
+        byProxyGroupId = {},
+        byBatchId = {};
 
 
     function getDataByIds(idOrIds) {
@@ -59,29 +61,49 @@ qq.UploadData = function(uploaderProxy) {
          * @param uuid Initial UUID for this file.
          * @param name Initial name of this file.
          * @param size Size of this file, -1 if this cannot be determined
-         * @param status Initial `qq.status` for this file.  If null/undefined, `qq.status.SUBMITTING`.
+         * @param opt_status Initial `qq.status` for this file.  If null/undefined, `qq.status.SUBMITTING`.
+         * @param opt_batchId ID of the batch this file belongs to
+         * @param opt_proxyGroupId ID of the proxy group associated with this file
          * @returns {number} Internal ID for this file.
          */
-        addFile: function(uuid, name, size, status) {
-            status = status || qq.status.SUBMITTING;
+        addFile: function(uuid, name, size, opt_batchId, opt_proxyGroupId, opt_status) {
+            opt_status = opt_status || qq.status.SUBMITTING;
 
             var id = data.push({
                 name: name,
                 originalName: name,
                 uuid: uuid,
                 size: size,
-                status: status
+                status: opt_status
             }) - 1;
+
+            if (opt_batchId) {
+                data[id].batchId = opt_batchId;
+
+                if (byBatchId[opt_batchId] === undefined) {
+                    byBatchId[opt_batchId] = [];
+                }
+                byBatchId[opt_batchId].push(id);
+            }
+
+            if (opt_proxyGroupId) {
+                data[id].proxyGroupId = opt_proxyGroupId;
+
+                if (byProxyGroupId[opt_proxyGroupId] === undefined) {
+                    byProxyGroupId[opt_proxyGroupId] = [];
+                }
+                byProxyGroupId[opt_proxyGroupId].push(id);
+            }
 
             data[id].id = id;
             byUuid[uuid] = id;
 
-            if (byStatus[status] === undefined) {
-                byStatus[status] = [];
+            if (byStatus[opt_status] === undefined) {
+                byStatus[opt_status] = [];
             }
-            byStatus[status].push(id);
+            byStatus[opt_status].push(id);
 
-            uploaderProxy.onStatusChange(id, null, status);
+            uploaderProxy.onStatusChange(id, null, opt_status);
 
             return id;
         },
@@ -109,6 +131,7 @@ qq.UploadData = function(uploaderProxy) {
             data = [];
             byUuid = {};
             byStatus = {};
+            byBatchId = {};
         },
 
         setStatus: function(id, newStatus) {
@@ -148,8 +171,19 @@ qq.UploadData = function(uploaderProxy) {
             data[targetId].parentId = parentId;
         },
 
-        setGroupIds: function(id, groupIds) {
-            data[id].groupIds = groupIds;
+        getIdsInProxyGroup: function(id) {
+            var proxyGroupId = data[id].proxyGroupId;
+
+            if (proxyGroupId) {
+                return byProxyGroupId[proxyGroupId];
+            }
+            return [];
+        },
+
+        getIdsInBatch: function(id) {
+            var batchId = data[id].batchId;
+
+            return byBatchId[batchId];
         }
     });
 };

@@ -114,13 +114,59 @@ describe("upload-data.js", function () {
 
     it("Uses passed status if available on addFile", function() {
         var uploadData = helpme.createUploadData(),
-            id = uploadData.addFile("uuid", "name", -1, qq.status.UPLOAD_SUCCESSFUL),
+            id = uploadData.addFile("uuid", "name", -1, null, null, qq.status.UPLOAD_SUCCESSFUL),
             uploadDataItems = uploadData.retrieve();
 
         assert.equal(uploadDataItems[0].status, qq.status.UPLOAD_SUCCESSFUL);
 
         uploadDataItems = uploadData.retrieve({status: qq.status.UPLOAD_SUCCESSFUL});
         assert.equal(uploadDataItems[0].id, id);
+    });
+
+    it("Tracks proxy group files correctly", function() {
+        var uploadData = helpme.createUploadData(),
+            groupId1 = "a",
+            groupId2 = "b",
+            actualGroup1 = [],
+            expectedGroup1 = [0, 2],
+            actualGroup2 = [],
+            expectedGroup2 = [1, 3];
+
+        actualGroup1.push(uploadData.addFile("uuid0", "name0", -1, null, groupId1));
+        actualGroup2.push(uploadData.addFile("uuid1", "name1", -1, null, groupId2));
+        actualGroup1.push(uploadData.addFile("uuid2", "name2", -1, null, groupId1));
+        actualGroup2.push(uploadData.addFile("uuid3", "name3", -1, null, groupId2));
+
+        qq.each(expectedGroup1, function(idx, id) {
+            assert.deepEqual(uploadData.getIdsInProxyGroup(id), expectedGroup1);
+        });
+
+        qq.each(expectedGroup2, function(idx, id) {
+            assert.deepEqual(uploadData.getIdsInProxyGroup(id), expectedGroup2);
+        });
+    });
+
+    it("Tracks batched files correctly", function() {
+        var uploadData = helpme.createUploadData(),
+            batchId1 = "a",
+            batchId2 = "b",
+            actualBatch1 = [],
+            expectedBatch1 = [0, 2],
+            actualBatch2 = [],
+            expectedBatch2 = [1, 3];
+
+        actualBatch1.push(uploadData.addFile("uuid0", "name0", -1, batchId1));
+        actualBatch2.push(uploadData.addFile("uuid1", "name1", -1, batchId2));
+        actualBatch1.push(uploadData.addFile("uuid2", "name2", -1, batchId1));
+        actualBatch2.push(uploadData.addFile("uuid3", "name3", -1, batchId2));
+
+        qq.each(expectedBatch1, function(idx, id) {
+            assert.deepEqual(uploadData.getIdsInBatch(id), expectedBatch1);
+        });
+
+        qq.each(expectedBatch2, function(idx, id) {
+            assert.deepEqual(uploadData.getIdsInBatch(id), expectedBatch2);
+        });
     });
 });
 

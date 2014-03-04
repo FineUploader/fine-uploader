@@ -59,7 +59,8 @@ qq.UploadHandler = function(o, namespace) {
         getName: function(id) {},
         setSize: function(id, newSize) {},
         isQueued: function(id) {},
-        getIdsInGroup: function(id) {}
+        getIdsInProxyGroup: function(id) {},
+        getIdsInBatch: function(id) {}
     };
     qq.extend(options, o);
 
@@ -90,18 +91,26 @@ qq.UploadHandler = function(o, namespace) {
         return options.isQueued(id);
     }
 
+    function uploadBlob(id) {
+        var idsInBatch = options.getIdsInBatch(id);
+
+        //TODO concurrent chunk uploads logic
+
+        handlerImpl.upload(id);
+    }
+
     // Upload any grouped blobs, in the proper order, that are ready to be uploaded
     function maybeReadyToUpload(id) {
-        var idsInGroup = options.getIdsInGroup(id),
+        var idsInGroup = options.getIdsInProxyGroup(id),
             uploadedThisId = false;
 
         if (idsInGroup && idsInGroup.length) {
-            log("Maybe ready to upload grouped file " + id);
+            log("Maybe ready to upload proxy group file " + id);
 
             qq.each(idsInGroup, function(idx, idInGroup) {
                 if (eligibleForUpload(idInGroup) && waitingAndReadyForUpload(idInGroup)) {
                     uploadedThisId = idInGroup === id;
-                    handlerImpl.upload(idInGroup);
+                    uploadBlob(idInGroup);
                 }
                 else if (eligibleForUpload(idInGroup)) {
                     return false;
@@ -110,7 +119,7 @@ qq.UploadHandler = function(o, namespace) {
         }
         else {
             uploadedThisId = true;
-            handlerImpl.upload(id);
+            uploadBlob(id);
         }
 
         return uploadedThisId;
@@ -154,7 +163,7 @@ qq.UploadHandler = function(o, namespace) {
                     errorResponse.error = errorMessage;
                 }
 
-                log(qq.format("Failed to generate scaled version for ID {}.  Error message: {}.", id, errorMessage), "error");
+                log(qq.format("Failed to generate blob for ID {}.  Error message: {}.", id, errorMessage), "error");
 
                 options.onComplete(id, options.getName(id), qq.extend(errorResponse, preventRetryResponse), null);
                 maybeReadyToUpload(id);
