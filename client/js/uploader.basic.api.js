@@ -404,8 +404,12 @@
 
         // Updates internal state with a file record (not backed by a live file).  Returns the assigned ID.
         _addCannedFile: function(sessionData) {
-            var id = this._uploadData.addFile(sessionData.uuid, sessionData.name, sessionData.size, null, null,
-                qq.status.UPLOAD_SUCCESSFUL);
+            var id = this._uploadData.addFile({
+                uuid: sessionData.uuid,
+                name: sessionData.name,
+                size: sessionData.size,
+                status: qq.status.UPLOAD_SUCCESSFUL
+            });
 
             sessionData.deleteFileEndpoint && this.setDeleteFileEndpoint(sessionData.deleteFileEndpoint, id);
             sessionData.deleteFileParams && this.setDeleteFileParams(sessionData.deleteFileParams, id);
@@ -447,7 +451,7 @@
         },
 
         _handleNewFileGeneric: function(file, name, uuid, size, fileList, batchId) {
-            var id = this._uploadData.addFile(uuid, name, size, batchId);
+            var id = this._uploadData.addFile({uuid: uuid, name: name, size: size, batchId: batchId});
 
             this._handler.add(id, file);
             this._trackButton(id);

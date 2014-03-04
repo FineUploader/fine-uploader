@@ -142,7 +142,13 @@ qq.Scaler = function(spec, log) {
                     relatedSize = -1;
                 }
 
-                id = uploadData.addFile(record.uuid, record.name, relatedSize, batchId, proxyGroupId);
+                id = uploadData.addFile({
+                    uuid: record.uuid,
+                    name: record.name,
+                    size: relatedSize,
+                    batchId: batchId,
+                    proxyGroupId: proxyGroupId
+                });
 
                 if (record.blob instanceof qq.BlobProxy) {
                     scaledIds.push(id);

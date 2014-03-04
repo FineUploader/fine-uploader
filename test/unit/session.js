@@ -60,7 +60,7 @@ describe("file list initialization tests", function() {
             assert.equal(uploader.getUuid(1), "abc", "abc UUID was not recorded");
 
             assert.equal(uploader.getSize(0), 456, "wrong size for first file");
-            assert.equal(uploader.getSize(1), null, "wrong size for second file");
+            assert.equal(uploader.getSize(1), -1, "wrong size for second file");
 
             assert.equal(uploader.getName(0), "up.jpg", "wrong name for first file");
             assert.equal(uploader.getName(1), "up2.jpg", "wrong name for second file");

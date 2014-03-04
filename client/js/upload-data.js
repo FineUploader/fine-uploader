@@ -58,52 +58,55 @@ qq.UploadData = function(uploaderProxy) {
         /**
          * Adds a new file to the data cache for tracking purposes.
          *
-         * @param uuid Initial UUID for this file.
-         * @param name Initial name of this file.
-         * @param size Size of this file, -1 if this cannot be determined
-         * @param opt_status Initial `qq.status` for this file.  If null/undefined, `qq.status.SUBMITTING`.
-         * @param opt_batchId ID of the batch this file belongs to
-         * @param opt_proxyGroupId ID of the proxy group associated with this file
+         * @param spec Data that describes this file.  Possible properties are:
+         *
+         * - uuid: Initial UUID for this file.
+         * - name: Initial name of this file.
+         * - size: Size of this file, omit if this cannot be determined
+         * - status: Initial `qq.status` for this file.  Omit for `qq.status.SUBMITTING`.
+         * - batchId: ID of the batch this file belongs to
+         * - proxyGroupId: ID of the proxy group associated with this file
+         *
          * @returns {number} Internal ID for this file.
          */
-        addFile: function(uuid, name, size, opt_batchId, opt_proxyGroupId, opt_status) {
-            opt_status = opt_status || qq.status.SUBMITTING;
+        addFile: function(spec) {
+            var status = spec.status || qq.status.SUBMITTING;
 
             var id = data.push({
-                name: name,
-                originalName: name,
-                uuid: uuid,
-                size: size,
-                status: opt_status
+                name: spec.name,
+                originalName: spec.name,
+                uuid: spec.uuid,
+                size: spec.size || -1,
+                status: status
             }) - 1;
 
-            if (opt_batchId) {
-                data[id].batchId = opt_batchId;
+            if (spec.batchId) {
+                data[id].batchId = spec.batchId;
 
-                if (byBatchId[opt_batchId] === undefined) {
-                    byBatchId[opt_batchId] = [];
+                if (byBatchId[spec.batchId] === undefined) {
+                    byBatchId[spec.batchId] = [];
                 }
-                byBatchId[opt_batchId].push(id);
+                byBatchId[spec.batchId].push(id);
             }
 
-            if (opt_proxyGroupId) {
-                data[id].proxyGroupId = opt_proxyGroupId;
+            if (spec.proxyGroupId) {
+                data[id].proxyGroupId = spec.proxyGroupId;
 
-                if (byProxyGroupId[opt_proxyGroupId] === undefined) {
-                    byProxyGroupId[opt_proxyGroupId] = [];
+                if (byProxyGroupId[spec.proxyGroupId] === undefined) {
+                    byProxyGroupId[spec.proxyGroupId] = [];
                 }
-                byProxyGroupId[opt_proxyGroupId].push(id);
+                byProxyGroupId[spec.proxyGroupId].push(id);
             }
 
             data[id].id = id;
-            byUuid[uuid] = id;
+            byUuid[spec.uuid] = id;
 
-            if (byStatus[opt_status] === undefined) {
-                byStatus[opt_status] = [];
+            if (byStatus[status] === undefined) {
+                byStatus[status] = [];
             }
-            byStatus[opt_status].push(id);
+            byStatus[status].push(id);
 
-            uploaderProxy.onStatusChange(id, null, opt_status);
+            uploaderProxy.onStatusChange(id, null, status);
 
             return id;
         },
