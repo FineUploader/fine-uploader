@@ -94,6 +94,7 @@ module.exports =
         fuImageValidationModule: false
         fuSessionModule: false
         fuFormSupportModule: false
+        fuScaling: false
         fuSrcJquery: false
         fuSrcS3Jquery: false
         fuSrcAzureJquery: false
