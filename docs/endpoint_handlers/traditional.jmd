@@ -68,7 +68,7 @@ along with each chunked request.  These parameters will be necessary to ensure y
 order Fine Uploader to restart with the first chunk on a failed attempt by returning a `reset` property in your server response
 (with a value of `true`).  This is only applicable if `autoRetry` or `manualRetry` is enabled.
 
-You should make use of the UUID parameter, passed with reach request, that uniquely identifies each file.  This may make it easier for you
+You should make use of the UUID parameter, passed with each request, that uniquely identifies each file.  This may make it easier for you
 to avoid collisions during accumulation of chunks between files with the same name.
 
 Some server-side examples have been updated to handle file chunking.
