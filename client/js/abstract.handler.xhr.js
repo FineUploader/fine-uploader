@@ -70,13 +70,13 @@ qq.AbstractUploadHandlerXhr = function(spec) {
             delete fileState[id];
         },
 
-        /**
-         * Sends the file identified by id to the server
-         */
-        upload: function(id, retry) {
-            fileState[id] && delete fileState[id].paused;
-            return onUpload(id, retry);
-        },
+//        /**
+//         * Sends the file identified by id to the server
+//         */
+//        upload: function(id, retry) {
+//            fileState[id] && delete fileState[id].paused;
+//            return onUpload(id, retry);
+//        },
 
         cancel: function(id) {
             var onCancelRetVal = onCancel(id, getName(id));

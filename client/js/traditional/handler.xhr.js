@@ -162,7 +162,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
             persistChunkData(id, chunkData);
         }
 
-        xhr.onreadystatechange = getReadyStateChangeHandler(id, xhr);
+        xhr.onreadystatechange = createReadyStateChangeHandler(id, xhr);
 
         xhr.upload.onprogress = function(e) {
             if (e.lengthComputable) {
@@ -252,12 +252,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
         try {
             log(qq.format("Received response status {} with body: {}", xhr.status, xhr.responseText));
-
             response = qq.parseJson(xhr.responseText);
-
-            if (response.newUuid !== undefined) {
-                onUuidChanged(id, response.newUuid);
-            }
         }
         catch(error) {
             log("Error when attempting to parse xhr response text (" + error.message + ")", "error");
@@ -305,46 +300,62 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     function onComplete(id, xhr) {
         var state = handler._getFileState(id),
-            attemptingResume = state && state.attemptingResume,
-            paused = state && state.paused,
+//            attemptingResume = state && state.attemptingResume,
+//            paused = state && state.paused,
             response;
 
         // The logic in this function targets uploads that have not been paused or canceled,
         // so return at once if this is not the case.
-        if (!state || paused) {
-            return;
-        }
+//        if (!state || paused) {
+//            return;
+//        }
 
         log("xhr - server response received for " + id);
         log("responseText = " + xhr.responseText);
         response = parseResponse(id, xhr);
 
-        if (isErrorResponse(xhr, response)) {
-            if (response.reset) {
-                handleResetResponse(id);
-            }
+        return {
+            success: !isErrorResponse(xhr, response),
+            response: response
+        };
 
-            if (attemptingResume && response.reset) {
-                handleResetResponseOnResumeAttempt(id);
-            }
-            else {
-                handleNonResetErrorResponse(id, response, xhr);
-            }
-        }
-        else if (chunkFiles) {
-            handleSuccessfullyCompletedChunk(id, response, xhr);
-        }
-        else {
-            handleCompletedItem(id, response, xhr);
-        }
+//        if (isErrorResponse(xhr, response)) {
+//            if (response.reset) {
+//                handleResetResponse(id);
+//            }
+//
+//            if (attemptingResume && response.reset) {
+//                handleResetResponseOnResumeAttempt(id);
+//            }
+//            else {
+//                handleNonResetErrorResponse(id, response, xhr);
+//            }
+//        }
+//        else if (chunkFiles) {
+//            handleSuccessfullyCompletedChunk(id, response, xhr);
+//        }
+//        else {
+//            handleCompletedItem(id, response, xhr);
+//        }
     }
 
-    function getReadyStateChangeHandler(id, xhr) {
-        return function() {
+    function createReadyStateChangeHandler(id, xhr) {
+        var promise = new qq.Promise();
+
+        xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
-                onComplete(id, xhr);
+                var result = onComplete(id, xhr);
+
+                if (result.success) {
+                    promise.success(result.response, xhr);
+                }
+                else {
+                    promise.failure(result.response, xhr);
+                }
             }
         };
+
+        return promise;
     }
 
     function persistChunkData(id, chunkData) {
@@ -504,7 +515,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     function handleStandardFileUpload(id) {
         var fileOrBlob = handler.getFile(id),
             name = getName(id),
-            xhr, params, toSend;
+            promise, xhr, params, toSend;
 
         handler._getFileState(id).loaded = 0;
 
@@ -517,7 +528,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
             }
         };
 
-        xhr.onreadystatechange = getReadyStateChangeHandler(id, xhr);
+        promise = createReadyStateChangeHandler(id, xhr);
 
         params = spec.paramsStore.get(id);
         toSend = setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id);
@@ -525,23 +536,29 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
         log("Sending upload request for " + id);
         xhr.send(toSend);
+
+        return promise;
     }
 
-    function handleUploadSignal(id, retry) {
-        var name = getName(id);
+//    function handleUploadSignal(id, retry) {
+//        var name = getName(id);
+//
+//        if (handler.isValid(id)) {
+//            spec.onUpload(id, name);
+//
+//            if (chunkFiles) {
+//                handleFileChunkingUpload(id, retry);
+//            }
+//            else {
+//                handleStandardFileUpload(id);
+//            }
+//        }
+//    }
 
-        if (handler.isValid(id)) {
-            spec.onUpload(id, name);
 
-            if (chunkFiles) {
-                handleFileChunkingUpload(id, retry);
-            }
-            else {
-                handleStandardFileUpload(id);
-            }
-        }
-    }
-
+    this.uploadFile = function(id) {
+        return handleStandardFileUpload(id);
+    };
 
     qq.extend(this, new qq.AbstractUploadHandlerXhr({
             options: {
@@ -549,7 +566,6 @@ qq.UploadHandlerXhr = function(spec, proxy) {
             },
 
             proxy: {
-                onUpload: handleUploadSignal,
                 onCancel: spec.onCancel,
                 onUuidChanged: onUuidChanged,
                 getName: getName,

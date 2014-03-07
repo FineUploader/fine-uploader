@@ -8,7 +8,8 @@
 qq.UploadHandler = function(o, namespace) {
     "use strict";
 
-    var queue = [],
+    var baseHandler = this,
+        queue = [],
         preventRetryResponse, options, log, handlerImpl;
 
     // Default options, can be overridden by the user
@@ -74,6 +75,55 @@ qq.UploadHandler = function(o, namespace) {
 
     log = options.log;
 
+
+    function cleanupUpload(id, response, opt_xhr) {
+        var name = options.getName(id);
+
+        options.onComplete(id, name, response, opt_xhr);
+
+        if (handlerImpl._getFileState(id)) {
+            delete handlerImpl._getFileState(id).xhr;
+        }
+
+        dequeue(id);
+    }
+
+    function maybeHandleUuidChange(id, response) {
+        if (response.newUuid !== undefined) {
+            options.onUuidChanged(id, response.newUuid);
+        }
+    }
+
+    function uploadFile(id) {
+        var name = options.getName(id);
+
+        if (!baseHandler.isValid(id)) {
+            throw new qq.Error(id + " is not a valid file ID to upload!");
+        }
+
+        options.onUpload(id, name);
+
+        handlerImpl.uploadFile(id).then(
+            function(response, opt_xhr) {
+                var size = options.getSize(id);
+
+                options.onProgress(id, name, size, size);
+                maybeHandleUuidChange(id, response);
+                cleanupUpload(id, response, opt_xhr);
+            },
+
+            function(response, opt_xhr) {
+                // Make sure the success property is not true, since other internal code currently
+                // depends on this value to determine status.
+                response.success = false;
+
+                if (!options.onAutoRetry(id, name, response, opt_xhr)) {
+                    cleanupUpload(id, response, opt_xhr);
+                }
+            }
+        );
+    }
+
     // Returns a qq.BlobProxy, or an actual File/Blob if no proxy is involved, or undefined
     // if none of these are available for the ID
     function getProxyOrBlob(id) {
@@ -91,14 +141,6 @@ qq.UploadHandler = function(o, namespace) {
         return options.isQueued(id);
     }
 
-    function uploadBlob(id) {
-        var idsInBatch = options.getIdsInBatch(id);
-
-        //TODO concurrent chunk uploads logic
-
-        handlerImpl.upload(id);
-    }
-
     // Upload any grouped blobs, in the proper order, that are ready to be uploaded
     function maybeReadyToUpload(id) {
         var idsInGroup = options.getIdsInProxyGroup(id),
@@ -110,7 +152,7 @@ qq.UploadHandler = function(o, namespace) {
             qq.each(idsInGroup, function(idx, idInGroup) {
                 if (eligibleForUpload(idInGroup) && waitingAndReadyForUpload(idInGroup)) {
                     uploadedThisId = idInGroup === id;
-                    uploadBlob(idInGroup);
+                    uploadFile(idInGroup);
                 }
                 else if (eligibleForUpload(idInGroup)) {
                     return false;
@@ -119,7 +161,7 @@ qq.UploadHandler = function(o, namespace) {
         }
         else {
             uploadedThisId = true;
-            uploadBlob(id);
+            uploadFile(id);
         }
 
         return uploadedThisId;
@@ -185,7 +227,7 @@ qq.UploadHandler = function(o, namespace) {
             return startBlobUpload(id, blobToUpload);
         }
         else {
-            handlerImpl.upload(id);
+            uploadFile(id);
             return true;
         }
 
@@ -227,7 +269,6 @@ qq.UploadHandler = function(o, namespace) {
         handlerImpl = new handlerType["UploadHandler" + handlerModuleSubtype](
             options,
             {
-                onUploadComplete: dequeue,
                 onUuidChanged: options.onUuidChanged,
                 getName: options.getName,
                 getUuid: options.getUuid,
@@ -268,7 +309,7 @@ qq.UploadHandler = function(o, namespace) {
                 isProxy = blobOrProxy && blobOrProxy instanceof qq.BlobProxy;
 
             if (i >= 0) {
-                return isProxy ? startUpload(id) : handlerImpl.upload(id, true);
+                return isProxy ? startUpload(id) : uploadFile(id);
             }
             else {
                 return this.upload(id);

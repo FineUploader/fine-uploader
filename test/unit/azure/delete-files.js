@@ -1,6 +1,6 @@
 /* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 if (qqtest.canDownloadFileAsBlob) {
-    describe("test the delete file feature for Azure", function() {
+    describe.skip("test the delete file feature for Azure", function() {
         "use strict";
 
         var fileTestHelper = helpme.setupFileTests(),

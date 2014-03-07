@@ -19,7 +19,6 @@ qq.AbstractUploadHandlerForm = function(spec) {
         fileState = {},
         inputName = options.inputName,
         onCancel = proxy.onCancel,
-        onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
         getUuid = proxy.getUuid,
         log = proxy.log,
@@ -184,10 +183,6 @@ qq.AbstractUploadHandlerForm = function(spec) {
             return false;
         },
 
-        upload: function(id) {
-            // implementation-specific
-        },
-
         /**
          * @param fileId ID of the associated file
          * @returns {string} The `document`-unique name of the iframe
@@ -218,10 +213,6 @@ qq.AbstractUploadHandlerForm = function(spec) {
 
             try {
                 response = qq.parseJson(innerHtmlOrMessage);
-
-                if (response.newUuid !== undefined) {
-                    onUuidChanged(id, response.newUuid);
-                }
             }
             catch(error) {
                 log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");

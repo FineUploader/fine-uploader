@@ -319,7 +319,7 @@ if (qq.supportedFeatures.scaling) {
             });
         });
 
-        it("uploads scaled files as expected: chunked, default options", function(done) {
+        it.skip("uploads scaled files as expected: chunked, default options", function(done) {
             assert.expect(15, done);
 
             var referenceFileSize,
