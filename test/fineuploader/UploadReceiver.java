@@ -172,6 +172,8 @@ public class UploadReceiver extends HttpServlet
         {
             writeFile(requestParser.getUploadItem().getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null, requestParser.getUuid());
 
+            System.out.println("--------PARTS COMPLETED: " + partsCompleted.get(requestParser.getUuid()));
+
             if (partsCompleted.get(requestParser.getUuid()) == requestParser.getTotalParts())
             {
                 File[] parts = getPartitionFiles(dir, requestParser.getUuid());
@@ -270,6 +272,7 @@ public class UploadReceiver extends HttpServlet
 
         try
         {
+            boolean duplicatePart = out.exists();
             fos = new FileOutputStream(out);
 
             IOUtils.copy(in, fos);
@@ -286,13 +289,16 @@ public class UploadReceiver extends HttpServlet
             }
 
             Integer completed = partsCompleted.get(fileUuid);
-            if (completed == null)
+            if (!duplicatePart)
             {
-                partsCompleted.put(fileUuid, 1);
-            }
-            else
-            {
-                partsCompleted.put(fileUuid, ++completed);
+                if (completed == null)
+                {
+                    partsCompleted.put(fileUuid, 1);
+                }
+                else
+                {
+                    partsCompleted.put(fileUuid, ++completed);
+                }
             }
 
             return out;
