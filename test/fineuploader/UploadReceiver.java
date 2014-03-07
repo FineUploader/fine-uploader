@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 //commented code blocks are only used for CORS environments
@@ -25,6 +26,8 @@ public class UploadReceiver extends HttpServlet
     private static int SUCCESS_RESPONSE_CODE = 200;
 
     final Logger log = LoggerFactory.getLogger(UploadReceiver.class);
+
+    private HashMap<String, Integer> partsCompleted = new HashMap<>();
 
 
     @Override
@@ -134,7 +137,7 @@ public class UploadReceiver extends HttpServlet
 
         if (requestParser.getPartIndex() >= 0)
         {
-            writeFile(req.getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null);
+            writeFile(req.getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null, requestParser.getUuid());
 
             if (requestParser.getTotalParts()-1 == requestParser.getPartIndex())
             {
@@ -152,7 +155,7 @@ public class UploadReceiver extends HttpServlet
         else
         {
             File file = new File(dir, requestParser.getFilename());
-            writeFile(req.getInputStream(), file, expectedFileSize);
+            writeFile(req.getInputStream(), file, expectedFileSize, requestParser.getUuid());
             return file;
         }
 
@@ -167,11 +170,12 @@ public class UploadReceiver extends HttpServlet
 
         if (requestParser.getPartIndex() >= 0)
         {
-            writeFile(requestParser.getUploadItem().getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null);
+            writeFile(requestParser.getUploadItem().getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null, requestParser.getUuid());
 
-            if (requestParser.getTotalParts()-1 == requestParser.getPartIndex())
+            if (partsCompleted.get(requestParser.getUuid()) == requestParser.getTotalParts())
             {
                 File[] parts = getPartitionFiles(dir, requestParser.getUuid());
+
                 File outputFile = new File(dir, requestParser.getOriginalFilename());
                 for (File part : parts)
                 {
@@ -185,7 +189,7 @@ public class UploadReceiver extends HttpServlet
         else
         {
             File file = new File(dir, requestParser.getFilename());
-            writeFile(requestParser.getUploadItem().getInputStream(), file, null);
+            writeFile(requestParser.getUploadItem().getInputStream(), file, null, requestParser.getUuid());
             return file;
         }
 
@@ -260,7 +264,7 @@ public class UploadReceiver extends HttpServlet
         return outputFile;
     }
 
-    private File writeFile(InputStream in, File out, Long expectedFileSize) throws IOException
+    private File writeFile(InputStream in, File out, Long expectedFileSize, String fileUuid) throws IOException
     {
         FileOutputStream fos = null;
 
@@ -279,6 +283,16 @@ public class UploadReceiver extends HttpServlet
                     out.delete();
                     throw new IOException(String.format("Unexpected file size mismatch. Actual bytes %s. Expected bytes %s.", bytesWrittenToDisk, expectedFileSize));
                 }
+            }
+
+            Integer completed = partsCompleted.get(fileUuid);
+            if (completed == null)
+            {
+                partsCompleted.put(fileUuid, 1);
+            }
+            else
+            {
+                partsCompleted.put(fileUuid, ++completed);
             }
 
             return out;
