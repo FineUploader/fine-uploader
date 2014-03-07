@@ -10,6 +10,7 @@ qq.UploadHandler = function(o, namespace) {
 
     var baseHandler = this,
         queue = [],
+        chunking = false,
         preventRetryResponse, options, log, handlerImpl;
 
     // Default options, can be overridden by the user
@@ -64,6 +65,8 @@ qq.UploadHandler = function(o, namespace) {
         getIdsInBatch: function(id) {}
     };
     qq.extend(options, o);
+    chunking = options.chunking.enabled && qq.supportedFeatures.chunking;
+
 
     preventRetryResponse = (function() {
         var response = {};
@@ -94,15 +97,7 @@ qq.UploadHandler = function(o, namespace) {
         }
     }
 
-    function uploadFile(id) {
-        var name = options.getName(id);
-
-        if (!baseHandler.isValid(id)) {
-            throw new qq.Error(id + " is not a valid file ID to upload!");
-        }
-
-        options.onUpload(id, name);
-
+    function uploadNonChunkedFile(id, name) {
         handlerImpl.uploadFile(id).then(
             function(response, opt_xhr) {
                 var size = options.getSize(id);
@@ -122,6 +117,94 @@ qq.UploadHandler = function(o, namespace) {
                 }
             }
         );
+    }
+
+    function uploadChunkedFile(id) {
+        if (!handlerImpl._getFileState(id).remainingChunkIdxs ||
+            handlerImpl._getFileState(id).remainingChunkIdxs.length === 0) {
+
+            handlerImpl._getFileState(id).remainingChunkIdxs = [];
+
+            var currentChunkIndex;
+
+            for (currentChunkIndex = handlerImpl._getTotalChunks(id)-1; currentChunkIndex >= 0; currentChunkIndex-=1) {
+                handlerImpl._getFileState(id).remainingChunkIdxs.unshift(currentChunkIndex);
+            }
+        }
+
+        uploadChunk(id, handlerImpl._getFileState(id).remainingChunkIdxs[0]);
+    }
+
+    function uploadChunk(id, chunkIdx) {
+        var size = options.getSize(id),
+            name = options.getName(id),
+            chunkData = handlerImpl._getChunkData(id, chunkIdx);
+
+        options.onUploadChunk(id, name, handlerImpl._getChunkDataForCallback(chunkData));
+
+        handlerImpl.uploadChunk(id, chunkIdx).then(
+            function(response, xhr) {
+                handlerImpl._getFileState(id).remainingChunkIdxs.shift();
+                chunkUploadComplete(id, chunkIdx, response, xhr);
+
+                var nextChunkIdx = handlerImpl._getFileState(id).remainingChunkIdxs[0];
+
+                if (nextChunkIdx === undefined) {
+                    options.onProgress(id, name, size, size);
+                    maybeHandleUuidChange(id, response);
+                    cleanupUpload(id, response, xhr);
+                }
+                else {
+                    uploadChunk(id, nextChunkIdx);
+                }
+            },
+
+            function(response, xhr) {
+                if (response.reset) {
+                    resetChunkedUpload(id);
+                }
+
+                if (!options.onAutoRetry(id, name, response, xhr)) {
+                    cleanupUpload(id, response, xhr);
+                }
+            }
+        );
+    }
+
+    function resetChunkedUpload(id) {
+        log("Server has ordered chunking effort to be restarted on next attempt for item ID " + id, "error");
+
+        handlerImpl._getFileState(id).remainingChunkIdxs = [];
+        delete handlerImpl._getFileState(id).loaded;
+        delete handlerImpl._getFileState(id).estTotalRequestsSize;
+        delete handlerImpl._getFileState(id).initialRequestOverhead;
+    }
+
+    function chunkUploadComplete(id, chunkIdx, response, xhr) {
+        var chunkData = handlerImpl._getChunkData(id, chunkIdx),
+            estRequestOverhead = handlerImpl._getFileState(id).lastRequestOverhead || 0;
+
+        handlerImpl._getFileState(id).attemptingResume = false;
+        handlerImpl._getFileState(id).loaded += chunkData.size + estRequestOverhead;
+
+        options.onUploadChunkSuccess(id, handlerImpl._getChunkDataForCallback(chunkData), response, xhr);
+    }
+
+    function uploadFile(id) {
+        var name = options.getName(id);
+
+        if (!baseHandler.isValid(id)) {
+            throw new qq.Error(id + " is not a valid file ID to upload!");
+        }
+
+        options.onUpload(id, name);
+
+        if (chunking) {
+            uploadChunkedFile(id);
+        }
+        else {
+            uploadNonChunkedFile(id, name);
+        }
     }
 
     // Returns a qq.BlobProxy, or an actual File/Blob if no proxy is involved, or undefined

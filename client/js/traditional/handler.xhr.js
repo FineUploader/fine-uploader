@@ -9,8 +9,7 @@
 qq.UploadHandlerXhr = function(spec, proxy) {
     "use strict";
 
-    var uploadComplete = proxy.onUploadComplete,
-        onUuidChanged = proxy.onUuidChanged,
+    var onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
         getUuid = proxy.getUuid,
         getSize = proxy.getSize,
@@ -56,18 +55,6 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     function addResumeSpecificParams(params) {
         params[spec.resume.paramNames.resuming] = true;
-    }
-
-    function getChunk(fileOrBlob, startByte, endByte) {
-        if (fileOrBlob.slice) {
-            return fileOrBlob.slice(startByte, endByte);
-        }
-        else if (fileOrBlob.mozSlice) {
-            return fileOrBlob.mozSlice(startByte, endByte);
-        }
-        else if (fileOrBlob.webkitSlice) {
-            return fileOrBlob.webkitSlice(startByte, endByte);
-        }
     }
 
     function setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id) {
@@ -130,39 +117,22 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         });
     }
 
-    function handleCompletedItem(id, response, xhr) {
-        var name = getName(id),
-            size = getSize(id);
-
-        handler._getFileState(id).attemptingResume = false;
-
-        spec.onProgress(id, name, size, size);
-        spec.onComplete(id, name, response, xhr);
-
-        if (handler._getFileState(id)) {
-            delete handler._getFileState(id).xhr;
-        }
-
-        uploadComplete(id);
-    }
-
-    function uploadNextChunk(id) {
-        var chunkIdx = handler._getFileState(id).remainingChunkIdxs[0],
-            chunkData = handler._getChunkData(id, chunkIdx),
+    function uploadChunk(id, chunkIdx) {
+        var chunkData = handler._getChunkData(id, chunkIdx),
             xhr = handler._createXhr(id),
             size = getSize(id),
             name = getName(id),
-            toSend, params;
+            promise, toSend, params;
 
         if (handler._getFileState(id).loaded === undefined) {
             handler._getFileState(id).loaded = 0;
         }
 
-        if (resumeEnabled && handler.getFile(id)) {
-            persistChunkData(id, chunkData);
-        }
+//        if (resumeEnabled && handler.getFile(id)) {
+//            persistChunkData(id, chunkData);
+//        }
 
-        xhr.onreadystatechange = createReadyStateChangeHandler(id, xhr);
+        promise = createReadyStateChangeHandler(id, xhr);
 
         xhr.upload.onprogress = function(e) {
             if (e.lengthComputable) {
@@ -172,8 +142,6 @@ qq.UploadHandlerXhr = function(spec, proxy) {
                 spec.onProgress(id, name, totalLoaded, estTotalRequestsSize);
             }
         };
-
-        spec.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
 
         params = spec.paramsStore.get(id);
         addChunkingSpecificParams(id, params, chunkData);
@@ -187,6 +155,8 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
         log("Sending chunked upload request for item " + id + ": bytes " + (chunkData.start+1) + "-" + chunkData.end + " of " + size);
         xhr.send(toSend);
+
+        return promise;
     }
 
     function calcAllRequestsSizeForChunkedUpload(id, chunkIdx, requestSize) {
@@ -222,27 +192,6 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         }
     }
 
-    function handleSuccessfullyCompletedChunk(id, response, xhr) {
-        var chunkIdx = handler._getFileState(id).remainingChunkIdxs.shift(),
-            chunkData = handler._getChunkData(id, chunkIdx);
-
-        handler._getFileState(id).attemptingResume = false;
-        handler._getFileState(id).loaded += chunkData.size + getLastRequestOverhead(id);
-
-        spec.onUploadChunkSuccess(id, handler._getChunkDataForCallback(chunkData), response, xhr);
-
-        if (handler._getFileState(id).remainingChunkIdxs.length > 0) {
-            uploadNextChunk(id);
-        }
-        else {
-            if (resumeEnabled) {
-                deletePersistedChunkData(id);
-            }
-
-            handleCompletedItem(id, response, xhr);
-        }
-    }
-
     function isErrorResponse(xhr, response) {
         return xhr.status !== 200 || !response.success || response.reset;
     }
@@ -262,41 +211,41 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         return response;
     }
 
-    function handleResetResponse(id) {
-        log("Server has ordered chunking effort to be restarted on next attempt for item ID " + id, "error");
+//    function handleResetResponse(id) {
+//        log("Server has ordered chunking effort to be restarted on next attempt for item ID " + id, "error");
+//
+//        if (resumeEnabled) {
+//            deletePersistedChunkData(id);
+//            handler._getFileState(id).attemptingResume = false;
+//        }
+//
+//        handler._getFileState(id).remainingChunkIdxs = [];
+//        delete handler._getFileState(id).loaded;
+//        delete handler._getFileState(id).estTotalRequestsSize;
+//        delete handler._getFileState(id).initialRequestOverhead;
+//    }
 
-        if (resumeEnabled) {
-            deletePersistedChunkData(id);
-            handler._getFileState(id).attemptingResume = false;
-        }
+//    function handleResetResponseOnResumeAttempt(id) {
+//        handler._getFileState(id).attemptingResume = false;
+//        log("Server has declared that it cannot handle resume for item ID " + id + " - starting from the first chunk", "error");
+//        handleResetResponse(id);
+//        handler.upload(id, true);
+//    }
 
-        handler._getFileState(id).remainingChunkIdxs = [];
-        delete handler._getFileState(id).loaded;
-        delete handler._getFileState(id).estTotalRequestsSize;
-        delete handler._getFileState(id).initialRequestOverhead;
-    }
-
-    function handleResetResponseOnResumeAttempt(id) {
-        handler._getFileState(id).attemptingResume = false;
-        log("Server has declared that it cannot handle resume for item ID " + id + " - starting from the first chunk", "error");
-        handleResetResponse(id);
-        handler.upload(id, true);
-    }
-
-    function handleNonResetErrorResponse(id, response, xhr) {
-        var name = getName(id);
-
-        if (spec.onAutoRetry(id, name, response, xhr)) {
-            return;
-        }
-        else {
-            if (xhr.status !== 200) {
-                response.success = false;
-            }
-
-            handleCompletedItem(id, response, xhr);
-        }
-    }
+//    function handleNonResetErrorResponse(id, response, xhr) {
+//        var name = getName(id);
+//
+//        if (spec.onAutoRetry(id, name, response, xhr)) {
+//            return;
+//        }
+//        else {
+//            if (xhr.status !== 200) {
+//                response.success = false;
+//            }
+//
+//            handleCompletedItem(id, response, xhr);
+//        }
+//    }
 
     function onComplete(id, xhr) {
         var state = handler._getFileState(id),
@@ -358,159 +307,138 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         return promise;
     }
 
-    function persistChunkData(id, chunkData) {
-        if (handler.isResumable(id)) {
-            var fileUuid = getUuid(id),
-                lastByteSent = handler._getFileState(id).loaded,
-                initialRequestOverhead = handler._getFileState(id).initialRequestOverhead,
-                estTotalRequestsSize = handler._getFileState(id).estTotalRequestsSize,
-                cookieName = getChunkDataCookieName(id),
-                cookieValue = fileUuid +
-                    cookieItemDelimiter + chunkData.part +
-                    cookieItemDelimiter + lastByteSent +
-                    cookieItemDelimiter + initialRequestOverhead +
-                    cookieItemDelimiter + estTotalRequestsSize,
-                cookieExpDays = spec.resume.cookiesExpireIn;
+//    function persistChunkData(id, chunkData) {
+//        if (handler.isResumable(id)) {
+//            var fileUuid = getUuid(id),
+//                lastByteSent = handler._getFileState(id).loaded,
+//                initialRequestOverhead = handler._getFileState(id).initialRequestOverhead,
+//                estTotalRequestsSize = handler._getFileState(id).estTotalRequestsSize,
+//                cookieName = getChunkDataCookieName(id),
+//                cookieValue = fileUuid +
+//                    cookieItemDelimiter + chunkData.part +
+//                    cookieItemDelimiter + lastByteSent +
+//                    cookieItemDelimiter + initialRequestOverhead +
+//                    cookieItemDelimiter + estTotalRequestsSize,
+//                cookieExpDays = spec.resume.cookiesExpireIn;
+//
+//            qq.setCookie(cookieName, cookieValue, cookieExpDays);
+//        }
+//    }
 
-            qq.setCookie(cookieName, cookieValue, cookieExpDays);
-        }
-    }
+//    function deletePersistedChunkData(id) {
+//        if (handler.isResumable(id) && handler.getFile(id)) {
+//            var cookieName = getChunkDataCookieName(id);
+//            qq.deleteCookie(cookieName);
+//        }
+//    }
 
-    function deletePersistedChunkData(id) {
-        if (handler.isResumable(id) && handler.getFile(id)) {
-            var cookieName = getChunkDataCookieName(id);
-            qq.deleteCookie(cookieName);
-        }
-    }
+//    function getPersistedChunkData(id) {
+//        var chunkCookieValue = qq.getCookie(getChunkDataCookieName(id)),
+//            filename = getName(id),
+//            sections, uuid, partIndex, lastByteSent, initialRequestOverhead, estTotalRequestsSize;
+//
+//        if (chunkCookieValue) {
+//            sections = chunkCookieValue.split(cookieItemDelimiter);
+//
+//            if (sections.length === 5) {
+//                uuid = sections[0];
+//                partIndex = parseInt(sections[1], 10);
+//                lastByteSent = parseInt(sections[2], 10);
+//                initialRequestOverhead = parseInt(sections[3], 10);
+//                estTotalRequestsSize = parseInt(sections[4], 10);
+//
+//                return {
+//                    uuid: uuid,
+//                    part: partIndex,
+//                    lastByteSent: lastByteSent,
+//                    initialRequestOverhead: initialRequestOverhead,
+//                    estTotalRequestsSize: estTotalRequestsSize
+//                };
+//            }
+//            else {
+//                log("Ignoring previously stored resume/chunk cookie for " + filename + " - old cookie format", "warn");
+//            }
+//        }
+//    }
 
-    function getPersistedChunkData(id) {
-        var chunkCookieValue = qq.getCookie(getChunkDataCookieName(id)),
-            filename = getName(id),
-            sections, uuid, partIndex, lastByteSent, initialRequestOverhead, estTotalRequestsSize;
+//    function getChunkDataCookieName(id) {
+//        var filename = getName(id),
+//            fileSize = getSize(id),
+//            maxChunkSize = spec.chunking.partSize,
+//            cookieName;
+//
+//        cookieName = "qqfilechunk" + cookieItemDelimiter + encodeURIComponent(filename) + cookieItemDelimiter + fileSize + cookieItemDelimiter + maxChunkSize;
+//
+//        if (resumeId !== undefined) {
+//            cookieName += cookieItemDelimiter + resumeId;
+//        }
+//
+//        return cookieName;
+//    }
 
-        if (chunkCookieValue) {
-            sections = chunkCookieValue.split(cookieItemDelimiter);
+//    function onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume) {
+//        firstChunkIndex = persistedChunkInfoForResume.part;
+//        handler._getFileState(id).loaded = persistedChunkInfoForResume.lastByteSent;
+//        handler._getFileState(id).estTotalRequestsSize = persistedChunkInfoForResume.estTotalRequestsSize;
+//        handler._getFileState(id).initialRequestOverhead = persistedChunkInfoForResume.initialRequestOverhead;
+//        handler._getFileState(id).attemptingResume = true;
+//        log("Resuming " + name + " at partition index " + firstChunkIndex);
+//
+//        calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
+//    }
 
-            if (sections.length === 5) {
-                uuid = sections[0];
-                partIndex = parseInt(sections[1], 10);
-                lastByteSent = parseInt(sections[2], 10);
-                initialRequestOverhead = parseInt(sections[3], 10);
-                estTotalRequestsSize = parseInt(sections[4], 10);
+//    function startResumeAttempt(id, persistedChunkInfoForResume, firstChunkIndex) {
+//        var name = getName(id),
+//            firstChunkDataForResume = handler._getChunkData(id, persistedChunkInfoForResume.part),
+//            onResumeRetVal;
+//
+//        onResumeRetVal = spec.onResume(id, name, handler._getChunkDataForCallback(firstChunkDataForResume));
+//        if (onResumeRetVal instanceof qq.Promise) {
+//            log("Waiting for onResume promise to be fulfilled for " + id);
+//            onResumeRetVal.then(
+//                function() {
+//                    onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume);
+//                },
+//                function() {
+//                    log("onResume promise fulfilled - failure indicated.  Will not resume.");
+//                    calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
+//                }
+//            );
+//        }
+//        else if (onResumeRetVal !== false) {
+//            onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume);
+//        }
+//        else {
+//            log("onResume callback returned false.  Will not resume.");
+//            calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
+//        }
+//    }
 
-                return {
-                    uuid: uuid,
-                    part: partIndex,
-                    lastByteSent: lastByteSent,
-                    initialRequestOverhead: initialRequestOverhead,
-                    estTotalRequestsSize: estTotalRequestsSize
-                };
-            }
-            else {
-                log("Ignoring previously stored resume/chunk cookie for " + filename + " - old cookie format", "warn");
-            }
-        }
-    }
+//    function handleStartOfChunkedUpload(id, retry) {
+//        handler._getFileState(id).remainingChunkIdxs = [];
+//
+//        if (resumeEnabled &&
+//            !retry &&
+//            handler.getFile(id) &&
+//            handler.isResumable(id)) {
+//
+//            maybeResumeChunkedUpload(id);
+//        }
+//        else {
+//            calculateRemainingChunkIdxsAndUpload(id, 0);
+//        }
+//    }
 
-    function getChunkDataCookieName(id) {
-        var filename = getName(id),
-            fileSize = getSize(id),
-            maxChunkSize = spec.chunking.partSize,
-            cookieName;
-
-        cookieName = "qqfilechunk" + cookieItemDelimiter + encodeURIComponent(filename) + cookieItemDelimiter + fileSize + cookieItemDelimiter + maxChunkSize;
-
-        if (resumeId !== undefined) {
-            cookieName += cookieItemDelimiter + resumeId;
-        }
-
-        return cookieName;
-    }
-
-    function calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex) {
-        var currentChunkIndex;
-
-        for (currentChunkIndex = handler._getTotalChunks(id)-1; currentChunkIndex >= firstChunkIndex; currentChunkIndex-=1) {
-            handler._getFileState(id).remainingChunkIdxs.unshift(currentChunkIndex);
-        }
-
-        uploadNextChunk(id);
-    }
-
-    function onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume) {
-        firstChunkIndex = persistedChunkInfoForResume.part;
-        handler._getFileState(id).loaded = persistedChunkInfoForResume.lastByteSent;
-        handler._getFileState(id).estTotalRequestsSize = persistedChunkInfoForResume.estTotalRequestsSize;
-        handler._getFileState(id).initialRequestOverhead = persistedChunkInfoForResume.initialRequestOverhead;
-        handler._getFileState(id).attemptingResume = true;
-        log("Resuming " + name + " at partition index " + firstChunkIndex);
-
-        calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
-    }
-
-    function startResumeAttempt(id, persistedChunkInfoForResume, firstChunkIndex) {
-        var name = getName(id),
-            firstChunkDataForResume = handler._getChunkData(id, persistedChunkInfoForResume.part),
-            onResumeRetVal;
-
-        onResumeRetVal = spec.onResume(id, name, handler._getChunkDataForCallback(firstChunkDataForResume));
-        if (onResumeRetVal instanceof qq.Promise) {
-            log("Waiting for onResume promise to be fulfilled for " + id);
-            onResumeRetVal.then(
-                function() {
-                    onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume);
-                },
-                function() {
-                    log("onResume promise fulfilled - failure indicated.  Will not resume.");
-                    calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
-                }
-            );
-        }
-        else if (onResumeRetVal !== false) {
-            onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume);
-        }
-        else {
-            log("onResume callback returned false.  Will not resume.");
-            calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
-        }
-    }
-
-    function handleFileChunkingUpload(id, retry) {
-        if (!handler._getFileState(id).remainingChunkIdxs ||
-            handler._getFileState(id).remainingChunkIdxs.length === 0) {
-
-            handleStartOfChunkedUpload(id, retry);
-        }
-        else {
-            uploadNextChunk(id);
-        }
-    }
-
-    function handleStartOfChunkedUpload(id, retry) {
-        handler._getFileState(id).remainingChunkIdxs = [];
-
-        if (resumeEnabled &&
-            !retry &&
-            handler.getFile(id) &&
-            handler.isResumable(id)) {
-
-            maybeResumeChunkedUpload(id);
-        }
-        else {
-            calculateRemainingChunkIdxsAndUpload(id, 0);
-        }
-    }
-
-    function maybeResumeChunkedUpload(id) {
-        var persistedChunkInfoForResume = getPersistedChunkData(id);
-
-        if (persistedChunkInfoForResume) {
-            startResumeAttempt(id, persistedChunkInfoForResume, 0);
-        }
-        else {
-            calculateRemainingChunkIdxsAndUpload(id, 0);
-        }
-    }
+//    function maybeResumeChunkedUpload(id) {
+//        var persistedChunkInfoForResume = getPersistedChunkData(id);
+//
+//        if (persistedChunkInfoForResume) {
+//            startResumeAttempt(id, persistedChunkInfoForResume, 0);
+//        }
+//        else {
+//            calculateRemainingChunkIdxsAndUpload(id, 0);
+//        }
+//    }
 
     function handleStandardFileUpload(id) {
         var fileOrBlob = handler.getFile(id),
@@ -540,25 +468,15 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         return promise;
     }
 
-//    function handleUploadSignal(id, retry) {
-//        var name = getName(id);
-//
-//        if (handler.isValid(id)) {
-//            spec.onUpload(id, name);
-//
-//            if (chunkFiles) {
-//                handleFileChunkingUpload(id, retry);
-//            }
-//            else {
-//                handleStandardFileUpload(id);
-//            }
-//        }
-//    }
+    qq.extend(this, {
+        uploadFile: function(id) {
+            return handleStandardFileUpload(id);
+        },
 
-
-    this.uploadFile = function(id) {
-        return handleStandardFileUpload(id);
-    };
+        uploadChunk: function(id, chunkIdx) {
+            return uploadChunk(id, chunkIdx);
+        }
+    });
 
     qq.extend(this, new qq.AbstractUploadHandlerXhr({
             options: {
@@ -583,60 +501,60 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
                 super_.add.apply(this, arguments);
 
-                if (resumeEnabled) {
-                    persistedChunkData = getPersistedChunkData(id);
-
-                    if (persistedChunkData) {
-                        // If this is a duplicate of another file submitted during this session,
-                        // it is not eligible for resume
-                        if (getDataByUuid(persistedChunkData.uuid)) {
-                            handler._markNotResumable(id);
-                        }
-                        else {
-                            onUuidChanged(id, persistedChunkData.uuid);
-                        }
-                    }
-                }
+//                if (resumeEnabled) {
+//                    persistedChunkData = getPersistedChunkData(id);
+//
+//                    if (persistedChunkData) {
+//                        // If this is a duplicate of another file submitted during this session,
+//                        // it is not eligible for resume
+//                        if (getDataByUuid(persistedChunkData.uuid)) {
+//                            handler._markNotResumable(id);
+//                        }
+//                        else {
+//                            onUuidChanged(id, persistedChunkData.uuid);
+//                        }
+//                    }
+//                }
 
                 return id;
             },
 
-            getResumableFilesData: function() {
-                var matchingCookieNames = [],
-                    resumableFilesData = [];
-
-                if (chunkFiles && resumeEnabled) {
-                    if (resumeId === undefined) {
-                        matchingCookieNames = qq.getCookieNames(new RegExp("^qqfilechunk\\" + cookieItemDelimiter + ".+\\" +
-                            cookieItemDelimiter + "\\d+\\" + cookieItemDelimiter + spec.chunking.partSize + "="));
-                    }
-                    else {
-                        matchingCookieNames = qq.getCookieNames(new RegExp("^qqfilechunk\\" + cookieItemDelimiter + ".+\\" +
-                            cookieItemDelimiter + "\\d+\\" + cookieItemDelimiter + spec.chunking.partSize + "\\" +
-                            cookieItemDelimiter + resumeId + "="));
-                    }
-
-                    qq.each(matchingCookieNames, function(idx, cookieName) {
-                        var cookiesNameParts = cookieName.split(cookieItemDelimiter);
-                        var cookieValueParts = qq.getCookie(cookieName).split(cookieItemDelimiter);
-
-                        resumableFilesData.push({
-                            name: decodeURIComponent(cookiesNameParts[1]),
-                            size: cookiesNameParts[2],
-                            uuid: cookieValueParts[0],
-                            partIdx: cookieValueParts[1]
-                        });
-                    });
-
-                    return resumableFilesData;
-                }
-                return [];
-            },
+//            getResumableFilesData: function() {
+//                var matchingCookieNames = [],
+//                    resumableFilesData = [];
+//
+//                if (chunkFiles && resumeEnabled) {
+//                    if (resumeId === undefined) {
+//                        matchingCookieNames = qq.getCookieNames(new RegExp("^qqfilechunk\\" + cookieItemDelimiter + ".+\\" +
+//                            cookieItemDelimiter + "\\d+\\" + cookieItemDelimiter + spec.chunking.partSize + "="));
+//                    }
+//                    else {
+//                        matchingCookieNames = qq.getCookieNames(new RegExp("^qqfilechunk\\" + cookieItemDelimiter + ".+\\" +
+//                            cookieItemDelimiter + "\\d+\\" + cookieItemDelimiter + spec.chunking.partSize + "\\" +
+//                            cookieItemDelimiter + resumeId + "="));
+//                    }
+//
+//                    qq.each(matchingCookieNames, function(idx, cookieName) {
+//                        var cookiesNameParts = cookieName.split(cookieItemDelimiter);
+//                        var cookieValueParts = qq.getCookie(cookieName).split(cookieItemDelimiter);
+//
+//                        resumableFilesData.push({
+//                            name: decodeURIComponent(cookiesNameParts[1]),
+//                            size: cookiesNameParts[2],
+//                            uuid: cookieValueParts[0],
+//                            partIdx: cookieValueParts[1]
+//                        });
+//                    });
+//
+//                    return resumableFilesData;
+//                }
+//                return [];
+//            },
 
             expunge: function(id) {
-                if (resumeEnabled) {
-                    deletePersistedChunkData(id);
-                }
+//                if (resumeEnabled) {
+//                    deletePersistedChunkData(id);
+//                }
 
                 super_.expunge(id);
             }

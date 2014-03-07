@@ -1,6 +1,6 @@
 /* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 if (qqtest.canDownloadFileAsBlob) {
-    describe.skip("chunked uploads", function() {
+    describe("chunked uploads", function() {
         "use strict";
 
         var fileTestHelper = helpme.setupFileTests(),
@@ -39,8 +39,6 @@ if (qqtest.canDownloadFileAsBlob) {
                     },
                     callbacks: {
                         onUploadChunk: function (id, name, chunkData) {
-                            var request = fileTestHelper.getRequests()[fileTestHelper.getRequests().length - 1];
-
                             chunksSent++;
 
                             assert.equal(id, 0, "Wrong ID passed to onUpoadChunk");
@@ -51,6 +49,7 @@ if (qqtest.canDownloadFileAsBlob) {
                             assert.equal(chunkData.totalParts, expectedChunks, "Wrong totalParts passed to onUploadChunk");
 
                             setTimeout(function () {
+                                var request = fileTestHelper.getRequests()[fileTestHelper.getRequests().length - 1];
                                 request.respond(200, null, JSON.stringify({success: true}));
                             }, 10);
                         },
@@ -123,8 +122,6 @@ if (qqtest.canDownloadFileAsBlob) {
                     },
                     callbacks: {
                         onUploadChunk: function (id, name, chunkData) {
-                            var request = fileTestHelper.getRequests()[fileTestHelper.getRequests().length - 1];
-
                             chunksSent++;
 
                             assert.equal(id, 0, "Wrong ID passed to onUpoadChunk");
@@ -135,6 +132,8 @@ if (qqtest.canDownloadFileAsBlob) {
                             assert.equal(chunkData.totalParts, expectedChunks, "Wrong totalParts passed to onUploadChunk");
 
                             setTimeout(function () {
+                                var request = fileTestHelper.getRequests()[fileTestHelper.getRequests().length - 1];
+
                                 if (chunksSent === expectedChunks && !alreadyFailed) {
                                     alreadyFailed = true;
 
