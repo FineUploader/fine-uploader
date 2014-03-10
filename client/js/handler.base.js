@@ -119,43 +119,55 @@ qq.UploadHandler = function(o, namespace) {
         );
     }
 
-    function uploadChunkedFile(id) {
-        if (!handlerImpl._getFileState(id).remainingChunkIdxs ||
-            handlerImpl._getFileState(id).remainingChunkIdxs.length === 0) {
 
-            handlerImpl._getFileState(id).remainingChunkIdxs = [];
+    /**
+     * Retrieves the 0-based index of the next chunk to send.  Note that AWS uses 1-based indexing.
+     *
+     * @param id File ID
+     * @returns {number} The 0-based index of the next file chunk to be sent to S3
+     */
+    function getNextPartIdxToSend(id) {
+        var nextIdx = handlerImpl._getFileState(id).chunking.lastSent;
 
-            var currentChunkIndex;
-
-            for (currentChunkIndex = handlerImpl._getTotalChunks(id)-1; currentChunkIndex >= 0; currentChunkIndex-=1) {
-                handlerImpl._getFileState(id).remainingChunkIdxs.unshift(currentChunkIndex);
-            }
+        if (nextIdx >= 0) {
+            nextIdx = nextIdx + 1;
+        }
+        else {
+            nextIdx = 0;
         }
 
-        uploadChunk(id, handlerImpl._getFileState(id).remainingChunkIdxs[0]);
+        if (nextIdx >= handlerImpl._getTotalChunks(id)) {
+            nextIdx = null;
+        }
+
+        return nextIdx;
     }
 
-    function uploadChunk(id, chunkIdx) {
+    function uploadChunk(id) {
         var size = options.getSize(id),
             name = options.getName(id),
+            chunkIdx = getNextPartIdxToSend(id),
             chunkData = handlerImpl._getChunkData(id, chunkIdx);
 
         options.onUploadChunk(id, name, handlerImpl._getChunkDataForCallback(chunkData));
 
+        handlerImpl._maybePersistChunkedState(id);
+
         handlerImpl.uploadChunk(id, chunkIdx).then(
             function(response, xhr) {
-                handlerImpl._getFileState(id).remainingChunkIdxs.shift();
                 chunkUploadComplete(id, chunkIdx, response, xhr);
+                handlerImpl._getFileState(id).chunking.lastSent = chunkIdx;
 
-                var nextChunkIdx = handlerImpl._getFileState(id).remainingChunkIdxs[0];
+                var nextChunkIdx = getNextPartIdxToSend(id);
 
-                if (nextChunkIdx === undefined) {
+                if (nextChunkIdx === null) {
                     options.onProgress(id, name, size, size);
+                    handlerImpl._maybeDeletePersistedChunkData(id);
                     maybeHandleUuidChange(id, response);
                     cleanupUpload(id, response, xhr);
                 }
                 else {
-                    uploadChunk(id, nextChunkIdx);
+                    uploadChunk(id);
                 }
             },
 
@@ -174,7 +186,8 @@ qq.UploadHandler = function(o, namespace) {
     function resetChunkedUpload(id) {
         log("Server has ordered chunking effort to be restarted on next attempt for item ID " + id, "error");
 
-        handlerImpl._getFileState(id).remainingChunkIdxs = [];
+        handlerImpl._maybeDeletePersistedChunkData(id);
+        delete handlerImpl._getFileState(id).chunking;
         delete handlerImpl._getFileState(id).loaded;
         delete handlerImpl._getFileState(id).estTotalRequestsSize;
         delete handlerImpl._getFileState(id).initialRequestOverhead;
@@ -199,8 +212,8 @@ qq.UploadHandler = function(o, namespace) {
 
         options.onUpload(id, name);
 
-        if (chunking) {
-            uploadChunkedFile(id);
+        if (chunking && handlerImpl._shouldChunkThisFile(id)) {
+            uploadChunk(id);
         }
         else {
             uploadNonChunkedFile(id, name);

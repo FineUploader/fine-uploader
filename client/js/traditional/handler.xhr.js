@@ -480,7 +480,9 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     qq.extend(this, new qq.AbstractUploadHandlerXhr({
             options: {
-                chunking: chunkFiles ? spec.chunking : null
+                namespace: "traditional",
+                chunking: chunkFiles ? spec.chunking : null,
+                resumeEnabled: resumeEnabled
             },
 
             proxy: {
@@ -489,6 +491,8 @@ qq.UploadHandlerXhr = function(spec, proxy) {
                 getName: getName,
                 getSize: getSize,
                 getUuid: getUuid,
+                getEndpoint: spec.endpointStore.get,
+                getDataByUuid: getDataByUuid,
                 log: log
             }
         }

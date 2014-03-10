@@ -338,10 +338,11 @@ if (qq.supportedFeatures.scaling) {
                 ],
                 actualUploadCallbacks = [],
                 uploader = new qq.FineUploaderBasic({
+                    debug: true,
                     request: {endpoint: "test/uploads"},
                     chunking: {
                         enabled: true,
-                        partSize: 50000
+                        partSize: 500
                     },
                     scaling: {
                         sizes: sizes

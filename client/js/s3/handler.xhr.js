@@ -197,7 +197,7 @@ qq.s3.UploadHandlerXhr = function(spec, proxy) {
 
             // Only declare the upload complete (to listeners) if it has not been paused.
             if (paused) {
-                qq.log(qq.format("Detected pause on {} ({}).", id, name));
+                log(qq.format("Detected pause on {} ({}).", id, name));
             }
             else {
                 onComplete(id, name, responseToBubble, xhr);

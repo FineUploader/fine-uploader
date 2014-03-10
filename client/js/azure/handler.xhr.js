@@ -58,7 +58,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
                 handler._maybeDeletePersistedChunkData(id);
 
                 if (paused) {
-                    qq.log(qq.format("Detected pause on {} ({}).", id, getName(id)));
+                    log(qq.format("Detected pause on {} ({}).", id, getName(id)));
                 }
                 else {
                     onComplete(id, getName(id), {success: true}, xhr);
