@@ -165,7 +165,7 @@
          * Ensures the parent's upload handler creator passes any additional S3-specific options to the handler as well
          * as information required to instantiate the specific handler based on the current browser's capabilities.
          *
-         * @returns {qq.UploadHandler}
+         * @returns {qq.UploadHandlerController}
          * @private
          */
         _createUploadHandler: function() {

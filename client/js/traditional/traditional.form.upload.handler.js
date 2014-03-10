@@ -7,7 +7,8 @@
  * @param options Options passed from the base handler
  * @param proxy Callbacks & methods used to query for or push out data/changes
  */
-qq.UploadHandlerForm = function(options, proxy) {
+qq.traditional = qq.traditional || {};
+qq.traditional.FormUploadHandler = function(options, proxy) {
     "use strict";
 
     var handler = this,
@@ -104,7 +105,7 @@ qq.UploadHandlerForm = function(options, proxy) {
         return promise;
     };
 
-    qq.extend(this, new qq.AbstractUploadHandlerForm({
+    qq.extend(this, new qq.FormUploadHandler({
             options: {
                 isCors: options.cors.expected,
                 inputName: options.inputName

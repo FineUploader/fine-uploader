@@ -5,7 +5,7 @@
  *
  * @constructor
  */
-qq.AbstractUploadHandlerXhr = function(spec) {
+qq.XhrUploadHandler = function(spec) {
     "use strict";
 
     var publicApi = this,

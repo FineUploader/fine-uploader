@@ -20,7 +20,7 @@ qq.AbstractNonTraditionalUploadHandlerXhr = function(spec) {
         getUuid = proxy.getUuid,
         getDataByUuid = proxy.getDataByUuid,
         log = proxy.log,
-        baseHandlerXhrApi = new qq.AbstractUploadHandlerXhr(spec);
+        baseHandlerXhrApi = new qq.XhrUploadHandler(spec);
 
     qq.extend(this, baseHandlerXhrApi);
     qq.extend(this, {

@@ -6,7 +6,8 @@
  * @param spec Options passed from the base handler
  * @param proxy Callbacks & methods used to query for or push out data/changes
  */
-qq.UploadHandlerXhr = function(spec, proxy) {
+qq.traditional = qq.traditional || {};
+qq.traditional.XhrUploadHandler = function(spec, proxy) {
     "use strict";
 
     var onUuidChanged = proxy.onUuidChanged,
@@ -478,7 +479,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         }
     });
 
-    qq.extend(this, new qq.AbstractUploadHandlerXhr({
+    qq.extend(this, new qq.XhrUploadHandler({
             options: {
                 namespace: "traditional",
                 chunking: chunkFiles ? spec.chunking : null,

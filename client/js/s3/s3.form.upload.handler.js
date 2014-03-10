@@ -7,7 +7,7 @@
  * @param options Options passed from the base handler
  * @param proxy Callbacks & methods used to query for or push out data/changes
  */
-qq.s3.UploadHandlerForm = function(options, proxy) {
+qq.s3.FormUploadHandler = function(options, proxy) {
     "use strict";
 
     var handler = this,
@@ -186,7 +186,7 @@ qq.s3.UploadHandlerForm = function(options, proxy) {
         uploadCompleteCallback(id);
     }
 
-    qq.extend(this, new qq.AbstractUploadHandlerForm({
+    qq.extend(this, new qq.FormUploadHandler({
             options: {
                 isCors: false,
                 inputName: "file"

@@ -768,7 +768,7 @@
                 });
             }
 
-            return new qq.UploadHandler(options, namespace);
+            return new qq.UploadHandlerController(options, namespace);
         },
 
         _createDeleteHandler: function() {

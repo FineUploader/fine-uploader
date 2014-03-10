@@ -5,7 +5,7 @@
  *
  * @constructor
  */
-qq.AbstractUploadHandlerForm = function(spec) {
+qq.FormUploadHandler = function(spec) {
     "use strict";
 
     var options = spec.options,

@@ -8,7 +8,7 @@
  * @param proxy Callbacks & methods used to query for or push out data/changes
  */
 // TODO l18n for error messages returned to UI
-qq.azure.UploadHandlerXhr = function(spec, proxy) {
+qq.azure.XhrUploadHandler = function(spec, proxy) {
     "use strict";
 
     var handler = this,

@@ -5,13 +5,13 @@
  * @param o Options.  Passed along to the specific handler submodule as well.
  * @param namespace [optional] Namespace for the specific handler.
  */
-qq.UploadHandler = function(o, namespace) {
+qq.UploadHandlerController = function(o, namespace) {
     "use strict";
 
-    var baseHandler = this,
+    var controller = this,
         queue = [],
         chunking = false,
-        preventRetryResponse, options, log, handlerImpl;
+        preventRetryResponse, options, log, handler;
 
     // Default options, can be overridden by the user
     options = {
@@ -84,8 +84,8 @@ qq.UploadHandler = function(o, namespace) {
 
         options.onComplete(id, name, response, opt_xhr);
 
-        if (handlerImpl._getFileState(id)) {
-            delete handlerImpl._getFileState(id).xhr;
+        if (handler._getFileState(id)) {
+            delete handler._getFileState(id).xhr;
         }
 
         dequeue(id);
@@ -98,7 +98,7 @@ qq.UploadHandler = function(o, namespace) {
     }
 
     function uploadNonChunkedFile(id, name) {
-        handlerImpl.uploadFile(id).then(
+        handler.uploadFile(id).then(
             function(response, opt_xhr) {
                 var size = options.getSize(id);
 
@@ -127,7 +127,7 @@ qq.UploadHandler = function(o, namespace) {
      * @returns {number} The 0-based index of the next file chunk to be sent to S3
      */
     function getNextPartIdxToSend(id) {
-        var nextIdx = handlerImpl._getFileState(id).chunking.lastSent;
+        var nextIdx = handler._getFileState(id).chunking.lastSent;
 
         if (nextIdx >= 0) {
             nextIdx = nextIdx + 1;
@@ -136,7 +136,7 @@ qq.UploadHandler = function(o, namespace) {
             nextIdx = 0;
         }
 
-        if (nextIdx >= handlerImpl._getTotalChunks(id)) {
+        if (nextIdx >= handler._getTotalChunks(id)) {
             nextIdx = null;
         }
 
@@ -147,22 +147,22 @@ qq.UploadHandler = function(o, namespace) {
         var size = options.getSize(id),
             name = options.getName(id),
             chunkIdx = getNextPartIdxToSend(id),
-            chunkData = handlerImpl._getChunkData(id, chunkIdx);
+            chunkData = handler._getChunkData(id, chunkIdx);
 
-        options.onUploadChunk(id, name, handlerImpl._getChunkDataForCallback(chunkData));
+        options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
 
-        handlerImpl._maybePersistChunkedState(id);
+        handler._maybePersistChunkedState(id);
 
-        handlerImpl.uploadChunk(id, chunkIdx).then(
+        handler.uploadChunk(id, chunkIdx).then(
             function(response, xhr) {
                 chunkUploadComplete(id, chunkIdx, response, xhr);
-                handlerImpl._getFileState(id).chunking.lastSent = chunkIdx;
+                handler._getFileState(id).chunking.lastSent = chunkIdx;
 
                 var nextChunkIdx = getNextPartIdxToSend(id);
 
                 if (nextChunkIdx === null) {
                     options.onProgress(id, name, size, size);
-                    handlerImpl._maybeDeletePersistedChunkData(id);
+                    handler._maybeDeletePersistedChunkData(id);
                     maybeHandleUuidChange(id, response);
                     cleanupUpload(id, response, xhr);
                 }
@@ -186,33 +186,33 @@ qq.UploadHandler = function(o, namespace) {
     function resetChunkedUpload(id) {
         log("Server has ordered chunking effort to be restarted on next attempt for item ID " + id, "error");
 
-        handlerImpl._maybeDeletePersistedChunkData(id);
-        delete handlerImpl._getFileState(id).chunking;
-        delete handlerImpl._getFileState(id).loaded;
-        delete handlerImpl._getFileState(id).estTotalRequestsSize;
-        delete handlerImpl._getFileState(id).initialRequestOverhead;
+        handler._maybeDeletePersistedChunkData(id);
+        delete handler._getFileState(id).chunking;
+        delete handler._getFileState(id).loaded;
+        delete handler._getFileState(id).estTotalRequestsSize;
+        delete handler._getFileState(id).initialRequestOverhead;
     }
 
     function chunkUploadComplete(id, chunkIdx, response, xhr) {
-        var chunkData = handlerImpl._getChunkData(id, chunkIdx),
-            estRequestOverhead = handlerImpl._getFileState(id).lastRequestOverhead || 0;
+        var chunkData = handler._getChunkData(id, chunkIdx),
+            estRequestOverhead = handler._getFileState(id).lastRequestOverhead || 0;
 
-        handlerImpl._getFileState(id).attemptingResume = false;
-        handlerImpl._getFileState(id).loaded += chunkData.size + estRequestOverhead;
+        handler._getFileState(id).attemptingResume = false;
+        handler._getFileState(id).loaded += chunkData.size + estRequestOverhead;
 
-        options.onUploadChunkSuccess(id, handlerImpl._getChunkDataForCallback(chunkData), response, xhr);
+        options.onUploadChunkSuccess(id, handler._getChunkDataForCallback(chunkData), response, xhr);
     }
 
     function uploadFile(id) {
         var name = options.getName(id);
 
-        if (!baseHandler.isValid(id)) {
+        if (!controller.isValid(id)) {
             throw new qq.Error(id + " is not a valid file ID to upload!");
         }
 
         options.onUpload(id, name);
 
-        if (chunking && handlerImpl._shouldChunkThisFile(id)) {
+        if (chunking && handler._shouldChunkThisFile(id)) {
             uploadChunk(id);
         }
         else {
@@ -223,13 +223,13 @@ qq.UploadHandler = function(o, namespace) {
     // Returns a qq.BlobProxy, or an actual File/Blob if no proxy is involved, or undefined
     // if none of these are available for the ID
     function getProxyOrBlob(id) {
-        return (handlerImpl.getProxy && handlerImpl.getProxy(id)) ||
-            (handlerImpl.getFile && handlerImpl.getFile(id));
+        return (handler.getProxy && handler.getProxy(id)) ||
+            (handler.getFile && handler.getFile(id));
     }
 
     // Used when determining if a grouped Blob should be uploaded
     function waitingAndReadyForUpload(id) {
-        return !!handlerImpl.getFile(id);
+        return !!handler.getFile(id);
     }
 
     // Used when determining if a grouped Blob should be uploaded
@@ -270,7 +270,7 @@ qq.UploadHandler = function(o, namespace) {
         // If we don't have a file/blob yet & no file/blob exists for this item, request it,
         // and then submit the upload to the specific handler once the blob is available.
         // ASSUMPTION: This condition will only ever be true if XHR uploading is supported.
-        if (blob && !handlerImpl.getFile(id) && blob instanceof qq.BlobProxy) {
+        if (blob && !handler.getFile(id) && blob instanceof qq.BlobProxy) {
 
             // Blob creation may take some time, so the caller may want to update the
             // UI to indicate that an operation is in progress, even before the actual
@@ -282,13 +282,13 @@ qq.UploadHandler = function(o, namespace) {
                 log("Generated an on-demand blob for " + id);
 
                 // Update record associated with this file by providing the generated Blob
-                handlerImpl.updateBlob(id, generatedBlob);
+                handler.updateBlob(id, generatedBlob);
 
                 // Propagate the size for this generated Blob
                 options.setSize(id, generatedBlob.size);
 
                 // Order handler to recalculate chunking possibility, if applicable
-                handlerImpl.reevaluateChunking(id);
+                handler.reevaluateChunking(id);
 
                 maybeReadyToUpload(id);
             },
@@ -339,7 +339,7 @@ qq.UploadHandler = function(o, namespace) {
 
         if (getProxyOrBlob(id) instanceof qq.BlobProxy) {
             log("Generated blob upload has ended for " + id + ", disposing generated blob.");
-            delete handlerImpl._getFileState(id).file;
+            delete handler._getFileState(id).file;
         }
 
         if (i >= 0) {
@@ -358,11 +358,11 @@ qq.UploadHandler = function(o, namespace) {
         dequeue(id);
     }
 
-    function determineHandlerImpl() {
-        var handlerType = namespace ? qq[namespace] : qq,
+    function determineSpecificHandler() {
+        var handlerType = namespace ? qq[namespace] : qq.traditional,
             handlerModuleSubtype = qq.supportedFeatures.ajaxUploading ? "Xhr" : "Form";
 
-        handlerImpl = new handlerType["UploadHandler" + handlerModuleSubtype](
+        handler = new handlerType[handlerModuleSubtype + "UploadHandler"](
             options,
             {
                 onUuidChanged: options.onUuidChanged,
@@ -382,7 +382,7 @@ qq.UploadHandler = function(o, namespace) {
          * @returns id
          **/
         add: function(id, file) {
-            return handlerImpl.add.apply(this, arguments);
+            return handler.add.apply(this, arguments);
         },
 
         /**
@@ -408,7 +408,7 @@ qq.UploadHandler = function(o, namespace) {
                 return isProxy ? startUpload(id) : uploadFile(id);
             }
             else {
-                return this.upload(id);
+                return controller.upload(id);
             }
         },
 
@@ -416,7 +416,7 @@ qq.UploadHandler = function(o, namespace) {
          * Cancels file upload by id
          */
         cancel: function(id) {
-            var cancelRetVal = handlerImpl.cancel(id);
+            var cancelRetVal = handler.cancel(id);
 
             if (cancelRetVal instanceof qq.Promise) {
                 cancelRetVal.then(function() {
@@ -446,34 +446,34 @@ qq.UploadHandler = function(o, namespace) {
         // Returns a File, Blob, or the Blob/File for the reference/parent file if the targeted blob is a proxy.
         // Undefined if no file record is available.
         getFile: function(id) {
-            if (handlerImpl.getProxy && handlerImpl.getProxy(id)) {
-                return handlerImpl.getProxy(id).referenceBlob;
+            if (handler.getProxy && handler.getProxy(id)) {
+                return handler.getProxy(id).referenceBlob;
             }
 
-            return handlerImpl.getFile && handlerImpl.getFile(id);
+            return handler.getFile && handler.getFile(id);
         },
 
         // Returns true if the Blob associated with the ID is related to a proxy s
         isProxied: function(id) {
-            return !!(handlerImpl.getProxy && handlerImpl.getProxy(id));
+            return !!(handler.getProxy && handler.getProxy(id));
         },
 
         getInput: function(id) {
-            if (handlerImpl.getInput) {
-                return handlerImpl.getInput(id);
+            if (handler.getInput) {
+                return handler.getInput(id);
             }
         },
 
         reset: function() {
             log("Resetting upload handler");
-            this.cancelAll();
+            controller.cancelAll();
             queue = [];
-            handlerImpl.reset();
+            handler.reset();
         },
 
         expunge: function(id) {
-            if (this.isValid(id)) {
-                return handlerImpl.expunge(id);
+            if (controller.isValid(id)) {
+                return handler.expunge(id);
             }
         },
 
@@ -481,12 +481,12 @@ qq.UploadHandler = function(o, namespace) {
          * Determine if the file exists.
          */
         isValid: function(id) {
-            return handlerImpl.isValid(id);
+            return handler.isValid(id);
         },
 
         getResumableFilesData: function() {
-            if (handlerImpl.getResumableFilesData) {
-                return handlerImpl.getResumableFilesData();
+            if (handler.getResumableFilesData) {
+                return handler.getResumableFilesData();
             }
             return [];
         },
@@ -500,8 +500,8 @@ qq.UploadHandler = function(o, namespace) {
          * @returns {*} Some identifier used by a 3rd-party service involved in the upload process
          */
         getThirdPartyFileId: function(id) {
-            if (handlerImpl.getThirdPartyFileId && this.isValid(id)) {
-                return handlerImpl.getThirdPartyFileId(id);
+            if (handler.getThirdPartyFileId && controller.isValid(id)) {
+                return handler.getThirdPartyFileId(id);
             }
         },
 
@@ -511,7 +511,7 @@ qq.UploadHandler = function(o, namespace) {
          * @returns {boolean} true if the upload was paused
          */
         pause: function(id) {
-            if (this.isResumable(id) && handlerImpl.pause && this.isValid(id) && handlerImpl.pause(id)) {
+            if (controller.isResumable(id) && handler.pause && controller.isValid(id) && handler.pause(id)) {
                 dequeue(id);
                 return true;
             }
@@ -519,9 +519,9 @@ qq.UploadHandler = function(o, namespace) {
 
         // True if the file is eligible for pause/resume.
         isResumable: function(id) {
-            return !!handlerImpl.isResumable && handlerImpl.isResumable(id);
+            return !!handler.isResumable && handler.isResumable(id);
         }
     });
 
-    determineHandlerImpl();
+    determineSpecificHandler();
 };
