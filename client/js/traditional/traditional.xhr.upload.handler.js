@@ -105,7 +105,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         });
     }
 
-    function uploadChunk(id, chunkIdx) {
+    function uploadChunk(id, chunkIdx, resuming) {
         var chunkData = handler._getChunkData(id, chunkIdx),
             xhr = handler._createXhr(id),
             size = getSize(id),
@@ -121,9 +121,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         params = spec.paramsStore.get(id);
         addChunkingSpecificParams(id, params, chunkData);
 
-        if (handler._getFileState(id).attemptingResume) {
-            addResumeSpecificParams(params);
-        }
+        resuming && addResumeSpecificParams(params);
 
         toSend = setParamsAndGetEntityToSend(params, xhr, chunkData.blob, id);
         setHeaders(id, xhr);
@@ -367,13 +365,8 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
     }
 
     qq.extend(this, {
-        uploadFile: function(id) {
-            return handleStandardFileUpload(id);
-        },
-
-        uploadChunk: function(id, chunkIdx) {
-            return uploadChunk(id, chunkIdx);
-        }
+        uploadFile: handleStandardFileUpload,
+        uploadChunk: uploadChunk
     });
 
     qq.extend(this, new qq.XhrUploadHandler({

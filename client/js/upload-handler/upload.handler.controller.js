@@ -30,22 +30,12 @@ qq.UploadHandlerController = function(o, namespace) {
         totalFileSizeName: "qqtotalfilesize",
         chunking: {
             enabled: false,
-            partSize: 2000000, //bytes
-            paramNames: {
-                partIndex: "qqpartindex",
-                partByteOffset: "qqpartbyteoffset",
-                chunkSize: "qqchunksize",
-                totalParts: "qqtotalparts",
-                filename: "qqfilename"
-            }
+            partSize: 2000000 //bytes
         },
         resume: {
             enabled: false,
             id: null,
-            recordsExpireIn: 7, //days
-            paramNames: {
-                resuming: "qqresume"
-            }
+            recordsExpireIn: 7 //days
         },
         log: function(str, level) {},
         onProgress: function(id, fileName, loaded, total){},
@@ -147,13 +137,14 @@ qq.UploadHandlerController = function(o, namespace) {
         var size = options.getSize(id),
             name = options.getName(id),
             chunkIdx = getNextPartIdxToSend(id),
-            chunkData = handler._getChunkData(id, chunkIdx);
+            chunkData = handler._getChunkData(id, chunkIdx),
+            resuming = handler._getFileState(id).attemptingResume;
 
         options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
 
         handler._maybePersistChunkedState(id);
 
-        handler.uploadChunk(id, chunkIdx).then(
+        handler.uploadChunk(id, chunkIdx, resuming).then(
             function(response, xhr) {
                 chunkUploadComplete(id, chunkIdx, response, xhr);
                 handler._getFileState(id).chunking.lastSent = chunkIdx;
