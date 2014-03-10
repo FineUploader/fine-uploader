@@ -18,9 +18,9 @@ sizes to about 4GB).
 
 {{ alert("The default chunk size for Fine Uploader S3 is 5 MiB. If your file is smaller than that size, the upload will be non-chunked.", "default", "Amazon S3 Specific Note:") }}
 
-Chunking is made possible by the File API, and is supported in Chrome (except on Android), Firefox,
-Safari (iOS 6+ and OS X), Internet Explorer 10+, and Opera 15+. Chunking is disabled in all
-Android browsers until its `Blob.prototype.slice` implementation is fixed.
+Chunking is made possible by the File API, and is supported in Chrome, Firefox,
+Safari (iOS 6+ and OS X), Internet Explorer 10+, and Opera 15+. Chunking is disabled in
+Android's stock browser due to a bug in the browser's ability to upload Blobs.
 
 Each chunk is sent in order and as a separate request, and each chunked request
 should be acknowledged much as you would for a non-chunked request because

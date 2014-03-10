@@ -439,6 +439,26 @@ been added to the DOM immediately before this callback is invoked.
     ])
 }}
 
+{{ api_event("totalProgress", "totalProgress",
+""" Called during a batch of uploads, as they progress, but only for the AJAX uploader.  This represents the total
+progress of all files in the batch.
+
+Useful for implementing an aggregate progress bar.
+""",
+    [
+        {
+            "name": "totalUploadedBytes",
+            "type": "Integer",
+            "description": "The number of bytes that have been uploaded so far in this batch."
+        },
+        {
+            "name": "totalBytes",
+            "type": "Integer",
+            "description": "The total number of bytes that comprise all files in the batch."
+        }
+    ])
+}}
+
 {{ api_event("upload", "upload", "Called just before an item begins uploading to the server.",
     [
         {

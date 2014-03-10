@@ -40,8 +40,7 @@
     }
 
     function addCallbacks(transformedOpts) {
-        var callbacks = transformedOpts.callbacks = {},
-            dndInst = new qq.FineUploaderBasic();
+        var callbacks = transformedOpts.callbacks = {};
 
         $.each(new qq.DragAndDrop.callbacks(), function(prop, func) {
             var name = prop,

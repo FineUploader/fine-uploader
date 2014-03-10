@@ -270,4 +270,37 @@ describe("templating.js", function() {
             assert.equal(templating.getFileId(retryButtonEl), 0, "Button 3 levels deep");
         });
     });
+
+    if (qqtest.canDownloadFileAsBlob) {
+        it("updates the name in the UI after a call to setName API method", function(done) {
+            assert.expect(2, done);
+
+            helpme.setupFileTests();
+
+            var uploader;
+
+            var template = $('<script id="qq-template" type="text/template">' + defaultTemplate + '</script>');
+            $fixture.append(template);
+
+            uploader = new qq.FineUploader({
+                element: $fixture[0],
+                autoUpload: false,
+
+                callbacks: {
+                    onSubmitted: function(id) {
+                        assert.equal($(".qq-upload-file-selector").text(), "up.jpg");
+
+                        uploader.setName(id, "newname.test");
+                        setTimeout(function() {
+                            assert.equal($(".qq-upload-file-selector").text(), "newname.test");
+                        }, 0);
+                    }
+                }
+            });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                uploader.addBlobs({blob: blob, name: "up.jpg"});
+            });
+        });
+    }
 });

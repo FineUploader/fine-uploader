@@ -20,18 +20,6 @@ qq.AbstractUploadHandlerXhr = function(spec) {
         log = proxy.log;
 
 
-    function getChunk(fileOrBlob, startByte, endByte) {
-        if (fileOrBlob.slice) {
-            return fileOrBlob.slice(startByte, endByte);
-        }
-        else if (fileOrBlob.mozSlice) {
-            return fileOrBlob.mozSlice(startByte, endByte);
-        }
-        else if (fileOrBlob.webkitSlice) {
-            return fileOrBlob.webkitSlice(startByte, endByte);
-        }
-    }
-
     function abort(id) {
         var xhr = fileState[id].xhr,
             ajaxRequester = fileState[id].currentAjaxRequester;
@@ -46,22 +34,24 @@ qq.AbstractUploadHandlerXhr = function(spec) {
         /**
          * Adds File or Blob to the queue
          **/
-        add: function(id, fileOrBlobData) {
-            if (qq.isFile(fileOrBlobData)) {
-                fileState[id] = {file: fileOrBlobData};
+        add: function(id, blobOrProxy) {
+            if (qq.isFile(blobOrProxy) || qq.isBlob(blobOrProxy)) {
+                fileState[id] = {file: blobOrProxy};
             }
-            else if (qq.isBlob(fileOrBlobData.blob)) {
-                fileState[id] =  {blobData: fileOrBlobData};
+            else if (blobOrProxy instanceof qq.BlobProxy) {
+                fileState[id] = {proxy: blobOrProxy};
             }
             else {
-                throw new Error("Passed obj is not a File or BlobData (in qq.UploadHandlerXhr)");
+                throw new Error("Passed obj is not a File, Blob, or proxy");
             }
         },
 
         getFile: function(id) {
-            if (fileState[id]) {
-                return fileState[id].file || fileState[id].blobData.blob;
-            }
+            return this.isValid(id) && fileState[id].file;
+        },
+
+        getProxy: function(id) {
+            return this.isValid(id) && fileState[id].proxy;
         },
 
         isValid: function(id) {
@@ -117,6 +107,23 @@ qq.AbstractUploadHandlerXhr = function(spec) {
             }
         },
 
+        updateBlob: function(id, newBlob) {
+            if (this.isValid(id)) {
+                fileState[id].file = newBlob;
+            }
+        },
+
+        // Causes handler code to re-evaluate the current blob for chunking
+        reevaluateChunking: function(id) {
+            if (chunking && this.isValid(id)) {
+                delete fileState[id].chunking;
+            }
+        },
+
+        isResumable: function(id) {
+            return !!chunking && this.isValid(id) && !fileState[id].notResumable;
+        },
+
         /**
          * Creates an XHR instance for this file and stores it in the fileState.
          *
@@ -170,7 +177,7 @@ qq.AbstractUploadHandlerXhr = function(spec) {
                 start: startBytes,
                 end: endBytes,
                 count: totalChunks,
-                blob: getChunk(fileOrBlob, startBytes, endBytes),
+                blob: qq.sliceBlob(fileOrBlob, startBytes, endBytes),
                 size: endBytes - startBytes
             };
         },
@@ -186,6 +193,10 @@ qq.AbstractUploadHandlerXhr = function(spec) {
 
         _getFileState: function(id) {
             return fileState[id];
+        },
+
+        _markNotResumable: function(id) {
+            fileState[id].notResumable = true;
         }
     });
 };

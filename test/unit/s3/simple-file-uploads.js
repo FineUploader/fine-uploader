@@ -86,7 +86,7 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("converts all parameters (metadata) to lower case before sending them to S3", function(done) {
-            assert.expect(3, done);
+            assert.expect(5, done);
 
             var uploader = new qq.s3.FineUploaderBasic({
                     request: typicalRequestOption,
@@ -94,17 +94,24 @@ if (qqtest.canDownloadFileAsBlob) {
                 }
             );
 
-            uploader.setParams({mIxEdCaSe: "value"});
+            uploader.setParams({
+                mIxEdCaSe: "value",
+                mIxEdCaSeFunc: function() {
+                    return "value2";
+                }
+            });
 
             startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
                 var uploadRequestParams;
 
                 assert.equal(conditions["x-amz-meta-mixedcase"], "value");
+                assert.equal(conditions["x-amz-meta-mixedcasefunc"], "value2");
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
                 uploadRequestParams = uploadRequest.requestBody.fields;
 
                 assert.equal(uploadRequestParams["x-amz-meta-mixedcase"], "value");
+                assert.equal(uploadRequestParams["x-amz-meta-mixedcasefunc"], "value2");
             });
         });
 

@@ -35,6 +35,19 @@ qq.DragAndDrop = function(o) {
 
         if (entry.isFile) {
             entry.file(function(file) {
+                var name = entry.name,
+                    fullPath = entry.fullPath,
+                    indexOfNameInFullPath = fullPath.indexOf(name);
+
+                // remove file name from full path string
+                fullPath = fullPath.substr(0, indexOfNameInFullPath);
+
+                // remove leading slash in full path string
+                if (fullPath.charAt(0) === "/") {
+                    fullPath = fullPath.substr(1);
+                }
+
+                file.qqPath = fullPath;
                 droppedFiles.push(file);
                 parseEntryPromise.success();
             },
@@ -166,16 +179,37 @@ qq.DragAndDrop = function(o) {
         return fileDrag;
     }
 
+    // Attempt to determine when the file has left the document.  It is not always possible to detect this
+    // in all cases, but it is generally possible in all browsers, with a few exceptions.
+    //
+    // Exceptions:
+    // * IE10+ & Safari: We can't detect a file leaving the document if the Explorer window housing the file
+    //                   overlays the browser window.
+    // * IE10+: If the file is dragged out of the window too quickly, IE does not set the expected values of the
+    //          event's X & Y properties.
     function leavingDocumentOut(e) {
-        /* jshint -W041, eqeqeq:false */
-            // null coords for Chrome and Safari Windows
-        return ((qq.chrome() || (qq.safari() && qq.windows())) && e.clientX == 0 && e.clientY == 0) ||
-            // null e.relatedTarget for Firefox
-            (qq.firefox() && !e.relatedTarget);
+        if (qq.firefox()) {
+            return !e.relatedTarget;
+        }
+
+        if (qq.safari()) {
+            return e.x < 0 || e.y < 0;
+        }
+
+        return e.x === 0 && e.y === 0;
     }
 
     function setupDragDrop() {
-        var dropZones = options.dropZoneElements;
+        var dropZones = options.dropZoneElements,
+
+            maybeHideDropZones = function() {
+                setTimeout(function() {
+                    qq.each(dropZones, function(idx, dropZone) {
+                        qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
+                        qq(dropZone).removeClass(options.classes.dropActive);
+                    });
+                }, 10);
+            };
 
         qq.each(dropZones, function(idx, dropZone) {
             var uploadDropZone = setupDropzone(dropZone);
@@ -197,25 +231,23 @@ qq.DragAndDrop = function(o) {
 
         disposeSupport.attach(document, "dragleave", function(e) {
             if (leavingDocumentOut(e)) {
-                qq.each(dropZones, function(idx, dropZone) {
-                    qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
-                });
+                maybeHideDropZones();
             }
         });
 
-        disposeSupport.attach(document, "drop", function(e){
-            qq.each(dropZones, function(idx, dropZone) {
-                qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(dropZone).hide();
-            });
-            e.preventDefault();
+        // Just in case we were not able to detect when a dragged file has left the document,
+        // hide all relevant drop zones the next time the mouse enters the document.
+        // Note that mouse events such as this one are not fired during drag operations.
+        disposeSupport.attach(qq(document).children()[0], "mouseenter", function(e) {
+            maybeHideDropZones();
         });
 
-        disposeSupport.attach(document, HIDE_ZONES_EVENT_NAME, function(e) {
-            qq.each(options.dropZoneElements, function(idx, zone) {
-                qq(zone).hasAttribute(HIDE_BEFORE_ENTER_ATTR) && qq(zone).hide();
-                qq(zone).removeClass(options.classes.dropActive);
-            });
+        disposeSupport.attach(document, "drop", function(e){
+            e.preventDefault();
+            maybeHideDropZones();
         });
+
+        disposeSupport.attach(document, HIDE_ZONES_EVENT_NAME, maybeHideDropZones);
     }
 
     setupDragDrop();

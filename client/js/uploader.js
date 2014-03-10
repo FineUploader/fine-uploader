@@ -20,7 +20,8 @@ qq.FineUploader = function(o, namespace) {
         listElement: null,
 
         dragAndDrop: {
-            extraDropzones: []
+            extraDropzones: [],
+            reportDirectoryPaths: false
         },
 
         text: {
@@ -83,6 +84,10 @@ qq.FineUploader = function(o, namespace) {
                 notAvailablePath: null,
                 waitingPath: null
             }
+        },
+
+        scaling: {
+            hideScaled: false
         },
 
         showMessage: function(message){

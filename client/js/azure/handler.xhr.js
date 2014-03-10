@@ -69,6 +69,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
         getName = proxy.getName,
         getUuid = proxy.getUuid,
         getSize = proxy.getSize,
+        getDataByUuid = proxy.getDataByUuid,
         progressHandler = function(id, loaded, total) {
             if (handler._shouldChunkThisFile(id)) {
                 onProgress(id, getName(id), loaded + handler._getFileState(id).loaded, getSize(id));
@@ -277,6 +278,7 @@ qq.azure.UploadHandlerXhr = function(spec, proxy) {
                 getSize: getSize,
                 getUuid: getUuid,
                 getEndpoint: endpointStore.get,
+                getDataByUuid: getDataByUuid,
                 log: log
             }
         }

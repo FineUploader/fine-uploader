@@ -110,11 +110,7 @@
     // [4]: http://www.jshint.com/options/
 
     "maxerr"        : 100,      // Maximum errors before stopping.
-    "predef"        : [         // Extra globals.
-        //"exampleVar",
-        //"anotherCoolGlobal",
-        //"iLoveDouglas"
-    ],
+    "predef"        : ["qq"],
     "quotmark"      : "double", // Enforces consistencey of quotation marks.
     //"maxlen"        : "80",     // Enfore a maximum line length
     "indent"        : 4         // Specify indentation spacing

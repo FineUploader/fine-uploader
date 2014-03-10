@@ -44,6 +44,13 @@
             this._setupClickAndEditEventHandlers();
         },
 
+        setName: function(id, newName) {
+            var formattedFilename = this._options.formatFileName(newName);
+
+            this._parent.prototype.setName.apply(this, arguments);
+            this._templating.updateFilename(id, formattedFilename);
+        },
+
         pauseUpload: function(id) {
             var paused = this._parent.prototype.pauseUpload.apply(this, arguments);
 
@@ -208,9 +215,6 @@
                     return self.getName(fileId);
                 },
                 onSetName: function(id, newName) {
-                    var formattedFilename = self._options.formatFileName(newName);
-
-                    templating.updateFilename(id, formattedFilename);
                     self.setName(id, newName);
                 },
                 onEditingStatusChange: function(id, isEditing) {
@@ -269,7 +273,20 @@
             this._templating.hideSpinner(id);
         },
 
+        _onAllComplete: function(successful, failed) {
+            this._parent.prototype._onAllComplete.apply(this, arguments);
+            this._templating.resetTotalProgress();
+        },
+
         _onSubmit: function(id, name) {
+            var file = this.getFile(id);
+
+            if (file && file.qqPath && this._options.dragAndDrop.reportDirectoryPaths) {
+                this._paramsStore.addReadOnly(id, {
+                    qqpath: file.qqPath
+                });
+            }
+
             this._parent.prototype._onSubmit.apply(this, arguments);
             this._addToList(id, name);
         },
@@ -309,15 +326,27 @@
             }
         },
 
+        _onTotalProgress: function(loaded, total) {
+            this._parent.prototype._onTotalProgress.apply(this, arguments);
+            this._templating.updateTotalProgress(loaded, total);
+        },
+
         _onComplete: function(id, name, result, xhr) {
             var parentRetVal = this._parent.prototype._onComplete.apply(this, arguments),
                 templating = this._templating,
+                fileContainer = templating.getFileContainer(id),
                 self = this;
 
             function completeUpload(result) {
+                // If this file is not represented in the templating module, perhaps it was hidden intentionally.
+                // If so, don't perform any UI-related tasks related to this file.
+                if (!fileContainer) {
+                    return;
+                }
+
                 templating.setStatusText(id);
 
-                qq(templating.getFileContainer(id)).removeClass(self._classes.retrying);
+                qq(fileContainer).removeClass(self._classes.retrying);
                 templating.hideProgress(id);
 
                 if (!self._options.disableCancelForFormUploads || qq.supportedFeatures.ajaxUploading) {
@@ -329,10 +358,10 @@
                     self._markFileAsSuccessful(id);
                 }
                 else {
-                    qq(templating.getFileContainer(id)).addClass(self._classes.fail);
+                    qq(fileContainer).addClass(self._classes.fail);
 
                     if (self._templating.isRetryPossible() && !self._preventRetries[id]) {
-                        qq(templating.getFileContainer(id)).addClass(self._classes.retryable);
+                        qq(fileContainer).addClass(self._classes.retryable);
                     }
                     self._controlFailureTextDisplay(id, result);
                 }
@@ -364,6 +393,11 @@
             this._maybeUpdateThumbnail(id);
         },
 
+        _onUploadPrep: function(id) {
+            this._parent.prototype._onUploadPrep.apply(this, arguments);
+            this._templating.showSpinner(id);
+        },
+
         _onUpload: function(id, name){
             var parentRetVal = this._parent.prototype._onUpload.apply(this, arguments);
 
@@ -376,12 +410,19 @@
             this._parent.prototype._onUploadChunk.apply(this, arguments);
 
             // Only display the pause button if we have finished uploading at least one chunk
-            chunkData.partIndex > 0 && this._templating.allowPause(id);
+            // & this file can be resumed
+            if (chunkData.partIndex > 0 && this._handler.isResumable(id)) {
+                this._templating.allowPause(id);
+            }
         },
 
         _onCancel: function(id, name) {
             this._parent.prototype._onCancel.apply(this, arguments);
             this._removeFileItem(id);
+
+            if (this._getNotFinished() === 0) {
+                this._templating.resetTotalProgress();
+            }
         },
 
         _onBeforeAutoRetry: function(id) {
@@ -478,7 +519,13 @@
 
         _addToList: function(id, name, canned) {
             var prependData,
-                prependIndex = 0;
+                prependIndex = 0,
+                dontDisplay = this._handler.isProxied(id) && this._options.scaling.hideScaled;
+
+            // If we don't want this file to appear in the UI, skip all of this UI-related logic.
+            if (dontDisplay) {
+                return;
+            }
 
             if (this._options.display.prependFiles) {
                 if (this._totalFilesInBatch > 1 && this._filesInBatchAddedToUi > 0) {
@@ -562,7 +609,6 @@
                 }
                 else {
                     failureReason = this._options.text.failUpload;
-                    this.log("'" + responseProperty + "' is not a valid property on the server response.", "warn");
                 }
 
                 this._templating.setStatusText(id, shortFailureReason || failureReason);
@@ -636,6 +682,12 @@
             this._markFileAsSuccessful(id);
 
             return id;
+        },
+
+        _setSize: function(id, newSize) {
+            this._parent.prototype._setSize.apply(this, arguments);
+
+            this._templating.updateSize(id, this._formatSize(newSize));
         }
     };
 }());

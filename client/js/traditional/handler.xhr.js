@@ -14,6 +14,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         getName = proxy.getName,
         getUuid = proxy.getUuid,
         getSize = proxy.getSize,
+        getDataByUuid = proxy.getDataByUuid,
         log = proxy.log,
         cookieItemDelimiter = "|",
         chunkFiles = spec.chunking.enabled && qq.supportedFeatures.chunking,
@@ -113,7 +114,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
 
     function setHeaders(id, xhr) {
         var extraHeaders = spec.customHeaders,
-            fileOrBlob = handler._getFileState(id).file || handler._getFileState(id).blobData.blob;
+            fileOrBlob = handler.getFile(id);
 
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.setRequestHeader("Cache-Control", "no-cache");
@@ -157,7 +158,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
             handler._getFileState(id).loaded = 0;
         }
 
-        if (resumeEnabled && handler._getFileState(id).file) {
+        if (resumeEnabled && handler.getFile(id)) {
             persistChunkData(id, chunkData);
         }
 
@@ -347,23 +348,25 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     }
 
     function persistChunkData(id, chunkData) {
-        var fileUuid = getUuid(id),
-            lastByteSent = handler._getFileState(id).loaded,
-            initialRequestOverhead = handler._getFileState(id).initialRequestOverhead,
-            estTotalRequestsSize = handler._getFileState(id).estTotalRequestsSize,
-            cookieName = getChunkDataCookieName(id),
-            cookieValue = fileUuid +
-                cookieItemDelimiter + chunkData.part +
-                cookieItemDelimiter + lastByteSent +
-                cookieItemDelimiter + initialRequestOverhead +
-                cookieItemDelimiter + estTotalRequestsSize,
-            cookieExpDays = spec.resume.cookiesExpireIn;
+        if (handler.isResumable(id)) {
+            var fileUuid = getUuid(id),
+                lastByteSent = handler._getFileState(id).loaded,
+                initialRequestOverhead = handler._getFileState(id).initialRequestOverhead,
+                estTotalRequestsSize = handler._getFileState(id).estTotalRequestsSize,
+                cookieName = getChunkDataCookieName(id),
+                cookieValue = fileUuid +
+                    cookieItemDelimiter + chunkData.part +
+                    cookieItemDelimiter + lastByteSent +
+                    cookieItemDelimiter + initialRequestOverhead +
+                    cookieItemDelimiter + estTotalRequestsSize,
+                cookieExpDays = spec.resume.cookiesExpireIn;
 
-        qq.setCookie(cookieName, cookieValue, cookieExpDays);
+            qq.setCookie(cookieName, cookieValue, cookieExpDays);
+        }
     }
 
     function deletePersistedChunkData(id) {
-        if (handler._getFileState(id).file) {
+        if (handler.isResumable(id) && handler.getFile(id)) {
             var cookieName = getChunkDataCookieName(id);
             qq.deleteCookie(cookieName);
         }
@@ -434,7 +437,7 @@ qq.UploadHandlerXhr = function(spec, proxy) {
         calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
     }
 
-    function handlePossibleResumeAttempt(id, persistedChunkInfoForResume, firstChunkIndex) {
+    function startResumeAttempt(id, persistedChunkInfoForResume, firstChunkIndex) {
         var name = getName(id),
             firstChunkDataForResume = handler._getChunkData(id, persistedChunkInfoForResume.part),
             onResumeRetVal;
@@ -462,32 +465,44 @@ qq.UploadHandlerXhr = function(spec, proxy) {
     }
 
     function handleFileChunkingUpload(id, retry) {
-        var firstChunkIndex = 0,
-            persistedChunkInfoForResume;
+        if (!handler._getFileState(id).remainingChunkIdxs ||
+            handler._getFileState(id).remainingChunkIdxs.length === 0) {
 
-        if (!handler._getFileState(id).remainingChunkIdxs || handler._getFileState(id).remainingChunkIdxs.length === 0) {
-            handler._getFileState(id).remainingChunkIdxs = [];
-
-            if (resumeEnabled && !retry && handler._getFileState(id).file) {
-                persistedChunkInfoForResume = getPersistedChunkData(id);
-                if (persistedChunkInfoForResume) {
-                    handlePossibleResumeAttempt(id, persistedChunkInfoForResume, firstChunkIndex);
-                }
-                else {
-                    calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
-                }
-            }
-            else {
-                calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
-            }
+            handleStartOfChunkedUpload(id, retry);
         }
         else {
             uploadNextChunk(id);
         }
     }
 
+    function handleStartOfChunkedUpload(id, retry) {
+        handler._getFileState(id).remainingChunkIdxs = [];
+
+        if (resumeEnabled &&
+            !retry &&
+            handler.getFile(id) &&
+            handler.isResumable(id)) {
+
+            maybeResumeChunkedUpload(id);
+        }
+        else {
+            calculateRemainingChunkIdxsAndUpload(id, 0);
+        }
+    }
+
+    function maybeResumeChunkedUpload(id) {
+        var persistedChunkInfoForResume = getPersistedChunkData(id);
+
+        if (persistedChunkInfoForResume) {
+            startResumeAttempt(id, persistedChunkInfoForResume, 0);
+        }
+        else {
+            calculateRemainingChunkIdxsAndUpload(id, 0);
+        }
+    }
+
     function handleStandardFileUpload(id) {
-        var fileOrBlob = handler._getFileState(id).file || handler._getFileState(id).blobData.blob,
+        var fileOrBlob = handler.getFile(id),
             name = getName(id),
             xhr, params, toSend;
 
@@ -556,7 +571,14 @@ qq.UploadHandlerXhr = function(spec, proxy) {
                     persistedChunkData = getPersistedChunkData(id);
 
                     if (persistedChunkData) {
-                        onUuidChanged(id, persistedChunkData.uuid);
+                        // If this is a duplicate of another file submitted during this session,
+                        // it is not eligible for resume
+                        if (getDataByUuid(persistedChunkData.uuid)) {
+                            handler._markNotResumable(id);
+                        }
+                        else {
+                            onUuidChanged(id, persistedChunkData.uuid);
+                        }
                     }
                 }
 

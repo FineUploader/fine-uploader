@@ -55,6 +55,8 @@ To this:
 </div>
 ```
 
+You can do the same for the total progress bar (qq-total-progress-bar-container).
+
 
 #### Omit a portion of the template that does not apply to your app
 You can omit any element of the template that does not apply to your uploader except for:
