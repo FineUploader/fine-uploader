@@ -107,8 +107,7 @@
 
             resume: {
                 enabled: false,
-                id: null,
-                cookiesExpireIn: 7, //days
+                recordsExpireIn: 7, //days
                 paramNames: {
                     resuming: "qqresume"
                 }

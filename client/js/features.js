@@ -93,7 +93,7 @@ qq.supportedFeatures = (function () {
 
     supportsChunking = supportsAjaxFileUploading && qq.isFileChunkingSupported();
 
-    supportsResume = supportsAjaxFileUploading && supportsChunking && qq.areCookiesEnabled();
+    supportsResume = supportsAjaxFileUploading && supportsChunking && !!window.localStorage;
 
     supportsUploadViaPaste = supportsAjaxFileUploading && isChrome14OrHigher();
 

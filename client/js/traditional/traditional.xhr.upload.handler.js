@@ -16,24 +16,11 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         getSize = proxy.getSize,
         getDataByUuid = proxy.getDataByUuid,
         log = proxy.log,
-        cookieItemDelimiter = "|",
         chunkFiles = spec.chunking.enabled && qq.supportedFeatures.chunking,
         resumeEnabled = spec.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
         multipart = spec.forceMultipart || spec.paramsInBody,
-        handler = this,
-        resumeId;
+        handler = this;
 
-    function getResumeId() {
-        if (spec.resume.id !== null &&
-            spec.resume.id !== undefined &&
-            !qq.isFunction(spec.resume.id) &&
-            !qq.isObject(spec.resume.id)) {
-
-            return spec.resume.id;
-        }
-    }
-
-    resumeId = getResumeId();
 
     function addChunkingSpecificParams(id, params, chunkData) {
         var size = getSize(id),
@@ -294,75 +281,6 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
 
         return promise;
     }
-
-//    function persistChunkData(id, chunkData) {
-//        if (handler.isResumable(id)) {
-//            var fileUuid = getUuid(id),
-//                lastByteSent = handler._getFileState(id).loaded,
-//                initialRequestOverhead = handler._getFileState(id).initialRequestOverhead,
-//                estTotalRequestsSize = handler._getFileState(id).estTotalRequestsSize,
-//                cookieName = getChunkDataCookieName(id),
-//                cookieValue = fileUuid +
-//                    cookieItemDelimiter + chunkData.part +
-//                    cookieItemDelimiter + lastByteSent +
-//                    cookieItemDelimiter + initialRequestOverhead +
-//                    cookieItemDelimiter + estTotalRequestsSize,
-//                cookieExpDays = spec.resume.cookiesExpireIn;
-//
-//            qq.setCookie(cookieName, cookieValue, cookieExpDays);
-//        }
-//    }
-
-//    function deletePersistedChunkData(id) {
-//        if (handler.isResumable(id) && handler.getFile(id)) {
-//            var cookieName = getChunkDataCookieName(id);
-//            qq.deleteCookie(cookieName);
-//        }
-//    }
-
-//    function getPersistedChunkData(id) {
-//        var chunkCookieValue = qq.getCookie(getChunkDataCookieName(id)),
-//            filename = getName(id),
-//            sections, uuid, partIndex, lastByteSent, initialRequestOverhead, estTotalRequestsSize;
-//
-//        if (chunkCookieValue) {
-//            sections = chunkCookieValue.split(cookieItemDelimiter);
-//
-//            if (sections.length === 5) {
-//                uuid = sections[0];
-//                partIndex = parseInt(sections[1], 10);
-//                lastByteSent = parseInt(sections[2], 10);
-//                initialRequestOverhead = parseInt(sections[3], 10);
-//                estTotalRequestsSize = parseInt(sections[4], 10);
-//
-//                return {
-//                    uuid: uuid,
-//                    part: partIndex,
-//                    lastByteSent: lastByteSent,
-//                    initialRequestOverhead: initialRequestOverhead,
-//                    estTotalRequestsSize: estTotalRequestsSize
-//                };
-//            }
-//            else {
-//                log("Ignoring previously stored resume/chunk cookie for " + filename + " - old cookie format", "warn");
-//            }
-//        }
-//    }
-
-//    function getChunkDataCookieName(id) {
-//        var filename = getName(id),
-//            fileSize = getSize(id),
-//            maxChunkSize = spec.chunking.partSize,
-//            cookieName;
-//
-//        cookieName = "qqfilechunk" + cookieItemDelimiter + encodeURIComponent(filename) + cookieItemDelimiter + fileSize + cookieItemDelimiter + maxChunkSize;
-//
-//        if (resumeId !== undefined) {
-//            cookieName += cookieItemDelimiter + resumeId;
-//        }
-//
-//        return cookieName;
-//    }
 
 //    function onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume) {
 //        firstChunkIndex = persistedChunkInfoForResume.part;

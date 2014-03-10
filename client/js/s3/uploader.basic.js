@@ -62,10 +62,6 @@
                 partSize: 5242880
             },
 
-            resume: {
-                recordsExpireIn: 7 // days
-            },
-
             cors: {
                 allowXdr: true
             },
