@@ -311,13 +311,12 @@
 
             this._templating.updateProgress(id, loaded, total);
 
-            if (loaded === total) {
+            if (Math.round(loaded / total * 100) === 100) {
                 this._templating.hideCancel(id);
                 this._templating.hidePause(id);
-
                 this._templating.setStatusText(id, this._options.text.waitingForResponse);
 
-                // If last byte was sent, display total file size
+                // If ~last byte was sent, display total file size
                 this._displayFileSize(id);
             }
             else {

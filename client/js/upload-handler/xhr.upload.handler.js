@@ -8,8 +8,7 @@
 qq.XhrUploadHandler = function(spec) {
     "use strict";
 
-    var publicApi = this,
-        handler = this,
+    var handler = this,
         options = spec.options,
         resume = options.resume,
         namespace = options.namespace,
@@ -24,6 +23,7 @@ qq.XhrUploadHandler = function(spec) {
         getEndpoint = proxy.getEndpoint,
         getDataByUuid = proxy.getDataByUuid,
         onUuidChanged = proxy.onUuidChanged,
+        onProgress = proxy.onProgress,
         log = proxy.log;
 
 
@@ -129,6 +129,36 @@ qq.XhrUploadHandler = function(spec) {
             return !!chunking && this.isValid(id) && !fileState[id].notResumable;
         },
 
+        _registerProgressHandler: function(id, chunkSize) {
+            var xhr = fileState[id].xhr,
+
+                progressCalculator = {
+                    simple: function(loaded, total) {
+                        fileState[id].loaded = loaded;
+                        onProgress(id, name, loaded, total);
+                    },
+
+                    chunked: function(loaded, total) {
+                        var totalSuccessfullyLoadedForFile = fileState[id].loaded,
+                            loadedForRequest = loaded,
+                            totalForRequest = total,
+                            totalFileSize = getSize(id),
+                            estActualChunkLoaded = loadedForRequest - (totalForRequest - chunkSize),
+                            totalLoadedForFile = totalSuccessfullyLoadedForFile + estActualChunkLoaded;
+
+                        onProgress(id, name, totalLoadedForFile, totalFileSize);
+                    }
+                };
+
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    /* jshint eqnull: true */
+                    var type = chunkSize == null ? "simple" : "chunked";
+                    progressCalculator[type](e.loaded, e.total);
+                }
+            };
+        },
+
         /**
          * Creates an XHR instance for this file and stores it in the fileState.
          *
@@ -153,7 +183,7 @@ qq.XhrUploadHandler = function(spec) {
         },
 
         _getMimeType: function(id) {
-            return publicApi.getFile(id).type;
+            return handler.getFile(id).type;
         },
 
         /**
@@ -172,7 +202,7 @@ qq.XhrUploadHandler = function(spec) {
         _getChunkData: function(id, chunkIndex) {
             var chunkSize = chunking.partSize,
                 fileSize = getSize(id),
-                fileOrBlob = publicApi.getFile(id),
+                fileOrBlob = handler.getFile(id),
                 startBytes = chunkSize * chunkIndex,
                 endBytes = startBytes+chunkSize >= fileSize ? fileSize : startBytes+chunkSize,
                 totalChunks = this._getTotalChunks(id);

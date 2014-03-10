@@ -625,7 +625,7 @@ qq.Templating = function(spec) {
             if (bar) {
                 percent = Math.round(loaded / total * 100);
 
-                if (loaded === total) {
+                if (percent === 100) {
                     hide(bar);
                 }
                 else {

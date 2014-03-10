@@ -129,21 +129,8 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             handler._getFileState(id).loaded = 0;
         }
 
-//        if (resumeEnabled && handler.getFile(id)) {
-//            persistChunkData(id, chunkData);
-//        }
-
         promise = createReadyStateChangeHandler(id, xhr);
-
-        xhr.upload.onprogress = function(e) {
-            if (e.lengthComputable) {
-                var totalLoaded = e.loaded + handler._getFileState(id).loaded,
-                    estTotalRequestsSize = calcAllRequestsSizeForChunkedUpload(id, chunkIdx, e.total);
-
-                spec.onProgress(id, name, totalLoaded, estTotalRequestsSize);
-            }
-        };
-
+        handler._registerProgressHandler(id, chunkData.size);
         params = spec.paramsStore.get(id);
         addChunkingSpecificParams(id, params, chunkData);
 
@@ -449,16 +436,8 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         handler._getFileState(id).loaded = 0;
 
         xhr = handler._createXhr(id);
-
-        xhr.upload.onprogress = function(e){
-            if (e.lengthComputable){
-                handler._getFileState(id).loaded = e.loaded;
-                spec.onProgress(id, name, e.loaded, e.total);
-            }
-        };
-
+        handler._registerProgressHandler(id);
         promise = createReadyStateChangeHandler(id, xhr);
-
         params = spec.paramsStore.get(id);
         toSend = setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id);
         setHeaders(id, xhr);
@@ -494,6 +473,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
                 getUuid: getUuid,
                 getEndpoint: spec.endpointStore.get,
                 getDataByUuid: getDataByUuid,
+                onProgress: spec.onProgress,
                 log: log
             }
         }
