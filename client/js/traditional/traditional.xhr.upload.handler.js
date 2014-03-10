@@ -10,14 +10,10 @@ qq.traditional = qq.traditional || {};
 qq.traditional.XhrUploadHandler = function(spec, proxy) {
     "use strict";
 
-    var onUuidChanged = proxy.onUuidChanged,
-        getName = proxy.getName,
+    var getName = proxy.getName,
         getUuid = proxy.getUuid,
         getSize = proxy.getSize,
-        getDataByUuid = proxy.getDataByUuid,
         log = proxy.log,
-        chunkFiles = spec.chunking.enabled && qq.supportedFeatures.chunking,
-        resumeEnabled = spec.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
         multipart = spec.forceMultipart || spec.paramsInBody,
         handler = this;
 
@@ -109,7 +105,6 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         var chunkData = handler._getChunkData(id, chunkIdx),
             xhr = handler._createXhr(id),
             size = getSize(id),
-            name = getName(id),
             promise, toSend, params;
 
         if (handler._getFileState(id).loaded === undefined) {
@@ -132,45 +127,13 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         return promise;
     }
 
-    function calcAllRequestsSizeForChunkedUpload(id, chunkIdx, requestSize) {
-        var chunkData = handler._getChunkData(id, chunkIdx),
-            blobSize = chunkData.size,
-            overhead = requestSize - blobSize,
-            size = getSize(id),
-            chunkCount = chunkData.count,
-            initialRequestOverhead = handler._getFileState(id).initialRequestOverhead,
-            overheadDiff = overhead - initialRequestOverhead;
-
-        handler._getFileState(id).lastRequestOverhead = overhead;
-
-        if (chunkIdx === 0) {
-            handler._getFileState(id).lastChunkIdxProgress = 0;
-            handler._getFileState(id).initialRequestOverhead = overhead;
-            handler._getFileState(id).estTotalRequestsSize = size + (chunkCount * overhead);
-        }
-        else if (handler._getFileState(id).lastChunkIdxProgress !== chunkIdx) {
-            handler._getFileState(id).lastChunkIdxProgress = chunkIdx;
-            handler._getFileState(id).estTotalRequestsSize += overheadDiff;
-        }
-
-        return handler._getFileState(id).estTotalRequestsSize;
-    }
-
-    function getLastRequestOverhead(id) {
-        if (multipart) {
-            return handler._getFileState(id).lastRequestOverhead;
-        }
-        else {
-            return 0;
-        }
-    }
-
     function isErrorResponse(xhr, response) {
         return xhr.status !== 200 || !response.success || response.reset;
     }
 
-    function parseResponse(id, xhr) {
-        var response;
+    function parseResponse(id) {
+        var xhr = handler._getFileState(id).xhr,
+            response;
 
         try {
             log(qq.format("Received response status {} with body: {}", xhr.status, xhr.responseText));
@@ -184,81 +147,18 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         return response;
     }
 
-//    function handleResetResponse(id) {
-//        log("Server has ordered chunking effort to be restarted on next attempt for item ID " + id, "error");
-//
-//        if (resumeEnabled) {
-//            deletePersistedChunkData(id);
-//            handler._getFileState(id).attemptingResume = false;
-//        }
-//
-//        handler._getFileState(id).remainingChunkIdxs = [];
-//        delete handler._getFileState(id).loaded;
-//        delete handler._getFileState(id).estTotalRequestsSize;
-//        delete handler._getFileState(id).initialRequestOverhead;
-//    }
-
-//    function handleResetResponseOnResumeAttempt(id) {
-//        handler._getFileState(id).attemptingResume = false;
-//        log("Server has declared that it cannot handle resume for item ID " + id + " - starting from the first chunk", "error");
-//        handleResetResponse(id);
-//        handler.upload(id, true);
-//    }
-
-//    function handleNonResetErrorResponse(id, response, xhr) {
-//        var name = getName(id);
-//
-//        if (spec.onAutoRetry(id, name, response, xhr)) {
-//            return;
-//        }
-//        else {
-//            if (xhr.status !== 200) {
-//                response.success = false;
-//            }
-//
-//            handleCompletedItem(id, response, xhr);
-//        }
-//    }
-
     function onComplete(id, xhr) {
-        var state = handler._getFileState(id),
-//            attemptingResume = state && state.attemptingResume,
-//            paused = state && state.paused,
-            response;
-
-        // The logic in this function targets uploads that have not been paused or canceled,
-        // so return at once if this is not the case.
-//        if (!state || paused) {
-//            return;
-//        }
+        var response;
 
         log("xhr - server response received for " + id);
         log("responseText = " + xhr.responseText);
-        response = parseResponse(id, xhr);
+
+        response = parseResponse(id);
 
         return {
             success: !isErrorResponse(xhr, response),
             response: response
         };
-
-//        if (isErrorResponse(xhr, response)) {
-//            if (response.reset) {
-//                handleResetResponse(id);
-//            }
-//
-//            if (attemptingResume && response.reset) {
-//                handleResetResponseOnResumeAttempt(id);
-//            }
-//            else {
-//                handleNonResetErrorResponse(id, response, xhr);
-//            }
-//        }
-//        else if (chunkFiles) {
-//            handleSuccessfullyCompletedChunk(id, response, xhr);
-//        }
-//        else {
-//            handleCompletedItem(id, response, xhr);
-//        }
     }
 
     function createReadyStateChangeHandler(id, xhr) {
@@ -279,70 +179,6 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
 
         return promise;
     }
-
-//    function onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume) {
-//        firstChunkIndex = persistedChunkInfoForResume.part;
-//        handler._getFileState(id).loaded = persistedChunkInfoForResume.lastByteSent;
-//        handler._getFileState(id).estTotalRequestsSize = persistedChunkInfoForResume.estTotalRequestsSize;
-//        handler._getFileState(id).initialRequestOverhead = persistedChunkInfoForResume.initialRequestOverhead;
-//        handler._getFileState(id).attemptingResume = true;
-//        log("Resuming " + name + " at partition index " + firstChunkIndex);
-//
-//        calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
-//    }
-
-//    function startResumeAttempt(id, persistedChunkInfoForResume, firstChunkIndex) {
-//        var name = getName(id),
-//            firstChunkDataForResume = handler._getChunkData(id, persistedChunkInfoForResume.part),
-//            onResumeRetVal;
-//
-//        onResumeRetVal = spec.onResume(id, name, handler._getChunkDataForCallback(firstChunkDataForResume));
-//        if (onResumeRetVal instanceof qq.Promise) {
-//            log("Waiting for onResume promise to be fulfilled for " + id);
-//            onResumeRetVal.then(
-//                function() {
-//                    onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume);
-//                },
-//                function() {
-//                    log("onResume promise fulfilled - failure indicated.  Will not resume.");
-//                    calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
-//                }
-//            );
-//        }
-//        else if (onResumeRetVal !== false) {
-//            onResumeSuccess(id, name, firstChunkIndex, persistedChunkInfoForResume);
-//        }
-//        else {
-//            log("onResume callback returned false.  Will not resume.");
-//            calculateRemainingChunkIdxsAndUpload(id, firstChunkIndex);
-//        }
-//    }
-
-//    function handleStartOfChunkedUpload(id, retry) {
-//        handler._getFileState(id).remainingChunkIdxs = [];
-//
-//        if (resumeEnabled &&
-//            !retry &&
-//            handler.getFile(id) &&
-//            handler.isResumable(id)) {
-//
-//            maybeResumeChunkedUpload(id);
-//        }
-//        else {
-//            calculateRemainingChunkIdxsAndUpload(id, 0);
-//        }
-//    }
-
-//    function maybeResumeChunkedUpload(id) {
-//        var persistedChunkInfoForResume = getPersistedChunkData(id);
-//
-//        if (persistedChunkInfoForResume) {
-//            startResumeAttempt(id, persistedChunkInfoForResume, 0);
-//        }
-//        else {
-//            calculateRemainingChunkIdxsAndUpload(id, 0);
-//        }
-//    }
 
     function handleStandardFileUpload(id) {
         var fileOrBlob = handler.getFile(id),
@@ -370,90 +206,8 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
     });
 
     qq.extend(this, new qq.XhrUploadHandler({
-            options: {
-                namespace: "traditional",
-                chunking: chunkFiles ? spec.chunking : null,
-                resumeEnabled: resumeEnabled
-            },
-
-            proxy: {
-                onCancel: spec.onCancel,
-                onUuidChanged: onUuidChanged,
-                getName: getName,
-                getSize: getSize,
-                getUuid: getUuid,
-                getEndpoint: spec.endpointStore.get,
-                getDataByUuid: getDataByUuid,
-                onProgress: spec.onProgress,
-                log: log
-            }
+            options: qq.extend({namespace: "traditional"}, spec),
+            proxy: qq.extend({getEndpoint: spec.endpointStore.get}, proxy)
         }
     ));
-
-    qq.override(this, function(super_) {
-        return {
-            add: function(id, fileOrBlobData) {
-                var persistedChunkData;
-
-                super_.add.apply(this, arguments);
-
-//                if (resumeEnabled) {
-//                    persistedChunkData = getPersistedChunkData(id);
-//
-//                    if (persistedChunkData) {
-//                        // If this is a duplicate of another file submitted during this session,
-//                        // it is not eligible for resume
-//                        if (getDataByUuid(persistedChunkData.uuid)) {
-//                            handler._markNotResumable(id);
-//                        }
-//                        else {
-//                            onUuidChanged(id, persistedChunkData.uuid);
-//                        }
-//                    }
-//                }
-
-                return id;
-            },
-
-//            getResumableFilesData: function() {
-//                var matchingCookieNames = [],
-//                    resumableFilesData = [];
-//
-//                if (chunkFiles && resumeEnabled) {
-//                    if (resumeId === undefined) {
-//                        matchingCookieNames = qq.getCookieNames(new RegExp("^qqfilechunk\\" + cookieItemDelimiter + ".+\\" +
-//                            cookieItemDelimiter + "\\d+\\" + cookieItemDelimiter + spec.chunking.partSize + "="));
-//                    }
-//                    else {
-//                        matchingCookieNames = qq.getCookieNames(new RegExp("^qqfilechunk\\" + cookieItemDelimiter + ".+\\" +
-//                            cookieItemDelimiter + "\\d+\\" + cookieItemDelimiter + spec.chunking.partSize + "\\" +
-//                            cookieItemDelimiter + resumeId + "="));
-//                    }
-//
-//                    qq.each(matchingCookieNames, function(idx, cookieName) {
-//                        var cookiesNameParts = cookieName.split(cookieItemDelimiter);
-//                        var cookieValueParts = qq.getCookie(cookieName).split(cookieItemDelimiter);
-//
-//                        resumableFilesData.push({
-//                            name: decodeURIComponent(cookiesNameParts[1]),
-//                            size: cookiesNameParts[2],
-//                            uuid: cookieValueParts[0],
-//                            partIdx: cookieValueParts[1]
-//                        });
-//                    });
-//
-//                    return resumableFilesData;
-//                }
-//                return [];
-//            },
-
-            expunge: function(id) {
-//                if (resumeEnabled) {
-//                    deletePersistedChunkData(id);
-//                }
-
-                super_.expunge(id);
-            }
-        };
-    });
 };

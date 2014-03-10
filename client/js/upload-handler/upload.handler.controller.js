@@ -140,8 +140,15 @@ qq.UploadHandlerController = function(o, namespace) {
             chunkData = handler._getChunkData(id, chunkIdx),
             resuming = handler._getFileState(id).attemptingResume;
 
-        options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
+        // Don't follow-through with the resume attempt if the integrator returns false from onResume
+        if (resuming && options.onResume(id, name, chunkData) === false) {
+            resetChunkedUpload(id);
+            resuming = false;
+            chunkIdx = getNextPartIdxToSend(id);
+            chunkData = handler._getChunkData(id, chunkIdx);
+        }
 
+        options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
         handler._maybePersistChunkedState(id);
 
         handler.uploadChunk(id, chunkIdx, resuming).then(
@@ -175,13 +182,15 @@ qq.UploadHandlerController = function(o, namespace) {
     }
 
     function resetChunkedUpload(id) {
-        log("Server has ordered chunking effort to be restarted on next attempt for item ID " + id, "error");
+        log("Server or callback has ordered chunking effort to be restarted on next attempt for item ID " + id, "error");
 
         handler._maybeDeletePersistedChunkData(id);
+
         delete handler._getFileState(id).chunking;
+        //TODO Only called because of side effect.  Call more specific function once it exists
+        handler._shouldChunkThisFile(id);
+
         delete handler._getFileState(id).loaded;
-        delete handler._getFileState(id).estTotalRequestsSize;
-        delete handler._getFileState(id).initialRequestOverhead;
     }
 
     function chunkUploadComplete(id, chunkIdx, response, xhr) {
@@ -356,12 +365,14 @@ qq.UploadHandlerController = function(o, namespace) {
         handler = new handlerType[handlerModuleSubtype + "UploadHandler"](
             options,
             {
-                onUuidChanged: options.onUuidChanged,
-                getName: options.getName,
-                getUuid: options.getUuid,
-                getSize: options.getSize,
                 getDataByUuid: options.getDataByUuid,
-                log: log
+                getName: options.getName,
+                getSize: options.getSize,
+                getUuid: options.getUuid,
+                log: log,
+                onCancel: options.onCancel,
+                onProgress: options.onProgress,
+                onUuidChanged: options.onUuidChanged
             }
         );
     }

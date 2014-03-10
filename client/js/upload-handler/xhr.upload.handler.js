@@ -9,13 +9,13 @@ qq.XhrUploadHandler = function(spec) {
     "use strict";
 
     var handler = this,
-        options = spec.options,
-        resume = options.resume,
-        namespace = options.namespace,
+        namespace = spec.options.namespace,
         proxy = spec.proxy,
         fileState = {},
-        chunking = options.chunking,
-        resumeEnabled = options.resumeEnabled,
+        chunking = spec.options.chunking,
+        resume = spec.options.resume,
+        chunkFiles = chunking && spec.options.chunking.enabled && qq.supportedFeatures.chunking,
+        resumeEnabled = resume && spec.options.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
         onCancel = proxy.onCancel,
         getName = proxy.getName,
         getSize = proxy.getSize,
@@ -77,9 +77,7 @@ qq.XhrUploadHandler = function(spec) {
             var xhr = fileState[id].xhr;
 
             xhr && abort(id);
-
             handler._maybeDeletePersistedChunkData(id);
-
             delete fileState[id];
         },
 
@@ -388,6 +386,7 @@ qq.XhrUploadHandler = function(spec) {
          * @param id ID of the associated file
          * @returns {*} true if chunking is enabled, possible, and the file can be split into more than 1 part
          */
+        //TODO consider moving the side-effect of this function into another function
         _shouldChunkThisFile: function(id) {
             var totalChunks,
                 fileState = handler._getFileState(id);
