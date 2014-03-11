@@ -47,7 +47,8 @@ qq.FormUploadHandler = function(spec) {
         if (iframe) {
             // To cancel request set src to something else.  We use src="javascript:false;"
             // because it doesn't trigger ie6 prompt on https
-            iframe.setAttribute("src", "java" + String.fromCharCode(115) + "cript:false;"); //deal with "JSLint: javascript URL" warning, which apparently cannot be turned off
+            /* jshint scripturl:true */
+            iframe.setAttribute("src", "javascript:false;");
 
             qq(iframe).remove();
         }
@@ -201,25 +202,6 @@ qq.FormUploadHandler = function(spec) {
             var iframeName = handler._getIframeName(id);
 
             return initIframeForUpload(iframeName);
-        },
-
-        /**
-         * @param id ID of the associated file
-         * @param innerHtmlOrMessage JSON message
-         * @returns {*} The parsed response, or an empty object if the response could not be parsed
-         */
-        _parseJsonResponse: function(id, innerHtmlOrMessage) {
-            var response;
-
-            try {
-                response = qq.parseJson(innerHtmlOrMessage);
-            }
-            catch(error) {
-                log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
-                response = {};
-            }
-
-            return response;
         },
 
         /**

@@ -16,6 +16,22 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
         getUuid = proxy.getUuid,
         log = proxy.log;
 
+    /**
+     * @param innerHtmlOrMessage JSON message
+     * @returns {*} The parsed response, or an empty object if the response could not be parsed
+     */
+    function parseJsonResponse(innerHtmlOrMessage) {
+        var response = {};
+
+        try {
+            response = qq.parseJson(innerHtmlOrMessage);
+        }
+        catch(error) {
+            log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
+        }
+
+        return response;
+    }
 
     /**
      * Returns json object received by iframe from server.
@@ -38,7 +54,7 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
                 innerHtml = doc.body.firstChild.firstChild.nodeValue;
             }
 
-            response = handler._parseJsonResponse(id, innerHtml);
+            response = parseJsonResponse(innerHtml);
         }
         catch(error) {
             log("Error when attempting to parse form upload response (" + error.message + ")", "error");
@@ -70,7 +86,7 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
     }
 
     this.uploadFile = function(id) {
-        var input = handler._getFileState(id).input,
+        var input = handler.getInput(id),
             iframe = handler._createIframe(id),
             promise = new qq.Promise(),
             form;
