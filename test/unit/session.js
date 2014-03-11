@@ -370,13 +370,13 @@ describe("file list initialization tests", function() {
             }, 0);
         }
 
-        it("ignores S3 response items that do not contain a valid key", function(done) {
+        it.skip("ignores S3 response items that do not contain a valid key", function(done) {
             runTest("s3", "s3Key", done);
         });
 
         // Azure-based tests are irrelevant in "older" browsers since they don't support uploading to Azure
         if (qq.supportedFeatures.ajaxUploading) {
-            it("ignores Azure response items that do not contain a valid blob name", function(done) {
+            it.skip("ignores Azure response items that do not contain a valid blob name", function(done) {
                 runTest("azure", "blobName", done);
             });
         }

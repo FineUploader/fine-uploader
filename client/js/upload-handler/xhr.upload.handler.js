@@ -258,13 +258,9 @@ qq.XhrUploadHandler = function(spec) {
 
                         onUuidChanged(id, persistedData.uuid);
                         fileState.key = persistedData.key;
-                        fileState.loaded = persistedData.loaded;
                         fileState.chunking = persistedData.chunking;
-
-                        fileState.estTotalRequestsSize = persistedData.estTotalRequestsSize;
-                        fileState.initialRequestOverhead = persistedData.initialRequestOverhead;
+                        fileState.loaded = persistedData.loaded;
                         fileState.attemptingResume = true;
-
                     }
                 }
             }
@@ -289,10 +285,8 @@ qq.XhrUploadHandler = function(spec) {
                     size: getSize(id),
                     uuid: getUuid(id),
                     key: fileState.key,
-                    loaded: fileState.loaded,
                     chunking: fileState.chunking,
-                    estTotalRequestsSize: fileState.estTotalRequestsSize,
-                    initialRequestOverhead: fileState.initialRequestOverhead,
+                    loaded: fileState.loaded,
                     lastUpdated: Date.now()
                 };
 

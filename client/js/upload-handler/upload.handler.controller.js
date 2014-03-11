@@ -10,32 +10,15 @@ qq.UploadHandlerController = function(o, namespace) {
 
     var controller = this,
         queue = [],
-        chunking = false,
-        preventRetryResponse, options, log, handler;
+        chunking, preventRetryResponse, options, log, handler;
 
     // Default options, can be overridden by the user
     options = {
-        debug: false,
-        forceMultipart: true,
-        paramsInBody: false,
         paramsStore: {},
-        endpointStore: {},
-        filenameParam: "qqfilename",
-        cors: {
-            expected: false,
-            sendCredentials: false
-        },
         maxConnections: 3, // maximum number of concurrent uploads
-        uuidName: "qquuid",
-        totalFileSizeName: "qqtotalfilesize",
         chunking: {
             enabled: false,
             partSize: 2000000 //bytes
-        },
-        resume: {
-            enabled: false,
-            id: null,
-            recordsExpireIn: 7 //days
         },
         log: function(str, level) {},
         onProgress: function(id, fileName, loaded, total){},
@@ -88,6 +71,8 @@ qq.UploadHandlerController = function(o, namespace) {
     }
 
     function uploadNonChunkedFile(id, name) {
+        handler._getFileState(id).loaded = 0;
+
         handler.uploadFile(id).then(
             function(response, opt_xhr) {
                 var size = options.getSize(id);
@@ -140,6 +125,10 @@ qq.UploadHandlerController = function(o, namespace) {
             chunkData = handler._getChunkData(id, chunkIdx),
             resuming = handler._getFileState(id).attemptingResume;
 
+        if (handler._getFileState(id).loaded === undefined) {
+            handler._getFileState(id).loaded = 0;
+        }
+
         // Don't follow-through with the resume attempt if the integrator returns false from onResume
         if (resuming && options.onResume(id, name, chunkData) === false) {
             resetChunkedUpload(id);
@@ -149,7 +138,10 @@ qq.UploadHandlerController = function(o, namespace) {
         }
 
         options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
-        handler._maybePersistChunkedState(id);
+
+        if (chunkData.part > 0) {
+            handler._maybePersistChunkedState(id);
+        }
 
         handler.uploadChunk(id, chunkIdx, resuming).then(
             function(response, xhr) {
@@ -190,7 +182,7 @@ qq.UploadHandlerController = function(o, namespace) {
         //TODO Only called because of side effect.  Call more specific function once it exists
         handler._shouldChunkThisFile(id);
 
-        delete handler._getFileState(id).loaded;
+        handler._getFileState(id).loaded = 0;
     }
 
     function chunkUploadComplete(id, chunkIdx, response, xhr) {
@@ -526,4 +518,8 @@ qq.UploadHandlerController = function(o, namespace) {
     });
 
     determineSpecificHandler();
+
+    if (handler._removeExpiredChunkingRecords) {
+        handler._removeExpiredChunkingRecords();
+    }
 };
