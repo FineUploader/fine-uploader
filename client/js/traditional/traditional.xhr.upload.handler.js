@@ -149,7 +149,6 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
     qq.extend(this, {
         uploadFile: function(id) {
             var fileOrBlob = handler.getFile(id),
-                name = getName(id),
                 promise, xhr, params, toSend;
 
             xhr = handler._createXhr(id);

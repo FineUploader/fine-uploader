@@ -370,7 +370,7 @@ describe("file list initialization tests", function() {
             }, 0);
         }
 
-        it.skip("ignores S3 response items that do not contain a valid key", function(done) {
+        it("ignores S3 response items that do not contain a valid key", function(done) {
             runTest("s3", "s3Key", done);
         });
 

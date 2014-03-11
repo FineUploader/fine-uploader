@@ -1,5 +1,5 @@
 /* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
-describe.skip("S3 serverless upload tests", function() {
+describe("S3 serverless upload tests", function() {
     "use strict";
 
     if (qqtest.canDownloadFileAsBlob) {

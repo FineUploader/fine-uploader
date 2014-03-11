@@ -12,11 +12,8 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
     "use strict";
 
     var uploadCompleteCallback = proxy.onUploadComplete,
-        onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
-        getUuid = proxy.getUuid,
         getSize = proxy.getSize,
-        getDataByUuid = proxy.getDataByUuid,
         log = proxy.log,
         expectedStatus = 200,
         onProgress = spec.onProgress,
@@ -32,7 +29,6 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
         validation = spec.validation,
         signature = spec.signature,
         chunkingPossible = spec.chunking.enabled && qq.supportedFeatures.chunking,
-        resumeEnabled = spec.resume.enabled && chunkingPossible && qq.supportedFeatures.resume && window.localStorage !== undefined,
         handler = this,
         credentialsProvider = spec.signature.credentialsProvider,
         policySignatureRequester = new qq.s3.RequestSigner({
@@ -106,24 +102,42 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
      * @param id Associated file ID
      */
     function handleUpload(id) {
-        var fileOrBlob = handler.getFile(id);
-
         handler._createXhr(id);
 
-        if (handler._shouldChunkThisFile(id)) {
-            // We might be retrying a failed in-progress upload, so it's important that we
-            // don't reset this value so we don't wipe out the record of all successfully
-            // uploaded chunks for this file.
-            if (handler._getFileState(id).loaded === undefined) {
-                handler._getFileState(id).loaded = 0;
-            }
+//        if (handler._shouldChunkThisFile(id)) {
+//            // We might be retrying a failed in-progress upload, so it's important that we
+//            // don't reset this value so we don't wipe out the record of all successfully
+//            // uploaded chunks for this file.
+//            if (handler._getFileState(id).loaded === undefined) {
+//                handler._getFileState(id).loaded = 0;
+//            }
+//
+//            handleChunkedUpload(id);
+//        }
+//        else {
+//        handler._getFileState(id).loaded = 0;
+        return handleSimpleUpload(id);
+//        }
+    }
 
-            handleChunkedUpload(id);
-        }
-        else {
-            handler._getFileState(id).loaded = 0;
-            handleSimpleUpload(id);
-        }
+
+    function createReadyStateChangeHandler(id, xhr) {
+        var promise = new qq.Promise();
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                var result = uploadCompleted(id);
+
+                if (result.success) {
+                    promise.success(result.response, xhr);
+                }
+                else {
+                    promise.failure(result.response, xhr);
+                }
+            }
+        };
+
+        return promise;
     }
 
     function getReadyStateChangeHandler(id) {
@@ -172,39 +186,45 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
             /*jshint -W116*/
             isError = !paused && (errorDetails != null || responseToExamine.success !== true);
 
-        // If this upload failed, we might want to completely start the upload over on retry in some cases.
-        if (isError) {
-            if (shouldResetOnRetry(responseToExamine.code)) {
-                log("This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.", "error");
-                handler._maybeDeletePersistedChunkData(id);
-                delete handler._getFileState(id).loaded;
-                delete handler._getFileState(id).chunking;
-            }
-        }
+//        // If this upload failed, we might want to completely start the upload over on retry in some cases.
+//        if (isError) {
+//            if (shouldResetOnRetry(responseToExamine.code)) {
+//                log("This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.", "error");
+//                handler._maybeDeletePersistedChunkData(id);
+//                delete handler._getFileState(id).loaded;
+//                delete handler._getFileState(id).chunking;
+//            }
+//        }
+//
+//        // If this upload failed AND we are expecting an auto-retry, we are not done yet.  Otherwise, we are done.
+//        if (!isError || !spec.onAutoRetry(id, name, responseToBubble, xhr)) {
+//            log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
+//
+//            // If the upload has not failed and has not been paused, clean up state date
+//            if (!isError && !paused) {
+//                responseToBubble.success = true;
+//                onProgress(id, name, size, size);
+//                handler._maybeDeletePersistedChunkData(id);
+//                delete handler._getFileState(id).loaded;
+//                delete handler._getFileState(id).chunking;
+//            }
+//
+//            // Only declare the upload complete (to listeners) if it has not been paused.
+//            if (paused) {
+//                log(qq.format("Detected pause on {} ({}).", id, name));
+//            }
+//            else {
+//                onComplete(id, name, responseToBubble, xhr);
+//                handler._getFileState(id) && delete handler._getFileState(id).xhr;
+//                uploadCompleteCallback(id);
+//            }
+//        }
 
-        // If this upload failed AND we are expecting an auto-retry, we are not done yet.  Otherwise, we are done.
-        if (!isError || !spec.onAutoRetry(id, name, responseToBubble, xhr)) {
-            log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
+        return {
+            success: !isError,
+            response: responseToBubble
+        };
 
-            // If the upload has not failed and has not been paused, clean up state date
-            if (!isError && !paused) {
-                responseToBubble.success = true;
-                onProgress(id, name, size, size);
-                handler._maybeDeletePersistedChunkData(id);
-                delete handler._getFileState(id).loaded;
-                delete handler._getFileState(id).chunking;
-            }
-
-            // Only declare the upload complete (to listeners) if it has not been paused.
-            if (paused) {
-                log(qq.format("Detected pause on {} ({}).", id, name));
-            }
-            else {
-                onComplete(id, name, responseToBubble, xhr);
-                handler._getFileState(id) && delete handler._getFileState(id).xhr;
-                uploadCompleteCallback(id);
-            }
-        }
     }
 
     /**
@@ -268,28 +288,25 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
         }
     }
 
-    function handleStartUploadSignal(id, retry) {
-        var name = getName(id);
+    function handleStartUploadSignal(id) {
+        var promise = new qq.Promise(),
+            name = getName(id);
 
-        if (handler.isValid(id)) {
-            handler._maybePrepareForResume(id);
-
-            if (getActualKey(id) !== undefined) {
-                onUpload(id, name);
-                handleUpload(id);
-            }
-            else {
-                // The S3 uploader module will either calculate the key or ask the server for it
-                // and will call us back once it is known.
-                onGetKeyName(id, name).then(function(key) {
-                    setKey(id, key);
-                    onUpload(id, name);
-                    handleUpload(id);
-                }, function(errorReason) {
-                    uploadCompleted(id, {error: errorReason});
-                });
-            }
+        if (getActualKey(id) !== undefined) {
+            handleUpload(id).then(promise.success, promise.failure);
         }
+        else {
+            // The S3 uploader module will either calculate the key or ask the server for it
+            // and will call us back once it is known.
+            onGetKeyName(id, name).then(function(key) {
+                setKey(id, key);
+                handleUpload(id).then(promise.success, promise.failure);
+            }, function(errorReason) {
+                promise.failure({error: errorReason});
+            });
+        }
+
+        return promise;
     }
 
 
@@ -297,24 +314,20 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
     // Starting point for incoming requests for simple (non-chunked) uploads.
     function handleSimpleUpload(id) {
-        var xhr = handler._getFileState(id).xhr,
-            name = getName(id),
+        var promise = new qq.Promise(),
+            xhr = handler._getFileState(id).xhr,
             fileOrBlob = handler.getFile(id);
 
-        xhr.upload.onprogress = function(e){
-            if (e.lengthComputable){
-                handler._getFileState(id).loaded = e.loaded;
-                onProgress(id, name, e.loaded, e.total);
-            }
-        };
-
-        xhr.onreadystatechange = getReadyStateChangeHandler(id);
+        handler._registerProgressHandler(id);
+        createReadyStateChangeHandler(id, xhr).then(promise.success, promise.failure);
 
         // Delegate to a function the sets up the XHR request and notifies us when it is ready to be sent, along w/ the payload.
         prepareForSend(id, fileOrBlob).then(function(toSend) {
             log("Sending upload request for " + id);
             xhr.send(toSend);
-        });
+        }, promise.failure);
+
+        return promise;
     }
 
     /**
@@ -383,8 +396,8 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
             // Failure - we couldn't determine some params (likely the signature)
             function(errorMessage) {
-                promise.failure(errorMessage);
-                uploadCompleted(id, {error: errorMessage});
+                promise.failure({error: errorMessage});
+//                uploadCompleted(id, {error: errorMessage});
             }
         );
 
@@ -581,25 +594,15 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
         }
     }
 
+    qq.extend(this, {
+        uploadFile: function(id) {
+            return handleStartUploadSignal(id);
+        }
+    });
 
-    qq.extend(this, new qq.AbstractNonTraditionalUploadHandlerXhr({
-            options: {
-                namespace: "s3",
-                chunking: chunkingPossible ? spec.chunking : null,
-                resumeEnabled: resumeEnabled
-            },
-
-            proxy: {
-                onUpload: handleStartUploadSignal,
-                onCancel: spec.onCancel,
-                onUuidChanged: onUuidChanged,
-                getName: getName,
-                getSize: getSize,
-                getUuid: getUuid,
-                getEndpoint: endpointStore.get,
-                getDataByUuid: getDataByUuid,
-                log: log
-            }
+    qq.extend(this, new qq.XhrUploadHandler({
+            options: qq.extend({namespace: "s3"}, spec),
+            proxy: qq.extend({getEndpoint: spec.endpointStore.get}, proxy)
         }
     ));
 

@@ -472,8 +472,8 @@ qq.UploadHandlerController = function(o, namespace) {
          * @returns {*} Some identifier used by a 3rd-party service involved in the upload process
          */
         getThirdPartyFileId: function(id) {
-            if (handler.getThirdPartyFileId && controller.isValid(id)) {
-                return handler.getThirdPartyFileId(id);
+            if (controller.isValid(id)) {
+                return handler._getFileState(id).key;
             }
         },
 
