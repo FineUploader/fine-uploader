@@ -234,8 +234,8 @@ if (qq.supportedFeatures.scaling) {
                     },
                     callbacks: {
                         onUpload: function(id, name) {
-                            assert.ok(uploader.getSize(id) > 0);
-                            assert.ok(qq.isBlob(uploader.getFile(id)));
+                            assert.ok(uploader.getSize(id) > 0, "Blob size is not greater than 0");
+                            assert.ok(qq.isBlob(uploader.getFile(id)), "file is not a Blob");
                             assert.equal(uploader.getFile(id).size, referenceFileSize);
 
                             actualUploadCallbacks.push({id: id, name: name});
