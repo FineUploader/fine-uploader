@@ -11,13 +11,10 @@ qq.s3.FormUploadHandler = function(options, proxy) {
     "use strict";
 
     var handler = this,
-        uploadCompleteCallback = proxy.onUploadComplete,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
         getUuid = proxy.getUuid,
         log = proxy.log,
-        onCompleteCallback = options.onComplete,
-        onUpload = options.onUpload,
         onGetKeyName = options.getKeyName,
         filenameParam = options.filenameParam,
         paramsStore = options.paramsStore,
@@ -63,7 +60,7 @@ qq.s3.FormUploadHandler = function(options, proxy) {
 
             var responseData = qq.s3.util.parseIframeResponse(iframe);
             if (responseData.bucket === bucket &&
-                responseData.key === qq.s3.util.encodeQueryStringParam(handler._getFileState(id).key)) {
+                responseData.key === qq.s3.util.encodeQueryStringParam(handler.getThirdPartyFileId(id))) {
 
                 return true;
             }
@@ -87,7 +84,7 @@ qq.s3.FormUploadHandler = function(options, proxy) {
         return qq.s3.util.generateAwsParams({
                 endpoint: endpointStore.get(id),
                 params: customParams,
-                key: handler._getFileState(id).key,
+                key: handler.getThirdPartyFileId(id),
                 accessKey: credentialsProvider.get().accessKey,
                 sessionToken: credentialsProvider.get().sessionToken,
                 acl: aclStore.get(id),
@@ -129,13 +126,11 @@ qq.s3.FormUploadHandler = function(options, proxy) {
     }
 
     function handleUpload(id) {
-        var fileName = getName(id),
-            iframe = handler._createIframe(id),
-            input = handler._getFileState(id).input;
+        var iframe = handler._createIframe(id),
+            input = handler.getInput(id),
+            promise = new qq.Promise();
 
         createForm(id, iframe).then(function(form) {
-            onUpload(id, fileName);
-
             form.appendChild(input);
 
             // Register a callback when the response comes in from S3
@@ -147,6 +142,7 @@ qq.s3.FormUploadHandler = function(options, proxy) {
                     // If there is something fundamentally wrong with the response (such as iframe content is not accessible)
                     if (response.success === false) {
                         log("Amazon likely rejected the upload request", "error");
+                        promise.failure(response);
                     }
                 }
                 // The generic response (iframe onload) handler was not able to make a determination regarding the success of the request
@@ -157,33 +153,28 @@ qq.s3.FormUploadHandler = function(options, proxy) {
                     // If the more specific response handle detected a problem with the response from S3
                     if (response.success === false) {
                         log("A success response was received by Amazon, but it was invalid in some way.", "error");
+                        promise.failure(response);
                     }
                     else {
                         qq.extend(response, qq.s3.util.parseIframeResponse(iframe));
+                        promise.success(response);
                     }
                 }
 
-                handleFinishedUpload(id, iframe, fileName, response);
+                handleFinishedUpload(id, iframe);
             });
 
             log("Sending upload request for " + id);
             form.submit();
             qq(form).remove();
-        });
+        }, promise.failure);
+
+        return promise;
     }
 
-    function handleFinishedUpload(id, iframe, fileName, response) {
+    function handleFinishedUpload(id, iframe) {
         handler._detachLoadEvent(id);
-
         iframe && qq(iframe).remove();
-
-        if (!response.success) {
-            if (options.onAutoRetry(id, fileName, response)) {
-                return;
-            }
-        }
-        onCompleteCallback(id, fileName, response);
-        uploadCompleteCallback(id);
     }
 
     qq.extend(this, new qq.FormUploadHandler({
@@ -203,33 +194,26 @@ qq.s3.FormUploadHandler = function(options, proxy) {
     ));
 
     qq.extend(this, {
-        upload: function(id) {
-            var input = handler._getFileState(id).input,
-                name = getName(id);
+        uploadFile: function(id) {
+            var name = getName(id),
+                promise = new qq.Promise();
 
-            if (!input){
-                throw new Error("file with passed id was not added, or already uploaded or canceled");
+            if (handler.getThirdPartyFileId(id)) {
+                handleUpload(id).then(promise.success, promise.failure);
+            }
+            else {
+                // The S3 uploader module will either calculate the key or ask the server for it
+                // and will call us back once it is known.
+                onGetKeyName(id, name).then(function(key) {
+                    handler._setThirdPartyFileId(id, key);
+                    handleUpload(id).then(promise.success, promise.failure);
+
+                }, function(errorReason) {
+                    promise.failure({error: errorReason});
+                });
             }
 
-            if (this.isValid(id)) {
-                if (handler._getFileState(id).key) {
-                    handleUpload(id);
-                }
-                else {
-                    // The S3 uploader module will either calculate the key or ask the server for it
-                    // and will call us back once it is known.
-                    onGetKeyName(id, name).then(function(key) {
-                        handler._getFileState(id).key = key;
-                        handleUpload(id);
-                    }, function(errorReason) {
-                        handleFinishedUpload(id, null, name, {error: errorReason});
-                    });
-                }
-            }
-        },
-
-        getThirdPartyFileId: function(id) {
-            return handler._getFileState(id).key;
+            return promise;
         }
     });
 };

@@ -11,12 +11,10 @@ qq.XhrUploadHandler = function(spec) {
     var handler = this,
         namespace = spec.options.namespace,
         proxy = spec.proxy,
-        fileState = {},
         chunking = spec.options.chunking,
         resume = spec.options.resume,
         chunkFiles = chunking && spec.options.chunking.enabled && qq.supportedFeatures.chunking,
         resumeEnabled = resume && spec.options.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
-        onCancel = proxy.onCancel,
         getName = proxy.getName,
         getSize = proxy.getSize,
         getUuid = proxy.getUuid,
@@ -28,8 +26,8 @@ qq.XhrUploadHandler = function(spec) {
 
 
     function abort(id) {
-        var xhr = fileState[id].xhr,
-            ajaxRequester = fileState[id].currentAjaxRequester;
+        var xhr = handler._getFileState(id).xhr,
+            ajaxRequester = handler._getFileState(id).currentAjaxRequester;
 
         xhr.onreadystatechange = null;
         xhr.upload.onprogress = null;
@@ -37,88 +35,66 @@ qq.XhrUploadHandler = function(spec) {
         ajaxRequester && ajaxRequester.canceled && ajaxRequester.canceled(id);
     }
 
+    qq.extend(this, new qq.UploadHandler(spec));
+
+    qq.override(this, function(super_) {
+        return {
+            /**
+             * Adds File or Blob to the queue
+             **/
+            add: function(id, blobOrProxy) {
+                if (qq.isFile(blobOrProxy) || qq.isBlob(blobOrProxy)) {
+                    super_.add(id, {file: blobOrProxy});
+                }
+                else if (blobOrProxy instanceof qq.BlobProxy) {
+                    super_.add(id, {proxy: blobOrProxy});
+                }
+                else {
+                    throw new Error("Passed obj is not a File, Blob, or proxy");
+                }
+
+                if (resumeEnabled) {
+                    handler._maybePrepareForResume(id);
+                }
+            },
+
+            expunge: function(id) {
+                var xhr = handler._getFileState(id).xhr;
+
+                xhr && abort(id);
+                handler._maybeDeletePersistedChunkData(id);
+                super_.expunge(id);
+            }
+        };
+    });
+
     qq.extend(this, {
-        /**
-         * Adds File or Blob to the queue
-         **/
-        add: function(id, blobOrProxy) {
-            if (qq.isFile(blobOrProxy) || qq.isBlob(blobOrProxy)) {
-                fileState[id] = {file: blobOrProxy};
-            }
-            else if (blobOrProxy instanceof qq.BlobProxy) {
-                fileState[id] = {proxy: blobOrProxy};
-            }
-            else {
-                throw new Error("Passed obj is not a File, Blob, or proxy");
-            }
-
-            if (resumeEnabled) {
-                handler._maybePrepareForResume(id);
-            }
-        },
-
         getFile: function(id) {
-            return handler.isValid(id) && fileState[id].file;
+            return handler.isValid(id) && handler._getFileState(id).file;
         },
 
         getProxy: function(id) {
-            return handler.isValid(id) && fileState[id].proxy;
+            return handler.isValid(id) && handler._getFileState(id).proxy;
         },
 
-        isValid: function(id) {
-            return fileState[id] !== undefined;
-        },
-
-        reset: function() {
-            fileState.length = 0;
-        },
-
-        expunge: function(id) {
-            var xhr = fileState[id].xhr;
-
-            xhr && abort(id);
-            handler._maybeDeletePersistedChunkData(id);
-            delete fileState[id];
-        },
-
-        cancel: function(id) {
-            var onCancelRetVal = onCancel(id, getName(id));
-
-            if (onCancelRetVal instanceof qq.Promise) {
-                return onCancelRetVal.then(function() {
-                    fileState[id].canceled = true;
-                    handler.expunge(id);
-                });
-            }
-            else if (onCancelRetVal !== false) {
-                fileState[id].canceled = true;
-                handler.expunge(id);
-                return true;
-            }
-
-            return false;
+        isResumable: function(id) {
+            return !!chunking && handler.isValid(id) && !handler._getFileState(id).notResumable;
         },
 
         pause: function(id) {
-            var xhr = fileState[id].xhr;
+            var xhr = handler._getFileState(id).xhr;
 
             if(xhr) {
                 log(qq.format("Aborting XHR upload for {} '{}' due to pause instruction.", id, getName(id)));
-                fileState[id].paused = true;
+                handler._getFileState(id).paused = true;
                 abort(id);
                 return true;
             }
         },
 
-        updateBlob: function(id, newBlob) {
-            if (handler.isValid(id)) {
-                fileState[id].file = newBlob;
-            }
-        },
-
         reevaluateChunking: function(id) {
             if (chunking && handler.isValid(id)) {
-                var state = fileState[id],
+                var state = handler._getFileState(id),
                     totalChunks;
 
                 delete state.chunking;
@@ -135,38 +111,10 @@ qq.XhrUploadHandler = function(spec) {
             }
         },
 
-        isResumable: function(id) {
-            return !!chunking && handler.isValid(id) && !fileState[id].notResumable;
-        },
-
-        _registerProgressHandler: function(id, chunkSize) {
-            var xhr = fileState[id].xhr,
-
-                progressCalculator = {
-                    simple: function(loaded, total) {
-                        fileState[id].loaded = loaded;
-                        onProgress(id, name, loaded, total);
-                    },
-
-                    chunked: function(loaded, total) {
-                        var totalSuccessfullyLoadedForFile = fileState[id].loaded,
-                            loadedForRequest = loaded,
-                            totalForRequest = total,
-                            totalFileSize = getSize(id),
-                            estActualChunkLoaded = loadedForRequest - (totalForRequest - chunkSize),
-                            totalLoadedForFile = totalSuccessfullyLoadedForFile + estActualChunkLoaded;
-
-                        onProgress(id, name, totalLoadedForFile, totalFileSize);
-                    }
-                };
-
-            xhr.upload.onprogress = function(e) {
-                if (e.lengthComputable) {
-                    /* jshint eqnull: true */
-                    var type = chunkSize == null ? "simple" : "chunked";
-                    progressCalculator[type](e.loaded, e.total);
-                }
-            };
+        updateBlob: function(id, newBlob) {
+            if (handler.isValid(id)) {
+                handler._getFileState(id).file = newBlob;
+            }
         },
 
         /**
@@ -177,36 +125,6 @@ qq.XhrUploadHandler = function(spec) {
          */
         _createXhr: function(id) {
             return handler._registerXhr(id, qq.createXhrInstance());
-        },
-
-        /**
-         * Registers an XHR transport instance created elsewhere.
-         *
-         * @param id ID of the associated file
-         * @param xhr XMLHttpRequest object instance
-         * @returns {XMLHttpRequest}
-         */
-        _registerXhr: function(id, xhr, ajaxRequester) {
-            fileState[id].xhr = xhr;
-            fileState[id].currentAjaxRequester = ajaxRequester;
-            return xhr;
-        },
-
-        _getMimeType: function(id) {
-            return handler.getFile(id).type;
-        },
-
-        /**
-         * @param id ID of the associated file
-         * @returns {number} Number of parts this file can be divided into, or undefined if chunking is not supported in this UA
-         */
-        _getTotalChunks: function(id) {
-            if (chunking) {
-                var fileSize = getSize(id),
-                    chunkSize = chunking.partSize;
-
-                return Math.ceil(fileSize / chunkSize);
-            }
         },
 
         _getChunkData: function(id, chunkIndex) {
@@ -236,18 +154,94 @@ qq.XhrUploadHandler = function(spec) {
             };
         },
 
-        _getFileState: function(id) {
-            return fileState[id];
+        /**
+         * @param id File ID
+         * @returns {string} Identifier for this item that may appear in the browser's local storage
+         */
+        _getLocalStorageId: function(id) {
+            var name = getName(id),
+                size = getSize(id),
+                chunkSize = chunking.partSize,
+                endpoint = getEndpoint(id);
+
+            return qq.format("qq{}resume-{}-{}-{}-{}", namespace, name, size, chunkSize, endpoint);
+        },
+
+        _getMimeType: function(id) {
+            return handler.getFile(id).type;
+        },
+
+        /**
+         * @param id ID of the associated file
+         * @returns {number} Number of parts this file can be divided into, or undefined if chunking is not supported in this UA
+         */
+        _getTotalChunks: function(id) {
+            if (chunking) {
+                var fileSize = getSize(id),
+                    chunkSize = chunking.partSize;
+
+                return Math.ceil(fileSize / chunkSize);
+            }
+        },
+
+        /**
+         * @returns {Array} Array of objects containing properties useful to integrators
+         * when it is important to determine which files are potentially resumable.
+         */
+        _getResumableFilesData: function() {
+            var resumableFilesData = [];
+
+            handler._iterateResumeRecords(function(key, uploadData) {
+                resumableFilesData.push({
+                    name: uploadData.name,
+                    size: uploadData.size,
+                    uuid: uploadData.uuid,
+                    partIdx: uploadData.chunking.lastSent + 1,
+                    key: uploadData.key
+                });
+            });
+
+            return resumableFilesData;
+        },
+
+        // Iterates through all XHR handler-created resume records (in local storage),
+        // invoking the passed callback and passing in the key and value of each local storage record.
+        _iterateResumeRecords: function(callback) {
+            if (resumeEnabled) {
+                qq.each(localStorage, function(key, item) {
+                    if (key.indexOf(qq.format("qq{}resume-", namespace)) === 0) {
+                        var uploadData = JSON.parse(item);
+                        callback(key, uploadData);
+                    }
+                });
+            }
         },
 
         _markNotResumable: function(id) {
-            fileState[id].notResumable = true;
+            handler._getFileState(id).notResumable = true;
+        },
+
+        // Removes a chunked upload record from local storage, if possible.
+        // Returns true if the item was removed, false otherwise.
+        _maybeDeletePersistedChunkData: function(id) {
+            var localStorageId;
+
+            if (resumeEnabled && handler.isResumable(id)) {
+                localStorageId = handler._getLocalStorageId(id);
+
+                if (localStorageId && localStorage.getItem(localStorageId)) {
+                    localStorage.removeItem(localStorageId);
+                    return true;
+                }
+            }
+
+            return false;
         },
 
         // If this is a resumable upload, grab the relevant data from storage and items in memory that track this upload
         // so we can pick up from where we left off.
         _maybePrepareForResume: function(id) {
-            var state = fileState[id],
+            var state = handler._getFileState(id),
                 localStorageId, persistedData;
 
             // Resume is enabled and possible and this is the first time we've tried to upload this file in this session,
@@ -301,54 +295,47 @@ qq.XhrUploadHandler = function(spec) {
             }
         },
 
-        // Removes a chunked upload record from local storage, if possible.
-        // Returns true if the item was removed, false otherwise.
-        _maybeDeletePersistedChunkData: function(id) {
-            var localStorageId;
+        _registerProgressHandler: function(id, chunkSize) {
+            var xhr = handler._getFileState(id).xhr,
 
-            if (resumeEnabled && handler.isResumable(id)) {
-                localStorageId = handler._getLocalStorageId(id);
+                progressCalculator = {
+                    simple: function(loaded, total) {
+                        handler._getFileState(id).loaded = loaded;
+                        onProgress(id, name, loaded, total);
+                    },
 
-                if (localStorageId && localStorage.getItem(localStorageId)) {
-                    localStorage.removeItem(localStorageId);
-                    return true;
-                }
-            }
+                    chunked: function(loaded, total) {
+                        var totalSuccessfullyLoadedForFile = handler._getFileState(id).loaded,
+                            loadedForRequest = loaded,
+                            totalForRequest = total,
+                            totalFileSize = getSize(id),
+                            estActualChunkLoaded = loadedForRequest - (totalForRequest - chunkSize),
+                            totalLoadedForFile = totalSuccessfullyLoadedForFile + estActualChunkLoaded;
 
-            return false;
-        },
-
-        // Iterates through all XHR handler-created resume records (in local storage),
-        // invoking the passed callback and passing in the key and value of each local storage record.
-        _iterateResumeRecords: function(callback) {
-            if (resumeEnabled) {
-                qq.each(localStorage, function(key, item) {
-                    if (key.indexOf(qq.format("qq{}resume-", namespace)) === 0) {
-                        var uploadData = JSON.parse(item);
-                        callback(key, uploadData);
+                        onProgress(id, name, totalLoadedForFile, totalFileSize);
                     }
-                });
-            }
+                };
+
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    /* jshint eqnull: true */
+                    var type = chunkSize == null ? "simple" : "chunked";
+                    progressCalculator[type](e.loaded, e.total);
+                }
+            };
         },
 
         /**
-         * @returns {Array} Array of objects containing properties useful to integrators
-         * when it is important to determine which files are potentially resumable.
+         * Registers an XHR transport instance created elsewhere.
+         *
+         * @param id ID of the associated file
+         * @param xhr XMLHttpRequest object instance
+         * @returns {XMLHttpRequest}
          */
-        _getResumableFilesData: function() {
-            var resumableFilesData = [];
-
-            handler._iterateResumeRecords(function(key, uploadData) {
-                resumableFilesData.push({
-                    name: uploadData.name,
-                    size: uploadData.size,
-                    uuid: uploadData.uuid,
-                    partIdx: uploadData.chunking.lastSent + 1,
-                    key: uploadData.key
-                });
-            });
-
-            return resumableFilesData;
+        _registerXhr: function(id, xhr, ajaxRequester) {
+            handler._getFileState(id).xhr = xhr;
+            handler._getFileState(id).currentAjaxRequester = ajaxRequester;
+            return xhr;
         },
 
         // Deletes any local storage records that are "expired".
@@ -369,26 +356,13 @@ qq.XhrUploadHandler = function(spec) {
         },
 
         /**
-         * @param id File ID
-         * @returns {string} Identifier for this item that may appear in the browser's local storage
-         */
-        _getLocalStorageId: function(id) {
-            var name = getName(id),
-                size = getSize(id),
-                chunkSize = chunking.partSize,
-                endpoint = getEndpoint(id);
-
-            return qq.format("qq{}resume-{}-{}-{}-{}", namespace, name, size, chunkSize, endpoint);
-        },
-
-        /**
          * Determine if the associated file should be chunked.
          *
          * @param id ID of the associated file
          * @returns {*} true if chunking is enabled, possible, and the file can be split into more than 1 part
          */
         _shouldChunkThisFile: function(id) {
-            var state = fileState[id];
+            var state = handler._getFileState(id);
 
             if (!state.chunking) {
                 handler.reevaluateChunking(id);

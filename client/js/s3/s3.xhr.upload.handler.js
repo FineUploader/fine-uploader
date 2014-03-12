@@ -89,11 +89,11 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
     }
 
     function getActualKey(id) {
-        return handler._getFileState(id).key;
+        return handler.getThirdPartyFileId(id);
     }
 
     function setKey(id, key) {
-        handler._getFileState(id).key = key;
+        handler._setThirdPartyFileId(id, key);
     }
 
     /**

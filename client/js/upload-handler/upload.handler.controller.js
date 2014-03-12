@@ -473,7 +473,7 @@ qq.UploadHandlerController = function(o, namespace) {
          */
         getThirdPartyFileId: function(id) {
             if (controller.isValid(id)) {
-                return handler._getFileState(id).key;
+                return handler.getThirdPartyFileId(id);
             }
         },
 
