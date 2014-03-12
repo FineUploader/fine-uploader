@@ -27,43 +27,45 @@
 
 ## Building
 
-Fine Uploader's build system depends on [nodejs](http://nodejs.org/).
 If you are developing an open-source project and are comfortable with the GPL v3 license, you can build your own
-version-stamped copy of Fine Uploader's combined source code using the provided Gruntfile.
+version-stamped copy of Fine Uploader's combined source code using the build file located in the root of the
+repository.
 
-1. Install [grunt](http://gruntjs.com/:) `npm install -g grunt`
-2. Clone the repository: `git clone git://github.com/Widen/fine-uploader`
-3. `grunt package` will generate a .zip file of Fine Uploader's JavaScript, CSS, and images in the `./_dist/` directory.
+The following instructions are aimed at *nix OSes, such as OSX, Linux, BSD, etc.  If you are using Windows,
+you'll need to make the appropriate adjustments to the following steps.
 
-## Coding
+To build Fine Uploader, you must:
 
-Oh, you think you can code? Great!
+1. Install [git][git]
+2. Install [node.js][node].
+3. Install [grunt][grunt]:  `sudo npm install -g grunt-cli`
+4. Clone the repository: `git clone git://github.com/Widen/fine-uploader`
+5. Change to the new fine-uploader directory: `cd fine-uploader`
+6. Ensure all Fine Uploader build dependencies are installed: `npm install`.
+7. Build Fine Uploader: `grunt package`.
+
+The last step will generate various .zip files that correspond to all of the high-level types of Fine Uploader,
+such as Fine Uploader S3, Fine Uploader UI, etc.
+
+
+## Contributing Changes
 
 To contribute to development [fork it](https://github.com/Widen/fine-uploader/fork), and make sure to submit any pull requests against the "develop" branch.  See [How do I contribute to other's code in GitHub?](http://stackoverflow.com/questions/4384776/how-do-i-contribute-to-others-code-in-github).
 
 Pull requests **MUST** be against the "develop" branch!
 
-1. Install [grunt](http://gruntjs.com/:) `npm install -g grunt`
-2. Clone the repository: `git clone git://github.com/Widen/fine-uploader`
-3. Checkout the "develop" branch. It's where the most bleeding edge code exists: `git checkout develop`
-4. From the develop branch, make a new topic branch to work on the whichever
-new, hot feature you plan to add such as 'feature/add-ie6-support'.
-5. Issue `grunt dev` this will prepare the development environment
-6. `grunt build` will build the latest version from the source code into `./_build/`.
-7. `grunt package` will generate a .zip file of Fine Uploader's JavaScript, CSS, and images in the `./_dist/` directory.
+1. Follow all steps in the Building section above, up until (and including) step 5.
+2. Checkout the "develop" branch. It's where in-progress versions are staged: `git checkout develop`
+3. From the develop branch, create a branch based off of develop that describes your proposed changes,
+such as `git checkout -b feature/more-efficient-scaling`.
+4. Run `grunt dev`.  This will prepare the development environment
+5. `grunt build` will build the latest version from the source code into `./_build/`.
+6. Be sure to run all unit tests: `grunt test:headless`.
 
 
-## Testing
-
-If you're reading this, then good for you!
-
-You can run the test suite by forking or cloning the repo and running `grunt test:unit` on your development machine.
-
-## Writing
-
-Like to write for people rather than computers?
-
-Fine Uploader could always use better documentation, examples, tutorials, and demos. Feel free to answer questions on the support forum, discuss issues on GitHub, write tutorials on your blog, posts screencasts on YouTube, … anything that can help the developers spend more time creating new features always helps!
+[git]: http://git-scm.com/downloads
+[node]: http://nodejs.org/
+[grunt]: http://gruntjs.com/
 
 {% endmarkdown %}
 {% endblock %}
