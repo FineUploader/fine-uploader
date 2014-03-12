@@ -435,7 +435,7 @@
                     this._customNewFileHandler :
                     qq.bind(self._handleNewFileGeneric, self);
 
-            if (actualFile.size >= 0) {
+            if (!qq.isInput(actualFile) && actualFile.size >= 0) {
                 size = actualFile.size;
             }
 
@@ -1391,12 +1391,12 @@
                 return validityChecker.failure();
             }
 
-            if (size && validationBase.sizeLimit && size > validationBase.sizeLimit) {
+            if (size > 0 && validationBase.sizeLimit && size > validationBase.sizeLimit) {
                 this._itemError("sizeError", name, file);
                 return validityChecker.failure();
             }
 
-            if (size && size < validationBase.minSizeLimit) {
+            if (size > 0 && size < validationBase.minSizeLimit) {
                 this._itemError("minSizeError", name, file);
                 return validityChecker.failure();
             }

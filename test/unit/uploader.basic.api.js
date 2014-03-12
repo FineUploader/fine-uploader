@@ -438,4 +438,19 @@ describe("uploader.basic.api.js", function () {
             assert.deepEqual(store.get(), initVal);
         });
     });
+
+    describe("_handleNewFile", function() {
+        it("ignores size property if passing a file input", function() {
+            var uploader = new qq.FineUploaderBasic({}),
+                fileInput = document.createElement("input");
+
+            uploader._customNewFileHandler = function(actualFile, name, uuid, size) {
+                assert.equal(size, -1);
+            };
+
+            fileInput.type = "file";
+
+            uploader._handleNewFile(fileInput, 0, []);
+        });
+    });
 });
