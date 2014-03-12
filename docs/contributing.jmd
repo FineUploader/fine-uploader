@@ -45,7 +45,7 @@ To build Fine Uploader, you must:
 7. Build Fine Uploader: `grunt package`.
 
 The last step will generate various .zip files that correspond to all of the high-level types of Fine Uploader,
-such as Fine Uploader S3, Fine Uploader UI, etc.
+such as Fine Uploader S3, Fine Uploader UI, etc.  These zip files will be located in the `./_dist/` directory.
 
 
 ## Contributing Changes
@@ -60,7 +60,7 @@ Pull requests **MUST** be against the "develop" branch!
 such as `git checkout -b feature/more-efficient-scaling`.
 4. Run `grunt dev`.  This will prepare the development environment
 5. `grunt build` will build the latest version from the source code into `./_build/`.
-6. Be sure to run all unit tests: `grunt test:headless`.
+6. Before you open up a pull request, be sure to run all unit tests: `grunt test:headless`.
 
 
 [git]: http://git-scm.com/downloads
