@@ -21,15 +21,39 @@ Fine Uploader provides two concepts of progress: per-file progress, and total pr
 
 ### Per-File Progress
 If using Fine Uploader UI, a progress bar will be drawn and updated for each file as the upload progresses.  Note that
-you must have the progress element in your template.  There is also a `progress` event, that can be used to feed your
-own custom progress bar if you are using Fine Uploader Core.
+you must have the progress element in your template.  Here's what the progress element may look like in your template:
+
+```html
+<div class="qq-progress-bar-container-selector">
+    <div class="qq-progress-bar-selector qq-progress-bar"></div>
+</div>
+```
+
+You can remove or change the non-selector CSS classes, tags, etc to suit your application.
+
+
+There is also a `progress` event, that can be used to feed your own custom progress bar if you are using
+Fine Uploader Core.
 
 
 ### Total Progress
 Version 4.4 brings built-in total progress tracking.  If using Fine Uploader UI, a total progress bar will be rendered
 and updated automatically for you, provided you have the total progress module included in the source and the total
-progress element is present in your template.  Fine Uploader core users can easily feed their own custom total progress
-bar by listening to the `totalProgress` events that Fine Uploader will trigger.
+progress element is present in your template.  Here's what the total progress element may look like in your
+template:
+
+```html
+<div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
+    <div class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>
+</div>
+```
+
+As with all other template elements, you can remove or change the non-selector CSS classes, tags, etc to suit
+your application.
+
+
+Fine Uploader core users can easily feed their own custom total progress bar by listening to the `totalProgress`
+events that Fine Uploader will trigger.
 
 Total progress represents the upload progress of all files in the current batch of files.  Once all files have
 finished uploading (failed or successful), total progress calculations are complete and will restart once
