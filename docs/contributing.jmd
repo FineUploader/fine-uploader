@@ -27,9 +27,10 @@
 
 ## Building
 
-If you are developing an open-source project and are comfortable with the GPL v3 license, you can build your own
-version-stamped copy of Fine Uploader's combined source code using the build file located in the root of the
-repository.
+If you are developing an open-source project, are comfortable with the GPL v3 license, and are not using
+Fine Uploader for commercial purposes, you can build your own version-stamped copy of Fine Uploader's
+combined source code using the build file located in the root of the repository.  Please see [our licensing FAQ][licensefaq]
+for more details on Fine Uploader's commercial license.
 
 The following instructions are aimed at *nix OSes, such as OSX, Linux, BSD, etc.  If you are using Windows,
 you'll need to make the appropriate adjustments to the following steps.
@@ -66,6 +67,7 @@ such as `git checkout -b feature/more-efficient-scaling`.
 [git]: http://git-scm.com/downloads
 [node]: http://nodejs.org/
 [grunt]: http://gruntjs.com/
+[licensefaq]: http://fineuploader.com/faq
 
 {% endmarkdown %}
 {% endblock %}
