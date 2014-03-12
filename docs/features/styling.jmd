@@ -37,9 +37,9 @@ Uploader UI to track/address the associated template element."""
 
 #### Re-style the progress bar
 
-Don't like the default progress bar included with Fine Uploader's CSS file?  No problem!  You can easily use,
-for example, a Bootstrap-styled progress bar.  Just [include Bootstrap](http://getbootstrap.com/)
-in your project and change this:
+Don't like [the default progress bar](progress-bars.html#per-file-progress) included with Fine Uploader's CSS file?
+No problem!  You can easily use, for example, a Bootstrap-styled progress bar.
+Just [include Bootstrap](http://getbootstrap.com/) in your project and change this:
 
 ```html
 <div class="qq-progress-bar-container-selector">
@@ -55,7 +55,7 @@ To this:
 </div>
 ```
 
-You can do the same for the total progress bar (qq-total-progress-bar-container).
+You can do the same for the [total progress bar](progress-bars.html#total-progress).
 
 
 #### Omit a portion of the template that does not apply to your app
