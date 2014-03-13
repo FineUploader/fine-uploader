@@ -503,8 +503,8 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
 
     qq.extend(this, {
-        uploadFile: upload.start,
-        uploadChunk: upload.start
+        uploadChunk: upload.start,
+        uploadFile: upload.start
     });
 
     qq.extend(this, new qq.XhrUploadHandler({

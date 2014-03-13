@@ -147,23 +147,6 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
     }
 
     qq.extend(this, {
-        uploadFile: function(id) {
-            var fileOrBlob = handler.getFile(id),
-                promise, xhr, params, toSend;
-
-            xhr = handler._createXhr(id);
-            handler._registerProgressHandler(id);
-            promise = createReadyStateChangeHandler(id, xhr);
-            params = spec.paramsStore.get(id);
-            toSend = setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id);
-            setHeaders(id, xhr);
-
-            log("Sending upload request for " + id);
-            xhr.send(toSend);
-
-            return promise;
-        },
-
         uploadChunk: function(id, chunkIdx, resuming) {
             var chunkData = handler._getChunkData(id, chunkIdx),
                 xhr = handler._createXhr(id),
@@ -183,6 +166,23 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             setHeaders(id, xhr);
 
             log("Sending chunked upload request for item " + id + ": bytes " + (chunkData.start+1) + "-" + chunkData.end + " of " + size);
+            xhr.send(toSend);
+
+            return promise;
+        },
+
+        uploadFile: function(id) {
+            var fileOrBlob = handler.getFile(id),
+                promise, xhr, params, toSend;
+
+            xhr = handler._createXhr(id);
+            handler._registerProgressHandler(id);
+            promise = createReadyStateChangeHandler(id, xhr);
+            params = spec.paramsStore.get(id);
+            toSend = setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id);
+            setHeaders(id, xhr);
+
+            log("Sending upload request for " + id);
             xhr.send(toSend);
 
             return promise;
