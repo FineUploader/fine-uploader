@@ -682,7 +682,7 @@
                     blobs: this._options.blobs,
                     log: qq.bind(self.log, self),
                     preventRetryParam: this._options.retry.preventRetryResponseProperty,
-                    onProgress: function(id, name, loaded, total){
+                    onProgress: function(id, name, loaded, total) {
                         self._onProgress(id, name, loaded, total);
                         self._options.callbacks.onProgress(id, name, loaded, total);
                     },
