@@ -154,6 +154,10 @@ qq.XhrUploadHandler = function(spec) {
             };
         },
 
+        _getChunkDataState: function(id) {
+            return handler._getFileState(id).chunking;
+        },
+
         /**
          * @param id File ID
          * @returns {string} Identifier for this item that may appear in the browser's local storage
@@ -202,6 +206,10 @@ qq.XhrUploadHandler = function(spec) {
             });
 
             return resumableFilesData;
+        },
+
+        _getXhr: function(id) {
+            return handler._getFileState(id).xhr;
         },
 
         // Iterates through all XHR handler-created resume records (in local storage),
