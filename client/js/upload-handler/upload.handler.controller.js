@@ -103,6 +103,10 @@ qq.UploadHandlerController = function(o, namespace) {
 
             handler.uploadChunk(id, chunkIdx, resuming).then(
                 function(response, xhr) {
+                    // Make sure the success property is true, since other higher-level code still
+                    // depends on this value to determine status.
+                    response.success = true;
+
                     chunked.done(id, chunkIdx, response, xhr);
                     handler._getFileState(id).chunking.lastSent = chunkIdx;
 
@@ -120,6 +124,10 @@ qq.UploadHandlerController = function(o, namespace) {
                 },
 
                 function(response, xhr) {
+                    // Make sure the success property is not true, since other higher-level code still
+                    // depends on this value to determine status.
+                    response.succcess = false;
+
                     if (response.reset) {
                         chunked.reset(id);
                     }
@@ -139,6 +147,10 @@ qq.UploadHandlerController = function(o, namespace) {
 
             handler.uploadFile(id).then(
                 function(response, opt_xhr) {
+                    // Make sure the success property is true, since other higher-level code still
+                    // depends on this value to determine status.
+                    response.success = true;
+
                     var size = options.getSize(id);
 
                     options.onProgress(id, name, size, size);
@@ -147,7 +159,7 @@ qq.UploadHandlerController = function(o, namespace) {
                 },
 
                 function(response, opt_xhr) {
-                    // Make sure the success property is not true, since other internal code currently
+                    // Make sure the success property is not true, since other higher-level code still
                     // depends on this value to determine status.
                     response.success = false;
 

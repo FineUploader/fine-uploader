@@ -11,14 +11,9 @@
 qq.s3.XhrUploadHandler = function(spec, proxy) {
     "use strict";
 
-    var uploadCompleteCallback = proxy.onUploadComplete,
-        getName = proxy.getName,
-        getSize = proxy.getSize,
+    var getName = proxy.getName,
         log = proxy.log,
         expectedStatus = 200,
-        onProgress = spec.onProgress,
-        onComplete = spec.onComplete,
-        onUpload = spec.onUpload,
         onGetKeyName = spec.getKeyName,
         filenameParam = spec.filenameParam,
         paramsStore = spec.paramsStore,
@@ -28,7 +23,6 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
         serverSideEncryption = spec.objectProperties.serverSideEncryption,
         validation = spec.validation,
         signature = spec.signature,
-        chunkingPossible = spec.chunking.enabled && qq.supportedFeatures.chunking,
         handler = this,
         credentialsProvider = spec.signature.credentialsProvider,
         policySignatureRequester = new qq.s3.RequestSigner({
@@ -85,15 +79,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 // ************************** Shared ******************************
 
     function getUrlSafeKey(id) {
-        return encodeURIComponent(getActualKey(id));
-    }
-
-    function getActualKey(id) {
-        return handler.getThirdPartyFileId(id);
-    }
-
-    function setKey(id, key) {
-        handler._setThirdPartyFileId(id, key);
+        return encodeURIComponent(handler.getThirdPartyFileId(id));
     }
 
     /**
@@ -101,58 +87,42 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
      *
      * @param id Associated file ID
      */
-    function handleUpload(id) {
+    function handleUpload(id, chunkIdx) {
         handler._createXhr(id);
 
-//        if (handler._shouldChunkThisFile(id)) {
-//            // We might be retrying a failed in-progress upload, so it's important that we
-//            // don't reset this value so we don't wipe out the record of all successfully
-//            // uploaded chunks for this file.
-//            if (handler._getFileState(id).loaded === undefined) {
-//                handler._getFileState(id).loaded = 0;
-//            }
-//
-//            handleChunkedUpload(id);
-//        }
-//        else {
-//        handler._getFileState(id).loaded = 0;
-        return handleSimpleUpload(id);
-//        }
+        /* jshint eqnull:true */
+        if (chunkIdx == null) {
+            return handleSimpleUpload(id);
+        }
+        return handleChunkedUpload(id, chunkIdx);
     }
 
 
-    function createReadyStateChangeHandler(id, xhr) {
+    function createReadyStateChangeHandler(id, xhr, chunkIdx) {
         var promise = new qq.Promise();
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
-                var result = uploadCompleted(id);
+                var result;
 
-                if (result.success) {
-                    promise.success(result.response, xhr);
+                /* jshint eqnull:true */
+                if (chunkIdx == null) {
+                    result = uploadCompleted(id);
+                    promise[result.success ? "success" : "failure"](result.response, xhr);
                 }
                 else {
-                    promise.failure(result.response, xhr);
+                    uploadChunkCompleted(id, chunkIdx).then(function() {
+                        result = uploadCompleted(id);
+                        promise[result.success ? "success" : "failure"](result.response, xhr);
+
+                    }, function(errorMsg, xhr) {
+                        promise.failure({error: errorMsg}, xhr);
+                    });
                 }
             }
         };
 
         return promise;
-    }
-
-    function getReadyStateChangeHandler(id) {
-        var xhr = handler._getFileState(id).xhr;
-
-        return function() {
-            if (xhr.readyState === 4) {
-                if (handler._getFileState(id).chunking.enabled) {
-                    uploadChunkCompleted(id);
-                }
-                else {
-                    uploadCompleted(id);
-                }
-            }
-        };
     }
 
     // Determine if the upload should be restarted on the next retry attempt
@@ -171,69 +141,29 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
      * encountered an error during the upload or when the file may have uploaded successfully.
      *
      * @param id file ID
-     * @param errorDetails Any error details associated with the upload.  Format: {error: message}.
-     * @param requestXhr The XHR object associated with the call, if the upload XHR is not appropriate.
      */
-    function uploadCompleted(id, errorDetails, requestXhr) {
-        var xhr = requestXhr || handler._getFileState(id).xhr,
-            name = getName(id),
-            size = getSize(id),
-            // This is the response we will use internally to determine if we need to do something special in case of a failure
-            responseToExamine = parseResponse(id, requestXhr),
-            // This is the response we plan on passing to external callbacks
-            responseToBubble = errorDetails || parseResponse(id),
-            paused = handler._getFileState(id).paused,
-            /*jshint -W116*/
-            isError = !paused && (errorDetails != null || responseToExamine.success !== true);
+    function uploadCompleted(id) {
+        var response = parseResponse(id),
+            isError = response.success !== true;
 
-//        // If this upload failed, we might want to completely start the upload over on retry in some cases.
-//        if (isError) {
-//            if (shouldResetOnRetry(responseToExamine.code)) {
-//                log("This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.", "error");
-//                handler._maybeDeletePersistedChunkData(id);
-//                delete handler._getFileState(id).loaded;
-//                delete handler._getFileState(id).chunking;
-//            }
-//        }
-//
-//        // If this upload failed AND we are expecting an auto-retry, we are not done yet.  Otherwise, we are done.
-//        if (!isError || !spec.onAutoRetry(id, name, responseToBubble, xhr)) {
-//            log(qq.format("Upload attempt for file ID {} to S3 is complete", id));
-//
-//            // If the upload has not failed and has not been paused, clean up state date
-//            if (!isError && !paused) {
-//                responseToBubble.success = true;
-//                onProgress(id, name, size, size);
-//                handler._maybeDeletePersistedChunkData(id);
-//                delete handler._getFileState(id).loaded;
-//                delete handler._getFileState(id).chunking;
-//            }
-//
-//            // Only declare the upload complete (to listeners) if it has not been paused.
-//            if (paused) {
-//                log(qq.format("Detected pause on {} ({}).", id, name));
-//            }
-//            else {
-//                onComplete(id, name, responseToBubble, xhr);
-//                handler._getFileState(id) && delete handler._getFileState(id).xhr;
-//                uploadCompleteCallback(id);
-//            }
-//        }
+        if (isError && shouldResetOnRetry(response.code)) {
+            log("This is an unrecoverable error, we must restart the upload entirely on the next retry attempt.", "error");
+            response.reset = true;
+        }
 
         return {
             success: !isError,
-            response: responseToBubble
+            response: response
         };
 
     }
 
     /**
      * @param id File ID
-     * @param requestXhr The XHR object associated with the call, if the upload XHR is not appropriate.
      * @returns {object} Object containing the parsed response, or perhaps some error data injected in `error` and `code` properties
      */
-    function parseResponse(id, requestXhr) {
-        var xhr = requestXhr || handler._getFileState(id).xhr,
+    function parseResponse(id) {
+        var xhr = handler._getFileState(id).xhr,
             response = {},
             parsedErrorProps;
 
@@ -288,23 +218,44 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
         }
     }
 
-    function handleStartUploadSignal(id) {
+    function getKeyAsync(id) {
         var promise = new qq.Promise(),
-            name = getName(id);
+            key = handler.getThirdPartyFileId(id);
 
-        if (getActualKey(id) !== undefined) {
-            handleUpload(id).then(promise.success, promise.failure);
+        /* jshint eqnull:true */
+        if (key == null) {
+            key = new qq.Promise();
+            handler._setThirdPartyFileId(id, key);
+            onGetKeyName(id, getName(id)).then(
+                function(key) {
+                    handler._setThirdPartyFileId(id, key);
+                    promise.success(key);
+                },
+                function(errorReason) {
+                    handler._setThirdPartyFileId(id, null);
+                    promise.failure(errorReason);
+                }
+            );
+        }
+        else if (key instanceof qq.Promise) {
+            promise.then(key.success, key.failure);
         }
         else {
-            // The S3 uploader module will either calculate the key or ask the server for it
-            // and will call us back once it is known.
-            onGetKeyName(id, name).then(function(key) {
-                setKey(id, key);
-                handleUpload(id).then(promise.success, promise.failure);
-            }, function(errorReason) {
-                promise.failure({error: errorReason});
-            });
+            promise.success(key);
         }
+
+        return promise;
+    }
+
+    function handleStartUploadSignal(id, chunkIdx) {
+        var promise = new qq.Promise();
+
+        getKeyAsync(id).then(function() {
+            handleUpload(id, chunkIdx).then(promise.success, promise.failure);
+        },
+        function(errorReason) {
+            promise.failure({error: errorReason});
+        });
 
         return promise;
     }
@@ -348,7 +299,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 endpoint: endpointStore.get(id),
                 params: customParams,
                 type: handler._getMimeType(id),
-                key: getActualKey(id),
+                key: handler.getThirdPartyFileId(id),
                 accessKey: credentialsProvider.get().accessKey,
                 sessionToken: credentialsProvider.get().sessionToken,
                 acl: aclStore.get(id),
@@ -397,7 +348,6 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
             // Failure - we couldn't determine some params (likely the signature)
             function(errorMessage) {
                 promise.failure({error: errorMessage});
-//                uploadCompleted(id, {error: errorMessage});
             }
         );
 
@@ -408,18 +358,31 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 // ************************** Chunked Uploads ******************************
 
     // Starting point for incoming requests for chunked uploads.
-    function handleChunkedUpload(id) {
-        maybeInitiateMultipart(id).then(
-            // The "Initiate" request succeeded.  We are ready to send the first chunk.
-            function(uploadId, xhr) {
-                maybeUploadNextChunk(id);
-            },
+    function handleChunkedUpload(id, chunkIdx) {
+        var promise = new qq.Promise(),
+            chunkAlreadyUploaded = handler._getFileState(id).chunking.s3LastPartSuccess === chunkIdx,
+            totalParts = handler._getFileState(id).chunking.parts;
 
-            // We were unable to initiate the chunked upload process.
-            function(errorMessage, xhr) {
-                uploadCompleted(id, {error: errorMessage}, xhr);
-            }
-        );
+        // If we have already succesfully sent this chunk, the complete multipart likely failed,
+        // and we should just retry that.
+        if (chunkIdx + 1 === totalParts && chunkAlreadyUploaded) {
+            completeMultipart(id).then(promise.success, promise.failure);
+        }
+        else {
+            maybeInitiateMultipart(id).then(
+                // The "Initiate" request succeeded.  We are ready to send the first chunk.
+                function() {
+                    uploadChunk(id, chunkIdx).then(promise.success, promise.failure);
+                },
+
+                // We were unable to initiate the chunked upload process.
+                function(errorMessage, xhr) {
+                    promise.failure({error: errorMessage}, xhr);
+                }
+            );
+        }
+
+        return promise;
     }
 
     /**
@@ -432,76 +395,41 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
         return handler._getFileState(id).chunking.lastSent >= 0 ? handler._getFileState(id).chunking.lastSent + 1 : 0;
     }
 
-    // Either initiate an upload for the next chunk for an associated file, or initiate a
-    // "Complete Multipart Upload" request if there are no more parts to be sent.
-    function maybeUploadNextChunk(id) {
-        var totalParts = handler._getFileState(id).chunking.parts,
-            nextPartIdx = getNextPartIdxToSend(id);
-
-        if (nextPartIdx < totalParts) {
-            uploadNextChunk(id);
-        }
-        else {
-            completeMultipart(id);
-        }
-    }
-
     // Sends a "Complete Multipart Upload" request and then signals completion of the upload
     // when the response to this request has been parsed.
     function completeMultipart(id) {
         var uploadId = handler._getFileState(id).chunking.uploadId,
             etagMap = handler._getFileState(id).chunking.etags;
 
-        completeMultipartRequester.send(id, uploadId, etagMap).then(
-            // Successfully completed
-            function(xhr) {
-                uploadCompleted(id, null, xhr);
-            },
-
-            // Complete request failed
-            function(errorMsg, xhr) {
-                uploadCompleted(id, {error: errorMsg}, xhr);
-            }
-        );
+        return completeMultipartRequester.send(id, uploadId, etagMap);
     }
 
     // Initiate the process to send the next chunk for a file.  This assumes there IS a "next" chunk.
-    function uploadNextChunk(id) {
-        var idx = getNextPartIdxToSend(id),
-            name = getName(id),
-            xhr = handler._getFileState(id).xhr,
-            totalFileSize = getSize(id),
-            chunkData = handler._getChunkData(id, idx),
-            domain = spec.endpointStore.get(id);
+    function uploadChunk(id, chunkIdx) {
+        var xhr = handler._getFileState(id).xhr,
+            chunkData = handler._getChunkData(id, chunkIdx),
+            domain = spec.endpointStore.get(id),
+            promise = new qq.Promise();
 
         // Add appropriate headers to the multipart upload request.
         // Once these have been determined (asynchronously) attach the headers and send the chunk.
         addChunkedHeaders(id).then(function(headers, endOfUrl) {
             var url = domain + "/" + endOfUrl;
 
-            spec.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
-
-            xhr.upload.onprogress = function(e) {
-                if (e.lengthComputable) {
-                    var totalLoaded = e.loaded + handler._getFileState(id).loaded;
-
-                    spec.onProgress(id, name, totalLoaded, totalFileSize);
-                }
-            };
-
-            xhr.onreadystatechange = getReadyStateChangeHandler(id);
-
+            handler._registerProgressHandler(id, chunkData.size);
+            createReadyStateChangeHandler(id, xhr, chunkData.part).then(promise.success, promise.failure);
             xhr.open("PUT", url, true);
 
             qq.each(headers, function(name, val) {
                 xhr.setRequestHeader(name, val);
             });
 
-            log(qq.format("Sending part {} of {} for file ID {} - {} ({} bytes)", chunkData.part+1, chunkData.count, id, name, chunkData.size));
             xhr.send(chunkData.blob);
         }, function() {
-            uploadCompleted(id, {error: "Problem signing the chunk!"}, xhr);
+            promise.failure({error: "Problem signing the chunk!"}, xhr);
         });
+
+        return promise;
     }
 
     /**
@@ -559,45 +487,40 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
     // The request may be successful, or not.  If it was successful, we must extract the "ETag" element
     // in the XML response and store that along with the associated part number.
     // We need these items to "Complete" the multipart upload after all chunks have been successfully sent.
-    function uploadChunkCompleted(id) {
-        var idxSent = getNextPartIdxToSend(id),
-            xhr = handler._getFileState(id).xhr,
+    function uploadChunkCompleted(id, chunkIdx) {
+        var xhr = handler._getFileState(id).xhr,
             response = parseResponse(id),
-            chunkData = handler._getChunkData(id, idxSent),
+            totalParts = handler._getFileState(id).chunking.parts,
+            promise = new qq.Promise(),
             etag;
 
         if (response.success) {
-            handler._getFileState(id).chunking.lastSent = idxSent;
             etag = xhr.getResponseHeader("ETag");
 
             if (!handler._getFileState(id).chunking.etags) {
                 handler._getFileState(id).chunking.etags = [];
             }
-            handler._getFileState(id).chunking.etags.push({part: idxSent+1, etag: etag});
+            handler._getFileState(id).chunking.etags.push({part: chunkIdx+1, etag: etag});
 
-            // Update the bytes loaded counter to reflect all bytes successfully transferred in the associated chunked request
-            handler._getFileState(id).loaded += chunkData.size;
+            handler._getFileState(id).chunking.s3LastPartSuccess = chunkIdx;
 
-            handler._maybePersistChunkedState(id);
-
-            spec.onUploadChunkSuccess(id, handler._getChunkDataForCallback(chunkData), response, xhr);
-
-            // We might not be done with this file...
-            maybeUploadNextChunk(id);
+            if (chunkIdx + 1 === totalParts) {
+                completeMultipart(id).then(promise.success, promise.failure);
+            }
+            else {
+                promise.success();
+            }
         }
         else {
-            if (response.error) {
-                log(response.error, "error");
-            }
-
-            uploadCompleted(id);
+            promise.success();
         }
+
+        return promise;
     }
 
     qq.extend(this, {
-        uploadFile: function(id) {
-            return handleStartUploadSignal(id);
-        }
+        uploadFile: handleStartUploadSignal,
+        uploadChunk: handleStartUploadSignal
     });
 
     qq.extend(this, new qq.XhrUploadHandler({

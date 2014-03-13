@@ -2,7 +2,6 @@
 /**
  * Common upload handler functions.
  *
- *
  * @constructor
  */
 qq.UploadHandler = function(spec) {
