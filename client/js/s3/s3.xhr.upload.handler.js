@@ -30,8 +30,8 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
             // Sends a "Complete Multipart Upload" request and then signals completion of the upload
             // when the response to this request has been parsed.
             combine: function(id) {
-                var uploadId = handler._getChunkDataState(id).uploadId,
-                    etagMap = handler._getChunkDataState(id).etags;
+                var uploadId = handler._getPersistableData(id).uploadId,
+                    etagMap = handler._getPersistableData(id).etags;
 
                 return requesters.completeMultipart.send(id, uploadId, etagMap);
             },
@@ -43,19 +43,19 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
             done: function(id, chunkIdx) {
                 var xhr = handler._getXhr(id),
                     response = upload.response.parse(id),
-                    totalParts = handler._getChunkDataState(id).parts,
+                    totalParts = handler._getTotalChunks(id),
                     promise = new qq.Promise(),
                     etag;
 
                 if (response.success) {
                     etag = xhr.getResponseHeader("ETag");
 
-                    if (!handler._getChunkDataState(id).etags) {
-                        handler._getChunkDataState(id).etags = [];
+                    if (!handler._getPersistableData(id).etags) {
+                        handler._getPersistableData(id).etags = [];
                     }
-                    handler._getChunkDataState(id).etags.push({part: chunkIdx+1, etag: etag});
+                    handler._getPersistableData(id).etags.push({part: chunkIdx+1, etag: etag});
 
-                    handler._getChunkDataState(id).s3LastPartSuccess = chunkIdx;
+                    handler._getPersistableData(id).s3LastPartSuccess = chunkIdx;
 
                     if (chunkIdx + 1 === totalParts) {
                         chunked.combine(id).then(promise.success, promise.failure);
@@ -91,7 +91,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                     signatureConstructor = requesters.restSignature.constructStringToSign
                         (requesters.restSignature.REQUEST_TYPE.MULTIPART_UPLOAD, bucket, key)
                         .withPartNum(chunkIdx + 1)
-                        .withUploadId(handler._getChunkDataState(id).uploadId);
+                        .withUploadId(handler._getPersistableData(id).uploadId);
 
                 // Ask the local server to sign the request.  Use this signature to form the Authorization header.
                 requesters.restSignature.getSignature(id, {signatureConstructor: signatureConstructor}).then(function(response) {
@@ -132,8 +132,8 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
             send: function(id, chunkIdx) {
                 var promise = new qq.Promise(),
-                    chunkAlreadyUploaded = handler._getChunkDataState(id).s3LastPartSuccess === chunkIdx,
-                    totalParts = handler._getChunkDataState(id).parts;
+                    chunkAlreadyUploaded = handler._getPersistableData(id).s3LastPartSuccess === chunkIdx,
+                    totalParts = handler._getTotalChunks(id);
 
                 // If we have already successfully sent this chunk, the complete multipart likely failed,
                 // and we should just retry that.
@@ -165,15 +165,15 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
              * @returns {qq.Promise} A promise that is fulfilled when the initiate request has been sent and the response has been parsed.
              */
             setup: function(id) {
-                if (!handler._getChunkDataState(id).uploadId) {
+                if (!handler._getPersistableData(id).uploadId) {
                     return requesters.initiateMultipart.send(id).then(
                         function(uploadId) {
-                            handler._getChunkDataState(id).uploadId = uploadId;
+                            handler._getPersistableData(id).uploadId = uploadId;
                         }
                     );
                 }
                 else {
-                    return new qq.Promise().success(handler._getChunkDataState(id).uploadId);
+                    return new qq.Promise().success(handler._getPersistableData(id).uploadId);
                 }
             }
         },
@@ -516,7 +516,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
     qq.override(this, function(super_) {
         return {
             expunge: function(id) {
-                var uploadId = handler._getChunkDataState(id) && handler._getChunkDataState(id).uploadId,
+                var uploadId = handler._getPersistableData(id) && handler._getPersistableData(id).uploadId,
                     existedInLocalStorage = handler._maybeDeletePersistedChunkData(id);
 
                 if (uploadId !== undefined && existedInLocalStorage) {

@@ -154,10 +154,6 @@ qq.XhrUploadHandler = function(spec) {
             };
         },
 
-        _getChunkDataState: function(id) {
-            return handler._getFileState(id).chunking;
-        },
-
         /**
          * @param id File ID
          * @returns {string} Identifier for this item that may appear in the browser's local storage
@@ -173,6 +169,10 @@ qq.XhrUploadHandler = function(spec) {
 
         _getMimeType: function(id) {
             return handler.getFile(id).type;
+        },
+
+        _getPersistableData: function(id) {
+            return handler._getFileState(id).chunking;
         },
 
         /**

@@ -13,7 +13,6 @@ qq.UploadHandlerController = function(o, namespace) {
         chunkingPossible = false,
         chunking, preventRetryResponse, log, handler,
 
-    // Default options, can be overridden by the user
     options = {
         paramsStore: {},
         maxConnections: 3, // maximum number of concurrent uploads
@@ -41,11 +40,10 @@ qq.UploadHandlerController = function(o, namespace) {
 
     chunked = {
         done: function(id, chunkIdx, response, xhr) {
-            var chunkData = handler._getChunkData(id, chunkIdx),
-                estRequestOverhead = handler._getFileState(id).lastRequestOverhead || 0;
+            var chunkData = handler._getChunkData(id, chunkIdx);
 
             handler._getFileState(id).attemptingResume = false;
-            handler._getFileState(id).loaded += chunkData.size + estRequestOverhead;
+            handler._getFileState(id).loaded += chunkData.size;
 
             options.onUploadChunkSuccess(id, handler._getChunkDataForCallback(chunkData), response, xhr);
         },
@@ -520,8 +518,8 @@ qq.UploadHandlerController = function(o, namespace) {
     });
 
     qq.extend(options, o);
-
     log = options.log;
+    chunkingPossible = options.chunking.enabled && qq.supportedFeatures.chunking;
 
     preventRetryResponse = (function() {
         var response = {};
@@ -530,8 +528,6 @@ qq.UploadHandlerController = function(o, namespace) {
 
         return response;
     }());
-
-    chunkingPossible = options.chunking.enabled && qq.supportedFeatures.chunking;
 
     upload.initHandler();
 };

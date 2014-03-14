@@ -64,7 +64,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
 
         getSignedUrl(id).then(function(sasUri) {
             var mimeType = handler._getMimeType(id),
-                blockIds = handler._getChunkDataState(id).blockIds;
+                blockIds = handler._getPersistableData(id).blockIds;
 
             api.putBlockList.send(id, sasUri, blockIds, mimeType, function(xhr) {
                 handler._registerXhr(id, xhr, api.putBlockList);
@@ -138,8 +138,8 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
     qq.extend(this, {
         uploadChunk: function(id, chunkIdx) {
             var promise = new qq.Promise(),
-                totalParts = handler._getChunkDataState(id).parts,
-                chunkAlreadyUploaded = handler._getChunkDataState(id).azureLastPartSuccess === chunkIdx;
+                totalParts = handler._getTotalChunks(id),
+                chunkAlreadyUploaded = handler._getPersistableData(id).azureLastPartSuccess === chunkIdx;
 
             // If we have already successfully sent this chunk, the put block list likely failed,
             // and we should just retry that.
@@ -157,12 +157,12 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
 
                         api.putBlock.upload(id, xhr, sasUri, chunkIdx, chunkData.blob).then(
                             function(blockId) {
-                                if (!handler._getChunkDataState(id).blockIds) {
-                                    handler._getChunkDataState(id).blockIds = [];
+                                if (!handler._getPersistableData(id).blockIds) {
+                                    handler._getPersistableData(id).blockIds = [];
                                 }
 
-                                handler._getChunkDataState(id).blockIds.push(blockId);
-                                handler._getChunkDataState(id).azureLastPartSuccess = chunkIdx;
+                                handler._getPersistableData(id).blockIds.push(blockId);
+                                handler._getPersistableData(id).azureLastPartSuccess = chunkIdx;
                                 log("Put Block call succeeded for " + id);
 
                                 if (chunkIdx+1 === totalParts) {
@@ -221,7 +221,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
         return {
             expunge: function(id) {
                 var relatedToCancel = handler._wasCanceled(id),
-                    chunkingData = handler._getChunkDataState(id),
+                    chunkingData = handler._getPersistableData(id),
                     blockIds = (chunkingData && chunkingData.blockIds) || [];
 
                 if (relatedToCancel && blockIds.length > 0) {
