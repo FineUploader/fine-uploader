@@ -82,7 +82,7 @@ section above.  You can determine if a resume has been ordered by looking for a 
 parameter will be sent with the first request of the resume.
 
 It is important that you keep chunks around on the server until either the entire file has been uploaded
-and all chunks have been merged, or until the number of days specified in the `cookiesExpireIn` property of the resume option have
+and all chunks have been merged, or until the number of days specified in the `recordsExpireIn` property of the resume option have
 passed.  If, for some reason, you receive a request that indicates a resume has been ordered, and one or more of the previously uploaded
 chunks is missing or invalid, you can return a valid JSON response containing a "reset" property with a value of "true".  This will
 let Fine Uploader know that it should start the file upload from the first chunk instead of the last failed chunk.

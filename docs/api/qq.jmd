@@ -408,22 +408,6 @@ sure to wrap any elements before calling these methods on them.
 {{ api_method("qq.getUniqueId ()", "getUniqueId", "returns a version4 uuid", [],
 [ { "type": "String", "description": "A version 4 unique identifier" } ]) }}
 
-{{ api_method("qq.areCookiesEnabled ()", "areCookiesEnabled", "`true` if cookies are enabled.", [],
-[ { "type": "Boolean", "description": "The result of the are cookies enabled test." } ]) }}
-
-{{ api_method("qq.getCookie", "getCookie (name)", "returns the value of the cookie with the associated name.",
-[ { "name": "name", "type": "String", "description": "The cookie name to look for" } ],
-[ { "type": "String", "description": "The cookie as a string." } ]) }}
-
-{{ api_method("qq.setCookie", "setCookie (name, value, daysTillExpiration)", "sets or updates a cookie.",
-[ { "name": "name", "type": "String", "description": "The cookie's name." },
-  { "name": "value", "type": "String", "description": "The cookie's value." },
-  { "name": "daysTillExpiration", "type": "Integer", "description": "Number of days until this cookie expires."} ])
-}}
-
-{{ api_method("qq.deleteCookie", "deleteCookie (name)", "deletes the cookie with the associated name.",
-[ { "name": "name", "type": "String", "description": "The cookie's name." } ]) }}
-
 {{ api_method("qq.getextension", "getExtension (filename)", "return the extension for the filename, if any.", [ { "name": "filename", "type": "String", "description": "The file's name to rip the extension off of." } ],
 [ { "type": "String", "description": "The new filename" }] )}}
 

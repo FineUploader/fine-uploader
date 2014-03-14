@@ -77,11 +77,6 @@ alert("The `chunking.paramNames` option does **not** apply to S3.")
 {{
 alert("The `resume.paramNames` option does **not** apply to S3.")
 }}
-{{ api_parent_option("resume", "resume", "",
-    (
-        ("resume.recordsExpireIn", "recordsExpireIn", "Number of days before resumable file records expire.", "Integer", "7",),
-    )
-)}}
 
 {{
 alert("`request.customHeaders` does **not** apply to S3.")

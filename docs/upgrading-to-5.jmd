@@ -1,0 +1,56 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Upgrading to 5.x" %}
+{% block content %}
+{% markdown %}
+# Upgrading to 5.x {: .page-header }
+
+The 5.0 version brings some breaking changes, mostly surrounding upload requests.
+
+If you are upgrading from a 3.x version, be sure to also read the [Upgrading to 4.x document](upgrading-to-4.html).
+
+### Resume data persisted using localStorage for traditional endpoints
+Fine Uploader no longer uses cookies to persist auto-resume data for traditional endpoints.  Now, all auto-resume
+data is persisted to `localStorage` for all endpoint handlers.
+
+This means that any existing auto-resume records will be lost when you switch to a 5.x version if you utilize
+a traditional endpoint handler.
+
+
+### Removed all utility functions that deal with cookies
+As a result of the switch from cookies to `localStorage`, we removed these cookie-related utility
+functions as they are no longer needed by Fine Uploader.  If you were utilizing these utility functions for your app,
+consider importing a cookie library as a replacement, such as [jquery-cookie][jcookie] or [Cookies][Cookies].
+
+The specific removed util functions were:
+* `qq.areCookiesEnabled`
+* `qq.getCookie`
+* `qq.setCookie`
+* `qq.deleteCookie`
+
+
+### Changes to `resume` option
+The `id` property of the `resume` option was removed.  Very few integrators, if any, were making use of this option.
+If you were making use of this option property, any existing resume records will be lost when you upgrade to 5.x.
+
+Also, for traditional endpoints, the `cookiesExpireIn` option has changed to `recordsExpireIn`.  This is related to
+the switch from cookies to `localStorage`.
+
+
+### onResume callback is no longer promissory
+A promise is no longer an acceptable return type from an `onResume` callback.  It was unclear what benefit this
+provided, and supporting this made the code more complicated.  Due to a long-standing oversight in the code,
+promises were only accepted from `onResume` callbacks when using the traditional endpoint handler anyway.
+
+
+### Chunked request only sent for traditional endpoints if necessary
+This means that, even if chunking is enabled, a chunked upload request is only sent to traditional endpoints
+if the associated file must be broken into more than 1 chunk.  This behavior is consistent with the way all other
+endpoints have functioned.  Previously, a chunked request would always be sent for traditional endpoints if
+chunking was supported and enabled.
+
+
+[jcookie]: https://github.com/carhartl/jquery-cookie
+[Cookies]: https://github.com/ScottHamper/Cookies
+
+{% endmarkdown %}
+{% endblock %}

@@ -142,10 +142,8 @@ mode you are in and keep that in mind when determining which options do what.
 
 {{ api_parent_option("resume", "resume", "",
     (
-        ("resume.cookiesExpireIn", "cookiesExpireIn", "The number of days before a persistent resume cookie will expire.", "Integer", "7",),
+        ("resume.recordsExpireIn", "recordsExpireIn", "The number of days before a persistent resume record will expire.", "Integer", "7",),
         ("resume.enabled", "enabled", "Enable or disable the ability to resume failed or stopped chunked uploads.", "Boolean", "false",),
-        ("resume.id", "id", "An additional component of the cookie name used to store the current upload session.", "Integer, String, or Boolean", "null",),
-
         ("resume.paramNames.resuming", "paramNames.resuming", "Sent with the first request of the resume with a value of `true`.", "String", "qqresume",),
     )
 )

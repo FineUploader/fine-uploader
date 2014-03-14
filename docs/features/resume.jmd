@@ -9,17 +9,16 @@
 # Resuming Uploads {: .page-header }
 
 The ability to resume an upload that was somehow interrupted is
-dependant on the support for [chunking](chunking.html) and cookies (traditional uploader) or
-localstorage (S3 uploader) by the client. Essentially, to support resumable uploads, Fine
-Uploader just needs to keep track of where it currently is in the upload process.
-To do this it stores session data in a record that is saved on the client
-before each chunk is sent to the server.
+dependant on the support for [chunking](chunking.html) and `localStorage` by the client.
+Essentially, to support resumable uploads, Fine Uploader just needs to keep track of
+where it currently is in the upload process.  To do this it stores session data in a
+record that is saved on the client before each chunk is sent to the server.
 
-Note that resuming is disabled by default, and the cookie or local storage object is stored for 7 days
+Note that resuming is disabled by default, and the local storage record is stored for 7 days (by default)
 (both of these options can be easily changed).
 
 {{
-    alert("The `cookiesExpireIn`, `id`, and `resume.paramNames` properties are not applicable to the S3 uploader.  Instead, use `recordsExpireIn`.")
+    alert("The `resume.paramNames` properties are not applicable to the S3 & Azure uploaders.")
 }}
 
 [For more information, see the associated blog post](http://blog.fineuploader.com/2013/01/01/resume-uploads-from-previous-sessions-in-3-2/)
