@@ -59,6 +59,29 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
         };
 
 
+    function combineChunks(id) {
+        var promise = new qq.Promise();
+
+        getSignedUrl(id).then(function(sasUri) {
+            var mimeType = handler._getMimeType(id),
+                blockIds = handler._getFileState(id).chunking.blockIds;
+
+            api.putBlockList.send(id, sasUri, blockIds, mimeType, function(xhr) {
+                handler._registerXhr(id, xhr, api.putBlockList);
+            })
+                .then(function(xhr) {
+                    log("Success combining chunks for id " + id);
+                    promise.success({}, xhr);
+                }, function(xhr) {
+                    log("Attempt to combine chunks failed for id " + id, "error");
+                    handleFailure(xhr, promise);
+                });
+
+        }, promise.failure);
+
+        return promise;
+    }
+
     function determineBlobUrl(id) {
         var containerUrl = endpointStore.get(id),
             promise = new qq.Promise(),
@@ -101,63 +124,16 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
         return promise;
     }
 
-    function handleSimpleUpload(id) {
-        var promise = new qq.Promise(),
-            fileOrBlob = handler.getFile(id);
+    function handleFailure(xhr, promise) {
+        var azureError = qq.azure.util.parseAzureError(xhr.responseText, log),
+            errorMsg = "Problem sending file to Azure";
 
-        getSignedUrl(id).then(function(sasUri) {
-            var xhr = handler._createXhr(id);
-
-            handler._registerProgressHandler(id);
-
-            api.putBlob.upload(id, xhr, sasUri, fileOrBlob).then(
-                function() {
-                    log("Put Blob call succeeded for " + id);
-                    promise.success({}, xhr);
-                },
-                function() {
-                    log("Put Blob call failed for " + id, "error");
-
-                    var azureError = qq.azure.util.parseAzureError(xhr.responseText, log),
-                        errorMsg = "Problem sending file to Azure";
-
-                    promise.failure({error: errorMsg, azureError: azureError && azureError.message});
-                }
-            );
-        }, promise.failure);
-
-        return promise;
+        promise.failure({error: errorMsg,
+            azureError: azureError && azureError.message,
+            reset: xhr.status === 403
+        });
     }
 
-    function combineChunks(id) {
-        var promise = new qq.Promise();
-
-        getSignedUrl(id).then(function(sasUri) {
-            var mimeType = handler._getMimeType(id),
-                blockIds = handler._getFileState(id).chunking.blockIds;
-
-            api.putBlockList.send(id, sasUri, blockIds, mimeType, function(xhr) {
-                handler._registerXhr(id, xhr, api.putBlockList);
-            })
-                .then(function(xhr) {
-                    log("Success combining chunks for id " + id);
-                    promise.success({}, xhr);
-                }, function(xhr) {
-                    log("Attempt to combine chunks failed for id " + id, "error");
-
-                    var azureError = qq.azure.util.parseAzureError(xhr.responseText, log),
-                        errorMsg = "Problem sending file to Azure";
-
-                    promise.failure({error: errorMsg,
-                        azureError: azureError && azureError.message,
-                        reset: xhr.status === 403
-                    });
-                });
-
-        }, promise.failure);
-
-        return promise;
-    }
 
     qq.extend(this, {
         uploadChunk: function(id, chunkIdx) {
@@ -198,14 +174,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
                             },
                             function() {
                                 log(qq.format("Put Block call failed for ID {} on part {}", id, chunkIdx), "error");
-
-                                var azureError = qq.azure.util.parseAzureError(xhr.responseText, log),
-                                    errorMsg = "Problem sending file to Azure";
-
-                                promise.failure({error: errorMsg,
-                                    azureError: azureError && azureError.message,
-                                    reset: xhr.status === 403
-                                });
+                                handleFailure(xhr, promise);
                             }
                         );
                     },
@@ -216,8 +185,31 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
             return promise;
         },
 
-        uploadFile: handleSimpleUpload
+        uploadFile: function(id) {
+            var promise = new qq.Promise(),
+                fileOrBlob = handler.getFile(id);
+
+            getSignedUrl(id).then(function(sasUri) {
+                var xhr = handler._createXhr(id);
+
+                handler._registerProgressHandler(id);
+
+                api.putBlob.upload(id, xhr, sasUri, fileOrBlob).then(
+                    function() {
+                        log("Put Blob call succeeded for " + id);
+                        promise.success({}, xhr);
+                    },
+                    function() {
+                        log("Put Blob call failed for " + id, "error");
+                        handleFailure(xhr, promise);
+                    }
+                );
+            }, promise.failure);
+
+            return promise;
+        }
     });
+
 
     qq.extend(this, new qq.XhrUploadHandler({
             options: qq.extend({namespace: "azure"}, spec),
