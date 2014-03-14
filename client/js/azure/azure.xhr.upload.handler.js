@@ -64,7 +64,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
 
         getSignedUrl(id).then(function(sasUri) {
             var mimeType = handler._getMimeType(id),
-                blockIds = handler._getFileState(id).chunking.blockIds;
+                blockIds = handler._getChunkDataState(id).blockIds;
 
             api.putBlockList.send(id, sasUri, blockIds, mimeType, function(xhr) {
                 handler._registerXhr(id, xhr, api.putBlockList);
@@ -86,7 +86,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
         var containerUrl = endpointStore.get(id),
             promise = new qq.Promise(),
             getBlobNameSuccess = function(blobName) {
-                handler._getFileState(id).key = blobName;
+                handler._setThirdPartyFileId(id, blobName);
                 promise.success(containerUrl + "/" + blobName);
             },
             getBlobNameFailure = function(reason) {
@@ -138,7 +138,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
     qq.extend(this, {
         uploadChunk: function(id, chunkIdx) {
             var promise = new qq.Promise(),
-                totalParts = handler._getFileState(id).chunking.parts,
+                totalParts = handler._getChunkDataState(id).parts,
                 chunkAlreadyUploaded = handler._getChunkDataState(id).azureLastPartSuccess === chunkIdx;
 
             // If we have already successfully sent this chunk, the put block list likely failed,
@@ -220,8 +220,8 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
     qq.override(this, function(super_) {
         return {
             expunge: function(id) {
-                var relatedToCancel = handler._getFileState(id).canceled,
-                    chunkingData = handler._getFileState(id).chunking,
+                var relatedToCancel = handler._wasCanceled(id),
+                    chunkingData = handler._getChunkDataState(id),
                     blockIds = (chunkingData && chunkingData.blockIds) || [];
 
                 if (relatedToCancel && blockIds.length > 0) {
@@ -234,10 +234,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
             _shouldChunkThisFile: function(id) {
                 var maybePossible = super_._shouldChunkThisFile(id);
 
-                if (maybePossible && getSize(id) >= minFileSizeForChunking) {
-                    return true;
-                }
-                return false;
+                return maybePossible && getSize(id) >= minFileSizeForChunking;
             }
         };
     });

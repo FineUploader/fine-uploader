@@ -58,6 +58,10 @@ qq.UploadHandler = function(spec) {
 
         _setThirdPartyFileId: function(id, thirdPartyFileId) {
             fileState[id].key = thirdPartyFileId;
+        },
+
+        _wasCanceled: function(id) {
+            return !!fileState[id].canceled;
         }
     });
 };
