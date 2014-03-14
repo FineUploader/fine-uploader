@@ -103,11 +103,9 @@ qq.UploadHandlerController = function(o, namespace) {
 
             handler.uploadChunk(id, chunkIdx, resuming).then(
                 function(response, xhr) {
-                    // Make sure the success property is true, since other higher-level code still
-                    // depends on this value to determine status.
-                    response.success = true;
+                    var responseToReport = upload.normalizeResponse(response, true);
 
-                    chunked.done(id, chunkIdx, response, xhr);
+                    chunked.done(id, chunkIdx, responseToReport, xhr);
                     handler._getFileState(id).chunking.lastSent = chunkIdx;
 
                     var nextChunkIdx = chunked.nextPart(id);
@@ -115,8 +113,8 @@ qq.UploadHandlerController = function(o, namespace) {
                     if (nextChunkIdx === null) {
                         options.onProgress(id, name, size, size);
                         handler._maybeDeletePersistedChunkData(id);
-                        upload.maybeNewUuid(id, response);
-                        upload.cleanup(id, response, xhr);
+                        upload.maybeNewUuid(id, responseToReport);
+                        upload.cleanup(id, responseToReport, xhr);
                     }
                     else {
                         chunked.send(id);
@@ -124,16 +122,14 @@ qq.UploadHandlerController = function(o, namespace) {
                 },
 
                 function(response, xhr) {
-                    // Make sure the success property is not true, since other higher-level code still
-                    // depends on this value to determine status.
-                    response.succcess = false;
+                    var responseToReport = upload.normalizeResponse(response, false);
 
-                    if (response.reset) {
+                    if (responseToReport.reset) {
                         chunked.reset(id);
                     }
 
-                    if (!options.onAutoRetry(id, name, response, xhr)) {
-                        upload.cleanup(id, response, xhr);
+                    if (!options.onAutoRetry(id, name, responseToReport, xhr)) {
+                        upload.cleanup(id, responseToReport, xhr);
                     }
                 }
             );
@@ -147,24 +143,20 @@ qq.UploadHandlerController = function(o, namespace) {
 
             handler.uploadFile(id).then(
                 function(response, opt_xhr) {
-                    // Make sure the success property is true, since other higher-level code still
-                    // depends on this value to determine status.
-                    response.success = true;
+                    var responseToReport = upload.normalizeResponse(response, true);
 
                     var size = options.getSize(id);
 
                     options.onProgress(id, name, size, size);
-                    upload.maybeNewUuid(id, response);
-                    upload.cleanup(id, response, opt_xhr);
+                    upload.maybeNewUuid(id, responseToReport);
+                    upload.cleanup(id, responseToReport, opt_xhr);
                 },
 
                 function(response, opt_xhr) {
-                    // Make sure the success property is not true, since other higher-level code still
-                    // depends on this value to determine status.
-                    response.success = false;
+                    var responseToReport = upload.normalizeResponse(response, false);
 
-                    if (!options.onAutoRetry(id, name, response, opt_xhr)) {
-                        upload.cleanup(id, response, opt_xhr);
+                    if (!options.onAutoRetry(id, name, responseToReport, opt_xhr)) {
+                        upload.cleanup(id, responseToReport, opt_xhr);
                     }
                 }
             );
@@ -330,6 +322,27 @@ qq.UploadHandlerController = function(o, namespace) {
             if (response.newUuid !== undefined) {
                 options.onUuidChanged(id, response.newUuid);
             }
+        },
+
+        // The response coming from handler implementations may be in various formats.
+        // Instead of hoping a promise nested 5 levels deep will always return an object
+        // as its first param, let's just normalize the response here.
+        normalizeResponse: function(originalResponse, successful) {
+            var response = originalResponse;
+
+            // The passed "response" param may not be a response at all.
+            // It could be a string, detailing the error, for example.
+            if (!qq.isObject(originalResponse)) {
+                response = {};
+
+                if (qq.isString(originalResponse) && !successful) {
+                    response.error = originalResponse;
+                }
+            }
+
+            response.success = successful;
+
+            return response;
         },
 
         now: function(id) {
