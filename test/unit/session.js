@@ -376,7 +376,7 @@ describe("file list initialization tests", function() {
 
         // Azure-based tests are irrelevant in "older" browsers since they don't support uploading to Azure
         if (qq.supportedFeatures.ajaxUploading) {
-            it.skip("ignores Azure response items that do not contain a valid blob name", function(done) {
+            it("ignores Azure response items that do not contain a valid blob name", function(done) {
                 runTest("azure", "blobName", done);
             });
         }

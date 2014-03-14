@@ -82,15 +82,20 @@ qq.AjaxRequester = function (o) {
     }
 
     // Returns either a new XHR/XDR instance, or an existing one for the associated `File` or `Blob`.
-    function getXhrOrXdr(id, dontCreateIfNotExist) {
+    function getXhrOrXdr(id, suppliedXhr) {
         var xhrOrXdr = requestData[id].xhr;
 
-        if (!xhrOrXdr && !dontCreateIfNotExist) {
-            if (options.cors.expected) {
-                xhrOrXdr = getCorsAjaxTransport();
+        if (!xhrOrXdr) {
+            if (suppliedXhr) {
+                xhrOrXdr = suppliedXhr;
             }
             else {
-                xhrOrXdr = qq.createXhrInstance();
+                if (options.cors.expected) {
+                    xhrOrXdr = getCorsAjaxTransport();
+                }
+                else {
+                    xhrOrXdr = qq.createXhrInstance();
+                }
             }
 
             requestData[id].xhr = xhrOrXdr;
@@ -158,8 +163,8 @@ qq.AjaxRequester = function (o) {
         return params;
     }
 
-    function sendRequest(id) {
-        var xhr = getXhrOrXdr(id),
+    function sendRequest(id, opt_xhr) {
+        var xhr = getXhrOrXdr(id, opt_xhr),
             method = options.method,
             params = getParams(id),
             payload = requestData[id].payload,
@@ -306,7 +311,7 @@ qq.AjaxRequester = function (o) {
         return qq.indexOf(options.successfulResponseCodes[options.method], responseCode) >= 0;
     }
 
-    function prepareToSend(id, addToPath, additionalParams, additionalHeaders, payload) {
+    function prepareToSend(id, opt_xhr, addToPath, additionalParams, additionalHeaders, payload) {
         requestData[id] = {
             addToPath: addToPath,
             additionalParams: additionalParams,
@@ -318,7 +323,7 @@ qq.AjaxRequester = function (o) {
 
         // if too many active connections, wait...
         if (len <= options.maxConnections) {
-            return sendRequest(id);
+            return sendRequest(id, opt_xhr);
         }
     }
 
@@ -365,12 +370,12 @@ qq.AjaxRequester = function (o) {
                 },
 
                 // Send the constructed request.
-                send: function() {
+                send: function(opt_xhr) {
                     if (cacheBuster && qq.indexOf(["GET", "DELETE"], options.method) >= 0) {
                         params.qqtimestamp = new Date().getTime();
                     }
 
-                    return prepareToSend(id, path, params, headers, payload);
+                    return prepareToSend(id, opt_xhr, path, params, headers, payload);
                 }
             };
         },

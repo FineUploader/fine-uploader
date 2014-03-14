@@ -9,12 +9,10 @@ qq.azure.PutBlob = function(o) {
         method = "PUT",
         options = {
             getBlobMetadata: function(id) {},
-            onProgress: function(id, loaded, total) {},
-            onUpload: function(id) {},
-            onComplete: function(id, xhr, isError) {},
             log: function(str, level) {}
         },
         endpoints = {},
+        promises = {},
         endpointHandler = {
             get: function(id) {
                 return endpoints[id];
@@ -46,26 +44,38 @@ qq.azure.PutBlob = function(o) {
             expected: true
         },
         log: options.log,
-        onSend: options.onUpload,
         onComplete: function(id, xhr, isError) {
+            var promise = promises[id];
+
             delete endpoints[id];
-            options.onComplete.apply(this, arguments);
-        },
-        onProgress: options.onProgress
+            delete promises[id];
+
+            if (isError) {
+                promise.failure();
+            }
+            else {
+                promise.success();
+            }
+        }
     }));
 
 
     qq.extend(this, {
         method: method,
-        upload: function(id, url, file) {
+        upload: function(id, xhr, url, file) {
+            var promise = new qq.Promise();
+
             options.log("Submitting Put Blob request for " + id);
 
+            promises[id] = promise;
             endpoints[id] = url;
 
-            return requester.initTransport(id)
+            requester.initTransport(id)
                 .withPayload(file)
                 .withHeaders({"Content-Type": file.type})
-                .send();
+                .send(xhr);
+
+            return promise;
         }
     });
 };

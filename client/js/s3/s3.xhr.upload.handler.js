@@ -135,7 +135,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                     chunkAlreadyUploaded = handler._getChunkDataState(id).s3LastPartSuccess === chunkIdx,
                     totalParts = handler._getChunkDataState(id).parts;
 
-                // If we have already succesfully sent this chunk, the complete multipart likely failed,
+                // If we have already successfully sent this chunk, the complete multipart likely failed,
                 // and we should just retry that.
                 if (chunkIdx + 1 === totalParts && chunkAlreadyUploaded) {
                     chunked.combine(id).then(promise.success, promise.failure);

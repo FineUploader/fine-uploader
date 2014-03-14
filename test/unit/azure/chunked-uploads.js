@@ -1,5 +1,5 @@
 /* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
-describe.skip("azure chunked upload tests", function() {
+describe("azure chunked upload tests", function() {
     "use strict";
 
     if (qqtest.canDownloadFileAsBlob) {
