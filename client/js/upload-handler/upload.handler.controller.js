@@ -18,8 +18,7 @@ qq.UploadHandlerController = function(o, namespace) {
         paramsStore: {},
         maxConnections: 3, // maximum number of concurrent uploads
         chunking: {
-            enabled: false,
-            partSize: 2000000 //bytes
+            enabled: false
         },
         log: function(str, level) {},
         onProgress: function(id, fileName, loaded, total){},

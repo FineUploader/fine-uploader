@@ -21,35 +21,43 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
         minFileSizeForChunking = spec.chunking.minFileSize,
         deleteBlob = spec.deleteBlob,
         onGetBlobName = spec.onGetBlobName,
+        getName = proxy.getName,
+        getSize = proxy.getSize,
+
         getBlobMetadata = function(id) {
             var params = paramsStore.get(id);
             params[filenameParam] = getName(id);
             return params;
         },
-        getName = proxy.getName,
-        getSize = proxy.getSize,
-        putBlob = new qq.azure.PutBlob({
-            getBlobMetadata: getBlobMetadata,
-            log: log
-        }),
-        putBlock = new qq.azure.PutBlock({
-            log: log
-        }),
-        putBlockList = new qq.azure.PutBlockList({
-            getBlobMetadata: getBlobMetadata,
-            log: log
-        }),
-        getSasForPutBlobOrBlock = new qq.azure.GetSas({
-            cors: cors,
-            endpointStore: {
-                get: function() {
-                    return signature.endpoint;
-                }
-            },
-            customHeaders: signature.customHeaders,
-            restRequestVerb: putBlob.method,
-            log: log
-        });
+
+        api = {
+            putBlob: new qq.azure.PutBlob({
+                getBlobMetadata: getBlobMetadata,
+                log: log
+            }),
+
+            putBlock: new qq.azure.PutBlock({
+                log: log
+            }),
+
+            putBlockList: new qq.azure.PutBlockList({
+                getBlobMetadata: getBlobMetadata,
+                log: log
+            }),
+
+            getSasForPutBlobOrBlock: new qq.azure.GetSas({
+                cors: cors,
+                customHeaders: signature.customHeaders,
+                endpointStore: {
+                    get: function() {
+                        return signature.endpoint;
+                    }
+                },
+                log: log,
+                restRequestVerb: "PUT"
+            })
+        };
+
 
     function determineBlobUrl(id) {
         var containerUrl = endpointStore.get(id),
@@ -78,7 +86,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
                 promise.failure({error: "Problem communicating with local server"}, getSasXhr);
             },
             determineBlobUrlSuccess = function(blobUrl) {
-                getSasForPutBlobOrBlock.request(id, blobUrl).then(
+                api.getSasForPutBlobOrBlock.request(id, blobUrl).then(
                     getSasSuccess,
                     getSasFailure
                 );
@@ -102,7 +110,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
 
             handler._registerProgressHandler(id);
 
-            putBlob.upload(id, xhr, sasUri, fileOrBlob).then(
+            api.putBlob.upload(id, xhr, sasUri, fileOrBlob).then(
                 function() {
                     log("Put Blob call succeeded for " + id);
                     promise.success({}, xhr);
@@ -128,8 +136,8 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
             var mimeType = handler._getMimeType(id),
                 blockIds = handler._getFileState(id).chunking.blockIds;
 
-            putBlockList.send(id, sasUri, blockIds, mimeType, function(xhr) {
-                handler._registerXhr(id, xhr, putBlockList);
+            api.putBlockList.send(id, sasUri, blockIds, mimeType, function(xhr) {
+                handler._registerXhr(id, xhr, api.putBlockList);
             })
                 .then(function(xhr) {
                     log("Success combining chunks for id " + id);
@@ -169,9 +177,9 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
                         chunkData = handler._getChunkData(id, chunkIdx);
 
                         handler._registerProgressHandler(id, chunkData.size);
-                        handler._registerXhr(id, xhr, putBlock);
+                        handler._registerXhr(id, xhr, api.putBlock);
 
-                        putBlock.upload(id, xhr, sasUri, chunkIdx, chunkData.blob).then(
+                        api.putBlock.upload(id, xhr, sasUri, chunkIdx, chunkData.blob).then(
                             function(blockId) {
                                 if (!handler._getChunkDataState(id).blockIds) {
                                     handler._getChunkDataState(id).blockIds = [];
@@ -189,7 +197,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
                                 }
                             },
                             function() {
-                                log(qq.format("Put Block call failed for ID {} on part {}",id, chunkIdx), "error");
+                                log(qq.format("Put Block call failed for ID {} on part {}", id, chunkIdx), "error");
 
                                 var azureError = qq.azure.util.parseAzureError(xhr.responseText, log),
                                     errorMsg = "Problem sending file to Azure";
