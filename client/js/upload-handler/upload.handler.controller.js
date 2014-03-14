@@ -1,6 +1,6 @@
 /*globals qq*/
 /**
- * Base upload handler module.  Delegates to more specific handlers.
+ * Base upload handler module.  Controls more specific handlers.
  *
  * @param o Options.  Passed along to the specific handler submodule as well.
  * @param namespace [optional] Namespace for the specific handler.
