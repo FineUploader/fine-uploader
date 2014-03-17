@@ -197,11 +197,6 @@ qq.UploadHandlerController = function(o, namespace) {
             return qq.indexOf(connectionManager._open, id) >= 0;
         },
 
-        reset: function() {
-            connectionManager._waiting = [];
-            connectionManager._open = [];
-        },
-
         open: function(id) {
             connectionManager._waiting.push(id);
 
@@ -214,6 +209,11 @@ qq.UploadHandlerController = function(o, namespace) {
             }
 
             return false;
+        },
+
+        reset: function() {
+            connectionManager._waiting = [];
+            connectionManager._open = [];
         }
     },
 
