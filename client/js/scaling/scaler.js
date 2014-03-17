@@ -415,8 +415,8 @@ qq.extend(qq.Scaler.prototype, {
         // write the bytes of the binary string to an ArrayBuffer
         arrayBuffer = new ArrayBuffer(byteString.length);
         intArray = new Uint8Array(arrayBuffer);
-        qq.each(byteString, function(idx, char) {
-            intArray[idx] = char.charCodeAt(0);
+        qq.each(byteString, function(idx, character) {
+            intArray[idx] = character.charCodeAt(0);
         });
 
         return this._createBlob(arrayBuffer, mimeString);
