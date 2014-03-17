@@ -9,15 +9,18 @@ qq.UploadHandlerController = function(o, namespace) {
     "use strict";
 
     var controller = this,
-        queue = [],
         chunkingPossible = false,
+        concurrentChunkingPossible = false,
         chunking, preventRetryResponse, log, handler,
 
     options = {
         paramsStore: {},
         maxConnections: 3, // maximum number of concurrent uploads
         chunking: {
-            enabled: false
+            enabled: false,
+            multiple: {
+                enabled: false
+            }
         },
         log: function(str, level) {},
         onProgress: function(id, fileName, loaded, total){},
@@ -65,6 +68,15 @@ qq.UploadHandlerController = function(o, namespace) {
             return nextIdx;
         },
 
+        pickStrategy: function(id) {
+            if (concurrentChunkingPossible) {
+                chunked.sendMulti(id);
+            }
+            else {
+                chunked.sendOne(id);
+            }
+        },
+
         reset: function(id) {
             log("Server or callback has ordered chunking effort to be restarted on next attempt for item ID " + id, "error");
 
@@ -73,7 +85,11 @@ qq.UploadHandlerController = function(o, namespace) {
             handler._getFileState(id).loaded = 0;
         },
 
-        send: function(id) {
+        sendMulti: function(id) {
+
+        },
+
+        sendOne: function(id) {
             var size = options.getSize(id),
                 name = options.getName(id),
                 chunkIdx = chunked.nextPart(id),
@@ -114,7 +130,7 @@ qq.UploadHandlerController = function(o, namespace) {
                         upload.cleanup(id, responseToReport, xhr);
                     }
                     else {
-                        chunked.send(id);
+                        chunked.sendOne(id);
                     }
                 },
 
@@ -133,6 +149,73 @@ qq.UploadHandlerController = function(o, namespace) {
         }
     },
 
+    connectionManager = {
+        _open: [],
+        _waiting: [],
+
+        available: function() {
+            return options.maxConnections - connectionManager._open.length;
+        },
+
+        /**
+         * Removes element from queue, starts upload of next
+         */
+        dequeue: function(id) {
+            var waitingIndex = qq.indexOf(connectionManager._waiting, id),
+                connectionsIndex = qq.indexOf(connectionManager._open, id),
+                nextId;
+
+            if (upload.getProxyOrBlob(id) instanceof qq.BlobProxy) {
+                log("Generated blob upload has ended for " + id + ", disposing generated blob.");
+                delete handler._getFileState(id).file;
+            }
+
+            // If this file was not consuming a connection, it was just waiting, so remove it from the waiting array
+            if (waitingIndex >= 0) {
+                connectionManager._waiting.splice(waitingIndex, 1);
+            }
+            // If this file was consuming a connection, allow the next file to be uploaded
+            else if (connectionsIndex >= 0) {
+                connectionManager._open.splice(connectionsIndex, 1);
+
+                nextId = connectionManager._waiting.shift();
+                if (nextId >= 0) {
+                    connectionManager._open.push(nextId);
+                    upload.start(nextId);
+                }
+            }
+        },
+
+        getWaitingOrConnected: function() {
+            var waitingOrConnected = [];
+
+            qq.each(waitingOrConnected, connectionManager._open);
+            return qq.each(waitingOrConnected, connectionManager._waiting);
+        },
+
+        isUsingConnection: function(id) {
+            return qq.indexOf(connectionManager._open, id) >= 0;
+        },
+
+        reset: function() {
+            connectionManager._waiting = [];
+            connectionManager._open = [];
+        },
+
+        takeOpenConnection: function(id) {
+            connectionManager._waiting.push(id);
+
+            var availableConnections = connectionManager.available();
+
+            if (availableConnections) {
+                connectionManager._waiting.pop();
+                connectionManager._open.push(id);
+                return true;
+            }
+
+            return false;
+        }
+    },
 
     simple = {
         send: function(id, name) {
@@ -165,7 +248,7 @@ qq.UploadHandlerController = function(o, namespace) {
         cancel: function(id) {
             log("Cancelling " + id);
             options.paramsStore.remove(id);
-            upload.dequeue(id);
+            connectionManager.dequeue(id);
         },
 
         cleanup: function(id, response, opt_xhr) {
@@ -177,30 +260,7 @@ qq.UploadHandlerController = function(o, namespace) {
                 delete handler._getFileState(id).xhr;
             }
 
-            upload.dequeue(id);
-        },
-
-        /**
-         * Removes element from queue, starts upload of next
-         */
-        dequeue: function(id) {
-            var i = qq.indexOf(queue, id),
-                max = options.maxConnections,
-                nextId;
-
-            if (upload.getProxyOrBlob(id) instanceof qq.BlobProxy) {
-                log("Generated blob upload has ended for " + id + ", disposing generated blob.");
-                delete handler._getFileState(id).file;
-            }
-
-            if (i >= 0) {
-                queue.splice(i, 1);
-
-                if (queue.length >= max && i < max) {
-                    nextId = queue[max-1];
-                    upload.start(nextId);
-                }
-            }
+            connectionManager.dequeue(id);
         },
 
         // Returns a qq.BlobProxy, or an actual File/Blob if no proxy is involved, or undefined
@@ -279,7 +339,7 @@ qq.UploadHandlerController = function(o, namespace) {
 
                     options.onComplete(id, options.getName(id), qq.extend(errorResponse, preventRetryResponse), null);
                     upload.maybeSendDeferredFiles(id);
-                    upload.dequeue(id);
+                    connectionManager.dequeue(id);
                 });
             }
             else {
@@ -352,7 +412,7 @@ qq.UploadHandlerController = function(o, namespace) {
             options.onUpload(id, name);
 
             if (chunkingPossible && handler._shouldChunkThisFile(id)) {
-                chunked.send(id);
+                chunked.pickStrategy(id);
             }
             else {
                 simple.send(id, name);
@@ -385,22 +445,22 @@ qq.UploadHandlerController = function(o, namespace) {
          * Sends the file identified by id
          */
         upload: function(id) {
-            var len = queue.push(id);
-
-            // if too many active uploads, wait...
-            if (len <= options.maxConnections) {
+            if(connectionManager.takeOpenConnection(id)) {
                 return upload.start(id);
             }
-
             return false;
         },
 
         retry: function(id) {
-            var i = qq.indexOf(queue, id);
-
-            if (i >= 0) {
+            // If we are attempting to retry a file that is already consuming a connection, this is likely an auto-retry.
+            // Just go ahead and ask the handler to upload again.
+            if (connectionManager.isUsingConnection(id)) {
                 return upload.start(id);
             }
+
+            // If we are attempting to retry a file that is not currently consuming a connection,
+            // this is likely a manual retry attempt.  We will need to ensure a connection is available
+            // before the retry commences.
             else {
                 return controller.upload(id);
             }
@@ -426,15 +486,13 @@ qq.UploadHandlerController = function(o, namespace) {
          * Cancels all queued or in-progress uploads
          */
         cancelAll: function() {
-            var self = this,
-                queueCopy = [];
+            var waitingOrConnected = connectionManager.getWaitingOrConnected();
 
-            qq.extend(queueCopy, queue);
-            qq.each(queueCopy, function(idx, fileId) {
-                self.cancel(fileId);
+            qq.each(waitingOrConnected, function(idx, fileId) {
+                controller.cancel(fileId);
             });
 
-            queue = [];
+            connectionManager.reset();
         },
 
         // Returns a File, Blob, or the Blob/File for the reference/parent file if the targeted blob is a proxy.
@@ -461,7 +519,7 @@ qq.UploadHandlerController = function(o, namespace) {
         reset: function() {
             log("Resetting upload handler");
             controller.cancelAll();
-            queue = [];
+            connectionManager.reset();
             handler.reset();
         },
 
@@ -506,9 +564,10 @@ qq.UploadHandlerController = function(o, namespace) {
          */
         pause: function(id) {
             if (controller.isResumable(id) && handler.pause && controller.isValid(id) && handler.pause(id)) {
-                upload.dequeue(id);
+                connectionManager.dequeue(id);
                 return true;
             }
+            return false;
         },
 
         // True if the file is eligible for pause/resume.
@@ -520,6 +579,7 @@ qq.UploadHandlerController = function(o, namespace) {
     qq.extend(options, o);
     log = options.log;
     chunkingPossible = options.chunking.enabled && qq.supportedFeatures.chunking;
+    concurrentChunkingPossible = chunkingPossible && options.chunking.concurrent.enabled;
 
     preventRetryResponse = (function() {
         var response = {};

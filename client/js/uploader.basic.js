@@ -95,14 +95,17 @@
 
             chunking: {
                 enabled: false,
-                partSize: 2000000,
+                concurrent: {
+                    enabled: false
+                },
                 paramNames: {
                     partIndex: "qqpartindex",
                     partByteOffset: "qqpartbyteoffset",
                     chunkSize: "qqchunksize",
                     totalFileSize: "qqtotalfilesize",
                     totalParts: "qqtotalparts"
-                }
+                },
+                partSize: 2000000
             },
 
             resume: {
