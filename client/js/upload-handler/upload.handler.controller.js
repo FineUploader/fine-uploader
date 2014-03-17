@@ -160,7 +160,7 @@ qq.UploadHandlerController = function(o, namespace) {
         /**
          * Removes element from queue, starts upload of next
          */
-        dequeue: function(id) {
+        free: function(id) {
             var waitingIndex = qq.indexOf(connectionManager._waiting, id),
                 connectionsIndex = qq.indexOf(connectionManager._open, id),
                 nextId;
@@ -202,7 +202,7 @@ qq.UploadHandlerController = function(o, namespace) {
             connectionManager._open = [];
         },
 
-        takeOpenConnection: function(id) {
+        open: function(id) {
             connectionManager._waiting.push(id);
 
             var availableConnections = connectionManager.available();
@@ -248,7 +248,7 @@ qq.UploadHandlerController = function(o, namespace) {
         cancel: function(id) {
             log("Cancelling " + id);
             options.paramsStore.remove(id);
-            connectionManager.dequeue(id);
+            connectionManager.free(id);
         },
 
         cleanup: function(id, response, opt_xhr) {
@@ -260,7 +260,7 @@ qq.UploadHandlerController = function(o, namespace) {
                 delete handler._getFileState(id).xhr;
             }
 
-            connectionManager.dequeue(id);
+            connectionManager.free(id);
         },
 
         // Returns a qq.BlobProxy, or an actual File/Blob if no proxy is involved, or undefined
@@ -339,7 +339,7 @@ qq.UploadHandlerController = function(o, namespace) {
 
                     options.onComplete(id, options.getName(id), qq.extend(errorResponse, preventRetryResponse), null);
                     upload.maybeSendDeferredFiles(id);
-                    connectionManager.dequeue(id);
+                    connectionManager.free(id);
                 });
             }
             else {
@@ -445,7 +445,7 @@ qq.UploadHandlerController = function(o, namespace) {
          * Sends the file identified by id
          */
         upload: function(id) {
-            if(connectionManager.takeOpenConnection(id)) {
+            if(connectionManager.open(id)) {
                 return upload.start(id);
             }
             return false;
@@ -564,7 +564,7 @@ qq.UploadHandlerController = function(o, namespace) {
          */
         pause: function(id) {
             if (controller.isResumable(id) && handler.pause && controller.isValid(id) && handler.pause(id)) {
-                connectionManager.dequeue(id);
+                connectionManager.free(id);
                 return true;
             }
             return false;
