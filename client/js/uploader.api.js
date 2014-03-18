@@ -314,6 +314,7 @@
             if (Math.round(loaded / total * 100) === 100) {
                 this._templating.hideCancel(id);
                 this._templating.hidePause(id);
+                this._templating.hideProgress(id);
                 this._templating.setStatusText(id, this._options.text.waitingForResponse);
 
                 // If ~last byte was sent, display total file size

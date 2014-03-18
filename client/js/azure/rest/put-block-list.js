@@ -7,7 +7,6 @@ qq.azure.PutBlockList = function(o) {
 
     var requester,
         method = "PUT",
-        blockIds = {},
         promises = {},
         options = {
             getBlobMetadata: function(id) {},
@@ -48,7 +47,6 @@ qq.azure.PutBlockList = function(o) {
 
             delete endpoints[id];
             delete promises[id];
-            delete blockIds[id];
 
             if (isError) {
                 promise.failure(xhr);
@@ -60,13 +58,18 @@ qq.azure.PutBlockList = function(o) {
         }
     }));
 
-    function createRequestBody(blockIds) {
+    function createRequestBody(blockIdEntries) {
         var doc = document.implementation.createDocument(null, "BlockList", null);
 
+        // If we don't sort the block ID entries by part number, the file will be combined incorrectly by Azure
+        blockIdEntries.sort(function(a, b) {
+            return a.part - b.part;
+        });
+
         // Construct an XML document for each pair of etag/part values that correspond to part uploads.
-        qq.each(blockIds, function(idx, blockId) {
+        qq.each(blockIdEntries, function(idx, blockIdEntry) {
             var latestEl = doc.createElement("Latest"),
-                latestTextEl = doc.createTextNode(blockId);
+                latestTextEl = doc.createTextNode(blockIdEntry.id);
 
             latestEl.appendChild(latestTextEl);
             qq(doc).children()[0].appendChild(latestEl);
@@ -78,9 +81,9 @@ qq.azure.PutBlockList = function(o) {
 
     qq.extend(this, {
         method: method,
-        send: function(id, sasUri, blockIds, fileMimeType, registerXhrCallback) {
+        send: function(id, sasUri, blockIdEntries, fileMimeType, registerXhrCallback) {
             var promise = new qq.Promise(),
-                blockIdsXml = createRequestBody(blockIds),
+                blockIdsXml = createRequestBody(blockIdEntries),
                 xhr;
 
             promises[id] = promise;

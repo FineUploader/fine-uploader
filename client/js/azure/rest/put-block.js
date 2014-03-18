@@ -7,7 +7,7 @@ qq.azure.PutBlock = function(o) {
 
     var requester,
         method = "PUT",
-        blockIds = {},
+        blockIdEntries = {},
         promises = {},
         options = {
             log: function(str, level) {}
@@ -38,17 +38,17 @@ qq.azure.PutBlock = function(o) {
         log: options.log,
         onComplete: function(id, xhr, isError) {
             var promise = promises[id],
-                blockId = blockIds[id];
+                blockIdEntry = blockIdEntries[id];
 
             delete endpoints[id];
             delete promises[id];
-            delete blockIds[id];
+            delete blockIdEntries[id];
 
             if (isError) {
                 promise.failure();
             }
             else {
-                promise.success(blockId);
+                promise.success(blockIdEntry);
             }
         }
     }));
@@ -72,7 +72,7 @@ qq.azure.PutBlock = function(o) {
             options.log(qq.format("Submitting Put Block request for {} = part {}", id, partNum));
 
             endpoints[id] = qq.format("{}&comp=block&blockid={}", sasUri, encodeURIComponent(blockId));
-            blockIds[id] = blockId;
+            blockIdEntries[id] = {part: partNum, id: blockId};
 
             requester.initTransport(id)
                 .withPayload(blob)

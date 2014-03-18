@@ -64,9 +64,9 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
 
         getSignedUrl(id).then(function(sasUri) {
             var mimeType = handler._getMimeType(id),
-                blockIds = handler._getPersistableData(id).blockIds;
+                blockIdEntries = handler._getPersistableData(id).blockIdEntries;
 
-            api.putBlockList.send(id, sasUri, blockIds, mimeType, function(xhr) {
+            api.putBlockList.send(id, sasUri, blockIdEntries, mimeType, function(xhr) {
                 handler._registerXhr(id, xhr, api.putBlockList);
             })
                 .then(function(xhr) {
@@ -77,7 +77,8 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
                     handleFailure(xhr, promise);
                 });
 
-        }, promise.failure);
+        },
+        promise.failure);
 
         return promise;
     }
@@ -98,8 +99,12 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
         return promise;
     }
 
-    function getSignedUrl(id) {
-        var promise = new qq.Promise(),
+    function getSignedUrl(id, opt_chunkIdx) {
+        // We may have multiple SAS requests in progress for the same file, so we must include the chunk idx
+        // as part of the ID when communicating with the SAS ajax requester to avoid collisions.
+        var getSasId = opt_chunkIdx == null ? id : id + "." + opt_chunkIdx,
+
+            promise = new qq.Promise(),
             getSasSuccess = function(sasUri) {
                 log("GET SAS request succeeded.");
                 promise.success(sasUri);
@@ -109,7 +114,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
                 promise.failure({error: "Problem communicating with local server"}, getSasXhr);
             },
             determineBlobUrlSuccess = function(blobUrl) {
-                api.getSasForPutBlobOrBlock.request(id, blobUrl).then(
+                api.getSasForPutBlobOrBlock.request(getSasId, blobUrl).then(
                     getSasSuccess,
                     getSasFailure
                 );
@@ -137,50 +142,37 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
 
     qq.extend(this, {
         uploadChunk: function(id, chunkIdx) {
-            var promise = new qq.Promise(),
-                totalParts = handler._getTotalChunks(id),
-                chunkAlreadyUploaded = handler._getPersistableData(id).azureLastPartSuccess === chunkIdx;
+            var promise = new qq.Promise();
 
-            // If we have already successfully sent this chunk, the put block list likely failed,
-            // and we should just retry that.
-            if (chunkIdx + 1 === totalParts && chunkAlreadyUploaded) {
-                combineChunks(id).then(promise.success, promise.failure);
-            }
-            else {
-                getSignedUrl(id).then(
-                    function(sasUri) {
-                        var xhr = handler._createXhr(id),
-                        chunkData = handler._getChunkData(id, chunkIdx);
+            getSignedUrl(id, chunkIdx).then(
+                function(sasUri) {
+                    var xhr = handler._createXhr(id),
+                    chunkData = handler._getChunkData(id, chunkIdx);
 
-                        handler._registerProgressHandler(id, chunkData.size);
-                        handler._registerXhr(id, xhr, api.putBlock);
+                    handler._registerProgressHandler(id, chunkData.size);
+                    handler._registerXhr(id, xhr, api.putBlock);
 
-                        api.putBlock.upload(id, xhr, sasUri, chunkIdx, chunkData.blob).then(
-                            function(blockId) {
-                                if (!handler._getPersistableData(id).blockIds) {
-                                    handler._getPersistableData(id).blockIds = [];
-                                }
-
-                                handler._getPersistableData(id).blockIds.push(blockId);
-                                handler._getPersistableData(id).azureLastPartSuccess = chunkIdx;
-                                log("Put Block call succeeded for " + id);
-
-                                if (chunkIdx+1 === totalParts) {
-                                    combineChunks(id).then(promise.success, promise.failure);
-                                }
-                                else {
-                                    promise.success({}, xhr);
-                                }
-                            },
-                            function() {
-                                log(qq.format("Put Block call failed for ID {} on part {}", id, chunkIdx), "error");
-                                handleFailure(xhr, promise);
+                    // We may have multiple put block requests in progress for the same file, so we must include the chunk idx
+                    // as part of the ID when communicating with the put block ajax requester to avoid collisions.
+                    api.putBlock.upload(id + "." + chunkIdx, xhr, sasUri, chunkIdx, chunkData.blob).then(
+                        function(blockIdEntry) {
+                            if (!handler._getPersistableData(id).blockIdEntries) {
+                                handler._getPersistableData(id).blockIdEntries = [];
                             }
-                        );
-                    },
-                    promise.failure
-                );
-            }
+
+                            handler._getPersistableData(id).blockIdEntries.push(blockIdEntry);
+                            handler._getPersistableData(id).azureLastPartSuccess = chunkIdx;
+                            log("Put Block call succeeded for " + id);
+                            promise.success({}, xhr);
+                        },
+                        function() {
+                            log(qq.format("Put Block call failed for ID {} on part {}", id, chunkIdx), "error");
+                            handleFailure(xhr, promise);
+                        }
+                    );
+                },
+                promise.failure
+            );
 
             return promise;
         },
@@ -204,7 +196,8 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
                         handleFailure(xhr, promise);
                     }
                 );
-            }, promise.failure);
+            },
+            promise.failure);
 
             return promise;
         }
@@ -222,18 +215,21 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
             expunge: function(id) {
                 var relatedToCancel = handler._wasCanceled(id),
                     chunkingData = handler._getPersistableData(id),
-                    blockIds = (chunkingData && chunkingData.blockIds) || [];
+                    blockIdEntries = (chunkingData && chunkingData.blockIdEntries) || [];
 
-                if (relatedToCancel && blockIds.length > 0) {
+                if (relatedToCancel && blockIdEntries.length > 0) {
                     deleteBlob(id);
                 }
 
                 super_.expunge(id);
             },
 
+            finalizeChunks: function(id) {
+                return combineChunks(id);
+            },
+
             _shouldChunkThisFile: function(id) {
                 var maybePossible = super_._shouldChunkThisFile(id);
-
                 return maybePossible && getSize(id) >= minFileSizeForChunking;
             }
         };

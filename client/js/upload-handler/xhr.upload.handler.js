@@ -69,6 +69,12 @@ qq.XhrUploadHandler = function(spec) {
     });
 
     qq.extend(this, {
+        // Called when all chunks have been successfully uploaded.  Expected promissory return type.
+        // This defines the default behavior if nothing further is required when all chunks have been uploaded.
+        finalizeChunks: function(id) {
+            return new qq.Promise().success(handler._getXhr(id));
+        },
+
         getFile: function(id) {
             return handler.isValid(id) && handler._getFileState(id).file;
         },
@@ -104,6 +110,11 @@ qq.XhrUploadHandler = function(spec) {
                 if (totalChunks > 1) {
                     state.chunking.enabled = true;
                     state.chunking.parts = totalChunks;
+
+                    state.chunking.remaining = [];
+                    for (var i = 0; i < totalChunks; i++) {
+                        state.chunking.remaining.push(i);
+                    }
                 }
                 else {
                     state.chunking.enabled = false;
@@ -171,6 +182,9 @@ qq.XhrUploadHandler = function(spec) {
             return handler.getFile(id).type;
         },
 
+        // TODO Consider separating the "chunking" data from the persistable data in `fileState`,
+        // since we don't necessarily want to persist all chunking-related data, especially when
+        // we store XHR instances per chunk in `fileState`.
         _getPersistableData: function(id) {
             return handler._getFileState(id).chunking;
         },
@@ -275,6 +289,13 @@ qq.XhrUploadHandler = function(spec) {
                         state.chunking = persistedData.chunking;
                         state.loaded = persistedData.loaded;
                         state.attemptingResume = true;
+
+                        if (state.chunking.inProgress) {
+                            qq.each(state.chunking.inProgress, function(idx, chunkIdx) {
+                                state.chunking.remaining.unshift(chunkIdx);
+                            });
+                            delete state.chunking.inProgress;
+                        }
                     }
                 }
             }

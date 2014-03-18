@@ -51,30 +51,44 @@ qq.UploadHandlerController = function(o, namespace) {
             options.onUploadChunkSuccess(id, handler._getChunkDataForCallback(chunkData), response, xhr);
         },
 
-        nextPart: function(id) {
-            var nextIdx = handler._getFileState(id).chunking.lastSent;
+        // Called when all chunks have been successfully uploaded and we want to ask the handler to perform any
+        // logic associated with closing out the file, such as combining the chunks.
+        finalize: function(id) {
+            var size = options.getSize(id),
+                name = options.getName(id);
 
-            if (nextIdx >= 0) {
-                nextIdx = nextIdx + 1;
-            }
-            else {
-                nextIdx = 0;
-            }
+            log("All chunks have been uploaded for " + id + " - finalizing....");
+            handler.finalizeChunks(id).then(
+                function(xhr) {
+                    var normaizedResponse = upload.normalizeResponse({}, true);
+
+                    options.onProgress(id, name, size, size);
+                    handler._maybeDeletePersistedChunkData(id);
+                    upload.cleanup(id, normaizedResponse, xhr);
+                },
+                function(response, xhr) {
+                    var normaizedResponse = upload.normalizeResponse(response, false);
+
+                    log("Problem finalizing chunks for file ID " + id + " - " + normaizedResponse.error, "error");
+                    if (!options.onAutoRetry(id, name, normaizedResponse, xhr)) {
+                        upload.cleanup(id, normaizedResponse);
+                    }
+                }
+            );
+        },
+
+        hasMoreParts: function(id) {
+            return !!handler._getFileState(id).chunking.remaining.length;
+        },
+
+        nextPart: function(id) {
+            var nextIdx = handler._getFileState(id).chunking.remaining.shift();
 
             if (nextIdx >= handler._getTotalChunks(id)) {
                 nextIdx = null;
             }
 
             return nextIdx;
-        },
-
-        pickStrategy: function(id) {
-            if (concurrentChunkingPossible) {
-                chunked.sendMulti(id);
-            }
-            else {
-                chunked.sendOne(id);
-            }
         },
 
         reset: function(id) {
@@ -85,76 +99,114 @@ qq.UploadHandlerController = function(o, namespace) {
             handler._getFileState(id).loaded = 0;
         },
 
-        sendMulti: function(id) {
-
-        },
-
-        sendOne: function(id) {
+        sendNext: function(id) {
             var size = options.getSize(id),
                 name = options.getName(id),
                 chunkIdx = chunked.nextPart(id),
                 chunkData = handler._getChunkData(id, chunkIdx),
-                resuming = handler._getFileState(id).attemptingResume;
+                resuming = handler._getFileState(id).attemptingResume,
+                inProgressChunks = handler._getFileState(id).chunking.inProgress || [];
 
-            if (handler._getFileState(id).loaded === undefined) {
+            // TODO This logic will likely need to change with concurrent chunk uploads
+            if (handler._getFileState(id).loaded == null) {
                 handler._getFileState(id).loaded = 0;
             }
 
             // Don't follow-through with the resume attempt if the integrator returns false from onResume
             if (resuming && options.onResume(id, name, chunkData) === false) {
                 chunked.reset(id);
-                resuming = false;
                 chunkIdx = chunked.nextPart(id);
                 chunkData = handler._getChunkData(id, chunkIdx);
+                resuming = false;
             }
 
-            options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
-
-            if (chunkData.part > 0) {
-                handler._maybePersistChunkedState(id);
+            // If all chunks have already uploaded successfully, we must be re-attempting the finalize step.
+            if (chunkIdx == null && inProgressChunks.length === 0) {
+                chunked.finalize(id);
             }
 
-            handler.uploadChunk(id, chunkIdx, resuming).then(
-                function(response, xhr) {
-                    var responseToReport = upload.normalizeResponse(response, true);
+            // Send the next chunk
+            else {
+                options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
 
-                    chunked.done(id, chunkIdx, responseToReport, xhr);
-                    handler._getFileState(id).chunking.lastSent = chunkIdx;
+                inProgressChunks.push(chunkIdx);
+                handler._getFileState(id).chunking.inProgress = inProgressChunks;
 
-                    var nextChunkIdx = chunked.nextPart(id);
-
-                    if (nextChunkIdx === null) {
-                        options.onProgress(id, name, size, size);
-                        handler._maybeDeletePersistedChunkData(id);
-                        upload.maybeNewUuid(id, responseToReport);
-                        upload.cleanup(id, responseToReport, xhr);
-                    }
-                    else {
-                        chunked.sendOne(id);
-                    }
-                },
-
-                function(response, xhr) {
-                    var responseToReport = upload.normalizeResponse(response, false);
-
-                    if (responseToReport.reset) {
-                        chunked.reset(id);
-                    }
-
-                    if (!options.onAutoRetry(id, name, responseToReport, xhr)) {
-                        upload.cleanup(id, responseToReport, xhr);
-                    }
+                if (concurrentChunkingPossible) {
+                    connectionManager.open(id, chunkIdx);
                 }
-            );
+
+                qq.log("CHUNKS IN PROGRESS: " + inProgressChunks);
+
+                if (concurrentChunkingPossible && connectionManager.available() && handler._getFileState(id).chunking.remaining.length) {
+                    chunked.sendNext(id);
+                }
+
+                handler.uploadChunk(id, chunkIdx, resuming).then(
+                    // upload chunk success
+                    function(response, xhr) {
+                        var inProgressChunks = handler._getFileState(id).chunking.inProgress || [],
+                            responseToReport = upload.normalizeResponse(response, true),
+                            inProgressChunkIdx = qq.indexOf(inProgressChunks, chunkIdx);
+
+                        log(qq.format("Chunk {} for file {} uploaded successfully.", chunkIdx, id));
+
+                        chunked.done(id, chunkIdx, responseToReport, xhr);
+
+                        if (inProgressChunkIdx >= 0) {
+                            inProgressChunks.splice(inProgressChunkIdx, 1);
+                        }
+
+                        handler._maybePersistChunkedState(id);
+
+                        if (!chunked.hasMoreParts(id) && inProgressChunks.length === 0) {
+                            chunked.finalize(id);
+                        }
+                        else if (chunked.hasMoreParts(id)) {
+                            chunked.sendNext(id);
+                        }
+                    },
+
+                    // upload chunk failure
+                    function(response, xhr) {
+                        var responseToReport = upload.normalizeResponse(response, false);
+
+                        if (responseToReport.reset) {
+                            chunked.reset(id);
+                        }
+                        else {
+                            var inProgressIdx = qq.indexOf(handler._getFileState(id).chunking.inProgress, chunkIdx);
+                            if (inProgressIdx >= 0) {
+                                handler._getFileState(id).chunking.inProgress.splice(inProgressIdx, 1);
+                                handler._getFileState(id).chunking.remaining.unshift(chunkIdx);
+                            }
+                        }
+
+                        if (!options.onAutoRetry(id, name, responseToReport, xhr)) {
+                            upload.cleanup(id, responseToReport, xhr);
+                        }
+                    }
+                );
+            }
         }
     },
 
     connectionManager = {
         _open: [],
+        _openChunks: {},
         _waiting: [],
 
         available: function() {
-            return options.maxConnections - connectionManager._open.length;
+            var max = options.maxConnections,
+                openChunkEntriesCount = 0,
+                openChunksCount = 0;
+
+            qq.each(connectionManager._openChunks, function(fileId, openChunkIndexes) {
+                openChunkEntriesCount++;
+                openChunksCount += openChunkIndexes.length;
+            });
+
+            return max - (connectionManager._open.length - openChunkEntriesCount + openChunksCount);
         },
 
         /**
@@ -164,6 +216,8 @@ qq.UploadHandlerController = function(o, namespace) {
             var waitingIndex = qq.indexOf(connectionManager._waiting, id),
                 connectionsIndex = qq.indexOf(connectionManager._open, id),
                 nextId;
+
+            delete connectionManager._openChunks[id];
 
             if (upload.getProxyOrBlob(id) instanceof qq.BlobProxy) {
                 log("Generated blob upload has ended for " + id + ", disposing generated blob.");
@@ -197,14 +251,24 @@ qq.UploadHandlerController = function(o, namespace) {
             return qq.indexOf(connectionManager._open, id) >= 0;
         },
 
-        open: function(id) {
-            connectionManager._waiting.push(id);
+        open: function(id, chunkIdx) {
+            if (chunkIdx == null) {
+                connectionManager._waiting.push(id);
+            }
 
-            var availableConnections = connectionManager.available();
+            if (connectionManager.available()) {
+                if (chunkIdx == null) {
+                    connectionManager._waiting.pop();
+                    connectionManager._open.push(id);
+                }
+                else {
+                    (function() {
+                        var openChunksEntry = connectionManager._openChunks[id] || [];
+                        openChunksEntry.push(chunkIdx);
+                        connectionManager._openChunks[id] = openChunksEntry;
+                    }());
+                }
 
-            if (availableConnections) {
-                connectionManager._waiting.pop();
-                connectionManager._open.push(id);
                 return true;
             }
 
@@ -412,7 +476,7 @@ qq.UploadHandlerController = function(o, namespace) {
             options.onUpload(id, name);
 
             if (chunkingPossible && handler._shouldChunkThisFile(id)) {
-                chunked.pickStrategy(id);
+                chunked.sendNext(id);
             }
             else {
                 simple.send(id, name);
@@ -435,10 +499,9 @@ qq.UploadHandlerController = function(o, namespace) {
     qq.extend(this, {
         /**
          * Adds file or file input to the queue
-         * @returns id
          **/
         add: function(id, file) {
-            return handler.add.apply(this, arguments);
+            handler.add.apply(this, arguments);
         },
 
         /**
@@ -565,6 +628,12 @@ qq.UploadHandlerController = function(o, namespace) {
         pause: function(id) {
             if (controller.isResumable(id) && handler.pause && controller.isValid(id) && handler.pause(id)) {
                 connectionManager.free(id);
+
+                qq.each(handler._getFileState(id).chunking.inProgress, function(idx, chunkIdx) {
+                    handler._getFileState(id).chunking.remaining.unshift(chunkIdx);
+                });
+                delete handler._getFileState(id).chunking.inProgress;
+
                 return true;
             }
             return false;

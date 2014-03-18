@@ -254,7 +254,7 @@
                 this._pasteHandler = this._createPasteHandler();
             }
             else {
-                qq.log("Paste support module not found", "info");
+                this.log("Paste support module not found", "error");
             }
         }
 
