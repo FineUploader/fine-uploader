@@ -149,7 +149,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
                     var xhr = handler._createXhr(id),
                     chunkData = handler._getChunkData(id, chunkIdx);
 
-                    handler._registerProgressHandler(id, chunkData.size);
+                    handler._registerProgressHandler(id, chunkIdx, chunkData.size);
                     handler._registerXhr(id, xhr, api.putBlock);
 
                     // We may have multiple put block requests in progress for the same file, so we must include the chunk idx

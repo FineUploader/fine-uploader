@@ -110,11 +110,14 @@ qq.XhrUploadHandler = function(spec) {
                 if (totalChunks > 1) {
                     state.chunking.enabled = true;
                     state.chunking.parts = totalChunks;
-
                     state.chunking.remaining = [];
+
                     for (var i = 0; i < totalChunks; i++) {
                         state.chunking.remaining.push(i);
                     }
+
+                    state.temp = {};
+                    state.temp.chunkProgress = {};
                 }
                 else {
                     state.chunking.enabled = false;
@@ -209,12 +212,12 @@ qq.XhrUploadHandler = function(spec) {
         _getResumableFilesData: function() {
             var resumableFilesData = [];
 
+            // TODO Mention parts that still need to be uploaded (`remaining`)
             handler._iterateResumeRecords(function(key, uploadData) {
                 resumableFilesData.push({
                     name: uploadData.name,
                     size: uploadData.size,
                     uuid: uploadData.uuid,
-                    partIdx: uploadData.chunking.lastSent + 1,
                     key: uploadData.key
                 });
             });
@@ -287,7 +290,10 @@ qq.XhrUploadHandler = function(spec) {
                         onUuidChanged(id, persistedData.uuid);
                         state.key = persistedData.key;
                         state.chunking = persistedData.chunking;
+
+                        // TODO calculate loaded based on remaining parts
                         state.loaded = persistedData.loaded;
+
                         state.attemptingResume = true;
 
                         if (state.chunking.inProgress) {
@@ -324,7 +330,7 @@ qq.XhrUploadHandler = function(spec) {
             }
         },
 
-        _registerProgressHandler: function(id, chunkSize) {
+        _registerProgressHandler: function(id, chunkIdx, chunkSize) {
             var xhr = handler._getFileState(id).xhr,
 
                 progressCalculator = {
@@ -334,12 +340,19 @@ qq.XhrUploadHandler = function(spec) {
                     },
 
                     chunked: function(loaded, total) {
-                        var totalSuccessfullyLoadedForFile = handler._getFileState(id).loaded,
+                        var chunkProgress = handler._getFileState(id).temp.chunkProgress,
+                            totalSuccessfullyLoadedForFile = handler._getFileState(id).loaded,
                             loadedForRequest = loaded,
                             totalForRequest = total,
                             totalFileSize = getSize(id),
                             estActualChunkLoaded = loadedForRequest - (totalForRequest - chunkSize),
-                            totalLoadedForFile = totalSuccessfullyLoadedForFile + estActualChunkLoaded;
+                            totalLoadedForFile = totalSuccessfullyLoadedForFile;
+
+                        chunkProgress[chunkIdx] = estActualChunkLoaded;
+
+                        qq.each(chunkProgress, function(chunkIdx, chunkLoaded) {
+                            totalLoadedForFile += chunkLoaded;
+                        });
 
                         onProgress(id, name, totalLoadedForFile, totalFileSize);
                     }

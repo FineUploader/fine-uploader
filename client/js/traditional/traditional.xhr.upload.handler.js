@@ -154,7 +154,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
                 promise, toSend, params;
 
             promise = createReadyStateChangeHandler(id, xhr);
-            handler._registerProgressHandler(id, chunkData.size);
+            handler._registerProgressHandler(id, chunkIdx, chunkData.size);
             params = spec.paramsStore.get(id);
             addChunkingSpecificParams(id, params, chunkData);
 
@@ -164,8 +164,6 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
 
             toSend = setParamsAndGetEntityToSend(params, xhr, chunkData.blob, id);
             setHeaders(id, xhr);
-
-            log("Sending chunked upload request for item " + id + ": bytes " + (chunkData.start+1) + "-" + chunkData.end + " of " + size);
             xhr.send(toSend);
 
             return promise;

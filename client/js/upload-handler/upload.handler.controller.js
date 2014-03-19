@@ -42,10 +42,13 @@ qq.UploadHandlerController = function(o, namespace) {
 
 
     chunked = {
+        // Called when each chunk has uploaded successfully
         done: function(id, chunkIdx, response, xhr) {
             var chunkData = handler._getChunkData(id, chunkIdx);
 
             handler._getFileState(id).attemptingResume = false;
+
+            delete handler._getFileState(id).temp.chunkProgress[chunkIdx];
             handler._getFileState(id).loaded += chunkData.size;
 
             options.onUploadChunkSuccess(id, handler._getChunkDataForCallback(chunkData), response, xhr);
@@ -127,6 +130,7 @@ qq.UploadHandlerController = function(o, namespace) {
 
             // Send the next chunk
             else {
+                log("Sending chunked upload request for item " + id + ": bytes " + (chunkData.start+1) + "-" + chunkData.end + " of " + size);
                 options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
 
                 inProgressChunks.push(chunkIdx);

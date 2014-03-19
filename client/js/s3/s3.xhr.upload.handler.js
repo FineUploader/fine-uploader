@@ -97,8 +97,8 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 // Once these have been determined (asynchronously) attach the headers and send the chunk.
                 chunked.initHeaders(id, chunkIdx).then(function(headers, endOfUrl) {
                     var url = domain + "/" + endOfUrl;
-                    handler._registerProgressHandler(id, chunkData.size);
-                    upload.track(id, xhr, chunkData.part).then(promise.success, promise.failure);
+                    handler._registerProgressHandler(id, chunkIdx, chunkData.size);
+                    upload.track(id, xhr, chunkIdx).then(promise.success, promise.failure);
                     xhr.open("PUT", url, true);
 
                     qq.each(headers, function(name, val) {
