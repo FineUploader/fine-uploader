@@ -51,7 +51,6 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                         handler._getPersistableData(id).etags = [];
                     }
                     handler._getPersistableData(id).etags.push({part: chunkIdx+1, etag: etag});
-                    handler._getPersistableData(id).s3LastPartSuccess = chunkIdx;
                 }
             },
 

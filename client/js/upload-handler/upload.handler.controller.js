@@ -110,7 +110,6 @@ qq.UploadHandlerController = function(o, namespace) {
                 resuming = handler._getFileState(id).attemptingResume,
                 inProgressChunks = handler._getFileState(id).chunking.inProgress || [];
 
-            // TODO This logic will likely need to change with concurrent chunk uploads
             if (handler._getFileState(id).loaded == null) {
                 handler._getFileState(id).loaded = 0;
             }
@@ -632,12 +631,7 @@ qq.UploadHandlerController = function(o, namespace) {
         pause: function(id) {
             if (controller.isResumable(id) && handler.pause && controller.isValid(id) && handler.pause(id)) {
                 connectionManager.free(id);
-
-                qq.each(handler._getFileState(id).chunking.inProgress, function(idx, chunkIdx) {
-                    handler._getFileState(id).chunking.remaining.unshift(chunkIdx);
-                });
-                delete handler._getFileState(id).chunking.inProgress;
-
+                handler.moveInProgressToRemaining(id);
                 return true;
             }
             return false;

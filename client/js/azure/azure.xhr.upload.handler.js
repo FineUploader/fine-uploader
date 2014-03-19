@@ -161,7 +161,6 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
                             }
 
                             handler._getPersistableData(id).blockIdEntries.push(blockIdEntry);
-                            handler._getPersistableData(id).azureLastPartSuccess = chunkIdx;
                             log("Put Block call succeeded for " + id);
                             promise.success({}, xhr);
                         },

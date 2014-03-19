@@ -83,8 +83,48 @@ qq.XhrUploadHandler = function(spec) {
             return handler.isValid(id) && handler._getFileState(id).proxy;
         },
 
+        /**
+         * @returns {Array} Array of objects containing properties useful to integrators
+         * when it is important to determine which files are potentially resumable.
+         */
+        getResumableFilesData: function() {
+            var resumableFilesData = [];
+
+            handler._iterateResumeRecords(function(key, uploadData) {
+                handler.moveInProgressToRemaining(null, uploadData.chunking.inProgress,  uploadData.chunking.remaining);
+
+                var data = {
+                    name: uploadData.name,
+                    remaining: uploadData.chunking.remaining,
+                    size: uploadData.size,
+                    uuid: uploadData.uuid
+                };
+
+                if (uploadData.key) {
+                    data.key = uploadData.key;
+                }
+
+                resumableFilesData.push(data);
+            });
+
+            return resumableFilesData;
+        },
+
         isResumable: function(id) {
             return !!chunking && handler.isValid(id) && !handler._getFileState(id).notResumable;
+        },
+
+        moveInProgressToRemaining: function(id, opt_inProgress, opt_remaining) {
+            var inProgress = opt_inProgress || handler._getFileState(id).chunking.inProgress,
+                remaining = opt_remaining || handler._getFileState(id).chunking.remaining;
+
+            if (inProgress) {
+                inProgress.reverse();
+                qq.each(inProgress, function(idx, chunkIdx) {
+                    remaining.unshift(chunkIdx);
+                });
+                inProgress.length = 0;
+            }
         },
 
         pause: function(id) {
@@ -185,9 +225,6 @@ qq.XhrUploadHandler = function(spec) {
             return handler.getFile(id).type;
         },
 
-        // TODO Consider separating the "chunking" data from the persistable data in `fileState`,
-        // since we don't necessarily want to persist all chunking-related data, especially when
-        // we store XHR instances per chunk in `fileState`.
         _getPersistableData: function(id) {
             return handler._getFileState(id).chunking;
         },
@@ -203,26 +240,6 @@ qq.XhrUploadHandler = function(spec) {
 
                 return Math.ceil(fileSize / chunkSize);
             }
-        },
-
-        /**
-         * @returns {Array} Array of objects containing properties useful to integrators
-         * when it is important to determine which files are potentially resumable.
-         */
-        _getResumableFilesData: function() {
-            var resumableFilesData = [];
-
-            // TODO Mention parts that still need to be uploaded (`remaining`)
-            handler._iterateResumeRecords(function(key, uploadData) {
-                resumableFilesData.push({
-                    name: uploadData.name,
-                    size: uploadData.size,
-                    uuid: uploadData.uuid,
-                    key: uploadData.key
-                });
-            });
-
-            return resumableFilesData;
         },
 
         _getXhr: function(id) {
@@ -288,20 +305,15 @@ qq.XhrUploadHandler = function(spec) {
                         log(qq.format("Identified file with ID {} and name of {} as resumable.", id, getName(id)));
 
                         onUuidChanged(id, persistedData.uuid);
+
                         state.key = persistedData.key;
                         state.chunking = persistedData.chunking;
-
-                        // TODO calculate loaded based on remaining parts
                         state.loaded = persistedData.loaded;
-
                         state.attemptingResume = true;
+                        state.temp = {};
+                        state.temp.chunkProgress = {};
 
-                        if (state.chunking.inProgress) {
-                            qq.each(state.chunking.inProgress, function(idx, chunkIdx) {
-                                state.chunking.remaining.unshift(chunkIdx);
-                            });
-                            delete state.chunking.inProgress;
-                        }
+                        handler.moveInProgressToRemaining(id);
                     }
                 }
             }
