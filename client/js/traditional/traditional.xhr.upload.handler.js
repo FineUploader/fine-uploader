@@ -149,7 +149,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
     qq.extend(this, {
         uploadChunk: function(id, chunkIdx, resuming) {
             var chunkData = handler._getChunkData(id, chunkIdx),
-                xhr = handler._createXhr(id),
+                xhr = handler._createXhr(id, chunkIdx),
                 size = getSize(id),
                 promise, toSend, params;
 

@@ -87,7 +87,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
             },
 
             put: function(id, chunkIdx) {
-                var xhr = handler._createXhr(id),
+                var xhr = handler._createXhr(id, chunkIdx),
                     chunkData = handler._getChunkData(id, chunkIdx),
                     domain = spec.endpointStore.get(id),
                     promise = new qq.Promise();

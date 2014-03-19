@@ -16,6 +16,7 @@ qq.UploadHandler = function(spec) {
     qq.extend(this, {
         add: function(id, fileItem) {
             fileState[id] = fileItem;
+            fileState[id].temp = {};
         },
 
         cancel: function(id) {

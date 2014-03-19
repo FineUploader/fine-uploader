@@ -67,7 +67,7 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
                 blockIdEntries = handler._getPersistableData(id).blockIdEntries;
 
             api.putBlockList.send(id, sasUri, blockIdEntries, mimeType, function(xhr) {
-                handler._registerXhr(id, xhr, api.putBlockList);
+                handler._registerXhr(id, null, xhr, api.putBlockList);
             })
                 .then(function(xhr) {
                     log("Success combining chunks for id " + id);
@@ -146,11 +146,11 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
 
             getSignedUrl(id, chunkIdx).then(
                 function(sasUri) {
-                    var xhr = handler._createXhr(id),
+                    var xhr = handler._createXhr(id, chunkIdx),
                     chunkData = handler._getChunkData(id, chunkIdx);
 
                     handler._registerProgressHandler(id, chunkIdx, chunkData.size);
-                    handler._registerXhr(id, xhr, api.putBlock);
+                    handler._registerXhr(id, chunkIdx, xhr, api.putBlock);
 
                     // We may have multiple put block requests in progress for the same file, so we must include the chunk idx
                     // as part of the ID when communicating with the put block ajax requester to avoid collisions.

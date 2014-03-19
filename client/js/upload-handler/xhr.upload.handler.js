@@ -26,13 +26,14 @@ qq.XhrUploadHandler = function(spec) {
 
 
     function abort(id) {
-        var xhr = handler._getFileState(id).xhr,
-            ajaxRequester = handler._getFileState(id).currentAjaxRequester;
+        qq.each(handler._getXhrs(id), function(xhrId, xhr) {
+            var ajaxRequester = handler._getAjaxRequester(id, xhrId);
 
-        xhr.onreadystatechange = null;
-        xhr.upload.onprogress = null;
-        xhr.abort();
-        ajaxRequester && ajaxRequester.canceled && ajaxRequester.canceled(id);
+            xhr.onreadystatechange = null;
+            xhr.upload.onprogress = null;
+            xhr.abort();
+            ajaxRequester && ajaxRequester.canceled && ajaxRequester.canceled(id);
+        });
     }
 
     qq.extend(this, new qq.UploadHandler(spec));
@@ -59,16 +60,26 @@ qq.XhrUploadHandler = function(spec) {
             },
 
             expunge: function(id) {
-                var xhr = handler._getFileState(id).xhr;
-
-                xhr && abort(id);
+                abort(id);
                 handler._maybeDeletePersistedChunkData(id);
+                handler._clearXhrs(id);
                 super_.expunge(id);
             }
         };
     });
 
     qq.extend(this, {
+        clearXhr: function(id, chunkIdx) {
+            var tempState = handler._getFileState(id).temp;
+
+            if (tempState.xhrs) {
+                delete tempState.xhrs[chunkIdx];
+            }
+            if (tempState.ajaxRequesters) {
+                delete tempState.ajaxRequesters[chunkIdx];
+            }
+        },
+
         // Called when all chunks have been successfully uploaded.  Expected promissory return type.
         // This defines the default behavior if nothing further is required when all chunks have been uploaded.
         finalizeChunks: function(id) {
@@ -128,9 +139,7 @@ qq.XhrUploadHandler = function(spec) {
         },
 
         pause: function(id) {
-            var xhr = handler._getFileState(id).xhr;
-
-            if(xhr) {
+            if(handler.isValid(id)) {
                 log(qq.format("Aborting XHR upload for {} '{}' due to pause instruction.", id, getName(id)));
                 handler._getFileState(id).paused = true;
                 abort(id);
@@ -171,14 +180,32 @@ qq.XhrUploadHandler = function(spec) {
             }
         },
 
+        _clearXhrs: function(id) {
+            var tempState = handler._getFileState(id).temp;
+
+            qq.each(tempState.ajaxRequesters, function(chunkId) {
+                delete tempState.ajaxRequesters[chunkId];
+            });
+
+            qq.each(tempState.xhrs, function(chunkId) {
+                delete tempState.xhrs[chunkId];
+            });
+        },
+
         /**
          * Creates an XHR instance for this file and stores it in the fileState.
          *
          * @param id File ID
+         * @param opt_chunkIdx The chunk index associated with this XHR, if applicable
          * @returns {XMLHttpRequest}
          */
-        _createXhr: function(id) {
-            return handler._registerXhr(id, qq.createXhrInstance());
+        _createXhr: function(id, opt_chunkIdx) {
+            return handler._registerXhr(id, opt_chunkIdx, qq.createXhrInstance());
+        },
+
+        _getAjaxRequester: function(id, opt_chunkIdx) {
+            var chunkIdx = opt_chunkIdx == null ? -1 : opt_chunkIdx;
+            return handler._getFileState(id).temp.ajaxRequesters[chunkIdx];
         },
 
         _getChunkData: function(id, chunkIndex) {
@@ -242,8 +269,13 @@ qq.XhrUploadHandler = function(spec) {
             }
         },
 
-        _getXhr: function(id) {
-            return handler._getFileState(id).xhr;
+        _getXhr: function(id, opt_chunkIdx) {
+            var chunkIdx = opt_chunkIdx == null ? -1 : opt_chunkIdx;
+            return handler._getFileState(id).temp.xhrs[chunkIdx];
+        },
+
+        _getXhrs: function(id) {
+            return handler._getFileState(id).temp.xhrs;
         },
 
         // Iterates through all XHR handler-created resume records (in local storage),
@@ -310,8 +342,6 @@ qq.XhrUploadHandler = function(spec) {
                         state.chunking = persistedData.chunking;
                         state.loaded = persistedData.loaded;
                         state.attemptingResume = true;
-                        state.temp = {};
-                        state.temp.chunkProgress = {};
 
                         handler.moveInProgressToRemaining(id);
                     }
@@ -343,7 +373,7 @@ qq.XhrUploadHandler = function(spec) {
         },
 
         _registerProgressHandler: function(id, chunkIdx, chunkSize) {
-            var xhr = handler._getFileState(id).xhr,
+            var xhr = handler._getXhr(id, chunkIdx),
 
                 progressCalculator = {
                     simple: function(loaded, total) {
@@ -383,12 +413,24 @@ qq.XhrUploadHandler = function(spec) {
          * Registers an XHR transport instance created elsewhere.
          *
          * @param id ID of the associated file
+         * @param opt_chunkIdx The chunk index associated with this XHR, if applicable
          * @param xhr XMLHttpRequest object instance
+         * @param opt_ajaxRequester `qq.AjaxRequester` associated with this request, if applicable.
          * @returns {XMLHttpRequest}
          */
-        _registerXhr: function(id, xhr, ajaxRequester) {
-            handler._getFileState(id).xhr = xhr;
-            handler._getFileState(id).currentAjaxRequester = ajaxRequester;
+        _registerXhr: function(id, opt_chunkIdx, xhr, opt_ajaxRequester) {
+            var xhrsId = opt_chunkIdx == null ? -1 : opt_chunkIdx,
+                tempState = handler._getFileState(id).temp;
+
+            tempState.xhrs = tempState.xhrs || {};
+            tempState.ajaxRequesters = tempState.ajaxRequesters || {};
+
+            tempState.xhrs[xhrsId] = xhr;
+
+            if (opt_ajaxRequester) {
+                tempState.ajaxRequesters[xhrsId] = opt_ajaxRequester;
+            }
+
             return xhr;
         },
 

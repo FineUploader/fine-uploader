@@ -139,8 +139,6 @@ qq.UploadHandlerController = function(o, namespace) {
                     connectionManager.open(id, chunkIdx);
                 }
 
-                qq.log("CHUNKS IN PROGRESS: " + inProgressChunks);
-
                 if (concurrentChunkingPossible && connectionManager.available() && handler._getFileState(id).chunking.remaining.length) {
                     chunked.sendNext(id);
                 }
@@ -189,7 +187,10 @@ qq.UploadHandlerController = function(o, namespace) {
                             upload.cleanup(id, responseToReport, xhr);
                         }
                     }
-                );
+                )
+                    .done(function() {
+                        handler.clearXhr(id, chunkIdx);
+                    }) ;
             }
         }
     },
@@ -324,7 +325,7 @@ qq.UploadHandlerController = function(o, namespace) {
             options.onComplete(id, name, response, opt_xhr);
 
             if (handler._getFileState(id)) {
-                delete handler._getFileState(id).xhr;
+                handler._clearXhrs(id);
             }
 
             connectionManager.free(id);
