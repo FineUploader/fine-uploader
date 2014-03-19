@@ -433,7 +433,7 @@
             this._showCancelLink(id);
 
             if (this._options.retry.showAutoRetryNote) {
-                retryNumForDisplay = this._autoRetries[id] + 1;
+                retryNumForDisplay = this._autoRetries[id];
                 maxAuto = this._options.retry.maxAutoAttempts;
 
                 retryNote = this._options.retry.autoRetryNote.replace(/\{retryNum\}/g, retryNumForDisplay);

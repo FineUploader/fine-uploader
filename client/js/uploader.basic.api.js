@@ -1099,12 +1099,11 @@
 
             if (self._shouldAutoRetry(id, name, responseJSON)) {
                 self._maybeParseAndSendUploadError.apply(self, arguments);
-                self._options.callbacks.onAutoRetry(id, name, self._autoRetries[id] + 1);
+                self._options.callbacks.onAutoRetry(id, name, self._autoRetries[id]);
                 self._onBeforeAutoRetry(id, name);
 
                 self._retryTimeouts[id] = setTimeout(function() {
                     self.log("Retrying " + name + "...");
-                    self._autoRetries[id]++;
                     self._uploadData.setStatus(id, qq.status.UPLOAD_RETRYING);
 
                     if (callback) {
@@ -1131,7 +1130,10 @@
                     this._autoRetries[id] = 0;
                 }
 
-                return this._autoRetries[id] < this._options.retry.maxAutoAttempts;
+                if (this._autoRetries[id] < this._options.retry.maxAutoAttempts) {
+                    this._autoRetries[id] += 1;
+                    return true;
+                }
             }
 
             return false;
