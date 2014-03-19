@@ -54,9 +54,8 @@ qq.XhrUploadHandler = function(spec) {
                     throw new Error("Passed obj is not a File, Blob, or proxy");
                 }
 
-                if (resumeEnabled) {
-                    handler._maybePrepareForResume(id);
-                }
+                handler._initTempState(id);
+                resumeEnabled && handler._maybePrepareForResume(id);
             },
 
             expunge: function(id) {
@@ -165,8 +164,7 @@ qq.XhrUploadHandler = function(spec) {
                         state.chunking.remaining.push(i);
                     }
 
-                    state.temp = {};
-                    state.temp.chunkProgress = {};
+                    handler._initTempState(id);
                 }
                 else {
                     state.chunking.enabled = false;
@@ -289,6 +287,14 @@ qq.XhrUploadHandler = function(spec) {
                     }
                 });
             }
+        },
+
+        _initTempState: function(id) {
+            handler._getFileState(id).temp = {
+                ajaxRequesters: {},
+                chunkProgress: {},
+                xhrs: {}
+            };
         },
 
         _markNotResumable: function(id) {
