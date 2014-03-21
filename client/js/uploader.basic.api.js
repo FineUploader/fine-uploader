@@ -710,13 +710,24 @@
                             self._options.callbacks.onComplete(id, name, result, xhr);
                         }
                     },
-                    onCancel: function(id, name) {
-                        return self._handleCheckedCallback({
+                    onCancel: function(id, name, cancelFinalizationEffort) {
+                        var promise = new qq.Promise();
+
+                        self._handleCheckedCallback({
                             name: "onCancel",
                             callback: qq.bind(self._options.callbacks.onCancel, self, id, name),
-                            onSuccess: qq.bind(self._onCancel, self, id, name),
+                            onFailure: promise.failure,
+                            onSuccess: function() {
+                                cancelFinalizationEffort.then(function() {
+                                    self._onCancel(id, name);
+                                });
+
+                                promise.success();
+                            },
                             identifier: id
                         });
+
+                        return promise;
                     },
                     onUploadPrep: qq.bind(this._onUploadPrep, this),
                     onUpload: function(id, name) {
