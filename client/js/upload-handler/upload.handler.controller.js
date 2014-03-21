@@ -146,6 +146,8 @@ qq.UploadHandlerController = function(o, namespace) {
                 handler.uploadChunk(id, chunkIdx, resuming).then(
                     // upload chunk success
                     function(response, xhr) {
+                        log("Chunked upload request succeeded for " + id + ", chunk " + chunkIdx);
+
                         var inProgressChunks = handler._getFileState(id).chunking.inProgress || [],
                             responseToReport = upload.normalizeResponse(response, true),
                             inProgressChunkIdx = qq.indexOf(inProgressChunks, chunkIdx);
@@ -170,6 +172,8 @@ qq.UploadHandlerController = function(o, namespace) {
 
                     // upload chunk failure
                     function(response, xhr) {
+                        log("Chunked upload request failed for " + id + ", chunk " + chunkIdx);
+
                         var responseToReport = upload.normalizeResponse(response, false);
 
                         if (responseToReport.reset) {
@@ -289,8 +293,11 @@ qq.UploadHandlerController = function(o, namespace) {
         send: function(id, name) {
             handler._getFileState(id).loaded = 0;
 
+            log("Sending simple upload request for " + id);
             handler.uploadFile(id).then(
                 function(response, opt_xhr) {
+                    log("Simple upload request succeeded for " + id);
+
                     var responseToReport = upload.normalizeResponse(response, true);
 
                     var size = options.getSize(id);
@@ -301,6 +308,8 @@ qq.UploadHandlerController = function(o, namespace) {
                 },
 
                 function(response, opt_xhr) {
+                    log("Simple upload request failed for " + id);
+
                     var responseToReport = upload.normalizeResponse(response, false);
 
                     if (!options.onAutoRetry(id, name, responseToReport, opt_xhr)) {
