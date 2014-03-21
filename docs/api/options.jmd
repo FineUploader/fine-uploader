@@ -189,7 +189,7 @@ mode you are in and keep that in mind when determining which options do what.
 )
 }}
 
-{{ api_parent_option("session", "session", "See the [Initial File List feature page](../feature/session.html) for more details.",
+{{ api_parent_option("session", "session", "See the [Initial File List feature page](../features/session.html) for more details.",
     (
         ("session.customHeaders", "customHeaders", "Any additional headers you would like included with the GET request sent to your server. Ignored in IE9 and IE8 if the endpoint is cross-origin.", "Object", "{}",),
         ("session.endpoint", "endpoint", "If non-null, Fine Uploader will send a GET request on startup to this endpoint, expecting a JSON response containing data about the initial file list to populate.", "String", "null",),
