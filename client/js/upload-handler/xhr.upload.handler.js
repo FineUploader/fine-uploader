@@ -29,12 +29,10 @@ qq.XhrUploadHandler = function(spec) {
         qq.each(handler._getXhrs(id), function(xhrId, xhr) {
             var ajaxRequester = handler._getAjaxRequester(id, xhrId);
 
-            if (xhr.readyState !== 0) {
-                xhr.onreadystatechange = null;
-                xhr.upload.onprogress = null;
-                xhr.abort();
-                ajaxRequester && ajaxRequester.canceled && ajaxRequester.canceled(id);
-            }
+            xhr.onreadystatechange = null;
+            xhr.upload.onprogress = null;
+            xhr.abort();
+            ajaxRequester && ajaxRequester.canceled && ajaxRequester.canceled(id);
         });
     }
 
@@ -180,13 +178,8 @@ qq.XhrUploadHandler = function(spec) {
             }
         },
 
-        _clearXhrs: function(id, doAbort) {
+        _clearXhrs: function(id) {
             var tempState = handler._getFileState(id).temp;
-
-            if (chunkFiles && doAbort) {
-                abort(id);
-                handler.moveInProgressToRemaining(id);
-            }
 
             qq.each(tempState.ajaxRequesters, function(chunkId) {
                 delete tempState.ajaxRequesters[chunkId];

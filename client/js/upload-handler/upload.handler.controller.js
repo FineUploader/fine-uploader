@@ -187,11 +187,32 @@ qq.UploadHandlerController = function(o, namespace) {
                             }
                         }
 
-                        if (!options.onAutoRetry(id, name, responseToReport, xhr)) {
-                            // If one chunk fails, abort all of the others to avoid odd race conditions that occur
-                            // if a chunk succeeds immediately after one fails before we have determined if the upload
-                            // is a failure or not.
-                            upload.cleanup(id, responseToReport, xhr, concurrentChunkingPossible);
+                        // We may have aborted all other in-progress chunks for this file due to a failure.
+                        // If so, ignore the failures associated with those aborts.
+                        if (!handler._getFileState(id).temp.ignoreFailure) {
+                            // If this chunk has failed, we want to ignore all other failures of currently in-progress
+                            // chunks since they will be explicitly aborted
+                            if (concurrentChunkingPossible) {
+                                handler._getFileState(id).temp.ignoreFailure = true;
+
+                                qq.each(handler._getXhrs(id), function(ckid, ckXhr) {
+                                    ckXhr.abort();
+                                });
+
+                                // We must indicate that all aborted chunks are no longer in progress
+                                handler.moveInProgressToRemaining(id);
+
+                                // Free up any connections used by these chunks, but don't allow any
+                                // other files to take up the connections (until we have exhausted all auto-retries)
+                                connectionManager.free(id, true);
+                            }
+
+                            if (!options.onAutoRetry(id, name, responseToReport, xhr)) {
+                                // If one chunk fails, abort all of the others to avoid odd race conditions that occur
+                                // if a chunk succeeds immediately after one fails before we have determined if the upload
+                                // is a failure or not.
+                                upload.cleanup(id, responseToReport, xhr);
+                            }
                         }
                     }
                 )
@@ -223,8 +244,9 @@ qq.UploadHandlerController = function(o, namespace) {
         /**
          * Removes element from queue, starts upload of next
          */
-        free: function(id) {
-            var waitingIndex = qq.indexOf(connectionManager._waiting, id),
+        free: function(id, dontAllowNext) {
+            var allowNext = !dontAllowNext,
+                waitingIndex = qq.indexOf(connectionManager._waiting, id),
                 connectionsIndex = qq.indexOf(connectionManager._open, id),
                 nextId;
 
@@ -240,7 +262,7 @@ qq.UploadHandlerController = function(o, namespace) {
                 connectionManager._waiting.splice(waitingIndex, 1);
             }
             // If this file was consuming a connection, allow the next file to be uploaded
-            else if (connectionsIndex >= 0) {
+            else if (allowNext && connectionsIndex >= 0) {
                 connectionManager._open.splice(connectionsIndex, 1);
 
                 nextId = connectionManager._waiting.shift();
@@ -331,13 +353,13 @@ qq.UploadHandlerController = function(o, namespace) {
             connectionManager.free(id);
         },
 
-        cleanup: function(id, response, opt_xhr, abortAllXhrs) {
+        cleanup: function(id, response, opt_xhr) {
             var name = options.getName(id);
 
             options.onComplete(id, name, response, opt_xhr);
 
             if (handler._getFileState(id)) {
-                handler._clearXhrs(id, abortAllXhrs);
+                handler._clearXhrs(id);
             }
 
             connectionManager.free(id);
@@ -531,6 +553,14 @@ qq.UploadHandlerController = function(o, namespace) {
         },
 
         retry: function(id) {
+            // On retry, if concurrent chunking has been enabled, we may have aborted all other in-progress chunks
+            // for a file when encountering a failed chunk upload.  We then signaled the controller to ignore
+            // all failures associated with these aborts.  We are now retrying, so we don't want to ignore
+            // any more failures at this point.
+            if (concurrentChunkingPossible) {
+                handler._getFileState(id).temp.ignoreFailure = false;
+            }
+            
             // If we are attempting to retry a file that is already consuming a connection, this is likely an auto-retry.
             // Just go ahead and ask the handler to upload again.
             if (connectionManager.isUsingConnection(id)) {
