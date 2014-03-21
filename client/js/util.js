@@ -340,7 +340,7 @@ var qq = function(element) {
     };
 
     qq.isFolderDropSupported = function(dataTransfer) {
-        return (dataTransfer.items && dataTransfer.items[0].webkitGetAsEntry);
+        return (dataTransfer.items.length > 0 && dataTransfer.items[0].webkitGetAsEntry);
     };
 
     qq.isFileChunkingSupported = function() {
