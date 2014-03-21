@@ -188,7 +188,10 @@ qq.UploadHandlerController = function(o, namespace) {
                         }
 
                         if (!options.onAutoRetry(id, name, responseToReport, xhr)) {
-                            upload.cleanup(id, responseToReport, xhr);
+                            // If one chunk fails, abort all of the others to avoid odd race conditions that occur
+                            // if a chunk succeeds immediately after one fails before we have determined if the upload
+                            // is a failure or not.
+                            upload.cleanup(id, responseToReport, xhr, concurrentChunkingPossible);
                         }
                     }
                 )
@@ -328,13 +331,13 @@ qq.UploadHandlerController = function(o, namespace) {
             connectionManager.free(id);
         },
 
-        cleanup: function(id, response, opt_xhr) {
+        cleanup: function(id, response, opt_xhr, abortAllXhrs) {
             var name = options.getName(id);
 
             options.onComplete(id, name, response, opt_xhr);
 
             if (handler._getFileState(id)) {
-                handler._clearXhrs(id);
+                handler._clearXhrs(id, abortAllXhrs);
             }
 
             connectionManager.free(id);

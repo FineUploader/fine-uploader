@@ -274,11 +274,11 @@
                     return true;
                 }
                 else {
-                    qq.log(qq.format("Unable to pause file ID {} ({}).", id, this.getName(id)), "error");
+                    this.log(qq.format("Unable to pause file ID {} ({}).", id, this.getName(id)), "error");
                 }
             }
             else {
-                qq.log(qq.format("Ignoring pause for file ID {} ({}).  Not in progress.", id, this.getName(id)), "error");
+                this.log(qq.format("Ignoring pause for file ID {} ({}).  Not in progress.", id, this.getName(id)), "error");
             }
 
             return false;
@@ -292,12 +292,12 @@
             }
 
             if (uploadData.status === qq.status.PAUSED) {
-                qq.log(qq.format("Paused file ID {} ({}) will be continued.  Not paused.", id, this.getName(id)));
+                this.log(qq.format("Paused file ID {} ({}) will be continued.  Not paused.", id, this.getName(id)));
                 this._uploadFile(id);
                 return true;
             }
             else {
-                qq.log(qq.format("Ignoring continue for file ID {} ({}).  Not paused.", id, this.getName(id)), "error");
+                this.log(qq.format("Ignoring continue for file ID {} ({}).  Not paused.", id, this.getName(id)), "error");
             }
 
             return false;

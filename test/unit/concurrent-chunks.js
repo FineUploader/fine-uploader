@@ -103,7 +103,6 @@ if (qqtest.canDownloadFileAsBlob) {
                         },
                         onStatusChange: function(id, oldStatus, newStatus) {
                             if (newStatus === qq.status.CANCELED) {
-                                qq.log("CANCELED!!!!");
                                 assert.equal(xhrsAborted, expectedChunks);
                             }
                         }
