@@ -139,7 +139,9 @@
                 }
 
                 this.log("Received " + verifiedFilesOrInputs.length + " files or inputs.");
-                this._prepareItemsForUpload(verifiedFilesOrInputs, params, endpoint);
+                if (verifiedFilesOrInputs.length > 0) {
+                    this._prepareItemsForUpload(verifiedFilesOrInputs, params, endpoint);
+                }
             }
         },
 
