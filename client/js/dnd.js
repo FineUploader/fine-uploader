@@ -22,7 +22,11 @@ qq.DragAndDrop = function(o) {
     function uploadDroppedFiles(files, uploadDropZone) {
         options.callbacks.dropLog("Grabbed " + files.length + " dropped files.");
         uploadDropZone.dropDisabled(false);
-        options.callbacks.processingDroppedFilesComplete(files);
+        if (files.length > 0) {
+            options.callbacks.processingDroppedFilesComplete(filesAsArray, uploadDropZone.getElement());
+        } else {
+            options.callbacks.dropError("noFilesPresentError", "");
+        }
     }
 
     function traverseFileTree(entry) {
