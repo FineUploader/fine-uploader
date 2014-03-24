@@ -25,7 +25,7 @@ qq.DragAndDrop = function(o) {
         if (files.length > 0) {
             options.callbacks.processingDroppedFilesComplete(filesAsArray, uploadDropZone.getElement());
         } else {
-            options.callbacks.dropError("noFilesPresentError", "");
+            options.callbacks.dropError("noFilesError", "");
         }
     }
 
