@@ -336,6 +336,8 @@
                 key: this.getKey(id),
                 uuid: this.getUuid(id),
                 name: this.getName(id),
+                size: this.getSize(id),
+                mime_type: this.getFile(id).type,
                 bucket: qq.s3.util.getBucket(this._endpointStore.get(id))
             };
 
