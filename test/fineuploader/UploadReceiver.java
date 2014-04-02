@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.regex.Pattern;
 
 //commented code blocks are only used for CORS environments
@@ -26,8 +25,6 @@ public class UploadReceiver extends HttpServlet
     private static int SUCCESS_RESPONSE_CODE = 200;
 
     final Logger log = LoggerFactory.getLogger(UploadReceiver.class);
-
-    private HashMap<String, Integer> partsCompleted = new HashMap<>();
 
 
     @Override
@@ -89,7 +86,21 @@ public class UploadReceiver extends HttpServlet
 //            resp.addHeader("Access-Control-Allow-Credentials", "true");
 //            resp.addHeader("Access-Control-Allow-Origin", "*");
 
-            if (ServletFileUpload.isMultipartContent(req))
+            if (req.getParameter("done") != null)
+            {
+                requestParser = RequestParser.getInstance(req, null);
+                File dir = new File(UPLOAD_DIR, requestParser.getUuid());
+                File[] parts = getPartitionFiles(dir, requestParser.getUuid());
+                File outputFile = new File(dir, requestParser.getFilename());
+                for (File part : parts)
+                {
+                    mergeFiles(outputFile, part);
+                }
+
+                assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
+                deletePartitionFiles(dir, requestParser.getUuid());
+            }
+            else if (ServletFileUpload.isMultipartContent(req))
             {
                 MultipartUploadParser multipartUploadParser = new MultipartUploadParser(req, TEMP_DIR, getServletContext());
                 requestParser = RequestParser.getInstance(req, multipartUploadParser);
@@ -137,25 +148,12 @@ public class UploadReceiver extends HttpServlet
 
         if (requestParser.getPartIndex() >= 0)
         {
-            writeFile(req.getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null, requestParser.getUuid());
-
-            if (requestParser.getTotalParts()-1 == requestParser.getPartIndex())
-            {
-                File[] parts = getPartitionFiles(dir, requestParser.getUuid());
-                File outputFile = new File(dir, requestParser.getFilename());
-                for (File part : parts)
-                {
-                    mergeFiles(outputFile, part);
-                }
-
-                assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
-                deletePartitionFiles(dir, requestParser.getUuid());
-            }
+            writeFile(req.getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null);
         }
         else
         {
             File file = new File(dir, requestParser.getFilename());
-            writeFile(req.getInputStream(), file, expectedFileSize, requestParser.getUuid());
+            writeFile(req.getInputStream(), file, expectedFileSize);
             return file;
         }
 
@@ -170,35 +168,19 @@ public class UploadReceiver extends HttpServlet
 
         if (requestParser.getPartIndex() >= 0)
         {
-            writeFile(requestParser.getUploadItem().getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null, requestParser.getUuid());
-
-            System.out.println("--------PARTS COMPLETED: " + partsCompleted.get(requestParser.getUuid()));
-
-            if (partsCompleted.get(requestParser.getUuid()) == requestParser.getTotalParts())
-            {
-                File[] parts = getPartitionFiles(dir, requestParser.getUuid());
-
-                File outputFile = new File(dir, requestParser.getOriginalFilename());
-                for (File part : parts)
-                {
-                    mergeFiles(outputFile, part);
-                }
-
-                assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
-                deletePartitionFiles(dir, requestParser.getUuid());
-            }
+            writeFile(requestParser.getUploadItem().getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null);
         }
         else
         {
             File file = new File(dir, requestParser.getFilename());
-            writeFile(requestParser.getUploadItem().getInputStream(), file, null, requestParser.getUuid());
+            writeFile(requestParser.getUploadItem().getInputStream(), file, null);
             return file;
         }
 
         return null;
     }
 
-    private void assertCombinedFileIsVaid(int totalFileSize, File outputFile, String uuid) throws MergePartsException
+    private void assertCombinedFileIsVaid(long totalFileSize, File outputFile, String uuid) throws MergePartsException
     {
         if (totalFileSize != outputFile.length())
         {
@@ -266,13 +248,12 @@ public class UploadReceiver extends HttpServlet
         return outputFile;
     }
 
-    private File writeFile(InputStream in, File out, Long expectedFileSize, String fileUuid) throws IOException
+    private File writeFile(InputStream in, File out, Long expectedFileSize) throws IOException
     {
         FileOutputStream fos = null;
 
         try
         {
-            boolean duplicatePart = out.exists();
             fos = new FileOutputStream(out);
 
             IOUtils.copy(in, fos);
@@ -285,19 +266,6 @@ public class UploadReceiver extends HttpServlet
                     log.warn("Expected file {} to be {} bytes; file on disk is {} bytes", new Object[] { out.getAbsolutePath(), expectedFileSize, 1 });
                     out.delete();
                     throw new IOException(String.format("Unexpected file size mismatch. Actual bytes %s. Expected bytes %s.", bytesWrittenToDisk, expectedFileSize));
-                }
-            }
-
-            Integer completed = partsCompleted.get(fileUuid);
-            if (!duplicatePart)
-            {
-                if (completed == null)
-                {
-                    partsCompleted.put(fileUuid, 1);
-                }
-                else
-                {
-                    partsCompleted.put(fileUuid, ++completed);
                 }
             }
 

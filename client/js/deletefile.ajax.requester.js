@@ -33,6 +33,7 @@ qq.DeleteFileAjaxRequester = function(o) {
     }
 
     requester = qq.extend(this, new qq.AjaxRequester({
+        acceptHeader: "application/json",
         validMethods: ["POST", "DELETE"],
         method: options.method,
         endpointStore: options.endpointStore,

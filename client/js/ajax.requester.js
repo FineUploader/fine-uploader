@@ -7,6 +7,7 @@ qq.AjaxRequester = function (o) {
         queue = [],
         requestData = {},
         options = {
+            acceptHeader: null,
             validMethods: ["POST"],
             method: "POST",
             contentType: "application/x-www-form-urlencoded",
@@ -282,6 +283,8 @@ qq.AjaxRequester = function (o) {
 
         // If XDomainRequest is being used, we can't set headers, so just ignore this block.
         if (!isXdr(xhr)) {
+            options.acceptHeader && xhr.setRequestHeader("Accept", options.acceptHeader);
+
             // Only attempt to add X-Requested-With & Cache-Control if permitted
             if (options.allowXRequestedWithAndCacheControl) {
                 // Do not add X-Requested-With & Cache-Control if this is a cross-origin request

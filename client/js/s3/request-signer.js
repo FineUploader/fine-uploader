@@ -177,6 +177,7 @@ qq.s3.RequestSigner = function(o) {
     }
 
     requester = qq.extend(this, new qq.AjaxRequester({
+        acceptHeader: "application/json",
         method: options.method,
         contentType: "application/json; charset=utf-8",
         endpointStore: {

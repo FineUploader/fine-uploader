@@ -40,6 +40,7 @@ qq.azure.GetSas = function(o) {
     }
 
     requester = qq.extend(this, new qq.AjaxRequester({
+        acceptHeader: "application/json",
         validMethods: ["GET"],
         method: "GET",
         successfulResponseCodes: {

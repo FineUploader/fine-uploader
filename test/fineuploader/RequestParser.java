@@ -27,7 +27,7 @@ public class RequestParser
     private boolean generateError;
 
     private int partIndex = -1;
-    private int totalFileSize;
+    private long totalFileSize;
     private int totalParts;
     private String uuid;
     private String originalFilename;
@@ -50,6 +50,11 @@ public class RequestParser
             if (request.getMethod().equals("POST") && request.getContentType() == null)
             {
                 parseXdrPostParams(request, requestParser);
+            }
+            // The only request sent by Fine Uploader that has a form-URL encoded body is the "all chunks done" POST
+            else if (request.getMethod().equals("POST") && request.getContentType().startsWith("application/x-www-form-urlencoded"))
+            {
+                parseAllChunksDoneRequestParams(requestParser, request);
             }
             else
             {
@@ -93,7 +98,7 @@ public class RequestParser
         return partIndex;
     }
 
-    public int getTotalFileSize()
+    public long getTotalFileSize()
     {
         return totalFileSize;
     }
@@ -135,7 +140,7 @@ public class RequestParser
         {
             requestParser.partIndex = Integer.parseInt(partNumStr);
 
-            requestParser.totalFileSize = Integer.parseInt(multipartUploadParser.getParams().get(FILE_SIZE_PARAM));
+            requestParser.totalFileSize = Long.parseLong(multipartUploadParser.getParams().get(FILE_SIZE_PARAM));
             requestParser.totalParts = Integer.parseInt(multipartUploadParser.getParams().get(TOTAL_PARTS_PARAM));
         }
 
@@ -152,6 +157,19 @@ public class RequestParser
         if (requestParser.originalFilename == null)
         {
             requestParser.originalFilename = multipartUploadParser.getParams().get(PART_FILENAME_PARAM);
+        }
+    }
+
+    private static void parseAllChunksDoneRequestParams(RequestParser requestParser, HttpServletRequest req)
+    {
+        requestParser.totalFileSize = Long.parseLong(req.getParameter(FILE_SIZE_PARAM));
+        requestParser.totalParts = Integer.parseInt(req.getParameter(TOTAL_PARTS_PARAM));
+        requestParser.uuid = req.getParameter(UUID_PARAM);
+        requestParser.originalFilename = req.getParameter(PART_FILENAME_PARAM);
+
+        for (Map.Entry<String, String[]> paramEntry : req.getParameterMap().entrySet())
+        {
+            requestParser.customParams.put(paramEntry.getKey(), paramEntry.getValue()[0]);
         }
     }
 

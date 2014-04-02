@@ -68,6 +68,7 @@ qq.UploadSuccessAjaxRequester = function(o) {
     }
 
     requester = qq.extend(this, new qq.AjaxRequester({
+        acceptHeader: "application/json",
         method: options.method,
         endpointStore: {
             get: function() {

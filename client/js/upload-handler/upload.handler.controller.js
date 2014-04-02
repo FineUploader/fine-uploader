@@ -73,6 +73,11 @@ qq.UploadHandlerController = function(o, namespace) {
                     var normaizedResponse = upload.normalizeResponse(response, false);
 
                     log("Problem finalizing chunks for file ID " + id + " - " + normaizedResponse.error, "error");
+
+                    if (normaizedResponse.reset) {
+                        chunked.reset(id);
+                    }
+
                     if (!options.onAutoRetry(id, name, normaizedResponse, xhr)) {
                         upload.cleanup(id, normaizedResponse);
                     }
