@@ -193,7 +193,7 @@ called if all files in the group have been cancelled or rejected (i.e. if none o
     ])
 }}
 
-{{ api_event("error", "error", "Called whenever an exceptional condition occurs (see [Handling Errors](../features/handling-errors.html)",
+{{ api_event("error", "error", "Called whenever an exceptional condition occurs (see [Handling Errors](../features/handling-errors.html))",
     [
         {
             "name": "id",
