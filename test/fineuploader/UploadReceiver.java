@@ -36,6 +36,7 @@ public class UploadReceiver extends HttpServlet
     @Override
     public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
+        setContentType(req, resp);
         String uuid = req.getPathInfo().replaceAll("/", "");
 
         handleDeleteFileRequest(uuid, resp);
@@ -72,14 +73,14 @@ public class UploadReceiver extends HttpServlet
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
         RequestParser requestParser = null;
-        resp.setCharacterEncoding("UTF-8");
+
+        setContentType(req, resp);
 
         boolean isIframe = req.getHeader("X-Requested-With") == null || !req.getHeader("X-Requested-With").equals("XMLHttpRequest");
 
         try
         {
 //            resp.setContentType(isIframe ? "text/html" : "text/plain");
-            resp.setContentType("text/plain");
             resp.setStatus(SUCCESS_RESPONSE_CODE);
 
 //            resp.addHeader("Access-Control-Allow-Origin", "http://192.168.130.118:8080");
@@ -136,6 +137,19 @@ public class UploadReceiver extends HttpServlet
                 writeResponse(resp.getWriter(), e.getMessage(), isIframe, false, requestParser, null);
             }
         }
+    }
+
+    private void setContentType(HttpServletRequest req, HttpServletResponse resp)
+    {
+        String accept = req.getHeader("Accept");
+        String responseType = accept;
+
+        if (responseType == null) {
+            responseType = "text/plain";
+        }
+
+        resp.setContentType(responseType);
+        resp.setCharacterEncoding("UTF-8");
     }
 
     private File writeFileForNonMultipartRequest(HttpServletRequest req, RequestParser requestParser) throws Exception
