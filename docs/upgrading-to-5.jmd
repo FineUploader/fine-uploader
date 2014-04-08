@@ -16,7 +16,7 @@ This means that any existing auto-resume records will be lost when you switch to
 a traditional endpoint handler.
 
 
-### Persisted resume data form changed for S3 and Azure upload endpoints
+### Persisted resume data format changed for S3 and Azure upload endpoints
 This means that any existing resume records will be ignored.  This format change was required to
 support the new concurrent chunking feature.
 
