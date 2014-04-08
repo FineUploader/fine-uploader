@@ -79,7 +79,7 @@ qq.UploadHandlerController = function(o, namespace) {
                     }
 
                     if (!options.onAutoRetry(id, name, normaizedResponse, xhr)) {
-                        upload.cleanup(id, normaizedResponse);
+                        upload.cleanup(id, normaizedResponse, xhr);
                     }
                 }
             );

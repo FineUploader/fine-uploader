@@ -116,7 +116,7 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("ensure 'all chunks done' POST is sent when all chunks are complete & the upload is failed if this request fails", function(done) {
-            assert.expect(4, done);
+            assert.expect(10, done);
 
             var foundAllChunksDoneReq = false,
                 uploader = new qq.FineUploaderBasic({
@@ -149,10 +149,18 @@ if (qqtest.canDownloadFileAsBlob) {
                                         parsedBody = purl("http://example.com?" + req.requestBody).param();
                                         assert.equal(parsedBody.test_param, "test");
 
-                                        req.respond(500, null, null);
+                                        req.respond(500, null, JSON.stringify({error: "oops", otherstuff: "foobar"}));
                                     }
                                 });
                             }, 10);
+                        },
+                        onComplete: function(id, name, response, xhr) {
+                            assert.equal(id, 0);
+                            assert.equal(name, "test");
+                            assert.equal(response.error, "oops");
+                            assert.equal(response.otherstuff, "foobar");
+                            assert.equal(response.success, false);
+                            assert.ok(xhr);
                         },
                         onAllComplete: function(succeeded, failed) {
                             assert.ok(foundAllChunksDoneReq);
