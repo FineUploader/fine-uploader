@@ -60,6 +60,7 @@ Any parameters you have specified for the upload request (either via options or 
 along with this request.
 
 Fine Uploader will also include the following parameters that describe the underlying file:
+
 - qquuid: the UUID of the underlying file.
 - qqfilename: the name of the underlying file.
 - qqtotalfilesize: the size, in bytes, of the underlying file.
