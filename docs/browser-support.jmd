@@ -342,6 +342,40 @@ Note: Any features not listed here are supported in all browsers.
     </tbody>
 </table>
 
+### Upload size Limitations
+
+Upload size limitations are present in all browsers, but are most likely to affect the users of older browsers
+which do not support the [File API](http://caniuse.com/fileapi). Fine Uploader uses [chunking]({{ URL_ROOT }}/features/chunking.html) to work around
+the maxiumum upload size limit in browsers that do support the File API. When you are designing your upload form
+for users of these older browsers, or if you are not using chunking, make sure you keep the imposed file size limits in mind:
+
+<table class='table table-condensed table-hover table-striped'>
+    <thead>
+        <tr>
+            <th>Browser</th>
+            <th>Upload Limit</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr>
+            <td>IE7</td>
+            <td>2GB</td>
+        </tr>
+        <tr>
+            <td>IE8</td>
+            <td>2GB</td>
+        </tr>
+        <tr>
+            <td>IE9</td>
+            <td>4GB</td>
+        </tr>
+    </tbody>
+
+</table>
+
+[Source](http://blogs.msdn.com/b/ieinternals/archive/2011/03/10/wininet-internet-explorer-file-download-and-upload-maximum-size-limits.aspx)
+
 # Feature Detection
 
 ## Feature Flags

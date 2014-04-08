@@ -340,7 +340,7 @@ var qq = function(element) {
     };
 
     qq.isFolderDropSupported = function(dataTransfer) {
-        return (dataTransfer.items && dataTransfer.items[0].webkitGetAsEntry);
+        return (dataTransfer.items.length > 0 && dataTransfer.items[0].webkitGetAsEntry);
     };
 
     qq.isFileChunkingSupported = function() {
@@ -360,8 +360,8 @@ var qq = function(element) {
             bytes = new Uint8Array(buffer);
 
 
-        qq.each(bytes, function(idx, byte) {
-            var byteAsHexStr = byte.toString(16);
+        qq.each(bytes, function(idx, byt) {
+            var byteAsHexStr = byt.toString(16);
 
             if (byteAsHexStr.length < 2) {
                 byteAsHexStr = "0" + byteAsHexStr;
