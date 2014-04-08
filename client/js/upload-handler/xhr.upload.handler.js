@@ -238,12 +238,13 @@ qq.XhrUploadHandler = function(spec) {
          * @returns {string} Identifier for this item that may appear in the browser's local storage
          */
         _getLocalStorageId: function(id) {
-            var name = getName(id),
+            var formatVersion = "5.0",
+                name = getName(id),
                 size = getSize(id),
                 chunkSize = chunking.partSize,
                 endpoint = getEndpoint(id);
 
-            return qq.format("qq{}resume-{}-{}-{}-{}", namespace, name, size, chunkSize, endpoint);
+            return qq.format("qq{}resume{}-{}-{}-{}-{}", namespace, formatVersion, name, size, chunkSize, endpoint);
         },
 
         _getMimeType: function(id) {
