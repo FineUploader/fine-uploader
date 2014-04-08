@@ -62,15 +62,22 @@ mode you are in and keep that in mind when determining which options do what.
 )
 }}
 
+{{
+alert("The `chunking.successEndpoint` option **only** applies to traditional upload endpoints (not S3, Azure, etc).")
+}}
 {{ api_parent_option("chunking", "chunking", "",
     (
+        ("chunking.concurrent.enabled", "concurrent.enabled", "Allow multiple chunks to be uploaded simultaneously per file", "Boolean", "false",),
+
         ("chunking.enabled", "enabled", "Enable or disable splitting the file separate parts. Each part is sent in a separate request.", "Boolean", "false",),
-        ("chunking.partSize", "partSize", "THe maximum size of each part, in bytes.", "Integer", "2000000",),
+        ("chunking.partSize", "partSize", "The maximum size of each part, in bytes.", "Integer", "2000000",),
 
         ("chunking.paramNames.chunkSize", "paramNames.chunkSize", "Name of the parameter passed with a chunked request that specifies the size in bytes of the associated chunk.", "String", "qqchunksize",),
         ("chunking.paramNames.partByteOffset", "paramNames.partByteOffset", "Name of the parameter passed with a chunked request that specifies the starting byte of the associated chunk.", "String", "qqpartbyteoffset",),
         ("chunking.paramNames.partIndex", "paramNames.partIndex", "Name of the parameter passed with a chunked request that specifies the index of the associated partition.", "String", "qqpartindex",),
         ("chunking.paramNames.totalParts", "paramNames.totalParts", "Name of the parameter passed with a chunked request that specifies the total number of chunks associated with the `File` or `Blob`.", "String", "qqtotalparts",),
+
+        ("chunking.successEndpoint", "successEndpoint", "Endpoint to send a POST after all chunks have been successfully uploaded for each file.  Required if the concurrent option is set.", "String", "null",),
     )
 )
 }}

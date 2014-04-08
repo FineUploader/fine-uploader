@@ -16,6 +16,24 @@ This means that any existing auto-resume records will be lost when you switch to
 a traditional endpoint handler.
 
 
+### Persisted resume data form changed for S3 and Azure upload endpoints
+This means that any existing resume records will be ignored.  This format change was required to
+support the new concurrent chunking feature.
+
+
+### Most XHR requests will now contain an Accept header
+This is probably not technically a breaking change, but it should be mentioned here just in case your
+server, for some reason, is not expecting this header on requests from Fine Uploader.  This change
+affects all `XMLHttpRequests` originated requests sent to local servers
+(i.e. not requests sent to S3/Azure).
+
+Your can look at this header to programmatically determine the correct Content-Type for your response,
+but you should **NOT** rely on this value for upload requests in IE9 and older since the Accept header
+is set by the browser and is not reflective of the expected response Content-Type.  Also, ajax requests
+sent in IE9 and IE8 in a cross-origin environment will not contain this header, since
+the `XDomainRequest` transport is used and does not allow headers to be specified.
+
+
 ### Removed all utility functions that deal with cookies
 As a result of the switch from cookies to `localStorage`, we removed these cookie-related utility
 functions as they are no longer needed by Fine Uploader.  If you were utilizing these utility functions for your app,
