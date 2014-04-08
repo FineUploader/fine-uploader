@@ -39,7 +39,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
 
         allChunksDoneRequester = new qq.traditional.AllChunksDoneAjaxRequester({
             cors: spec.cors,
-            endpoint: spec.chunking.successEndpoint,
+            endpoint: spec.chunking.success.endpoint,
             log: log
         }),
 
@@ -111,7 +111,12 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         sendChunksCompleteRequest = function(id) {
             var promise = new qq.Promise();
 
-            allChunksDoneRequester.complete(id, handler._createXhr(id), getChunksCompleteParams(id))
+            allChunksDoneRequester.complete(
+                    id,
+                    handler._createXhr(id),
+                    getChunksCompleteParams(id),
+                    spec.customHeaders
+                )
                 .then(function(xhr) {
                     promise.success(parseResponse(xhr), xhr);
                 }, function(xhr) {
@@ -229,7 +234,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
     qq.override(this, function(super_) {
         return {
             finalizeChunks: function(id) {
-                if (spec.chunking.successEndpoint) {
+                if (spec.chunking.success.endpoint) {
                     return sendChunksCompleteRequest(id);
                 }
                 return super_.finalizeChunks(id);

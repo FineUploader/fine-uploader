@@ -58,7 +58,7 @@ qq.traditional.AllChunksDoneAjaxRequester = function(o) {
 
 
     qq.extend(this, {
-        complete: function(id, xhr, params) {
+        complete: function(id, xhr, params, headers) {
             var promise = new qq.Promise();
 
             options.log("Submitting All Chunks Done request for " + id);
@@ -67,6 +67,7 @@ qq.traditional.AllChunksDoneAjaxRequester = function(o) {
 
             requester.initTransport(id)
                 .withParams(params)
+                .withHeaders(headers)
                 .send(xhr);
 
             return promise;

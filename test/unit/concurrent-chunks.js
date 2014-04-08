@@ -116,12 +116,14 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("ensure 'all chunks done' POST is sent when all chunks are complete & the upload is failed if this request fails", function(done) {
-            assert.expect(2, done);
+            assert.expect(4, done);
 
             var foundAllChunksDoneReq = false,
                 uploader = new qq.FineUploaderBasic({
                     request: {
-                        endpoint: testUploadEndpoint
+                        endpoint: testUploadEndpoint,
+                        customHeaders: {test_header: "test"},
+                        params: {test_param: "test"}
                     },
                     chunking: {
                         enabled: true,
@@ -129,15 +131,24 @@ if (qqtest.canDownloadFileAsBlob) {
                         concurrent: {
                             enabled: true
                         },
-                        successEndpoint: "/chunking/success"
+                        success: {
+                            endpoint: "/chunking/success"
+                        }
                     },
                     callbacks: {
                         onUploadChunk: function() {
                             acknowledgeRequests(testUploadEndpoint);
                             setTimeout(function() {
                                 qq.each(fileTestHelper.getRequests(), function(idx, req) {
+                                    var parsedBody;
                                     if (!foundAllChunksDoneReq && "/chunking/success" === req.url) {
                                         foundAllChunksDoneReq = true;
+
+                                        assert.equal(req.requestHeaders.test_header, "test");
+
+                                        parsedBody = purl("http://example.com?" + req.requestBody).param();
+                                        assert.equal(parsedBody.test_param, "test");
+
                                         req.respond(500, null, null);
                                     }
                                 });

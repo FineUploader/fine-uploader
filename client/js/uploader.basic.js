@@ -107,7 +107,9 @@
                 },
                 partSize: 2000000,
                 // only relevant for traditional endpoints, only required when concurrent.enabled === true
-                successEndpoint: null
+                success: {
+                    endpoint: null
+                }
             },
 
             resume: {
