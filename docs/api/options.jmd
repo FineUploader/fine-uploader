@@ -63,7 +63,7 @@ mode you are in and keep that in mind when determining which options do what.
 }}
 
 {{
-alert("The `chunking.successEndpoint` option **only** applies to traditional upload endpoints (not S3, Azure, etc).")
+alert("The `chunking.success.endpoint` option **only** applies to traditional upload endpoints (not S3, Azure, etc).")
 }}
 {{ api_parent_option("chunking", "chunking", "",
     (
@@ -77,7 +77,7 @@ alert("The `chunking.successEndpoint` option **only** applies to traditional upl
         ("chunking.paramNames.partIndex", "paramNames.partIndex", "Name of the parameter passed with a chunked request that specifies the index of the associated partition.", "String", "qqpartindex",),
         ("chunking.paramNames.totalParts", "paramNames.totalParts", "Name of the parameter passed with a chunked request that specifies the total number of chunks associated with the `File` or `Blob`.", "String", "qqtotalparts",),
 
-        ("chunking.successEndpoint", "successEndpoint", "Endpoint to send a POST after all chunks have been successfully uploaded for each file.  Required if the concurrent option is set.", "String", "null",),
+        ("chunking.success.endpoint", "success.endpoint", "Endpoint to send a POST after all chunks have been successfully uploaded for each file.  Required if the concurrent option is set.", "String", "null",),
     )
 )
 }}

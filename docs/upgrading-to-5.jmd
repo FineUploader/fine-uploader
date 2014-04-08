@@ -24,7 +24,7 @@ support the new concurrent chunking feature.
 ### Most XHR requests will now contain an Accept header
 This is probably not technically a breaking change, but it should be mentioned here just in case your
 server, for some reason, is not expecting this header on requests from Fine Uploader.  This change
-affects all `XMLHttpRequests` originated requests sent to local servers
+affects all `XMLHttpRequest` originated requests sent to local servers
 (i.e. not requests sent to S3/Azure).
 
 Your can look at this header to programmatically determine the correct Content-Type for your response,
