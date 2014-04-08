@@ -50,7 +50,7 @@ chunks uploading simultaneously for a single file.  To avoid this complexity, th
 option is required when making use of the concurrent chunking feature.
 
 #### Headers for the chunking success POST
-Any custom headers you have specified via the `endpoint.customHeaders` option will also be included
+Any custom headers you have specified via the `request.customHeaders` option will also be included
 in this request.
 
 #### Payload (body) for the chunking success POST
