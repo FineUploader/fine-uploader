@@ -8,10 +8,10 @@ if (qqtest.canDownloadFileAsBlob) {
             expectedFileSize = 3266,
             expectedChunks = 3,
             chunkSize = Math.round(expectedFileSize / expectedChunks),
-            acknowledgeRequests = function() {
+            acknowledgeRequests = function(endpoint) {
                 setTimeout(function() {
                     qq.each(fileTestHelper.getRequests(), function(idx, req) {
-                        if (!req.ack) {
+                        if (!req.ack && (!endpoint || endpoint === req.url)) {
                             req.ack = true;
                             req.respond(200, null, JSON.stringify({success: true}));
                         }
@@ -112,6 +112,48 @@ if (qqtest.canDownloadFileAsBlob) {
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
                 fileTestHelper.mockXhr();
                 uploader.addBlobs({name: "test", blob: blob});
+            });
+        });
+
+        it("ensure 'all chunks done' POST is sent when all chunks are complete & the upload is failed if this request fails", function(done) {
+            assert.expect(2, done);
+
+            var foundAllChunksDoneReq = false,
+                uploader = new qq.FineUploaderBasic({
+                    request: {
+                        endpoint: testUploadEndpoint
+                    },
+                    chunking: {
+                        enabled: true,
+                        partSize: chunkSize,
+                        concurrent: {
+                            enabled: true
+                        },
+                        successEndpoint: "/chunking/success"
+                    },
+                    callbacks: {
+                        onUploadChunk: function() {
+                            acknowledgeRequests(testUploadEndpoint);
+                            setTimeout(function() {
+                                qq.each(fileTestHelper.getRequests(), function(idx, req) {
+                                    if (!foundAllChunksDoneReq && "/chunking/success" === req.url) {
+                                        foundAllChunksDoneReq = true;
+                                        req.respond(500, null, null);
+                                    }
+                                });
+                            }, 10);
+                        },
+                        onAllComplete: function(succeeded, failed) {
+                            assert.ok(foundAllChunksDoneReq);
+                            assert.equal(failed.length, 1);
+                        }
+                    }
+                });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                fileTestHelper.mockXhr();
+                uploader.addBlobs({name: "test", blob: blob});
+
             });
         });
     });
