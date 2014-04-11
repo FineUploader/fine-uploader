@@ -782,5 +782,15 @@ describe("util.js", function () {
             assert.equal(qq.format("Number: {}, boolean: {}, Object: {}, Array: {}", 1, true, {one: "two"}, [1,2,3]), "Number: 1, boolean: true, Object: [object Object], Array: 1,2,3");
         });
     });
+
+    describe("qq.isFolderDropSupported", function() {
+        it("should return false if DataTransfer doesn't contain an items array", function() {
+            assert.ok(!qq.isFolderDropSupported({}));
+        });
+
+        it("should return false if DataTransfer does contain an items array, but it's empty", function() {
+            assert.ok(!qq.isFolderDropSupported({items: []}));
+        });
+    });
 }); // Util
 
