@@ -40,6 +40,7 @@ functions as they are no longer needed by Fine Uploader.  If you were utilizing 
 consider importing a cookie library as a replacement, such as [jquery-cookie][jcookie] or [Cookies][Cookies].
 
 The specific removed util functions were:
+
 * `qq.areCookiesEnabled`
 * `qq.getCookie`
 * `qq.setCookie`
