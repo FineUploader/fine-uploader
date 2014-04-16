@@ -332,7 +332,7 @@ A `BlobData` object:
 
 {{ api_method("reset", "reset ()", "Reset Fine Uploader", null, null) }}
 
-{{ api_method("retry", "retry (id)", "Attemp to upload a specific item again.",
+{{ api_method("retry", "retry (id)", "Attempt to upload a specific item again.",
 [
     {
         "name": "id",
