@@ -1,4 +1,11 @@
 /*globals qq*/
+
+// Is the passed object a promise instance?
+qq.isGenericPromise = function(maybePromise) {
+    "use strict";
+    return !!(maybePromise && maybePromise.then && qq.isFunction(maybePromise.then));
+};
+
 qq.Promise = function() {
     "use strict";
 

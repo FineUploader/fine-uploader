@@ -507,7 +507,7 @@
 
             retVal = this._options.showConfirm(confirmMessage);
 
-            if (retVal instanceof qq.Promise) {
+            if (qq.isGenericPromise(retVal)) {
                 retVal.then(function () {
                     self._sendDeleteRequest.apply(self, deleteRequestArgs);
                 });

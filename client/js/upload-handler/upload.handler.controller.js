@@ -586,7 +586,7 @@ qq.UploadHandlerController = function(o, namespace) {
         cancel: function(id) {
             var cancelRetVal = handler.cancel(id);
 
-            if (cancelRetVal instanceof qq.Promise) {
+            if (qq.isGenericPromise(cancelRetVal)) {
                 cancelRetVal.then(function() {
                     upload.cancel(id);
                 });

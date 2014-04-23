@@ -582,7 +582,7 @@
             var self = this,
                 callbackRetVal = details.callback();
 
-            if (callbackRetVal instanceof qq.Promise) {
+            if (qq.isGenericPromise(callbackRetVal)) {
                 this.log(details.name + " - waiting for " + details.name + " promise to be fulfilled for " + details.identifier);
                 return callbackRetVal.then(
                     function(successParam) {

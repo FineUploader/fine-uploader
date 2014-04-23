@@ -361,7 +361,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                             }
                         );
                     }
-                    else if (key instanceof qq.Promise) {
+                    else if (qq.isGenericPromise(key)) {
                         promise.then(key.success, key.failure);
                     }
                     else {
