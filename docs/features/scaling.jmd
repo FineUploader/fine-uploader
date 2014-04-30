@@ -139,10 +139,10 @@ to `false`.
 
 ### Supported File Types
 Scaling can occur on JPEGs, BMPs, GIFs, and PNGs.  TIFFs are also supported, but only in Safari.  The output
-type is generally limited to JPEG and PNG.  By default, Fine Uploader will ensure that the output type matches
-the original file type, unless the original file type.  If the original file type happens to be anything other
-than a JPEG, the output type will default to PNG.  You can override this via the [`scaling` option][scaling], but
-you should probably not, unless you know what you are doing.
+type is generally limited to JPEG and PNG.  If the original file type happens to be anything other than a JPEG,
+the output type will default to PNG.  JPEG original files will be converted to scaled JPEGs by default.
+You can override this via the [`scaling` option][scaling], but you should probably not, unless you know
+what you are doing.
 
 
 ### Tracking Scaled Files Server-Side
