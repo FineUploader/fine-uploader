@@ -1,4 +1,4 @@
-/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
+/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl, afterEach */
 if (qqtest.canDownloadFileAsBlob) {
     describe("concurrent chunked uploads", function() {
         "use strict";
@@ -19,6 +19,11 @@ if (qqtest.canDownloadFileAsBlob) {
                     });
                 }, 10);
             };
+
+
+        afterEach(function() {
+            clearTimeout(ackTimer);
+        });
 
         it("Make sure only `maxConnections` chunks are sent at once", function(done) {
             var chunksStarted = 0,
@@ -47,7 +52,6 @@ if (qqtest.canDownloadFileAsBlob) {
                         },
                         onAllComplete: function(succeeded, failed) {
                             assert.deepEqual(actualUploadsPerGroup, expectedUploadPerGroup);
-                            clearTimeout(ackTimer);
                             done();
                         }
                     }
@@ -60,10 +64,7 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("Cancel terminates all in-progress requests", function(done) {
-            assert.expect(2, function() {
-                clearTimeout(ackTimer);
-                done();
-            });
+            assert.expect(2, done);
 
             var chunksInProgress = 0,
                 xhrsAborted = 0,
@@ -120,10 +121,7 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("ensure 'all chunks done' POST is sent when all chunks are complete & the upload is failed if this request fails", function(done) {
-            assert.expect(10, function() {
-                clearTimeout(ackTimer);
-                done();
-            });
+            assert.expect(10, done);
 
             var foundAllChunksDoneReq = false,
                 uploader = new qq.FineUploaderBasic({
