@@ -1,4 +1,4 @@
-/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
+/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl, Q */
 describe("S3 serverless upload tests", function() {
     "use strict";
 
@@ -16,15 +16,15 @@ describe("S3 serverless upload tests", function() {
 
                 var testExpiration = new Date(Date.now() + 10000),
                     uploader = new qq.s3.FineUploaderBasic({
-                    request: {
-                        endpoint: testS3Endpoint
-                    },
-                    credentials: {
-                        accessKey: testAccessKey,
-                        secretKey: testSecretKey,
-                        expiration: testExpiration
-                    }
-                });
+                        request: {
+                            endpoint: testS3Endpoint
+                        },
+                        credentials: {
+                            accessKey: testAccessKey,
+                            secretKey: testSecretKey,
+                            expiration: testExpiration
+                        }
+                    });
 
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
                     var request, requestParams;
@@ -61,16 +61,16 @@ describe("S3 serverless upload tests", function() {
 
                 var testExpiration = new Date(Date.now() + 10000).toISOString(),
                     uploader = new qq.s3.FineUploaderBasic({
-                    request: {
-                        endpoint: testS3Endpoint
-                    },
-                    credentials: {
-                        accessKey: testAccessKey,
-                        secretKey: testSecretKey,
-                        expiration: testExpiration,
-                        sessionToken: testSessionToken
-                    }
-                });
+                        request: {
+                            endpoint: testS3Endpoint
+                        },
+                        credentials: {
+                            accessKey: testAccessKey,
+                            secretKey: testSecretKey,
+                            expiration: testExpiration,
+                            sessionToken: testSessionToken
+                        }
+                    });
 
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
                     var request, requestParams;
@@ -90,10 +90,10 @@ describe("S3 serverless upload tests", function() {
 
                 var testExpiration = new Date(Date.now() + 10000),
                     uploader = new qq.s3.FineUploaderBasic({
-                    request: {
-                        endpoint: testS3Endpoint
-                    }
-                });
+                        request: {
+                            endpoint: testS3Endpoint
+                        }
+                    });
 
                 uploader.setCredentials({
                     accessKey: testAccessKey,
@@ -132,65 +132,92 @@ describe("S3 serverless upload tests", function() {
                 });
             });
 
-            it("test credentialsExpired callback", function(done) {
-                assert.expect(15, done);
-
+            describe("test credentialsExpired callback", function() {
                 var testExpiration = new Date(Date.now() - 1000),
                     testAccessKeyFromCallback = "testAccessKeyFromCallback",
-                    testSessionTokenFromCallback = "testSessionTokenFromCallback",
-                    uploader = new qq.s3.FineUploaderBasic({
-                    request: {
-                        endpoint: testS3Endpoint
-                    },
-                    credentials: {
-                        accessKey: testAccessKey,
-                        secretKey: testSecretKey,
-                        expiration: testExpiration,
-                        sessionToken: testSessionToken
-                    },
-                    callbacks: {
-                        onCredentialsExpired: function() {
-                            assert.ok(true);
+                    testSessionTokenFromCallback = "testSessionTokenFromCallback";
 
-                            var promise = new qq.Promise();
-                            promise.success({
-                                accessKey: testAccessKeyFromCallback,
-                                secretKey: testSecretKey,
-                                expiration: new Date(Date.now() + 10000),
-                                sessionToken: testSessionTokenFromCallback
-                            });
-                            return promise;
+                function runTest(callback, done) {
+                    assert.expect(15, done);
+
+                    var uploader = new qq.s3.FineUploaderBasic({
+                        request: {
+                            endpoint: testS3Endpoint
+                        },
+                        credentials: {
+                            accessKey: testAccessKey,
+                            secretKey: testSecretKey,
+                            expiration: testExpiration,
+                            sessionToken: testSessionToken
+                        },
+                        callbacks: {
+                            onCredentialsExpired: callback
                         }
-                    }
+                    });
+
+                    qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                        var request, requestParams;
+
+                        fileTestHelper.mockXhr();
+                        uploader.addBlobs({name: "test", blob: blob});
+
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+
+                        setTimeout(function() {
+                            request = fileTestHelper.getRequests()[0];
+                            requestParams = request.requestBody.fields;
+
+                            assert.equal(request.url, testS3Endpoint);
+                            assert.equal(request.method, "POST");
+
+                            assert.equal(requestParams["Content-Type"], "image/jpeg");
+                            assert.equal(requestParams.success_action_status, 200);
+                            assert.equal(requestParams[qq.s3.util.SESSION_TOKEN_PARAM_NAME], testSessionTokenFromCallback);
+                            assert.equal(requestParams["x-amz-storage-class"], null);
+                            assert.equal(requestParams["x-amz-meta-qqfilename"], "test");
+                            assert.equal(requestParams.key, uploader.getKey(0));
+                            assert.equal(requestParams.AWSAccessKeyId, testAccessKeyFromCallback);
+                            assert.equal(requestParams.acl, "private");
+                            assert.ok(requestParams.file);
+
+
+                            assert.ok(requestParams.signature);
+                            assert.ok(requestParams.policy);
+                        }, 10);
+                    });
+                }
+
+                it("qq.Promise", function(done) {
+                    var callback = function() {
+                        assert.ok(true);
+
+                        var promise = new qq.Promise();
+                        promise.success({
+                            accessKey: testAccessKeyFromCallback,
+                            secretKey: testSecretKey,
+                            expiration: new Date(Date.now() + 10000),
+                            sessionToken: testSessionTokenFromCallback
+                        });
+                        return promise;
+                    };
+
+                    runTest(callback, done);
                 });
 
-                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
-                    var request, requestParams;
+                it("Q.js", function(done) {
+                    var callback = function() {
+                        assert.ok(true);
 
-                    fileTestHelper.mockXhr();
-                    uploader.addBlobs({name: "test", blob: blob});
+                        /* jshint newcap:false */
+                        return Q({
+                            accessKey: testAccessKeyFromCallback,
+                            secretKey: testSecretKey,
+                            expiration: new Date(Date.now() + 10000),
+                            sessionToken: testSessionTokenFromCallback
+                        });
+                    };
 
-                    assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
-
-                    request = fileTestHelper.getRequests()[0];
-                    requestParams = request.requestBody.fields;
-
-                    assert.equal(request.url, testS3Endpoint);
-                    assert.equal(request.method, "POST");
-
-                    assert.equal(requestParams["Content-Type"], "image/jpeg");
-                    assert.equal(requestParams.success_action_status, 200);
-                    assert.equal(requestParams[qq.s3.util.SESSION_TOKEN_PARAM_NAME], testSessionTokenFromCallback);
-                    assert.equal(requestParams["x-amz-storage-class"], null);
-                    assert.equal(requestParams["x-amz-meta-qqfilename"], "test");
-                    assert.equal(requestParams.key, uploader.getKey(0));
-                    assert.equal(requestParams.AWSAccessKeyId, testAccessKeyFromCallback);
-                    assert.equal(requestParams.acl, "private");
-                    assert.ok(requestParams.file);
-
-
-                    assert.ok(requestParams.signature);
-                    assert.ok(requestParams.policy);
+                    runTest(callback, done);
                 });
             });
         });
