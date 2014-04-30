@@ -17,7 +17,7 @@ for the credentials must also be provided.  Additionally, if you are using tempo
 AWS Security Token Service, you will also need to provide a `sessionToken`.
 
 When your credentials expire, your [`credentialsExpired` event handler][3] will be invoked.  You must then return a
-[`qq.Promise` object][4] and fulfill it by passing the new credentials via the `success` method on the promise.  The
+[promise][4] and fulfill it by passing the new credentials via the `success` method on the promise.  The
 validity of credentials is checked internall by Fine Uploader S3 just before a request is sent to S3.  If the
 credentials have expired, the request will be held up until your event handler specifies a new set of credentials or
 fails its attempt to do so.

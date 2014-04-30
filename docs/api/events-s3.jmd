@@ -58,7 +58,7 @@ $("#my_uploader").on("deleteComplete", function(event, id, xhr, isError) {
 #### credentialsExpired
 
 Called before a request is sent to S3 if the temporary credentials have expired.  You must return
-a `qq.Promise`.  If your attempt to refresh the temporary credentials is successful, you must fulfill
+a promise.  If your attempt to refresh the temporary credentials is successful, you must fulfill
 the promise via the `success` method, passing the new `credentials` object.  Otherwise, call `failure`
 with a descriptive reason.
 

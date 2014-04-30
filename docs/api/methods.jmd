@@ -140,7 +140,7 @@ A `BlobData` object:
 ],
 [
     {
-        "type": "qq.Promise",
+        "type": "promise",
         "description": "Fulfilled by passing the container back into the success callback after the thumbnail has been rendered. If the thumbnail cannot be rendered, failure callbacks will be invoked instead, passing an object with `container` and `error` properties."
     }
 
@@ -512,7 +512,7 @@ A `BlobData` object:
 ],
 [
     {
-        "type": "qq.Promise",
+        "type": "promise",
         "description": "Fulfilled by passing the scaled image as a `Blob` back into the success callback after the original image has been scaled. If the scaled image cannot be generated, the failure callback will be invoked instead."
     }
 

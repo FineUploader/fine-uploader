@@ -70,7 +70,7 @@ actually uploaded.  After a scaled image has been uploaded, the client-side gene
 discarded to conserve browser memory.  Calls to the [`getFile` API method][getfile] will return the associated
 original file, not the scaled version.  This is due to the fact that, again, the scaled version is not kept around
 any longer than necessary to conserve memory.  Also, generating a scaled version is an asynchronous operation, which
-would require the [`getFile` API method][getfile] return a [`qq.Promise` object][promise], introducing a breaking
+would require the [`getFile` API method][getfile] return a [promise][promise], introducing a breaking
 change to the API.  Once a scaled image has been generated, the UI (and [upload data store][data]) will be updated
 with the generated size.
 

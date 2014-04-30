@@ -9,7 +9,10 @@ In some cases, Fine Uploader uses "promises", both internally and via the API.
 Promises are a design pattern taken from the functional programming style and
 are extremely helpful when dealing with asynchronous operations.
 
-Fine Uploader's support for promises is encapsulated in the `qq.Promise` module.
+Fine Uploader's support for promises is encapsulated in the `qq.Promise` module.  Starting with version 5.0, you
+can use any A+ certified promise implementation to communicate with Fine Uploader as well.  That is, you are
+no longer bound to `qq.Promise`.  Instead, you can use [Q][q], or [RSVP][rsvp], for example, to return promises from any
+promissory callback handlers.
 
 For more informaton on promises in JavaScript, have a look at
 [Promises -- an alternative way to approach asynchronous JavaScript](http://12devs.co.uk/articles/promises-an-alternative-way-to-approach-asynchronous-javascript/).
@@ -148,6 +151,8 @@ name supplied by the user.
 
 [For more information, see the associated blog post](http://blog.fineuploader.com/2013/05/07/callbacks-that-permit-asynchronous-returns/)
 
+[q]: https://github.com/kriskowal/q
+[rsvp]: https://github.com/tildeio/rsvp.js/
 
 {% endmarkdown %}
 {% endblock %}
