@@ -8,8 +8,9 @@ if (qqtest.canDownloadFileAsBlob) {
             expectedFileSize = 3266,
             expectedChunks = 3,
             chunkSize = Math.round(expectedFileSize / expectedChunks),
+            ackTimer,
             acknowledgeRequests = function(endpoint) {
-                setTimeout(function() {
+                ackTimer = setTimeout(function() {
                     qq.each(fileTestHelper.getRequests(), function(idx, req) {
                         if (!req.ack && (!endpoint || endpoint === req.url)) {
                             req.ack = true;
@@ -20,8 +21,6 @@ if (qqtest.canDownloadFileAsBlob) {
             };
 
         it("Make sure only `maxConnections` chunks are sent at once", function(done) {
-            assert.expect(1, done);
-
             var chunksStarted = 0,
                 actualUploadsPerGroup = [0],
                 expectedUploadPerGroup = [2, 1],
@@ -48,6 +47,8 @@ if (qqtest.canDownloadFileAsBlob) {
                         },
                         onAllComplete: function(succeeded, failed) {
                             assert.deepEqual(actualUploadsPerGroup, expectedUploadPerGroup);
+                            clearTimeout(ackTimer);
+                            done();
                         }
                     }
                 });
@@ -59,7 +60,10 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("Cancel terminates all in-progress requests", function(done) {
-            assert.expect(2, done);
+            assert.expect(2, function() {
+                clearTimeout(ackTimer);
+                done();
+            });
 
             var chunksInProgress = 0,
                 xhrsAborted = 0,
@@ -116,7 +120,10 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("ensure 'all chunks done' POST is sent when all chunks are complete & the upload is failed if this request fails", function(done) {
-            assert.expect(10, done);
+            assert.expect(10, function() {
+                clearTimeout(ackTimer);
+                done();
+            });
 
             var foundAllChunksDoneReq = false,
                 uploader = new qq.FineUploaderBasic({
