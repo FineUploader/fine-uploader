@@ -3,6 +3,9 @@
 {% block content %}
 {% markdown %}
 
+[q]: https://github.com/kriskowal/q
+[rsvp]: https://github.com/tildeio/rsvp.js/
+
 # Async Tasks and Promises {: .page-header }
 
 In some cases, Fine Uploader uses "promises", both internally and via the API.
@@ -150,9 +153,6 @@ proceed to upload the pasted image using the
 name supplied by the user.
 
 [For more information, see the associated blog post](http://blog.fineuploader.com/2013/05/07/callbacks-that-permit-asynchronous-returns/)
-
-[q]: https://github.com/kriskowal/q
-[rsvp]: https://github.com/tildeio/rsvp.js/
 
 {% endmarkdown %}
 {% endblock %}
