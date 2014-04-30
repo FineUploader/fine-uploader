@@ -141,7 +141,7 @@ A `BlobData` object:
 [
     {
         "type": "qq.Promise",
-        "description": "Fulfilled by passing the container back into the success callback after the thumbnail has been rendered. If the thumbnail cannot be rendered, failure callbacks will be invoked instead, passing the container and an error message."
+        "description": "Fulfilled by passing the container back into the success callback after the thumbnail has been rendered. If the thumbnail cannot be rendered, failure callbacks will be invoked instead, passing an object with `container` and `error` properties."
     }
 
 ]) }}

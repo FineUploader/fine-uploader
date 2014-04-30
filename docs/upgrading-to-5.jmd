@@ -68,8 +68,18 @@ endpoints have functioned.  Previously, a chunked request would always be sent f
 chunking was supported and enabled.
 
 
-[jcookie]: https://github.com/carhartl/jquery-cookie
+### `drawThumbnail` API method only passes one argument to returned promise callbacks
+This was done to bring the API that Fine Uploader exposes in compliance with the A+ promises spec.  While
+`qq.Promise` is not A+ compliant, use of other promise implementations when communicating with Fine Uploader
+is now supported.  Since the spec indicates that only one argument can be passed to a resolve or reject callback,
+the promise returned by the [`drawThumbnail` API method][drawthumbnail] had to be modified.  The resolve callback
+already was only passed one argument (the container element), this breaking change only affects the reject callback.
+Previously, two arguments were passed, in the event of an error, to the reject callback: the container element, and
+an error message.  Now, an object with `container` and `error` properties is the only argument.
+
 [Cookies]: https://github.com/ScottHamper/Cookies
+[drawthumbnail]: api/methods.html#drawThumbnail
+[jcookie]: https://github.com/carhartl/jquery-cookie
 
 {% endmarkdown %}
 {% endblock %}

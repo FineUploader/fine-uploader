@@ -238,6 +238,8 @@
         // Thumbnail can either be based off of a URL for an image returned
         // by the server in the upload response, or the associated `Blob`.
         drawThumbnail: function(fileId, imgOrCanvas, maxSize, fromServer) {
+            var promiseToReturn = new qq.Promise();
+
             if (this._imageGenerator) {
                 var fileOrUrl = this._thumbnailUrls[fileId],
                     options = {
@@ -253,11 +255,25 @@
 
                 /* jshint eqeqeq:false,eqnull:true */
                 if (fileOrUrl == null) {
-                    return new qq.Promise().failure(imgOrCanvas, "File or URL not found.");
+                    promiseToReturn.failure({container: imgOrCanvas, error: "File or URL not found."});
                 }
+                else {
+                    this._imageGenerator.generate(fileOrUrl, imgOrCanvas, options).then(
+                        function success(modifiedContainer) {
+                            promiseToReturn.success(modifiedContainer);
+                        },
 
-                return this._imageGenerator.generate(fileOrUrl, imgOrCanvas, options);
+                        function failure(container, reason) {
+                            promiseToReturn.failure({container: container, error: reason || "Problem generating thumbnail"});
+                        }
+                    );
+                }
             }
+            else {
+                promiseToReturn.failure({container: imgOrCanvas, error: "Missing image generator module"});
+            }
+
+            return promiseToReturn;
         },
 
         pauseUpload: function(id) {

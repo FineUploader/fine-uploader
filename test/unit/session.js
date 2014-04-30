@@ -106,8 +106,8 @@ describe("file list initialization tests", function() {
                             assert.deepEqual(response, expectedSessionResponse, "unexpected callback response");
                             assert.ok(success, "session request deemed failure");
 
-                            uploader.drawThumbnail(0, img, 0, true).then(function() {
-                                assert.equal(img.src, thumbnailSrc, "wrong thumbnail src");
+                            uploader.drawThumbnail(0, img, 0, true).then(function(container) {
+                                assert.equal(container.src, thumbnailSrc, "wrong thumbnail src");
                             }, function() {
                                 assert.fail(null, null, "Thumbnail generation failed");
                             });
