@@ -1,4 +1,5 @@
 /* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
+//TODO test to ensure uploads are reset if CompleteMultipart error response contains specific keywords.  Do this as part of #1188
 if (qqtest.canDownloadFileAsBlob) {
     describe("s3 chunked upload tests", function() {
         "use strict";
