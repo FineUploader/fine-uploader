@@ -14,7 +14,10 @@ if (qq.supportedFeatures.progressBar) {
                     actualTotalProgressUpdates = [],
                     expectedTotalProgressUpdates = [
                         {loaded: 0, total: actualFileSizes[0]},
+                        {loaded: 0, total: actualFileSizes[0] + actualFileSizes[1]},
+                        {loaded: 0, total: actualFileSizes[0]},
                         {loaded: 0, total: actualFileSizes[0] + actualFileSizes[2]}
+
                     ],
 
                     onTotalProgress = function(loaded, total) {
@@ -27,9 +30,16 @@ if (qq.supportedFeatures.progressBar) {
 
                     tp = new qq.TotalProgress(onTotalProgress, getSize);
 
+                tp.onStatusChange(0, null, qq.status.SUBMITTING);
                 tp.onStatusChange(0, qq.status.SUBMITTING, qq.status.SUBMITTED);
+
+                tp.onStatusChange(1, null, qq.status.SUBMITTING);
                 tp.onStatusChange(1, qq.status.SUBMITTING, qq.status.REJECTED);
+
+                tp.onStatusChange(2, null, qq.status.SUBMITTING);
                 tp.onStatusChange(2, qq.status.SUBMITTING, qq.status.SUBMITTED);
+
+                tp.onStatusChange(3, null, qq.status.SUBMITTING);
                 tp.onStatusChange(3, qq.status.SUBMITTING, qq.status.SUBMITTED);
 
                 actualFileSizes[3] = 333;
@@ -64,9 +74,13 @@ if (qq.supportedFeatures.progressBar) {
 
                     tp = new qq.TotalProgress(onTotalProgress, getSize);
 
+                tp.onStatusChange(0, null, qq.status.SUBMITTING);
                 tp.onStatusChange(0, qq.status.SUBMITTING, qq.status.SUBMITTED);
                 tp.onIndividualProgress(0, 10, actualFileSizes[0]);
+
+                tp.onStatusChange(1, null, qq.status.SUBMITTING);
                 tp.onStatusChange(1, qq.status.SUBMITTING, qq.status.SUBMITTED);
+
                 tp.onStatusChange(0, qq.status.SUBMITTED, qq.status.CANCELED);
 
                 assert.deepEqual(actualTotalProgressUpdates, expectedTotalProgressUpdates);
@@ -81,7 +95,7 @@ if (qq.supportedFeatures.progressBar) {
                 actualTotalProgressUpdates = [],
                 expectedTotalProgressUpdates = [
                     {loaded: 0, total: actualFileSizes[0]},
-                    {loaded: 10, total: actualFileSizes[0]},
+                    {loaded: 0, total: actualFileSizes[0] + actualFileSizes[1]},
                     {loaded: 10, total: actualFileSizes[0] + actualFileSizes[1]},
                     {loaded: 20, total: actualFileSizes[0] + actualFileSizes[1]},
                     {loaded: 35, total: actualFileSizes[0] + actualFileSizes[1]}
@@ -97,11 +111,14 @@ if (qq.supportedFeatures.progressBar) {
 
                 tp = new qq.TotalProgress(onTotalProgress, getSize);
 
-            tp.onStatusChange(0, qq.status.SUBMITTING, qq.status.SUBMITTED);
-            tp.onIndividualProgress(0, 10, actualFileSizes[0]);
+            tp.onStatusChange(0, null, qq.status.SUBMITTING);
+            tp.onStatusChange(1, null, qq.status.SUBMITTING);
 
-            tp.onStatusChange(1, qq.status.SUBMITTING, qq.status.SUBMITTED);
+            tp.onStatusChange(0, qq.status.SUBMITTING, qq.status.SUBMITTING);
+            tp.onIndividualProgress(0, 10, actualFileSizes[0]);
             tp.onIndividualProgress(0, 20, actualFileSizes[0]);
+
+            tp.onStatusChange(1, qq.status.SUBMITTING, qq.status.SUBMITTING);
             tp.onIndividualProgress(1, 15, actualFileSizes[1]);
 
             assert.deepEqual(actualTotalProgressUpdates, expectedTotalProgressUpdates);
@@ -118,7 +135,7 @@ if (qq.supportedFeatures.progressBar) {
                     {loaded: 0, total: actualFileSizes[0]},
                     {loaded: actualFileSizes[0] - 1, total: actualFileSizes[0]},
                     {loaded: actualFileSizes[0] - 1, total: actualFileSizes[0] + actualFileSizes[1]},
-                    {loaded: actualFileSizes[0] + actualFileSizes[1] - 2, total: actualFileSizes[0] + actualFileSizes[1]},
+                    {loaded: actualFileSizes[0] - 1 + actualFileSizes[1] - 1, total: actualFileSizes[0] + actualFileSizes[1]},
                     {loaded: actualFileSizes[0] + actualFileSizes[1], total: actualFileSizes[0] + actualFileSizes[1]},
                     {loaded: 0, total: actualFileSizes[2]}
                 ],
@@ -133,14 +150,17 @@ if (qq.supportedFeatures.progressBar) {
 
                 tp = new qq.TotalProgress(onTotalProgress, getSize);
 
+            tp.onStatusChange(0, null, qq.status.SUBMITTING);
             tp.onStatusChange(0, qq.status.SUBMITTING, qq.status.SUBMITTED);
             tp.onIndividualProgress(0, actualFileSizes[0] - 1, actualFileSizes[0]);
 
+            tp.onStatusChange(1, null, qq.status.SUBMITTING);
             tp.onStatusChange(1, qq.status.SUBMITTING, qq.status.SUBMITTED);
             tp.onIndividualProgress(1, actualFileSizes[1] - 1, actualFileSizes[1]);
 
             tp.onAllComplete([0], [1], []);
 
+            tp.onStatusChange(2, null, qq.status.SUBMITTING);
             tp.onStatusChange(2, qq.status.SUBMITTING, qq.status.SUBMITTED);
 
             assert.deepEqual(actualTotalProgressUpdates, expectedTotalProgressUpdates);

@@ -394,11 +394,16 @@ qq.XhrUploadHandler = function(spec) {
 
         _registerProgressHandler: function(id, chunkIdx, chunkSize) {
             var xhr = handler._getXhr(id, chunkIdx),
-
                 progressCalculator = {
                     simple: function(loaded, total) {
-                        handler._getFileState(id).loaded = loaded;
-                        onProgress(id, name, loaded, total);
+                        var fileSize = getSize(id);
+
+                        if (loaded === total) {
+                            onProgress(id, name, fileSize, fileSize);
+                        }
+                        else {
+                            onProgress(id, name, (loaded >= fileSize ? fileSize-1 : loaded), fileSize);
+                        }
                     },
 
                     chunked: function(loaded, total) {

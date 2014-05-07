@@ -686,6 +686,7 @@
 
         _createUploadHandler: function(additionalOptions, namespace) {
             var self = this,
+                lastOnProgress = {},
                 options = {
                     debug: this._options.debug,
                     maxConnections: this._options.maxConnections,
@@ -699,10 +700,23 @@
                     log: qq.bind(self.log, self),
                     preventRetryParam: this._options.retry.preventRetryResponseProperty,
                     onProgress: function(id, name, loaded, total) {
-                        self._onProgress(id, name, loaded, total);
-                        self._options.callbacks.onProgress(id, name, loaded, total);
+                        if (lastOnProgress[id]) {
+                            if (lastOnProgress[id].loaded !== loaded || lastOnProgress[id].total !== total) {
+                                self._onProgress(id, name, loaded, total);
+                                self._options.callbacks.onProgress(id, name, loaded, total);
+                            }
+                        }
+                        else {
+                            self._onProgress(id, name, loaded, total);
+                            self._options.callbacks.onProgress(id, name, loaded, total);
+                        }
+
+                        lastOnProgress[id] = {loaded: loaded, total: total};
+
                     },
                     onComplete: function(id, name, result, xhr) {
+                        delete lastOnProgress[id];
+
                         var status = self.getUploads({id: id}).status;
 
                         // This is to deal with some observed cases where the XHR readyStateChange handler is

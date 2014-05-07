@@ -13,6 +13,17 @@ qq.TotalProgress = function(callback, getSize) {
         totalLoaded = 0,
         totalSize = 0,
 
+        lastLoadedSent = -1,
+        lastTotalSent = -1,
+        callbackProxy = function(loaded, total) {
+            if (loaded !== lastLoadedSent || total !== lastTotalSent) {
+                callback(loaded, total);
+            }
+
+            lastLoadedSent = loaded;
+            lastTotalSent = total;
+        },
+
         /**
          * @param failed Array of file IDs that have failed
          * @param retryable Array of file IDs that are retryable
@@ -38,7 +49,7 @@ qq.TotalProgress = function(callback, getSize) {
 
         onAllComplete = function(successful, failed, retryable) {
             if (failed.length === 0 || noRetryableFiles(failed, retryable)) {
-                callback(totalSize, totalSize);
+                callbackProxy(totalSize, totalSize);
                 this.reset();
             }
         },
@@ -78,7 +89,7 @@ qq.TotalProgress = function(callback, getSize) {
                 }
             }
 
-            callback(totalLoaded, totalSize);
+            callbackProxy(totalLoaded, totalSize);
         };
 
     qq.extend(this, {
@@ -87,10 +98,10 @@ qq.TotalProgress = function(callback, getSize) {
 
         // Called when the status of a file has changed.
         onStatusChange: function(id, oldStatus, newStatus) {
-            if (newStatus === qq.status.CANCELED) {
+            if (newStatus === qq.status.CANCELED || newStatus === qq.status.REJECTED) {
                 onCancel(id);
             }
-            else if (newStatus === qq.status.SUBMITTED) {
+            else if (newStatus === qq.status.SUBMITTING) {
                 onNew(id);
             }
         },
