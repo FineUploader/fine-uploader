@@ -364,7 +364,7 @@ qq.UploadHandlerController = function(o, namespace) {
             options.onComplete(id, name, response, opt_xhr);
 
             if (handler._getFileState(id)) {
-                handler._clearXhrs(id);
+                handler._clearXhrs && handler._clearXhrs(id);
             }
 
             connectionManager.free(id);
