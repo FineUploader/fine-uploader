@@ -150,8 +150,10 @@ qq.UploadHandlerController = function(o, namespace) {
 
                 handler.uploadChunk(id, chunkIdx, resuming).then(
                     // upload chunk success
-                    function(response, xhr) {
+                    function success(response, xhr) {
                         log("Chunked upload request succeeded for " + id + ", chunk " + chunkIdx);
+
+                        handler.clearCachedChunk(id, chunkIdx);
 
                         var inProgressChunks = handler._getFileState(id).chunking.inProgress || [],
                             responseToReport = upload.normalizeResponse(response, true),
@@ -176,8 +178,10 @@ qq.UploadHandlerController = function(o, namespace) {
                     },
 
                     // upload chunk failure
-                    function(response, xhr) {
+                    function failure(response, xhr) {
                         log("Chunked upload request failed for " + id + ", chunk " + chunkIdx);
+
+                        handler.clearCachedChunk(id, chunkIdx);
 
                         var responseToReport = upload.normalizeResponse(response, false);
 

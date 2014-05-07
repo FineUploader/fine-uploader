@@ -68,6 +68,11 @@ qq.XhrUploadHandler = function(spec) {
     });
 
     qq.extend(this, {
+        // Clear the cached chunk `Blob` after we are done with it, just in case the `Blob` bytes are stored in memory.
+        clearCachedChunk: function(id, chunkIdx) {
+            delete handler._getFileState(id).temp.cachedChunks[chunkIdx];
+        },
+
         clearXhr: function(id, chunkIdx) {
             var tempState = handler._getFileState(id).temp;
 
@@ -212,14 +217,21 @@ qq.XhrUploadHandler = function(spec) {
                 fileOrBlob = handler.getFile(id),
                 startBytes = chunkSize * chunkIndex,
                 endBytes = startBytes+chunkSize >= fileSize ? fileSize : startBytes+chunkSize,
-                totalChunks = handler._getTotalChunks(id);
+                totalChunks = handler._getTotalChunks(id),
+                cachedChunks = this._getFileState(id).temp.cachedChunks,
+
+                // To work around a Webkit GC bug, we must keep each chunk `Blob` in scope until we are done with it.
+                // See https://github.com/Widen/fine-uploader/issues/937#issuecomment-41418760
+                blob = cachedChunks[chunkIndex] || qq.sliceBlob(fileOrBlob, startBytes, endBytes);
+
+            cachedChunks[chunkIndex] = blob;
 
             return {
                 part: chunkIndex,
                 start: startBytes,
                 end: endBytes,
                 count: totalChunks,
-                blob: qq.sliceBlob(fileOrBlob, startBytes, endBytes),
+                blob: blob,
                 size: endBytes - startBytes
             };
         },
@@ -294,7 +306,8 @@ qq.XhrUploadHandler = function(spec) {
             handler._getFileState(id).temp = {
                 ajaxRequesters: {},
                 chunkProgress: {},
-                xhrs: {}
+                xhrs: {},
+                cachedChunks: {}
             };
         },
 
