@@ -1184,11 +1184,13 @@
             // Assuming no one will actually set the response code to something other than 200
             // and still set 'success' to true...
             if (!response.success){
+                var errorReason;
                 if (xhr && xhr.status !== 200 && !response.error) {
-                    this._options.callbacks.onError(id, name, "XHR returned response code " + xhr.status, xhr);
+                    errorReason = this._options.text.defaultXhrResponseError ? this._options.text.defaultXhrResponseError : "XHR returned response code " + xhr.status;
+                    this._options.callbacks.onError(id, name, errorReason, xhr);
                 }
                 else {
-                    var errorReason = response.error ? response.error : this._options.text.defaultResponseError;
+                    errorReason = response.error ? response.error : this._options.text.defaultResponseError;
                     this._options.callbacks.onError(id, name, errorReason, xhr);
                 }
             }
