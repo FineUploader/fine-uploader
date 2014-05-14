@@ -173,6 +173,7 @@
 
                 onRetry: function(fileId) {
                     qq(self._templating.getFileContainer(fileId)).removeClass(self._classes.retryable);
+                    self._templating.hideRetry(fileId);
                     self.retry(fileId);
                 },
 
@@ -360,8 +361,9 @@
                 else {
                     qq(fileContainer).addClass(self._classes.fail);
 
-                    if (self._templating.isRetryPossible() && !self._preventRetries[id]) {
+                    if (templating.isRetryPossible() && !self._preventRetries[id]) {
                         qq(fileContainer).addClass(self._classes.retryable);
+                        templating.showRetry(id);
                     }
                     self._controlFailureTextDisplay(id, result);
                 }
@@ -456,6 +458,7 @@
             }
             else {
                 qq(this._templating.getFileContainer(id)).addClass(this._classes.retryable);
+                this._templating.showRetry(id);
                 return false;
             }
         },

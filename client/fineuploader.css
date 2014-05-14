@@ -94,9 +94,6 @@
     color: #000000;
 }
 
-.qq-upload-retryable .qq-upload-retry {
-    display: inline;
-}
 .qq-upload-size, .qq-upload-cancel, .qq-upload-retry,
 .qq-upload-delete, .qq-upload-pause, .qq-upload-continue {
     font-size: 12px;
