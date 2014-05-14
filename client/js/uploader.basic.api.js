@@ -315,6 +315,14 @@
             });
         },
 
+        setCustomHeaders: function(headers, id) {
+            this._customHeadersStore.set(headers, id);
+        },
+
+        setDeleteFileCustomHeaders: function(headers, id) {
+            this._deleteFileCustomHeadersStore.set(headers, id);
+        },
+
         setDeleteFileEndpoint: function(endpoint, id) {
             this._deleteFileEndpointStore.set(endpoint, id);
         },
@@ -401,7 +409,7 @@
                 method: this._options.deleteFile.method.toUpperCase(),
                 maxConnections: this._options.maxConnections,
                 uuidParamName: this._options.request.uuidName,
-                customHeaders: this._options.deleteFile.customHeaders,
+                customHeaders: this._deleteFileCustomHeadersStore,
                 paramsStore: this._deleteFileParamsStore,
                 endpointStore: this._deleteFileEndpointStore,
                 demoMode: this._options.demoMode,
@@ -709,6 +717,8 @@
             qq.each(this._options.request, function(prop, val) {
                 options[prop] = val;
             });
+
+            options.customHeaders = this._customHeadersStore;
 
             if (additionalOptions) {
                 qq.each(additionalOptions, function(key, val) {

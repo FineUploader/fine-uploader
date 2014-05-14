@@ -236,6 +236,9 @@
 
         this._initFormSupportAndParams();
 
+        this._customHeadersStore = this._createStore(this._options.request.customHeaders);
+        this._deleteFileCustomHeadersStore = this._createStore(this._options.deleteFile.customHeaders);
+
         this._deleteFileParamsStore = this._createStore(this._options.deleteFile.params);
 
         this._endpointStore = this._createStore(this._options.request.endpoint);

@@ -115,7 +115,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
                     id,
                     handler._createXhr(id),
                     getChunksCompleteParams(id),
-                    spec.customHeaders
+                    spec.customHeaders.get(id)
                 )
                 .then(function(xhr) {
                     promise.success(parseResponse(xhr), xhr);
@@ -167,7 +167,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         },
 
         setUploadHeaders = function(id, xhr) {
-            var extraHeaders = spec.customHeaders,
+            var extraHeaders = spec.customHeaders.get(id),
                 fileOrBlob = handler.getFile(id);
 
             xhr.setRequestHeader("Accept", "application/json");
