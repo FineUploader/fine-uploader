@@ -346,7 +346,7 @@ A `BlobData` object:
     {
         "name": "customHeaders",
         "type": "Object",
-        "description": "The custom headers to include in the upload request.  Fine Uploader may also send some other required headers.
+        "description": "The custom headers to include in the upload request.  Fine Uploader may also send some other required headers."
     },
     {
         "name": "id",
@@ -374,7 +374,7 @@ A `BlobData` object:
     {
         "name": "customHeaders",
         "type": "Object",
-        "description": "The custom headers to include in the delete request.  Fine Uploader may also send some other required headers.
+        "description": "The custom headers to include in the delete request.  Fine Uploader may also send some other required headers."
     },
     {
         "name": "id",
