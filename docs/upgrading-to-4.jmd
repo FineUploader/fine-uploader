@@ -35,8 +35,8 @@ CSS class was removed/renamed, you had to be sure to update the associated `clas
 UI used the same CSS classes for selection and styling.
 
 In version 4.0, the `template` option expects either a string or an `Element` as a value (or a `jQuery` object if using
-the jQuery plug-in wrapper).  You may either specify the ID of the `<script>` element in your document that contains
-the template markup, or you may select the `<script>` yourself.  The default value is a string: "qq-template".
+the jQuery plug-in wrapper).  You may either specify the ID of the container element in your document that contains
+the template markup, or you may select the container element yourself.  The default value is a string: "qq-template".
 
 The default template HTML file that is bundled with Fine Uploader contains a `<script>` with an ID of "qq-template" along
 with all supported template items.  You can drop this into your document without any changes, and Fine Uploader UI
@@ -50,8 +50,9 @@ ignore the item, though it will still render in the DOM.
 ### Removed the `fileTemplate` option
 
 The contents of the old `template` and `fileTemplate` options have been combined into one template, which must be
-included as a `<script>` tag with a type of "text/template" in your document.  You can use the template contained in
-the included `default.html` file in the `templates` directory as-is, or modify it to match your application.
+included as a `<script>` tag with a type of "text/template" in your document (or any hidden container element).
+You can use the template contained in the included `default.html` file in the `templates` directory as-is,
+or modify it to match your application.
 
 ### Template must be included in document script tag for Fine Uploader UI
 
