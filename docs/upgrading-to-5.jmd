@@ -68,7 +68,7 @@ endpoints have functioned.  Previously, a chunked request would always be sent f
 chunking was supported and enabled.
 
 
-### `drawThumbnail` API method only passes one argument to returned promise callbacks
+### `drawThumbnail` API method only passes one argument to rejected promise callback
 This was done to bring the API that Fine Uploader exposes in compliance with the A+ promises spec.  While
 `qq.Promise` is not A+ compliant, use of other promise implementations when communicating with Fine Uploader
 is now supported.  Since the spec indicates that only one argument can be passed to a resolve or reject callback,
