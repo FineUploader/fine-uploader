@@ -243,7 +243,6 @@ qq.DragAndDrop = function(o) {
         });
 
         disposeSupport.attach(document, "drop", function(e){
-            e.preventDefault();
             maybeHideDropZones();
         });
 
@@ -321,14 +320,11 @@ qq.UploadDropZone = function(o){
 
             // for these cases we need to catch onDrop to reset dropArea
             if (dragover_should_be_canceled){
-                disposeSupport.attach(document, "dragover", function(e){
-                    e.preventDefault();
-                });
+                disposeSupport.attach(document, "dragover", function(e){});
             } else {
                 disposeSupport.attach(document, "dragover", function(e){
                     if (e.dataTransfer){
                         e.dataTransfer.dropEffect = "none";
-                        e.preventDefault();
                     }
                 });
             }
