@@ -30,8 +30,7 @@ qq.DragAndDrop = function(o) {
     }
 
     function traverseFileTree(entry) {
-        var dirReader,
-            parseEntryPromise = new qq.Promise();
+        var parseEntryPromise = new qq.Promise();
 
         if (entry.isFile) {
             entry.file(function(file) {
@@ -57,30 +56,58 @@ qq.DragAndDrop = function(o) {
             });
         }
         else if (entry.isDirectory) {
-            dirReader = entry.createReader();
-            dirReader.readEntries(function(entries) {
-                var entriesLeft = entries.length;
+            getFilesInDirectory(entry).then(
+                function allEntriesRead(entries) {
+                    var entriesLeft = entries.length;
 
-                qq.each(entries, function(idx, entry) {
-                    traverseFileTree(entry).done(function() {
-                        entriesLeft-=1;
+                    qq.each(entries, function(idx, entry) {
+                        traverseFileTree(entry).done(function() {
+                            entriesLeft-=1;
 
-                        if (entriesLeft === 0) {
-                            parseEntryPromise.success();
-                        }
+                            if (entriesLeft === 0) {
+                                parseEntryPromise.success();
+                            }
+                        });
                     });
-                });
 
-                if (!entries.length) {
-                    parseEntryPromise.success();
+                    if (!entries.length) {
+                        parseEntryPromise.success();
+                    }
+                },
+
+                function readFailure(fileError) {
+                    options.callbacks.dropLog("Problem parsing '" + entry.fullPath + "'.  FileError code " + fileError.code + ".", "error");
+                    parseEntryPromise.failure();
                 }
-            }, function(fileError) {
-                options.callbacks.dropLog("Problem parsing '" + entry.fullPath + "'.  FileError code " + fileError.code + ".", "error");
-                parseEntryPromise.failure();
-            });
+            );
         }
 
         return parseEntryPromise;
+    }
+
+    // Promissory.  Guaranteed to read all files in the root of the passed directory.
+    function getFilesInDirectory(entry, reader, accumEntries, existingPromise) {
+        var promise = existingPromise || new qq.Promise(),
+            dirReader = reader || entry.createReader();
+
+        dirReader.readEntries(
+            function readSuccess(entries) {
+                var newEntries = accumEntries ? accumEntries.concat(entries) : entries;
+
+                if (entries.length) {
+                    setTimeout(function() { // prevent stack oveflow, however unlikely
+                        getFilesInDirectory(entry, dirReader, newEntries, promise);
+                    }, 0);
+                }
+                else {
+                    promise.success(newEntries);
+                }
+            },
+
+            promise.failure
+        );
+
+        return promise;
     }
 
     function handleDataTransfer(dataTransfer, uploadDropZone) {
