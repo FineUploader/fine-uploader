@@ -163,18 +163,15 @@
             retry: {
                 enableAuto: true
             },
-            scaling: {
-                sizes: [{name: "small", maxSize: 300}]
-            },
             thumbnails: {
                 placeholders: {
                     waitingPath: "/client/placeholders/waiting-generic.png",
                     notAvailablePath: "/client/placeholders/not_available-generic.png"
                 }
-            },
-            scaling: {
-                sizes: [{name: "small", maxSize: 300}, {name: "medium", maxSize: 600}]
             }
+//            scaling: {
+//                sizes: [{name: "small", maxSize: 300}, {name: "medium", maxSize: 600}]
+//            }
         }).on('error', errorHandler)
             .on("resume", function() {
 //                return false;
