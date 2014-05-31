@@ -341,6 +341,27 @@ A `BlobData` object:
     }
 ], null) }}
 
+{{ api_method("scaleImage", "scaleImage (id, options)", "Generates a scaled version of a submitted image file.",
+[
+    {
+        "name": "id",
+        "type": "Integer",
+        "description": "The id of the image file."
+    },
+    {
+        "name": "options",
+        "type": "Object",
+        "description": "Information about the scaled image to generate.  The `maxSize` property is required (integer).  Optional properties are: `orient` (boolean, defaults to true), `type` (string, defaults to the type of the reference image), and `quality` (number between 0 and 100, defaults to 80), and `includeExif` (boolean, defaults to `false`)."
+    }
+],
+[
+    {
+        "type": "promise",
+        "description": "Fulfilled by passing the scaled image as a `Blob` back into the success callback after the original image has been scaled. If the scaled image cannot be generated, the failure callback will be invoked instead."
+    }
+
+]) }}
+
 {{ api_method("setCustomHeaders", "setCustomHeaders (customHeaders[, id])", "Set custom headers for an upload request. Pass in a file id to make the headers specific to that file.",
 [
     {
@@ -524,28 +545,6 @@ A `BlobData` object:
         "description": "The element to un-mark as a drop zone."
     }
 ], null) }}
-
-{{ api_method("scaleImage", "scaleImage (id, options)", "Generates a scaled version of a submitted image file.",
-[
-    {
-        "name": "id",
-        "type": "Integer",
-        "description": "The id of the image file."
-    },
-    {
-        "name": "options",
-        "type": "Object",
-        "description": "Information about the scaled image to generate.  The `maxSize` property is required (integer).  Optional properties are: `orient` (boolean, defaults to true), `type` (string, defaults to the type of the reference image), and `quality` (number between 0 and 100, defaults to 80), and `includeExif` (boolean, defaults to `false`)."
-    }
-],
-[
-    {
-        "type": "promise",
-        "description": "Fulfilled by passing the scaled image as a `Blob` back into the success callback after the original image has been scaled. If the scaled image cannot be generated, the failure callback will be invoked instead."
-    }
-
-]) }}
-
 
 </div>
 
