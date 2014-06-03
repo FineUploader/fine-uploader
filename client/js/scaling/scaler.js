@@ -122,14 +122,15 @@ qq.Scaler = function(spec, log) {
             return records;
         },
 
-        handleNewFile: function(file, name, uuid, size, fileList, uuidParamName, api) {
+        handleNewFile: function(file, name, uuid, size, fileList, uuidParamName, batchId, api) {
             var self = this,
                 buttonId = file.qqButtonId || (file.blob && file.blob.qqButtonId),
                 scaledIds = [],
                 originalId = null,
                 addFileToHandler = api.addFileToHandler,
                 uploadData = api.uploadData,
-                paramsStore = api.paramsStore;
+                paramsStore = api.paramsStore,
+                proxyGroupId = qq.getUniqueId();
 
             qq.each(self.getFileRecords(uuid, name, file), function(idx, record) {
                 var relatedBlob = file,
@@ -141,7 +142,13 @@ qq.Scaler = function(spec, log) {
                     relatedSize = -1;
                 }
 
-                id = uploadData.addFile(record.uuid, record.name, relatedSize);
+                id = uploadData.addFile({
+                    uuid: record.uuid,
+                    name: record.name,
+                    size: relatedSize,
+                    batchId: batchId,
+                    proxyGroupId: proxyGroupId
+                });
 
                 if (record.blob instanceof qq.BlobProxy) {
                     scaledIds.push(id);
@@ -155,20 +162,6 @@ qq.Scaler = function(spec, log) {
                 fileList.push({id: id, file: relatedBlob});
 
             });
-
-            // Tag all items in this group with the IDs of all items in the group.
-            if (scaledIds.length) {
-                qq.each(scaledIds, function(idx, scaledId) {
-                    if (originalId === null) {
-                        uploadData.setGroupIds(scaledId, scaledIds);
-                    }
-                    else {
-                        uploadData.setGroupIds(scaledId, scaledIds.concat([originalId]));
-                    }
-                });
-
-                originalId !== null && uploadData.setGroupIds(originalId, scaledIds.concat([originalId]));
-            }
 
             // If we are potentially uploading an original file and some scaled versions,
             // ensure the scaled versions include reference's to the parent's UUID and size
@@ -422,8 +415,8 @@ qq.extend(qq.Scaler.prototype, {
         // write the bytes of the binary string to an ArrayBuffer
         arrayBuffer = new ArrayBuffer(byteString.length);
         intArray = new Uint8Array(arrayBuffer);
-        qq.each(byteString, function(idx, char) {
-            intArray[idx] = char.charCodeAt(0);
+        qq.each(byteString, function(idx, character) {
+            intArray[idx] = character.charCodeAt(0);
         });
 
         return this._createBlob(arrayBuffer, mimeString);

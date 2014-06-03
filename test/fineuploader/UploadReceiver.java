@@ -86,7 +86,21 @@ public class UploadReceiver extends HttpServlet
 //            resp.addHeader("Access-Control-Allow-Credentials", "true");
 //            resp.addHeader("Access-Control-Allow-Origin", "*");
 
-            if (ServletFileUpload.isMultipartContent(req))
+            if (req.getParameter("done") != null)
+            {
+                requestParser = RequestParser.getInstance(req, null);
+                File dir = new File(UPLOAD_DIR, requestParser.getUuid());
+                File[] parts = getPartitionFiles(dir, requestParser.getUuid());
+                File outputFile = new File(dir, requestParser.getFilename());
+                for (File part : parts)
+                {
+                    mergeFiles(outputFile, part);
+                }
+
+                assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
+                deletePartitionFiles(dir, requestParser.getUuid());
+            }
+            else if (ServletFileUpload.isMultipartContent(req))
             {
                 MultipartUploadParser multipartUploadParser = new MultipartUploadParser(req, TEMP_DIR, getServletContext());
                 requestParser = RequestParser.getInstance(req, multipartUploadParser);
@@ -135,19 +149,6 @@ public class UploadReceiver extends HttpServlet
         if (requestParser.getPartIndex() >= 0)
         {
             writeFile(req.getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null);
-
-            if (requestParser.getTotalParts()-1 == requestParser.getPartIndex())
-            {
-                File[] parts = getPartitionFiles(dir, requestParser.getUuid());
-                File outputFile = new File(dir, requestParser.getFilename());
-                for (File part : parts)
-                {
-                    mergeFiles(outputFile, part);
-                }
-
-                assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
-                deletePartitionFiles(dir, requestParser.getUuid());
-            }
         }
         else
         {
@@ -168,19 +169,6 @@ public class UploadReceiver extends HttpServlet
         if (requestParser.getPartIndex() >= 0)
         {
             writeFile(requestParser.getUploadItem().getInputStream(), new File(dir, requestParser.getUuid() + "_" + String.format("%05d", requestParser.getPartIndex())), null);
-
-            if (requestParser.getTotalParts()-1 == requestParser.getPartIndex())
-            {
-                File[] parts = getPartitionFiles(dir, requestParser.getUuid());
-                File outputFile = new File(dir, requestParser.getOriginalFilename());
-                for (File part : parts)
-                {
-                    mergeFiles(outputFile, part);
-                }
-
-                assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
-                deletePartitionFiles(dir, requestParser.getUuid());
-            }
         }
         else
         {
@@ -192,7 +180,7 @@ public class UploadReceiver extends HttpServlet
         return null;
     }
 
-    private void assertCombinedFileIsVaid(int totalFileSize, File outputFile, String uuid) throws MergePartsException
+    private void assertCombinedFileIsVaid(long totalFileSize, File outputFile, String uuid) throws MergePartsException
     {
         if (totalFileSize != outputFile.length())
         {

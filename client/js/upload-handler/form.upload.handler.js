@@ -5,7 +5,7 @@
  *
  * @constructor
  */
-qq.AbstractUploadHandlerForm = function(spec) {
+qq.FormUploadHandler = function(spec) {
     "use strict";
 
     var options = spec.options,
@@ -16,11 +16,7 @@ qq.AbstractUploadHandlerForm = function(spec) {
         detachLoadEvents = {},
         postMessageCallbackTimers = {},
         isCors = options.isCors,
-        fileState = {},
         inputName = options.inputName,
-        onCancel = proxy.onCancel,
-        onUuidChanged = proxy.onUuidChanged,
-        getName = proxy.getName,
         getUuid = proxy.getUuid,
         log = proxy.log,
         corsMessageReceiver = new qq.WindowReceiveMessage({log: log});
@@ -33,7 +29,6 @@ qq.AbstractUploadHandlerForm = function(spec) {
      */
     function expungeFile(id) {
         delete detachLoadEvents[id];
-        delete fileState[id];
 
         // If we are dealing with CORS, we might still be waiting for a response from a loaded iframe.
         // In that case, terminate the timer waiting for a message from the loaded iframe
@@ -48,10 +43,37 @@ qq.AbstractUploadHandlerForm = function(spec) {
         if (iframe) {
             // To cancel request set src to something else.  We use src="javascript:false;"
             // because it doesn't trigger ie6 prompt on https
-            iframe.setAttribute("src", "java" + String.fromCharCode(115) + "cript:false;"); //deal with "JSLint: javascript URL" warning, which apparently cannot be turned off
+            /* jshint scripturl:true */
+            iframe.setAttribute("src", "javascript:false;");
 
             qq(iframe).remove();
         }
+    }
+
+    /**
+     * @param iframeName `document`-unique Name of the associated iframe
+     * @returns {*} ID of the associated file
+     */
+    function getFileIdForIframeName(iframeName) {
+        return iframeName.split("_")[0];
+    }
+
+    /**
+     * Generates an iframe to be used as a target for upload-related form submits.  This also adds the iframe
+     * to the current `document`.  Note that the iframe is hidden from view.
+     *
+     * @param name Name of the iframe.
+     * @returns {HTMLIFrameElement} The created iframe
+     */
+    function initIframeForUpload(name) {
+        var iframe = qq.toElement("<iframe src='javascript:false;' name='" + name + "' />");
+
+        iframe.setAttribute("id", name);
+
+        iframe.style.display = "none";
+        document.body.appendChild(iframe);
+
+        return iframe;
     }
 
     /**
@@ -71,7 +93,7 @@ qq.AbstractUploadHandlerForm = function(spec) {
         // When the iframe has loaded (after the server responds to an upload request)
         // declare the attempt a failure if we don't receive a valid message shortly after the response comes in.
         detachLoadEvents[fileId] = qq(iframe).attach("load", function() {
-            if (fileState[fileId].input) {
+            if (handler.getInput(fileId)) {
                 log("Received iframe load event for CORS upload request (iframe name " + iframeName + ")");
 
                 postMessageCallbackTimers[iframeName] = setTimeout(function() {
@@ -112,158 +134,37 @@ qq.AbstractUploadHandlerForm = function(spec) {
         });
     }
 
-    /**
-     * Generates an iframe to be used as a target for upload-related form submits.  This also adds the iframe
-     * to the current `document`.  Note that the iframe is hidden from view.
-     *
-     * @param name Name of the iframe.
-     * @returns {HTMLIFrameElement} The created iframe
-     */
-    function initIframeForUpload(name) {
-        var iframe = qq.toElement("<iframe src='javascript:false;' name='" + name + "' />");
+    qq.extend(this, new qq.UploadHandler(spec));
 
-        iframe.setAttribute("id", name);
+    qq.override(this, function(super_) {
+        return {
+            /**
+             * Adds File or Blob to the queue
+             **/
+            add: function(id, fileInput) {
+                super_.add(id, {input: fileInput});
 
-        iframe.style.display = "none";
-        document.body.appendChild(iframe);
+                fileInput.setAttribute("name", inputName);
 
-        return iframe;
-    }
+                // remove file input from DOM
+                if (fileInput.parentNode){
+                    qq(fileInput).remove();
+                }
+            },
 
-    /**
-     * @param iframeName `document`-unique Name of the associated iframe
-     * @returns {*} ID of the associated file
-     */
-    function getFileIdForIframeName(iframeName) {
-        return iframeName.split("_")[0];
-    }
+            expunge: function(id) {
+                expungeFile(id);
+                super_.expunge(id);
+            },
 
+            isValid: function(id) {
+                return super_.isValid(id) &&
+                    handler._getFileState(id).input !== undefined;
+            }
+        };
+    });
 
     qq.extend(this, {
-        add: function(id, fileInput) {
-            fileState[id] = {input: fileInput};
-
-            fileInput.setAttribute("name", inputName);
-
-            // remove file input from DOM
-            if (fileInput.parentNode){
-                qq(fileInput).remove();
-            }
-        },
-
-        getInput: function(id) {
-            return fileState[id].input;
-        },
-
-        isValid: function(id) {
-            return fileState[id] !== undefined &&
-                fileState[id].input !== undefined;
-        },
-
-        reset: function() {
-            fileState.length = 0;
-        },
-
-        expunge: function(id) {
-            return expungeFile(id);
-        },
-
-        cancel: function(id) {
-            var onCancelRetVal = onCancel(id, getName(id));
-
-            if (onCancelRetVal instanceof qq.Promise) {
-                return onCancelRetVal.then(function() {
-                    this.expunge(id);
-                });
-            }
-            else if (onCancelRetVal !== false) {
-                this.expunge(id);
-                return true;
-            }
-
-            return false;
-        },
-
-        upload: function(id) {
-            // implementation-specific
-        },
-
-        /**
-         * @param fileId ID of the associated file
-         * @returns {string} The `document`-unique name of the iframe
-         */
-        _getIframeName: function(fileId) {
-            return fileId + "_" + formHandlerInstanceId;
-        },
-
-        /**
-         * Creates an iframe with a specific document-unique name.
-         *
-         * @param id ID of the associated file
-         * @returns {HTMLIFrameElement}
-         */
-        _createIframe: function(id) {
-            var iframeName = handler._getIframeName(id);
-
-            return initIframeForUpload(iframeName);
-        },
-
-        /**
-         * @param id ID of the associated file
-         * @param innerHtmlOrMessage JSON message
-         * @returns {*} The parsed response, or an empty object if the response could not be parsed
-         */
-        _parseJsonResponse: function(id, innerHtmlOrMessage) {
-            var response;
-
-            try {
-                response = qq.parseJson(innerHtmlOrMessage);
-
-                if (response.newUuid !== undefined) {
-                    onUuidChanged(id, response.newUuid);
-                }
-            }
-            catch(error) {
-                log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
-                response = {};
-            }
-
-            return response;
-        },
-
-        /**
-         * Generates a form element and appends it to the `document`.  When the form is submitted, a specific iframe is targeted.
-         * The name of the iframe is passed in as a property of the spec parameter, and must be unique in the `document`.  Note
-         * that the form is hidden from view.
-         *
-         * @param spec An object containing various properties to be used when constructing the form.  Required properties are
-         * currently: `method`, `endpoint`, `params`, `paramsInBody`, and `targetName`.
-         * @returns {HTMLFormElement} The created form
-         */
-        _initFormForUpload: function(spec) {
-            var method = spec.method,
-                endpoint = spec.endpoint,
-                params = spec.params,
-                paramsInBody = spec.paramsInBody,
-                targetName = spec.targetName,
-                form = qq.toElement("<form method='" + method + "' enctype='multipart/form-data'></form>"),
-                url = endpoint;
-
-            if (paramsInBody) {
-                qq.obj2Inputs(params, form);
-            }
-            else {
-                url = qq.obj2url(params, endpoint);
-            }
-
-            form.setAttribute("action", url);
-            form.setAttribute("target", targetName);
-            form.style.display = "none";
-            document.body.appendChild(form);
-
-            return form;
-        },
-
         /**
          * This function either delegates to a more specific message handler if CORS is involved,
          * or simply registers a callback when the iframe has been loaded that invokes the passed callback
@@ -314,6 +215,18 @@ qq.AbstractUploadHandlerForm = function(spec) {
         },
 
         /**
+         * Creates an iframe with a specific document-unique name.
+         *
+         * @param id ID of the associated file
+         * @returns {HTMLIFrameElement}
+         */
+        _createIframe: function(id) {
+            var iframeName = handler._getIframeName(id);
+
+            return initIframeForUpload(iframeName);
+        },
+
+        /**
          * Called when we are no longer interested in being notified when an iframe has loaded.
          *
          * @param id Associated file ID
@@ -325,8 +238,49 @@ qq.AbstractUploadHandlerForm = function(spec) {
             }
         },
 
-        _getFileState: function(id) {
-            return fileState[id];
+        /**
+         * @param fileId ID of the associated file
+         * @returns {string} The `document`-unique name of the iframe
+         */
+        _getIframeName: function(fileId) {
+            return fileId + "_" + formHandlerInstanceId;
+        },
+
+        getInput: function(id) {
+            return handler._getFileState(id).input;
+        },
+
+        /**
+         * Generates a form element and appends it to the `document`.  When the form is submitted, a specific iframe is targeted.
+         * The name of the iframe is passed in as a property of the spec parameter, and must be unique in the `document`.  Note
+         * that the form is hidden from view.
+         *
+         * @param spec An object containing various properties to be used when constructing the form.  Required properties are
+         * currently: `method`, `endpoint`, `params`, `paramsInBody`, and `targetName`.
+         * @returns {HTMLFormElement} The created form
+         */
+        _initFormForUpload: function(spec) {
+            var method = spec.method,
+                endpoint = spec.endpoint,
+                params = spec.params,
+                paramsInBody = spec.paramsInBody,
+                targetName = spec.targetName,
+                form = qq.toElement("<form method='" + method + "' enctype='multipart/form-data'></form>"),
+                url = endpoint;
+
+            if (paramsInBody) {
+                qq.obj2Inputs(params, form);
+            }
+            else {
+                url = qq.obj2url(params, endpoint);
+            }
+
+            form.setAttribute("action", url);
+            form.setAttribute("target", targetName);
+            form.style.display = "none";
+            document.body.appendChild(form);
+
+            return form;
         }
     });
 };

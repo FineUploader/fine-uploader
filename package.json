@@ -1,7 +1,7 @@
 {
   "name": "fineuploader",
   "title": "Fine Uploader",
-  "version": "4.4.0",
+  "version": "5.0.0-15",
   "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
   "main": "./fine-uploader/js/fineuploader.js",
   "maintainers": [
@@ -62,7 +62,6 @@
     "grunt-strip-code": "~0.1.2",
     "grunt-version": "~0.2.2",
     "karma-mocha": "0.1.0",
-    "karma-slimerjs-launcher": "0.1.2",
     "karma-opera-launcher": "0.1.0",
     "karma-safari-launcher": "0.1.1",
     "karma-ievms": "0.0.4",

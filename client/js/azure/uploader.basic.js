@@ -38,10 +38,6 @@
                 partSize: 4000000,
                 // Don't chunk files less than this size
                 minFileSize: 4000001
-            },
-
-            resume: {
-                recordsExpireIn: 7 // days
             }
         };
 

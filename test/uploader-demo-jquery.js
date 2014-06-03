@@ -9,7 +9,7 @@
             $('#azure-example').fineUploaderAzure({
                 debug: true,
                 request: {
-                    endpoint: "http://fineuploaderdev.blob.core.windows.net/dev"
+                    endpoint: "http://fineuploaderdev2.blob.core.windows.net/dev"
                 },
                 cors: {
                     expected: true
@@ -21,7 +21,10 @@
                     endpoint: 'http://192.168.56.101:8080/success'
                 },
                 chunking: {
-                    enabled: true
+                    enabled: true,
+                    concurrent: {
+                        enabled: true
+                    }
                 },
                 resume: {
                     enabled: true
@@ -34,8 +37,7 @@
                     enabled: true
                 },
                 display: {
-                    fileSizeOnSubmit: true,
-                    prependFiles: true
+                    fileSizeOnSubmit: true
                 },
                 paste: {
                     targetElement: $(document)
@@ -83,7 +85,10 @@
                         localBlankPagePath: 'success.html'
                     },
                     chunking: {
-                        enabled: true
+                        enabled: true,
+                        concurrent: {
+                            enabled: true
+                        }
                     },
                     resume: {
                         enabled: true
@@ -104,8 +109,7 @@
                         mode: 'custom'
                     },
                     display: {
-                        fileSizeOnSubmit: true,
-                        prependFiles: true
+                        fileSizeOnSubmit: true
                     },
                     paste: {
                         targetElement: $(document)
@@ -123,15 +127,17 @@
                         }, id);
                     }).on('statusChange', function(event, id, oldS, newS) {
                         qq.log("id: " + id + " " + newS);
-                    });
+                    })
+            .on("totalProgress", function(event, loaded, total) {
+//                qq.log(loaded + "/" + total);
+            });
 
-        $('#manualUploadModeExample').fineUploader({
+        $('#manual-example').fineUploader({
             autoUpload: false,
             debug: true,
             uploadButtonText: "Select Files",
             display: {
-                fileSizeOnSubmit: true,
-                prependFiles: true
+                fileSizeOnSubmit: true
             },
             request: {
                 endpoint: "/upload/receiver"
@@ -145,7 +151,11 @@
                 }
             },
             chunking: {
-                enabled: true
+                enabled: true,
+                concurrent: {
+                    enabled: true
+                },
+                successEndpoint: "/upload/receiver?done"
             },
             resume: {
                 enabled: true
@@ -159,12 +169,21 @@
                     notAvailablePath: "/client/placeholders/not_available-generic.png"
                 }
             }
-        }).on('error', errorHandler);
+//            scaling: {
+//                sizes: [{name: "small", maxSize: 300}, {name: "medium", maxSize: 600}]
+//            }
+        }).on('error', errorHandler)
+            .on("resume", function() {
+//                return false;
+            })
+            .on("progress", function(event, id, name, loaded, total) {
+//                qq.log(loaded + "/" + total);
+            });
         $('#triggerUpload').click(function() {
-            return $('#manualUploadModeExample').fineUploader("uploadStoredFiles");
+            return $('#manual-example').fineUploader("uploadStoredFiles");
         });
 
-        $('#uploadWithVariousOptionsExample').fineUploader({
+        $('#validation-example').fineUploader({
             multiple: false,
             request: {
                 endpoint: "/upload/receiver"
@@ -183,7 +202,7 @@
             }
         }).on('error', errorHandler);
 
-        $('#basicUploadFailureExample').fineUploader({
+        $('#failure-example').fineUploader({
             request: {
                 endpoint: "/upload/receiver",
                 params: {

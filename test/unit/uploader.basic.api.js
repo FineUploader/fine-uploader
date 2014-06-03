@@ -1,4 +1,4 @@
-/* globals describe, beforeEach, afterEach, $fixture, qq, assert, it, qqtest, helpme, purl */
+/* globals describe, beforeEach, afterEach, $fixture, qq, assert, it, qqtest, helpme, purl, Q */
 describe("uploader.basic.api.js", function () {
     "use strict";
 
@@ -246,17 +246,9 @@ describe("uploader.basic.api.js", function () {
             done();
         });
 
-        it ("handles successful promissory callbacks", function(done) {
-            var callback = function() {
-                    var promise = new qq.Promise();
-
-                    setTimeout(function() {
-                        promise.success("foobar");
-                    }, 100);
-
-                    return promise;
-                },
-                spec = {
+        describe("handles successful promissory callbacks", function() {
+            function runTest(callback, done) {
+                var spec = {
                     callback: callback,
                     onSuccess: function(passedVal) {
                         assert.deepEqual(passedVal, "foobar");
@@ -268,20 +260,39 @@ describe("uploader.basic.api.js", function () {
                     }
                 };
 
-            assert.ok(fineuploader._handleCheckedCallback(spec) instanceof qq.Promise);
+                fineuploader._handleCheckedCallback(spec);
+            }
+
+            it ("qq.Promise", function(done) {
+                var callback = function() {
+                        var promise = new qq.Promise();
+
+                        setTimeout(function() {
+                            promise.success("foobar");
+                        }, 100);
+
+                        return promise;
+                    };
+
+                runTest(callback, done);
+            });
+
+            it ("Q.js", function(done) {
+                var callback = function() {
+                        return Q.Promise(function(resolve) {
+                            setTimeout(function() {
+                                resolve("foobar");
+                            }, 100);
+                        });
+                    };
+
+                runTest(callback, done);
+            });
         });
 
-        it ("handles failed promissory callbacks", function(done) {
-            var callback = function() {
-                    var promise = new qq.Promise();
-
-                    setTimeout(function() {
-                        promise.failure();
-                    }, 100);
-
-                    return promise;
-                },
-                spec = {
+        describe("handles failed promissory callbacks", function() {
+            function runTest(callback, done) {
+                var spec = {
                     callback: callback,
                     onSuccess: function() {
                         assert.fail();
@@ -292,7 +303,34 @@ describe("uploader.basic.api.js", function () {
                     }
                 };
 
-            assert.ok(fineuploader._handleCheckedCallback(spec) instanceof qq.Promise);
+                fineuploader._handleCheckedCallback(spec);
+            }
+
+            it ("qq.Promise", function(done) {
+                var callback = function() {
+                        var promise = new qq.Promise();
+
+                        setTimeout(function() {
+                            promise.failure();
+                        }, 100);
+
+                        return promise;
+                    };
+
+                runTest(callback, done);
+            });
+
+            it ("Q.js", function(done) {
+                var callback = function() {
+                    return Q.Promise(function (resolve, reject) {
+                        setTimeout(function () {
+                            reject();
+                        }, 100);
+                    });
+                };
+
+                runTest(callback, done);
+            });
         });
 
         it("does auto retry if upload is not paused", function() {
@@ -436,6 +474,21 @@ describe("uploader.basic.api.js", function () {
             assert.deepEqual(store.get(3), initVal);
             assert.deepEqual(store.get(100), initVal);
             assert.deepEqual(store.get(), initVal);
+        });
+    });
+
+    describe("_handleNewFile", function() {
+        it("ignores size property if passing a file input", function() {
+            var uploader = new qq.FineUploaderBasic({}),
+                fileInput = document.createElement("input");
+
+            uploader._customNewFileHandler = function(actualFile, name, uuid, size) {
+                assert.equal(size, -1);
+            };
+
+            fileInput.type = "file";
+
+            uploader._handleNewFile(fileInput, 0, []);
         });
     });
 });

@@ -9,6 +9,8 @@
 
 # Chunking & Partitioning {: .page-header }
 
+{{ alert("[Concurrent chunking](concurrent-chunking.html) is also supported!", "default", "Note:") }}
+
 With the advent of the File API, modern browsers now are capable of dividing
 files into "chunks" (also referred to as partitions). This feature is a crucial
 component to the [resume](resume.html) feature, and makes the [retry](retry.html) feature

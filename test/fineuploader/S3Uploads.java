@@ -43,6 +43,7 @@ public class S3Uploads extends HttpServlet
     // default method of DELETE, but that can be adjusted.
     public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
+        setContentType(req, resp);
         if (req.getServletPath().endsWith("s3/signature"))
         {
             handleSignatureRequest(req, resp);
@@ -57,6 +58,7 @@ public class S3Uploads extends HttpServlet
     @Override
     public void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
+        setContentType(req, resp);
         String key = req.getParameter("key");
         String bucket = req.getParameter("bucket");
 
@@ -67,11 +69,24 @@ public class S3Uploads extends HttpServlet
         s3Client.deleteObject(bucket, key);
     }
 
+
+    private void setContentType(HttpServletRequest req, HttpServletResponse resp)
+    {
+        String accept = req.getHeader("Accept");
+        String responseType = accept;
+
+        if (responseType == null) {
+            responseType = "text/plain";
+        }
+
+        resp.setContentType(responseType);
+        resp.setCharacterEncoding("UTF-8");
+    }
+
     // Called by the main POST request handler if Fine Uploader has asked for an item to be signed.  The item may be a
     // policy document or a string that represents multipart upload request headers.
     private void handleSignatureRequest(HttpServletRequest req, HttpServletResponse resp) throws IOException
     {
-        resp.setContentType("application/json");
         resp.setStatus(200);
 
         JsonParser jsonParser = new JsonParser();

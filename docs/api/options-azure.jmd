@@ -61,16 +61,10 @@ alert("The `chunking.paramNames` option does **not** apply to Fine Uploader Azur
 alert("The `resume.paramNames` option does **not** apply to Fine Uploader Azure.")
 }}
 
-{{ api_parent_option("resume", "resume", "",
-    (
-        ("resume.recordsExpireIn", "recordsExpireIn", "Number of days before resumable file records expire.", "Integer", "7",),
-    )
-)}}
-
-
 {{
 alert("`request.customHeaders` does **not** apply to Fine Uploader Azure.")
 }}
+
 {{ api_parent_option("request", "request", "",
     (
         ("request.endpoint", "containerUrl", "URL for your Azure Blob Storage container.", "String", "null",),

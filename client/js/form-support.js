@@ -145,7 +145,10 @@ qq.extend(qq.FormSupport.prototype, {
             };
 
         qq.each(form.elements, function(idx, el) {
-            if (qq.isInput(el, true) && notIrrelevantType(el.type) && !ignoreValue(el)) {
+            if ((qq.isInput(el, true) || el.tagName.toLowerCase() === "textarea") &&
+                notIrrelevantType(el.type) &&
+                !ignoreValue(el)) {
+
                 obj[el.name] = el.value;
             }
             else if (el.tagName.toLowerCase() === "select" && !ignoreValue(el)) {

@@ -7,17 +7,31 @@
  * @param options Options passed from the base handler
  * @param proxy Callbacks & methods used to query for or push out data/changes
  */
-qq.UploadHandlerForm = function(options, proxy) {
+qq.traditional = qq.traditional || {};
+qq.traditional.FormUploadHandler = function(options, proxy) {
     "use strict";
 
     var handler = this,
-        uploadCompleteCallback = proxy.onUploadComplete,
-        onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
         getUuid = proxy.getUuid,
-        uploadComplete = uploadCompleteCallback,
         log = proxy.log;
 
+    /**
+     * @param innerHtmlOrMessage JSON message
+     * @returns {*} The parsed response, or an empty object if the response could not be parsed
+     */
+    function parseJsonResponse(innerHtmlOrMessage) {
+        var response = {};
+
+        try {
+            response = qq.parseJson(innerHtmlOrMessage);
+        }
+        catch(error) {
+            log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
+        }
+
+        return response;
+    }
 
     /**
      * Returns json object received by iframe from server.
@@ -40,7 +54,7 @@ qq.UploadHandlerForm = function(options, proxy) {
                 innerHtml = doc.body.firstChild.firstChild.nodeValue;
             }
 
-            response = handler._parseJsonResponse(id, innerHtml);
+            response = parseJsonResponse(innerHtml);
         }
         catch(error) {
             log("Error when attempting to parse form upload response (" + error.message + ")", "error");
@@ -71,7 +85,43 @@ qq.UploadHandlerForm = function(options, proxy) {
         });
     }
 
-    qq.extend(this, new qq.AbstractUploadHandlerForm({
+    this.uploadFile = function(id) {
+        var input = handler.getInput(id),
+            iframe = handler._createIframe(id),
+            promise = new qq.Promise(),
+            form;
+
+        form = createForm(id, iframe);
+        form.appendChild(input);
+
+        handler._attachLoadEvent(iframe, function(responseFromMessage){
+            log("iframe loaded");
+
+            var response = responseFromMessage ? responseFromMessage : getIframeContentJson(id, iframe);
+
+            handler._detachLoadEvent(id);
+
+            //we can't remove an iframe if the iframe doesn't belong to the same domain
+            if (!options.cors.expected) {
+                qq(iframe).remove();
+            }
+
+            if (response.success) {
+                promise.success(response);
+            }
+            else {
+                promise.failure(response);
+            }
+        });
+
+        log("Sending upload request for " + id);
+        form.submit();
+        qq(form).remove();
+
+        return promise;
+    };
+
+    qq.extend(this, new qq.FormUploadHandler({
             options: {
                 isCors: options.cors.expected,
                 inputName: options.inputName
@@ -79,54 +129,10 @@ qq.UploadHandlerForm = function(options, proxy) {
         
             proxy: {
                 onCancel: options.onCancel,
-                onUuidChanged: onUuidChanged,
                 getName: getName,
                 getUuid: getUuid,
                 log: log
             }
         }
     ));
-
-    qq.extend(this, {
-        upload: function(id) {
-            var input = handler._getFileState(id).input,
-                fileName = getName(id),
-                iframe = handler._createIframe(id),
-                form;
-
-            if (!input){
-                throw new Error("file with passed id was not added, or already uploaded or canceled");
-            }
-
-            options.onUpload(id, getName(id));
-
-            form = createForm(id, iframe);
-            form.appendChild(input);
-
-            handler._attachLoadEvent(iframe, function(responseFromMessage){
-                log("iframe loaded");
-
-                var response = responseFromMessage ? responseFromMessage : getIframeContentJson(id, iframe);
-
-                handler._detachLoadEvent(id);
-
-                //we can't remove an iframe if the iframe doesn't belong to the same domain
-                if (!options.cors.expected) {
-                    qq(iframe).remove();
-                }
-
-                if (!response.success) {
-                    if (options.onAutoRetry(id, fileName, response)) {
-                        return;
-                    }
-                }
-                options.onComplete(id, fileName, response);
-                uploadComplete(id);
-            });
-
-            log("Sending upload request for " + id);
-            form.submit();
-            qq(form).remove();
-        }
-    });
 };

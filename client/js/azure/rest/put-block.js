@@ -7,11 +7,9 @@ qq.azure.PutBlock = function(o) {
 
     var requester,
         method = "PUT",
-        blockIds = {},
+        blockIdEntries = {},
+        promises = {},
         options = {
-            onProgress: function(id, loaded, total) {},
-            onUpload: function(id) {},
-            onComplete: function(id, xhr, isError) {},
             log: function(str, level) {}
         },
         endpoints = {},
@@ -38,15 +36,21 @@ qq.azure.PutBlock = function(o) {
             expected: true
         },
         log: options.log,
-        onSend: options.onUpload,
         onComplete: function(id, xhr, isError) {
+            var promise = promises[id],
+                blockIdEntry = blockIdEntries[id];
+
             delete endpoints[id];
+            delete promises[id];
+            delete blockIdEntries[id];
 
-            options.onComplete.call(this, id, xhr, isError, blockIds[id]);
-
-            delete blockIds[id];
-        },
-        onProgress: options.onProgress
+            if (isError) {
+                promise.failure();
+            }
+            else {
+                promise.success(blockIdEntry);
+            }
+        }
     }));
 
     function createBlockId(partNum) {
@@ -59,17 +63,22 @@ qq.azure.PutBlock = function(o) {
 
     qq.extend(this, {
         method: method,
-        upload: function(id, sasUri, partNum, blob) {
-            var blockId = createBlockId(partNum);
+        upload: function(id, xhr, sasUri, partNum, blob) {
+            var promise = new qq.Promise(),
+                blockId = createBlockId(partNum);
+
+            promises[id] = promise;
 
             options.log(qq.format("Submitting Put Block request for {} = part {}", id, partNum));
 
             endpoints[id] = qq.format("{}&comp=block&blockid={}", sasUri, encodeURIComponent(blockId));
-            blockIds[id] = blockId;
+            blockIdEntries[id] = {part: partNum, id: blockId};
 
-            return requester.initTransport(id)
+            requester.initTransport(id)
                 .withPayload(blob)
-                .send();
+                .send(xhr);
+
+            return promise;
         }
     });
 };

@@ -173,6 +173,7 @@
 
                 onRetry: function(fileId) {
                     qq(self._templating.getFileContainer(fileId)).removeClass(self._classes.retryable);
+                    self._templating.hideRetry(fileId);
                     self.retry(fileId);
                 },
 
@@ -311,13 +312,13 @@
 
             this._templating.updateProgress(id, loaded, total);
 
-            if (loaded === total) {
+            if (Math.round(loaded / total * 100) === 100) {
                 this._templating.hideCancel(id);
                 this._templating.hidePause(id);
-
+                this._templating.hideProgress(id);
                 this._templating.setStatusText(id, this._options.text.waitingForResponse);
 
-                // If last byte was sent, display total file size
+                // If ~last byte was sent, display total file size
                 this._displayFileSize(id);
             }
             else {
@@ -360,8 +361,9 @@
                 else {
                     qq(fileContainer).addClass(self._classes.fail);
 
-                    if (self._templating.isRetryPossible() && !self._preventRetries[id]) {
+                    if (templating.isRetryPossible() && !self._preventRetries[id]) {
                         qq(fileContainer).addClass(self._classes.retryable);
+                        templating.showRetry(id);
                     }
                     self._controlFailureTextDisplay(id, result);
                 }
@@ -433,7 +435,7 @@
             this._showCancelLink(id);
 
             if (this._options.retry.showAutoRetryNote) {
-                retryNumForDisplay = this._autoRetries[id] + 1;
+                retryNumForDisplay = this._autoRetries[id];
                 maxAuto = this._options.retry.maxAutoAttempts;
 
                 retryNote = this._options.retry.autoRetryNote.replace(/\{retryNum\}/g, retryNumForDisplay);
@@ -456,6 +458,7 @@
             }
             else {
                 qq(this._templating.getFileContainer(id)).addClass(this._classes.retryable);
+                this._templating.showRetry(id);
                 return false;
             }
         },
@@ -507,7 +510,7 @@
 
             retVal = this._options.showConfirm(confirmMessage);
 
-            if (retVal instanceof qq.Promise) {
+            if (qq.isGenericPromise(retVal)) {
                 retVal.then(function () {
                     self._sendDeleteRequest.apply(self, deleteRequestArgs);
                 });

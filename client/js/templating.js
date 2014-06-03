@@ -586,8 +586,16 @@ qq.Templating = function(spec) {
             return isEditElementsExist;
         },
 
+        hideRetry: function(id) {
+            hide(getRetry(id));
+        },
+
         isRetryPossible: function() {
             return isRetryElementExist;
+        },
+
+        showRetry: function(id) {
+            show(getRetry(id));
         },
 
         getFileContainer: function(id) {
@@ -625,7 +633,7 @@ qq.Templating = function(spec) {
             if (bar) {
                 percent = Math.round(loaded / total * 100);
 
-                if (loaded === total) {
+                if (percent === 100) {
                     hide(bar);
                 }
                 else {

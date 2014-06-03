@@ -62,10 +62,6 @@
                 partSize: 5242880
             },
 
-            resume: {
-                recordsExpireIn: 7 // days
-            },
-
             cors: {
                 allowXdr: true
             },
@@ -165,7 +161,7 @@
          * Ensures the parent's upload handler creator passes any additional S3-specific options to the handler as well
          * as information required to instantiate the specific handler based on the current browser's capabilities.
          *
-         * @returns {qq.UploadHandler}
+         * @returns {qq.UploadHandlerController}
          * @private
          */
         _createUploadHandler: function() {
@@ -223,7 +219,7 @@
                     var updateCredentials = new qq.Promise(),
                         callbackRetVal = self._options.callbacks.onCredentialsExpired();
 
-                    if (callbackRetVal instanceof qq.Promise) {
+                    if (qq.isGenericPromise(callbackRetVal)) {
                         callbackRetVal.then(function(credentials) {
                             try {
                                 self.setCredentials(credentials);
@@ -319,7 +315,7 @@
                 keyname = keynameFunc.call(this, id);
 
 
-            if (keyname instanceof qq.Promise) {
+            if (qq.isGenericPromise(keyname)) {
                 keyname.then(onSuccess, onFailure);
             }
             /*jshint -W116*/

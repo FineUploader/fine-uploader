@@ -7,10 +7,9 @@ qq.azure.PutBlockList = function(o) {
 
     var requester,
         method = "PUT",
-        blockIds = {},
+        promises = {},
         options = {
             getBlobMetadata: function(id) {},
-            onComplete: function(id, xhr, isError) {},
             log: function(str, level) {}
         },
         endpoints = {},
@@ -44,20 +43,33 @@ qq.azure.PutBlockList = function(o) {
         log: options.log,
         onSend: function() {},
         onComplete: function(id, xhr, isError) {
-            delete endpoints[id];
+            var promise = promises[id];
 
-            options.onComplete.apply(this, arguments);
-            delete blockIds[id];
+            delete endpoints[id];
+            delete promises[id];
+
+            if (isError) {
+                promise.failure(xhr);
+            }
+            else {
+                promise.success(xhr);
+            }
+
         }
     }));
 
-    function createRequestBody(blockIds) {
+    function createRequestBody(blockIdEntries) {
         var doc = document.implementation.createDocument(null, "BlockList", null);
 
+        // If we don't sort the block ID entries by part number, the file will be combined incorrectly by Azure
+        blockIdEntries.sort(function(a, b) {
+            return a.part - b.part;
+        });
+
         // Construct an XML document for each pair of etag/part values that correspond to part uploads.
-        qq.each(blockIds, function(idx, blockId) {
+        qq.each(blockIdEntries, function(idx, blockIdEntry) {
             var latestEl = doc.createElement("Latest"),
-                latestTextEl = doc.createTextNode(blockId);
+                latestTextEl = doc.createTextNode(blockIdEntry.id);
 
             latestEl.appendChild(latestTextEl);
             qq(doc).children()[0].appendChild(latestEl);
@@ -69,17 +81,24 @@ qq.azure.PutBlockList = function(o) {
 
     qq.extend(this, {
         method: method,
-        send: function(id, sasUri, blockIds, fileMimeType) {
-            var blockIdsXml = createRequestBody(blockIds);
+        send: function(id, sasUri, blockIdEntries, fileMimeType, registerXhrCallback) {
+            var promise = new qq.Promise(),
+                blockIdsXml = createRequestBody(blockIdEntries),
+                xhr;
+
+            promises[id] = promise;
 
             options.log(qq.format("Submitting Put Block List request for {}", id));
 
             endpoints[id] = qq.format("{}&comp=blocklist", sasUri);
 
-            return requester.initTransport(id)
+            xhr = requester.initTransport(id)
                 .withPayload(blockIdsXml)
                 .withHeaders({"x-ms-blob-content-type": fileMimeType})
                 .send();
+            registerXhrCallback(xhr);
+
+            return promise;
         }
     });
 };

@@ -8,7 +8,7 @@ qq.DeleteFileAjaxRequester = function(o) {
             uuidParamName: "qquuid",
             endpointStore: {},
             maxConnections: 3,
-            customHeaders: {},
+            customHeaders: function(id) {return {};},
             paramsStore: {},
             demoMode: false,
             cors: {
@@ -33,13 +33,16 @@ qq.DeleteFileAjaxRequester = function(o) {
     }
 
     requester = qq.extend(this, new qq.AjaxRequester({
+        acceptHeader: "application/json",
         validMethods: ["POST", "DELETE"],
         method: options.method,
         endpointStore: options.endpointStore,
         paramsStore: options.paramsStore,
         mandatedParams: getMandatedParams(),
         maxConnections: options.maxConnections,
-        customHeaders: options.customHeaders,
+        customHeaders: function(id) {
+            return options.customHeaders.get(id);
+        },
         demoMode: options.demoMode,
         log: options.log,
         onSend: options.onDelete,

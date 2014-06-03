@@ -340,7 +340,9 @@ var qq = function(element) {
     };
 
     qq.isFolderDropSupported = function(dataTransfer) {
-        return (dataTransfer.items && dataTransfer.items[0].webkitGetAsEntry);
+        return dataTransfer.items &&
+            dataTransfer.items.length > 0 &&
+            dataTransfer.items[0].webkitGetAsEntry;
     };
 
     qq.isFileChunkingSupported = function() {
@@ -360,8 +362,8 @@ var qq = function(element) {
             bytes = new Uint8Array(buffer);
 
 
-        qq.each(bytes, function(idx, byte) {
-            var byteAsHexStr = byte.toString(16);
+        qq.each(bytes, function(idx, byt) {
+            var byteAsHexStr = byt.toString(16);
 
             if (byteAsHexStr.length < 2) {
                 byteAsHexStr = "0" + byteAsHexStr;
@@ -711,72 +713,6 @@ var qq = function(element) {
         });
 
         return form;
-    };
-
-    qq.setCookie = function(name, value, days) {
-        var date = new Date(),
-            expires = "";
-
-        if (days) {
-            date.setTime(date.getTime()+(days*24*60*60*1000));
-            expires = "; expires="+date.toGMTString();
-        }
-
-        document.cookie = name+"="+value+expires+"; path=/";
-    };
-
-    qq.getCookie = function(name) {
-        var nameEQ = name + "=",
-            ca = document.cookie.split(";"),
-            cookie;
-
-        qq.each(ca, function(idx, part) {
-            /*jshint -W116 */
-            var cookiePart = part;
-            while (cookiePart.charAt(0) == " ") {
-                cookiePart = cookiePart.substring(1, cookiePart.length);
-            }
-
-            if (cookiePart.indexOf(nameEQ) === 0) {
-                cookie = cookiePart.substring(nameEQ.length, cookiePart.length);
-                return false;
-            }
-        });
-
-        return cookie;
-    };
-
-    qq.getCookieNames = function(regexp) {
-        var cookies = document.cookie.split(";"),
-            cookieNames = [];
-
-        qq.each(cookies, function(idx, cookie) {
-            cookie = qq.trimStr(cookie);
-
-            var equalsIdx = cookie.indexOf("=");
-
-            if (cookie.match(regexp)) {
-                cookieNames.push(cookie.substr(0, equalsIdx));
-            }
-        });
-
-        return cookieNames;
-    };
-
-    qq.deleteCookie = function(name) {
-        qq.setCookie(name, "", -1);
-    };
-
-    qq.areCookiesEnabled = function() {
-        var randNum = Math.random() * 100000,
-            name = "qqCookieTest:" + randNum;
-        qq.setCookie(name, 1);
-
-        if (qq.getCookie(name)) {
-            qq.deleteCookie(name);
-            return true;
-        }
-        return false;
     };
 
     /**

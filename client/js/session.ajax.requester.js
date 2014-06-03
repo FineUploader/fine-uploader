@@ -42,6 +42,7 @@ qq.SessionAjaxRequester = function(spec) {
     }
 
     requester = qq.extend(this, new qq.AjaxRequester({
+        acceptHeader: "application/json",
         validMethods: ["GET"],
         method: "GET",
         endpointStore: {

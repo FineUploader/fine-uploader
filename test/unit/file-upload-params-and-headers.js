@@ -1,6 +1,6 @@
 /* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 if (qqtest.canDownloadFileAsBlob) {
-    describe("sending params with upload requests", function() {
+    describe("sending params and headers with upload requests", function() {
         "use strict";
 
         var fileTestHelper = helpme.setupFileTests(),
@@ -11,6 +11,10 @@ if (qqtest.canDownloadFileAsBlob) {
                 thefunc: function() {
                     return "thereturn";
                 }
+            },
+            headers = {
+                one: "1",
+                two: "2"
             };
 
         function getSimpleParamsUploader(mpe, paramsAsOptions) {
@@ -25,6 +29,19 @@ if (qqtest.canDownloadFileAsBlob) {
             });
 
             !paramsAsOptions && uploader.setParams(params);
+            return uploader;
+        }
+
+        function getSimpleHeadersUploader(headersAsOptions) {
+            var uploader = new qq.FineUploaderBasic({
+                request: {
+                    endpoint: testUploadEndpoint,
+                    customHeaders: headersAsOptions ? headers : {},
+                    autoUpload: false
+                }
+            });
+
+            !headersAsOptions && uploader.setCustomHeaders(headers);
             return uploader;
         }
 
@@ -50,6 +67,28 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(mpe ? requestParams.foo : purlUrl.param("foo"), theparams.foo, "'foo' param value incorrect");
                 assert.equal(mpe ? requestParams.one : purlUrl.param("one"), theparams.one, "'one' param value incorrect");
                 assert.equal(mpe ? requestParams.thefunc : purlUrl.param("thefunc"), theparams.thefunc(), "'thefunc' param value incorrect");
+
+                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+            });
+        }
+
+
+        function assertHeadersInRequest(uploader, done) {
+            assert.expect(3, done);
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+
+                var request;
+
+                uploader.addBlobs({name: "test", blob: blob});
+                uploader.uploadStoredFiles();
+
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                request = fileTestHelper.getRequests()[0];
+
+                assert.equal(request.requestHeaders.one, headers.one, "Wrong 'one' header");
+                assert.equal(request.requestHeaders.two, headers.two, "Wrong 'two' header");
 
                 fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
             });
@@ -107,6 +146,16 @@ if (qqtest.canDownloadFileAsBlob) {
             uploader.setParams(overridenParams, 0);
             uploader.setParams({}, 1);
             assertParamsInRequest(uploader, false, done, overridenParams);
+        });
+
+        it("sends correct headers in request w/ headers specified as options", function(done) {
+            var uploader = getSimpleHeadersUploader(true);
+            assertHeadersInRequest(uploader, done);
+        });
+
+        it("sends correct headers in request w/ headers specified via API", function(done) {
+            var uploader = getSimpleHeadersUploader();
+            assertHeadersInRequest(uploader, done);
         });
     });
 }

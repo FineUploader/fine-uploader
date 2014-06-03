@@ -46,7 +46,6 @@ var helpme = (function () {
 
         createFineUploader: function (options, request, validation) {
             var defaults = {
-                debug: true,
                 button: null,
                 multiple: true,
                 maxConnections: 3,

@@ -4,8 +4,8 @@
 {% markdown %}
 
 {{ alert(
-"""Version 4.0 brings some breaking changes.  See the [upgrading to 4.x page](upgrading-to-4.html)
-for help on upgrading from a 3.x version."""
+"""Version 5.0 brings some breaking changes.  See the [upgrading to 5.x page](upgrading-to-5.html)
+for help on upgrading from a 4.x version."""
 )}}
 
 # Documentation Overview {: .page-header }

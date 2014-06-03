@@ -1,0 +1,109 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Concurrent Chunking" %}
+{% block sidebar %}
+{{ api_links(['chunking'], None, ['uploadChunk', 'uploadChunkSuccess']) }}
+{% endblock %}
+
+{% block content %}
+{% markdown %}
+
+# Concurrent Chunking {: .page-header }
+
+{{ alert("For details on the concept of chunking, start with the [chunking feature page](chunking.html).", "default", "Note:") }}
+
+The concurrent chunking feature allows multiple chunks for each file to be uploaded simultaneously.  The
+traditional chunking feature only sends one chunk at a time per file.  The number of chunks sent at once
+will always equal the maximum number of available connections (see the [`maxConnections` option](../api/options.html#maxConnections)).
+
+For example, if one file is submitted, and it can be broken up into 3 chunks, and `maxConnections` is set
+to 3, all 3 chunks of the file will be uploaded simultaneously.  With this feature disabled, the first
+chunk will be uploaded, the second chunk will be submitted only after the first chunk completes, and the
+third chunk will be uploaded only after the second chunk completes.
+
+
+### Benefits
+
+There is a clear benefit in terms of upload speed when sending multiple chunks at once.  The concurrent
+chunks feature is primarily in place to maximize bandwidth usage for single large file uploads.
+
+Our internal tests that involved uploading multiple chunks for a specific file concurrently
+showed significant improvements in bandwidth utilization.  For example, on our internal network,
+sending a 110 MB file to S3 with chunk sizes of 5 MB took about 22 seconds when chunks were
+uploaded one-at-a-time (with concurrent chunking disabled). When maxing out the default maxConnections
+for that file (3 chunks at once, concurrent chunking enabled) the same file uploaded in about 12 seconds.
+
+
+### Server-side Implications
+
+There are only server-side implications for traditional endpoints.  If you using Fine Uploader S3, or
+Fine Uploader Azure, for example, you can skip this section entirely.
+
+If you specify a path for the `chunking.success.endpoint` option, Fine Uploader (traditional) will send
+a POST request, giving your server an opportunity to combine all parts into a single file.  This option
+is required when concurrent chunking is enabled, and you may also take advantage of this request if
+you are not using the concurrent chunking feature.
+
+The POST request described above is necessary to ensure your server does not have to maintain state information
+about an in-progress upload.  Without this POST, your server would have to determine, with each chunk
+upload, if all chunks have been successfully uploaded and persisted.  This can be tricky with multiple
+chunks uploading simultaneously for a single file.  To avoid this complexity, the `chunking.success.endpoint`
+option is required when making use of the concurrent chunking feature.
+
+#### Headers for the chunking success POST
+Any custom headers you have specified via the `request.customHeaders` option will also be included
+in this request.
+
+#### Payload (body) for the chunking success POST
+The request body will be a URL-encoded string of parameters.
+
+Any parameters you have specified for the upload request (either via options or the API) will also be passed
+along with this request.
+
+Fine Uploader will also include the following parameters that describe the underlying file:
+
+- qquuid: the UUID of the underlying file.
+- qqfilename: the name of the underlying file.
+- qqtotalfilesize: the size, in bytes, of the underlying file.
+- qqtotalparts: the total number of parts that make up the underlying file.
+
+#### Expected response for the chunking success POST
+For successful responses, you may return an empty body with a status of 200, 201, or 202.  Any
+other status code is determined to be a failure.  You can also return a JSON response with
+any data your would like passed to your `onComplete` handler.  Furthermore, you can include
+an `error` property in your response with the error message you would like to have displayed
+next to the failed file (if you are using Fine Uploader UI).
+
+
+### Endpoint Support
+
+All endpoint types are supported by this feature.  Note that the `chunking.success.endpoint` option is required
+for traditional endpoints when this feature is enabled.
+
+
+### Enabling
+
+You simply must set the `chunking.concurrent.enabled` flag.  If using a traditional upload endpoint
+(i.e. not S3 or Azure) you must also specify a `chunking.success.endpoint` path, where Fine Uploader will
+send a POST after all chunks have been successfully uploaded for each file.
+
+For example:
+```javascript
+$("myUploader").fineUploader({
+    request: {
+        endpoint: "/upload/receiver"
+    },
+    chunking: {
+        enabled: true,
+        concurrent: {
+            enabled: true
+        },
+        success: {
+            endpoint: "/chunksdone"
+        }
+    }
+});
+```
+
+
+{% endmarkdown %}
+{% endblock %}

@@ -1,4 +1,4 @@
-/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
+/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl, Q */
 if (qqtest.canDownloadFileAsBlob) {
     describe("simple S3 upload tests", function() {
         "use strict";
@@ -17,24 +17,26 @@ if (qqtest.canDownloadFileAsBlob) {
             },
             startTypicalTest = function(uploader, callback) {
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
-                    var signatureRequest, uploadRequest, policyDoc, uploadRequestParams,
+                    var signatureRequest, uploadRequest, policyDoc,
                         conditions = {};
 
                     fileTestHelper.mockXhr();
                     uploader.addBlobs({name: "test.jpg", blob: blob});
 
-                    assert.equal(fileTestHelper.getRequests().length, 2, "Wrong # of requests");
+                    setTimeout(function() {
+                        assert.equal(fileTestHelper.getRequests().length, 2, "Wrong # of requests");
 
-                    uploadRequest = fileTestHelper.getRequests()[0];
-                    signatureRequest = fileTestHelper.getRequests()[1];
-                    policyDoc = JSON.parse(signatureRequest.requestBody);
+                        uploadRequest = fileTestHelper.getRequests()[0];
+                        signatureRequest = fileTestHelper.getRequests()[1];
+                        policyDoc = JSON.parse(signatureRequest.requestBody);
 
-                    qq.each(policyDoc.conditions, function(condIdx, condObj) {
-                        var condName = Object.getOwnPropertyNames(condObj)[0];
-                        conditions[condName] = condObj[condName];
-                    });
+                        qq.each(policyDoc.conditions, function(condIdx, condObj) {
+                            var condName = Object.getOwnPropertyNames(condObj)[0];
+                            conditions[condName] = condObj[condName];
+                        });
 
-                    callback(signatureRequest, policyDoc, uploadRequest, conditions);
+                        callback(signatureRequest, policyDoc, uploadRequest, conditions);
+                    }, 10);
                 });
             };
 
@@ -169,80 +171,129 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
-        it("respects the objectProperties.key option w/ a custom key generation function that returns a promise", function(done) {
-            assert.expect(5, done);
+        describe("respects the objectProperties.key option w/ a custom key generation function that returns a promise", function() {
+            var customKeyPrefix = "testcustomkey_";
 
-            var customKeyPrefix = "testcustomkey_",
-                uploader = new qq.s3.FineUploaderBasic({
-                    request:typicalRequestOption,
-                    signature: typicalSignatureOption,
-                    objectProperties: {
-                        key: function(id) {
-                            return new qq.Promise().success(customKeyPrefix + this.getName(id));
+            function runTest(keyFunc, done) {
+                var uploader = new qq.s3.FineUploaderBasic({
+                        request:typicalRequestOption,
+                        signature: typicalSignatureOption,
+                        objectProperties: {
+                            key: keyFunc
                         }
                     }
-                }
-            );
+                );
 
-            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
-                var uploadRequestParams;
+                startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                    var uploadRequestParams;
 
-                assert.equal(conditions.key, customKeyPrefix + "test.jpg");
-                assert.equal(uploader.getKey(0), customKeyPrefix + "test.jpg");
-                assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
-                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+                    assert.equal(conditions.key, customKeyPrefix + "test.jpg");
+                    assert.equal(uploader.getKey(0), customKeyPrefix + "test.jpg");
+                    assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
+                    signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                uploadRequestParams = uploadRequest.requestBody.fields;
-                assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
+                    uploadRequestParams = uploadRequest.requestBody.fields;
+                    assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
+
+                    done();
+                });
+            }
+
+            it("qq.Promise", function(done) {
+                var keyFunc = function(id) {
+                    return new qq.Promise().success(customKeyPrefix + this.getName(id));
+                };
+
+                runTest(keyFunc, done);
+            });
+
+            it("Q.js", function(done) {
+                var keyFunc = function(id) {
+                    /* jshint newcap:false */
+                    return Q(customKeyPrefix + this.getName(id));
+                };
+
+                runTest(keyFunc, done);
             });
         });
 
 
-        it("respects the objectProperties.key option w/ a custom key generation function that returns a failed promise (no reason)", function(done) {
-            assert.expect(1, done);
-
-            var uploader = new qq.s3.FineUploaderBasic({
-                    request:typicalRequestOption,
-                    signature: typicalSignatureOption,
-                    objectProperties: {
-                        key: function(id) {
-                            return new qq.Promise().failure();
+        describe("respects the objectProperties.key option w/ a custom key generation function that returns a failed promise (no reason)", function() {
+            function runTest(keyFunc, done) {
+                var uploader = new qq.s3.FineUploaderBasic({
+                        request:typicalRequestOption,
+                        signature: typicalSignatureOption,
+                        objectProperties: {
+                            key: keyFunc
                         }
                     }
-                }
-            );
+                );
 
-            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
-                uploader.addBlobs({name: "test.jpg", blob: blob});
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                    uploader.addBlobs({name: "test.jpg", blob: blob});
 
-                assert.equal(fileTestHelper.getRequests().length, 0, "Wrong # of requests");
+                    assert.equal(fileTestHelper.getRequests().length, 0, "Wrong # of requests");
+
+                    done();
+                });
+            }
+
+            it("qq.Promise", function(done) {
+                var keyFunc = function() {
+                    return new qq.Promise().failure();
+                };
+
+                runTest(keyFunc, done);
+            });
+
+            it("Q.js", function(done) {
+                var keyFunc = function() {
+                    return Q.reject();
+                };
+
+                runTest(keyFunc, done);
             });
         });
 
-        it("respects the objectProperties.key option w/ a custom key generation function that returns a failed promise (w/ reason)", function(done) {
-            assert.expect(3, done);
-
-            var uploader = new qq.s3.FineUploaderBasic({
-                    request:typicalRequestOption,
-                    signature: typicalSignatureOption,
-                    objectProperties: {
-                        key: function(id) {
-                            return new qq.Promise().failure("oops");
-                        }
-                    },
-                    callbacks: {
-                        onComplete: function(id, name, response, xhr) {
-                            assert.equal(response.error, "oops");
-                            assert.ok(!response.success);
+        describe("respects the objectProperties.key option w/ a custom key generation function that returns a failed promise (w/ reason)", function() {
+            function runTest(keyFunc, done) {
+                var uploader = new qq.s3.FineUploaderBasic({
+                        request:typicalRequestOption,
+                        signature: typicalSignatureOption,
+                        objectProperties: {
+                            key: keyFunc
+                        },
+                        callbacks: {
+                            onComplete: function(id, name, response, xhr) {
+                                assert.equal(response.error, "oops");
+                                assert.ok(!response.success);
+                                done();
+                            }
                         }
                     }
-                }
-            );
+                );
 
-            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
-                uploader.addBlobs({name: "test.jpg", blob: blob});
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                    uploader.addBlobs({name: "test.jpg", blob: blob});
 
-                assert.equal(fileTestHelper.getRequests().length, 0, "Wrong # of requests");
+                    assert.equal(fileTestHelper.getRequests().length, 0, "Wrong # of requests");
+                });
+            }
+
+            it("qq.Promise", function(done) {
+                var keyFunc = function() {
+                    return new qq.Promise().failure("oops");
+                };
+
+                runTest(keyFunc, done);
+            });
+
+            it("qq.Promise", function(done) {
+                var keyFunc = function() {
+                    return Q.reject("oops");
+                };
+
+                runTest(keyFunc, done);
             });
         });
 
@@ -357,8 +408,6 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("sends uploadSuccess request after upload succeeds", function(done) {
-            assert.expect(12, done);
-
             var uploadSuccessUrl = "/upload/success",
                 uploadSuccessParams = {"test-param-name": "test-param-value"},
                 uploadSuccessHeaders = {"test-header-name": "test-header-value"},
@@ -373,7 +422,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 }
             );
 
-            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest) {
                 var uploadSuccessRequest, uploadSuccessRequestParsedBody;
 
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
@@ -395,6 +444,8 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploadSuccessRequest.respond(200, null, null);
                 assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+
+                done();
             });
         });
 

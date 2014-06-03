@@ -631,35 +631,6 @@ describe("util.js", function () {
         });
     }); // obj2FormData
 
-    describe("cookies", function () {
-        it("perform CRUD on a cookie", function () {
-            var cookie_name1 = "qq|cookieName1";
-            var cookie_val1 = "cookieVal1";
-
-            var cookie_name2 = "qq|cookieName2";
-            var cookie_val2 = "cookieVal2";
-
-            qq.setCookie(cookie_name1, cookie_val1, 1);
-            qq.setCookie(cookie_name2, cookie_val2, 1);
-
-            assert.equal(qq.getCookie(cookie_name1), cookie_val1);
-            assert.equal(qq.getCookie(cookie_name2), cookie_val2);
-
-            var matchingcookieNames = qq.getCookieNames(/^qq\|cookieName/).sort();
-
-            assert.equal(matchingcookieNames.length, 2);
-            assert.equal(matchingcookieNames[0], cookie_name1);
-            assert.equal(matchingcookieNames[1], cookie_name2);
-
-            qq.deleteCookie(cookie_name1);
-
-            assert.equal(qq.getCookie(cookie_name1), undefined);
-            qq.deleteCookie(cookie_name2);
-
-            assert.equal(qq.getCookie(cookie_name2), undefined);
-        });
-    }); // cookies
-
     describe("parseJson", function () {
         it("parses JSON", function () {
             var object = { a: "a", b: "b"},
@@ -809,6 +780,16 @@ describe("util.js", function () {
 
         it("should format a string correctly with non-strings as parameters", function() {
             assert.equal(qq.format("Number: {}, boolean: {}, Object: {}, Array: {}", 1, true, {one: "two"}, [1,2,3]), "Number: 1, boolean: true, Object: [object Object], Array: 1,2,3");
+        });
+    });
+
+    describe("qq.isFolderDropSupported", function() {
+        it("should return false if DataTransfer doesn't contain an items array", function() {
+            assert.ok(!qq.isFolderDropSupported({}));
+        });
+
+        it("should return false if DataTransfer does contain an items array, but it's empty", function() {
+            assert.ok(!qq.isFolderDropSupported({items: []}));
         });
     });
 }); // Util

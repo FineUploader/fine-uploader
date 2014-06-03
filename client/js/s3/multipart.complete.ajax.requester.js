@@ -117,6 +117,11 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
     function getCompleteRequestBody(etagEntries) {
         var doc = document.implementation.createDocument(null, "CompleteMultipartUpload", null);
 
+        // The entries MUST be sorted by part number, per the AWS API spec.
+        etagEntries.sort(function(a, b) {
+            return a.part - b.part;
+        });
+
         // Construct an XML document for each pair of etag/part values that correspond to part uploads.
         qq.each(etagEntries, function(idx, etagEntry) {
             var part = etagEntry.part,

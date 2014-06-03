@@ -1,0 +1,85 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Upgrading to 5.x" %}
+{% block content %}
+{% markdown %}
+# Upgrading to 5.x {: .page-header }
+
+The 5.0 version brings some breaking changes, mostly surrounding upload requests.
+
+If you are upgrading from a 3.x version, be sure to also read the [Upgrading to 4.x document](upgrading-to-4.html).
+
+### Resume data persisted using localStorage for traditional endpoints
+Fine Uploader no longer uses cookies to persist auto-resume data for traditional endpoints.  Now, all auto-resume
+data is persisted to `localStorage` for all endpoint handlers.
+
+This means that any existing auto-resume records will be lost when you switch to a 5.x version if you utilize
+a traditional endpoint handler.
+
+
+### Persisted resume data format changed for S3 and Azure upload endpoints
+This means that any existing resume records will be ignored.  This format change was required to
+support the new concurrent chunking feature.
+
+
+### Most XHR requests will now contain an Accept header
+This is probably not technically a breaking change, but it should be mentioned here just in case your
+server, for some reason, is not expecting this header on requests from Fine Uploader.  This change
+affects all `XMLHttpRequest` originated requests sent to local servers
+(i.e. not requests sent to S3/Azure).
+
+Your can look at this header to programmatically determine the correct Content-Type for your response,
+but you should **NOT** rely on this value for upload requests in IE9 and older since the Accept header
+is set by the browser and is not reflective of the expected response Content-Type.  Also, ajax requests
+sent in IE9 and IE8 in a cross-origin environment will not contain this header, since
+the `XDomainRequest` transport is used and does not allow headers to be specified.
+
+
+### Removed all utility functions that deal with cookies
+As a result of the switch from cookies to `localStorage`, we removed these cookie-related utility
+functions as they are no longer needed by Fine Uploader.  If you were utilizing these utility functions for your app,
+consider importing a cookie library as a replacement, such as [jquery-cookie][jcookie] or [Cookies][Cookies].
+
+The specific removed util functions were:
+
+* `qq.areCookiesEnabled`
+* `qq.getCookie`
+* `qq.setCookie`
+* `qq.deleteCookie`
+
+
+### Changes to `resume` option
+The `id` property of the `resume` option was removed.  Very few integrators, if any, were making use of this option.
+If you were making use of this option property, any existing resume records will be lost when you upgrade to 5.x.
+
+Also, for traditional endpoints, the `cookiesExpireIn` option has changed to `recordsExpireIn`.  This is related to
+the switch from cookies to `localStorage`.
+
+
+### onResume callback is no longer promissory
+A promise is no longer an acceptable return type from an `onResume` callback.  It was unclear what benefit this
+provided, and supporting this made the code more complicated.  Due to a long-standing oversight in the code,
+promises were only accepted from `onResume` callbacks when using the traditional endpoint handler anyway.
+
+
+### Chunked request only sent for traditional endpoints if necessary
+This means that, even if chunking is enabled, a chunked upload request is only sent to traditional endpoints
+if the associated file must be broken into more than 1 chunk.  This behavior is consistent with the way all other
+endpoints have functioned.  Previously, a chunked request would always be sent for traditional endpoints if
+chunking was supported and enabled.
+
+
+### `drawThumbnail` API method only passes one argument to rejected promise callback
+This was done to bring the API that Fine Uploader exposes in compliance with the A+ promises spec.  While
+`qq.Promise` is not A+ compliant, use of other promise implementations when communicating with Fine Uploader
+is now supported.  Since the spec indicates that only one argument can be passed to a resolve or reject callback,
+the promise returned by the [`drawThumbnail` API method][drawthumbnail] had to be modified.  The resolve callback
+already was only passed one argument (the container element), this breaking change only affects the reject callback.
+Previously, two arguments were passed, in the event of an error, to the reject callback: the container element, and
+an error message.  Now, an object with `container` and `error` properties is the only argument.
+
+[Cookies]: https://github.com/ScottHamper/Cookies
+[drawthumbnail]: api/methods.html#drawThumbnail
+[jcookie]: https://github.com/carhartl/jquery-cookie
+
+{% endmarkdown %}
+{% endblock %}

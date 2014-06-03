@@ -140,8 +140,8 @@ A `BlobData` object:
 ],
 [
     {
-        "type": "qq.Promise",
-        "description": "Fulfilled by passing the container back into the success callback after the thumbnail has been rendered. If the thumbnail cannot be rendered, failure callbacks will be invoked instead, passing the container and an error message."
+        "type": "promise",
+        "description": "Fulfilled by passing the container back into the success callback after the thumbnail has been rendered. If the thumbnail cannot be rendered, failure callbacks will be invoked instead, passing an object with `container` and `error` properties."
     }
 
 ]) }}
@@ -356,11 +356,25 @@ A `BlobData` object:
 ],
 [
     {
-        "type": "qq.Promise",
+        "type": "promise",
         "description": "Fulfilled by passing the scaled image as a `Blob` back into the success callback after the original image has been scaled. If the scaled image cannot be generated, the failure callback will be invoked instead."
     }
 
 ]) }}
+
+{{ api_method("setCustomHeaders", "setCustomHeaders (customHeaders[, id])", "Set custom headers for an upload request. Pass in a file id to make the headers specific to that file.",
+[
+    {
+        "name": "customHeaders",
+        "type": "Object",
+        "description": "The custom headers to include in the upload request.  Fine Uploader may also send some other required headers."
+    },
+    {
+        "name": "id",
+        "type": "Integer",
+        "description": "The file id."
+    }
+], null) }}
 
 {{ api_method("setEndpoint", "setEndpoint (path[, identifier])", "Modify the location where upload requests should be directed. Pass in a file id or `HTMLElement` to change the endpoint for that specific item.",
 [
@@ -373,6 +387,20 @@ A `BlobData` object:
         "name": "identifier",
         "type": "Integer or HTMLElement",
         "description": "Either an integer corresponding to a file, or an `HTMLElement` corresponding to an upload button."
+    }
+], null) }}
+
+{{ api_method("setDeleteFileCustomHeaders", "setDeleteFileCustomHeaders (customHeaders[, id])", "Set custom headers for a delete file request. Pass in a file id to make the headers specific to that file.",
+[
+    {
+        "name": "customHeaders",
+        "type": "Object",
+        "description": "The custom headers to include in the delete request.  Fine Uploader may also send some other required headers."
+    },
+    {
+        "name": "id",
+        "type": "Integer",
+        "description": "The file id."
     }
 ], null) }}
 
@@ -424,7 +452,7 @@ A `BlobData` object:
     {
         "name": "params",
         "type": "Object",
-        "description": "The parameters to include in the delete request."
+        "description": "The parameters to include in the upload request."
     },
     {
         "name": "id",

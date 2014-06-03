@@ -1,78 +1,73 @@
-/* globals qq */
+/*globals qq*/
 /**
- * Implements the Put Blob Azure REST API call.  http://msdn.microsoft.com/en-us/library/windowsazure/dd179451.aspx.
+ * Ajax requester used to send a POST to a traditional endpoint once all chunks for a specific file have uploaded
+ * successfully.
+ *
+ * @param o Options from the caller - will override the defaults.
+ * @constructor
  */
-qq.azure.PutBlob = function(o) {
+qq.traditional.AllChunksDoneAjaxRequester = function(o) {
     "use strict";
 
     var requester,
-        method = "PUT",
+        method = "POST",
         options = {
-            getBlobMetadata: function(id) {},
+            cors: {
+                allowXdr: false,
+                expected: false,
+                sendCredentials: false
+            },
+            endpoint: null,
             log: function(str, level) {}
         },
-        endpoints = {},
         promises = {},
         endpointHandler = {
             get: function(id) {
-                return endpoints[id];
+                return options.endpoint;
             }
         };
 
     qq.extend(options, o);
 
     requester = qq.extend(this, new qq.AjaxRequester({
+        acceptHeader: "application/json",
         validMethods: [method],
         method: method,
         successfulResponseCodes: (function() {
             var codes = {};
-            codes[method] = [201];
+            codes[method] = [200, 201, 202];
             return codes;
         }()),
-        contentType: null,
-        customHeaders: function(id) {
-            var params = options.getBlobMetadata(id),
-                headers = qq.azure.util.getParamsAsHeaders(params);
-
-            headers["x-ms-blob-type"] = "BlockBlob";
-
-            return headers;
-        },
         endpointStore: endpointHandler,
         allowXRequestedWithAndCacheControl: false,
-        cors: {
-            expected: true
-        },
+        cors: options.cors,
         log: options.log,
         onComplete: function(id, xhr, isError) {
             var promise = promises[id];
 
-            delete endpoints[id];
             delete promises[id];
 
             if (isError) {
-                promise.failure();
+                promise.failure(xhr);
             }
             else {
-                promise.success();
+                promise.success(xhr);
             }
         }
     }));
 
 
     qq.extend(this, {
-        method: method,
-        upload: function(id, xhr, url, file) {
+        complete: function(id, xhr, params, headers) {
             var promise = new qq.Promise();
 
-            options.log("Submitting Put Blob request for " + id);
+            options.log("Submitting All Chunks Done request for " + id);
 
             promises[id] = promise;
-            endpoints[id] = url;
 
             requester.initTransport(id)
-                .withPayload(file)
-                .withHeaders({"Content-Type": file.type})
+                .withParams(params)
+                .withHeaders(headers)
                 .send(xhr);
 
             return promise;

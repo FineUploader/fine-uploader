@@ -95,20 +95,26 @@
 
             chunking: {
                 enabled: false,
-                partSize: 2000000,
+                concurrent: {
+                    enabled: false
+                },
                 paramNames: {
                     partIndex: "qqpartindex",
                     partByteOffset: "qqpartbyteoffset",
                     chunkSize: "qqchunksize",
                     totalFileSize: "qqtotalfilesize",
                     totalParts: "qqtotalparts"
+                },
+                partSize: 2000000,
+                // only relevant for traditional endpoints, only required when concurrent.enabled === true
+                success: {
+                    endpoint: null
                 }
             },
 
             resume: {
                 enabled: false,
-                id: null,
-                cookiesExpireIn: 7, //days
+                recordsExpireIn: 7, //days
                 paramNames: {
                     resuming: "qqresume"
                 }
@@ -230,6 +236,9 @@
 
         this._initFormSupportAndParams();
 
+        this._customHeadersStore = this._createStore(this._options.request.customHeaders);
+        this._deleteFileCustomHeadersStore = this._createStore(this._options.deleteFile.customHeaders);
+
         this._deleteFileParamsStore = this._createStore(this._options.deleteFile.params);
 
         this._endpointStore = this._createStore(this._options.request.endpoint);
@@ -252,7 +261,7 @@
                 this._pasteHandler = this._createPasteHandler();
             }
             else {
-                qq.log("Paste support module not found", "info");
+                this.log("Paste support module not found", "error");
             }
         }
 

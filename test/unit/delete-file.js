@@ -12,25 +12,38 @@ if (qqtest.canDownloadFileAsBlob) {
                 thefunc: function() {
                     return "thereturn";
                 }
+            },
+            deleteCustomHeaders = {
+                one: "1",
+                two: "2"
             };
 
-        function testDeleteFile(expectedMethod, deleteEnabled, successful, reject, expectedParams, sendParamsViaOptions, done) {
+        function testDeleteFile(done, expectedMethod, deleteEnabled, successful, reject, expectedParams, setParamsViaOptions, expectedHeaders, setHeadersViaOptions) {
+            var expectedAssertions = 0;
+
             expectedParams = expectedParams || {};
+            expectedHeaders = expectedHeaders || {};
 
             if (!deleteEnabled) {
-                assert.expect(2, done);
+                expectedAssertions = 2;
             }
             else if (reject) {
-                assert.expect(3, done);
+                expectedAssertions = 3;
             }
             else {
                 if (expectedMethod === "POST") {
-                    assert.expect(12 + Object.keys(expectedParams).length, done);
+                    expectedAssertions = 12 + Object.keys(expectedParams).length;
                 }
                 else {
-                    assert.expect(10 + Object.keys(expectedParams).length, done);
+                    expectedAssertions = 10 + Object.keys(expectedParams).length;
                 }
             }
+
+            if (Object.keys(expectedHeaders).length) {
+                expectedAssertions += 2;
+            }
+
+            assert.expect(expectedAssertions, done);
 
             var uploader = new qq.FineUploaderBasic({
                 request: {
@@ -41,8 +54,15 @@ if (qqtest.canDownloadFileAsBlob) {
                     endpoint: testDeleteEndpoint,
                     method: expectedMethod,
                     params: (function() {
-                        if (sendParamsViaOptions && expectedParams) {
+                        if (setParamsViaOptions && expectedParams) {
                             return expectedParams;
+                        }
+
+                        return {};
+                    }()),
+                    customHeaders: (function() {
+                        if (setHeadersViaOptions && expectedHeaders) {
+                            return expectedHeaders;
                         }
 
                         return {};
@@ -85,6 +105,11 @@ if (qqtest.canDownloadFileAsBlob) {
                                 }
                             }
 
+                            if (Object.keys(expectedHeaders).length) {
+                                assert.equal(deleteRequest.requestHeaders.one, expectedHeaders.one, "Wrong 'one' header");
+                                assert.equal(deleteRequest.requestHeaders.two, expectedHeaders.two, "Wrong 'two' header");
+                            }
+
                             deleteRequest.respond(successful ? 200 : 500, null, null);
                         }
                         else {
@@ -102,7 +127,8 @@ if (qqtest.canDownloadFileAsBlob) {
                             return false;
                         }
 
-                        !sendParamsViaOptions && uploader.setDeleteFileParams(expectedParams);
+                        !setParamsViaOptions && uploader.setDeleteFileParams(expectedParams);
+                        !setHeadersViaOptions && uploader.setDeleteFileCustomHeaders(expectedHeaders);
                     },
                     onDelete: function(id) {
                         assert.equal(id, 0, "Wrong ID passed to onDelete");
@@ -146,39 +172,47 @@ if (qqtest.canDownloadFileAsBlob) {
         }
 
         it("ignores delete requests if the feature is disabled", function(done) {
-            testDeleteFile("DELETE", true, false, false, null, null, done);
+            testDeleteFile(done, "DELETE", true, false, false);
         });
 
         it("handles simple delete of successfully uploaded file", function(done) {
-            testDeleteFile("DELETE", true, true, false, null, null, done);
+            testDeleteFile(done, "DELETE", true, true, false);
         });
 
         it("handles simple failed delete of successfully uploaded file", function(done) {
-            testDeleteFile("DELETE", false, true, false, null, null, done);
+            testDeleteFile(done, "DELETE", false, true);
         });
 
         it("ignores delete requests that are rejected via callback", function(done) {
-            testDeleteFile("DELETE", true, true, true, null, null, done);
+            testDeleteFile(done, "DELETE", true, true, true);
         });
 
         it("handles simple delete w/ method changed to POST", function(done) {
-            testDeleteFile("POST", true, true, false, null, null, done);
+            testDeleteFile(done, "POST", true, true, false);
         });
 
         it("properly passes parameters specified via options only for DELETE request", function(done) {
-            testDeleteFile("DELETE", true, true, false, deleteParams, true, done);
+            testDeleteFile(done, "DELETE", true, true, false, deleteParams, true);
         });
 
         it("properly passes parameters specified via options only for POST request", function(done) {
-            testDeleteFile("POST", true, true, false, deleteParams, true, done);
+            testDeleteFile(done, "POST", true, true, false, deleteParams, true);
         });
 
         it("properly passes parameters specified via API only for DELETE request", function(done) {
-            testDeleteFile("DELETE", true, true, false, deleteParams, false, done);
+            testDeleteFile(done, "DELETE", true, true, false, deleteParams);
         });
 
         it("properly passes parameters specified via API only for POST request", function(done) {
-            testDeleteFile("POST", true, true, false, deleteParams, false, done);
+            testDeleteFile(done, "POST", true, true, false, deleteParams);
+        });
+
+        it("properly passes headers specified via options", function(done) {
+            testDeleteFile(done, "POST", true, true, false, null, null, deleteCustomHeaders, true);
+        });
+
+        it("properly passes headers specified via API", function(done) {
+            testDeleteFile(done, "POST", true, true, false, null, null, deleteCustomHeaders, false);
         });
     });
 }
