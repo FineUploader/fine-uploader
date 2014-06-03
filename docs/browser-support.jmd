@@ -346,7 +346,7 @@ Note: Any features not listed here are supported in all browsers.
 
 Upload size limitations are present in all browsers, but are most likely to affect the users of older browsers
 which do not support the [File API](http://caniuse.com/fileapi). Fine Uploader uses [chunking]({{ URL_ROOT }}/features/chunking.html) to work around
-the maxiumum upload size limit in browsers that do support the File API. When you are designing your upload form
+the maximum upload size limit in browsers that do support the File API. When you are designing your upload form
 for users of these older browsers, or if you are not using chunking, make sure you keep the imposed file size limits in mind:
 
 <table class='table table-condensed table-hover table-striped'>
