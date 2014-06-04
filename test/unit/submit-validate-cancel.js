@@ -58,7 +58,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 expectedStatusChangeOrder = [qq.status.SUBMITTING, qq.status.SUBMITTED];
 
             qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
-                uploader.addBlobs({blob: blob, name: expectedName});
+                uploader.addFiles({blob: blob, name: expectedName});
 
                 assert.deepEqual(callbackOrder, expectedCallbackOrder);
                 assert.deepEqual(statusChangeOrder, expectedStatusChangeOrder);
@@ -120,7 +120,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     }())
                 });
 
-                uploader.addBlobs(blob);
+                uploader.addFiles(blob);
 
                 return uploader;
             }
@@ -211,7 +211,7 @@ if (qqtest.canDownloadFileAsBlob) {
                             blobs.push(blob);
                         }
 
-                        uploader.addBlobs(blobs);
+                        uploader.addFiles(blobs);
                     });
                 });
             }
@@ -328,7 +328,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
                     qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob1) {
                         qqtest.downloadFileAsBlob("down.jpg", "image/jpeg").then(function(blob2) {
-                            uploader.addBlobs([blob1, blob2, blob1]);
+                            uploader.addFiles([blob1, blob2, blob1]);
                         });
                     });
                 }
@@ -381,7 +381,7 @@ if (qqtest.canDownloadFileAsBlob) {
             );
 
                 qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
-                    uploader.addBlobs([blob, blob]);
+                    uploader.addFiles([blob, blob]);
                 });
             }
 

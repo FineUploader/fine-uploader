@@ -45,38 +45,65 @@
             }
         },
 
-        addFiles: function(filesOrInputs, params, endpoint) {
-            var verifiedFilesOrInputs = [],
-                batchId = this._storedIds.length === 0 ? qq.getUniqueId() : this._currentBatchId,
-                fileOrInputIndex, fileOrInput, fileIndex;
+        addFiles: function(data, params, endpoint) {
+            var batchId = this._storedIds.length === 0 ? qq.getUniqueId() : this._currentBatchId,
+
+                processBlob = qq.bind(function(blob) {
+                    this._handleNewFile({
+                        blob: blob,
+                        name: this._options.blobs.defaultName
+                    }, batchId, verifiedFiles);
+                }, this),
+
+                processBlobData = qq.bind(function(blobData) {
+                    this._handleNewFile(blobData, batchId, verifiedFiles);
+                }, this),
+
+                processFileOrInput = qq.bind(function(fileOrInput) {
+                    if (qq.isInput(fileOrInput) && qq.supportedFeatures.ajaxUploading) {
+                        var files = Array.prototype.slice.call(fileOrInput.files);
+
+                        qq.each(files, function(idx, file) {
+                            this._handleNewFile(file, batchId, verifiedFiles);
+                        });
+                    }
+                    else {
+                        this._handleNewFile(fileOrInput, batchId, verifiedFiles);
+                    }
+                }, this),
+
+                normalizeData = function() {
+                    if (qq.isFileList(data)) {
+                        data = Array.prototype.slice.call(data);
+                    }
+                    data = [].concat(data);
+                },
+
+                self = this,
+                verifiedFiles = [];
 
             this._currentBatchId = batchId;
 
-            if (filesOrInputs) {
-                if (!qq.isFileList(filesOrInputs)) {
-                    filesOrInputs = [].concat(filesOrInputs);
-                }
+            if (data) {
+                normalizeData();
 
-                for (fileOrInputIndex = 0; fileOrInputIndex < filesOrInputs.length; fileOrInputIndex+=1) {
-                    fileOrInput = filesOrInputs[fileOrInputIndex];
-
-                    if (qq.isFileOrInput(fileOrInput)) {
-                        if (qq.isInput(fileOrInput) && qq.supportedFeatures.ajaxUploading) {
-                            for (fileIndex = 0; fileIndex < fileOrInput.files.length; fileIndex++) {
-                                this._handleNewFile(fileOrInput.files[fileIndex], batchId, verifiedFilesOrInputs);
-                            }
-                        }
-                        else {
-                            this._handleNewFile(fileOrInput, batchId, verifiedFilesOrInputs);
-                        }
+                qq.each(data, function(idx, fileContainer) {
+                    if (qq.isFileOrInput(fileContainer)) {
+                        processFileOrInput(fileContainer);
+                    }
+                    else if (qq.isBlob(fileContainer)) {
+                        processBlob(fileContainer);
+                    }
+                    else if (qq.isObject(fileContainer) && fileContainer.blob && fileContainer.name) {
+                        processBlobData(fileContainer);
                     }
                     else {
-                        this.log(fileOrInput + " is not a File or INPUT element!  Ignoring!", "warn");
+                        self.log(fileContainer + " is not a valid file container!  Ignoring!", "warn");
                     }
-                }
+                });
 
-                this.log("Received " + verifiedFilesOrInputs.length + " files or inputs.");
-                this._prepareItemsForUpload(verifiedFilesOrInputs, params, endpoint);
+                this.log("Received " + verifiedFiles.length + " files.");
+                this._prepareItemsForUpload(verifiedFiles, params, endpoint);
             }
         },
 
@@ -994,7 +1021,7 @@
 
             name += "." + extension;
 
-            this.addBlobs({
+            this.addFiles({
                 name: name,
                 blob: blob
             });

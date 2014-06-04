@@ -21,7 +21,7 @@ if (qqtest.canDownloadFileAsBlob) {
                         conditions = {};
 
                     fileTestHelper.mockXhr();
-                    uploader.addBlobs({name: "test.jpg", blob: blob});
+                    uploader.addFiles({name: "test.jpg", blob: blob});
 
                     setTimeout(function() {
                         assert.equal(fileTestHelper.getRequests().length, 2, "Wrong # of requests");
@@ -230,7 +230,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 );
 
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
-                    uploader.addBlobs({name: "test.jpg", blob: blob});
+                    uploader.addFiles({name: "test.jpg", blob: blob});
 
                     assert.equal(fileTestHelper.getRequests().length, 0, "Wrong # of requests");
 
@@ -274,7 +274,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 );
 
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
-                    uploader.addBlobs({name: "test.jpg", blob: blob});
+                    uploader.addFiles({name: "test.jpg", blob: blob});
 
                     assert.equal(fileTestHelper.getRequests().length, 0, "Wrong # of requests");
                 });

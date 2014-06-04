@@ -30,26 +30,7 @@ $(document).ready(function() {
 {% markdown %}
 ## Core
 {% endmarkdown %}
-{{ api_method("addFiles", "addFiles (files[, params[, endpoint]])", "Submit one or more File objects to the uploader",
-[
-        {
-            "name": "files",
-            "type": "Array",
-            "description": "An array of `File`s or `<input>` `HTMLElements`"
-        },
-    {
-        "name": "params",
-        "type": "Object",
-        "description": "A set of parameters to send with the file to be added"
-    },
-    {
-        "name": "endpoint",
-        "type": "String",
-        "description": "The endpoint to send this file to"
-    }
-]) }}
-
-{{ api_method("addBlobs", "addBlobs (blobs[, params[, endpoint]])", "Submit one or more Blob objects to the uploader.
+{{ api_method("addFiles", "addFiles (files[, params[, endpoint]])", "Submit one or more files to the uploader.
 
 A `BlobData` object:
 
@@ -60,11 +41,11 @@ A `BlobData` object:
 
 ",
 [
-    {
-        "name": "blobs",
-        "type": "Array",
-        "description": "An array of `Blob` or `BlobData` objects."
-    },
+        {
+            "name": "files",
+            "type": "Array",
+            "description": "An array of `File`s, `<input>`s, `FileList`s, `Blob`s, or `BlobData` objects"
+        },
     {
         "name": "params",
         "type": "Object",

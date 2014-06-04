@@ -56,7 +56,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     purlUrl,
                     theparams = overrideParams || params;
 
-                uploader.addBlobs({name: "test", blob: blob});
+                uploader.addFiles({name: "test", blob: blob});
                 uploader.uploadStoredFiles();
 
                 assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
@@ -81,7 +81,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 var request;
 
-                uploader.addBlobs({name: "test", blob: blob});
+                uploader.addFiles({name: "test", blob: blob});
                 uploader.uploadStoredFiles();
 
                 assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");

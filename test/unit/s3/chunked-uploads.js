@@ -23,7 +23,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     var initiateSignatureRequest, uploadRequest, initiateToSign;
 
                     fileTestHelper.mockXhr();
-                    uploader.addBlobs({name: "test.jpg", blob: blob});
+                    uploader.addFiles({name: "test.jpg", blob: blob});
 
                     assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 
@@ -544,7 +544,7 @@ if (qqtest.canDownloadFileAsBlob) {
                         var uploadRequest;
 
                         fileTestHelper.mockXhr();
-                        uploader.addBlobs({name: "test.jpg", blob: blob});
+                        uploader.addFiles({name: "test.jpg", blob: blob});
 
                         assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 

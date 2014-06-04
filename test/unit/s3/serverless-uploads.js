@@ -30,7 +30,7 @@ describe("S3 serverless upload tests", function() {
                     var request, requestParams;
 
                     fileTestHelper.mockXhr();
-                    uploader.addBlobs({name: "test", blob: blob});
+                    uploader.addFiles({name: "test", blob: blob});
 
                     assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 
@@ -76,7 +76,7 @@ describe("S3 serverless upload tests", function() {
                     var request, requestParams;
 
                     fileTestHelper.mockXhr();
-                    uploader.addBlobs({name: "test", blob: blob});
+                    uploader.addFiles({name: "test", blob: blob});
 
                     request = fileTestHelper.getRequests()[0];
                     requestParams = request.requestBody.fields;
@@ -106,7 +106,7 @@ describe("S3 serverless upload tests", function() {
                     var request, requestParams;
 
                     fileTestHelper.mockXhr();
-                    uploader.addBlobs({name: "test", blob: blob});
+                    uploader.addFiles({name: "test", blob: blob});
 
                     assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 
@@ -159,7 +159,7 @@ describe("S3 serverless upload tests", function() {
                         var request, requestParams;
 
                         fileTestHelper.mockXhr();
-                        uploader.addBlobs({name: "test", blob: blob});
+                        uploader.addFiles({name: "test", blob: blob});
 
                         assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 

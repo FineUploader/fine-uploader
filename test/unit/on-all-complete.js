@@ -39,7 +39,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
                     fileTestHelper.mockXhr();
-                    uploader.addBlobs(blob);
+                    uploader.addFiles(blob);
                     !autoUpload && uploader.uploadStoredFiles();
 
                     if (success) {
@@ -97,7 +97,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
                     fileTestHelper.mockXhr();
-                    uploader.addBlobs([blob, blob]);
+                    uploader.addFiles([blob, blob]);
                 });
             };
 
@@ -139,7 +139,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
                 fileTestHelper.mockXhr();
-                uploader.addBlobs(blob);
+                uploader.addFiles(blob);
                 uploader.cancel(0);
 
                 setTimeout(function() {
@@ -196,7 +196,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
                 fileTestHelper.mockXhr();
-                uploader.addBlobs([blob, blob]);
+                uploader.addFiles([blob, blob]);
             });
         });
 
@@ -235,7 +235,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
                 fileTestHelper.mockXhr();
-                uploader.addBlobs([blob, blob]);
+                uploader.addFiles([blob, blob]);
             });
         });
 
@@ -260,7 +260,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
                 fileTestHelper.mockXhr();
-                uploader.addBlobs([blob, blob]);
+                uploader.addFiles([blob, blob]);
 
                 setTimeout(function() {
                     assert.deepEqual(callbackOrder, ["submit", "submit"]);
@@ -305,7 +305,7 @@ if (qqtest.canDownloadFileAsBlob) {
             }),
                 uploadFiles = function() {
                     callbackOrder = [];
-                    uploader.addBlobs([blobToUpload, blobToUpload]);
+                    uploader.addFiles([blobToUpload, blobToUpload]);
                 },
                 blobToUpload;
 

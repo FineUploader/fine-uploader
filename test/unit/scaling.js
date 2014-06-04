@@ -271,7 +271,7 @@ if (qq.supportedFeatures.scaling) {
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                 fileTestHelper.mockXhr();
                 referenceFileSize = blob.size;
-                uploader.addBlobs([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
+                uploader.addFiles([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
             });
         });
 
@@ -314,7 +314,7 @@ if (qq.supportedFeatures.scaling) {
             qqtest.downloadFileAsBlob("star.png", "image/png").then(function(star) {
                 qqtest.downloadFileAsBlob("drop-background.gif", "image/gif").then(function(drop) {
                     fileTestHelper.mockXhr();
-                    uploader.addBlobs([{blob: star, name: "star.png"}, {blob: drop, name: "drop.gif"}]);
+                    uploader.addFiles([{blob: star, name: "star.png"}, {blob: drop, name: "drop.gif"}]);
                 });
             });
         });
@@ -368,7 +368,7 @@ if (qq.supportedFeatures.scaling) {
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                 fileTestHelper.mockXhr();
                 referenceFileSize = blob.size;
-                uploader.addBlobs([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
+                uploader.addFiles([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
             });
         });
 
@@ -411,7 +411,7 @@ if (qq.supportedFeatures.scaling) {
             qqtest.downloadFileAsBlob("simpletext.txt", "text/plain").then(function(blob) {
                 fileTestHelper.mockXhr();
                 referenceFileSize = blob.size;
-                uploader.addBlobs([{blob: blob, name: "one.txt"}, {blob: blob, name: "two.txt"}]);
+                uploader.addFiles([{blob: blob, name: "one.txt"}, {blob: blob, name: "two.txt"}]);
             });
         });
 
@@ -454,7 +454,7 @@ if (qq.supportedFeatures.scaling) {
             qqtest.downloadFileAsBlob("simpletext.txt", "text/plain").then(function(textFile) {
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(jpegFile) {
                     fileTestHelper.mockXhr();
-                    uploader.addBlobs([{blob: textFile, name: "one.txt"}, {blob: jpegFile, name: "two.jpg"}]);
+                    uploader.addFiles([{blob: textFile, name: "one.txt"}, {blob: jpegFile, name: "two.jpg"}]);
                 });
             });
         });
@@ -518,7 +518,7 @@ if (qq.supportedFeatures.scaling) {
 
             qqtest.downloadFileAsBlob("star.png", "image/png").then(function(blob) {
                 fileTestHelper.mockXhr();
-                uploader.addBlobs({blob: blob, name: "test.png"});
+                uploader.addFiles({blob: blob, name: "test.png"});
             });
         });
 
@@ -589,7 +589,7 @@ if (qq.supportedFeatures.scaling) {
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                 fileTestHelper.mockXhr();
                 referenceFileSize = blob.size;
-                uploader.addBlobs([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
+                uploader.addFiles([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
             });
         });
 
@@ -641,7 +641,7 @@ if (qq.supportedFeatures.scaling) {
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(up) {
                 qqtest.downloadFileAsBlob("star.png", "image/png").then(function(star) {
                     fileTestHelper.mockXhr();
-                    uploader.addBlobs([{blob: up, name: "up.jpg"}, {blob: star, name: "star.png"}]);
+                    uploader.addFiles([{blob: up, name: "up.jpg"}, {blob: star, name: "star.png"}]);
                 });
             });
         });
@@ -689,7 +689,7 @@ if (qq.supportedFeatures.scaling) {
 
                     qqtest.downloadFileAsBlob("simpletext.txt", "text/plain").then(function(text) {
                         fileTestHelper.mockXhr();
-                        uploader.addBlobs([{blob: up, name: "up.jpg"}, {blob: text, name: "text.txt"}]);
+                        uploader.addFiles([{blob: up, name: "up.jpg"}, {blob: text, name: "text.txt"}]);
                     });
                 });
             });
@@ -748,7 +748,7 @@ if (qq.supportedFeatures.scaling) {
             qqtest.downloadFileAsBlob("left.jpg", "image/jpeg").then(function(left) {
                 qqtest.downloadFileAsBlob("star.png", "image/png").then(function(star) {
                     fileTestHelper.mockXhr();
-                    uploader.addBlobs([{blob: left, name: "left.jpg"}, {blob: star, name: "star.png"}]);
+                    uploader.addFiles([{blob: left, name: "left.jpg"}, {blob: star, name: "star.png"}]);
                 });
             });
         });

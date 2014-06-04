@@ -20,7 +20,7 @@ describe("azure chunked upload tests", function() {
                     var signatureRequest, signatureRequestPurl;
 
                     fileTestHelper.mockXhr();
-                    uploader.addBlobs({name: "test.jpg", blob: blob});
+                    uploader.addFiles({name: "test.jpg", blob: blob});
 
                     assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 

@@ -299,7 +299,7 @@ describe("templating.js", function() {
             });
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                uploader.addBlobs({blob: blob, name: "up.jpg"});
+                uploader.addFiles({blob: blob, name: "up.jpg"});
             });
         });
     }

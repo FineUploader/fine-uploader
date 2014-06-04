@@ -50,7 +50,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 var request,
                     requestParams;
 
-                uploader.addBlobs({name: "test", blob: blob});
+                uploader.addFiles({name: "test", blob: blob});
                 uploader.uploadStoredFiles();
 
                 assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
@@ -78,7 +78,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 var request, purlUrl;
 
-                uploader.addBlobs({name: "test", blob: blob});
+                uploader.addFiles({name: "test", blob: blob});
 
                 assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
                 request = fileTestHelper.getRequests()[0];
@@ -115,7 +115,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 var request, requestParams;
 
-                uploader.addBlobs(blob);
+                uploader.addFiles(blob);
 
                 assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
                 request = fileTestHelper.getRequests()[0];
@@ -137,7 +137,7 @@ if (qqtest.canDownloadFileAsBlob) {
             });
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                uploader.addBlobs(blob);
+                uploader.addFiles(blob);
                 uploader.setUuid(0, "123");
                 assert.equal(uploader.getUuid(0), "123");
             });
@@ -162,7 +162,7 @@ if (qqtest.canDownloadFileAsBlob) {
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                 fileTestHelper.mockXhr();
 
-                uploader.addBlobs(blob);
+                uploader.addFiles(blob);
 
                 fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true, newUuid: newUuid}));
             });
@@ -178,7 +178,7 @@ if (qqtest.canDownloadFileAsBlob) {
             });
 
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                uploader.addBlobs(blob);
+                uploader.addFiles(blob);
                 uploader.setName(0, newName);
                 assert.equal(uploader.getName(0), newName);
             });
@@ -206,7 +206,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                     fileTestHelper.mockXhr();
 
-                    uploader.addBlobs([blob, blob]);
+                    uploader.addFiles([blob, blob]);
                     setTimeout(function() {
                         autoUpload || uploader.uploadStoredFiles();
                     }, 0);
@@ -233,7 +233,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 }
             });
 
-            uploader.addBlobs([]);
+            uploader.addFiles([]);
             uploader.addFiles([]);
         });
 
@@ -255,7 +255,7 @@ if (qqtest.canDownloadFileAsBlob) {
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                 fileTestHelper.mockXhr();
 
-                uploader.addBlobs(blob);
+                uploader.addFiles(blob);
                 fileTestHelper.getRequests()[0].respond(500, null, JSON.stringify({success: true}));
             });
         });

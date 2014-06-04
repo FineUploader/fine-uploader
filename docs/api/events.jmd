@@ -535,8 +535,7 @@ See the [`uploadChunk` event](#uploadChunk) for more information on the `chunkDa
 }}
 
 {{ api_event("validate", "validate",
-""" Called once for each selected, dropped, or `addFiles` submitted file and for
-each `addBlobs` submitted `Blob`.
+""" Called once for each selected, dropped, or `addFiles` submitted file.
 
 This callback is always invoked before the default Fine Uploader validators
 execute.

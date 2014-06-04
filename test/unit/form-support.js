@@ -158,7 +158,7 @@ describe("test form support", function() {
 
                         var request, requestParams;
 
-                        uploader.addBlobs(blob);
+                        uploader.addFiles(blob);
 
                         assert.equal(fileTestHelper.getRequests().length, 0, "Wrong # of requests");
                         uploader.uploadStoredFiles();
