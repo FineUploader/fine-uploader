@@ -62,8 +62,8 @@ qq.UploadHandlerController = function(o, namespace) {
 
             log("All chunks have been uploaded for " + id + " - finalizing....");
             handler.finalizeChunks(id).then(
-                function(xhr) {
-                    var normaizedResponse = upload.normalizeResponse({}, true);
+                function(response, xhr) {
+                    var normaizedResponse = upload.normalizeResponse(response, true);
 
                     options.onProgress(id, name, size, size);
                     handler._maybeDeletePersistedChunkData(id);
