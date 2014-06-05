@@ -99,6 +99,7 @@ public class UploadReceiver extends HttpServlet
 
                 assertCombinedFileIsVaid(requestParser.getTotalFileSize(), outputFile, requestParser.getUuid());
                 deletePartitionFiles(dir, requestParser.getUuid());
+                writeResponse(resp.getWriter(), requestParser.generateError() ? "Generated error" : null, isIframe, false, requestParser, outputFile);
             }
             else if (ServletFileUpload.isMultipartContent(req))
             {
@@ -296,6 +297,7 @@ public class UploadReceiver extends HttpServlet
 
 
                 response.addProperty("success", true);
+            response.addProperty("foo", "bar");
                 if (file != null)
                 {
                     response.addProperty("thumbnailUrl", "/" + file.getPath());
