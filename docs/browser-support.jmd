@@ -400,6 +400,7 @@ Feature     | Description
 `folderSelection` | Can folders be selected via a file dialog?
 `imagePreviews` | Is client-side image preview generation possible?
 `imageValidation` | Can we validate image properties client-side?
+`limitedScaledImageSize` | Does the browser have an upper limit on the size of a `<canvas>`?  Directly related to the maximum allowable dimensions of a scaled image.
 `itemSizeValidation` | Is client-side file size validation supported?
 `pause` | Can chunked file uploads be paused?
 `progressBar` | Are progress bars supported?

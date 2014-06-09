@@ -132,6 +132,7 @@ qq.supportedFeatures = (function () {
         imagePreviews: supportsImagePreviews,
         imageValidation: supportsImagePreviews,
         itemSizeValidation: supportsAjaxFileUploading,
+        limitedScaledImageSize: qq.ios(),
         pause: supportsChunking,
         progressBar: supportsUploadProgress,
         resume: supportsResume,
