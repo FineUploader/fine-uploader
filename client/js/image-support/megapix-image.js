@@ -263,13 +263,5 @@
         }
     };
 
-    /**
-     * Export class to global
-     */
-    if (typeof define === "function" && define.amd) {
-        define([], function() { return MegaPixImage; }); // for AMD loader
-    } else {
-        this.MegaPixImage = MegaPixImage;
-    }
-
+    qq.MegaPixImage = MegaPixImage;
 })();
