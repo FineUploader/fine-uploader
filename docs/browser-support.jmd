@@ -407,6 +407,7 @@ Feature     | Description
 `resume` | Is the auto-resume feature supported?
 `scaling` | Is client-side image scaling possible?
 `tiffPreviews` | Can TIFFs be rendered natively in the current browser?
+`unlimitedScaledImageSize` | `true` if there is no known upper limit for `<canvas>` (used to scale images).  Will be `false` for iOS and scaled images may be further downsampled by Fine Uploader to work around this limit.
 `uploadCors` | Are cross-domain uploads supported?
 `uploading` | Is uploading of any sort supported? (Note: This will return true for browsers that are not explicitly supported such as IE6)
 `uploadCustomHeaders` | Are custom headers allowed to be sent along with the upload request?

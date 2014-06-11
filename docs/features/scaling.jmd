@@ -171,6 +171,11 @@ this item limit.
 * Client-side scaling and EXIF header re-insertion operations can potentially be very resource-intensive.
 Please keep this in mind before you enable this feature, taking into account your user base and application goals.
 
+* iOS limits the size of a `<canvas>` to  about 5 megapixels.  Any image larger than this will be rendered as a
+blank `<canvas>`.  This affects scaling as Fine Uploader uses `<canvas>` in part of the scaling process.  To
+overcome this issue, Fine Uploader will further downsample scaled images that exceed this limit.  You can check to
+see if such a limitation is known by examining the `qq.supportedFeatures.unlimitedScaledImageSize` flag.
+
 
 ### Supported Browsers
 This feature is supported on all browsers other than IE9 and older, Android 2.4 or older, and Safari 5.1 or older.
