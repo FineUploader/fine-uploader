@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block js_head %}
-<script src="{{ ASSETS }}/js/main.js"></script>
+<script src="{{ ASSETS }}/js/sidebar.js"></script>
 {% endblock %}
 
 {% block js_footer %}
