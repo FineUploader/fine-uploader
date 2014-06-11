@@ -3,7 +3,6 @@ var renderSidebarNav = function(type, headers) {
         sidebarContents = '';
 
     $.each(headers, function (index, header) {
-        console.log('header: ' + header);
         var $typeEl = $("." + type + "s-" + header),
             typeTitle = $typeEl.find('h2').text(),
             typeLink = "#"+$typeEl.find('h2').attr('id');
