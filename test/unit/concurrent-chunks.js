@@ -14,7 +14,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     qq.each(fileTestHelper.getRequests(), function(idx, req) {
                         if (!req.ack && (!endpoint || endpoint === req.url)) {
                             req.ack = true;
-                            req.respond(200, null, JSON.stringify({success: true}));
+                            req.respond(200, null, JSON.stringify({success: true, testParam: "testVal"}));
                         }
                     });
                 }, 10);
@@ -47,12 +47,16 @@ if (qqtest.canDownloadFileAsBlob) {
                             chunksStarted++;
                             acknowledgeRequests();
                         },
-                        onUploadChunkSuccess: function(id, chunkData) {
+                        onUploadChunkSuccess: function(id, chunkData, response) {
                             chunksStarted < expectedChunks && actualUploadsPerGroup.push(0);
+                            assert.equal(response.testParam, "testVal");
                         },
                         onAllComplete: function(succeeded, failed) {
                             assert.deepEqual(actualUploadsPerGroup, expectedUploadPerGroup);
                             done();
+                        },
+                        onComplete: function(id, name, response) {
+                            assert.equal(response.testParam, "testVal");
                         }
                     }
                 });

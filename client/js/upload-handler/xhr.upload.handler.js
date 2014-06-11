@@ -86,8 +86,15 @@ qq.XhrUploadHandler = function(spec) {
 
         // Called when all chunks have been successfully uploaded.  Expected promissory return type.
         // This defines the default behavior if nothing further is required when all chunks have been uploaded.
-        finalizeChunks: function(id) {
-            return new qq.Promise().success(handler._getXhr(id));
+        finalizeChunks: function(id, responseParser) {
+            var lastChunkIdx = handler._getTotalChunks(id) - 1,
+                xhr = handler._getXhr(id, lastChunkIdx);
+
+            if (responseParser) {
+                return new qq.Promise().success(responseParser(xhr), xhr);
+            }
+
+            return new qq.Promise().success({}, xhr);
         },
 
         getFile: function(id) {

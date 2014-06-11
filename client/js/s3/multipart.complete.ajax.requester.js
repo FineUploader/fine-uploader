@@ -106,7 +106,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
             promise.failure("Problem asking Amazon to combine the parts!", xhr);
         }
         else {
-            promise.success(xhr);
+            promise.success({}, xhr);
         }
     }
 
