@@ -73,6 +73,21 @@
         return canvas.toDataURL(mime, options.quality || 0.8);
     }
 
+    function maybeCalculateDownsampledDimensions(spec) {
+        var maxPixels = 5241809; //iOS specific value
+
+        if (!qq.ios()) {
+            throw new qq.Error("Downsampled dimensions can only be reliably calculated for iOS!");
+        }
+
+        if (spec.origHeight * spec.origWidth > maxPixels) {
+            return {
+                newHeight: Math.round(Math.sqrt(maxPixels * (spec.origHeight / spec.origWidth))),
+                newWidth: Math.round(Math.sqrt(maxPixels * (spec.origWidth / spec.origHeight)))
+            }
+        }
+    }
+
     /**
      * Rendering image element (with resizing) into the canvas element
      */
@@ -81,6 +96,23 @@
         var width = options.width, height = options.height;
         var ctx = canvas.getContext("2d");
         ctx.save();
+
+        if (!qq.supportedFeatures.unlimitedScaledImageSize) {
+            var modifiedDimensions = maybeCalculateDownsampledDimensions({
+                origWidth: width,
+                origHeight: height
+            });
+
+            if (modifiedDimensions) {
+                qq.log(qq.format("Had to reduce dimensions due to device limitations from {}w / {}h to {}w / {}h",
+                    width, height, modifiedDimensions.newWidth, modifiedDimensions.newHeight),
+                "warn");
+
+                width = modifiedDimensions.newWidth - 1;
+                height = modifiedDimensions.newHeight - 1;
+            }
+        }
+
         transformCoordinate(canvas, width, height, options.orientation);
 
         // Fine Uploader specific: Save some CPU cycles if not using iOS
