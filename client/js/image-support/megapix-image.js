@@ -74,7 +74,7 @@
     }
 
     function maybeCalculateDownsampledDimensions(spec) {
-        var maxPixels = 5241809; //iOS specific value
+        var maxPixels = 5241000; //iOS specific value
 
         if (!qq.ios()) {
             throw new qq.Error("Downsampled dimensions can only be reliably calculated for iOS!");
@@ -108,8 +108,8 @@
                     width, height, modifiedDimensions.newWidth, modifiedDimensions.newHeight),
                 "warn");
 
-                width = modifiedDimensions.newWidth - 1;
-                height = modifiedDimensions.newHeight - 1;
+                width = modifiedDimensions.newWidth;
+                height = modifiedDimensions.newHeight;
             }
         }
 
