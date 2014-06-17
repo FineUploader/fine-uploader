@@ -137,6 +137,7 @@ qq.supportedFeatures = (function () {
         resume: supportsResume,
         scaling: supportsImagePreviews && supportsUploadingBlobs,
         tiffPreviews: qq.safari(), // Not the best solution, but simple and probably accurate enough (for now)
+        unlimitedScaledImageSize: !qq.ios(), // false simply indicates that there is some known limit
         uploading: supportsUploading,
         uploadCors: supportsUploadCors,
         uploadCustomHeaders: supportsAjaxFileUploading,

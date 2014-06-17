@@ -419,12 +419,14 @@ Feature     | Description
 `folderSelection` | Can folders be selected via a file dialog?
 `imagePreviews` | Is client-side image preview generation possible?
 `imageValidation` | Can we validate image properties client-side?
+`limitedScaledImageSize` | Does the browser have an upper limit on the size of a `<canvas>`?  Directly related to the maximum allowable dimensions of a scaled image.
 `itemSizeValidation` | Is client-side file size validation supported?
 `pause` | Can chunked file uploads be paused?
 `progressBar` | Are progress bars supported?
 `resume` | Is the auto-resume feature supported?
 `scaling` | Is client-side image scaling possible?
 `tiffPreviews` | Can TIFFs be rendered natively in the current browser?
+`unlimitedScaledImageSize` | `true` if there is no known upper limit for `<canvas>` (used to scale images).  Will be `false` for iOS and scaled images may be further downsampled by Fine Uploader to work around this limit.
 `uploadCors` | Are cross-domain uploads supported?
 `uploading` | Is uploading of any sort supported? (Note: This will return true for browsers that are not explicitly supported such as IE6)
 `uploadCustomHeaders` | Are custom headers allowed to be sent along with the upload request?

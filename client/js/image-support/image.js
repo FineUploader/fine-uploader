@@ -1,4 +1,4 @@
-/*globals qq, MegaPixImage */
+/*globals qq */
 /**
  * Draws a thumbnail of a Blob/File/URL onto an <img> or <canvas>.
  *
@@ -156,7 +156,7 @@ qq.ImageGenerator = function(log) {
                         }
                     },
                     exif = orient ? new qq.Exif(fileOrBlob, log) : dummyExif,
-                    mpImg = new MegaPixImage(fileOrBlob, megapixErrorHandler);
+                    mpImg = new qq.MegaPixImage(fileOrBlob, megapixErrorHandler);
 
                 if (registerThumbnailRenderedListener(container, drawPreview)) {
                     exif.parse().then(
@@ -208,7 +208,7 @@ qq.ImageGenerator = function(log) {
         tempImgRender.then(function() {
             registerThumbnailRenderedListener(canvasOrImg, draw);
 
-            var mpImg = new MegaPixImage(tempImg);
+            var mpImg = new qq.MegaPixImage(tempImg);
             mpImg.render(canvasOrImg, {
                 maxWidth: maxSize,
                 maxHeight: maxSize,
