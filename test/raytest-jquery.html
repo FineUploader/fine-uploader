@@ -85,6 +85,59 @@
                 <div id="fubUploadButton" class="btn btn-primary"><div>Select Files</div></div>
             </div>
         </div>
+
+
+
+    <div>
+        <table>
+            <tr>
+                <td><div id="fine-uploader" style="float: left; padding: 25px; border: 1px solid black; background: grey; color: white;">Upload</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id="filesize">Full filesize onSubmit: <span></span></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id="progress">Bytes uploaded: <span></span></div>
+                </td>
+            </tr>
+        </table>
+        <script>
+            var uploader = new qq.FineUploaderBasic({
+                debug: true,
+                button: document.getElementById('fine-uploader'),
+                request: {
+                    endpoint: '/upload/receiver'
+                },
+                validation: {
+                    acceptFiles: 'image/*;capture=camera',
+                    allowedExtensions: ['jpeg', 'jpg', 'png'],
+                    sizeLimit: 10240000, // 10 mB (1 mB = 1000 * 1024 bytes)
+                    itemLimit: 200, // maximum 200 photos at one session
+                    stopOnFirstInvalidFile: false // do not stop entire process if invalid file is found
+                },
+                autoUpload: true,
+                scaling: {
+                    defaultQuality: 100,
+                    sizes: [
+                        { name: "full", maxSize: 5000 }
+                    ]
+                },
+                callbacks: {
+                    onSubmit: function(id, fileName) {
+                        var f = this.getFile(id);
+                        $('#filesize span').html(f.size);
+                    },
+                    onProgress: function(id, fileName, loaded, total) {
+                        $("#progress span").html(loaded);
+                    }
+                }
+            });
+        </script>
+    </div>
     </body>
 </html>
 
