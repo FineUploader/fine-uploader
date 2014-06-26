@@ -62,14 +62,20 @@ qq.Scaler = function(spec, log) {
                         }
                     );
                 });
-            }
 
-            // Finally, add a record for the original file (if requested)
-            includeReference && records.push({
-                uuid: originalFileUuid,
-                name: originalFileName,
-                blob: originalBlob
-            });
+                includeReference && records.push({
+                    uuid: originalFileUuid,
+                    name: originalFileName,
+                    blob: originalBlob
+                });
+            }
+            else {
+                records.push({
+                    uuid: originalFileUuid,
+                    name: originalFileName,
+                    blob: originalBlob
+                });
+            }
 
             return records;
         },
@@ -179,12 +185,10 @@ qq.extend(qq.Scaler.prototype, {
         }
         else {
             (qq.bind(function() {
-                var record;
-
                 // Assumption: There will never be more than one record
-                record = scaler.getFileRecords(uuid, name, file)[0];
+                var record = scaler.getFileRecords(uuid, name, file)[0];
 
-                if (record) {
+                if (record && record.blob instanceof qq.BlobProxy) {
                     record.blob.create().then(scalingEffort.success, scalingEffort.failure);
                 }
                 else {
