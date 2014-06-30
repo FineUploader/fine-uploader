@@ -558,8 +558,8 @@ The `blobData` object has two properties: `name` and `size`. The `size` property
     [
         {
             "name": "data",
-            "type": "File or Blob",
-            "description": " A `File` or `Blob`."
+            "type": "Object",
+            "description": "An object with a `name` and `size` property."
         },
         {
             "name": "buttonContainer",
@@ -591,7 +591,7 @@ The `fileOrBlobDataArray` object has two properties: `name` and `size`. The `siz
         {
             "name": "fileOrBlobDataArray",
             "type": "Array",
-            "description": "An array of `File`'s or `Blob`'s."
+            "description": "An array of `Objects` with `name` and a `size` properties."
         },
         {
             "name": "buttonContainer",
