@@ -591,7 +591,7 @@ The `fileOrBlobDataArray` object has two properties: `name` and `size`. The `siz
         {
             "name": "fileOrBlobDataArray",
             "type": "Array",
-            "description": "An array of `Objects` with `name` and a `size` properties."
+            "description": "An array of `Objects` with `name` and `size` properties."
         },
         {
             "name": "buttonContainer",
