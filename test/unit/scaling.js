@@ -29,7 +29,7 @@ if (qq.supportedFeatures.scaling) {
         });
 
         describe("generate records tests", function() {
-            function runTest(includeOriginal) {
+            function runTestWithImage(includeOriginal) {
                 var sizes = [
                         {
                             name: "small",
@@ -47,7 +47,7 @@ if (qq.supportedFeatures.scaling) {
                             type: "image/jpeg"
                         }
                     ],
-                    originalFile = {dummy: "blob", type:"image/jpeg"},
+                    originalFile = {dummy: "blob", type: "image/jpeg"},
                     scaler = new qq.Scaler(({sizes: sizes, sendOriginal: includeOriginal})),
                     records = scaler.getFileRecords("originalUuid", "originalName.jpeg", originalFile);
 
@@ -72,12 +72,44 @@ if (qq.supportedFeatures.scaling) {
                 }
             }
 
+            function runTestWithNonImage(includeOriginal) {
+                var sizes = [
+                        {
+                            name: "small",
+                            maxSize: 100,
+                            type: "image/jpeg"
+                        },
+                        {
+                            name: "large",
+                            maxSize: 300,
+                            type: "image/jpeg"
+                        }
+                    ],
+                    originalFile = {dummy: "blob", type: "text/plain"},
+                    scaler = new qq.Scaler(({sizes: sizes, sendOriginal: includeOriginal}), function dummyLogger(){}),
+                    records = scaler.getFileRecords("originalUuid", "plain.txt", originalFile);
+
+                assert.equal(records.length, 1);
+
+                assert.equal(records[0].name, "plain.txt");
+                assert.equal(records[0].uuid, "originalUuid");
+                assert.equal(records[0].blob, originalFile);
+            }
+
             it("creates properly ordered and constructed file records on demand", function() {
-                runTest(true);
+                runTestWithImage(true);
             });
 
             it("creates properly ordered and constructed file records on demand (ignoring original)", function() {
-                runTest(false);
+                runTestWithImage(false);
+            });
+
+            it("ensure non-images are not ignored", function() {
+                runTestWithNonImage(true);
+            });
+
+            it("ensure non-images are not ignored, even if `sendOriginal` is set to false", function() {
+                runTestWithNonImage(false);
             });
         });
 

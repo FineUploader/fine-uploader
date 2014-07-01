@@ -18,55 +18,7 @@ qq.Scaler = function(spec, log) {
         defaultQuality = spec.defaultQuality / 100,
         failedToScaleText = spec.failureText,
         includeExif = spec.includeExif,
-        sizes = this._getSortedSizes(spec.sizes),
-
-        getFileRecords = function(originalFileUuid, originalFileName, originalBlobOrBlobData) {
-            var self = this,
-                records = [],
-                originalBlob = originalBlobOrBlobData.blob ? originalBlobOrBlobData.blob : originalBlobOrBlobData,
-                idenitifier = new qq.Identify(originalBlob, log);
-
-            // If the reference file cannot be rendered natively, we can't create scaled versions.
-            if (idenitifier.isPreviewableSync()) {
-                // Create records for each scaled version & add them to the records array, smallest first.
-                qq.each(sizes, function(idx, sizeRecord) {
-                    var outputType = self._determineOutputType({
-                        defaultType: defaultType,
-                        requestedType: sizeRecord.type,
-                        refType: originalBlob.type
-                    });
-
-                    records.push({
-                        uuid: qq.getUniqueId(),
-                        name: self._getName(originalFileName, {
-                            name: sizeRecord.name,
-                            type: outputType,
-                            refType: originalBlob.type
-                        }),
-                        blob: new qq.BlobProxy(originalBlob,
-                            qq.bind(self._generateScaledImage, self, {
-                                maxSize: sizeRecord.maxSize,
-                                orient: orient,
-                                type: outputType,
-                                quality: defaultQuality,
-                                failedText: failedToScaleText,
-                                includeExif: includeExif,
-                                log: log
-                            }))
-                        }
-                    );
-                });
-            }
-
-            // Finally, add a record for the original file (if requested)
-            includeReference && records.push({
-                uuid: originalFileUuid,
-                name: originalFileName,
-                blob: originalBlob
-            });
-
-            return records;
-        };
+        sizes = this._getSortedSizes(spec.sizes);
 
     // Revealed API for instances of this module
     qq.extend(this, {
@@ -110,14 +62,20 @@ qq.Scaler = function(spec, log) {
                         }
                     );
                 });
-            }
 
-            // Finally, add a record for the original file (if requested)
-            includeReference && records.push({
-                uuid: originalFileUuid,
-                name: originalFileName,
-                blob: originalBlob
-            });
+                includeReference && records.push({
+                    uuid: originalFileUuid,
+                    name: originalFileName,
+                    blob: originalBlob
+                });
+            }
+            else {
+                records.push({
+                    uuid: originalFileUuid,
+                    name: originalFileName,
+                    blob: originalBlob
+                });
+            }
 
             return records;
         },
@@ -227,12 +185,10 @@ qq.extend(qq.Scaler.prototype, {
         }
         else {
             (qq.bind(function() {
-                var record;
-
                 // Assumption: There will never be more than one record
-                record = scaler.getFileRecords(uuid, name, file)[0];
+                var record = scaler.getFileRecords(uuid, name, file)[0];
 
-                if (record) {
+                if (record && record.blob instanceof qq.BlobProxy) {
                     record.blob.create().then(scalingEffort.success, scalingEffort.failure);
                 }
                 else {
