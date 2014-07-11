@@ -66,18 +66,6 @@ module.exports = (grunt) ->
 
         clean: tasks.clean(paths)
 
-        coffeelint:
-            options:
-                indentation:
-                    level: 'warn'
-                no_trailing_whitespace:
-                    level: 'warn'
-                no_backticks:
-                    level: 'ignore'
-                max_line_length:
-                    level: 'ignore'
-            grunt: ['./Gruntfile.coffee', 'lib/grunt/**/*.coffee']
-
         compress:
             jquery:
                 options:
@@ -175,13 +163,6 @@ module.exports = (grunt) ->
             css:
                 src: ["#{paths.src}/*.css"]
                 dest: "#{paths.build}/<%= pkg.name %>.css"
-
-        concurrent:
-            minify: ['cssmin', 'uglify']
-            lint: ['jshint', 'coffeelint']
-            concat: ['concat']
-            clean: ['clean']
-            compress: ['compress']
 
         connect:
             root_server:
@@ -706,12 +687,6 @@ module.exports = (grunt) ->
                 tasks: [
                     'jshint:tests'
                     'tests:local'
-                ]
-            grunt:
-                files: ['./Gruntfile.coffee']
-                tasks: [
-                    'coffeelint:grunt'
-                    'build'
                 ]
             images:
                 files: ["#{paths.src}/*.gif", "#{paths.src}/placeholders/*.png"]
