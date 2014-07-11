@@ -6,6 +6,8 @@
 
 ###
 
+tasks = require('./lib/grunt/tasks')
+
 module.exports = (grunt) ->
 
     fs = require 'fs'
@@ -62,22 +64,7 @@ module.exports = (grunt) ->
                     cleanBowerDir: true
                     layout: 'byComponent'
 
-        clean:
-            build:
-                files:
-                    src: paths.build
-            dist:
-                files:
-                    src: paths.dist
-            test:
-                files:
-                    src: ["#{paths.test}/_temp*"]
-            vendor:
-                files:
-                    src: "#{paths.test}/_vendor"
-            custom:
-                files:
-                    src: "#{paths.custom}/*"
+        clean: tasks.clean(paths)
 
         coffeelint:
             options:
