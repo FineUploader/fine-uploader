@@ -62,6 +62,7 @@ module.exports = (grunt) ->
         copy: tasks.copy(paths)
         cssmin: tasks.cssmin(paths, customBuildDest)
         jshint: tasks.jshint(paths)
+        nodestatic: tasks.static(paths)
         strip_code: tasks.stripcode(paths, customBuildDest)
         uglify: tasks.uglify(paths, customBuildDest)
         usebanner: tasks.banner(paths, customBuildDest)
