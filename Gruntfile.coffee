@@ -6,13 +6,16 @@
 
 ###
 
-tasks = require('./lib/grunt/tasks')
 
 module.exports = (grunt) ->
 
     fs = require 'fs'
     uuid = require 'uuid'
     async = require 'async'
+    path = require 'path'
+    spawn = require('child_process').spawn
+    utils = require './lib/grunt/utils'
+    tasks = require('./lib/grunt/tasks')
 
     # Utilities
     # ==========
@@ -95,8 +98,6 @@ module.exports = (grunt) ->
     # ==========
     for name of pkg.dependencies when name.substring(0, 6) is 'grunt-'
         grunt.loadNpmTasks name
-
-    grunt.loadTasks './lib/grunt'
 
     grunt.registerTask 'build_details', ->
         grunt.log.writeln "\n##########"
@@ -194,6 +195,18 @@ module.exports = (grunt) ->
 
         grunt.task.run(taskList)
 
+    grunt.registerTask 'lint', 'Lint, in order, the Gruntfile, sources, and tests.', ['concurrent:lint']
+
+    grunt.registerTask 'minify', 'Minify the source javascript and css', [
+        'cssmin:all', 'uglify:core', 'uglify:jquery', 'uglify:coreS3',
+        'uglify:jqueryS3', 'uglify:jqueryAzure', 'uglify:coreAzure', 'uglify:all']
+
+    grunt.registerMultiTask 'tests', '** Use ` grunt-test` instead **', ->
+        utils.startKarma.call utils, @data, @async()
+
+    grunt.registerTask 'check_pull_req', '', ->
+        utils.checkPullRequest()
+
     grunt.registerTask 'travis', 'Test with Travis CI', ['check_pull_req', 'dev', 'test:travis']
 
     grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'bower', 'build', 'copy:test']
@@ -204,12 +217,11 @@ module.exports = (grunt) ->
     grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build_stripped', 'copy:dist', 'shell:version_dist_templates', 'compress:jquery', 'compress:jqueryS3', 'compress:jqueryAzure', 'compress:core', 'compress:coreS3', 'compress:coreAzure' ]
 
     grunt.registerTask 'custom', 'Build a custom version', (modules) ->
-        util = require './lib/grunt/utils'
         dest = customBuildDest
         if (modules?)
-            util.build.call util, dest, modules.split(',')
+            utils.build.call utils, dest, modules.split(',')
         else
-            util.build.call util, dest, []
+            utils.build.call utils, dest, []
         grunt.task.run(['uglify:custom', 'cssmin:custom', 'strip_code:custom', 'shell:version_custom_templates', 'usebanner:customhead', 'usebanner:customfoot', 'compress:custom', 'build_details'])
 
     grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', ['package']
