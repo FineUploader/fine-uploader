@@ -55,15 +55,7 @@ module.exports = (grunt) ->
 
         pkg: pkg
 
-        bower:
-            install:
-                options:
-                    targetDir: "#{paths.test}/_vendor"
-                    install: true
-                    cleanTargetDir: true
-                    cleanBowerDir: true
-                    layout: 'byComponent'
-
+        bower: tasks.bower(paths)
         clean: tasks.clean(paths)
         compress: tasks.compress(paths, customBuildDest)
 
