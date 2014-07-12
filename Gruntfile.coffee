@@ -64,36 +64,12 @@ module.exports = (grunt) ->
         jshint: tasks.jshint(paths)
         uglify: tasks.uglify(paths, customBuildDest)
         usebanner: tasks.banner(paths, customBuildDest)
+        version: tasks.version(pkg)
 
         custom:
             options:
                 dest: customBuildDest
 
-
-        version:
-            options:
-                pkg: pkg,
-                prefix: '[^\\-][Vv]ersion[\'"]?\\s*[:=]\\s*[\'"]?'
-            major:
-                options:
-                    release: 'major'
-                src: fineUploaderModules.modules.versioned
-            minor:
-                options:
-                    release: 'minor'
-                src: fineUploaderModules.modules.versioned
-            hotfix:
-                options:
-                    release: 'patch'
-                src: fineUploaderModules.modules.versioned
-            build:
-                options:
-                    release: 'build'
-                src: fineUploaderModules.modules.versioned
-            release:
-                options:
-                    release: pkg.version.replace /-\d+$/, ""
-                src: fineUploaderModules.modules.versioned
 
         watch:
             options:
