@@ -111,12 +111,6 @@ module.exports = (grunt) ->
 
     # Tasks
     # ==========
-    grunt.registerTask 'lint', 'Lint, in order, the Gruntfile, sources, and tests.', ['concurrent:lint']
-
-    grunt.registerTask 'minify', 'Minify the source javascript and css', [
-        'cssmin:all', 'uglify:core', 'uglify:jquery', 'uglify:coreS3',
-        'uglify:jqueryS3', 'uglify:jqueryAzure', 'uglify:coreAzure', 'uglify:all']
-
     grunt.registerMultiTask 'tests', '** Use ` grunt-test` instead **', ->
         utils.startKarma.call utils, @data, @async()
 
