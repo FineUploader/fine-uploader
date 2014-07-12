@@ -111,9 +111,6 @@ module.exports = (grunt) ->
 
     # Tasks
     # ==========
-    grunt.registerMultiTask 'tests', '** Use ` grunt-test` instead **', ->
-        utils.startKarma.call utils, @data, @async()
-
     grunt.registerTask 'check_pull_req', '', ->
         utils.checkPullRequest()
 
