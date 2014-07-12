@@ -58,32 +58,7 @@ module.exports = (grunt) ->
         bower: tasks.bower(paths)
         clean: tasks.clean(paths)
         compress: tasks.compress(paths, customBuildDest)
-
-        concat:
-            core:
-                src: fineUploaderModules.mergeModules true, 'fuTraditional'
-                dest: "#{paths.build}/<%= pkg.name %>.js"
-            coreS3:
-                src: fineUploaderModules.mergeModules true, 'fuS3'
-                dest: "#{paths.build}/s3.<%= pkg.name %>.js"
-            coreAzure:
-                src: fineUploaderModules.mergeModules true, 'fuAzure'
-                dest: "#{paths.build}/azure.<%= pkg.name %>.js"
-            jquery:
-                src: fineUploaderModules.mergeModules true, 'fuTraditionalJquery'
-                dest: "#{paths.build}/jquery.<%= pkg.name %>.js"
-            jqueryS3:
-                src: fineUploaderModules.mergeModules true, 'fuS3Jquery'
-                dest: "#{paths.build}/s3.jquery.<%= pkg.name %>.js"
-            jqueryAzure:
-                src: fineUploaderModules.mergeModules true, 'fuAzureJquery'
-                dest: "#{paths.build}/azure.jquery.<%= pkg.name %>.js"
-            all:
-                src: fineUploaderModules.mergeModules true, 'fuAll'
-                dest: paths.build + "/all.<%= pkg.name %>.js"
-            css:
-                src: ["#{paths.src}/*.css"]
-                dest: "#{paths.build}/<%= pkg.name %>.css"
+        concat: tasks.concat(paths)
 
         connect:
             root_server:
