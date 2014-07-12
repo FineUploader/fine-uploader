@@ -16,8 +16,8 @@ module.exports = (grunt) ->
     spawn = require('child_process').spawn
     utils = require './lib/grunt/utils'
 
-    tasks = require('./lib/grunt/tasks')
     configs = require('./lib/grunt/configs')
+    tasks = './lib/grunt/tasks'
 
     # Utilities
     # ==========
@@ -107,96 +107,10 @@ module.exports = (grunt) ->
         grunt.log.write "### " + customBuildDest + " ###"
         grunt.log.writeln "\n##########\n"
 
+    grunt.loadTasks(tasks)
+
     # Tasks
     # ==========
-    grunt.registerTask 'test', "Run unit tests. Allows: 'travis', 'server', 'headless', 'ie', and 'all'. Can also take browser names: 'PhantomJS', 'Firefox', 'Chrome', 'Safari', etc.. Comma-delimited.", (test_type) ->
-    # To run this task:
-    #   % grunt test:<args>
-    #
-    # Where <args> is either:
-    #   * 'travis', 'server', 'headless', 'ie', 'ios', or 'all'
-    #   * a comma-delimited list of browsers.
-    #
-    # Example:
-    #   % grunt test:server
-    #   % grunt test:headless
-    #   % grunt test:PhantomJS --no-single-run
-    #   % grunt test:Firefox,Chrome,Opera,Safari
-    #   % grunt test:ie
-    #   % grunt test:Firefox,Chrome,Opera,Safari --autoWatch=true --singleRun=true
-    #   etc...
-        taskList = ["server"]
-
-        setDefaultOption = (name, def) ->
-            if not grunt.option(name)?
-                grunt.option(name, def)
-
-        switch test_type
-            when "travis" then do ->
-                setDefaultOption('singleRun', true)
-                setDefaultOption('autoWatch', true)
-                taskList.push('tests:travis')
-            when "server" then do ->
-                setDefaultOption('singleRun', false)
-                setDefaultOption('autoWatch', false)
-                grunt.option('browsers', [])
-                taskList.push('tests:local')
-            when "headless" then do ->
-                setDefaultOption('singleRun', true)
-                setDefaultOption('autoWatch', true)
-                #grunt.option('autoWatch') || true
-                #grunt.option('singleRun') || true
-                grunt.option('browsers', ['PhantomJS'])
-                taskList.push('tests:local')
-            when "ie" then do ->
-                setDefaultOption('singleRun', true)
-                setDefaultOption('autoWatch', true)
-                #grunt.option('autoWatch') || true
-                #grunt.option('singleRun') || true
-                taskList.push('tests:local')
-                grunt.option('browsers', [
-                    'IE7 - WinXP',
-                    'IE8 - WinXP',
-                    'IE9 - Win7',
-                    'IE10 - Win7',
-                    'IE11 - Win7'
-                ])
-            when "ios" then do ->
-                setDefaultOption('singleRun', true)
-                setDefaultOption('autoWatch', true)
-                grunt.option('browsers', ['iOS'])
-                taskList.push('tests:local')
-            when "all" then do ->
-                setDefaultOption('singleRun', true)
-                setDefaultOption('autoWatch', true)
-                grunt.option('browsers', [
-                    'PhantomJS',
-                    'Firefox',
-                    'Chrome',
-                    'Safari',
-                    'Opera',
-                    'IE7 - WinXP',
-                    'IE8 - WinXP',
-                    'IE9 - Win7',
-                    'IE10 - Win7',
-                    'IE11 - Win7'
-                ])
-                taskList.push('tests:local')
-            else do ->
-                if (test_type?)
-                    setDefaultOption('singleRun', true)
-                    setDefaultOption('autoWatch', true)
-                    if (',' in test_type)
-                        tests = test_type.split(',')
-                        grunt.option('browsers', tests)
-                    else
-                        grunt.option('browsers', [test_type])
-                else
-                    grunt.option('browsers') || ['Chrome']
-                taskList.push('tests:local')
-
-        grunt.task.run(taskList)
-
     grunt.registerTask 'lint', 'Lint, in order, the Gruntfile, sources, and tests.', ['concurrent:lint']
 
     grunt.registerTask 'minify', 'Minify the source javascript and css', [
