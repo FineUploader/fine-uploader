@@ -15,7 +15,9 @@ module.exports = (grunt) ->
     path = require 'path'
     spawn = require('child_process').spawn
     utils = require './lib/grunt/utils'
+
     tasks = require('./lib/grunt/tasks')
+    configs = require('./lib/grunt/configs')
 
     # Utilities
     # ==========
@@ -58,19 +60,19 @@ module.exports = (grunt) ->
 
         pkg: pkg
 
-        bower: tasks.bower(paths)
-        clean: tasks.clean(paths)
-        compress: tasks.compress(paths, customBuildDest)
-        concat: tasks.concat(paths)
-        copy: tasks.copy(paths)
-        cssmin: tasks.cssmin(paths, customBuildDest)
-        jshint: tasks.jshint(paths)
-        nodestatic: tasks.static(paths)
-        strip_code: tasks.stripcode(paths, customBuildDest)
-        uglify: tasks.uglify(paths, customBuildDest)
-        usebanner: tasks.banner(paths, customBuildDest)
-        version: tasks.version(pkg)
-        watch: tasks.watch(paths)
+        bower: configs.bower(paths)
+        clean: configs.clean(paths)
+        compress: configs.compress(paths, customBuildDest)
+        concat: configs.concat(paths)
+        copy: configs.copy(paths)
+        cssmin: configs.cssmin(paths, customBuildDest)
+        jshint: configs.jshint(paths)
+        nodestatic: configs.static(paths)
+        strip_code: configs.stripcode(paths, customBuildDest)
+        uglify: configs.uglify(paths, customBuildDest)
+        usebanner: configs.banner(paths, customBuildDest)
+        version: configs.version(pkg)
+        watch: configs.watch(paths)
 
         custom:
             options:
