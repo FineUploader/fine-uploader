@@ -65,33 +65,11 @@ module.exports = (grunt) ->
         uglify: tasks.uglify(paths, customBuildDest)
         usebanner: tasks.banner(paths, customBuildDest)
         version: tasks.version(pkg)
+        watch: tasks.watch(paths)
 
         custom:
             options:
                 dest: customBuildDest
-
-
-        watch:
-            options:
-                interrupt: true
-                debounceDelay: 250
-            js:
-                files: ["#{paths.src}/js/*.js", "#{paths.src}/js/s3/*.js"]
-                tasks: [
-                    'dev'
-                    'tests:local'
-                ]
-            test:
-                files: ["#{paths.test}/unit/*.js", "#{paths.test}/unit/s3/*.js"]
-                tasks: [
-                    'jshint:tests'
-                    'tests:local'
-                ]
-            images:
-                files: ["#{paths.src}/*.gif", "#{paths.src}/placeholders/*.png"]
-                tasks: [
-                    'copy:images'
-                ]
 
         tests:
             local: 'karma-local.conf.coffee'
