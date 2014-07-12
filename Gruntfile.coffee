@@ -63,70 +63,12 @@ module.exports = (grunt) ->
         cssmin: tasks.cssmin(paths, customBuildDest)
         jshint: tasks.jshint(paths)
         uglify: tasks.uglify(paths, customBuildDest)
+        usebanner: tasks.banner(paths, customBuildDest)
 
         custom:
             options:
                 dest: customBuildDest
 
-
-        usebanner:
-            allhead:
-                src: ["#{paths.build}/*.{js,css}"]
-                options:
-                    position: 'top'
-                    banner: '''
-                            /*!
-                            * <%= pkg.title %>
-                            *
-                            * Copyright 2013, <%= pkg.author %> info@fineuploader.com
-                            *
-                            * Version: <%= pkg.version %>
-                            *
-                            * Homepage: http://fineuploader.com
-                            *
-                            * Repository: <%= pkg.repository.url %>
-                            *
-                            * Licensed under GNU GPL v3, see LICENSE
-                            */ \n\n'''
-            allfoot:
-                src: ["#{paths.build}/*.{js,css}"]
-                options:
-                    position: 'bottom'
-                    banner: '/*! <%= grunt.template.today("yyyy-mm-dd") %> */\n'
-            customhead:
-                files:
-                    src: ["#{customBuildDest}/src/*.{js,css}"]
-                options:
-                    position: 'top'
-                    banner: '''
-                            /*!
-                            * <%= pkg.title %>
-                            *
-                            * Copyright 2013-2014, <%= pkg.author %> info@fineuploader.com
-                            *
-                            * Version: <%= pkg.version %>
-                            *
-                            * Homepage: http://fineuploader.com
-                            *
-                            * Repository: <%= pkg.repository.url %>
-                            *
-                            * Licensed under GNU GPL v3, see LICENSE
-                            *
-                            * Third-party credits:
-                            *   MegaPixImageModule (MIT)
-                            *       https://github.com/stomita/ios-imagefile-megapixel
-                            *       Copyright (c) 2012 Shinichi Tomita <shinichi.tomita@gmail.com>
-                            *
-                            *   CryptoJS
-                            *       code.google.com/p/crypto-js/wiki/License
-                            *       (c) 2009-2013 by Jeff Mott. All rights reserved.
-                            */ \n\n'''
-            customfoot:
-                files:
-                    src: ["#{customBuildDest}/*.{js,css}"]
-                options:
-                    position: 'bottom'
-                    banner: '/*! <%= grunt.template.today("yyyy-mm-dd") %> */\n'
 
         version:
             options:
