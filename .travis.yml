@@ -29,7 +29,7 @@ before_script:
 - "sh -e /etc/init.d/xvfb start"
 
 script:
-    - grunt travis --verbose --debug
+- grunt travis
 
 branches:
     only:
