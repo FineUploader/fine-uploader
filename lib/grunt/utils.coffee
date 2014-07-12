@@ -37,21 +37,6 @@ module.exports =
         grunt.fail.warn "Karma test(s) failed. Exit code: " + code
       done()
 
-  parallelTask: (args, options) ->
-    task =
-      grunt: true
-      args: args
-      stream: options && options.stream
-
-    args.push '--port=' + @sauceLabsAvailablePorts.pop()
-
-    if grunt.option 'reporters'
-      args.push '--reporters=' + grunt.option 'reporters'
-
-    task
-
-  sauceLabsAvailablePorts: [9000, 9001, 9080, 9090, 9876]
-
   concat: (formulae) ->
     src = ''
     _.map(formulae, (f) ->
