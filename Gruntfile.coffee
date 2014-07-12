@@ -62,6 +62,7 @@ module.exports = (grunt) ->
         copy: tasks.copy(paths)
         cssmin: tasks.cssmin(paths, customBuildDest)
         jshint: tasks.jshint(paths)
+        strip_code: tasks.stripcode(paths, customBuildDest)
         uglify: tasks.uglify(paths, customBuildDest)
         usebanner: tasks.banner(paths, customBuildDest)
         version: tasks.version(pkg)
@@ -88,26 +89,6 @@ module.exports = (grunt) ->
                     cwd: __dirname
                     stderr: true
                     stdout: true
-
-
-        strip_code:
-            options:
-                start_comment: "<testing>"
-                end_comment: "</testing>"
-            build:
-                files:
-                    src: "#{paths.build}/**/*.js"
-            custom:
-                files:
-                    src: "#{customBuildDest}/**/*.js"
-
-        nodestatic:
-            server:
-                options:
-                    port: 3000
-                    base: "test/unit/resources"
-                    headers:
-                        "Access-Control-Allow-Origin": "*"
 
     # Dependencies
     # ==========
