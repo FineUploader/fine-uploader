@@ -76,12 +76,6 @@ module.exports = (grunt) ->
             travis: 'karma-travis.conf.coffee'
 
         shell:
-            start_saucecon:
-                command: './lib/sauce/sauce_connect_setup.sh'
-            kill_saucecon:
-                command: 'cat /tmp/sauce-connect.pid | xargs kill'
-            npm_install:
-                command: 'npm install'
             version_custom_templates:
                 command: "find #{customBuildDest}/ -type f -name '*.html' | xargs sed -i '' 's/{VERSION}/<%= pkg.version %>/'"
                 options:
