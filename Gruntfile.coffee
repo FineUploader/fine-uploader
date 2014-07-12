@@ -61,13 +61,7 @@ module.exports = (grunt) ->
         concat: tasks.concat(paths)
         copy: tasks.copy(paths)
         cssmin: tasks.cssmin(paths, customBuildDest)
-
-        jshint:
-            source: ["#{paths.src}/js/**/*.js"]
-            tests: ["#{paths.test}/unit/**/*.js","#{paths.test}/static/local/*.js"]
-            options:
-                jshintrc: true
-                ignores: ["#{paths.src}/js/third-party/**/*.js"]
+        jshint: tasks.jshint(paths)
 
         custom:
             options:
