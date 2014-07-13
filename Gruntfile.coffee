@@ -111,9 +111,6 @@ module.exports = (grunt) ->
 
     # Tasks
     # ==========
-
-    grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'bower', 'build', 'copy:test']
-
     grunt.registerTask 'build', 'Build from latest source', ['jshint:source', 'jshint:tests', 'concat', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
     grunt.registerTask 'build_stripped', 'Build from latest source w/ test artifacts stripped out', ['concat', 'strip_code:build', 'minify', 'usebanner:allhead', 'usebanner:allfoot', 'copy:images']
 
