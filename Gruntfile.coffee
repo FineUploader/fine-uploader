@@ -111,8 +111,6 @@ module.exports = (grunt) ->
 
     # Tasks
     # ==========
-    grunt.registerTask 'package', 'Build a zipped distribution-worthy version', ['build_stripped', 'copy:dist', 'shell:version_dist_templates', 'compress:jquery', 'compress:jqueryS3', 'compress:jqueryAzure', 'compress:core', 'compress:coreS3', 'compress:coreAzure' ]
-
     grunt.registerTask 'custom', 'Build a custom version', (modules) ->
         dest = customBuildDest
         if (modules?)
