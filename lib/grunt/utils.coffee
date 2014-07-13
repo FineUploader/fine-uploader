@@ -7,14 +7,6 @@ modules = require '../modules'
 
 module.exports =
 
-  checkPullRequest: ->
-    if (process.env.TRAVIS_BRANCH == 'master' and process.env.TRAVIS_PULL_REQUEST != 'false')
-      grunt.fail.fatal '''Woah there, buddy! Pull requests should be
-      branched from develop!\n
-      Details on contributing pull requests found here: \n
-      https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md\n
-      '''
-
   startKarma: (config, done) ->
     browsers = grunt.option 'browsers'
     reporters = grunt.option 'reporters'
