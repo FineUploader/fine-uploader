@@ -118,7 +118,4 @@ module.exports = (grunt) ->
         else
             utils.build.call utils, dest, []
         grunt.task.run(['uglify:custom', 'cssmin:custom', 'strip_code:custom', 'shell:version_custom_templates', 'usebanner:customhead', 'usebanner:customfoot', 'compress:custom', 'build_details'])
-
-    grunt.registerTask 'default', 'Default task: clean, bower, lint, build, & test', ['package']
-
     grunt.registerTask "server", ["nodestatic"]
