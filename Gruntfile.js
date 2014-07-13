@@ -53,8 +53,8 @@ module.exports = function(grunt) {
             }
         },
         tests: {
-            local: "karma-local.conf.coffee",
-            travis: "karma-travis.conf.coffee"
+            local: "karma-local.conf.js",
+            travis: "karma-travis.conf.js"
         }
     });
 
