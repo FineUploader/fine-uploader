@@ -44,7 +44,6 @@
   "devDependencies": {},
   "dependencies": {
     "async": "0.2.9",
-    "coffee-script": "1.6.3",
     "glob": "3.2.6",
     "grunt": "0.4.1",
     "grunt-banner": "0.2.0",
