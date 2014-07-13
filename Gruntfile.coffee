@@ -111,7 +111,6 @@ module.exports = (grunt) ->
 
     # Tasks
     # ==========
-    grunt.registerTask 'travis', 'Test with Travis CI', ['validate_pull_request', 'dev', 'test:travis']
 
     grunt.registerTask 'dev', 'Prepare code for testing', ['clean', 'bower', 'build', 'copy:test']
 
