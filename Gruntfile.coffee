@@ -60,7 +60,6 @@ module.exports = (grunt) ->
 
         pkg: pkg
 
-        bower: configs.bower(paths)
         clean: configs.clean(paths)
         compress: configs.compress(paths, customBuildDest)
         concat: configs.concat(paths)
