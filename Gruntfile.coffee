@@ -68,6 +68,7 @@ module.exports = (grunt) ->
         cssmin: configs.cssmin(paths, customBuildDest)
         jshint: configs.jshint(paths)
         nodestatic: configs.static(paths)
+        shell: configs.shell(paths, customBuildDest)
         strip_code: configs.stripcode(paths, customBuildDest)
         uglify: configs.uglify(paths, customBuildDest)
         usebanner: configs.banner(paths, customBuildDest)
@@ -82,19 +83,6 @@ module.exports = (grunt) ->
             local: 'karma-local.conf.coffee'
             travis: 'karma-travis.conf.coffee'
 
-        shell:
-            version_custom_templates:
-                command: "find #{customBuildDest}/ -type f -name '*.html' | xargs sed -i '' 's/{VERSION}/<%= pkg.version %>/'"
-                options:
-                    cwd: __dirname
-                    stderr: true
-                    stdout: true
-            version_dist_templates:
-                command: "find #{paths.dist}/ -type f -name '*.html' | xargs sed -i '' 's/{VERSION}/<%= pkg.version %>/'"
-                options:
-                    cwd: __dirname
-                    stderr: true
-                    stdout: true
 
     # Dependencies
     # ==========
