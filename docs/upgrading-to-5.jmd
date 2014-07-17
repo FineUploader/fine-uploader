@@ -62,10 +62,18 @@ promises were only accepted from `onResume` callbacks when using the traditional
 
 
 ### Chunked request only sent for traditional endpoints if necessary
-This means that, even if chunking is enabled, a chunked upload request is only sent to traditional endpoints
-if the associated file must be broken into more than 1 chunk.  This behavior is consistent with the way all other
-endpoints have functioned.  Previously, a chunked request would always be sent for traditional endpoints if
-chunking was supported and enabled.
+If the chunking.partSize value is greater than or equal to the size of the
+file, no chunking will occur. Note that a chunked request is different from
+a non-chunked request due to differing headers, and the fact that the
+message-body of a chunked request contains a Blob, while a non-chunked request
+message-body contains a File (assuming the file is not a scaled version and
+the original file is not a Blob itself).
+
+This means that, even if chunking is enabled, a chunked upload request is
+only sent to traditional endpoints if the associated file can be broken into
+more than 1 chunk.  This behavior is consistent with the way all other
+endpoints have functioned.  Previously, a chunked request would always be
+sent for traditional endpoints if chunking was supported and enabled.
 
 
 ### `drawThumbnail` API method only passes one argument to rejected promise callback
