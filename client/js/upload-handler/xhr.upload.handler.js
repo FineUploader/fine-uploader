@@ -401,6 +401,7 @@ qq.XhrUploadHandler = function(spec) {
 
         _registerProgressHandler: function(id, chunkIdx, chunkSize) {
             var xhr = handler._getXhr(id, chunkIdx),
+                name = getName(id),
                 progressCalculator = {
                     simple: function(loaded, total) {
                         var fileSize = getSize(id);

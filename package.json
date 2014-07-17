@@ -69,6 +69,7 @@
     "karma-firefox-launcher": "0.1.2"
   },
   "dependencies": {
+    "tmp": "0.0.23",
     "bower": "1.2.5",
     "coffee-script": "~1.6.3",
     "glob": "~3.2.6",
