@@ -70,8 +70,8 @@ qq.s3.util = qq.s3.util || (function() {
                 // see: http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPUT.html 
                 //
                 case "Cache-Control":
-                case "Content-Disposition": 
-                case "Content-Encoding": 
+                case "Content-Disposition":
+                case "Content-Encoding":
                 case "Content-MD5": // CAW: Content-MD5 might not be appropriate from user-land
                 case "x-amz-server-side-encryption-customer-algorithm":
                 case "x-amz-server-side-encryption-customer-key":
