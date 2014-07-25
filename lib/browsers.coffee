@@ -53,20 +53,3 @@ browsers =
 
 if (exports)
     exports.modules = browsers
-    exports.sauceBrowsers = sauceBrowsers = do ->
-        b = {}
-        for browser in browsers
-            key = "SL-#{browser.browserName.replace " ", "_"}-#{browser.version || ''}-#{browser.platform.replace " ", "_"}"
-            key = key.replace " ", "_"
-            b[key] =
-                base: 'SauceLabs'
-                browserName: browser.browserName
-                version: browser.version
-                platform: browser.platform
-        return b
-
-    exports.sauceBrowserKeys = do ->
-        res = []
-        for k of sauceBrowsers
-            res.push k
-        return res

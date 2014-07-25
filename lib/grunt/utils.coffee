@@ -7,14 +7,6 @@ modules = require '../modules'
 
 module.exports =
 
-  checkPullRequest: ->
-    if (process.env.TRAVIS_BRANCH == 'master' and process.env.TRAVIS_PULL_REQUEST != 'false')
-      grunt.fail.fatal '''Woah there, buddy! Pull requests should be
-      branched from develop!\n
-      Details on contributing pull requests found here: \n
-      https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md\n
-      '''
-
   startKarma: (config, done) ->
     browsers = grunt.option 'browsers'
     reporters = grunt.option 'reporters'
@@ -36,21 +28,6 @@ module.exports =
       if code != 0
         grunt.fail.warn "Karma test(s) failed. Exit code: " + code
       done()
-
-  parallelTask: (args, options) ->
-    task =
-      grunt: true
-      args: args
-      stream: options && options.stream
-
-    args.push '--port=' + @sauceLabsAvailablePorts.pop()
-
-    if grunt.option 'reporters'
-      args.push '--reporters=' + grunt.option 'reporters'
-
-    task
-
-  sauceLabsAvailablePorts: [9000, 9001, 9080, 9090, 9876]
 
   concat: (formulae) ->
     src = ''

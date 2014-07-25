@@ -19,8 +19,6 @@ hardcopy*
 selenium.log*
 
 pid.txt
-sauce_connect.log*
-lib/sauce/sauce-connect*
 
 fine-uploader/
 test/upload/*
