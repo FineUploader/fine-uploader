@@ -44,7 +44,7 @@
   "devDependencies": {
     "async": "~0.2.9",
     "grunt-banner": "~0.2.0",
-    "grunt-bower-task": "0.3.2",
+    "grunt-bower-task": "git+https://github.com/pogoseat/grunt-bower-task.git",
     "grunt-coffeelint": "0.0.7",
     "grunt-concurrent": "~0.3.1",
     "grunt-contrib-clean": "~0.4.1",
