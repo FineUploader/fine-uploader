@@ -287,8 +287,20 @@ qq.UploadHandlerController = function(o, namespace) {
         getWaitingOrConnected: function() {
             var waitingOrConnected = [];
 
-            qq.each(waitingOrConnected, connectionManager._open);
-            return qq.each(waitingOrConnected, connectionManager._waiting);
+            if (concurrentChunkingPossible) {
+                qq.each(connectionManager._openChunks, function(fileId, chunks) {
+                    if (chunks && chunks.length) {
+                        waitingOrConnected.push(fileId);
+                    }
+                });
+            }
+            else {
+                waitingOrConnected = waitingOrConnected.concat(connectionManager._open);
+            }
+
+            waitingOrConnected = waitingOrConnected.concat(connectionManager._waiting);
+
+            return waitingOrConnected;
         },
 
         isUsingConnection: function(id) {
@@ -608,9 +620,13 @@ qq.UploadHandlerController = function(o, namespace) {
         cancelAll: function() {
             var waitingOrConnected = connectionManager.getWaitingOrConnected();
 
-            qq.each(waitingOrConnected, function(idx, fileId) {
-                controller.cancel(fileId);
-            });
+            // ensure files are cancelled in reverse order which they were added
+            // to avoid a flash of time where a queued file begins to upload before it is canceled
+            if (waitingOrConnected.length) {
+                for (var i = waitingOrConnected.length-1; i >= 0; i--) {
+                    controller.cancel(waitingOrConnected[i]);
+                }
+            }
 
             connectionManager.reset();
         },
