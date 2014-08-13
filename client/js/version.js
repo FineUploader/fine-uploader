@@ -1,2 +1,2 @@
 /*global qq */
-qq.version="5.0.4-1";
+qq.version="5.0.4-2";
