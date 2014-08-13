@@ -75,6 +75,30 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+        it("only ever passes name and size to onValidate callbacks", function(done) {
+            var uploader = new qq.FineUploaderBasic({
+                callbacks: {
+                    onValidate: function(blobData, button) {
+                        assert.ok(blobData.name);
+                        assert.ok(blobData.size);
+                        assert.equal(undefined, blobData.foo);
+                        qq.log(button);
+                        assert.ok(button);
+                    }
+                }
+            });
+
+            qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
+                blob.foo = "bar";
+
+                uploader.addBlobs([
+                    {blob: blob, name: "name1"},
+                    {blob: blob, name: "name2"}
+                ]);
+                done();
+            });
+        });
+
         describe("file rejection via callback", function() {
             function setupUploader(callback, blob, done, useQ) {
                 var uploader = new qq.FineUploaderBasic({
