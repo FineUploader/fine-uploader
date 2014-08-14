@@ -615,6 +615,10 @@
                     log: qq.bind(self.log, self),
                     preventRetryParam: this._options.retry.preventRetryResponseProperty,
                     onProgress: function(id, name, loaded, total) {
+                        if (loaded < 0 || total < 0) {
+                            return;
+                        }
+
                         if (lastOnProgress[id]) {
                             if (lastOnProgress[id].loaded !== loaded || lastOnProgress[id].total !== total) {
                                 self._onProgress(id, name, loaded, total);
