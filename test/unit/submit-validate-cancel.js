@@ -82,7 +82,6 @@ if (qqtest.canDownloadFileAsBlob) {
                         assert.ok(blobData.name);
                         assert.ok(blobData.size);
                         assert.equal(undefined, blobData.foo);
-                        qq.log(button);
                         assert.ok(button);
                     }
                 }
