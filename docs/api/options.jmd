@@ -189,7 +189,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
         ("scaling.includeExif", "includeExif", "Ensure the EXIF data from the reference image is inserted into the scaled image.  Only applicable when both the reference and the target are type image/jpeg.", "Boolean", "false",),
         ("scaling.orient", "orient", "Set this to `false` if you do not want scaled images to be re-oriented based on parsed EXIF data before they are uploaded.", "Boolean", "true",),
         ("scaling.sendOriginal", "sendOriginal", "Set this to `false` if you don't want to original file to be uploaded as well.", "Boolean", "true",),
-        ("scaling.sizes", "sizes", "An array containing size objects that describe scaled versions of each submitted image that should be generated and uploaded.  A size object must contain a `name` String property, a `maxSize` integer property, and optionally a `type` MIME string property.", "Array", "[]",),
+        ("scaling.sizes", "sizes", "An array containing size objects that describe scaled versions of each submitted image that should be generated and uploaded.  A size object should usually contain a `name` String property, a must always contain a `maxSize` integer property.  A `type` MIME string property is optional.", "Array", "[]",),
     )
 )
 }}
