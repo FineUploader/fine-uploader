@@ -287,17 +287,23 @@ qq.UploadHandlerController = function(o, namespace) {
         getWaitingOrConnected: function() {
             var waitingOrConnected = [];
 
-            if (concurrentChunkingPossible) {
-                qq.each(connectionManager._openChunks, function(fileId, chunks) {
-                    if (chunks && chunks.length) {
-                        waitingOrConnected.push(fileId);
-                    }
-                });
-            }
-            else {
-                waitingOrConnected = waitingOrConnected.concat(connectionManager._open);
-            }
+            // Chunked files may have multiple connections open per chunk (if concurrent chunking is enabled)
+            // We need to grab the file ID of any file that has at least one chunk consuming a connection.
+            qq.each(connectionManager._openChunks, function(fileId, chunks) {
+                if (chunks && chunks.length) {
+                    waitingOrConnected.push(parseInt(fileId));
+                }
+            });
 
+            // For non-chunked files, only one connection will be consumed per file.
+            // This is where we aggregate those file IDs.
+            qq.each(connectionManager._open, function(idx, fileId) {
+                if (!connectionManager._openChunks[fileId]) {
+                    waitingOrConnected.push(parseInt(fileId));
+                }
+            });
+
+            // There may be files waiting for a connection.
             waitingOrConnected = waitingOrConnected.concat(connectionManager._waiting);
 
             return waitingOrConnected;
