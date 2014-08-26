@@ -241,11 +241,15 @@ qq.extend(qq.Scaler.prototype, {
         "use strict";
 
         var startOfExt = originalName.lastIndexOf("."),
-            nameAppendage = " (" + scaledVersionProperties.name + ")",
             versionType = scaledVersionProperties.type || "image/png",
             referenceType = scaledVersionProperties.refType,
             scaledName = "",
-            scaledExt = qq.getExtension(originalName);
+            scaledExt = qq.getExtension(originalName),
+            nameAppendage = "";
+
+        if (scaledVersionProperties.name && scaledVersionProperties.name.trim().length) {
+            nameAppendage = " (" + scaledVersionProperties.name + ")";
+        }
 
         if (startOfExt >= 0) {
             scaledName = originalName.substr(0, startOfExt);

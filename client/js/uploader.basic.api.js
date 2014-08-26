@@ -615,6 +615,10 @@
                     log: qq.bind(self.log, self),
                     preventRetryParam: this._options.retry.preventRetryResponseProperty,
                     onProgress: function(id, name, loaded, total) {
+                        if (loaded < 0 || total < 0) {
+                            return;
+                        }
+
                         if (lastOnProgress[id]) {
                             if (lastOnProgress[id].loaded !== loaded || lastOnProgress[id].total !== total) {
                                 self._onProgress(id, name, loaded, total);
@@ -1193,11 +1197,13 @@
                 if (validItem || !this._options.validation.stopOnFirstInvalidFile) {
                     //use setTimeout to prevent a stack overflow with a large number of files in the batch & non-promissory callbacks
                     setTimeout(function() {
-                        var validationDescriptor = self._getValidationDescriptor(items[index]);
+                        var validationDescriptor = self._getValidationDescriptor(items[index]),
+                            buttonId = self._getButtonId(items[index].file),
+                            button = self._getButton(buttonId);
 
                         self._handleCheckedCallback({
                             name: "onValidate",
-                            callback: qq.bind(self._options.callbacks.onValidate, self, items[index].file),
+                            callback: qq.bind(self._options.callbacks.onValidate, self, validationDescriptor, button),
                             onSuccess: qq.bind(self._onValidateCallbackSuccess, self, items, index, params, endpoint),
                             onFailure: qq.bind(self._onValidateCallbackFailure, self, items, index, params, endpoint),
                             identifier: "Item '" + validationDescriptor.name + "', size: " + validationDescriptor.size

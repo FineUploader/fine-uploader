@@ -126,6 +126,28 @@ if (qq.supportedFeatures.scaling) {
             assert.equal(records[0].name, "originalName (small)");
         });
 
+        it("handles empty name property correctly", function() {
+            var sizes = [
+                    {
+                        maxSize: 100
+                    },
+                    {
+                        name: null,
+                        maxSize: 101
+                    },
+                    {
+                        name: "",
+                        maxSize: 102
+                    }
+                ],
+                scaler = new qq.Scaler(({sizes: sizes})),
+                records = scaler.getFileRecords("originalUuid", "originalName", {type: "image/jpeg"});
+
+            assert.equal(records[0].name, "originalName");
+            assert.equal(records[1].name, "originalName");
+            assert.equal(records[2].name, "originalName");
+        });
+
         describe("generates simple scaled image tests", function() {
             function runScaleTest(orient, done) {
                 assert.expect(3, done);
