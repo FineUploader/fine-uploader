@@ -7,6 +7,8 @@
 {% block content %}
 {% markdown %}
 
+[chunking-success]: concurrent-chunking.html#expected-response-for-the-chunking-success-post
+
 # Chunking & Partitioning {: .page-header }
 
 {{ alert("[Concurrent chunking](concurrent-chunking.html) is also supported!", "default", "Note:") }}
@@ -70,6 +72,12 @@ next attempt (assuming auto or manual retry has been enabled).
 {{ alert("The `chunking.paramNames` options do not apply to the S3 uploader", "default", "Amazon S3 Specific Note:") }}
 
 [For more information, see the associated blog post](http://blog.fineuploader.com/2012/12/28/file-chunkingpartitioning-is-now-available-in-3-2/)
+
+### POST when all chunks are successfully uploaded
+
+You may specify a `chunking.success.endpoint` if you'd like your server to be called when all chunks
+have been successfully uploaded.  Note that this only applies to traditional endpoint.  See the section on
+the [chunking success call][chunking-success] for more details.
 
 {% endmarkdown %}
 {% endblock %}
