@@ -34,3 +34,7 @@ test/_vendor*
 node_modules/
 
 bin/
+
+build/
+
+src

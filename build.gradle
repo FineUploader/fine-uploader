@@ -77,7 +77,7 @@ sourceSets {
     }
 }
 
-task execute(type:JavaExec, dependsOn:'classes') {
+task server(type:JavaExec, dependsOn:'classes') {
    main = "fineuploader.Runner"
    classpath = sourceSets.test.runtimeClasspath
 }
