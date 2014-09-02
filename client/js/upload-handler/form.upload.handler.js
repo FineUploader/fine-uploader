@@ -165,6 +165,10 @@ qq.FormUploadHandler = function(spec) {
     });
 
     qq.extend(this, {
+        getInput: function(id) {
+            return handler._getFileState(id).input;
+        },
+
         /**
          * This function either delegates to a more specific message handler if CORS is involved,
          * or simply registers a callback when the iframe has been loaded that invokes the passed callback
@@ -246,10 +250,6 @@ qq.FormUploadHandler = function(spec) {
             return fileId + "_" + formHandlerInstanceId;
         },
 
-        getInput: function(id) {
-            return handler._getFileState(id).input;
-        },
-
         /**
          * Generates a form element and appends it to the `document`.  When the form is submitted, a specific iframe is targeted.
          * The name of the iframe is passed in as a property of the spec parameter, and must be unique in the `document`.  Note
@@ -281,6 +281,23 @@ qq.FormUploadHandler = function(spec) {
             document.body.appendChild(form);
 
             return form;
+        },
+        
+        /**
+         * @param innerHtmlOrMessage JSON message
+         * @returns {*} The parsed response, or an empty object if the response could not be parsed
+         */
+        _parseJsonResponse: function(innerHtmlOrMessage) {
+            var response = {};
+    
+            try {
+                response = qq.parseJson(innerHtmlOrMessage);
+            }
+            catch(error) {
+                log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
+            }
+    
+            return response;
         }
     });
 };
