@@ -111,7 +111,7 @@ qq.FormUploadHandler = function(spec) {
         corsMessageReceiver.receiveMessage(iframeName, function(message) {
             log("Received the following window message: '" + message + "'");
             var fileId = getFileIdForIframeName(iframeName),
-                response = handler._parseJsonResponse(fileId, message),
+                response = handler._parseJsonResponse(message),
                 uuid = response.uuid,
                 onloadCallback;
 
