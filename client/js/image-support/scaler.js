@@ -80,7 +80,7 @@ qq.Scaler = function(spec, log) {
             return records;
         },
 
-        handleNewFile: function(file, name, uuid, size, fileList, uuidParamName, batchId, api) {
+        handleNewFile: function(file, name, uuid, size, fileList, batchId, uuidParamName, api) {
             var self = this,
                 buttonId = file.qqButtonId || (file.blob && file.blob.qqButtonId),
                 scaledIds = [],
