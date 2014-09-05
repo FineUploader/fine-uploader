@@ -545,6 +545,9 @@
                     this._templating.disableCancel();
                 }
 
+                // Cancel all existing (previous) files and clear the list if this file is not part of 
+                // a scaled file group that has already been accepted, or if this file is not part of 
+                // a scaled file group at all.
                 if (!this._options.multiple) {
                     var record = this.getUploads({id: id});
                     
