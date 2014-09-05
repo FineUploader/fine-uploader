@@ -546,8 +546,15 @@
                 }
 
                 if (!this._options.multiple) {
-                    this._handler.cancelAll();
-                    this._clearList();
+                    var record = this.getUploads({id: id});
+                    
+                    this._handledProxyGroup = this._handledProxyGroup || record.proxyGroupId;
+
+                    if (record.proxyGroupId !== this._handledProxyGroup || !record.proxyGroupId) {
+                        this._handler.cancelAll();
+                        this._clearList();
+                        this._handledProxyGroup = null;
+                    }
                 }
             }
 
