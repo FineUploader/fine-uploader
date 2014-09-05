@@ -82,15 +82,17 @@ qq.UploadButton = function(o) {
             // to ensure the rendered input button in IE takes up the entire 
             // space of the container element.  Otherwise, the left side of the 
             // button will require a double-click to invoke the file chooser.
-            fontSize: "999999px",
+            fontSize: "3500px",
             margin: 0,
             padding: 0,
             cursor: "pointer",
             opacity: 0,
-            width: "100%",
-            height: "100%"
-            
+            width: "100%"
         });
+        
+        // Setting the file input's height to 100% in IE7 causes 
+        // most of the visible button to be unclickable.
+        !qq.ie7() && qq(input).css({height: "100%"});
 
         options.element.appendChild(input);
 
