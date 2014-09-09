@@ -514,8 +514,23 @@ var qq = function(element) {
         return qq.android() && navigator.userAgent.toLowerCase().indexOf("chrome") < 0;
     };
 
+    qq.ios6 = function() {
+        return qq.ios() && navigator.userAgent.indexOf(" OS 6_") !== -1;
+    };
+
     qq.ios7 = function() {
         return qq.ios() && navigator.userAgent.indexOf(" OS 7_") !== -1;
+    };
+    
+    // When this function was written, iOS8 was in beta, and the userAgent string 
+    // appeared to be inconsistent with previous versions of iOS.  Just in case 
+    // the final build of iOS8 doesn't include an adjustment to the UA string, 
+    // this seems like a reasonable way to determine if the device is running iOS8.  
+    //
+    // TODO This should be removed once it is no longer needed for workarounds, or at 
+    // least adjusted to look at the correct pattern after iOS8 releases.
+    qq.ios8 = function() {
+        return qq.ios() && !qq.ios6() && !qq.ios7();
     };
 
     qq.ios = function() {
