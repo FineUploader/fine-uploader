@@ -54,10 +54,7 @@ qq.UploadButton = function(o) {
 
         input.setAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME, buttonId);
 
-        // (hopefully) temporary workaround for a bug detected in iOS8 beta 5 
-        // that prevents any images from being selected if the `multiple` attribute 
-        // is present on the file input.
-        if (options.multiple && !qq.ios8()) {
+        if (options.multiple) {
             input.setAttribute("multiple", "");
         }
 
