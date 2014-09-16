@@ -2,7 +2,8 @@
 describe("uploader.basic.js", function () {
     "use strict";
 
-    var $fineUploader, $button, $extraButton, $extraButton2, $extraButton3;
+    var $fineUploader, $button, $extraButton, $extraButton2, $extraButton3,
+        isIos8 = qq.ios() && navigator.userAgent.indexOf(" OS 8_") !== -1;
 
     function getFileInput($containerEl) {
         return $containerEl.find("INPUT")[0];
@@ -25,7 +26,7 @@ describe("uploader.basic.js", function () {
         $extraButton3 = $fixture.find("#test-button4");
     });
 
-    it("Excludes the multiple attribute on the file input element by default only in iOS7 AND when MOV files can be submitted", function() {
+    it("Excludes the multiple attribute on the file input element by default only in iOS7+ AND when MOV files can be submitted", function() {
         var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0],
@@ -34,10 +35,14 @@ describe("uploader.basic.js", function () {
             }
         });
 
-        assert.equal(qq(getFileInput($button)).hasAttribute("multiple"), qq.supportedFeatures.ajaxUploading && !qq.ios7());
+        var multipleExpected = (!qq.ios() && qq.supportedFeatures.ajaxUploading) ||
+            qq.ios6() ||
+            (isIos8 && qq.iosChrome());
+
+        assert.equal(qq(getFileInput($button)).hasAttribute("multiple"), multipleExpected);
     });
 
-    it("Includes the multiple attribute on the file input element by default in all supported browsers (even iOS7) when MOV files cannot be submitted", function() {
+    it("Includes the multiple attribute on the file input element by default in all supported browsers (even iOS7+) when MOV files cannot be submitted", function() {
         var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0],
@@ -49,23 +54,29 @@ describe("uploader.basic.js", function () {
         assert.equal(qq(getFileInput($button)).hasAttribute("multiple"), qq.supportedFeatures.ajaxUploading);
     });
 
-    it("Includes the multiple attribute on the file input element by default (where supported) except in iOS7 with the default alloweExtensions value", function() {
+    it("Includes the multiple attribute on the file input element by default (where supported) except in iOS7+ with the default alloweExtensions value", function() {
         var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0]
         });
 
+        var multipleExpected = (!qq.ios() && qq.supportedFeatures.ajaxUploading) ||
+            qq.ios6() ||
+            (isIos8 && qq.iosChrome());
+
         assert.equal(qq(getFileInput($button)).hasAttribute("multiple"), qq.supportedFeatures.ajaxUploading && !qq.ios7());
     });
 
-    it("Excludes the multiple attribute on the file input element if requested", function() {
+    it("Excludes the multiple attribute on the file input element if requested, unless iOS8 Chrome", function() {
         var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0],
             multiple: false
         });
 
-        assert.ok(!qq(getFileInput($button)).hasAttribute("multiple"));
+        var multipleExpected = isIos8 && qq.iosChrome();
+
+        assert.equal(qq(getFileInput($button)).hasAttribute("multiple"), multipleExpected);
     });
 
     it("Excludes or includes the multiple attribute on 'extra' file input elements appropriately, taking OS and extraButton properties into consideration", function() {
@@ -92,8 +103,16 @@ describe("uploader.basic.js", function () {
             ]
         });
 
-        assert.equal(qq(getFileInput($extraButton)).hasAttribute("multiple"), qq.supportedFeatures.ajaxUploading && !qq.ios7());
-        assert.equal(qq(getFileInput($extraButton2)).hasAttribute("multiple"), false);
-        assert.equal(qq(getFileInput($extraButton3)).hasAttribute("multiple"), qq.supportedFeatures.ajaxUploading);
+        var multipleExpectedForBtn1 = (!qq.ios() && qq.supportedFeatures.ajaxUploading) ||
+            qq.ios6() ||
+            (isIos8 && qq.iosChrome());
+
+        var multipleExpectedForBtn2 = isIos8 && qq.iosChrome();
+
+        var multipleExpectedForBtn3 = qq.supportedFeatures.ajaxUploading;
+
+        assert.equal(qq(getFileInput($extraButton)).hasAttribute("multiple"), multipleExpectedForBtn1);
+        assert.equal(qq(getFileInput($extraButton2)).hasAttribute("multiple"), multipleExpectedForBtn2);
+        assert.equal(qq(getFileInput($extraButton3)).hasAttribute("multiple"), multipleExpectedForBtn3);
     });
 });

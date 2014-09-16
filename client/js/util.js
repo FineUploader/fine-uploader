@@ -514,6 +514,10 @@ var qq = function(element) {
         return qq.android() && navigator.userAgent.toLowerCase().indexOf("chrome") < 0;
     };
 
+    qq.ios6 = function() {
+        return qq.ios() && navigator.userAgent.indexOf(" OS 6_") !== -1;
+    };
+
     qq.ios7 = function() {
         return qq.ios() && navigator.userAgent.indexOf(" OS 7_") !== -1;
     };
@@ -523,6 +527,10 @@ var qq = function(element) {
         return navigator.userAgent.indexOf("iPad") !== -1
             || navigator.userAgent.indexOf("iPod") !== -1
             || navigator.userAgent.indexOf("iPhone") !== -1;
+    };
+
+    qq.iosChrome = function() {
+        return qq.ios() && navigator.userAgent.indexOf("CriOS") !== -1;
     };
 
     //

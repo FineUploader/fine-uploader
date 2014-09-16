@@ -15,7 +15,9 @@ qq.UploadButton = function(o) {
     "use strict";
 
 
-    var disposeSupport = new qq.DisposeSupport(),
+    var self = this,
+
+        disposeSupport = new qq.DisposeSupport(),
 
         options = {
             // "Container" element
@@ -54,9 +56,7 @@ qq.UploadButton = function(o) {
 
         input.setAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME, buttonId);
 
-        if (options.multiple) {
-            input.setAttribute("multiple", "");
-        }
+        self.setMultiple(options.multiple, input);
 
         if (options.folders && qq.supportedFeatures.folderSelection) {
             // selecting directories is only possible in Chrome now, via a vendor-specific prefixed attribute
@@ -134,9 +134,6 @@ qq.UploadButton = function(o) {
         direction: "ltr"
     });
 
-    input = createInput();
-
-
     // Exposed API
     qq.extend(this, {
         getInput: function() {
@@ -147,8 +144,17 @@ qq.UploadButton = function(o) {
             return buttonId;
         },
 
-        setMultiple: function(isMultiple) {
-            if (isMultiple !== options.multiple) {
+        setMultiple: function(isMultiple, opt_input) {
+            var input = this.getInput() || opt_input;
+
+            // Temporary workaround for bug in in iOS8 Chrome that causes the browser to crash
+            // before the file chooser appears if the file input doesn't contain a multiple attribute.
+            // See #1283.
+            if (qq.iosChrome() && !qq.ios6() && !qq.ios7()) {
+                input.setAttribute("multiple", "");
+            }
+
+            else {
                 if (isMultiple) {
                     input.setAttribute("multiple", "");
                 }
@@ -173,6 +179,8 @@ qq.UploadButton = function(o) {
             input = createInput();
         }
     });
+
+    input = createInput();
 };
 
 qq.UploadButton.BUTTON_ID_ATTR_NAME = "qq-button-id";

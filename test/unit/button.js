@@ -90,7 +90,7 @@ describe("button.js", function () {
             });
 
             input = button.getInput();
-            assert.ok(!input.hasAttribute("multiple"));
+            assert.equal(input.hasAttribute("multiple"), qq.iosChrome() && !qq.ios6() && !qq.ios7());
 
             button.setMultiple(true);
             assert.ok(input.hasAttribute("multiple"));

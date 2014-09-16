@@ -562,8 +562,8 @@
 
             function allowMultiple() {
                 if (qq.supportedFeatures.ajaxUploading) {
-                    // Workaround for bug in iOS7 (see #1039)
-                    if (qq.ios7() && self._isAllowedExtension(allowedExtensions, ".mov")) {
+                    // Workaround for bug in iOS7+ (see #1039)
+                    if (qq.ios() && !qq.ios6() && self._isAllowedExtension(allowedExtensions, ".mov")) {
                         return false;
                     }
 
