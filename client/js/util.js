@@ -468,7 +468,8 @@ var qq = function(element) {
     //
     // Browsers and platforms detection
     qq.ie = function() {
-        return navigator.userAgent.indexOf("MSIE") !== -1;
+        return navigator.userAgent.indexOf("MSIE") !== -1 ||
+            navigator.userAgent.indexOf("Trident") !== -1;
     };
 
     qq.ie7 = function() {
@@ -480,8 +481,7 @@ var qq = function(element) {
     };
 
     qq.ie11 = function() {
-        return (navigator.userAgent.indexOf("Trident") !== -1 &&
-            navigator.userAgent.indexOf("rv:11") !== -1);
+        return qq.ie() && navigator.userAgent.indexOf("rv:11") !== -1;
     };
 
     qq.safari = function() {
