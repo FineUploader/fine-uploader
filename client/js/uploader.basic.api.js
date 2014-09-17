@@ -11,6 +11,8 @@
                 throw new qq.Error("Blob uploading is not supported in this browser!");
             }
 
+            this._maybeHandleIos8SafariWorkaround();
+
             if (blobDataOrArray) {
                 var blobDataArray = [].concat(blobDataOrArray),
                     verifiedBlobDataList = [],
@@ -46,6 +48,8 @@
         },
 
         addFiles: function(filesOrInputs, params, endpoint) {
+            this._maybeHandleIos8SafariWorkaround();
+
             var verifiedFilesOrInputs = [],
                 batchId = this._storedIds.length === 0 ? qq.getUniqueId() : this._currentBatchId,
                 fileOrInputIndex, fileOrInput, fileIndex;
@@ -562,8 +566,12 @@
 
             function allowMultiple() {
                 if (qq.supportedFeatures.ajaxUploading) {
-                    // Workaround for bug in iOS7 (see #1039)
-                    if (qq.ios7() && self._isAllowedExtension(allowedExtensions, ".mov")) {
+                    // Workaround for bug in iOS7+ (see #1039)
+                    if (self._options.workarounds.iosEmptyVideos &&
+                        qq.ios() &&
+                        !qq.ios6() &&
+                        self._isAllowedExtension(allowedExtensions, ".mov")) {
+
                         return false;
                     }
 
@@ -587,7 +595,8 @@
                     self._onInputChange(input);
                 },
                 hoverClass: this._options.classes.buttonHover,
-                focusClass: this._options.classes.buttonFocus
+                focusClass: this._options.classes.buttonFocus,
+                ios8BrowserCrashWorkaround: this._options.workarounds.ios8BrowserCrash
             });
 
             this._disposeSupport.addDisposer(function() {
@@ -1173,6 +1182,17 @@
                 setTimeout(function() {
                     self._onAllComplete(self._succeededSinceLastAllComplete, self._failedSinceLastAllComplete);
                 }, 0);
+            }
+        },
+
+        _maybeHandleIos8SafariWorkaround: function() {
+            var self = this;
+
+            if (this._options.workarounds.ios8SafariUploads && qq.ios8() && qq.iosSafari()) {
+                setTimeout(function() {
+                    window.alert(self._options.messages.unsupportedBrowserIos8Safari);
+                }, 0);
+                throw new qq.Error(this._options.messages.unsupportedBrowserIos8Safari);
             }
         },
 

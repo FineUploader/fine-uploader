@@ -86,7 +86,11 @@ describe("button.js", function () {
             var input;
             var button = new qq.UploadButton({
                 element: $button[0],
-                multiple: false
+                multiple: false,
+                workarounds: {
+                    ios8BrowserCrash: false,
+                    iosEmptyVideos: false
+                }
             });
 
             input = button.getInput();

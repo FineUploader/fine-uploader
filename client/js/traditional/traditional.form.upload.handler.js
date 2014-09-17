@@ -17,23 +17,6 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
         log = proxy.log;
 
     /**
-     * @param innerHtmlOrMessage JSON message
-     * @returns {*} The parsed response, or an empty object if the response could not be parsed
-     */
-    function parseJsonResponse(innerHtmlOrMessage) {
-        var response = {};
-
-        try {
-            response = qq.parseJson(innerHtmlOrMessage);
-        }
-        catch(error) {
-            log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
-        }
-
-        return response;
-    }
-
-    /**
      * Returns json object received by iframe from server.
      */
     function getIframeContentJson(id, iframe) {
@@ -54,7 +37,7 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
                 innerHtml = doc.body.firstChild.firstChild.nodeValue;
             }
 
-            response = parseJsonResponse(innerHtml);
+            response = handler._parseJsonResponse(innerHtml);
         }
         catch(error) {
             log("Error when attempting to parse form upload response (" + error.message + ")", "error");

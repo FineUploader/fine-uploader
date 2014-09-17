@@ -468,7 +468,8 @@ var qq = function(element) {
     //
     // Browsers and platforms detection
     qq.ie = function() {
-        return navigator.userAgent.indexOf("MSIE") !== -1;
+        return navigator.userAgent.indexOf("MSIE") !== -1 ||
+            navigator.userAgent.indexOf("Trident") !== -1;
     };
 
     qq.ie7 = function() {
@@ -480,8 +481,7 @@ var qq = function(element) {
     };
 
     qq.ie11 = function() {
-        return (navigator.userAgent.indexOf("Trident") !== -1 &&
-            navigator.userAgent.indexOf("rv:11") !== -1);
+        return qq.ie() && navigator.userAgent.indexOf("rv:11") !== -1;
     };
 
     qq.safari = function() {
@@ -514,8 +514,16 @@ var qq = function(element) {
         return qq.android() && navigator.userAgent.toLowerCase().indexOf("chrome") < 0;
     };
 
+    qq.ios6 = function() {
+        return qq.ios() && navigator.userAgent.indexOf(" OS 6_") !== -1;
+    };
+
     qq.ios7 = function() {
         return qq.ios() && navigator.userAgent.indexOf(" OS 7_") !== -1;
+    };
+
+    qq.ios8 = function() {
+        return qq.ios() && navigator.userAgent.indexOf(" OS 8_") !== -1;
     };
 
     qq.ios = function() {
@@ -523,6 +531,18 @@ var qq = function(element) {
         return navigator.userAgent.indexOf("iPad") !== -1
             || navigator.userAgent.indexOf("iPod") !== -1
             || navigator.userAgent.indexOf("iPhone") !== -1;
+    };
+
+    qq.iosChrome = function() {
+        return qq.ios() && navigator.userAgent.indexOf("CriOS") !== -1;
+    };
+
+    qq.iosSafari = function() {
+        return qq.ios() && !qq.iosChrome() && navigator.userAgent.indexOf("Safari") !== -1;
+    };
+
+    qq.iosSafariWebView = function() {
+        return qq.ios() && !qq.iosChrome() && !qq.iosSafari();
     };
 
     //
