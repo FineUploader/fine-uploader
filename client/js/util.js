@@ -522,6 +522,10 @@ var qq = function(element) {
         return qq.ios() && navigator.userAgent.indexOf(" OS 7_") !== -1;
     };
 
+    qq.ios8 = function() {
+        return qq.ios() && navigator.userAgent.indexOf(" OS 8_") !== -1;
+    };
+
     qq.ios = function() {
         /*jshint -W014 */
         return navigator.userAgent.indexOf("iPad") !== -1
@@ -531,6 +535,14 @@ var qq = function(element) {
 
     qq.iosChrome = function() {
         return qq.ios() && navigator.userAgent.indexOf("CriOS") !== -1;
+    };
+
+    qq.iosSafari = function() {
+        return qq.ios() && !qq.iosChrome() && navigator.userAgent.indexOf("Safari") !== -1;
+    };
+
+    qq.iosSafariWebView = function() {
+        return qq.ios() && !qq.iosChrome() && !qq.iosSafari();
     };
 
     //

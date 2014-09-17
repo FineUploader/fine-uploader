@@ -38,6 +38,8 @@ qq.UploadButton = function(o) {
             // Called when the browser invokes the onchange handler on the `<input type="file">`
             onChange: function(input) {},
 
+            ios8BrowserCrashWorkaround: true,
+
             // **This option will be removed** in the future as the :hover CSS pseudo-class is available on all supported browsers
             hoverClass: "qq-upload-button-hover",
 
@@ -147,10 +149,10 @@ qq.UploadButton = function(o) {
         setMultiple: function(isMultiple, opt_input) {
             var input = this.getInput() || opt_input;
 
-            // Temporary workaround for bug in in iOS8 Chrome that causes the browser to crash
+            // Temporary workaround for bug in in iOS8 UIWebView that causes the browser to crash
             // before the file chooser appears if the file input doesn't contain a multiple attribute.
             // See #1283.
-            if (qq.iosChrome() && !qq.ios6() && !qq.ios7()) {
+            if (options.ios8BrowserCrashWorkaround && qq.ios8() && (qq.iosChrome() || qq.iosSafariWebView())) {
                 input.setAttribute("multiple", "");
             }
 

@@ -86,11 +86,15 @@ describe("button.js", function () {
             var input;
             var button = new qq.UploadButton({
                 element: $button[0],
-                multiple: false
+                multiple: false,
+                workarounds: {
+                    ios8BrowserCrash: false,
+                    iosEmptyVideos: false
+                }
             });
 
             input = button.getInput();
-            assert.equal(input.hasAttribute("multiple"), qq.iosChrome() && !qq.ios6() && !qq.ios7());
+            assert.ok(!input.hasAttribute("multiple"));
 
             button.setMultiple(true);
             assert.ok(input.hasAttribute("multiple"));

@@ -228,6 +228,15 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
     )
 )
 }}
+
+{{ api_parent_option("workarounds", "workarounds", "Flags that enable or disable workarounds for browser-specific bugs.",
+    (
+        ("workarounds.iosEmptyVideos", "iosEmptyVideos", "Ensures all `<input type="file">` elements tracked by Fine Uploader do NOT contain a `multiple` attribute to work around an issue present in iOS7 & 8 that otherwise results in 0-sized uploaded videos.", "Boolean", "true",),
+        ("workarounds.ios8BrowserCrash", "ios8BrowserCrash", "Ensures all `<input type="file">` elements tracked by Fine Uploader always have a `multiple` attribute present.  This only applies to iOS8 Chrome and iOS8 UIWebView, and is put in place to work around an issue that causes the browser to crash when a file input element does not contain a `multiple` attribute inside of a UIWebView container created by an iOS8 app compiled with and iOS7 SDK.", "Boolean", "true",),
+        ("workarounds.ios8SafariUploads", "ios8SafariUploads", "Disables Fine Uploader and displays a message to the user in iOS8 Safari.  Due to serious bugs in iOS8 Safari, uploading is not possible.", "Boolean", "true",)
+    )
+)
+}}
 </div>
 </div>
 

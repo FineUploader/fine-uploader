@@ -359,6 +359,7 @@ Note: Any features not listed here are supported in all browsers.
 </table>
 
 <small><a style="font-size: 24px" name="ios-multiple">*</a> - iOS browsers are unable to upload multiple files when video files are allowed to be uploaded due to a long-standing iOS bug. See case <a href="https://github.com/Widen/fine-uploader/issues/990">#990</a> on our bug tracker for more details.</small>
+<small><a style="font-size: 24px" name="ios-multiple">*</a> - iOS8 Safari is unable to upload any files due to bugs in Apple's code.  Please see [the blog post on this topic for more details](http://blog.fineuploader.com/2014/09/10/ios8-presents-serious-issues-that-prevent-file-uploading/).</small>
 
 
 ### Upload size Limitations
