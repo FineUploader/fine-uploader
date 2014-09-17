@@ -135,7 +135,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
         ("messages.sizeError", "sizeError", "Text passed to the error event handler if a submitted item is too large.", "String", "{file} is too large, maximum file size is {sizeLimit}.",),
         ("messages.tooManyItemsError", "tooManyItemsError", "Text passed to the error event handler if a submit is ignored due to a violation of the `validation.itemLimit` rules.", "String", "Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.",),
         ("messages.typeError", "typeError", "Text passed to the error event handler if an invalid file type is detected.", "String", "{file} has an invalid extension. Valid extension(s): {extensions}.",),
-        ("messages.unsupportedBrowserIos8Safari", "unsupportedBrowserIos8Safari", "Unrecoverable error - this browser does not permit file uploading of any kind due to serious bugs in iOS8 Safari.  Please use iOS8 Chrome until Apple fixes these issues.",),
+        ("messages.unsupportedBrowserIos8Safari", "unsupportedBrowserIos8Safari", "Message displayed if the browser is iOS8 Safari and the corresponding workarounds option is not disabled.", "String", "Unrecoverable error - this browser does not permit file uploading of any kind due to serious bugs in iOS8 Safari.  Please use iOS8 Chrome until Apple fixes these issues.",),
     )
 )
 }}
