@@ -124,6 +124,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
 {{ api_parent_option("messages", "messages", "",
     (
         ("messages.emptyError", "emptyError", "Text passed to the error event handler if a submitted item is zero bits.", "String", "{file} is empty, please select files again without it.",),
+        ("messages.unsupportedBrowserIos8Safari", "unsupportedBrowserIos8Safari", "Unrecoverable error - this browser does not permit file uploading of any kind due to serious bugs in iOS8 Safari.  Please use iOS8 Chrome until Apple fixes these issues.",),
         ("messages.maxHeightImageError", "maxHeightImageError", "Text passed to the error event handler if an image is too tall.", "String", "Image is too tall.",),
         ("messages.maxWidthImageError", "maxWidthImageError", "Text passed to the error event handler if an image is too wide.", "String", "Image is too wide.",),
         ("messages.minHeightImageError", "minHeightImageError", "Text passed to the error event handler if an image is not tall enough.", "String", "Image is not tall enough.",),
