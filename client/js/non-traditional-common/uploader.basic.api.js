@@ -8,6 +8,9 @@
     qq.nonTraditionalBasePublicApi = {
         setUploadSuccessParams: function(params, id) {
             this._uploadSuccessParamsStore.set(params, id);
+        },
+        setUploadSuccessEndpoint: function(endpoint, id) {
+            this._uploadSuccessEndpointStore.set(endpoint, id);
         }
     };
 
@@ -32,7 +35,7 @@
             var success = result.success ? true : false,
                 self = this,
                 onCompleteArgs = arguments,
-                successEndpoint = this._options.uploadSuccess.endpoint,
+                successEndpoint = this._uploadSuccessEndpointStore.get(id),
                 successCustomHeaders = this._options.uploadSuccess.customHeaders,
                 cors = this._options.cors,
                 promise = new qq.Promise(),

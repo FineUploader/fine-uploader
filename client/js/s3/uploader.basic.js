@@ -84,6 +84,7 @@
         qq.FineUploaderBasic.call(this, options);
 
         this._uploadSuccessParamsStore = this._createStore(this._options.uploadSuccess.params);
+        this._uploadSuccessEndpointStore = this._createStore(this._options.uploadSuccess.endpoint);
 
         // This will hold callbacks for failed uploadSuccess requests that will be invoked on retry.
         // Indexed by file ID.
@@ -124,6 +125,10 @@
 
         setUploadSuccessParams: function(params, id) {
             this._uploadSuccessParamsStore.set(params, id);
+        },
+
+        setUploadSuccessEndpoint: function(endpoint, id) {
+            this._uploadSuccessEndpointStore.set(endpoint, id);
         },
 
         setCredentials: function(credentials, ignoreEmpty) {
