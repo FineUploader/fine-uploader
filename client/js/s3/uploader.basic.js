@@ -123,14 +123,6 @@
             this._failedSuccessRequestCallbacks = [];
         },
 
-        setUploadSuccessParams: function(params, id) {
-            this._uploadSuccessParamsStore.set(params, id);
-        },
-
-        setUploadSuccessEndpoint: function(endpoint, id) {
-            this._uploadSuccessEndpointStore.set(endpoint, id);
-        },
-
         setCredentials: function(credentials, ignoreEmpty) {
             if (credentials && credentials.secretKey) {
                 if (!credentials.accessKey) {
