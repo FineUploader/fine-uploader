@@ -11,7 +11,6 @@ qq.UiEventHandler = function(s, protectedApi) {
             onHandled: function(target, event) {}
         };
 
-
     // This makes up the "public" API methods that will be accessible
     // to instances constructing a base or child handler
     qq.extend(this, {
@@ -46,7 +45,6 @@ qq.UiEventHandler = function(s, protectedApi) {
             return disposer;
         }
     });
-
 
     qq.extend(spec, s);
 

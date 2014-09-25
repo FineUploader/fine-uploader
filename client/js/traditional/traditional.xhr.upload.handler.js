@@ -36,7 +36,6 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             }
         },
 
-
         allChunksDoneRequester = new qq.traditional.AllChunksDoneAjaxRequester({
             cors: spec.cors,
             endpoint: spec.chunking.success.endpoint,
@@ -101,7 +100,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
                 log(qq.format("Received response status {} with body: {}", xhr.status, xhr.responseText));
                 response = qq.parseJson(xhr.responseText);
             }
-            catch(error) {
+            catch (error) {
                 upload && log("Error when attempting to parse xhr response text (" + error.message + ")", "error");
             }
 
@@ -185,7 +184,6 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             });
         };
 
-
     qq.extend(this, {
         uploadChunk: function(id, chunkIdx, resuming) {
             var chunkData = handler._getChunkData(id, chunkIdx),
@@ -226,10 +224,9 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
     });
 
     qq.extend(this, new qq.XhrUploadHandler({
-            options: qq.extend({namespace: "traditional"}, spec),
-            proxy: qq.extend({getEndpoint: spec.endpointStore.get}, proxy)
-        }
-    ));
+        options: qq.extend({namespace: "traditional"}, spec),
+        proxy: qq.extend({getEndpoint: spec.endpointStore.get}, proxy)
+    }));
 
     qq.override(this, function(super_) {
         return {

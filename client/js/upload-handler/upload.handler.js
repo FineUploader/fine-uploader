@@ -12,7 +12,6 @@ qq.UploadHandler = function(spec) {
         onCancel = proxy.onCancel,
         getName = proxy.getName;
 
-
     qq.extend(this, {
         add: function(id, fileItem) {
             fileState[id] = fileItem;

@@ -45,7 +45,7 @@
   "dependencies": {
     "async": "0.2.9",
     "glob": "3.2.6",
-    "grunt": "0.4.1",
+    "grunt": "^0.4.5",
     "grunt-banner": "0.2.0",
     "grunt-contrib-clean": "0.4.1",
     "grunt-contrib-compress": "0.5.2",
@@ -71,7 +71,8 @@
     "request": "2.21.0",
     "semver": "2.0.x",
     "underscore": "1.5.2",
-    "uuid": "1.4.1"
+    "uuid": "1.4.1",
+    "grunt-jscs": "^0.7.1"
   },
   "license": "GPLv3"
 }

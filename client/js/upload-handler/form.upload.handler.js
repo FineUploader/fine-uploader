@@ -21,7 +21,6 @@ qq.FormUploadHandler = function(spec) {
         log = proxy.log,
         corsMessageReceiver = new qq.WindowReceiveMessage({log: log});
 
-
     /**
      * Remove any trace of the file from the handler.
      *
@@ -147,7 +146,7 @@ qq.FormUploadHandler = function(spec) {
                 fileInput.setAttribute("name", inputName);
 
                 // remove file input from DOM
-                if (fileInput.parentNode){
+                if (fileInput.parentNode) {
                     qq(fileInput).remove();
                 }
             },
@@ -185,13 +184,13 @@ qq.FormUploadHandler = function(spec) {
                 registerPostMessageCallback(iframe, callback);
             }
             else {
-                detachLoadEvents[iframe.id] = qq(iframe).attach("load", function(){
+                detachLoadEvents[iframe.id] = qq(iframe).attach("load", function() {
                     log("Received response for " + iframe.id);
 
                     // when we remove iframe from dom
                     // the request stops, but in IE load
                     // event fires
-                    if (!iframe.parentNode){
+                    if (!iframe.parentNode) {
                         return;
                     }
 
@@ -199,7 +198,7 @@ qq.FormUploadHandler = function(spec) {
                         // fixing Opera 10.53
                         if (iframe.contentDocument &&
                             iframe.contentDocument.body &&
-                            iframe.contentDocument.body.innerHTML == "false"){
+                            iframe.contentDocument.body.innerHTML == "false") {
                             // In Opera event is fired second time
                             // when body.innerHTML changed from false
                             // to server response approx. after 1 sec
@@ -282,21 +281,21 @@ qq.FormUploadHandler = function(spec) {
 
             return form;
         },
-        
+
         /**
          * @param innerHtmlOrMessage JSON message
          * @returns {*} The parsed response, or an empty object if the response could not be parsed
          */
         _parseJsonResponse: function(innerHtmlOrMessage) {
             var response = {};
-    
+
             try {
                 response = qq.parseJson(innerHtmlOrMessage);
             }
-            catch(error) {
+            catch (error) {
                 log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
             }
-    
+
             return response;
         }
     });

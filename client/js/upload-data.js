@@ -8,7 +8,6 @@ qq.UploadData = function(uploaderProxy) {
         byProxyGroupId = {},
         byBatchId = {};
 
-
     function getDataByIds(idOrIds) {
         if (qq.isArray(idOrIds)) {
             var entries = [];
@@ -70,15 +69,14 @@ qq.UploadData = function(uploaderProxy) {
          * @returns {number} Internal ID for this file.
          */
         addFile: function(spec) {
-            var status = spec.status || qq.status.SUBMITTING;
-
-            var id = data.push({
-                name: spec.name,
-                originalName: spec.name,
-                uuid: spec.uuid,
-                size: spec.size || -1,
-                status: status
-            }) - 1;
+            var status = spec.status || qq.status.SUBMITTING,
+                id = data.push({
+                    name: spec.name,
+                    originalName: spec.name,
+                    uuid: spec.uuid,
+                    size: spec.size || -1,
+                    status: status
+                }) - 1;
 
             if (spec.batchId) {
                 data[id].batchId = spec.batchId;

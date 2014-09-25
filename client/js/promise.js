@@ -29,7 +29,7 @@ qq.Promise = function() {
                 onFailure && onFailure.apply(null, failureArgs);
             }
             else if (onSuccess) {
-                onSuccess.apply(null,successArgs);
+                onSuccess.apply(null, successArgs);
             }
 
             return this;
@@ -56,7 +56,7 @@ qq.Promise = function() {
                 });
             }
 
-            if(doneCallbacks.length) {
+            if (doneCallbacks.length) {
                 qq.each(doneCallbacks, function(idx, callback) {
                     callback.apply(null, successArgs);
                 });
@@ -75,7 +75,7 @@ qq.Promise = function() {
                 });
             }
 
-            if(doneCallbacks.length) {
+            if (doneCallbacks.length) {
                 qq.each(doneCallbacks, function(idx, callback) {
                     callback.apply(null, failureArgs);
                 });

@@ -2,7 +2,7 @@
 /**
  * Defines the public API for FineUploader mode.
  */
-(function(){
+(function() {
     "use strict";
 
     qq.uiPublicApi = {
@@ -11,11 +11,11 @@
             this._templating.clearFiles();
         },
 
-        addExtraDropzone: function(element){
+        addExtraDropzone: function(element) {
             this._dnd && this._dnd.setupExtraDropzone(element);
         },
 
-        removeExtraDropzone: function(element){
+        removeExtraDropzone: function(element) {
             if (this._dnd) {
                 return this._dnd.removeDropzone(element);
             }
@@ -75,9 +75,6 @@
             return file.qqDropTarget;
         }
     };
-
-
-
 
     /**
      * Defines the private (internal) API for FineUploader mode.
@@ -307,7 +304,7 @@
         },
 
         // Update the progress bar & percentage as the file is uploaded
-        _onProgress: function(id, name, loaded, total){
+        _onProgress: function(id, name, loaded, total) {
             this._parent.prototype._onProgress.apply(this, arguments);
 
             this._templating.updateProgress(id, loaded, total);
@@ -400,7 +397,7 @@
             this._templating.showSpinner(id);
         },
 
-        _onUpload: function(id, name){
+        _onUpload: function(id, name) {
             var parentRetVal = this._parent.prototype._onUpload.apply(this, arguments);
 
             this._templating.showSpinner(id);
@@ -511,7 +508,7 @@
             retVal = this._options.showConfirm(confirmMessage);
 
             if (qq.isGenericPromise(retVal)) {
-                retVal.then(function () {
+                retVal.then(function() {
                     self._sendDeleteRequest.apply(self, deleteRequestArgs);
                 });
             }
@@ -523,7 +520,8 @@
         _addToList: function(id, name, canned) {
             var prependData,
                 prependIndex = 0,
-                dontDisplay = this._handler.isProxied(id) && this._options.scaling.hideScaled;
+                dontDisplay = this._handler.isProxied(id) && this._options.scaling.hideScaled,
+                record;
 
             // If we don't want this file to appear in the UI, skip all of this UI-related logic.
             if (dontDisplay) {
@@ -545,12 +543,12 @@
                     this._templating.disableCancel();
                 }
 
-                // Cancel all existing (previous) files and clear the list if this file is not part of 
-                // a scaled file group that has already been accepted, or if this file is not part of 
+                // Cancel all existing (previous) files and clear the list if this file is not part of
+                // a scaled file group that has already been accepted, or if this file is not part of
                 // a scaled file group at all.
                 if (!this._options.multiple) {
-                    var record = this.getUploads({id: id});
-                    
+                    record = this.getUploads({id: id});
+
                     this._handledProxyGroup = this._handledProxyGroup || record.proxyGroupId;
 
                     if (record.proxyGroupId !== this._handledProxyGroup || !record.proxyGroupId) {
@@ -579,7 +577,7 @@
             }
         },
 
-        _clearList: function(){
+        _clearList: function() {
             this._templating.clearFiles();
             this.clearStoredFiles();
         },
@@ -597,7 +595,7 @@
             }
         },
 
-        _formatProgress: function (uploadedSize, totalSize) {
+        _formatProgress: function(uploadedSize, totalSize) {
             var message = this._options.text.formatProgress;
             function r(name, replacement) { message = message.replace(name, replacement); }
 

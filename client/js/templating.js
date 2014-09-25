@@ -454,7 +454,6 @@ qq.Templating = function(spec) {
             });
     }
 
-
     qq.extend(options, spec);
     log = options.log;
 
@@ -763,8 +762,8 @@ qq.Templating = function(spec) {
             show(getSpinner(id));
         },
 
-        generatePreview: function(id, opt_fileOrBlob) {
-            var relatedThumbnailId = opt_fileOrBlob && opt_fileOrBlob.qqThumbnailId,
+        generatePreview: function(id, optFileOrBlob) {
+            var relatedThumbnailId = optFileOrBlob && optFileOrBlob.qqThumbnailId,
                 thumbnail = getThumbnail(id),
                 spec = {
                     maxSize: thumbnailMaxSize,
@@ -784,7 +783,7 @@ qq.Templating = function(spec) {
                             useCachedPreview(id, relatedThumbnailId);
                         }
                         else {
-                            generateNewPreview(id, opt_fileOrBlob, spec);
+                            generateNewPreview(id, optFileOrBlob, spec);
                         }
                     });
                 }

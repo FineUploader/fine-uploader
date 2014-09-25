@@ -2,7 +2,7 @@
 /**
  * Defines the public API for non-traditional FineUploaderBasic mode.
  */
-(function(){
+(function() {
     "use strict";
 
     qq.nonTraditionalBasePublicApi = {
@@ -10,9 +10,6 @@
             this._uploadSuccessParamsStore.set(params, id);
         }
     };
-
-
-
 
     qq.nonTraditionalBasePrivateApi = {
         /**
@@ -83,7 +80,6 @@
                     cors: cors,
                     log: qq.bind(this.log, this)
                 });
-
 
                 // combine custom params and default params
                 qq.extend(uploadSuccessParams, self._getEndpointSpecificParams(id, result, xhr), true);

@@ -6,7 +6,7 @@
  * specific to the upload-to-S3 workflow.  Some inherited options and API methods have a special meaning
  * in the context of the S3 uploader.
  */
-(function(){
+(function() {
     "use strict";
 
     qq.s3.FineUploader = function(o) {

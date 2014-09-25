@@ -40,6 +40,7 @@ module.exports = function(grunt) {
         copy: configs.copy(paths),
         cssmin: configs.cssmin(paths, customBuildDest),
         jshint: configs.jshint(paths),
+        jscs: configs.jscs(paths),
         nodestatic: configs["static"](paths),
         shell: configs.shell(paths, customBuildDest),
         strip_code: configs.stripcode(paths, customBuildDest),

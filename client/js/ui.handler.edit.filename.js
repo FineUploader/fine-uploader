@@ -13,7 +13,6 @@ qq.FilenameEditHandler = function(s, inheritedInternalApi) {
             onEditingStatusChange: function(fileId, isEditing) {}
         };
 
-
     function getFilenameSansExtension(fileId) {
         var filenameSansExt = spec.onGetName(fileId),
             extIdx = filenameSansExt.lastIndexOf(".");

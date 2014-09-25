@@ -156,7 +156,6 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         }
     }));
 
-
     qq.extend(this, {
         /**
          * Sends the "Complete" request and fulfills the returned promise when the success of this request is known.

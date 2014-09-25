@@ -1,0 +1,10 @@
+{
+  "preset": "airbnb",
+
+  "disallowSpaceAfterObjectKeys": true,
+
+  "validateIndentation": 4,
+  "validateQuoteMarks": "\"",
+
+  "safeContextKeyword": ["self", "handler", "thisSignatureRequester", "controller"]
+}
