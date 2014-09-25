@@ -6,5 +6,5 @@
   "validateIndentation": 4,
   "validateQuoteMarks": "\"",
 
-  "safeContextKeyword": "self"
+  "safeContextKeyword": ["self", "handler", "thisSignatureRequester", "controller"]
 }

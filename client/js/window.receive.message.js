@@ -11,7 +11,7 @@ qq.WindowReceiveMessage = function(o) {
     qq.extend(options, o);
 
     qq.extend(this, {
-        receiveMessage : function(id, callback) {
+        receiveMessage: function(id, callback) {
             var onMessageCallbackWrapper = function(event) {
                     callback(event.data);
                 };
@@ -24,7 +24,7 @@ qq.WindowReceiveMessage = function(o) {
             }
         },
 
-        stopReceivingMessages : function(id) {
+        stopReceivingMessages: function(id) {
             if (window.postMessage) {
                 var detacher = callbackWrapperDetachers[id];
                 if (detacher) {

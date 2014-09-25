@@ -90,7 +90,7 @@ qq.FineUploader = function(o, namespace) {
             hideScaled: false
         },
 
-        showMessage: function(message){
+        showMessage: function(message) {
             setTimeout(function() {
                 window.alert(message);
             }, 0);

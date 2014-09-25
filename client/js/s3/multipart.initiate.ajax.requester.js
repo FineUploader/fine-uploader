@@ -36,7 +36,6 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         log: options.log
     });
 
-
     /**
      * Determine all headers for the "Initiate MPU" request, including the "Authorization" header, which must be determined
      * by the local server.  This is a promissory function.  If the server responds with a signature, the headers
@@ -149,7 +148,6 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             POST: [200]
         }
     }));
-
 
     qq.extend(this, {
         /**

@@ -18,7 +18,6 @@ qq.Session = function(spec) {
 
     qq.extend(options, spec, true);
 
-
     function isJsonResponseValid(response) {
         if (qq.isArray(response)) {
             return true;
@@ -48,7 +47,7 @@ qq.Session = function(spec) {
                         options.addFileRecord(fileItem);
                         return true;
                     }
-                    catch(err) {
+                    catch (err) {
                         someItemsIgnored = true;
                         options.log(err.message, "error");
                     }

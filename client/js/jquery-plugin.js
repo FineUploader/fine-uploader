@@ -114,7 +114,7 @@
 
         if (dest === undefined) {
             if (source.uploaderType !== "basic") {
-                xformed = { element : $el[0] };
+                xformed = { element: $el[0] };
             }
             else {
                 xformed = {};
