@@ -10,7 +10,7 @@
  * Copyright (c) 2012 Shinichi Tomita <shinichi.tomita@gmail.com>
  * Released under the MIT license
  *
- * Modified by Widen for Fine Uploader
+ * Heavily modified by Widen for Fine Uploader
  */
 (function() {
 
@@ -19,11 +19,14 @@
      * In iOS, larger images than 2M pixels may be subsampled in rendering.
      */
     function detectSubsampling(img) {
-        var iw = img.naturalWidth, ih = img.naturalHeight;
+        var iw = img.naturalWidth,
+            ih = img.naturalHeight,
+            canvas = document.createElement("canvas"),
+            ctx;
+
         if (iw * ih > 1024 * 1024) { // subsampling may happen over megapixel image
-            var canvas = document.createElement("canvas");
             canvas.width = canvas.height = 1;
-            var ctx = canvas.getContext("2d");
+            ctx = canvas.getContext("2d");
             ctx.drawImage(img, -iw + 1, 0);
             // subsampled image becomes half smaller in rendering size.
             // check alpha channel value to confirm image is covering edge pixel or not.
@@ -39,18 +42,21 @@
      * Fixes a bug which squash image vertically while drawing into canvas for some images.
      */
     function detectVerticalSquash(img, iw, ih) {
-        var canvas = document.createElement("canvas");
+        var canvas = document.createElement("canvas"),
+            sy = 0,
+            ey = ih,
+            py = ih,
+            ctx, data, alpha, ratio;
+
         canvas.width = 1;
         canvas.height = ih;
-        var ctx = canvas.getContext("2d");
+        ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0);
-        var data = ctx.getImageData(0, 0, 1, ih).data;
+        data = ctx.getImageData(0, 0, 1, ih).data;
+
         // search image edge pixel position in case it is squashed vertically.
-        var sy = 0;
-        var ey = ih;
-        var py = ih;
         while (py > sy) {
-            var alpha = data[(py - 1) * 4 + 3];
+            alpha = data[(py - 1) * 4 + 3];
             if (alpha === 0) {
                 ey = py;
             } else {
@@ -58,8 +64,9 @@
             }
             py = (ey + sy) >> 1;
         }
-        var ratio = (py / ih);
-        return (ratio===0)?1:ratio;
+
+        ratio = (py / ih);
+        return (ratio === 0) ? 1 : ratio;
     }
 
     /**
@@ -92,13 +99,17 @@
      * Rendering image element (with resizing) into the canvas element
      */
     function renderImageToCanvas(img, canvas, options, doSquash) {
-        var iw = img.naturalWidth, ih = img.naturalHeight;
-        var width = options.width, height = options.height;
-        var ctx = canvas.getContext("2d");
+        var iw = img.naturalWidth,
+            ih = img.naturalHeight,
+            width = options.width,
+            height = options.height,
+            ctx = canvas.getContext("2d"),
+            modifiedDimensions;
+
         ctx.save();
 
         if (!qq.supportedFeatures.unlimitedScaledImageSize) {
-            var modifiedDimensions = maybeCalculateDownsampledDimensions({
+            modifiedDimensions = maybeCalculateDownsampledDimensions({
                 origWidth: width,
                 origHeight: height
             });
@@ -118,35 +129,40 @@
         // Fine Uploader specific: Save some CPU cycles if not using iOS
         // Assumption: This logic is only needed to overcome iOS image sampling issues
         if (qq.ios()) {
-            var subsampled = detectSubsampling(img);
-            if (subsampled) {
-                iw /= 2;
-                ih /= 2;
-            }
-            var d = 1024; // size of tiling canvas
-            var tmpCanvas = document.createElement("canvas");
-            tmpCanvas.width = tmpCanvas.height = d;
-            var tmpCtx = tmpCanvas.getContext("2d");
-            var vertSquashRatio = doSquash ? detectVerticalSquash(img, iw, ih) : 1;
-            var dw = Math.ceil(d * width / iw);
-            var dh = Math.ceil(d * height / ih / vertSquashRatio);
-            var sy = 0;
-            var dy = 0;
-            while (sy < ih) {
-                var sx = 0;
-                var dx = 0;
-                while (sx < iw) {
-                    tmpCtx.clearRect(0, 0, d, d);
-                    tmpCtx.drawImage(img, -sx, -sy);
-                    ctx.drawImage(tmpCanvas, 0, 0, d, d, dx, dy, dw, dh);
-                    sx += d;
-                    dx += dw;
+            (function() {
+                if (detectSubsampling(img)) {
+                    iw /= 2;
+                    ih /= 2;
                 }
-                sy += d;
-                dy += dh;
-            }
-            ctx.restore();
-            tmpCanvas = tmpCtx = null;
+
+                var d = 1024, // size of tiling canvas
+                    tmpCanvas = document.createElement("canvas"),
+                    vertSquashRatio = doSquash ? detectVerticalSquash(img, iw, ih) : 1,
+                    dw = Math.ceil(d * width / iw),
+                    dh = Math.ceil(d * height / ih / vertSquashRatio),
+                    sy = 0,
+                    dy = 0,
+                    tmpCtx, sx, dx;
+
+                tmpCanvas.width = tmpCanvas.height = d;
+                tmpCtx = tmpCanvas.getContext("2d");
+
+                while (sy < ih) {
+                    sx = 0,
+                    dx = 0;
+                    while (sx < iw) {
+                        tmpCtx.clearRect(0, 0, d, d);
+                        tmpCtx.drawImage(img, -sx, -sy);
+                        ctx.drawImage(tmpCanvas, 0, 0, d, d, dx, dy, dw, dh);
+                        sx += d;
+                        dx += dw;
+                    }
+                    sy += d;
+                    dy += dh;
+                }
+                ctx.restore();
+                tmpCanvas = tmpCtx = null;
+            }())
         }
         else {
             ctx.drawImage(img, 0, 0, width, height);
@@ -215,31 +231,32 @@
         }
     }
 
-
     /**
      * MegaPixImage class
      */
     function MegaPixImage(srcImage, errorCallback) {
+        var self = this;
+
         if (window.Blob && srcImage instanceof Blob) {
-            var img = new Image();
-            var URL = window.URL && window.URL.createObjectURL ? window.URL :
-                    window.webkitURL && window.webkitURL.createObjectURL ? window.webkitURL :
-                null;
-            if (!URL) { throw Error("No createObjectURL function found to create blob url"); }
-            img.src = URL.createObjectURL(srcImage);
-            this.blob = srcImage;
-            srcImage = img;
+            (function() {
+                var img = new Image(),
+                    URL = window.URL && window.URL.createObjectURL ? window.URL :
+                        window.webkitURL && window.webkitURL.createObjectURL ? window.webkitURL : null;
+                if (!URL) { throw Error("No createObjectURL function found to create blob url"); }
+                img.src = URL.createObjectURL(srcImage);
+                self.blob = srcImage;
+                srcImage = img;
+            }());
         }
         if (!srcImage.naturalWidth && !srcImage.naturalHeight) {
-            var _this = this;
             srcImage.onload = function() {
-                var listeners = _this.imageLoadListeners;
+                var listeners = self.imageLoadListeners;
                 if (listeners) {
-                    _this.imageLoadListeners = null;
+                    self.imageLoadListeners = null;
                     // IE11 doesn't reliably report actual image dimensions immediately after onload for small files,
                     // so let's push this to the end of the UI thread queue.
                     setTimeout(function() {
-                        for (var i=0, len=listeners.length; i<len; i++) {
+                        for (var i = 0, len = listeners.length; i < len; i++) {
                             listeners[i]();
                         }
                     }, 0);
@@ -255,16 +272,24 @@
      * Rendering megapix image into specified target element
      */
     MegaPixImage.prototype.render = function(target, options) {
+        options = options || {};
+
+        var self = this,
+            imgWidth = this.srcImage.naturalWidth,
+            imgHeight = this.srcImage.naturalHeight,
+            width = options.width,
+            height = options.height,
+            maxWidth = options.maxWidth,
+            maxHeight = options.maxHeight,
+            doSquash = !this.blob || this.blob.type === "image/jpeg",
+            tagName = target.tagName.toLowerCase(),
+            opt;
+
         if (this.imageLoadListeners) {
-            var _this = this;
-            this.imageLoadListeners.push(function() { _this.render(target, options) });
+            this.imageLoadListeners.push(function() { self.render(target, options) });
             return;
         }
-        options = options || {};
-        var imgWidth = this.srcImage.naturalWidth, imgHeight = this.srcImage.naturalHeight,
-            width = options.width, height = options.height,
-            maxWidth = options.maxWidth, maxHeight = options.maxHeight,
-            doSquash = !this.blob || this.blob.type === "image/jpeg";
+
         if (width && !height) {
             height = (imgHeight * width / imgWidth) << 0;
         } else if (height && !width) {
@@ -281,10 +306,12 @@
             height = maxHeight;
             width = (imgWidth * height / imgHeight) << 0;
         }
-        var opt = { width : width, height : height };
-        for (var k in options) opt[k] = options[k];
 
-        var tagName = target.tagName.toLowerCase();
+        opt = { width: width, height: height },
+        qq.each(options, function(optionsKey, optionsValue) {
+            opt[optionsKey] = optionsValue;
+        });
+
         if (tagName === "img") {
             target.src = renderImageToDataURL(this.srcImage, opt, doSquash);
         } else if (tagName === "canvas") {
