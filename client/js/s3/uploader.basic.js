@@ -4,7 +4,7 @@
  * functionality of Fine Uploader Basic as well as code to handle uploads directly to S3.
  * Some inherited options and API methods have a special meaning in the context of the S3 uploader.
  */
-(function(){
+(function() {
     "use strict";
 
     qq.s3.FineUploaderBasic = function(o) {
@@ -272,7 +272,7 @@
                     promise.success(keynameToUse);
                 };
 
-            switch(keynameLogic) {
+            switch (keynameLogic) {
                 case "uuid":
                     onGetKeynameSuccess(this.getUuid(id), extension);
                     break;
@@ -313,7 +313,6 @@
                     failureCallback(reason);
                 },
                 keyname = keynameFunc.call(this, id);
-
 
             if (qq.isGenericPromise(keyname)) {
                 keyname.then(onSuccess, onFailure);

@@ -80,7 +80,7 @@ qq.ImageValidation = function(blob, log) {
                     actualValue = dimensions[dimensionPropName];
 
                 /*jshint -W015*/
-                switch(limitMatcher[1]) {
+                switch (limitMatcher[1]) {
                     case "min":
                         if (actualValue < limitValue) {
                             failingLimit = limitName;

@@ -23,23 +23,22 @@ qq.UploadHandlerController = function(o, namespace) {
             }
         },
         log: function(str, level) {},
-        onProgress: function(id, fileName, loaded, total){},
-        onComplete: function(id, fileName, response, xhr){},
-        onCancel: function(id, fileName){},
-        onUploadPrep: function(id){}, // Called if non-trivial operations will be performed before onUpload
-        onUpload: function(id, fileName){},
-        onUploadChunk: function(id, fileName, chunkData){},
-        onUploadChunkSuccess: function(id, chunkData, response, xhr){},
-        onAutoRetry: function(id, fileName, response, xhr){},
-        onResume: function(id, fileName, chunkData){},
-        onUuidChanged: function(id, newUuid){},
+        onProgress: function(id, fileName, loaded, total) {},
+        onComplete: function(id, fileName, response, xhr) {},
+        onCancel: function(id, fileName) {},
+        onUploadPrep: function(id) {}, // Called if non-trivial operations will be performed before onUpload
+        onUpload: function(id, fileName) {},
+        onUploadChunk: function(id, fileName, chunkData) {},
+        onUploadChunkSuccess: function(id, chunkData, response, xhr) {},
+        onAutoRetry: function(id, fileName, response, xhr) {},
+        onResume: function(id, fileName, chunkData) {},
+        onUuidChanged: function(id, newUuid) {},
         getName: function(id) {},
         setSize: function(id, newSize) {},
         isQueued: function(id) {},
         getIdsInProxyGroup: function(id) {},
         getIdsInBatch: function(id) {}
     },
-
 
     chunked = {
         // Called when each chunk has uploaded successfully
@@ -136,7 +135,7 @@ qq.UploadHandlerController = function(o, namespace) {
 
             // Send the next chunk
             else {
-                log("Sending chunked upload request for item " + id + ": bytes " + (chunkData.start+1) + "-" + chunkData.end + " of " + size);
+                log("Sending chunked upload request for item " + id + ": bytes " + (chunkData.start + 1) + "-" + chunkData.end + " of " + size);
                 options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
 
                 inProgressChunks.push(chunkIdx);
@@ -185,13 +184,14 @@ qq.UploadHandlerController = function(o, namespace) {
 
                         handler.clearCachedChunk(id, chunkIdx);
 
-                        var responseToReport = upload.normalizeResponse(response, false);
+                        var responseToReport = upload.normalizeResponse(response, false),
+                            inProgressIdx;
 
                         if (responseToReport.reset) {
                             chunked.reset(id);
                         }
                         else {
-                            var inProgressIdx = qq.indexOf(handler._getFileState(id).chunking.inProgress, chunkIdx);
+                            inProgressIdx = qq.indexOf(handler._getFileState(id).chunking.inProgress, chunkIdx);
                             if (inProgressIdx >= 0) {
                                 handler._getFileState(id).chunking.inProgress.splice(inProgressIdx, 1);
                                 handler._getFileState(id).chunking.remaining.unshift(chunkIdx);
@@ -349,31 +349,29 @@ qq.UploadHandlerController = function(o, namespace) {
 
             log("Sending simple upload request for " + id);
             handler.uploadFile(id).then(
-                function(response, opt_xhr) {
+                function(response, optXhr) {
                     log("Simple upload request succeeded for " + id);
 
-                    var responseToReport = upload.normalizeResponse(response, true);
-
-                    var size = options.getSize(id);
+                    var responseToReport = upload.normalizeResponse(response, true),
+                        size = options.getSize(id);
 
                     options.onProgress(id, name, size, size);
                     upload.maybeNewUuid(id, responseToReport);
-                    upload.cleanup(id, responseToReport, opt_xhr);
+                    upload.cleanup(id, responseToReport, optXhr);
                 },
 
-                function(response, opt_xhr) {
+                function(response, optXhr) {
                     log("Simple upload request failed for " + id);
 
                     var responseToReport = upload.normalizeResponse(response, false);
 
-                    if (!options.onAutoRetry(id, name, responseToReport, opt_xhr)) {
-                        upload.cleanup(id, responseToReport, opt_xhr);
+                    if (!options.onAutoRetry(id, name, responseToReport, optXhr)) {
+                        upload.cleanup(id, responseToReport, optXhr);
                     }
                 }
             );
         }
     },
-
 
     upload = {
         cancel: function(id) {
@@ -382,10 +380,10 @@ qq.UploadHandlerController = function(o, namespace) {
             connectionManager.free(id);
         },
 
-        cleanup: function(id, response, opt_xhr) {
+        cleanup: function(id, response, optXhr) {
             var name = options.getName(id);
 
-            options.onComplete(id, name, response, opt_xhr);
+            options.onComplete(id, name, response, optXhr);
 
             if (handler._getFileState(id)) {
                 handler._clearXhrs && handler._clearXhrs(id);
@@ -506,7 +504,7 @@ qq.UploadHandlerController = function(o, namespace) {
             return uploadedThisId;
         },
 
-        maybeNewUuid: function (id, response) {
+        maybeNewUuid: function(id, response) {
             if (response.newUuid !== undefined) {
                 options.onUuidChanged(id, response.newUuid);
             }
@@ -575,7 +573,7 @@ qq.UploadHandlerController = function(o, namespace) {
          * Sends the file identified by id
          */
         upload: function(id) {
-            if(connectionManager.open(id)) {
+            if (connectionManager.open(id)) {
                 return upload.start(id);
             }
             return false;
@@ -589,7 +587,7 @@ qq.UploadHandlerController = function(o, namespace) {
             if (concurrentChunkingPossible) {
                 handler._getFileState(id).temp.ignoreFailure = false;
             }
-            
+
             // If we are attempting to retry a file that is already consuming a connection, this is likely an auto-retry.
             // Just go ahead and ask the handler to upload again.
             if (connectionManager.isUsingConnection(id)) {
@@ -624,12 +622,13 @@ qq.UploadHandlerController = function(o, namespace) {
          * Cancels all queued or in-progress uploads
          */
         cancelAll: function() {
-            var waitingOrConnected = connectionManager.getWaitingOrConnected();
+            var waitingOrConnected = connectionManager.getWaitingOrConnected(),
+                i;
 
             // ensure files are cancelled in reverse order which they were added
             // to avoid a flash of time where a queued file begins to upload before it is canceled
             if (waitingOrConnected.length) {
-                for (var i = waitingOrConnected.length-1; i >= 0; i--) {
+                for (i = waitingOrConnected.length - 1; i >= 0; i--) {
                     controller.cancel(waitingOrConnected[i]);
                 }
             }

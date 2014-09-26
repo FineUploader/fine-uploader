@@ -1,5 +1,5 @@
 /*globals qq*/
-(function(){
+(function() {
     "use strict";
 
     qq.FineUploaderBasic = function(o) {
@@ -42,25 +42,25 @@
             },
 
             callbacks: {
-                onSubmit: function(id, name){},
-                onSubmitted: function(id, name){},
-                onComplete: function(id, name, responseJSON, maybeXhr){},
+                onSubmit: function(id, name) {},
+                onSubmitted: function(id, name) {},
+                onComplete: function(id, name, responseJSON, maybeXhr) {},
                 onAllComplete: function(successful, failed) {},
-                onCancel: function(id, name){},
-                onUpload: function(id, name){},
-                onUploadChunk: function(id, name, chunkData){},
-                onUploadChunkSuccess: function(id, chunkData, responseJSON, xhr){},
-                onResume: function(id, fileName, chunkData){},
-                onProgress: function(id, name, loaded, total){},
-                onTotalProgress: function(loaded, total){},
+                onCancel: function(id, name) {},
+                onUpload: function(id, name) {},
+                onUploadChunk: function(id, name, chunkData) {},
+                onUploadChunkSuccess: function(id, chunkData, responseJSON, xhr) {},
+                onResume: function(id, fileName, chunkData) {},
+                onProgress: function(id, name, loaded, total) {},
+                onTotalProgress: function(loaded, total) {},
                 onError: function(id, name, reason, maybeXhrOrXdr) {},
                 onAutoRetry: function(id, name, attemptNumber) {},
                 onManualRetry: function(id, name) {},
                 onValidateBatch: function(fileOrBlobData) {},
                 onValidate: function(fileOrBlobData) {},
                 onSubmitDelete: function(id) {},
-                onDelete: function(id){},
-                onDeleteComplete: function(id, xhrOrXdr, isError){},
+                onDelete: function(id) {},
+                onDeleteComplete: function(id, xhrOrXdr, isError) {},
                 onPasteReceived: function(blob) {},
                 onStatusChange: function(id, oldStatus, newStatus) {},
                 onSessionRequestComplete: function(response, success, xhrOrXdr) {}
@@ -133,7 +133,7 @@
                 sizeSymbols: ["kB", "MB", "GB", "TB", "PB", "EB"]
             },
 
-            deleteFile : {
+            deleteFile: {
                 enabled: false,
                 method: "DELETE",
                 endpoint: "/server/upload",

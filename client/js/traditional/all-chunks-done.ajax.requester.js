@@ -56,7 +56,6 @@ qq.traditional.AllChunksDoneAjaxRequester = function(o) {
         }
     }));
 
-
     qq.extend(this, {
         complete: function(id, xhr, params, headers) {
             var promise = new qq.Promise();

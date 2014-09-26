@@ -18,9 +18,9 @@ qq.AjaxRequester = function (o) {
             mandatedParams: {},
             allowXRequestedWithAndCacheControl: true,
             successfulResponseCodes: {
-                "DELETE": [200, 202, 204],
-                "POST": [200, 204],
-                "GET": [200]
+                DELETE: [200, 202, 204],
+                POST: [200, 204],
+                GET: [200]
             },
             cors: {
                 expected: false,
@@ -329,7 +329,6 @@ qq.AjaxRequester = function (o) {
             return sendRequest(id, opt_xhr);
         }
     }
-
 
     shouldParamsBeInQueryString = options.method === "GET" || options.method === "DELETE";
 

@@ -2,7 +2,7 @@
 /**
  * Defines the public API for FineUploaderBasic mode.
  */
-(function(){
+(function() {
     "use strict";
 
     qq.basePublicApi = {
@@ -61,7 +61,7 @@
                     filesOrInputs = [].concat(filesOrInputs);
                 }
 
-                for (fileOrInputIndex = 0; fileOrInputIndex < filesOrInputs.length; fileOrInputIndex+=1) {
+                for (fileOrInputIndex = 0; fileOrInputIndex < filesOrInputs.length; fileOrInputIndex += 1) {
                     fileOrInput = filesOrInputs[fileOrInputIndex];
 
                     if (qq.isFileOrInput(fileOrInput)) {
@@ -100,7 +100,7 @@
             this._handler.cancelAll();
         },
 
-        clearStoredFiles: function(){
+        clearStoredFiles: function() {
             this._storedIds = [];
         },
 
@@ -132,15 +132,16 @@
             return this._handler.isValid(fileOrBlobId);
         },
 
-                // Generate a variable size thumbnail on an img or canvas,
+        // Generate a variable size thumbnail on an img or canvas,
         // returning a promise that is fulfilled when the attempt completes.
         // Thumbnail can either be based off of a URL for an image returned
         // by the server in the upload response, or the associated `Blob`.
         drawThumbnail: function(fileId, imgOrCanvas, maxSize, fromServer) {
-            var promiseToReturn = new qq.Promise();
+            var promiseToReturn = new qq.Promise(),
+                fileOrUrl;
 
             if (this._imageGenerator) {
-                var fileOrUrl = this._thumbnailUrls[fileId],
+                fileOrUrl = this._thumbnailUrls[fileId],
                     options = {
                         scale: maxSize > 0,
                         maxSize: maxSize > 0 ? maxSize : null
@@ -367,9 +368,6 @@
         }
     };
 
-
-
-
     /**
      * Defines the private (internal) API for FineUploaderBasic mode.
      */
@@ -562,7 +560,8 @@
         _createUploadButton: function(spec) {
             var self = this,
                 acceptFiles = spec.accept || this._options.validation.acceptFiles,
-                allowedExtensions = spec.allowedExtensions || this._options.validation.allowedExtensions;
+                allowedExtensions = spec.allowedExtensions || this._options.validation.allowedExtensions,
+                button;
 
             function allowMultiple() {
                 if (qq.supportedFeatures.ajaxUploading) {
@@ -585,7 +584,7 @@
                 return false;
             }
 
-            var button = new qq.UploadButton({
+            button = new qq.UploadButton({
                 element: spec.element,
                 folders: spec.folders,
                 name: this._options.request.inputName,
@@ -645,7 +644,8 @@
                     onComplete: function(id, name, result, xhr) {
                         delete lastOnProgress[id];
 
-                        var status = self.getUploads({id: id}).status;
+                        var status = self.getUploads({id: id}).status,
+                            retVal;
 
                         // This is to deal with some observed cases where the XHR readyStateChange handler is
                         // invoked by the browser multiple times for the same XHR instance with the same state
@@ -655,7 +655,7 @@
                             return;
                         }
 
-                        var retVal = self._onComplete(id, name, result, xhr);
+                        retVal = self._onComplete(id, name, result, xhr);
 
                         // If the internal `_onComplete` handler returns a promise, don't invoke the `onComplete` callback
                         // until the promise has been fulfilled.
@@ -747,7 +747,7 @@
             this._uploadData.setStatus(id, qq.status.REJECTED);
         },
 
-        _formatSize: function(bytes){
+        _formatSize: function(bytes) {
             var i = -1;
             do {
                 bytes = bytes / 1000;
@@ -1109,7 +1109,7 @@
                 validationBase = this._getValidationBase(buttonId),
                 extensionsForMessage, placeholderMatch;
 
-            function r(name, replacement){ message = message.replace(name, replacement); }
+            function r(name, replacement) { message = message.replace(name, replacement); }
 
             qq.each(validationBase.allowedExtensions, function(idx, allowedExtension) {
                 /**
@@ -1199,7 +1199,7 @@
         _maybeParseAndSendUploadError: function(id, name, response, xhr) {
             // Assuming no one will actually set the response code to something other than 200
             // and still set 'success' to true...
-            if (!response.success){
+            if (!response.success) {
                 if (xhr && xhr.status !== 200 && !response.error) {
                     this._options.callbacks.onError(id, name, "XHR returned response code " + xhr.status, xhr);
                 }
@@ -1291,20 +1291,21 @@
 
         //return false if we should not attempt the requested retry
         _onBeforeManualRetry: function(id) {
-            var itemLimit = this._options.validation.itemLimit;
+            var itemLimit = this._options.validation.itemLimit,
+                fileName;
 
             if (this._preventRetries[id]) {
                 this.log("Retries are forbidden for id " + id, "warn");
                 return false;
             }
             else if (this._handler.isValid(id)) {
-                var fileName = this.getName(id);
+                fileName = this.getName(id);
 
                 if (this._options.callbacks.onManualRetry(id, fileName) === false) {
                     return false;
                 }
 
-                if (itemLimit > 0 && this._netUploadedOrQueued+1 > itemLimit) {
+                if (itemLimit > 0 && this._netUploadedOrQueued + 1 > itemLimit) {
                     this._itemError("retryFailTooManyItems");
                     return false;
                 }
@@ -1514,7 +1515,7 @@
         },
 
         _onValidateCallbackFailure: function(items, index, params, endpoint) {
-            var nextIndex = index+ 1;
+            var nextIndex = index + 1;
 
             this._fileOrBlobRejected(items[0].id, items[0].file.name);
 
@@ -1523,7 +1524,7 @@
 
         _onValidateCallbackSuccess: function(items, index, params, endpoint) {
             var self = this,
-                nextIndex = index+1,
+                nextIndex = index + 1,
                 validationDescriptor = this._getValidationDescriptor(items[index]);
 
             this._validateFileOrBlobData(items[index], validationDescriptor)
@@ -1557,10 +1558,10 @@
             });
         },
 
-        _preventLeaveInProgress: function(){
+        _preventLeaveInProgress: function() {
             var self = this;
 
-            this._disposeSupport.attach(window, "beforeunload", function(e){
+            this._disposeSupport.attach(window, "beforeunload", function(e) {
                 if (self.getInProgress()) {
                     e = e || window.event;
                     // for ie, ff
@@ -1739,7 +1740,7 @@
         },
 
         _wrapCallbacks: function() {
-            var self, safeCallback;
+            var self, safeCallback, prop;
 
             self = this;
 
@@ -1756,7 +1757,7 @@
             };
 
             /* jshint forin: false, loopfunc: true */
-            for (var prop in this._options.callbacks) {
+            for (prop in this._options.callbacks) {
                 (function() {
                     var callbackName, callbackFunc;
                     callbackName = prop;

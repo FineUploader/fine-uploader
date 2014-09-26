@@ -50,17 +50,16 @@ qq.Scaler = function(spec, log) {
                             refType: originalBlob.type
                         }),
                         blob: new qq.BlobProxy(originalBlob,
-                            qq.bind(self._generateScaledImage, self, {
-                                maxSize: sizeRecord.maxSize,
-                                orient: orient,
-                                type: outputType,
-                                quality: defaultQuality,
-                                failedText: failedToScaleText,
-                                includeExif: includeExif,
-                                log: log
-                            }))
-                        }
-                    );
+                        qq.bind(self._generateScaledImage, self, {
+                            maxSize: sizeRecord.maxSize,
+                            orient: orient,
+                            type: outputType,
+                            quality: defaultQuality,
+                            failedText: failedToScaleText,
+                            includeExif: includeExif,
+                            log: log
+                        }))
+                    });
                 });
 
                 includeReference && records.push({
@@ -352,7 +351,6 @@ qq.extend(qq.Scaler.prototype, {
 
         return insertionEffort;
     },
-
 
     _dataUriToBlob: function(dataUri) {
         "use strict";
