@@ -147,7 +147,7 @@ qq.UploadButton = function(o) {
         },
 
         setMultiple: function(isMultiple, opt_input) {
-            var input = this.getInput() || opt_input;
+            var input = opt_input || this.getInput();
 
             // Temporary workaround for bug in in iOS8 UIWebView that causes the browser to crash
             // before the file chooser appears if the file input doesn't contain a multiple attribute.
@@ -178,6 +178,7 @@ qq.UploadButton = function(o) {
             }
 
             qq(options.element).removeClass(options.focusClass);
+            input = null;
             input = createInput();
         }
     });
