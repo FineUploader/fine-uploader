@@ -127,7 +127,7 @@ qq.FineUploader = function(o, namespace) {
         text: this._options.text
     });
 
-    if (this._options.workarounds.ios8SafariUploads && qq.ios8() && qq.iosSafari()) {
+    if (this._options.workarounds.ios8SafariUploads && qq.ios800() && qq.iosSafari()) {
         this._templating.renderFailure(this._options.messages.unsupportedBrowserIos8Safari);
     }
     else if (!qq.supportedFeatures.uploading || (this._options.cors.expected && !qq.supportedFeatures.uploadCors)) {
