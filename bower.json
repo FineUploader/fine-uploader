@@ -1,8 +1,5 @@
 {
   "name": "fine-uploader",
-<<<<<<< HEAD
-  "version": "5.0.5"
-=======
   "version": "5.0.7",
   "devDependencies": {
     "jquery": "1.10.0",
@@ -18,5 +15,4 @@
       "css": "mocha.css"
     }
   }
->>>>>>> master
 }
