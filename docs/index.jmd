@@ -4,9 +4,9 @@
 {% markdown %}
 
 {{ alert(
-"""iOS8 contains some serious bugs that prevent uploading in some cases.  Workarounds are included
+"""iOS 8.0.0 contains some serious bugs that prevent uploading in some cases.  Workarounds are included
 in Fine Uploader in an attempt to deal with these issues.  Unfortunately, there are no known
-workarounds for iOS8 Safari, and uploading in that browser is not possible at this time
+workarounds for iOS 8.0.0 Safari, and uploading in that browser is not possible at this time
 Please see [the blog post on this topic for more details](http://blog.fineuploader.com/2014/09/10/ios8-presents-serious-issues-that-prevent-file-uploading/).""", "warning", "Attention") }}
 
 {{ alert(
