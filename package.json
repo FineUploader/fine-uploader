@@ -67,6 +67,7 @@
     "karma-mocha": "0.1.0",
     "karma-opera-launcher": "0.1.0",
     "karma-safari-launcher": "0.1.1",
+    "karma-spec-reporter": "0.0.13",
     "optimist": "0.6.0",
     "request": "2.21.0",
     "semver": "2.0.x",

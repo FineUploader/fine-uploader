@@ -1,6 +1,6 @@
 /* jshint node: true */
-var modules = require("./lib/modules");
-var allBrowsers = require("./lib/browsers");
+var modules = require("./lib/modules"),
+    allBrowsers = require("./lib/browsers");
 
 module.exports = function(config, options) {
     "use strict";
@@ -14,7 +14,7 @@ module.exports = function(config, options) {
         logLevel: config.LOG_INFO,
         logColors: true,
         frameworks: ["mocha"],
-        reporters: ["dots"],
+        reporters: ["spec"],
         captureTimeout: 60000,
         colors: true
     });
