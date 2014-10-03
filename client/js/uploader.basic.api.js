@@ -47,12 +47,12 @@
             }
         },
 
-        addFiles: function(filesOrInputs, params, endpoint) {
-            var batchId = this._storedIds.length === 0 ? qq.getUniqueId() : this._currentBatchId;
+        addFiles: function(data, params, endpoint) {
             this._maybeHandleIos8SafariWorkaround();
-            this._currentBatchId = batchId;
-            
-            var processBlob = qq.bind(function(blob) {
+
+            var batchId = this._storedIds.length === 0 ? qq.getUniqueId() : this._currentBatchId,
+
+                processBlob = qq.bind(function(blob) {
                     this._handleNewFile({
                         blob: blob,
                         name: this._options.blobs.defaultName
