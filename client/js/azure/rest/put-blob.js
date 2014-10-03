@@ -59,7 +59,6 @@ qq.azure.PutBlob = function(o) {
         }
     }));
 
-
     qq.extend(this, {
         method: method,
         upload: function(id, xhr, url, file) {

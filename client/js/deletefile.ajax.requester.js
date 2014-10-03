@@ -25,7 +25,7 @@ qq.DeleteFileAjaxRequester = function(o) {
     function getMandatedParams() {
         if (options.method.toUpperCase() === "POST") {
             return {
-                "_method": "DELETE"
+                _method: "DELETE"
             };
         }
 
@@ -49,7 +49,6 @@ qq.DeleteFileAjaxRequester = function(o) {
         onComplete: options.onDeleteComplete,
         cors: options.cors
     }));
-
 
     qq.extend(this, {
         sendDelete: function(id, uuid, additionalMandatedParams) {

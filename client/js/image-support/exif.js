@@ -43,10 +43,12 @@ qq.Exif = function(fileOrBlob, log) {
         }
 
         qq.readBlobToHex(fileOrBlob, theOffset, 4).then(function(hex) {
-            var match = /^ffe([0-9])/.exec(hex);
+            var match = /^ffe([0-9])/.exec(hex),
+                segmentLength;
+
             if (match) {
                 if (match[1] !== "1") {
-                    var segmentLength = parseInt(hex.slice(4, 8), 16);
+                    segmentLength = parseInt(hex.slice(4, 8), 16);
                     seekToApp1(theOffset + segmentLength + 2, thePromise);
                 }
                 else {
@@ -122,7 +124,7 @@ qq.Exif = function(fileOrBlob, log) {
         var entries = [],
             offset = 0;
 
-        while (offset+24 <= ifdHex.length) {
+        while (offset + 24 <= ifdHex.length) {
             entries.push(ifdHex.slice(offset, offset + 24));
             offset += 24;
         }
@@ -145,7 +147,7 @@ qq.Exif = function(fileOrBlob, log) {
             if (tagsToFindIdx >= 0) {
                 tagName = TAG_INFO[id].name;
                 tagValLength = TAG_INFO[id].bytes;
-                tagValHex = entry.slice(TAG_VAL_OFFSET, TAG_VAL_OFFSET + (tagValLength*2));
+                tagValHex = entry.slice(TAG_VAL_OFFSET, TAG_VAL_OFFSET + (tagValLength * 2));
                 vals[tagName] = littleEndian ? parseLittleEndian(tagValHex) : parseInt(tagValHex, 16);
 
                 tagsToFind.splice(tagsToFindIdx, 1);

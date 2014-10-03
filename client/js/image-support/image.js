@@ -36,7 +36,7 @@ qq.ImageGenerator = function(log) {
 
         extension = extension && extension.toLowerCase();
 
-        switch(extension) {
+        switch (extension) {
             case "jpeg":
             case "jpg":
                 return "image/jpeg";
@@ -270,7 +270,6 @@ qq.ImageGenerator = function(log) {
 
         return draw;
     }
-
 
     qq.extend(this, {
         /**

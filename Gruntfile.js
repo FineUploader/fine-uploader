@@ -20,13 +20,13 @@ module.exports = function(grunt) {
     path = require("path");
     pkg = require("./package.json");
     paths = {
-        "dist": "./_dist",
-        "build": "./_build",
-        "src": "./client",
-        "html": "./client/html/templates",
-        "docs": "./docs",
-        "test": "./test",
-        "custom": "./_custom"
+        dist: "./_dist",
+        build: "./_build",
+        src: "./client",
+        html: "./client/html/templates",
+        docs: "./docs",
+        test: "./test",
+        custom: "./_custom"
     };
     customBuildDest = path.join(paths.custom, uuid.v1(1), "custom." + pkg.name + "-" + pkg.version);
     allBrowsers = require("./lib/browsers");
@@ -43,6 +43,7 @@ module.exports = function(grunt) {
         jscs: configs.jscs(paths),
         nodestatic: configs["static"](paths),
         shell: configs.shell(paths, customBuildDest),
+        // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
         strip_code: configs.stripcode(paths, customBuildDest),
         uglify: configs.uglify(paths, customBuildDest),
         usebanner: configs.banner(paths, customBuildDest),

@@ -14,7 +14,6 @@
 qq.UploadButton = function(o) {
     "use strict";
 
-
     var self = this,
 
         disposeSupport = new qq.DisposeSupport(),
@@ -80,9 +79,9 @@ qq.UploadButton = function(o) {
             right: 0,
             top: 0,
             fontFamily: "Arial",
-            // It's especially important to make this an arbitrarily large value 
-            // to ensure the rendered input button in IE takes up the entire 
-            // space of the container element.  Otherwise, the left side of the 
+            // It's especially important to make this an arbitrarily large value
+            // to ensure the rendered input button in IE takes up the entire
+            // space of the container element.  Otherwise, the left side of the
             // button will require a double-click to invoke the file chooser.
             // In other browsers, this might cause other issues, so a large font-size
             // is only used in IE.
@@ -92,29 +91,29 @@ qq.UploadButton = function(o) {
             cursor: "pointer",
             opacity: 0
         });
-        
-        // Setting the file input's height to 100% in IE7 causes 
+
+        // Setting the file input's height to 100% in IE7 causes
         // most of the visible button to be unclickable.
         !qq.ie7() && qq(input).css({height: "100%"});
 
         options.element.appendChild(input);
 
-        disposeSupport.attach(input, "change", function(){
+        disposeSupport.attach(input, "change", function() {
             options.onChange(input);
         });
 
         // **These event handlers will be removed** in the future as the :hover CSS pseudo-class is available on all supported browsers
-        disposeSupport.attach(input, "mouseover", function(){
+        disposeSupport.attach(input, "mouseover", function() {
             qq(options.element).addClass(options.hoverClass);
         });
-        disposeSupport.attach(input, "mouseout", function(){
+        disposeSupport.attach(input, "mouseout", function() {
             qq(options.element).removeClass(options.hoverClass);
         });
 
-        disposeSupport.attach(input, "focus", function(){
+        disposeSupport.attach(input, "focus", function() {
             qq(options.element).addClass(options.focusClass);
         });
-        disposeSupport.attach(input, "blur", function(){
+        disposeSupport.attach(input, "blur", function() {
             qq(options.element).removeClass(options.focusClass);
         });
 
@@ -146,8 +145,8 @@ qq.UploadButton = function(o) {
             return buttonId;
         },
 
-        setMultiple: function(isMultiple, opt_input) {
-            var input = opt_input || this.getInput();
+        setMultiple: function(isMultiple, optInput) {
+            var input = optInput || this.getInput();
 
             // Temporary workaround for bug in in iOS8 UIWebView that causes the browser to crash
             // before the file chooser appears if the file input doesn't contain a multiple attribute.
@@ -172,8 +171,8 @@ qq.UploadButton = function(o) {
             }
         },
 
-        reset: function(){
-            if (input.parentNode){
+        reset: function() {
+            if (input.parentNode) {
                 qq(input).remove();
             }
 

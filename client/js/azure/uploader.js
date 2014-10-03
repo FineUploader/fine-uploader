@@ -6,7 +6,7 @@
  * specific to the upload-to-Azure workflow.  Some inherited options and API methods have a special meaning
  * in the context of the Azure uploader.
  */
-(function(){
+(function() {
     "use strict";
 
     qq.azure.FineUploader = function(o) {

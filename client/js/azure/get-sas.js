@@ -44,7 +44,7 @@ qq.azure.GetSas = function(o) {
         validMethods: ["GET"],
         method: "GET",
         successfulResponseCodes: {
-            "GET": [200]
+            GET: [200]
         },
         contentType: null,
         customHeaders: options.customHeaders,
@@ -53,7 +53,6 @@ qq.azure.GetSas = function(o) {
         log: options.log,
         onComplete: sasResponseReceived
     }));
-
 
     qq.extend(this, {
         request: function(id, blobUri) {

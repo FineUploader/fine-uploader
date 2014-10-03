@@ -58,7 +58,6 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
             })
         };
 
-
     function combineChunks(id) {
         var promise = new qq.Promise();
 
@@ -99,10 +98,10 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
         return promise;
     }
 
-    function getSignedUrl(id, opt_chunkIdx) {
+    function getSignedUrl(id, optChunkIdx) {
         // We may have multiple SAS requests in progress for the same file, so we must include the chunk idx
         // as part of the ID when communicating with the SAS ajax requester to avoid collisions.
-        var getSasId = opt_chunkIdx == null ? id : id + "." + opt_chunkIdx,
+        var getSasId = optChunkIdx == null ? id : id + "." + optChunkIdx,
 
             promise = new qq.Promise(),
             getSasSuccess = function(sasUri) {
@@ -138,7 +137,6 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
             reset: xhr.status === 403
         });
     }
-
 
     qq.extend(this, {
         uploadChunk: function(id, chunkIdx) {
@@ -202,8 +200,8 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
         }
     });
 
-
-    qq.extend(this, new qq.XhrUploadHandler({
+    qq.extend(this,
+        new qq.XhrUploadHandler({
             options: qq.extend({namespace: "azure"}, spec),
             proxy: qq.extend({getEndpoint: spec.endpointStore.get}, proxy)
         }
