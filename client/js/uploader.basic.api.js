@@ -1188,7 +1188,7 @@
         _maybeHandleIos8SafariWorkaround: function() {
             var self = this;
 
-            if (this._options.workarounds.ios8SafariUploads && qq.ios8() && qq.iosSafari()) {
+            if (this._options.workarounds.ios8SafariUploads && qq.ios800() && qq.iosSafari()) {
                 setTimeout(function() {
                     window.alert(self._options.messages.unsupportedBrowserIos8Safari);
                 }, 0);

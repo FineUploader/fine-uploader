@@ -246,23 +246,23 @@ describe("browser-specific workarounds", function() {
         });
     });
 
-    describe("iOS8 Safari uploads impossible", function() {
-        var origIos8 = qq.ios8,
+    describe("iOS 8.0.0 Safari uploads impossible", function() {
+        var origIos800 = qq.ios800,
             origIosSafari = qq.iosSafari,
             origWindowAlert = window.alert;
 
         beforeEach(function() {
-            qq.ios8 = function() {return true;};
+            qq.ios800 = function() {return true;};
             qq.iosSafari = function() {return true;};
         });
 
         afterEach(function() {
-            qq.ios8 = origIos8;
+            qq.ios800 = origIos800;
             qq.iosSafari = origIosSafari;
             window.alert = origWindowAlert;
         });
 
-        it("throws an error and pops up an alert if addFiles or addBlobs is called in iOS8 Safari", function(done) {
+        it("throws an error and pops up an alert if addFiles or addBlobs is called in iOS 8.0.0 Safari", function(done) {
             var uploader = new qq.FineUploaderBasic({
                 element: $fixture[0],
                 button: $button[0],

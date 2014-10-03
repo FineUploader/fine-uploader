@@ -524,6 +524,11 @@ var qq = function(element) {
         return qq.ios() && navigator.userAgent.indexOf(" OS 8_") !== -1;
     };
 
+    // iOS 8.0.0
+    qq.ios800 = function() {
+        return qq.ios() && navigator.userAgent.indexOf(" OS 8_0 ") !== -1;
+    };
+
     qq.ios = function() {
         /*jshint -W014 */
         return navigator.userAgent.indexOf("iPad") !== -1
