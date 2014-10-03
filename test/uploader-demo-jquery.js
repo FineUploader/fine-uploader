@@ -130,7 +130,11 @@
                     })
             .on("totalProgress", function(event, loaded, total) {
 //                qq.log(loaded + "/" + total);
-            });
+            })
+            .on("complete", function(event, id, name, response, xhr) {
+                                qq.log(response);
+                            });
+
 
         $('#manual-example').fineUploader({
             autoUpload: false,
@@ -155,7 +159,9 @@
                 concurrent: {
                     enabled: true
                 },
-                successEndpoint: "/upload/receiver?done"
+                success: {
+                    endpoint: "/upload/receiver?done"
+                }
             },
             resume: {
                 enabled: true
@@ -178,7 +184,11 @@
             })
             .on("progress", function(event, id, name, loaded, total) {
 //                qq.log(loaded + "/" + total);
-            });
+            })
+            .on("complete", function(event, id, name, response, xhr) {
+                                qq.log(response);
+                            });
+
         $('#triggerUpload').click(function() {
             return $('#manual-example').fineUploader("uploadStoredFiles");
         });

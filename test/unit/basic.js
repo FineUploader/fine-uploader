@@ -25,19 +25,7 @@ describe("uploader.basic.js", function () {
         $extraButton3 = $fixture.find("#test-button4");
     });
 
-    it("Excludes the multiple attribute on the file input element by default only in iOS7 AND when MOV files can be submitted", function() {
-        var uploader = new qq.FineUploaderBasic({
-            element: $fixture[0],
-            button: $button[0],
-            validation: {
-                allowedExtensions: ["gif", "mov"]
-            }
-        });
-
-        assert.equal(qq(getFileInput($button)).hasAttribute("multiple"), qq.supportedFeatures.ajaxUploading && !qq.ios7());
-    });
-
-    it("Includes the multiple attribute on the file input element by default in all supported browsers (even iOS7) when MOV files cannot be submitted", function() {
+    it("Includes the multiple attribute on the file input element by default in all supported browsers (even iOS7+) when MOV files cannot be submitted", function() {
         var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0],
@@ -49,7 +37,7 @@ describe("uploader.basic.js", function () {
         assert.equal(qq(getFileInput($button)).hasAttribute("multiple"), qq.supportedFeatures.ajaxUploading);
     });
 
-    it("Includes the multiple attribute on the file input element by default (where supported) except in iOS7 with the default alloweExtensions value", function() {
+    it("Includes the multiple attribute on the file input element by default (where supported)", function() {
         var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0]
@@ -62,16 +50,24 @@ describe("uploader.basic.js", function () {
         var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0],
-            multiple: false
+            multiple: false,
+            workarounds: {
+                ios8BrowserCrash: false,
+                iosEmptyVideos: false
+            }
         });
 
         assert.ok(!qq(getFileInput($button)).hasAttribute("multiple"));
     });
 
-    it("Excludes or includes the multiple attribute on 'extra' file input elements appropriately, taking OS and extraButton properties into consideration", function() {
+    it("Excludes or includes the multiple attribute on 'extra' file input elements appropriately, taking extraButton properties into consideration", function() {
         var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0],
+            workarounds: {
+                ios8BrowserCrash: false,
+                iosEmptyVideos: false
+            },
             validation: {
                 allowedExtensions: ["gif", "mov"]
             },
@@ -92,8 +88,8 @@ describe("uploader.basic.js", function () {
             ]
         });
 
-        assert.equal(qq(getFileInput($extraButton)).hasAttribute("multiple"), qq.supportedFeatures.ajaxUploading && !qq.ios7());
+        assert.equal(qq(getFileInput($extraButton)).hasAttribute("multiple"), true);
         assert.equal(qq(getFileInput($extraButton2)).hasAttribute("multiple"), false);
-        assert.equal(qq(getFileInput($extraButton3)).hasAttribute("multiple"), qq.supportedFeatures.ajaxUploading);
+        assert.equal(qq(getFileInput($extraButton3)).hasAttribute("multiple"), true);
     });
 });

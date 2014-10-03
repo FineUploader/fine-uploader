@@ -1,5 +1,5 @@
 /* globals qq */
-qq.supportedFeatures = (function () {
+qq.supportedFeatures = (function() {
     "use strict";
 
     var supportsUploading,
@@ -16,7 +16,6 @@ qq.supportedFeatures = (function () {
         supportsFolderSelection,
         supportsImagePreviews,
         supportsUploadProgress;
-
 
     function testSupportsFileInputElement() {
         var supported = true,
@@ -82,7 +81,6 @@ qq.supportedFeatures = (function () {
         return document.createElement("input").webkitdirectory !== undefined;
     }
 
-
     supportsUploading = testSupportsFileInputElement();
 
     supportsAjaxFileUploading = supportsUploading && qq.isXhrUploadSupported();
@@ -111,12 +109,10 @@ qq.supportedFeatures = (function () {
 
     supportsUploadProgress = (function() {
         if (supportsAjaxFileUploading) {
-            return !qq.androidStock() &&
-                !(qq.ios() && navigator.userAgent.indexOf("CriOS") >= 0);
+            return !qq.androidStock() && !qq.iosChrome();
         }
         return false;
     }());
-
 
     return {
         ajaxUploading: supportsAjaxFileUploading,
@@ -137,6 +133,7 @@ qq.supportedFeatures = (function () {
         resume: supportsResume,
         scaling: supportsImagePreviews && supportsUploadingBlobs,
         tiffPreviews: qq.safari(), // Not the best solution, but simple and probably accurate enough (for now)
+        unlimitedScaledImageSize: !qq.ios(), // false simply indicates that there is some known limit
         uploading: supportsUploading,
         uploadCors: supportsUploadCors,
         uploadCustomHeaders: supportsAjaxFileUploading,

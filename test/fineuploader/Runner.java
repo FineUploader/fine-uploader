@@ -20,7 +20,8 @@ public class Runner
 
 		Connector connector = new SelectChannelConnector();
 
-        connector.setPort(9090);
+		log.info("Starting server on port " + System.getenv("PORT"));
+        	connector.setPort(Integer.valueOf(System.getenv("PORT")));
 
 		server.setConnectors(new Connector[]{connector});
 

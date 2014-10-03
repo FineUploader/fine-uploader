@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block js_head %}
-<script src="{{ ASSETS }}/js/main.js"></script>
+<script src="{{ ASSETS }}/js/sidebar.js"></script>
 {% endblock %}
 
 {% block js_footer %}
@@ -135,6 +135,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
         ("messages.sizeError", "sizeError", "Text passed to the error event handler if a submitted item is too large.", "String", "{file} is too large, maximum file size is {sizeLimit}.",),
         ("messages.tooManyItemsError", "tooManyItemsError", "Text passed to the error event handler if a submit is ignored due to a violation of the `validation.itemLimit` rules.", "String", "Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.",),
         ("messages.typeError", "typeError", "Text passed to the error event handler if an invalid file type is detected.", "String", "{file} has an invalid extension. Valid extension(s): {extensions}.",),
+        ("messages.unsupportedBrowserIos8Safari", "unsupportedBrowserIos8Safari", "Message displayed if the browser is iOS8 Safari and the corresponding workarounds option is not disabled.", "String", "Unrecoverable error - this browser does not permit file uploading of any kind due to serious bugs in iOS8 Safari.  Please use iOS8 Chrome until Apple fixes these issues.",),
     )
 )
 }}
@@ -189,7 +190,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
         ("scaling.includeExif", "includeExif", "Ensure the EXIF data from the reference image is inserted into the scaled image.  Only applicable when both the reference and the target are type image/jpeg.", "Boolean", "false",),
         ("scaling.orient", "orient", "Set this to `false` if you do not want scaled images to be re-oriented based on parsed EXIF data before they are uploaded.", "Boolean", "true",),
         ("scaling.sendOriginal", "sendOriginal", "Set this to `false` if you don't want to original file to be uploaded as well.", "Boolean", "true",),
-        ("scaling.sizes", "sizes", "An array containing size objects that describe scaled versions of each submitted image that should be generated and uploaded.  A size object must contain a `name` String property, a `maxSize` integer property, and optionally a `type` MIME string property.", "Array", "[]",),
+        ("scaling.sizes", "sizes", "An array containing size objects that describe scaled versions of each submitted image that should be generated and uploaded.  A size object should usually contain a `name` String property, a must always contain a `maxSize` integer property.  A `type` MIME string property is optional.", "Array", "[]",),
     )
 )
 }}
@@ -225,6 +226,15 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
         ("validation.image.maxWidth", "image.maxWidth", "Restrict images to a maximum width in pixels (wherever possible).", "Integer", "0",),
         ("validation.image.minHeight", "image.minHeight", "Restrict images to a minimum height in pixels (wherever possible).", "Integer", "0",),
         ("validation.image.minWidth", "image.minWidth", "Restrict images to a minimum width in pixels (wherever possible).", "Integer", "0",),
+    )
+)
+}}
+
+{{ api_parent_option("workarounds", "workarounds", "Flags that enable or disable workarounds for browser-specific bugs.",
+    (
+        ("workarounds.iosEmptyVideos", "iosEmptyVideos", "Ensures all `<input type='file'>` elements tracked by Fine Uploader do NOT contain a `multiple` attribute to work around an issue present in iOS7 & 8 that otherwise results in 0-sized uploaded videos.", "Boolean", "true",),
+        ("workarounds.ios8BrowserCrash", "ios8BrowserCrash", "Ensures all `<input type='file'>` elements tracked by Fine Uploader always have a `multiple` attribute present.  This only applies to iOS8 Chrome and iOS8 UIWebView, and is put in place to work around an issue that causes the browser to crash when a file input element does not contain a `multiple` attribute inside of a UIWebView container created by an iOS8 app compiled with and iOS7 SDK.", "Boolean", "true",),
+        ("workarounds.ios8SafariUploads", "ios8SafariUploads", "Disables Fine Uploader and displays a message to the user in iOS 8.0.0 Safari.  Due to serious bugs in iOS 8.0.0 Safari, uploading is not possible.  This was apparently fixed in subsequent builds of iOS8, so this workaround only targets 8.0.0.", "Boolean", "true",)
     )
 )
 }}

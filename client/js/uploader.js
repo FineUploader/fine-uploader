@@ -90,7 +90,7 @@ qq.FineUploader = function(o, namespace) {
             hideScaled: false
         },
 
-        showMessage: function(message){
+        showMessage: function(message) {
             setTimeout(function() {
                 window.alert(message);
             }, 0);
@@ -127,7 +127,10 @@ qq.FineUploader = function(o, namespace) {
         text: this._options.text
     });
 
-    if (!qq.supportedFeatures.uploading || (this._options.cors.expected && !qq.supportedFeatures.uploadCors)) {
+    if (this._options.workarounds.ios8SafariUploads && qq.ios800() && qq.iosSafari()) {
+        this._templating.renderFailure(this._options.messages.unsupportedBrowserIos8Safari);
+    }
+    else if (!qq.supportedFeatures.uploading || (this._options.cors.expected && !qq.supportedFeatures.uploadCors)) {
         this._templating.renderFailure(this._options.messages.unsupportedBrowser);
     }
     else {

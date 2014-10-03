@@ -4,7 +4,7 @@
     var rootDataKey = "fineUploaderDnd",
         $el;
 
-    function init (options) {
+    function init(options) {
         if (!options) {
             options = {};
         }

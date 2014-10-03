@@ -31,6 +31,7 @@ Note: Any features not listed here are supported in all browsers.
         <tr>
             <th><strong>Browser</strong></th>
             <th>XHR2</th>
+            <th>Multiple File Selection</th>
             <th>File Drop</th>
             <th>Folder Drop</th>
             <th>Folder Selection</th>
@@ -67,10 +68,12 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>Chrome for iOS 6+</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}<a style="font-size: 24px" href="#ios-multiple">*</a></td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
@@ -90,6 +93,7 @@ Note: Any features not listed here are supported in all browsers.
         <tr>
             <td>Chrome for Android 4+</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
@@ -124,9 +128,11 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
             <td>Firefox</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -148,6 +154,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>IE 11</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -165,6 +172,7 @@ Note: Any features not listed here are supported in all browsers.
         </tr>
         <tr>
             <td>IE 10</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -191,6 +199,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -203,6 +212,7 @@ Note: Any features not listed here are supported in all browsers.
         </tr>
         <tr>
             <td>IE 8</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -236,6 +246,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
         </tr>
@@ -243,7 +254,8 @@ Note: Any features not listed here are supported in all browsers.
             <td>Android
                 4 stock</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('x', "") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -262,6 +274,7 @@ Note: Any features not listed here are supported in all browsers.
         <tr>
             <td>Android
                 2.3.x stock</td>
+            <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
@@ -283,6 +296,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>iOS
                 6+</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}<a style="font-size: 24px" href="#ios-multiple">*</a></td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
             <td>{{ label('x', "") }}</td>
@@ -302,6 +316,7 @@ Note: Any features not listed here are supported in all browsers.
         <tr>
             <td>Safari
                 6</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -324,6 +339,7 @@ Note: Any features not listed here are supported in all browsers.
                 5.1</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -341,6 +357,10 @@ Note: Any features not listed here are supported in all browsers.
         </tr>
     </tbody>
 </table>
+
+<small><a style="font-size: 24px" name="ios-multiple">*</a> - iOS browsers are unable to upload multiple files when video files are allowed to be uploaded due to a long-standing iOS bug. See case <a href="https://github.com/Widen/fine-uploader/issues/990">#990</a> on our bug tracker for more details.</small>
+<small><a style="font-size: 24px" name="ios-multiple">*</a> - iOS8 Safari is unable to upload any files due to bugs in Apple's code.  Please see [the blog post on this topic for more details](http://blog.fineuploader.com/2014/09/10/ios8-presents-serious-issues-that-prevent-file-uploading/).</small>
+
 
 ### Upload size Limitations
 
@@ -400,12 +420,14 @@ Feature     | Description
 `folderSelection` | Can folders be selected via a file dialog?
 `imagePreviews` | Is client-side image preview generation possible?
 `imageValidation` | Can we validate image properties client-side?
+`limitedScaledImageSize` | Does the browser have an upper limit on the size of a `<canvas>`?  Directly related to the maximum allowable dimensions of a scaled image.
 `itemSizeValidation` | Is client-side file size validation supported?
 `pause` | Can chunked file uploads be paused?
 `progressBar` | Are progress bars supported?
 `resume` | Is the auto-resume feature supported?
 `scaling` | Is client-side image scaling possible?
 `tiffPreviews` | Can TIFFs be rendered natively in the current browser?
+`unlimitedScaledImageSize` | `true` if there is no known upper limit for `<canvas>` (used to scale images).  Will be `false` for iOS and scaled images may be further downsampled by Fine Uploader to work around this limit.
 `uploadCors` | Are cross-domain uploads supported?
 `uploading` | Is uploading of any sort supported? (Note: This will return true for browsers that are not explicitly supported such as IE6)
 `uploadCustomHeaders` | Are custom headers allowed to be sent along with the upload request?

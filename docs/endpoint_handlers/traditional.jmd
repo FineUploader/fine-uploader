@@ -2,6 +2,9 @@
 {% set page_title = "Traditional Endpoint" %}
 {% block content %}
 {% markdown %}
+
+[chunking-success]: ../features/concurrent-chunking.html#server-side-implications
+
 # Traditional Uploader Server-Side Notes & Requirements {: .page-header }
 
 In the server folder you will find some examples for different platforms. If
@@ -133,6 +136,10 @@ to this thumbnail in your response to the upload request via a `thumbnailUrl` pr
 URL may be cross-origin as well.  See the [previews/thumbnails feature page](../features/thumbnails.html) for more
 information on this feature.
 
+### POST when all chunks have successfully uploaded
+
+You may specify a `chunking.success.endpoint` if you'd like your server to be called when all chunks
+have been successfully uploaded. See the section on the [chunking success call][chunking-success] for more details.
 
 {% endmarkdown %}
 {% endblock %}

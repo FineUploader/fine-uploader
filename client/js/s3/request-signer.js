@@ -100,7 +100,7 @@ qq.s3.RequestSigner = function(o) {
             endOfUrl;
 
         /*jshint indent:false */
-        switch(type) {
+        switch (type) {
             case thisSignatureRequester.REQUEST_TYPE.MULTIPART_ABORT:
                 method = "DELETE";
                 endOfUrl = qq.format("uploadId={}", uploadId);
@@ -195,7 +195,6 @@ qq.s3.RequestSigner = function(o) {
             POST: [200]
         }
     }));
-
 
     qq.extend(this, {
         /**

@@ -14,8 +14,9 @@
 qq.UploadButton = function(o) {
     "use strict";
 
+    var self = this,
 
-    var disposeSupport = new qq.DisposeSupport(),
+        disposeSupport = new qq.DisposeSupport(),
 
         options = {
             // "Container" element
@@ -36,6 +37,8 @@ qq.UploadButton = function(o) {
             // Called when the browser invokes the onchange handler on the `<input type="file">`
             onChange: function(input) {},
 
+            ios8BrowserCrashWorkaround: true,
+
             // **This option will be removed** in the future as the :hover CSS pseudo-class is available on all supported browsers
             hoverClass: "qq-upload-button-hover",
 
@@ -54,9 +57,7 @@ qq.UploadButton = function(o) {
 
         input.setAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME, buttonId);
 
-        if (options.multiple) {
-            input.setAttribute("multiple", "");
-        }
+        self.setMultiple(options.multiple, input);
 
         if (options.folders && qq.supportedFeatures.folderSelection) {
             // selecting directories is only possible in Chrome now, via a vendor-specific prefixed attribute
@@ -78,32 +79,41 @@ qq.UploadButton = function(o) {
             right: 0,
             top: 0,
             fontFamily: "Arial",
-            // 4 persons reported this, the max values that worked for them were 243, 236, 236, 118
-            fontSize: "118px",
+            // It's especially important to make this an arbitrarily large value
+            // to ensure the rendered input button in IE takes up the entire
+            // space of the container element.  Otherwise, the left side of the
+            // button will require a double-click to invoke the file chooser.
+            // In other browsers, this might cause other issues, so a large font-size
+            // is only used in IE.
+            fontSize: qq.ie() ? "3500px" : "118px",
             margin: 0,
             padding: 0,
             cursor: "pointer",
             opacity: 0
         });
 
+        // Setting the file input's height to 100% in IE7 causes
+        // most of the visible button to be unclickable.
+        !qq.ie7() && qq(input).css({height: "100%"});
+
         options.element.appendChild(input);
 
-        disposeSupport.attach(input, "change", function(){
+        disposeSupport.attach(input, "change", function() {
             options.onChange(input);
         });
 
         // **These event handlers will be removed** in the future as the :hover CSS pseudo-class is available on all supported browsers
-        disposeSupport.attach(input, "mouseover", function(){
+        disposeSupport.attach(input, "mouseover", function() {
             qq(options.element).addClass(options.hoverClass);
         });
-        disposeSupport.attach(input, "mouseout", function(){
+        disposeSupport.attach(input, "mouseout", function() {
             qq(options.element).removeClass(options.hoverClass);
         });
 
-        disposeSupport.attach(input, "focus", function(){
+        disposeSupport.attach(input, "focus", function() {
             qq(options.element).addClass(options.focusClass);
         });
-        disposeSupport.attach(input, "blur", function(){
+        disposeSupport.attach(input, "blur", function() {
             qq(options.element).removeClass(options.focusClass);
         });
 
@@ -125,9 +135,6 @@ qq.UploadButton = function(o) {
         direction: "ltr"
     });
 
-    input = createInput();
-
-
     // Exposed API
     qq.extend(this, {
         getInput: function() {
@@ -138,8 +145,17 @@ qq.UploadButton = function(o) {
             return buttonId;
         },
 
-        setMultiple: function(isMultiple) {
-            if (isMultiple !== options.multiple) {
+        setMultiple: function(isMultiple, optInput) {
+            var input = optInput || this.getInput();
+
+            // Temporary workaround for bug in in iOS8 UIWebView that causes the browser to crash
+            // before the file chooser appears if the file input doesn't contain a multiple attribute.
+            // See #1283.
+            if (options.ios8BrowserCrashWorkaround && qq.ios8() && (qq.iosChrome() || qq.iosSafariWebView())) {
+                input.setAttribute("multiple", "");
+            }
+
+            else {
                 if (isMultiple) {
                     input.setAttribute("multiple", "");
                 }
@@ -155,15 +171,18 @@ qq.UploadButton = function(o) {
             }
         },
 
-        reset: function(){
-            if (input.parentNode){
+        reset: function() {
+            if (input.parentNode) {
                 qq(input).remove();
             }
 
             qq(options.element).removeClass(options.focusClass);
+            input = null;
             input = createInput();
         }
     });
+
+    input = createInput();
 };
 
 qq.UploadButton.BUTTON_ID_ATTR_NAME = "qq-button-id";

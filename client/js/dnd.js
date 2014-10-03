@@ -62,7 +62,7 @@ qq.DragAndDrop = function(o) {
 
                     qq.each(entries, function(idx, entry) {
                         traverseFileTree(entry).done(function() {
-                            entriesLeft-=1;
+                            entriesLeft -= 1;
 
                             if (entriesLeft === 0) {
                                 parseEntryPromise.success();
@@ -163,14 +163,14 @@ qq.DragAndDrop = function(o) {
         var dropZone = new qq.UploadDropZone({
             HIDE_ZONES_EVENT_NAME: HIDE_ZONES_EVENT_NAME,
             element: dropArea,
-            onEnter: function(e){
+            onEnter: function(e) {
                 qq(dropArea).addClass(options.classes.dropActive);
                 e.stopPropagation();
             },
-            onLeaveNotDescendants: function(e){
+            onLeaveNotDescendants: function(e) {
                 qq(dropArea).removeClass(options.classes.dropActive);
             },
-            onDrop: function(e){
+            onDrop: function(e) {
                 handleDataTransfer(e.dataTransfer, dropZone).then(
                     function() {
                         uploadDroppedFiles(droppedFiles, dropZone);
@@ -269,7 +269,7 @@ qq.DragAndDrop = function(o) {
             maybeHideDropZones();
         });
 
-        disposeSupport.attach(document, "drop", function(e){
+        disposeSupport.attach(document, "drop", function(e) {
             e.preventDefault();
             maybeHideDropZones();
         });
@@ -289,7 +289,7 @@ qq.DragAndDrop = function(o) {
             var i,
                 dzs = options.dropZoneElements;
 
-            for(i in dzs) {
+            for (i in dzs) {
                 if (dzs[i] === element) {
                     return dzs.splice(i, 1);
                 }
@@ -320,7 +320,7 @@ qq.DragAndDrop.callbacks = function() {
     };
 };
 
-qq.UploadDropZone = function(o){
+qq.UploadDropZone = function(o) {
     "use strict";
 
     var disposeSupport = new qq.DisposeSupport(),
@@ -328,32 +328,32 @@ qq.UploadDropZone = function(o){
 
     options = {
         element: null,
-        onEnter: function(e){},
-        onLeave: function(e){},
+        onEnter: function(e) {},
+        onLeave: function(e) {},
         // is not fired when leaving element by hovering descendants
-        onLeaveNotDescendants: function(e){},
-        onDrop: function(e){}
+        onLeaveNotDescendants: function(e) {},
+        onDrop: function(e) {}
     };
 
     qq.extend(options, o);
     element = options.element;
 
-    function dragover_should_be_canceled(){
+    function dragoverShouldBeCanceled() {
         return qq.safari() || (qq.firefox() && qq.windows());
     }
 
-    function disableDropOutside(e){
+    function disableDropOutside(e) {
         // run only once for all instances
-        if (!dropOutsideDisabled ){
+        if (!dropOutsideDisabled) {
 
             // for these cases we need to catch onDrop to reset dropArea
-            if (dragover_should_be_canceled){
-                disposeSupport.attach(document, "dragover", function(e){
+            if (dragoverShouldBeCanceled) {
+                disposeSupport.attach(document, "dragover", function(e) {
                     e.preventDefault();
                 });
             } else {
-                disposeSupport.attach(document, "dragover", function(e){
-                    if (e.dataTransfer){
+                disposeSupport.attach(document, "dragover", function(e) {
+                    if (e.dataTransfer) {
                         e.dataTransfer.dropEffect = "none";
                         e.preventDefault();
                     }
@@ -364,7 +364,7 @@ qq.UploadDropZone = function(o){
         }
     }
 
-    function isValidFileDrag(e){
+    function isValidFileDrag(e) {
         // e.dataTransfer currently causing IE errors
         // IE9 does NOT support file API, so drag-and-drop is not possible
         if (qq.ie() && !qq.ie10()) {
@@ -414,8 +414,8 @@ qq.UploadDropZone = function(o){
         document.dispatchEvent(hideZonesEvent);
     }
 
-    function attachEvents(){
-        disposeSupport.attach(element, "dragover", function(e){
+    function attachEvents() {
+        disposeSupport.attach(element, "dragover", function(e) {
             if (!isValidFileDrag(e)) {
                 return;
             }
@@ -423,7 +423,7 @@ qq.UploadDropZone = function(o){
             // dt.effectAllowed crashes IE11 when files have been dragged from
             // the filesystem
             var effect = (qq.ie() || qq.ie11()) ? null : e.dataTransfer.effectAllowed;
-            if (effect === "move" || effect === "linkMove"){
+            if (effect === "move" || effect === "linkMove") {
                 e.dataTransfer.dropEffect = "move"; // for FF (only move allowed)
             } else {
                 e.dataTransfer.dropEffect = "copy"; // for Chrome
@@ -433,7 +433,7 @@ qq.UploadDropZone = function(o){
             e.preventDefault();
         });
 
-        disposeSupport.attach(element, "dragenter", function(e){
+        disposeSupport.attach(element, "dragenter", function(e) {
             if (!isOrSetDropDisabled()) {
                 if (!isValidFileDrag(e)) {
                     return;
@@ -442,7 +442,7 @@ qq.UploadDropZone = function(o){
             }
         });
 
-        disposeSupport.attach(element, "dragleave", function(e){
+        disposeSupport.attach(element, "dragleave", function(e) {
             if (!isValidFileDrag(e)) {
                 return;
             }

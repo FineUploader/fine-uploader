@@ -21,7 +21,6 @@ qq.FormUploadHandler = function(spec) {
         log = proxy.log,
         corsMessageReceiver = new qq.WindowReceiveMessage({log: log});
 
-
     /**
      * Remove any trace of the file from the handler.
      *
@@ -111,7 +110,7 @@ qq.FormUploadHandler = function(spec) {
         corsMessageReceiver.receiveMessage(iframeName, function(message) {
             log("Received the following window message: '" + message + "'");
             var fileId = getFileIdForIframeName(iframeName),
-                response = handler._parseJsonResponse(fileId, message),
+                response = handler._parseJsonResponse(message),
                 uuid = response.uuid,
                 onloadCallback;
 
@@ -147,7 +146,7 @@ qq.FormUploadHandler = function(spec) {
                 fileInput.setAttribute("name", inputName);
 
                 // remove file input from DOM
-                if (fileInput.parentNode){
+                if (fileInput.parentNode) {
                     qq(fileInput).remove();
                 }
             },
@@ -165,6 +164,10 @@ qq.FormUploadHandler = function(spec) {
     });
 
     qq.extend(this, {
+        getInput: function(id) {
+            return handler._getFileState(id).input;
+        },
+
         /**
          * This function either delegates to a more specific message handler if CORS is involved,
          * or simply registers a callback when the iframe has been loaded that invokes the passed callback
@@ -181,13 +184,13 @@ qq.FormUploadHandler = function(spec) {
                 registerPostMessageCallback(iframe, callback);
             }
             else {
-                detachLoadEvents[iframe.id] = qq(iframe).attach("load", function(){
+                detachLoadEvents[iframe.id] = qq(iframe).attach("load", function() {
                     log("Received response for " + iframe.id);
 
                     // when we remove iframe from dom
                     // the request stops, but in IE load
                     // event fires
-                    if (!iframe.parentNode){
+                    if (!iframe.parentNode) {
                         return;
                     }
 
@@ -195,7 +198,7 @@ qq.FormUploadHandler = function(spec) {
                         // fixing Opera 10.53
                         if (iframe.contentDocument &&
                             iframe.contentDocument.body &&
-                            iframe.contentDocument.body.innerHTML == "false"){
+                            iframe.contentDocument.body.innerHTML == "false") {
                             // In Opera event is fired second time
                             // when body.innerHTML changed from false
                             // to server response approx. after 1 sec
@@ -246,10 +249,6 @@ qq.FormUploadHandler = function(spec) {
             return fileId + "_" + formHandlerInstanceId;
         },
 
-        getInput: function(id) {
-            return handler._getFileState(id).input;
-        },
-
         /**
          * Generates a form element and appends it to the `document`.  When the form is submitted, a specific iframe is targeted.
          * The name of the iframe is passed in as a property of the spec parameter, and must be unique in the `document`.  Note
@@ -281,6 +280,23 @@ qq.FormUploadHandler = function(spec) {
             document.body.appendChild(form);
 
             return form;
+        },
+
+        /**
+         * @param innerHtmlOrMessage JSON message
+         * @returns {*} The parsed response, or an empty object if the response could not be parsed
+         */
+        _parseJsonResponse: function(innerHtmlOrMessage) {
+            var response = {};
+
+            try {
+                response = qq.parseJson(innerHtmlOrMessage);
+            }
+            catch (error) {
+                log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
+            }
+
+            return response;
         }
     });
 };

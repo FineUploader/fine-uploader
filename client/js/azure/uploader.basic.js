@@ -4,7 +4,7 @@
  * functionality of Fine Uploader Basic as well as code to handle uploads directly to Azure.
  * Some inherited options and API methods have a special meaning in the context of the Azure uploader.
  */
-(function(){
+(function() {
     "use strict";
 
     qq.azure.FineUploaderBasic = function(o) {
@@ -100,7 +100,7 @@
                 fileExtension = qq.getExtension(filename);
 
             if (qq.isString(blobNameOptionValue)) {
-                switch(blobNameOptionValue) {
+                switch (blobNameOptionValue) {
                     case "uuid":
                         return new qq.Promise().success(uuid + "." + fileExtension);
                     case "filename":
@@ -195,7 +195,6 @@
                     restRequestVerb: deleteBlob.method,
                     log: qq.bind(self.log, self)
                 });
-
 
             getSas.request(id, blobUriStore.get(id)).then(
                 qq.bind(getSasSuccess, self, id),

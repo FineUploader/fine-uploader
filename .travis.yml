@@ -9,7 +9,6 @@ node_js:
 
 env:
   global:
-  - SAUCE_CONNECT_READY_FILE=/tmp/sauce-connect-ready
   - LOGS_DIR=/tmp/fineuploader-build/logs
   - SLIMERJSLAUNCHER=$(which firefox) DISPLAY=:99.0 PATH=$TRAVIS_BUILD_DIR/slimerjs:$PATH SLIMERJS_BIN=$TRAVIS_BUILD_DIR/slimerjs-0.9.0/slimerjs
   - secure: |-
@@ -38,4 +37,6 @@ branches:
         - develop
         - /^feature.*$/
         - /^hotfix.*$/
-
+notifications:
+    slack:
+        secure: qb1LdOGlBVKCLxNi86tWrabIKs9TFa3ttpLIwu1vtEeh+R9XDeG32X89sM3a5CHRwLqkHwrs6JNcIC4qhTAKiUOiaPYPbv7PkZXX1GIuOPMBp20ghpnWA7QHv6SpmW4qDCTixZSzf0B0m97muzWm1VnotgRELbfKr9Cf/7h3jS0=

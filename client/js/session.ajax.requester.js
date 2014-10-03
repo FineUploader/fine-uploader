@@ -32,7 +32,7 @@ qq.SessionAjaxRequester = function(spec) {
             try {
                 response = qq.parseJson(xhrOrXdr.responseText);
             }
-            catch(err) {
+            catch (err) {
                 options.log("Problem parsing session response: " + err.message, "error");
                 isError = true;
             }
@@ -55,7 +55,6 @@ qq.SessionAjaxRequester = function(spec) {
         onComplete: onComplete,
         cors: options.cors
     }));
-
 
     qq.extend(this, {
         queryServer: function() {

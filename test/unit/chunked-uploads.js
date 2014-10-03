@@ -23,7 +23,7 @@ if (qqtest.canDownloadFileAsBlob) {
             customParams = customParams || {};
             chunkingParamNames = chunkingParamNames || new qq.FineUploaderBasic({})._options.chunking.paramNames;
 
-            assert.expect(2 + (expectedChunks * (18 + (Object.keys(customParams).length))), done);
+            assert.expect(3 + (expectedChunks * (20 + (Object.keys(customParams).length))), done);
 
             var uploader = new qq.FineUploaderBasic({
                     request: {
@@ -50,7 +50,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
                             setTimeout(function () {
                                 var request = fileTestHelper.getRequests()[fileTestHelper.getRequests().length - 1];
-                                request.respond(200, null, JSON.stringify({success: true}));
+                                request.respond(200, null, JSON.stringify({success: true, testParam: "testVal"}));
                             }, 10);
                         },
                         onUploadChunkSuccess: function (id, chunkData, response, xhr) {
@@ -83,10 +83,14 @@ if (qqtest.canDownloadFileAsBlob) {
                             assert.equal(chunkData.startByte, (chunksSent - 1) * chunkSize + 1, "Wrong startByte passed to onUploadChunkSuccess");
                             assert.equal(chunkData.endByte, chunksSucceeded === expectedChunks ? expectedFileSize : chunkData.startByte + chunkSize-1, "Wrong startByte passed to onUploadChunk");
                             assert.equal(chunkData.totalParts, expectedChunks, "Wrong totalParts passed to onUploadChunkSuccess");
+
+                            assert.equal(response.testParam, "testVal");
+                            assert.ok(xhr);
                         },
-                        onComplete: function (id) {
+                        onComplete: function (id, name, response) {
                             assert.equal(expectedChunks, chunksSent, "Wrong # of chunks sent.");
                             assert.equal(expectedChunks, chunksSucceeded, "Wrong # of chunks succeeded");
+                            assert.equal(response.testParam, "testVal");
                         }
                     }
                 }),
@@ -101,10 +105,10 @@ if (qqtest.canDownloadFileAsBlob) {
 
         function testChunkedFailureAndRecovery(restartAfterFailure, done) {
             if (restartAfterFailure) {
-                assert.expect(5 + (expectedChunks * 16) + (14 * (expectedChunks-1)), done);
+                assert.expect(6 + (expectedChunks * 17) + (15 * (expectedChunks-1)), done);
             }
             else {
-                assert.expect(5 + (expectedChunks * 16), done);
+                assert.expect(6 + (expectedChunks * 17), done);
             }
 
             var alreadyFailed = false,
@@ -140,15 +144,15 @@ if (qqtest.canDownloadFileAsBlob) {
                                     if (restartAfterFailure) {
                                         chunksSent = 0;
                                         chunksSucceeded = 0;
-                                        request.respond(500, null, JSON.stringify({reset: true}));
+                                        request.respond(500, null, JSON.stringify({reset: true, testParam: "testVal"}));
                                     }
                                     else {
                                         chunksSent--;
-                                        request.respond(500, null);
+                                        request.respond(500, null, JSON.stringify({testParam: "testVal"}));
                                     }
                                 }
                                 else {
-                                    request.respond(200, null, JSON.stringify({success: true}));
+                                    request.respond(200, null, JSON.stringify({success: true, testParam: "testVal"}));
                                 }
                             }, 10);
                         },
@@ -171,10 +175,13 @@ if (qqtest.canDownloadFileAsBlob) {
                             assert.equal(requestParams.qqfilename, uploader.getName(id), "Wrong filename param");
                             assert.equal(requestParams.qqchunksize, requestParams.qqfile.size, "Wrong chunk size param");
                             assert.equal(id, 0, "Wrong ID passed to onUpoadChunkSuccess");
+
+                            assert.equal(response.testParam, "testVal");
                         },
-                        onComplete: function (id) {
+                        onComplete: function (id, name, response) {
                             assert.equal(expectedChunks, chunksSent, "Wrong # of chunks sent.");
                             assert.equal(expectedChunks, chunksSucceeded, "Wrong # of chunks succeeded");
+                            assert.equal(response.testParam, "testVal");
                         }
                     }
                 }),

@@ -59,7 +59,7 @@ qq.Identify = function(fileOrBlob, log) {
                     }
                 },
                 function() {
-                    log("Error reading file w/ name '" + fileOrBlob.name + "'.  Not able to be rendered in this browser.");
+                    log("Error reading file w/ name '" + name + "'.  Not able to be rendered in this browser.");
                     idenitifer.failure();
                 });
             }
@@ -82,7 +82,8 @@ qq.Identify = function(fileOrBlob, log) {
             var fileMime = fileOrBlob.type,
                 // Assumption: This will only ever be executed in browsers that support `Object.keys`.
                 isRecognizedImage = qq.indexOf(Object.keys(this.PREVIEWABLE_MIME_TYPES), fileMime) >= 0,
-                previewable = false;
+                previewable = false,
+                name = fileOrBlob.name === undefined ? "blob" : fileOrBlob.name;
 
             if (isRecognizedImage) {
                 if (fileMime === "image/tiff") {
@@ -93,7 +94,7 @@ qq.Identify = function(fileOrBlob, log) {
                 }
             }
 
-            !previewable && log(fileOrBlob.name + " is not previewable in this browser per the blob's type attr");
+            !previewable && log(name + " is not previewable in this browser per the blob's type attr");
 
             return previewable;
         }

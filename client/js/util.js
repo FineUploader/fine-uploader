@@ -11,9 +11,9 @@ var qq = function(element) {
 
         /** Returns the function which detaches attached event */
         attach: function(type, fn) {
-            if (element.addEventListener){
+            if (element.addEventListener) {
                 element.addEventListener(type, fn, false);
-            } else if (element.attachEvent){
+            } else if (element.attachEvent) {
                 element.attachEvent("on" + type, fn);
             }
             return function() {
@@ -22,9 +22,9 @@ var qq = function(element) {
         },
 
         detach: function(type, fn) {
-            if (element.removeEventListener){
+            if (element.removeEventListener) {
                 element.removeEventListener(type, fn, false);
-            } else if (element.attachEvent){
+            } else if (element.attachEvent) {
                 element.detachEvent("on" + type, fn);
             }
             return this;
@@ -44,7 +44,7 @@ var qq = function(element) {
                 return true;
             }
 
-            if (element.contains){
+            if (element.contains) {
                 return element.contains(descendant);
             } else {
                 /*jslint bitwise: true*/
@@ -76,8 +76,8 @@ var qq = function(element) {
             }
 
             /*jshint -W116*/
-            if (styles.opacity != null){
-                if (typeof element.style.opacity !== "string" && typeof(element.filters) !== "undefined"){
+            if (styles.opacity != null) {
+                if (typeof element.style.opacity !== "string" && typeof (element.filters) !== "undefined") {
                     styles.filter = "alpha(opacity=" + Math.round(100 * styles.opacity) + ")";
                 }
             }
@@ -92,7 +92,7 @@ var qq = function(element) {
         },
 
         addClass: function(name) {
-            if (!qq(element).hasClass(name)){
+            if (!qq(element).hasClass(name)) {
                 element.className += " " + name;
             }
             return this;
@@ -108,14 +108,14 @@ var qq = function(element) {
             var candidates,
                 result = [];
 
-            if (element.querySelectorAll){
+            if (element.querySelectorAll) {
                 return element.querySelectorAll("." + className);
             }
 
             candidates = element.getElementsByTagName("*");
 
             qq.each(candidates, function(idx, val) {
-                if (qq(val).hasClass(className)){
+                if (qq(val).hasClass(className)) {
                     result.push(val);
                 }
             });
@@ -126,8 +126,8 @@ var qq = function(element) {
             var children = [],
                 child = element.firstChild;
 
-            while (child){
-                if (child.nodeType === 1){
+            while (child) {
+                if (child.nodeType === 1) {
                     children.push(child);
                 }
                 child = child.nextSibling;
@@ -174,7 +174,7 @@ var qq = function(element) {
     };
 };
 
-(function(){
+(function() {
     "use strict";
 
     qq.log = function(message, level) {
@@ -199,7 +199,7 @@ var qq = function(element) {
     };
 
     qq.isFunction = function(variable) {
-        return typeof(variable) === "function";
+        return typeof (variable) === "function";
     };
 
     /**
@@ -236,9 +236,8 @@ var qq = function(element) {
             return string.trim();
         }
 
-        return string.replace(/^\s+|\s+$/g,"");
+        return string.replace(/^\s+|\s+$/g, "");
     };
-
 
     /**
      * @param str String to format.
@@ -252,7 +251,7 @@ var qq = function(element) {
 
         qq.each(args, function(idx, val) {
             var strBefore = newStr.substring(0, nextIdxToReplace),
-                strAfter = newStr.substring(nextIdxToReplace+2);
+                strAfter = newStr.substring(nextIdxToReplace + 2);
 
             newStr = strBefore + val + strAfter;
             nextIdxToReplace = newStr.indexOf("{}", nextIdxToReplace + val.length);
@@ -321,7 +320,7 @@ var qq = function(element) {
             input.multiple !== undefined &&
                 typeof File !== "undefined" &&
                 typeof FormData !== "undefined" &&
-                typeof (qq.createXhrInstance()).upload !== "undefined" );
+                typeof (qq.createXhrInstance()).upload !== "undefined");
     };
 
     // Fall back to ActiveX is native XHR is disabled (possible in any version of IE).
@@ -333,7 +332,7 @@ var qq = function(element) {
         try {
             return new ActiveXObject("MSXML2.XMLHTTP.3.0");
         }
-        catch(error) {
+        catch (error) {
             qq.log("Neither XHR or ActiveX are supported!", "error");
             return null;
         }
@@ -360,7 +359,6 @@ var qq = function(element) {
     qq.arrayBufferToHex = function(buffer) {
         var bytesAsHex = "",
             bytes = new Uint8Array(buffer);
-
 
         qq.each(bytes, function(idx, byt) {
             var byteAsHexStr = byt.toString(16);
@@ -436,7 +434,7 @@ var qq = function(element) {
      * Searches for a given element in the array, returns -1 if it is not present.
      * @param {Number} [from] The index at which to begin the search
      */
-    qq.indexOf = function(arr, elt, from){
+    qq.indexOf = function(arr, elt, from) {
         if (arr.indexOf) {
             return arr.indexOf(elt, from);
         }
@@ -448,8 +446,8 @@ var qq = function(element) {
             from += len;
         }
 
-        for (; from < len; from+=1){
-            if (arr.hasOwnProperty(from) && arr[from] === elt){
+        for (; from < len; from += 1) {
+            if (arr.hasOwnProperty(from) && arr[from] === elt) {
                 return from;
             }
         }
@@ -457,10 +455,10 @@ var qq = function(element) {
     };
 
     //this is a version 4 UUID
-    qq.getUniqueId = function(){
+    qq.getUniqueId = function() {
         return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
             /*jslint eqeq: true, bitwise: true*/
-            var r = Math.random()*16|0, v = c == "x" ? r : (r&0x3|0x8);
+            var r = Math.random() * 16 | 0, v = c == "x" ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
     };
@@ -468,7 +466,8 @@ var qq = function(element) {
     //
     // Browsers and platforms detection
     qq.ie = function() {
-        return navigator.userAgent.indexOf("MSIE") !== -1;
+        return navigator.userAgent.indexOf("MSIE") !== -1 ||
+            navigator.userAgent.indexOf("Trident") !== -1;
     };
 
     qq.ie7 = function() {
@@ -480,8 +479,7 @@ var qq = function(element) {
     };
 
     qq.ie11 = function() {
-        return (navigator.userAgent.indexOf("Trident") !== -1 &&
-            navigator.userAgent.indexOf("rv:11") !== -1);
+        return qq.ie() && navigator.userAgent.indexOf("rv:11") !== -1;
     };
 
     qq.safari = function() {
@@ -514,8 +512,21 @@ var qq = function(element) {
         return qq.android() && navigator.userAgent.toLowerCase().indexOf("chrome") < 0;
     };
 
+    qq.ios6 = function() {
+        return qq.ios() && navigator.userAgent.indexOf(" OS 6_") !== -1;
+    };
+
     qq.ios7 = function() {
         return qq.ios() && navigator.userAgent.indexOf(" OS 7_") !== -1;
+    };
+
+    qq.ios8 = function() {
+        return qq.ios() && navigator.userAgent.indexOf(" OS 8_") !== -1;
+    };
+
+    // iOS 8.0.0
+    qq.ios800 = function() {
+        return qq.ios() && navigator.userAgent.indexOf(" OS 8_0 ") !== -1;
     };
 
     qq.ios = function() {
@@ -525,13 +536,25 @@ var qq = function(element) {
             || navigator.userAgent.indexOf("iPhone") !== -1;
     };
 
+    qq.iosChrome = function() {
+        return qq.ios() && navigator.userAgent.indexOf("CriOS") !== -1;
+    };
+
+    qq.iosSafari = function() {
+        return qq.ios() && !qq.iosChrome() && navigator.userAgent.indexOf("Safari") !== -1;
+    };
+
+    qq.iosSafariWebView = function() {
+        return qq.ios() && !qq.iosChrome() && !qq.iosSafari();
+    };
+
     //
     // Events
 
-    qq.preventDefault = function(e){
-        if (e.preventDefault){
+    qq.preventDefault = function(e) {
+        if (e.preventDefault) {
             e.preventDefault();
-        } else{
+        } else {
             e.returnValue = false;
         }
     };
@@ -540,9 +563,9 @@ var qq = function(element) {
      * Creates and returns element from html string
      * Uses innerHTML to create an element
      */
-    qq.toElement = (function(){
+    qq.toElement = (function() {
         var div = document.createElement("div");
-        return function(html){
+        return function(html) {
             div.innerHTML = html;
             var element = div.firstChild;
             div.removeChild(element);
@@ -628,15 +651,15 @@ var qq = function(element) {
      * @param  String current querystring-part
      * @return String encoded querystring
      */
-    qq.obj2url = function(obj, temp, prefixDone){
+    qq.obj2url = function(obj, temp, prefixDone) {
         /*jshint laxbreak: true*/
         var uristrings = [],
             prefix = "&",
-            add = function(nextObj, i){
+            add = function(nextObj, i) {
                 var nextTemp = temp
                     ? (/\[\]$/.test(temp)) // prevent double-encoding
                     ? temp
-                    : temp+"["+i+"]"
+                    : temp + "[" + i + "]"
                     : i;
                 if ((nextTemp !== "undefined") && (i !== "undefined")) {
                     uristrings.push(
@@ -653,11 +676,11 @@ var qq = function(element) {
             prefix = (/\?/.test(temp)) ? (/\?$/.test(temp)) ? "" : "&" : "?";
             uristrings.push(temp);
             uristrings.push(qq.obj2url(obj));
-        } else if ((Object.prototype.toString.call(obj) === "[object Array]") && (typeof obj !== "undefined") ) {
+        } else if ((Object.prototype.toString.call(obj) === "[object Array]") && (typeof obj !== "undefined")) {
             qq.each(obj, function(idx, val) {
                 add(val, idx);
             });
-        } else if ((typeof obj !== "undefined") && (obj !== null) && (typeof obj === "object")){
+        } else if ((typeof obj !== "undefined") && (obj !== null) && (typeof obj === "object")) {
             qq.each(obj, function(prop, val) {
                 add(val, prop);
             });

@@ -17,35 +17,18 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
         log = proxy.log;
 
     /**
-     * @param innerHtmlOrMessage JSON message
-     * @returns {*} The parsed response, or an empty object if the response could not be parsed
-     */
-    function parseJsonResponse(innerHtmlOrMessage) {
-        var response = {};
-
-        try {
-            response = qq.parseJson(innerHtmlOrMessage);
-        }
-        catch(error) {
-            log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
-        }
-
-        return response;
-    }
-
-    /**
      * Returns json object received by iframe from server.
      */
     function getIframeContentJson(id, iframe) {
         /*jshint evil: true*/
 
-        var response;
+        var response, doc, innerHtml;
 
         //IE may throw an "access is denied" error when attempting to access contentDocument on the iframe in some cases
         try {
             // iframe.contentWindow.document - for IE<7
-            var doc = iframe.contentDocument || iframe.contentWindow.document,
-                innerHtml = doc.body.innerHTML;
+            doc = iframe.contentDocument || iframe.contentWindow.document;
+            innerHtml = doc.body.innerHTML;
 
             log("converting iframe's innerHTML to JSON");
             log("innerHTML = " + innerHtml);
@@ -54,9 +37,9 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
                 innerHtml = doc.body.firstChild.firstChild.nodeValue;
             }
 
-            response = parseJsonResponse(innerHtml);
+            response = handler._parseJsonResponse(innerHtml);
         }
-        catch(error) {
+        catch (error) {
             log("Error when attempting to parse form upload response (" + error.message + ")", "error");
             response = {success: false};
         }
@@ -67,7 +50,7 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
     /**
      * Creates form, that will be submitted to iframe
      */
-    function createForm(id, iframe){
+    function createForm(id, iframe) {
         var params = options.paramsStore.get(id),
             method = options.demoMode ? "GET" : "POST",
             endpoint = options.endpointStore.get(id),
@@ -94,7 +77,7 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
         form = createForm(id, iframe);
         form.appendChild(input);
 
-        handler._attachLoadEvent(iframe, function(responseFromMessage){
+        handler._attachLoadEvent(iframe, function(responseFromMessage) {
             log("iframe loaded");
 
             var response = responseFromMessage ? responseFromMessage : getIframeContentJson(id, iframe);
@@ -122,17 +105,16 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
     };
 
     qq.extend(this, new qq.FormUploadHandler({
-            options: {
-                isCors: options.cors.expected,
-                inputName: options.inputName
-            },
-        
-            proxy: {
-                onCancel: options.onCancel,
-                getName: getName,
-                getUuid: getUuid,
-                log: log
-            }
+        options: {
+            isCors: options.cors.expected,
+            inputName: options.inputName
+        },
+
+        proxy: {
+            onCancel: options.onCancel,
+            getName: getName,
+            getUuid: getUuid,
+            log: log
         }
-    ));
+    }));
 };

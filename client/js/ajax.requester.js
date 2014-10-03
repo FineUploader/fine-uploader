@@ -1,6 +1,6 @@
 /*globals qq, XDomainRequest*/
 /** Generic class for sending non-upload ajax requests and handling the associated responses **/
-qq.AjaxRequester = function (o) {
+qq.AjaxRequester = function(o) {
     "use strict";
 
     var log, shouldParamsBeInQueryString,
@@ -18,17 +18,17 @@ qq.AjaxRequester = function (o) {
             mandatedParams: {},
             allowXRequestedWithAndCacheControl: true,
             successfulResponseCodes: {
-                "DELETE": [200, 202, 204],
-                "POST": [200, 204],
-                "GET": [200]
+                DELETE: [200, 202, 204],
+                POST: [200, 204],
+                GET: [200]
             },
             cors: {
                 expected: false,
                 sendCredentials: false
             },
-            log: function (str, level) {},
-            onSend: function (id) {},
-            onComplete: function (id, xhrOrXdr, isError) {},
+            log: function(str, level) {},
+            onSend: function(id) {},
+            onComplete: function(id, xhrOrXdr, isError) {},
             onProgress: null
         };
 
@@ -148,14 +148,14 @@ qq.AjaxRequester = function (o) {
         }
 
         if (onDemandParams) {
-            qq.each(onDemandParams, function (name, val) {
+            qq.each(onDemandParams, function(name, val) {
                 params = params || {};
                 params[name] = val;
             });
         }
 
         if (mandatedParams) {
-            qq.each(mandatedParams, function (name, val) {
+            qq.each(mandatedParams, function(name, val) {
                 params = params || {};
                 params[name] = val;
             });
@@ -164,8 +164,8 @@ qq.AjaxRequester = function (o) {
         return params;
     }
 
-    function sendRequest(id, opt_xhr) {
-        var xhr = getXhrOrXdr(id, opt_xhr),
+    function sendRequest(id, optXhr) {
+        var xhr = getXhrOrXdr(id, optXhr),
             method = options.method,
             params = getParams(id),
             payload = requestData[id].payload,
@@ -183,7 +183,6 @@ qq.AjaxRequester = function (o) {
         else {
             xhr.onreadystatechange = getXhrReadyStateChangeHandler(id);
         }
-
 
         registerForUploadProgress(id);
 
@@ -239,7 +238,7 @@ qq.AjaxRequester = function (o) {
     // Invoked by the UA to indicate a number of possible states that describe
     // a live `XMLHttpRequest` transport.
     function getXhrReadyStateChangeHandler(id) {
-        return function () {
+        return function() {
             if (getXhrOrXdr(id).readyState === 4) {
                 onComplete(id);
             }
@@ -261,7 +260,7 @@ qq.AjaxRequester = function (o) {
     // This will be called by IE to indicate **success** for an associated
     // `XDomainRequest` transported request.
     function getXdrLoadHandler(id) {
-        return function () {
+        return function() {
             onComplete(id);
         };
     }
@@ -269,7 +268,7 @@ qq.AjaxRequester = function (o) {
     // This will be called by IE to indicate **failure** for an associated
     // `XDomainRequest` transported request.
     function getXdrErrorHandler(id) {
-        return function () {
+        return function() {
             onComplete(id, true);
         };
     }
@@ -304,7 +303,7 @@ qq.AjaxRequester = function (o) {
             qq.extend(allHeaders, qq.isFunction(customHeaders) ? customHeaders(id) : customHeaders);
             qq.extend(allHeaders, onDemandHeaders);
 
-            qq.each(allHeaders, function (name, val) {
+            qq.each(allHeaders, function(name, val) {
                 xhr.setRequestHeader(name, val);
             });
         }
@@ -314,7 +313,7 @@ qq.AjaxRequester = function (o) {
         return qq.indexOf(options.successfulResponseCodes[options.method], responseCode) >= 0;
     }
 
-    function prepareToSend(id, opt_xhr, addToPath, additionalParams, additionalHeaders, payload) {
+    function prepareToSend(id, optXhr, addToPath, additionalParams, additionalHeaders, payload) {
         requestData[id] = {
             addToPath: addToPath,
             additionalParams: additionalParams,
@@ -326,10 +325,9 @@ qq.AjaxRequester = function (o) {
 
         // if too many active connections, wait...
         if (len <= options.maxConnections) {
-            return sendRequest(id, opt_xhr);
+            return sendRequest(id, optXhr);
         }
     }
-
 
     shouldParamsBeInQueryString = options.method === "GET" || options.method === "DELETE";
 
@@ -373,12 +371,12 @@ qq.AjaxRequester = function (o) {
                 },
 
                 // Send the constructed request.
-                send: function(opt_xhr) {
+                send: function(optXhr) {
                     if (cacheBuster && qq.indexOf(["GET", "DELETE"], options.method) >= 0) {
                         params.qqtimestamp = new Date().getTime();
                     }
 
-                    return prepareToSend(id, opt_xhr, path, params, headers, payload);
+                    return prepareToSend(id, optXhr, path, params, headers, payload);
                 }
             };
         },

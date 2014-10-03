@@ -71,7 +71,6 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
             errorEls = responseDoc.getElementsByTagName("Error"),
             awsErrorMsg;
 
-
         options.log(qq.format("Abort response status {}, body = {}", xhr.status, xhr.responseText));
 
         // If the base requester has determine this a failure, give up.
@@ -91,7 +90,6 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
         }
     }
 
-
     requester = qq.extend(this, new qq.AjaxRequester({
         validMethods: ["DELETE"],
         method: options.method,
@@ -105,7 +103,6 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
             DELETE: [204]
         }
     }));
-
 
     qq.extend(this, {
         /**

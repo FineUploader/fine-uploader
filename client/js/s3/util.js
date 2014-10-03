@@ -85,6 +85,7 @@ qq.s3.util = qq.s3.util || (function() {
                 conditions.push({"Content-Type": type});
             }
 
+            // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
             if (expectedStatus) {
                 conditions.push({success_action_status: expectedStatus.toString()});
             }
@@ -92,7 +93,7 @@ qq.s3.util = qq.s3.util || (function() {
             if (successRedirectUrl) {
                 conditions.push({success_action_redirect: successRedirectUrl});
             }
-
+            // jscs:enable
             if (reducedRedundancy) {
                 conditions.push({});
                 conditions[conditions.length - 1][qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME] = qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE;
@@ -184,7 +185,7 @@ qq.s3.util = qq.s3.util || (function() {
             if (type) {
                 awsParams["Content-Type"] = type;
             }
-
+            // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
             if (expectedStatus) {
                 awsParams.success_action_status = expectedStatus;
             }
@@ -192,7 +193,7 @@ qq.s3.util = qq.s3.util || (function() {
             if (successRedirectUrl) {
                 awsParams.success_action_redirect = successRedirectUrl;
             }
-
+            // jscs:enable
             if (reducedRedundancy) {
                 awsParams[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME] = qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE;
             }
@@ -273,7 +274,7 @@ qq.s3.util = qq.s3.util || (function() {
                 var pad = function(number) {
                     var r = String(number);
 
-                    if ( r.length === 1 ) {
+                    if (r.length === 1) {
                         r = "0" + r;
                     }
 
@@ -281,12 +282,12 @@ qq.s3.util = qq.s3.util || (function() {
                 };
 
                 return date.getUTCFullYear()
-                        + "-" + pad( date.getUTCMonth() + 1 )
-                        + "-" + pad( date.getUTCDate() )
-                        + "T" + pad( date.getUTCHours() )
-                        + ":" + pad( date.getUTCMinutes() )
-                        + ":" + pad( date.getUTCSeconds() )
-                        + "." + String( (date.getUTCMilliseconds()/1000).toFixed(3) ).slice( 2, 5 )
+                        + "-" + pad(date.getUTCMonth() + 1)
+                        + "-" + pad(date.getUTCDate())
+                        + "T" + pad(date.getUTCHours())
+                        + ":" + pad(date.getUTCMinutes())
+                        + ":" + pad(date.getUTCSeconds())
+                        + "." + String((date.getUTCMilliseconds() / 1000).toFixed(3)).slice(2, 5)
                         + "Z";
             }
         },
