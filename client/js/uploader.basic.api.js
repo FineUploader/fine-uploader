@@ -6,45 +6,9 @@
     "use strict";
 
     qq.basePublicApi = {
+        // DEPRECATED - TODO REMOVE IN NEXT MAJOR RELEASE (replaced by addFiles)
         addBlobs: function(blobDataOrArray, params, endpoint) {
-            if (!qq.supportedFeatures.blobUploading) {
-                throw new qq.Error("Blob uploading is not supported in this browser!");
-            }
-
-            this._maybeHandleIos8SafariWorkaround();
-
-            if (blobDataOrArray) {
-                var blobDataArray = [].concat(blobDataOrArray),
-                    verifiedBlobDataList = [],
-                    batchId = this._storedIds.length === 0 ? qq.getUniqueId() : this._currentBatchId,
-                    self = this;
-
-                this._currentBatchId = batchId;
-
-                qq.each(blobDataArray, function(idx, blobData) {
-                    var blobOrBlobData;
-
-                    if (qq.isBlob(blobData) && !qq.isFileOrInput(blobData)) {
-                        blobOrBlobData = {
-                            blob: blobData,
-                            name: self._options.blobs.defaultName
-                        };
-                    }
-                    else if (qq.isObject(blobData) && blobData.blob && blobData.name) {
-                        blobOrBlobData = blobData;
-                    }
-                    else {
-                        self.log("addBlobs: entry at index " + idx + " is not a Blob or a BlobData object", "error");
-                    }
-
-                    blobOrBlobData && self._handleNewFile(blobOrBlobData, batchId, verifiedBlobDataList);
-                });
-
-                this._prepareItemsForUpload(verifiedBlobDataList, params, endpoint);
-            }
-            else {
-                this.log("undefined or non-array parameter passed into addBlobs", "error");
-            }
+            this.addFiles(blobDataOrArray, params, endpoint);
         },
 
         addFiles: function(data, params, endpoint) {
@@ -61,6 +25,25 @@
 
                 processBlobData = qq.bind(function(blobData) {
                     this._handleNewFile(blobData, batchId, verifiedFiles);
+                }, this),
+
+                processCanvas = qq.bind(function(canvas) {
+                    var blob = qq.canvasToBlob(canvas);
+
+                    this._handleNewFile({
+                        blob: blob,
+                        name: this._options.blobs.defaultName + ".png"
+                    }, batchId, verifiedFiles);
+                }, this),
+
+                processCanvasData = qq.bind(function(canvasData) {
+                    var normalizedQuality = canvasData.quality && canvasData.quality / 100,
+                        blob = qq.canvasToBlob(canvasData.canvas, canvasData.type, normalizedQuality);
+
+                    this._handleNewFile({
+                        blob: blob,
+                        name: canvasData.name
+                    }, batchId, verifiedFiles);
                 }, this),
 
                 processFileOrInput = qq.bind(function(fileOrInput) {
@@ -98,8 +81,16 @@
                     else if (qq.isBlob(fileContainer)) {
                         processBlob(fileContainer);
                     }
-                    else if (qq.isObject(fileContainer) && fileContainer.blob && fileContainer.name) {
-                        processBlobData(fileContainer);
+                    else if (qq.isObject(fileContainer)) {
+                        if (fileContainer.blob && fileContainer.name) {
+                            processBlobData(fileContainer);
+                        }
+                        else if (fileContainer.canvas && fileContainer.name) {
+                            processCanvasData(fileContainer);
+                        }
+                    }
+                    else if (fileContainer.tagName && fileContainer.tagName.toLowerCase() === "canvas") {
+                        processCanvas(fileContainer);
                     }
                     else {
                         self.log(fileContainer + " is not a valid file container!  Ignoring!", "warn");

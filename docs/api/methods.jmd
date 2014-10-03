@@ -32,19 +32,28 @@ $(document).ready(function() {
 {% endmarkdown %}
 {{ api_method("addFiles", "addFiles (files[, params[, endpoint]])", "Submit one or more files to the uploader.
 
-A `BlobData` object:
+A `BlobWrapper` object:
 
 | Property | Description |
 | -------- | :---------- |
-| name     | the name of the `Blob` |
-| blob     | the bytes of the `Blob` object being uploaded | {: .table }
+| blob     | the bytes of the `Blob` object being uploaded
+| name     | the name of the `Blob` | {: .table }
 
+
+A `CanvasWrapper` object:
+
+| Property | Description |
+| -------- | :---------- |
+| canvas   | the `<canvas>` to be converted to a file & then uploaded
+| name     | the name to assign to the created file |
+| quality  | 1-100 value indicating the desired quality of the converted file (only for image/jpeg)
+| type     | MIME type of the file to create from this `<canvas>` | {: .table }
 ",
 [
         {
             "name": "files",
             "type": "Array",
-            "description": "An array of `File`s, `<input>`s, `FileList`s, `Blob`s, or `BlobData` objects"
+            "description": "An array of `File`s, `<input>`s, `FileList`s, `Blob`s, `BlobWrapper` objects, `<canvas>`es, or `CanvasData` objects"
         },
     {
         "name": "params",

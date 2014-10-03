@@ -89,7 +89,7 @@ if (qqtest.canDownloadFileAsBlob) {
             qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
                 blob.foo = "bar";
 
-                uploader.addBlobs([
+                uploader.addFiles([
                     {blob: blob, name: "name1"},
                     {blob: blob, name: "name2"}
                 ]);

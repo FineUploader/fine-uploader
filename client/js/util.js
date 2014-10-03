@@ -177,6 +177,52 @@ var qq = function(element) {
 (function() {
     "use strict";
 
+    qq.canvasToBlob = function(canvas, mime, quality) {
+        return qq.dataUriToBlob(canvas.toDataURL(mime, quality));
+    };
+
+    qq.dataUriToBlob = function(dataUri) {
+        var arrayBuffer, byteString,
+            createBlob = function(data, mime) {
+                var BlobBuilder = window.BlobBuilder ||
+                        window.WebKitBlobBuilder ||
+                        window.MozBlobBuilder ||
+                        window.MSBlobBuilder,
+                    blobBuilder = BlobBuilder && new BlobBuilder();
+
+                if (blobBuilder) {
+                    blobBuilder.append(data);
+                    return blobBuilder.getBlob(mime);
+                }
+                else {
+                    return new Blob([data], {type: mime});
+                }
+            },
+            intArray, mimeString;
+
+        // convert base64 to raw binary data held in a string
+        if (dataUri.split(",")[0].indexOf("base64") >= 0) {
+            byteString = atob(dataUri.split(",")[1]);
+        }
+        else {
+            byteString = decodeURI(dataUri.split(",")[1]);
+        }
+
+        // extract the MIME
+        mimeString = dataUri.split(",")[0]
+            .split(":")[1]
+            .split(";")[0];
+
+        // write the bytes of the binary string to an ArrayBuffer
+        arrayBuffer = new ArrayBuffer(byteString.length);
+        intArray = new Uint8Array(arrayBuffer);
+        qq.each(byteString, function(idx, character) {
+            intArray[idx] = character.charCodeAt(0);
+        });
+
+        return createBlob(arrayBuffer, mimeString);
+    };
+
     qq.log = function(message, level) {
         if (window.console) {
             if (!level || level === "info") {

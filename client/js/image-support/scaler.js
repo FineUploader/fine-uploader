@@ -304,7 +304,7 @@ qq.extend(qq.Scaler.prototype, {
             var scaledImageDataUri = canvas.toDataURL(type, quality),
                 signalSuccess = function() {
                     log("Success generating scaled version for " + sourceFile.name);
-                    var blob = self._dataUriToBlob(scaledImageDataUri);
+                    var blob = qq.dataUriToBlob(scaledImageDataUri);
                     scalingEffort.success(blob);
                 };
 

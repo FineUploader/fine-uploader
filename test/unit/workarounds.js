@@ -262,7 +262,7 @@ describe("browser-specific workarounds", function() {
             window.alert = origWindowAlert;
         });
 
-        it("throws an error and pops up an alert if addFiles or addBlobs is called in iOS 8.0.0 Safari", function(done) {
+        it("throws an error and pops up an alert if addFiles is called in iOS 8.0.0 Safari", function(done) {
             var uploader = new qq.FineUploaderBasic({
                 element: $fixture[0],
                 button: $button[0],
@@ -270,22 +270,11 @@ describe("browser-specific workarounds", function() {
                 workarounds: {
                     ios8SafariUploads: true
                 }
-            }),
-                alertCalled = 0;
+            });
 
             window.alert = function() {
-                alertCalled++;
-
-                if (alertCalled === 2) {
-                    done();
-                }
+                done();
             };
-
-            assert.throws(
-                function() {
-                    uploader.addBlobs();
-                }, qq.Error
-            );
 
             assert.throws(
                 function() {
