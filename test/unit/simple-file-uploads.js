@@ -1,4 +1,4 @@
-/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
+/* globals describe, beforeEach, afterEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 if (qqtest.canDownloadFileAsBlob) {
     describe("simple file uploads, mocked server/XHR", function() {
         "use strict";
