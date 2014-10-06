@@ -259,5 +259,66 @@ if (qqtest.canDownloadFileAsBlob) {
                 fileTestHelper.getRequests()[0].respond(500, null, JSON.stringify({success: true}));
             });
         });
+
+        describe("canvas uploading", function() {
+            var origCanvasToBlob;
+
+            beforeEach(function() {
+                origCanvasToBlob = qq.canvasToBlob;
+            });
+
+            afterEach(function() {
+                qq.canvasToBlob = origCanvasToBlob;
+            });
+
+            it("attempts to convert the passed canvas to a blob", function(done) {
+                var uploader = new qq.FineUploaderBasic({
+                        request: {
+                            endpoint: "/test/endpoint"
+                        }
+                    }),
+                    canvas = document.createElement("canvas");
+
+                qq.canvasToBlob = function(passedCanvas, mime, quality) {
+                    assert.equal(passedCanvas, canvas);
+                    assert.ok(!mime);
+                    assert.ok(!quality);
+
+                    uploader._handleNewFile = function(file) {
+                        done();
+                    };
+                };
+
+                uploader.addFiles(canvas);
+            });
+
+            it("attempts to convert the passed canvas to a blob, respecting type, quality, and name properties", function(done) {
+                var uploader = new qq.FineUploaderBasic({
+                        request: {
+                            endpoint: "/test/endpoint"
+                        }
+                    }),
+                    canvas = document.createElement("canvas"),
+                    canvasWrapper = {
+                        canvas: canvas,
+                        type: "foobar",
+                        quality: 3,
+                        name: "mycanvas"
+                    };
+
+                qq.canvasToBlob = function(passedCanvas, mime, quality) {
+                    assert.equal(passedCanvas, canvas);
+                    assert.equal(mime, "foobar");
+                    assert.equal(quality, 0.03);
+
+                    uploader._handleNewFile = function(file) {
+                        assert.equal(file.name, "mycanvas");
+                        done();
+                    };
+                };
+
+                uploader.addFiles(canvasWrapper);
+            });
+        });
     });
 }
