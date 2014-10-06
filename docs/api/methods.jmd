@@ -39,7 +39,7 @@ A `BlobWrapper` object:
 | blob     | the bytes of the `Blob` object being uploaded
 | name     | the name of the `Blob` | {: .table }
 
-
+<br/>
 A `CanvasWrapper` object:
 
 | Property | Description |
