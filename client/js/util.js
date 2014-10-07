@@ -476,6 +476,10 @@ var qq = function(element) {
         return navigator.userAgent.indexOf("MSIE 7") !== -1;
     };
 
+    qq.ie8 = function() {
+        return navigator.userAgent.indexOf("MSIE 8") !== -1;
+    };
+
     qq.ie10 = function() {
         return navigator.userAgent.indexOf("MSIE 10") !== -1;
     };
