@@ -176,6 +176,9 @@ blank `<canvas>`.  This affects scaling as Fine Uploader uses `<canvas>` in part
 overcome this issue, Fine Uploader will further downsample scaled images that exceed this limit.  You can check to
 see if such a limitation is known by examining the `qq.supportedFeatures.unlimitedScaledImageSize` flag.
 
+* The scaled file names will be sent with the upload request as the `qqfilename` parameter.
+Be sure to read this parameter when naming your file server-side.
+
 
 ### Supported Browsers
 This feature is supported on all browsers other than IE9 and older, Android 2.4 or older, and Safari 5.1 or older.

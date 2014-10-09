@@ -84,8 +84,10 @@ qq.UploadButton = function(o) {
             // space of the container element.  Otherwise, the left side of the
             // button will require a double-click to invoke the file chooser.
             // In other browsers, this might cause other issues, so a large font-size
-            // is only used in IE.
-            fontSize: qq.ie() ? "3500px" : "118px",
+            // is only used in IE.  There is a bug in IE8 where the opacity style is  ignored
+            // in some cases when the font-size is large.  So, this workaround is not applied
+            // to IE8.
+            fontSize: qq.ie() && !qq.ie8() ? "3500px" : "118px",
             margin: 0,
             padding: 0,
             cursor: "pointer",
