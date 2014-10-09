@@ -19,6 +19,14 @@ env:
       ItUbCE5lEEhfjbRw2xcG8F8L4T7JriFXCphlNV26ZzrRTGNGXKi2D7TDv2S5
       rwbV6veaxef5UrKDyR5vbRuyXcKg7B05snD3jvKhp/Jwn3cU9NbddwFqffej
       EFukvU9VidYA2iyLTB4UTVBh7AhZU05hLo5P4npKKcpObvSAL/8=
+  - secure: |-
+      AZ/GEWzykeSzxh+4r14eKq2dMQnZyEvx99zFnTSp30Ke9QqJP3UQvMdwHzuV
+      7jqjzHQUYMFl8o7VATMm7WeXiSURmzRP2F51W/v0rfhUyTo9BMiCxHmcI3up
+      wRMBtB4rJxzk3q5sUR32ucVs/fNlOCMC9M02fnSEijGw4Y+WOhc=
+  - secure: |-
+      sEQ0OSwK/9SUqLXB+w8n9oEdFEdLxZTBdMhC5fUrsCjgstfUSSgzYOT9cTFp
+      awR42/q/Akos2eA8NWx5yU+hRC5rr+oQG5Eio0tzi9+y3a6VXDvgS1h2SaQz
+      TR/MjA/29gFvV7bnp1LSs2TdZx+NGhLd4zHv01XZ+pQk/nQiW9w=
 
 before_install:
 - npm install -g grunt-cli
