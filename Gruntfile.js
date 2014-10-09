@@ -22,7 +22,7 @@ module.exports = function(grunt) {
     path = require("path");
     pkg = require("./package.json");
     paths = {
-        dist: "./_dist",
+        dist: path.join("./_dist", pkg.version),
         build: "./_build",
         src: "./client",
         html: "./client/html/templates",
