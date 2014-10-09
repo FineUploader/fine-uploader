@@ -40,11 +40,11 @@ can be overridden.
 
 {{ api_option("multiple", "multiple", "When `false` this will prevent the user from simultaneously selecting or dropping more than one item. Dropping or selecting another item will clear the upload list. If another is already uploading, it will be canceled. To ignore rather than cancel, simply return `false` in the 'validate' or 'submit' event handlers.", "Boolean", "true") }}
 
-{{ api_option("showMessage", "showMessage", "Provide a function here to display a message to the user when the uploader receives an error or the user attempts to leave the page. The provided function may return a promise if one wishes to do asynchronous work whilst waiting for user input.", "Function", "`function(message) { window.alert(message); }`") }}
+{{ api_option("showMessage", "showMessage", "Provide a function here to display a message to the user when the uploader receives an error or the user attempts to leave the page. The provided function may return a promise if one wishes to do asynchronous work whilst waiting for user input.", "Function", "function(message) { window.alert(message); }") }}
 
-{{ api_option("showConfirm", "showConfirm", "Provide a function here to prompt the user to confirm deletion of a file. The provided function may return a promise if one wishes to do asynchronous work whilst waiting for user input.", "Function", "`function(message) { window.confirm(message); }`") }}
+{{ api_option("showConfirm", "showConfirm", "Provide a function here to prompt the user to confirm deletion of a file. The provided function may return a promise if one wishes to do asynchronous work whilst waiting for user input.", "Function", "function(message) { window.confirm(message); }") }}
 
-{{ api_option("showPrompt", "showPrompt", "Provide a function here to prompt the user for a filename when pasting file(s). The provided function may return a promise if one wishes to do asynchronous work whilst waiting for user input.", "Function", "`function(message, defaultValue) { window.prompt(message, defaultValue); }`") }}
+{{ api_option("showPrompt", "showPrompt", "Provide a function here to prompt the user for a filename when pasting file(s). The provided function may return a promise if one wishes to do asynchronous work whilst waiting for user input.", "Function", "function(message, defaultValue) { window.prompt(message, defaultValue); }") }}
 
 
 {{ api_option("template", "template", "This points to the container element that contains the template to use for one or more Fine Uploader UI instances.  You can either specify a string, which is the element ID (the ID of the container element on the page) or an `Element` that points to the container element.", "String or Element", "qq-template") }}
