@@ -8,6 +8,8 @@
 module.exports = function(grunt) {
     "use strict";
 
+    require("time-grunt")(grunt);
+
     var allBrowsers, async, browsers, configs, customBuildDest, fineUploaderModules, fs, name, path, paths, pkg, spawn, tasks, utils, uuid;
     fs = require("fs");
     uuid = require("uuid");

@@ -71,6 +71,7 @@
     "optimist": "0.6.0",
     "request": "2.21.0",
     "semver": "2.0.x",
+    "time-grunt": "^1.0.0",
     "underscore": "1.5.2",
     "uuid": "1.4.1",
     "grunt-jscs": "^0.7.1"
