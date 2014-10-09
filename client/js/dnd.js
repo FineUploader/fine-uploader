@@ -242,7 +242,7 @@ qq.DragAndDrop = function(o) {
             var uploadDropZone = setupDropzone(dropZone);
 
             // IE <= 9 does not support the File API used for drag+drop uploads
-            if (dropZones.length && (!qq.ie() || qq.ie10())) {
+            if (dropZones.length && qq.supportedFeatures.fileDrop) {
                 disposeSupport.attach(document, "dragenter", function(e) {
                     if (!uploadDropZone.dropDisabled() && isFileDrag(e)) {
                         qq.each(dropZones, function(idx, dropZone) {
@@ -367,7 +367,7 @@ qq.UploadDropZone = function(o){
     function isValidFileDrag(e){
         // e.dataTransfer currently causing IE errors
         // IE9 does NOT support file API, so drag-and-drop is not possible
-        if (qq.ie() && !qq.ie10()) {
+        if (!qq.supportedFeatures.fileDrop) {
             return false;
         }
 
@@ -378,9 +378,9 @@ qq.UploadDropZone = function(o){
         // dt.effectAllowed is none in Safari 5
         // dt.types.contains check is for firefox
 
-        // dt.effectAllowed crashes IE11 when files have been dragged from
+        // dt.effectAllowed crashes IE 11 & 10 when files have been dragged from
         // the filesystem
-        effectTest = (qq.ie10() || qq.ie11()) ? true : dt.effectAllowed !== "none";
+        effectTest = qq.ie() && qq.supportedFeatures.fileDrop ? true : dt.effectAllowed !== "none";
         return dt && effectTest && (dt.files || (!isSafari && dt.types.contains && dt.types.contains("Files")));
     }
 
@@ -420,9 +420,9 @@ qq.UploadDropZone = function(o){
                 return;
             }
 
-            // dt.effectAllowed crashes IE11 when files have been dragged from
+            // dt.effectAllowed crashes IE 11 & 10 when files have been dragged from
             // the filesystem
-            var effect = (qq.ie() || qq.ie11()) ? null : e.dataTransfer.effectAllowed;
+            var effect = qq.ie() && qq.supportedFeatures.fileDrop ? null : e.dataTransfer.effectAllowed;
             if (effect === "move" || effect === "linkMove"){
                 e.dataTransfer.dropEffect = "move"; // for FF (only move allowed)
             } else {
