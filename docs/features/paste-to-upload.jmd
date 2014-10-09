@@ -17,6 +17,12 @@ currently present in your clipboard. For example, suppose you take a screenshot
 and add it directly to your clipboard. You can then paste it into your Fine
 Uploader instance.
 
+{{
+alert(
+"""The filename will be sent with the request as the `qqfilename` parameter.
+   Be sure to read this parameter when naming your file server-side.", "info", "Note:")
+}}
+
 {{ alert(
 """This feature is only supported by browsers that feature the [Clipboard API](http://www.w3.org/TR/clipboard-apis/).
 Currently, only Chrome & Opera 15+ support this completely.", "info", "Note:") }}

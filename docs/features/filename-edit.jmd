@@ -16,8 +16,11 @@ this. In UI mode, if the `editFilename` feature is enabled via the template, the
 clicks a file that they have submitted to the uploader the text will become
 an input element that they can use to change the name.
 
-The filename will then be sent with the request as the `qqfilename` parameter.
-Be sure to read this parameter when naming your file server-side.
+{{
+alert(
+"""The filename will be sent with the request as the `qqfilename` parameter.
+   Be sure to read this parameter when naming your file server-side.", "info", "Note:")
+}}
 
 {{
 alert("You will want to have `autoUpload` disabled when using the edit filename feature.")
