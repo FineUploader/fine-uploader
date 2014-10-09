@@ -58,6 +58,7 @@
     "grunt-karma": "0.6.2",
     "grunt-nodestatic": "0.1.2",
     "grunt-open": "0.2.2",
+    "grunt-s3": "^0.2.0-alpha.3",
     "grunt-shell": "0.3.1",
     "grunt-strip-code": "0.1.2",
     "grunt-version": "0.2.2",
