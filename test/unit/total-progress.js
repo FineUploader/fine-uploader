@@ -85,6 +85,43 @@ if (qq.supportedFeatures.progressBar) {
 
                 assert.deepEqual(actualTotalProgressUpdates, expectedTotalProgressUpdates);
             });
+
+            it("updates total progress when all files have been canceled", function() {
+                var actualFileSizes = {
+                        0: 123,
+                        1: 456
+                    },
+                    actualTotalProgressUpdates = [],
+                    expectedTotalProgressUpdates = [
+                        {loaded: 0, total: actualFileSizes[0]},
+                        {loaded: 10, total: actualFileSizes[0]},
+                        {loaded: 10, total: actualFileSizes[0] + actualFileSizes[1]},
+                        {loaded: 0, total: actualFileSizes[1]},
+                        {loaded: 0, total: 0}
+                    ],
+
+                    onTotalProgress = function(loaded, total) {
+                        actualTotalProgressUpdates.push({loaded: loaded, total: total});
+                    },
+
+                    getSize = function(id) {
+                        return actualFileSizes[id];
+                    },
+
+                    tp = new qq.TotalProgress(onTotalProgress, getSize);
+
+                tp.onStatusChange(0, null, qq.status.SUBMITTING);
+                tp.onStatusChange(0, qq.status.SUBMITTING, qq.status.SUBMITTED);
+                tp.onIndividualProgress(0, 10, actualFileSizes[0]);
+
+                tp.onStatusChange(1, null, qq.status.SUBMITTING);
+                tp.onStatusChange(1, qq.status.SUBMITTING, qq.status.SUBMITTED);
+
+                tp.onStatusChange(0, qq.status.SUBMITTED, qq.status.CANCELED);
+                tp.onStatusChange(1, qq.status.SUBMITTED, qq.status.CANCELED);
+
+                assert.deepEqual(actualTotalProgressUpdates, expectedTotalProgressUpdates);
+            });
         });
 
         it("updates total progress when individual files progress", function() {
