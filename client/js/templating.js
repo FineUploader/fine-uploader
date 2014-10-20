@@ -18,9 +18,16 @@ qq.Templating = function(spec) {
         // This variable is duplicated in the DnD module since it can function as a standalone as well
         HIDE_DROPZONE_ATTR = "qq-hide-dropzone",
         isCancelDisabled = false,
+        generatedThumbnails = 0,
+        thumbnailQueueMonitorRunning = false,
+        thumbGenerationQueue = [],
         thumbnailMaxSize = -1,
         options = {
             log: null,
+            limits: {
+                maxThumbs: 0,
+                timeBetweenThumbs: 750
+            },
             templateIdOrEl: "qq-template",
             containerEl: null,
             fileContainerEl: null,
@@ -352,6 +359,7 @@ qq.Templating = function(spec) {
             if (!thumbnail.src) {
                 thumbnail.src = img.src;
                 thumbnail.onload = function() {
+                    thumbnail.onload = null;
                     show(thumbnail);
                     waitingImgPlacement.success();
                 };
@@ -384,9 +392,12 @@ qq.Templating = function(spec) {
                 },
                 function() {
                     maybeScalePlaceholderViaCss(img, thumbnail);
+
                     thumbnail.onload = function() {
+                        thumbnail.onload = null;
                         notAvailableImgPlacement.success();
                     };
+
                     thumbnail.src = img.src;
                     show(thumbnail);
                 }
@@ -419,6 +430,7 @@ qq.Templating = function(spec) {
 
         // Generation of the related thumbnail may still be in progress, so, wait until it is done.
         previewGeneration[cachedThumbnailId].then(function() {
+            generatedThumbnails++;
             previewGeneration[targetThumbnailId].success();
             log(qq.format("Now using previously generated thumbnail created for ID {} on ID {}.", cachedThumbnailId, targetThumbnailId));
             targetThumnail.src = cachedThumbnail.src;
@@ -440,6 +452,7 @@ qq.Templating = function(spec) {
 
         return options.imageGenerator.generate(blob, thumbnail, spec).then(
             function() {
+                generatedThumbnails++;
                 show(thumbnail);
                 previewGeneration[id].success();
             },
@@ -454,6 +467,110 @@ qq.Templating = function(spec) {
             });
     }
 
+    function processNewQueuedPreviewRequest(queuedThumbRequest) {
+        var id = queuedThumbRequest.id,
+            optFileOrBlob = queuedThumbRequest.optFileOrBlob,
+            relatedThumbnailId = optFileOrBlob && optFileOrBlob.qqThumbnailId,
+            thumbnail = getThumbnail(id),
+            spec = {
+                maxSize: thumbnailMaxSize,
+                scale: true,
+                orient: true
+            };
+
+        if (qq.supportedFeatures.imagePreviews) {
+            if (thumbnail) {
+                if (options.limits.maxThumbs && options.limits.maxThumbs <= generatedThumbnails) {
+                    maybeSetDisplayNotAvailableImg(id, thumbnail);
+                    generateNextQueuedPreview();
+                }
+                else {
+                    displayWaitingImg(thumbnail).done(function() {
+                        previewGeneration[id] = new qq.Promise();
+
+                        previewGeneration[id].done(function() {
+                            setTimeout(generateNextQueuedPreview, options.limits.timeBetweenThumbs);
+                        });
+
+                        /* jshint eqnull: true */
+                        // If we've already generated an <img> for this file, use the one that exists,
+                        // don't waste resources generating a new one.
+                        if (relatedThumbnailId != null) {
+                            useCachedPreview(id, relatedThumbnailId);
+                        }
+                        else {
+                            generateNewPreview(id, optFileOrBlob, spec);
+                        }
+                    });
+                }
+            }
+        }
+        else if (thumbnail) {
+            displayWaitingImg(thumbnail);
+            generateNextQueuedPreview();
+        }
+    }
+
+    function processUpdateQueuedPreviewRequest(queuedThumbRequest) {
+        var id = queuedThumbRequest.id,
+            thumbnailUrl = queuedThumbRequest.thumbnailUrl,
+            showWaitingImg = queuedThumbRequest.showWaitingImg,
+            thumbnail = getThumbnail(id),
+            spec = {
+                maxSize: thumbnailMaxSize,
+                scale: serverScale
+            };
+
+        if (thumbnail) {
+            if (thumbnailUrl) {
+                if (options.maxThumbs && options.maxThumbs <= generatedThumbnails) {
+                    maybeSetDisplayNotAvailableImg(id, thumbnail);
+                    generateNextQueuedPreview();
+                }
+                else {
+                    if (showWaitingImg) {
+                        displayWaitingImg(thumbnail);
+                    }
+
+                    return options.imageGenerator.generate(thumbnailUrl, thumbnail, spec).then(
+                        function() {
+                            show(thumbnail);
+                            generatedThumbnails++;
+                            setTimeout(generateNextQueuedPreview, options.limits.timeBetweenThumbs);
+                        },
+
+                        function() {
+                            maybeSetDisplayNotAvailableImg(id, thumbnail);
+                            setTimeout(generateNextQueuedPreview, options.limits.timeBetweenThumbs);
+                        }
+                    );
+                }
+            }
+            else {
+                maybeSetDisplayNotAvailableImg(id, thumbnail);
+                generateNextQueuedPreview();
+            }
+        }
+    }
+
+    function generateNextQueuedPreview() {
+        if (thumbGenerationQueue.length) {
+            thumbnailQueueMonitorRunning = true;
+
+            var queuedThumbRequest = thumbGenerationQueue.shift();
+
+            if (queuedThumbRequest.update) {
+                processUpdateQueuedPreviewRequest(queuedThumbRequest);
+            }
+            else {
+                processNewQueuedPreviewRequest(queuedThumbRequest);
+            }
+        }
+        else {
+            thumbnailQueueMonitorRunning = false;
+        }
+    }
+
     qq.extend(options, spec);
     log = options.log;
 
@@ -466,6 +583,8 @@ qq.Templating = function(spec) {
     qq.extend(this, {
         render: function() {
             log("Rendering template in DOM.");
+
+            generatedThumbnails = 0;
 
             container.innerHTML = templateHtml.template;
             hide(getDropProcessing());
@@ -495,7 +614,8 @@ qq.Templating = function(spec) {
 
         addFile: function(id, name, prependInfo) {
             var fileEl = qq.toElement(templateHtml.fileTemplate),
-                fileNameEl = getTemplateEl(fileEl, selectorClasses.file);
+                fileNameEl = getTemplateEl(fileEl, selectorClasses.file),
+                thumb;
 
             qq(fileEl).addClass(FILE_CLASS_PREFIX + id);
             fileNameEl && qq(fileNameEl).setText(name);
@@ -517,6 +637,21 @@ qq.Templating = function(spec) {
 
             if (isCancelDisabled) {
                 this.hideCancel(id);
+            }
+
+            thumb = getThumbnail(id);
+            if (thumb && !thumb.src) {
+                cachedWaitingForThumbnailImg.then(function(waitingImg) {
+                    thumb.src = waitingImg.src;
+                    if (waitingImg.style.maxHeight && waitingImg.style.maxWidth) {
+                        qq(thumb).css({
+                            maxHeight: waitingImg.style.maxHeight,
+                            maxWidth: waitingImg.style.maxWidth
+                        });
+                    }
+
+                    show(thumb);
+                });
             }
         },
 
@@ -763,62 +898,13 @@ qq.Templating = function(spec) {
         },
 
         generatePreview: function(id, optFileOrBlob) {
-            var relatedThumbnailId = optFileOrBlob && optFileOrBlob.qqThumbnailId,
-                thumbnail = getThumbnail(id),
-                spec = {
-                    maxSize: thumbnailMaxSize,
-                    scale: true,
-                    orient: true
-                };
-
-            if (qq.supportedFeatures.imagePreviews) {
-                if (thumbnail) {
-                    displayWaitingImg(thumbnail).done(function() {
-                        previewGeneration[id] = new qq.Promise();
-
-                        /* jshint eqnull: true */
-                        // If we've already generated an <img> for this file, use the one that exists,
-                        // don't waste resources generating a new one.
-                        if (relatedThumbnailId != null) {
-                            useCachedPreview(id, relatedThumbnailId);
-                        }
-                        else {
-                            generateNewPreview(id, optFileOrBlob, spec);
-                        }
-                    });
-                }
-            }
-            else if (thumbnail) {
-                displayWaitingImg(thumbnail);
-            }
+            thumbGenerationQueue.push({id: id, optFileOrBlob: optFileOrBlob});
+            !thumbnailQueueMonitorRunning && generateNextQueuedPreview();
         },
 
         updateThumbnail: function(id, thumbnailUrl, showWaitingImg) {
-            var thumbnail = getThumbnail(id),
-                spec = {
-                    maxSize: thumbnailMaxSize,
-                    scale: serverScale
-                };
-
-            if (thumbnail) {
-                if (thumbnailUrl) {
-                    if (showWaitingImg) {
-                        displayWaitingImg(thumbnail);
-                    }
-
-                    return options.imageGenerator.generate(thumbnailUrl, thumbnail, spec).then(
-                        function() {
-                            show(thumbnail);
-                        },
-                        function() {
-                            maybeSetDisplayNotAvailableImg(id, thumbnail);
-                        }
-                    );
-                }
-                else {
-                    maybeSetDisplayNotAvailableImg(id, thumbnail);
-                }
-            }
+            thumbGenerationQueue.push({update: true, id: id, thumbnailUrl: thumbnailUrl, showWaitingImg: showWaitingImg});
+            !thumbnailQueueMonitorRunning && generateNextQueuedPreview();
         }
     });
 };

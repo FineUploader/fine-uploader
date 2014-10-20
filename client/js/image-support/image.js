@@ -219,6 +219,10 @@ qq.ImageGenerator = function(log) {
 
     function drawOnImgFromUrlWithCssScaling(url, img, draw, maxSize) {
         registerThumbnailRenderedListener(img, draw);
+        // NOTE: The fact that maxWidth/height is set on the thumbnail for scaled images
+        // that must drop back to CSS is known and exploited by the templating module.
+        // In this module, we pre-render "waiting" thumbs for all files immediately after they
+        // are submitted, and we must be sure to pass any style associated with the "waiting" preview.
         qq(img).css({
             maxWidth: maxSize + "px",
             maxHeight: maxSize + "px"

@@ -79,11 +79,13 @@ qq.FineUploader = function(o, namespace) {
         },
 
         thumbnails: {
+            maxCount: 0,
             placeholders: {
                 waitUntilResponse: false,
                 notAvailablePath: null,
                 waitingPath: null
-            }
+            },
+            timeBetweenThumbs: 750
         },
 
         scaling: {
@@ -118,6 +120,10 @@ qq.FineUploader = function(o, namespace) {
         classes: {
             hide: this._options.classes.hide,
             editable: this._options.classes.editable
+        },
+        limits: {
+            maxThumbs: this._options.thumbnails.maxCount,
+            timeBetweenThumbs: this._options.thumbnails.timeBetweenThumbs
         },
         placeholders: {
             waitUntilUpdate: this._options.thumbnails.placeholders.waitUntilResponse,

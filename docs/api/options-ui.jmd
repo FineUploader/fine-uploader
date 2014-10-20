@@ -107,10 +107,18 @@ options for `messages`""", "info", "Note:") }}
 """`retry` is also in the Core mode options. This section defines UI specific
 options for `retry`""", "info", "Note:") }}
 
+{{ api_parent_option("thumbnails", "thumbnails", "",
+    (
+        ("thumbnails.maxCount", "maxCount", "Maximum number of client-side generated previews to render per Fine Uploader instance.  A call to the reset method resets this value as well.", "Integer", "0",),
+        ("thumbnails.timeBetweenThumbs", "timeBetweenThumbs", "The amount of time, in milliseconds, to pause between each preview generation process.  This is in place to prevent the UI thread from locking up for a continuously long period of time, as preview generation can be a resource-intensive process.", "Integer", "750",),
+    )
+)}}
+
 {{ api_parent_option("thumbnails.placeholders", "thumbnails.placeholders", "",
     (
         ("thumbnails.placeholders.notAvailablePath", "notAvailablePath", "Absolute URL or relative path to the image to display if the preview/thumbnail could not be generated/displayed.", "String", "null",),
-        ("thumbnails.placeholders.waitingPath", "waitingPath", "Absolute URL or relative path to the image to display duringpreview generation (modern browsers) or until the server response has been parsed (older browsers).", "String", "null",),
+        ("thumbnails.placeholders.notAvailablePath", "notAvailablePath", "Absolute URL or relative path to the image to display if the preview/thumbnail could not be generated/displayed.", "String", "null",),
+        ("thumbnails.placeholders.waitingPath", "waitingPath", "Absolute URL or relative path to the image to display during preview generation (modern browsers) or until the server response has been parsed (older browsers).", "String", "null",),
         ("thumbnails.placeholders.waitUntilResponse", "waitUntilResponse", "Set this to `true` if you want the 'waiting' placeholder image to remain in place until the server response has been parsed.  This is useful if you expect to return thumbnail URLs in your upload responses for files types that cannot be previewed.  This option is ignored in older browsers where client-side previews cannot be generated.", "Boolean", "false",),
     )
 )}}
