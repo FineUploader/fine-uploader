@@ -10,7 +10,7 @@
 
 Fine Uploader has a wealth of ways to respond to error messages.
 
-By default, Fine Uploader asssumes an error when the server response does not
+By default, Fine Uploader assumes an error when the server response does not
 have a key of `success` set to `true`.
 
 If any error is thrown, then the `onError` callback will be called.
