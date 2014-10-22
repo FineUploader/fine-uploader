@@ -213,8 +213,8 @@ qq.Templating = function(spec) {
             beforeEl = parentEl.firstChild;
 
         if (index > 0) {
-            beforeEl = qq(parentEl).children()[index].nextSibling;
-
+            var child = qq(parentEl).children()[index];
+            child && (beforeEl = child.nextSibling);
         }
 
         parentEl.insertBefore(el, beforeEl);
