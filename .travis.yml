@@ -44,7 +44,7 @@ branches:
         - master
         - develop
         - /^feature.*$/
-        - /^hotfix.*$/
+        - /^.*fix.*$/
 notifications:
     slack:
         secure: qb1LdOGlBVKCLxNi86tWrabIKs9TFa3ttpLIwu1vtEeh+R9XDeG32X89sM3a5CHRwLqkHwrs6JNcIC4qhTAKiUOiaPYPbv7PkZXX1GIuOPMBp20ghpnWA7QHv6SpmW4qDCTixZSzf0B0m97muzWm1VnotgRELbfKr9Cf/7h3jS0=
