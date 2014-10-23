@@ -1,7 +1,7 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Previews & Thumbnails" %}
 {% block sidebar %}
-{{ api_links(options=['thumbnails.placeholders-ui', 'template-ui', ], methods=['drawThumbnail']) }}
+{{ api_links(options=['thumbnails-ui', 'template-ui', ], methods=['drawThumbnail']) }}
 {% endblock %}
 {% block content %}
 {% markdown %}
@@ -81,6 +81,22 @@ intends to orient them correctly first.
 `qq.supportedFeatures.imagePreviews`."""
 )}}
 
+#### Performance considerations
+For browsers that support client-generated image previews (`qq.supportedFeatures.imagePreviews === true`), a configurable
+pause between template-generated previews is in effect.  This is to prevent the complex process of generating previews
+from overwhelming the client machine's CPU for a lengthy amount of time.  Without this limit in place, the browser's
+UI thread runs the risk of blocking, preventing any user interaction (scrolling, etc) until all previews have been
+generated.
+
+Also, you may limit the number of previews generated/scaled via a `thumbnails` option property.  This may be especially
+important in Chrome, which seems to have memory management issues when generating thumbnails using `<canvas>`.  In Chrome,
+if enough previews are generated and rendered, the browser will eventually crash.  You can avoid this situation by
+limiting the number of previews to be generated (say, 50).  This is probably a good limit to set for all browsers, to
+conserve memory.  When the limit has been reached, the "not available" placeholder image will be used for all
+subsequently submitted files.
+
+The limits described above only apply to modern browsers that are capable of rendering previews via `<canvas>`.  See the
+`thumbnails` option for defaults and further configuration of these limits.
 
 ##### Cross-origin thumbnails
 Thumbnails returned in the server response may be cross-origin as well.  In that case, Fine Uploader will make a
