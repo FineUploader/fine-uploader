@@ -8,6 +8,8 @@
 module.exports = function(grunt) {
     "use strict";
 
+    require("time-grunt")(grunt);
+
     var allBrowsers, async, browsers, configs, customBuildDest, fineUploaderModules, fs, name, path, paths, pkg, spawn, tasks, utils, uuid;
     fs = require("fs");
     uuid = require("uuid");
@@ -20,7 +22,7 @@ module.exports = function(grunt) {
     path = require("path");
     pkg = require("./package.json");
     paths = {
-        dist: "./_dist",
+        dist: path.join("./_dist", pkg.version),
         build: "./_build",
         src: "./client",
         html: "./client/html/templates",
@@ -42,6 +44,7 @@ module.exports = function(grunt) {
         jshint: configs.jshint(paths),
         jscs: configs.jscs(paths),
         nodestatic: configs["static"](paths),
+        s3: configs.s3(paths.dist, pkg.version),
         shell: configs.shell(paths, customBuildDest),
         // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
         strip_code: configs.stripcode(paths, customBuildDest),

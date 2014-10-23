@@ -13,6 +13,9 @@ describe("templating.js", function() {
                             '</ul>' +
                         '</div>',
         defaultTemplate = '<div class="qq-uploader-selector qq-uploader">' +
+                            '<div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">' +
+                                '<div class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>' +
+                            '</div>' +
                             '<div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>' +
                                 '<span>Drop files here to upload</span>' +
                             '</div>' +
@@ -214,6 +217,27 @@ describe("templating.js", function() {
 
             templating.showEditIcon(0);
             assert.ok($(fileContainer0).find(".qq-edit-filename-icon-selector").hasClass(EDITABLE_CSS));
+        });
+
+        it("hides and shows total progress bar", function() {
+            var totalProgressEl = $fixture.find(".qq-total-progress-bar-container-selector");
+
+            // we're in progress, show total progress
+            templating.updateTotalProgress(50, 100);
+            assert.ok(!totalProgressEl.hasClass(HIDE_CSS));
+
+            // we've ended, hide total progress
+            templating.updateTotalProgress(100, 100);
+            assert.ok(totalProgressEl.hasClass(HIDE_CSS));
+
+            // we're back in progress, show total progress
+            templating.updateTotalProgress(1, 100);
+            assert.ok(!totalProgressEl.hasClass(HIDE_CSS));
+
+            // hide even if we are in progress
+            templating.hideTotalProgress();
+            assert.ok(totalProgressEl.hasClass(HIDE_CSS));
+
         });
 
         if (qq.supportedFeatures.fileDrop) {
