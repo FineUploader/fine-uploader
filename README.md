@@ -2,7 +2,7 @@
 
 Version: 5.1.0-3
 
-[![Build Status](https://travis-ci.org/Widen/fine-uploader.png?branch=master)](https://travis-ci.org/Widen/fine-uploader) | [![Semver badge](http://calm-shore-6115.herokuapp.com/?label=SemVer&value=2.0.0&color=green)](http://semver.org/spec/v2.0.0.html)
+[![Build Status](https://travis-ci.org/FineUploader/fine-uploader.png?branch=master)](https://travis-ci.org/FineUploader/fine-uploader) | [![Semver badge](http://calm-shore-6115.herokuapp.com/?label=SemVer&value=2.0.0&color=green)](http://semver.org/spec/v2.0.0.html)
 
 [**Download**](http://fineuploader.com/downloads.html) |
 [**Documentation**](http://docs.fineuploader.com) |
