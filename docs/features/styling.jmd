@@ -8,8 +8,8 @@
 # Styling {: .page-header }
 
 {{ alert(
-"""Templating changed drastically in version 5.0.  If you are upgrading from a 4.x version to a 5.x version
-you will want to read the [upgrading to 5.x document](../upgrading-to-5.html) as well.""", "warn") }}
+"""Templating changed drastically in version 4.0.  If you are upgrading from a 3.x version to a 4.x version
+you will want to read the [upgrading to 4.x document](../upgrading-to-4.html) as well.""", "warn") }}
 
 This document applies to Fine Uploader UI mode only, and aims to help you customize the default UI using
 the built-in templating feature.
