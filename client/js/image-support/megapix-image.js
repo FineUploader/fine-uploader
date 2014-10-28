@@ -313,7 +313,11 @@
         });
 
         if (tagName === "img") {
-            target.src = renderImageToDataURL(this.srcImage, opt, doSquash);
+            (function() {
+                var oldTargetSrc = target.src;
+                target.src = renderImageToDataURL(self.srcImage, opt, doSquash);
+                oldTargetSrc === target.src && target.onload();
+            }())
         } else if (tagName === "canvas") {
             renderImageToCanvas(this.srcImage, target, opt, doSquash);
         }

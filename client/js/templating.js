@@ -503,7 +503,7 @@ qq.Templating = function(spec) {
 
             if (thumbnail) {
                 if (thumbnailUrl) {
-                    if (options.maxThumbs && options.maxThumbs <= generatedThumbnails) {
+                    if (options.limits.maxThumbs && options.limits.maxThumbs <= generatedThumbnails) {
                         maybeSetDisplayNotAvailableImg(id, thumbnail);
                         generateNextQueuedPreview();
                     }

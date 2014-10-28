@@ -205,16 +205,20 @@ qq.ImageGenerator = function(log) {
 
         tempImg.src = url;
 
-        tempImgRender.then(function() {
-            registerThumbnailRenderedListener(canvasOrImg, draw);
+        tempImgRender.then(
+            function rendered() {
+                registerThumbnailRenderedListener(canvasOrImg, draw);
 
-            var mpImg = new qq.MegaPixImage(tempImg);
-            mpImg.render(canvasOrImg, {
-                maxWidth: maxSize,
-                maxHeight: maxSize,
-                mime: determineMimeOfFileName(url)
-            });
-        });
+                var mpImg = new qq.MegaPixImage(tempImg);
+                mpImg.render(canvasOrImg, {
+                    maxWidth: maxSize,
+                    maxHeight: maxSize,
+                    mime: determineMimeOfFileName(url)
+                });
+            },
+
+            draw.failure
+        );
     }
 
     function drawOnImgFromUrlWithCssScaling(url, img, draw, maxSize) {
