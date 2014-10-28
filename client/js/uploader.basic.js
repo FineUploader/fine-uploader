@@ -99,6 +99,7 @@
                 concurrent: {
                     enabled: false
                 },
+                mandatory: false,
                 paramNames: {
                     partIndex: "qqpartindex",
                     partByteOffset: "qqpartbyteoffset",
