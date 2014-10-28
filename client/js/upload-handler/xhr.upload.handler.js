@@ -167,7 +167,7 @@ qq.XhrUploadHandler = function(spec) {
 
                 state.chunking = {};
                 totalChunks = handler._getTotalChunks(id);
-                if (totalChunks > 1) {
+                if (totalChunks > 1 || chunking.mandatory) {
                     state.chunking.enabled = true;
                     state.chunking.parts = totalChunks;
                     state.chunking.remaining = [];
