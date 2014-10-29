@@ -11,30 +11,14 @@
 Fine Uploader's validation abilities allow integrators to strictly define
 what sorts of files can and can not be uploaded.
 
-Fine Uploader validators (defined in the options) execute.
+For each file, the `validate` event callback is invoked, allowing you to enforce your own custom rules.  Then, Fine
+Uploader's built-in validators (defined in the options) execute.
 
-If the `validation.stopOnFirstInvalidFile` option is enabled, then neither of
-these events will be thrown preceding a file being invalid (i.e., one of these
-callbacks returned `false`).
+If the `validation.stopOnFirstInvalidFile` option is enabled, Fine Uploader will stop processing files once an invalid
+file has been encountered.
 
-Also note that a `BlobData` object has two properties:
-
-```javascript
-{
-    name: "", /* The name of the file or blob */
-    size: "", /* the size of the file or blob */
-}
-```
-
-## Validation on File Name
-
-Until Fine Uploader is able to detect file mimetype client-side, validation
-on name is the best way to ensure that only the correct sorts of files get
-uploaded to your server.
-
-Validation on name can be controlled by modifying the `validation` settings,
-as documented above. The most important options are: `allowedExtensions` and
-`acceptFiles`.
+Fine Uploader's built-in validators allow you to limit based on file extension, number of files, file size, and
+image dimensions.  See the `validation` option for more details about these built-in validators.
 
 ## Validation on File Size
 
@@ -55,6 +39,12 @@ Also, this feature is dependant on the preview generation feature, and therefore
 Check the browser support matrix or the `qq.supportedFeatures.imageValidation` flag for more specific information.
 If image dimension validation is important to your application, you will also need a server-side fallback to account
 for older browsers and TIFFs (if allowed, since TIFFs are only previewable in Safari).
+
+## Custom Validation Rules
+You can further limit files using your own custom rules by including validation logic in a `validate` or `validateBatch`
+callback event handler.  Your handlers can return `false` to reject the file or files outright.  If you need to perform an
+async operation to determine if the file is valid, you can return a promise, and either resolve or reject the promise
+once the validity of the file is known.  See the `validate` and `validateBatch` documentation for more details.
 
 {% endmarkdown %}
 {% endblock %}
