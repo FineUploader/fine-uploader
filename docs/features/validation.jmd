@@ -1,7 +1,7 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Validation" %}
 {% block sidebar %}
-{{ api_links(options=['validation'], events=['validate', 'validateBatch']) }}
+{{ api_links(options=['validation'], events=['submit', 'validate', 'validateBatch']) }}
 {% endblock %}
 {% block content %}
 {% markdown %}
@@ -12,7 +12,9 @@ Fine Uploader's validation abilities allow integrators to strictly define
 what sorts of files can and can not be uploaded.
 
 For each file, the `validate` event callback is invoked, allowing you to enforce your own custom rules.  Then, Fine
-Uploader's built-in validators (defined in the options) execute.
+Uploader's built-in validators (defined in the options) execute.  If you need access to more information
+(such as the actual file), you can declare a submit event callback handler instead. When submit is called,
+an ID is available for the file, and you can address it using any of the other API methods that require a file ID.
 
 If the `validation.stopOnFirstInvalidFile` option is enabled, Fine Uploader will stop processing files once an invalid
 file has been encountered.
