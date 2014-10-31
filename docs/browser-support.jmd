@@ -6,7 +6,7 @@
 
 Currently, Fine Uploader supports the following browsers:
 
-* Internet Explorer 7+
+* Internet Explorer 8+
 * Firefox
 * Chrome
 * Chrome mobile (iOS & Android)
@@ -231,26 +231,6 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('x', "important") }}</td>
         </tr>
         <tr>
-            <td>IE 7</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "important") }}</td>
-            <td>{{ label('√', "success") }}</td>
-            <td>{{ label('x', "important") }}</td>
-        </tr>
-        <tr>
             <td>Android
                 4 stock</td>
             <td>{{ label('√', "success") }}</td>
@@ -378,10 +358,6 @@ for users of these older browsers, or if you are not using chunking, make sure y
     </thead>
 
     <tbody>
-        <tr>
-            <td>IE7</td>
-            <td>2GB</td>
-        </tr>
         <tr>
             <td>IE8</td>
             <td>2GB</td>

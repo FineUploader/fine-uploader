@@ -16,8 +16,6 @@ caveats depending on which browser is being used.
 
 {{ alert(
 """
-CORS is **not** supported in IE7 because IE7 has **zero** support for CORS.
-
 CORS in IE8 and IE9 is supported via the [`XDomainRequest`](http://msdn.microsoft.com/en-us/library/windows/apps/Hh767443.aspx)
 object. `XDomainRequest` does not support setting the 'Content-Type' header
 (or any headers for that matter) so for some server-side languages and

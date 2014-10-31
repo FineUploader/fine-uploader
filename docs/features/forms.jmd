@@ -71,7 +71,7 @@ IDs, and an array of all failed file IDs.  If you need to notify your server whe
 you can safely implement this logic in a contributed `onAllComplete` event handler.
 
 #### Cross-browser
-The form support feature, like most other Fine Uploader features, works in all supported browsers (including IE7).
+The form support feature, like most other Fine Uploader features, works in all supported browsers.
 
 
 ### Simple example
