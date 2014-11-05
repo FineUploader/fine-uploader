@@ -246,8 +246,11 @@ qq.DragAndDrop = function(o) {
                 disposeSupport.attach(document, "dragenter", function(e) {
                     if (!uploadDropZone.dropDisabled() && isFileDrag(e)) {
                         qq.each(dropZones, function(idx, dropZone) {
-                            // We can't apply styles to non-HTMLElements, since they lack the `style` property
-                            if (dropZone instanceof HTMLElement) {
+                            // We can't apply styles to non-HTMLElements, since they lack the `style` property.
+                            // Also, if the drop zone isn't initially hidden, let's not mess with `style.display`.
+                            if (dropZone instanceof HTMLElement &&
+                                qq(dropZone).hasAttribute(HIDE_BEFORE_ENTER_ATTR)) {
+
                                 qq(dropZone).css({display: "block"});
                             }
                         });
