@@ -243,10 +243,10 @@
         },
 
         getRemainingAllowedItems: function() {
-            var allowedItems = this._options.validation.itemLimit;
+            var allowedItems = this._currentItemLimit;
 
             if (allowedItems > 0) {
-                return this._options.validation.itemLimit - this._netUploadedOrQueued;
+                return allowedItems - this._netUploadedOrQueued;
             }
 
             return null;
@@ -357,6 +357,10 @@
         // Re-sets the default endpoint, an endpoint for a specific file, or an endpoint for a specific button
         setEndpoint: function(endpoint, id) {
             this._endpointStore.set(endpoint, id);
+        },
+
+        setItemLimit: function(newItemLimit) {
+            this._currentItemLimit = newItemLimit;
         },
 
         setName: function(id, newName) {
@@ -1309,7 +1313,7 @@
 
         //return false if we should not attempt the requested retry
         _onBeforeManualRetry: function(id) {
-            var itemLimit = this._options.validation.itemLimit,
+            var itemLimit = this._currentItemLimit,
                 fileName;
 
             if (this._preventRetries[id]) {
@@ -1506,7 +1510,7 @@
 
         _onValidateBatchCallbackSuccess: function(validationDescriptors, items, params, endpoint, button) {
             var errorMessage,
-                itemLimit = this._options.validation.itemLimit,
+                itemLimit = this._currentItemLimit,
                 proposedNetFilesUploadedOrQueued = this._netUploadedOrQueued;
 
             if (itemLimit === 0 || proposedNetFilesUploadedOrQueued <= itemLimit) {

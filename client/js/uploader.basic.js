@@ -295,6 +295,8 @@
                 }
             );
         }
+
+        this._currentItemLimit = this._options.validation.itemLimit;
     };
 
     // Define the private & public API methods.

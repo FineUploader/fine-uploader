@@ -390,11 +390,20 @@ describe("uploader.basic.api.js", function () {
             assert.equal(uploader.getRemainingAllowedItems(), null);
         });
 
-        it ("reports the correct number of remaining items w/ an item limit", function() {
+        it("reports the correct number of remaining items w/ an item limit", function() {
             setupUploader(3);
             uploader._netUploadedOrQueued = 2;
 
             assert.equal(uploader.getRemainingAllowedItems(), 1);
+        });
+
+        it("allows the itemLimit to be adjusted via the API", function() {
+            setupUploader(3);
+            uploader._netUploadedOrQueued = 2;
+
+            uploader.setItemLimit(5);
+
+            assert.equal(uploader.getRemainingAllowedItems(), 3);
         });
     });
 

@@ -423,6 +423,16 @@ A `CanvasWrapper` object:
 
 ], null) }}
 
+{{ api_method("setItemLimit", "setItemLimit (newItemLimit)", "Change the `validation.itemLimit` option set during construction/initialization.",
+[
+    {
+        "name": "newItemLimit",
+        "type": "Integer",
+        "description": "The new file count limit."
+    }
+
+], null) }}
+
 {{ api_method("setName", "setName (id, name)", "Change the name of a file.",
 [
     {
