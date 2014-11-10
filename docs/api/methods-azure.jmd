@@ -84,6 +84,21 @@ in Fine Uploader Azure, unless otherwise noted here.
         },
 ]) }}
 
+{{ api_method("setUploadSuccessEndpoint", "setUploadSuccessEndpoint (endpoint[, id])",
+"Modify the endpoint that Fine Uploader should POST to when a file has been successfully uploaded to Azure Blob Storage.",
+[
+        {
+            "name": "endpoint",
+            "type": "String",
+            "description": "An endpoint that Fine Uploader should POST to when a file has been successfully uploaded to Azure Blob Storage."
+        },
+        {
+            "name": "id",
+            "type": "Integer",
+            "description": "An ID corresponding to a file."
+        },
+]) }}
+
 {{ api_method("setUploadSuccessParams", "setUploadSuccessParams (newParams[, id])",
 "Set additional parameters for the upload success request. Note that Fine Uploader will still send the container URL, blob name, filename, and UUID as well.",
 [
