@@ -273,7 +273,7 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
-        it("sends uploadSuccess request after upload succeeds", function(done) {
+        it("Sends uploadSuccess request after upload succeeds.  Also respects call to setUploadSuccessEndpoint method.", function(done) {
             assert.expect(12, done);
 
             var uploadSuccessUrl = "/upload/success",
@@ -283,12 +283,14 @@ if (qqtest.canDownloadFileAsBlob) {
                     request: {endpoint: testEndpoint},
                     signature: {endpoint: testSignatureEndoint},
                     uploadSuccess: {
-                        endpoint: uploadSuccessUrl,
+                        endpoint: "foo/bar",
                         params: uploadSuccessParams,
                         customHeaders: uploadSuccessHeaders
                     }
                 }
             );
+
+            uploader.setUploadSuccessEndpoint(uploadSuccessUrl);
 
             startTypicalTest(uploader, function(signatureRequest) {
                 var uploadSuccessRequest, uploadSuccessRequestParsedBody;
@@ -320,8 +322,8 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
-        it("declares an upload as a failure if uploadSuccess response indicates a problem with the file", function(done) {
-            assert.expect(2, done);
+        it("declares an upload as a failure if uploadSuccess response indicates a problem with the file.  Also tests uploadSuccessRequest endpoint option.", function(done) {
+            assert.expect(3, done);
 
             var uploadSuccessUrl = "/upload/success",
                 uploader = new qq.azure.FineUploaderBasic({
@@ -343,6 +345,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     uploadRequest.respond(201, null, "");
 
                     uploadSuccessRequest = fileTestHelper.getRequests()[2];
+                    assert.equal(uploadSuccessRequest.url, uploadSuccessUrl);
                     uploadSuccessRequest.respond(200, null, JSON.stringify({success: false}));
                     assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
                 }, 0);
