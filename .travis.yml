@@ -22,7 +22,6 @@ env:
 
 before_install:
 - npm install -g grunt-cli
-- git submodule update --init --recursive
 
 before_script:
 - "sh -e /etc/init.d/xvfb start"
