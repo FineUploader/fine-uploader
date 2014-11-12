@@ -22,6 +22,7 @@ env:
 
 before_install:
 - npm install -g grunt-cli
+- npm install
 
 before_script:
 - "sh -e /etc/init.d/xvfb start"
