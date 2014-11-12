@@ -225,5 +225,45 @@ if (qqtest.canDownloadFileAsBlob) {
         it("fails the last chunk once, then restarts with the first chunk", function(done) {
             testChunkedFailureAndRecovery(true, done);
         });
+
+        describe("chunking determination logic", function() {
+            function testChunkingLogic(forceChunking, done) {
+                var actualChunks = 0,
+                    expectedChunks = forceChunking ? 1 : 0,
+                    uploader = new qq.FineUploaderBasic({
+                        request: {
+                            endpoint: testUploadEndpoint
+                        },
+                        chunking: {
+                            enabled: true,
+                            mandatory: forceChunking,
+                            partSize: expectedFileSize + 1
+                        },
+                        callbacks: {
+                            onUploadChunk: function() {
+                                actualChunks++;
+                            },
+                            onComplete: function() {
+                                assert.equal(actualChunks, expectedChunks, "unexpected number of chunks!");
+                                done();
+                            }
+                        }
+                    });
+
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                    fileTestHelper.mockXhr();
+                    uploader.addFiles({name: "test", blob: blob});
+                    fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                });
+            }
+
+            it("does NOT chunk a file that is smaller than chunking.partSize", function(done) {
+                testChunkingLogic(false, done);
+            });
+
+            it("DOES chunk a file that is smaller than chunking.partSize IFF chunking.mandatory == true", function(done) {
+                testChunkingLogic(true, done);
+            });
+        });
     });
 }

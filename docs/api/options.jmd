@@ -43,7 +43,7 @@ mode you are in and keep that in mind when determining which options do what.
 
 {{ api_option("formatFileName", "formatFileName", "Provide a function to control the display of file names.  The default function limits the name displayed in the UI to 33 characters plus 3 ellipses separating the first and last several characters.  The unformatted file name is passed into the function when it is invoked.", "Function", "") }}
 
-{{ api_option("maxConnections", "maxConnections", "Maxmimum allowable concurrent requests", "Integer", "3") }}
+{{ api_option("maxConnections", "maxConnections", "Maximum allowable concurrent requests", "Integer", "3") }}
 
 {{ api_option("multiple", "multiple", "When false this will prevent the user from simultaneously selecting or dropping more than one item.", "Boolean", "true") }}
 
@@ -70,6 +70,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
         ("chunking.concurrent.enabled", "concurrent.enabled", "Allow multiple chunks to be uploaded simultaneously per file", "Boolean", "false",),
 
         ("chunking.enabled", "enabled", "Enable or disable splitting the file separate parts. Each part is sent in a separate request.", "Boolean", "false",),
+        ("chunking.mandatory", "mandatory", "Ensure EVERY file is uploaded in chunks, even if the file can only be split up into 1 chunk.  Does not apply if chunking is not possible in the current browser.", "Boolean", "false",),
         ("chunking.partSize", "partSize", "The maximum size of each part, in bytes.", "Integer", "2000000",),
 
         ("chunking.paramNames.chunkSize", "paramNames.chunkSize", "Name of the parameter passed with a chunked request that specifies the size in bytes of the associated chunk.", "String", "qqchunksize",),
