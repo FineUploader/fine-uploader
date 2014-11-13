@@ -22,11 +22,7 @@ env:
 
 before_install:
 - npm install -g grunt-cli
-<<<<<<< HEAD
-- npm install
-=======
 - git submodule update --init --recursive
->>>>>>> parent of 133a4e3... fix(build): travis CI build is failing
 
 before_script:
 - "sh -e /etc/init.d/xvfb start"
