@@ -38,7 +38,7 @@ When using the non-jQuery version, events are defined as functions in the `callb
 
 There are two things to keep in mind when using the jQuery plugin version. First, event handlers are defined by calling the [jQuery `.on()`](http://api.jquery.com/on/) function which will bind a function to an event. Secondly, event handler parameters are passed an extra [jQuery `Event`](http://api.jquery.com/category/events/event-object/) object. If using the jQuery plugin, this Event object will precede all arguments listed.
 
-See the [Integrating jQuery](../integrating/jquery) page for code examples and more details.
+See the [Integrating jQuery](../integrating/jquery.html) page for code examples and more details.
 
 #### non-jQuery
 
