@@ -82,6 +82,16 @@ qq.supportedFeatures = (function () {
         return document.createElement("input").webkitdirectory !== undefined;
     }
 
+    function isLocalStorageSupported () {
+        try {
+            return !!window.localStorage;
+        }
+        catch (error) {
+            // probably caught a security exception, so no localStorage for you
+            return false;
+        }
+    }
+
 
     supportsUploading = testSupportsFileInputElement();
 
@@ -93,7 +103,7 @@ qq.supportedFeatures = (function () {
 
     supportsChunking = supportsAjaxFileUploading && qq.isFileChunkingSupported();
 
-    supportsResume = supportsAjaxFileUploading && supportsChunking && !!window.localStorage;
+    supportsResume = supportsAjaxFileUploading && supportsChunking && isLocalStorageSupported();
 
     supportsUploadViaPaste = supportsAjaxFileUploading && isChrome14OrHigher();
 
