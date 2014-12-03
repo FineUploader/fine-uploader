@@ -1,5 +1,5 @@
 /* globals qq */
-qq.supportedFeatures = (function () {
+qq.supportedFeatures = (function() {
     "use strict";
 
     var supportsUploading,
@@ -16,7 +16,7 @@ qq.supportedFeatures = (function () {
         supportsFolderSelection,
         supportsImagePreviews,
         supportsUploadProgress;
-    
+
     function testSupportsFileInputElement() {
         var supported = true,
             tempInput;
@@ -80,7 +80,17 @@ qq.supportedFeatures = (function () {
         // We know that folder selection is only supported in Chrome via this proprietary attribute for now
         return document.createElement("input").webkitdirectory !== undefined;
     }
-    
+
+    function isLocalStorageSupported() {
+        try {
+            return !!window.localStorage;
+        }
+        catch (error) {
+            // probably caught a security exception, so no localStorage for you
+            return false;
+        }
+    }
+
     supportsUploading = testSupportsFileInputElement();
 
     supportsAjaxFileUploading = supportsUploading && qq.isXhrUploadSupported();
