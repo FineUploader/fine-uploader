@@ -62,7 +62,7 @@ qq.s3.util = qq.s3.util || (function() {
         getPolicy: function(spec) {
             var policy = {},
                 conditions = [],
-                bucket = qq.s3.util.getBucket(spec.endpoint),
+                bucket = spec.bucket,
                 key = spec.key,
                 acl = spec.acl,
                 type = spec.type,

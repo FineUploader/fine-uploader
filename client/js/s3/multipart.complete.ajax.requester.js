@@ -17,6 +17,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
             endpointStore: null,
             signatureSpec: null,
             maxConnections: 3,
+            getBucket: function(id) {},
             getKey: function(id) {},
             log: function(str, level) {}
         },
@@ -43,8 +44,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
     function getHeaders(id, uploadId) {
         var headers = {},
             promise = new qq.Promise(),
-            endpoint = options.endpointStore.get(id),
-            bucket = qq.s3.util.getBucket(endpoint),
+            bucket = options.getBucket(id),
             signatureConstructor = getSignatureAjaxRequester.constructStringToSign
                 (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_COMPLETE, bucket, options.getKey(id))
                 .withUploadId(uploadId)
@@ -71,8 +71,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
     function handleCompleteRequestComplete(id, xhr, isError) {
         var promise = pendingCompleteRequests[id],
             domParser = new DOMParser(),
-            endpoint = options.endpointStore.get(id),
-            bucket = qq.s3.util.getBucket(endpoint),
+            bucket = options.getBucket(id),
             key = options.getKey(id),
             responseDoc = domParser.parseFromString(xhr.responseText, "application/xml"),
             bucketEls = responseDoc.getElementsByTagName("Bucket"),

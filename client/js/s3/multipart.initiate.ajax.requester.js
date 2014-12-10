@@ -22,6 +22,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             serverSideEncryption: false,
             maxConnections: 3,
             getContentType: function(id) {},
+            getBucket: function(id) {},
             getKey: function(id) {},
             getName: function(id) {},
             log: function(str, level) {}
@@ -46,7 +47,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
      * @returns {qq.Promise}
      */
     function getHeaders(id) {
-        var bucket = qq.s3.util.getBucket(options.endpointStore.get(id)),
+        var bucket = options.getBucket(id),
             headers = {},
             promise = new qq.Promise(),
             key = options.getKey(id),

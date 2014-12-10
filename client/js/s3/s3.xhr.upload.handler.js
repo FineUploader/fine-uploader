@@ -14,6 +14,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
     var getName = proxy.getName,
         log = proxy.log,
         expectedStatus = 200,
+        onGetBucket = spec.getBucket,
         onGetKeyName = spec.getKeyName,
         filenameParam = spec.filenameParam,
         paramsStore = spec.paramsStore,
@@ -77,7 +78,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
             initHeaders: function(id, chunkIdx) {
                 var headers = {},
                     endpoint = spec.endpointStore.get(id),
-                    bucket = qq.s3.util.getBucket(endpoint),
+                    bucket = upload.bucket.getName(id),
                     key = upload.key.urlSafe(id),
                     promise = new qq.Promise(),
                     signatureConstructor = requesters.restSignature.constructStringToSign
@@ -185,6 +186,9 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 signatureSpec: signature,
                 cors: spec.cors,
                 log: log,
+                getBucket: function(id) {
+                    return upload.bucket.getName(id);
+                },
                 getKey: function(id) {
                     return upload.key.urlSafe(id);
                 }
@@ -195,6 +199,9 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 signatureSpec: signature,
                 cors: spec.cors,
                 log: log,
+                getBucket: function(id) {
+                    return upload.bucket.getName(id);
+                },
                 getKey: function(id) {
                     return upload.key.urlSafe(id);
                 }
@@ -212,6 +219,9 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 log: log,
                 getContentType: function(id) {
                     return handler._getMimeType(id);
+                },
+                getBucket: function(id) {
+                    return upload.bucket.getName(id);
                 },
                 getKey: function(id) {
                     return upload.key.urlSafe(id);
@@ -254,6 +264,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                     endpoint: endpointStore.get(id),
                     params: customParams,
                     type: handler._getMimeType(id),
+                    bucket: upload.bucket.getName(id),
                     key: handler.getThirdPartyFileId(id),
                     accessKey: credentialsProvider.get().accessKey,
                     sessionToken: credentialsProvider.get().sessionToken,
@@ -335,6 +346,23 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
              *
              * @param id file ID
              */
+            bucket: {
+                promise: function(id) {
+                    var promise = new qq.Promise();
+
+                    onGetBucket(id).then(function(bucket) {
+                        handler._getFileState(id).bucket = bucket;
+                        promise.success(bucket);
+                    }, promise.failure);
+
+                    return promise;
+                },
+
+                getName: function(id) {
+                    return handler._getFileState(id).bucket;
+                }
+            },
+
             done: function(id, xhr) {
                 var response = upload.response.parse(id, xhr),
                     isError = response.success !== true;
@@ -456,13 +484,15 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 var promise = new qq.Promise();
 
                 upload.key.promise(id).then(function() {
-                    /* jshint eqnull:true */
-                    if (optChunkIdx == null) {
-                        simple.send(id).then(promise.success, promise.failure);
-                    }
-                    else {
-                        chunked.send(id, optChunkIdx).then(promise.success, promise.failure);
-                    }
+                    upload.bucket.promise(id).then(function() {
+                        /* jshint eqnull:true */
+                        if (optChunkIdx == null) {
+                            simple.send(id).then(promise.success, promise.failure);
+                        }
+                        else {
+                            chunked.send(id, optChunkIdx).then(promise.success, promise.failure);
+                        }
+                    });
                 },
                 function(errorReason) {
                     promise.failure({error: errorReason});
@@ -524,8 +554,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
             _getLocalStorageId: function(id) {
                 var baseStorageId = super_._getLocalStorageId(id),
-                    endpoint = endpointStore.get(id),
-                    bucketName = qq.s3.util.getBucket(endpoint);
+                    bucketName = upload.bucket.getName(id);
 
                 return baseStorageId + "-" + bucketName;
             }

@@ -17,6 +17,11 @@
             objectProperties: {
                 acl: "private",
 
+                // string or a function which may be promissory
+                bucket: qq.bind(function(id) {
+                    return qq.s3.util.getBucket(this.getEndpoint(id));
+                }, this),
+
                 // 'uuid', 'filename', or a function which may be promissory
                 key: "uuid",
 
@@ -92,6 +97,10 @@
 
         // Holds S3 keys for file representations constructed from a session request.
         this._cannedKeys = {};
+        // Holds S3 buckets for file representations constructed from a session request.
+        this._cannedBuckets = {};
+
+        this._buckets = {};
     };
 
     // Inherit basic public & private API methods.
@@ -102,6 +111,13 @@
 
     // Define public & private API methods for this module.
     qq.extend(qq.s3.FineUploaderBasic.prototype, {
+        getBucket: function(id) {
+            if (this._cannedBuckets[id] == null) {
+                return this._buckets[id];
+            }
+            return this._cannedBuckets[id];
+        },
+
         /**
          * @param id File ID
          * @returns {*} Key name associated w/ the file, if one exists
@@ -121,6 +137,7 @@
         reset: function() {
             qq.FineUploaderBasic.prototype.reset.call(this);
             this._failedSuccessRequestCallbacks = [];
+            this._buckets = {};
         },
 
         setCredentials: function(credentials, ignoreEmpty) {
@@ -164,11 +181,12 @@
         _createUploadHandler: function() {
             var self = this,
                 additionalOptions = {
-                    objectProperties: this._options.objectProperties,
                     aclStore: this._aclStore,
-                    signature: this._options.signature,
-                    iframeSupport: this._options.iframeSupport,
+                    getBucket: qq.bind(this._determineBucket, this),
                     getKeyName: qq.bind(this._determineKeyName, this),
+                    iframeSupport: this._options.iframeSupport,
+                    objectProperties: this._options.objectProperties,
+                    signature: this._options.signature,
                     // pass size limit validation values to include in the request so AWS enforces this server-side
                     validation: {
                         minSizeLimit: this._options.validation.minSizeLimit,
@@ -241,6 +259,37 @@
             };
 
             return qq.FineUploaderBasic.prototype._createUploadHandler.call(this, additionalOptions, "s3");
+        },
+
+        _determineBucket: function(id) {
+            var maybeBucket = this._options.objectProperties.bucket,
+                promise = new qq.Promise(),
+                self = this;
+
+            if (qq.isFunction(maybeBucket)) {
+                maybeBucket = maybeBucket(id);
+                if (qq.isGenericPromise(maybeBucket)) {
+                    promise = maybeBucket;
+                }
+                else {
+                    promise.success(maybeBucket);
+                }
+            }
+            else if (qq.isString(maybeBucket)) {
+                promise.success(maybeBucket);
+            }
+
+            promise.then(
+                function success(bucket) {
+                    self._buckets[id] = bucket;
+                },
+
+                function failure(errorMsg) {
+                    qq.log("Problem determining bucket for ID " + id + " (" + errorMsg + ")", "error");
+                }
+            );
+
+            return promise;
         },
 
         /**
@@ -328,7 +377,7 @@
                 key: this.getKey(id),
                 uuid: this.getUuid(id),
                 name: this.getName(id),
-                bucket: qq.s3.util.getBucket(this._endpointStore.get(id))
+                bucket: this.getBucket(id)
             };
 
             if (maybeXhr && maybeXhr.getResponseHeader("ETag")) {
@@ -345,7 +394,7 @@
         _onSubmitDelete: function(id, onSuccessCallback) {
             var additionalMandatedParams = {
                 key: this.getKey(id),
-                bucket: qq.s3.util.getBucket(this._endpointStore.get(id))
+                bucket: this.getBucket(id)
             };
 
             return qq.FineUploaderBasic.prototype._onSubmitDelete.call(this, id, onSuccessCallback, additionalMandatedParams);
@@ -361,6 +410,7 @@
             else {
                 id = qq.FineUploaderBasic.prototype._addCannedFile.apply(this, arguments);
                 this._cannedKeys[id] = sessionData.s3Key;
+                this._cannedBuckets[id] = sessionData.s3Bucket;
             }
 
             return id;

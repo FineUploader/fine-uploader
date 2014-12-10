@@ -198,6 +198,10 @@
             return this._getButton(this._buttonIdsForFileIds[fileId]);
         },
 
+        getEndpoint: function(fileId) {
+            return this._endpointStore.get(fileId);
+        },
+
         getFile: function(fileOrBlobId) {
             return this._handler.getFile(fileOrBlobId) || null;
         },

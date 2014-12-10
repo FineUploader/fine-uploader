@@ -15,6 +15,7 @@ qq.s3.FormUploadHandler = function(options, proxy) {
         getName = proxy.getName,
         getUuid = proxy.getUuid,
         log = proxy.log,
+        onGetBucket = options.getBucket,
         onGetKeyName = options.getKeyName,
         filenameParam = options.filenameParam,
         paramsStore = options.paramsStore,
@@ -85,6 +86,7 @@ qq.s3.FormUploadHandler = function(options, proxy) {
         return qq.s3.util.generateAwsParams({
             endpoint: endpointStore.get(id),
             params: customParams,
+            bucket: handler._getFileState(id).bucket,
             key: handler.getThirdPartyFileId(id),
             accessKey: credentialsProvider.get().accessKey,
             sessionToken: credentialsProvider.get().sessionToken,
@@ -199,15 +201,27 @@ qq.s3.FormUploadHandler = function(options, proxy) {
                 promise = new qq.Promise();
 
             if (handler.getThirdPartyFileId(id)) {
-                handleUpload(id).then(promise.success, promise.failure);
+                if (handler._getFileState(id).bucket) {
+                    handleUpload(id).then(promise.success, promise.failure);
+                }
+                else {
+                    onGetBucket(id).then(function(bucket) {
+                        handler._getFileState(id).bucket = bucket;
+                        handleUpload(id).then(promise.success, promise.failure);
+                    });
+                }
             }
             else {
                 // The S3 uploader module will either calculate the key or ask the server for it
                 // and will call us back once it is known.
                 onGetKeyName(id, name).then(function(key) {
-                    handler._setThirdPartyFileId(id, key);
-                    handleUpload(id).then(promise.success, promise.failure);
-
+                    onGetBucket(id).then(function(bucket) {
+                        handler._getFileState(id).bucket = bucket;
+                        handler._setThirdPartyFileId(id, key);
+                        handleUpload(id).then(promise.success, promise.failure);
+                    }, function(errorReason) {
+                        promise.failure({error: errorReason});
+                    });
                 }, function(errorReason) {
                     promise.failure({error: errorReason});
                 });

@@ -15,6 +15,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
             endpointStore: null,
             signatureSpec: null,
             maxConnections: 3,
+            getBucket: function(id) {},
             getKey: function(id) {},
             log: function(str, level) {}
         },
@@ -42,7 +43,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
         var headers = {},
             promise = new qq.Promise(),
             endpoint = options.endpointStore.get(id),
-            bucket = qq.s3.util.getBucket(endpoint),
+            bucket = options.getBucket(id),
             signatureConstructor = getSignatureAjaxRequester.constructStringToSign
                 (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_ABORT, bucket, options.getKey(id))
                 .withUploadId(uploadId);

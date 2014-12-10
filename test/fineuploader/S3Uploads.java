@@ -61,6 +61,12 @@ public class S3Uploads extends HttpServlet
         setContentType(req, resp);
         String key = req.getParameter("key");
         String bucket = req.getParameter("bucket");
+        String keyPrefix = req.getParameter("keyPrefix");
+
+        if (keyPrefix != null)
+        {
+            key = keyPrefix + key;
+        }
 
         resp.setStatus(200);
 
