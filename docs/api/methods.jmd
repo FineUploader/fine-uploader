@@ -167,6 +167,15 @@ A `CanvasWrapper` object:
 
 ]) }}
 
+{{ api_method("getEndpoint", "getEndpoint ([id])", "Returns the endpoint associated with a particular file, or the current catch-all endpoint for all files (if no ID is specified).",
+[
+    {
+        "name": "id",
+        "type": "Integer",
+        "description": "The ID of the associated file."
+    }
+]) }}
+
 {{ api_method("getInProgress", "getInProgress ()", "Returns the number of items that are either currently uploading or waiting for an available connection (`qq.status.QUEUED`). If called inside of a `cancel` event handler, then this method will return a value that includes the upload associated with the `cancel` event handler. This is because the upload will not be canceled until the event handler returns.", none, [
     {
         "type": "Integer",
