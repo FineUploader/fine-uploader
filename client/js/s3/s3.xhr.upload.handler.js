@@ -348,12 +348,18 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
              */
             bucket: {
                 promise: function(id) {
-                    var promise = new qq.Promise();
+                    var promise = new qq.Promise(),
+                        cachedBucket = handler._getFileState(id).bucket;
 
-                    onGetBucket(id).then(function(bucket) {
-                        handler._getFileState(id).bucket = bucket;
-                        promise.success(bucket);
-                    }, promise.failure);
+                    if (cachedBucket) {
+                        promise.success(cachedBucket);
+                    }
+                    else {
+                        onGetBucket(id).then(function(bucket) {
+                            handler._getFileState(id).bucket = bucket;
+                            promise.success(bucket);
+                        }, promise.failure);
+                    }
 
                     return promise;
                 },
