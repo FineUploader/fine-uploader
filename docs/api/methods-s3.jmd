@@ -37,7 +37,7 @@ reference.  All methods outlined in the core or UI documentation are also availa
 in Fine Uploader S3, unless otherwise noted here.
 {% endmarkdown %}
 
-{{ api_method("getKey", "getKey (fileId)", "Retreive the S3 object key with the associated ID",
+{{ api_method("getBucket", "getBucket (fileId)", "Retrieve the S3 bucket name associated with the passed file (id).  Note that the bucket name is not available before the file has started uploading.",
 [
         {
             "name": "fileId",
@@ -48,7 +48,22 @@ in Fine Uploader S3, unless otherwise noted here.
 [
     {
         "type": "String",
-        "description": "The S3 object key associated with the fileID."
+        "description": "The S3 bucket name associated with the passed file (id)"
+    }
+]) }}
+
+{{ api_method("getKey", "getKey (fileId)", "Retrieve the S3 object key associated with the passed file (id).  Note that the key is not available before the file has started uploading.",
+[
+        {
+            "name": "fileId",
+            "type": "Integer",
+            "description": "An ID corresponding to a file."
+        },
+],
+[
+    {
+        "type": "String",
+        "description": "The S3 object key associated with the passed file (id)"
     }
 ]) }}
 

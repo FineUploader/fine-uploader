@@ -49,6 +49,7 @@ Here are the following properties of each `Object` that Fine Uploader recognizes
 * deleteFileParams: `Object` - Parameters to send along with the associated delete file request.  If omitted, `deleteFile.params` is used.
 * thumbnailUrl: `String` - URL of an image to display next to the file.
 * *s3Key: `String` - Key of the file in your S3 bucket.  Only required if using Fine Uploader S3.
+* *s3Bucket: `String` - Name of the bucket where the file is stored in S3.  Only required if using Fine Uploader S3 and if the bucket cannot be determined by examining the endpoint URL (such as when routing through a CDN).
 * *blobName: `String` - Name of the file in your Azure Blob Storage container.  Only required if using Fine Uploader Azure.
 
 The response will be converted into a JavaScript `Array` and passed to your `sessionRequestComplete` event handler.
