@@ -18,18 +18,18 @@ for help on upgrading from a 4.x version."""
 
 Welcome to Fine Uploader's documentation. This documentation is divided into
 different parts. It's recommended that you first check out the
-[quickstart](#quickstart) for Fine Uploader. If you’d rather dive into the
+[quickstart](quickstart/01-getting-started.html) for Fine Uploader. If you’d rather dive into the
 internals of Fine Uploader, check out the exhaustive
-[feature reference](#features) or [API documentation](#api-reference).
+Features reference or API documentation (see the navigation menu bar at the top).
 For assistance in getting your upload server set up, check out the docs on
-the [server-side](#endpoint-handlers_2).
+the Servers section.
 
 ### Getting Started
 
 This area of the documentation is mostly prose and examples. It is meant to be
 human-readable and accessible to those looking to get started with Fine Uploader.
 For experts, or developers looking to view more technical documentation, refer
-to the [API docs](#api-reference).
+to the API documentation section.
 
 #### Quickstart
 
