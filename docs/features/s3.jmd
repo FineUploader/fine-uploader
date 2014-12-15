@@ -24,7 +24,7 @@ does not appear to be any way to forward all headers to an S3 origin via a Cloud
 a problem for uploads using S3's REST API, since we must include the ACL, metadata, encryption, redundancy
 parameters, and a number of other information via the Initiate Multipart Upload POST request.  We have notified
 Amazon of these issues, but they have been unwilling to address or acknowledge them.  For continuing updates
-on support to CloudFront, please see [issue #1332 in the Fine Uploader GitHub issue tracker][issue1332].
+on support to CloudFront, please see [issue #1016 in the Fine Uploader GitHub issue tracker][issue1016].
 
 #### Overview
 When uploading to S3 via a CDN, you must specify the name of the bucket.  This is not required for uploads
@@ -57,7 +57,7 @@ var uploader = new qq.s3.FineUploader({
 
 
 [fastly]: http://www.fastly.com/
-[issue1332]: https://github.com/FineUploader/fine-uploader/issues/1332
+[issue1016]: https://github.com/FineUploader/fine-uploader/issues/1016
 [objectpropertiesbucket]: [requestendpoint]: ../api/options-s3.html#objectProperties.bucket
 [requestendpoint]: ../api/options-s3.html#request.endpoint
 [s3blog]: http://blog.fineuploader.com/2013/08/16/fine-uploader-s3-upload-directly-to-amazon-s3-from-your-browser/
