@@ -107,13 +107,13 @@ in Fine Uploader S3, unless otherwise noted here.
     }
 ])}}
 
-{{ api_method("setEndpoint", "setEndpoint (bucketPath[, id])",
-"Modify the bucket where upload requests should be directed. The endpoint for a specific file or blob can be changed by passing in an optional `id` parameter. An `id` will always be a number and refers to a single file. All valid bucket URLs documented by Amazon are supported, including custom domains. SSL is also supported.",
+{{ api_method("setEndpoint", "setEndpoint (endpoint[, id])",
+"Modify the endpoint URL where upload requests should be directed. The endpoint for a specific file or blob can be changed by passing in an optional `id` parameter. An `id` will always be a number and refers to a single file. All valid bucket URLs documented by Amazon are supported, including custom domains. SSL is also supported.  If you specify a CDN endpoint URL, be sure that you are specifying a bucket as well via the `objectProperties.bucket` option.",
 [
         {
-            "name": "bucketPath",
+            "name": "endpoint",
             "type": "String",
-            "description": "The new S3 bucket path"
+            "description": "A URL for the S3 bucket or a CDN that forwards the request on to S3."
         },
         {
             "name": "id",
