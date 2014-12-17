@@ -1,12 +1,14 @@
-$(function() {
+qq(window).attach("load", function() {
     "use strict";
 
-    var errorHandler = function(event, id, fileName, reason, xhr) {
-        return qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
-    };
+    var errorHandler = function(event, id, fileName, reason) {
+            return qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
+        },
+        azureUploader, s3Uploader, manualUploader, validatingUploader, failingUploader;
 
     if (qq.supportedFeatures.ajaxUploading) {
-        $("#azure-example").fineUploaderAzure({
+        azureUploader = new qq.azure.FineUploader({
+            element: document.getElementById("azure-example"),
             debug: true,
             request: {
                 endpoint: "http://fineuploaderdev2.blob.core.windows.net/dev"
@@ -40,35 +42,35 @@ $(function() {
                 fileSizeOnSubmit: true
             },
             paste: {
-                targetElement: $(document)
+                targetElement: document
             },
             thumbnails: {
                 placeholders: {
                     waitingPath: "/client/placeholders/waiting-generic.png",
                     notAvailablePath: "/client/placeholders/not_available-generic.png"
                 }
+            },
+            callbacks: {
+                onError: errorHandler,
+                onUpload: function (id, filename) {
+                    this.setParams({
+                        "hey": "hi ɛ $ hmm \\ hi",
+                        "ho": "foobar"
+                    }, id);
+
+                },
+                onStatusChange: function (id, oldS, newS) {
+                    qq.log("id: " + id + " " + newS);
+                },
+                onComplete: function (id, name, response) {
+                    qq.log(response);
+                }
             }
-        }).on("error", errorHandler).on("upload", function(event, id, filename) {
-//                    $(this).fineUploader('setParams', {
-//                        "hey": "hi ɛ $ hmm \\ hi",
-//                        "ho": "foobar"
-//                    }, id);
-        }).on("statusChange", function(event, id, oldS, newS) {
-            qq.log("id: " + id + " " + newS);
-        }).on("complete", function(event, id, name, response, xhr) {
-            qq.log(response);
-        });
-
-        $("#basicUploadSuccessExample > div > div > input[name='qqfile']").hover(function(event) {
-            return event.preventDefault();
-        });
-
-        $("#basicUploadSuccessExample > div > .qq-upload-button").hover(function(event) {
-            return event.preventDefault();
         });
     }
 
-    $("#s3-example").fineUploaderS3({
+    s3Uploader = new qq.s3.FineUploader({
+        element: document.getElementById("s3-example"),
         debug: true,
         request: {
             endpoint: "http://fineuploadertest.s3.amazonaws.com",
@@ -111,30 +113,35 @@ $(function() {
             fileSizeOnSubmit: true
         },
         paste: {
-            targetElement: $(document)
+            targetElement: document
         },
         thumbnails: {
             placeholders: {
                 waitingPath: "/client/placeholders/waiting-generic.png",
                 notAvailablePath: "/client/placeholders/not_available-generic.png"
             }
-        }
-    }).on("error", errorHandler).on("upload", function(event, id, filename) {
-        $(this).fineUploader("setParams", {
-            hey: "hi ɛ $ hmm \\ hi",
-            ho: "foobar"
-        }, id);
-    }).on("statusChange", function(event, id, oldS, newS) {
-        qq.log("id: " + id + " " + newS);
-    })
-        .on("complete", function(event, id, name, response, xhr) {
-            qq.log(response);
-        })
-        .on("complete", function(event, id, name, response, xhr) {
-            qq.log(response);
-        });
+        },
+        callbacks: {
+            onError: errorHandler,
+            onUpload: function(id, filename) {
+                this.setParams({
+                    "hey": "hi ɛ $ hmm \\ hi",
+                    "ho": "foobar"
+                }, id);
 
-    $("#manual-example").fineUploader({
+            },
+            onStatusChange: function(id, oldS, newS) {
+                qq.log("id: " + id + " " + newS);
+            },
+            onComplete: function(id, name, response) {
+                qq.log(response);
+            }
+        }
+    });
+
+
+    manualUploader = new qq.FineUploader({
+        element: document.getElementById("manual-example"),
         autoUpload: false,
         debug: true,
         uploadButtonText: "Select Files",
@@ -173,23 +180,31 @@ $(function() {
         },
         scaling: {
             sizes: [{name: "small", maxSize: 300}, {name: "medium", maxSize: 600}]
-        }
-    }).on("error", errorHandler)
-//        .on("resume", function() {
-//                return false;
-//        })
-//        .on("progress", function(event, id, name, loaded, total) {
-//                qq.log(loaded + "/" + total);
-//        })
-        .on("complete", function(event, id, name, response, xhr) {
-            qq.log(response);
-        });
+        },
+        callbacks: {
+            onError: errorHandler,
+            onUpload: function (id, filename) {
+                this.setParams({
+                    "hey": "hi ɛ $ hmm \\ hi",
+                    "ho": "foobar"
+                }, id);
 
-    $("#triggerUpload").click(function() {
-        return $("#manual-example").fineUploader("uploadStoredFiles");
+            },
+            onStatusChange: function (id, oldS, newS) {
+                qq.log("id: " + id + " " + newS);
+            },
+            onComplete: function (id, name, response) {
+                qq.log(response);
+            }
+        }
     });
 
-    $("#validation-example").fineUploader({
+    qq(document.getElementById("triggerUpload")).attach("click", function() {
+        manualUploader.uploadStoredFiles();
+    });
+
+    validatingUploader = new qq.FineUploader({
+        element: document.getElementById("validation-example"),
         multiple: false,
         request: {
             endpoint: "/upload/receiver"
@@ -205,10 +220,14 @@ $(function() {
         },
         display: {
             fileSizeOnSubmit: true
+        },
+        callbacks: {
+            onError: errorHandler
         }
-    }).on("error", errorHandler);
+    });
 
-    $("#failure-example").fineUploader({
+    failingUploader = new qq.FineUploader({
+        element: document.getElementById("failure-example"),
         request: {
             endpoint: "/upload/receiver",
             params: {
@@ -223,6 +242,9 @@ $(function() {
         retry: {
             enableAuto: true,
             showButton: true
+        },
+        callbacks: {
+            onError: errorHandler
         }
-    }).on("error", errorHandler);
+    });
 });
