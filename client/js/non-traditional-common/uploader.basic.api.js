@@ -37,6 +37,7 @@
                 cors = this._options.cors,
                 promise = new qq.Promise(),
                 uploadSuccessParams = this._uploadSuccessParamsStore.get(id),
+                fileParams = this._paramsStore.get(id),
 
                 // If we are waiting for confirmation from the local server, and have received it,
                 // include properties from the local server response in the `response` parameter
@@ -86,6 +87,9 @@
 
                 // combine custom params and default params
                 qq.extend(uploadSuccessParams, self._getEndpointSpecificParams(id, result, xhr), true);
+
+                // include any params associated with the file
+                fileParams && qq.extend(uploadSuccessParams, fileParams, true);
 
                 submitSuccessRequest = qq.bind(function() {
                     successAjaxRequester.sendSuccessRequest(id, uploadSuccessParams)

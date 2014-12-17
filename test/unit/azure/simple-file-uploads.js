@@ -274,8 +274,6 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("Sends uploadSuccess request after upload succeeds.  Also respects call to setUploadSuccessEndpoint method.", function(done) {
-            assert.expect(12, done);
-
             var uploadSuccessUrl = "/upload/success",
                 uploadSuccessParams = {"test-param-name": "test-param-value"},
                 uploadSuccessHeaders = {"test-header-name": "test-header-value"},
@@ -291,6 +289,7 @@ if (qqtest.canDownloadFileAsBlob) {
             );
 
             uploader.setUploadSuccessEndpoint(uploadSuccessUrl);
+            uploader.setParams({foo: "bar"});
 
             startTypicalTest(uploader, function(signatureRequest) {
                 var uploadSuccessRequest, uploadSuccessRequestParsedBody;
@@ -310,6 +309,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.equal(uploadSuccessRequest.requestHeaders["Content-Type"].indexOf("application/x-www-form-urlencoded"), 0);
                     assert.equal(uploadSuccessRequest.requestHeaders["test-header-name"], uploadSuccessHeaders["test-header-name"]);
                     assert.equal(uploadSuccessRequestParsedBody["test-param-name"], uploadSuccessParams["test-param-name"]);
+                    assert.equal(uploadSuccessRequestParsedBody.foo, "bar");
                     assert.equal(uploadSuccessRequestParsedBody.blob, uploader.getBlobName(0));
                     assert.equal(uploadSuccessRequestParsedBody.uuid, uploader.getUuid(0));
                     assert.equal(uploadSuccessRequestParsedBody.name, uploader.getName(0));
@@ -317,6 +317,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
                     uploadSuccessRequest.respond(200, null, null);
                     assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                    done();
                 }, 0);
 
             });

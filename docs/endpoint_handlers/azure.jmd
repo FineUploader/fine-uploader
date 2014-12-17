@@ -86,6 +86,7 @@ will contain the following information:
 * Container URL
 * UUID of the file
 * Name of the file
+* Any parameters/form fields you have associated with the file
 
 An example of the payload for this request sent by Fine Uploader would look like this:
 

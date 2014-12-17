@@ -124,6 +124,7 @@ will contain the following information:
 * UUID of the file
 * Name of the file
 * The ETag of the object in S3 (for non-chunked uploads only)
+* Any parameters/form fields you have associated with the file
 
 An example of the payload for this request sent by Fine Uploader would look like this:
 
