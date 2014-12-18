@@ -1,6 +1,9 @@
 # Please Read This BEFORE Opening Up a New Issue or Pull Request #
 
-The issue tracker in this project is for bug reports or feature requests ONLY.  If you have a support question, 
+If you are contributing any code whatsoever, you **must** sign the [Widen Contributor License Agreement](https://www.clahub.com/agreements/FineUploader/fine-uploader).
+
+
+The issue tracker in this project is for bug reports or feature requests ONLY.  If you have a support question,
 please see http://fineuploader.com/support.html which contains instructions on where you can browse and open support 
 requests.
 
