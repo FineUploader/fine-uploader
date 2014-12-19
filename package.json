@@ -30,12 +30,8 @@
   "author": "Widen Enterprises, Inc.",
   "licenses": [
     {
-      "type": "GPL 3",
-      "url": "http://www.gnu.org/licenses/gpl-3.0.txt"
-    },
-    {
       "type": "Widen Commerical License",
-      "url": "http://fineuploader.com/downloads.html"
+      "url": "https://raw.githubusercontent.com/FineUploader/fine-uploader/master/LICENSE"
     }
   ],
   "bugs": {
@@ -77,5 +73,5 @@
     "uuid": "1.4.1",
     "grunt-jscs": "^0.7.1"
   },
-  "license": "GPLv3"
+  "license": "Widen Commercial License"
 }

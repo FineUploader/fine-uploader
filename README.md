@@ -19,10 +19,8 @@ FineUploader is simple to use. You only need to include one JavaScript file. The
 For more information, please see the [**documentation**](http://docs.fineuploader.com).
 
 ### License ###
-This plugin is open sourced under GNU GPL v3 or you may purchase a Widen Commerical license to release you from the terms of
-GPL v3.  Please see the [downloads page](http://fineuploader.com/downloads.html) for details.  For open-source users (those
-comfortable with the GPL v3 license) please see the [documentation](http://docs.fineuploader.com) for information on building
-your own version-stamped copy of the library.
+This plugin is made available under the [Widen Commercial license](LICENSE).  If you are using Fine Uploader for commercial purposes,
+you must [purchase a license](http://fineuploader.com/purchase).
 
 
-*Fine Uploader is an open-source component of [Widen Enterprises, Inc.](http://www.widen.com/)*
+*Fine Uploader is a code library maintained and developed by [Widen Enterprises, Inc.](http://www.widen.com/)*
