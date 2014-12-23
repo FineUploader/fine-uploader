@@ -35,8 +35,7 @@
   "bugs": {
     "url": "https://github.com/Widen/fine-uploader/issues"
   },
-  "devDependencies": {},
-  "dependencies": {
+  "devDependencies": {
     "async": "0.2.9",
     "glob": "3.2.6",
     "grunt": "^0.4.5",
@@ -71,5 +70,6 @@
     "uuid": "1.4.1",
     "grunt-jscs": "^0.7.1"
   },
+  "dependencies": {},
   "license": "Widen Commercial License"
 }

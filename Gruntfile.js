@@ -57,7 +57,7 @@ module.exports = function(grunt) {
         }
     });
 
-    for (name in pkg.dependencies) {
+    for (name in pkg.devDependencies) {
         if (name.substring(0, 6) === "grunt-") {
             grunt.loadNpmTasks(name);
         }
