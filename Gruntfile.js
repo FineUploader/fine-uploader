@@ -52,8 +52,8 @@ module.exports = function(grunt) {
         version: configs.version(pkg),
         watch: configs.watch(paths),
         tests: {
-            local: "karma-local.conf.js",
-            travis: "karma-travis.conf.js"
+            local: "./lib/karma/karma-local.conf.js",
+            travis: "./lib/karma/karma-travis.conf.js"
         }
     });
 
