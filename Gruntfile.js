@@ -1,4 +1,5 @@
 /* jshint node: true */
+// jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 /*
         Fine Uploader
         -------------
@@ -46,7 +47,6 @@ module.exports = function(grunt) {
         nodestatic: configs["static"](paths),
         aws_s3: configs.s3(paths.dist, paths.build, pkg.version),
         shell: configs.shell(paths, customBuildDest),
-        // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
         strip_code: configs.stripcode(paths, customBuildDest),
         uglify: configs.uglify(paths, customBuildDest),
         usebanner: configs.banner(paths, customBuildDest),
