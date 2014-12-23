@@ -44,7 +44,7 @@ module.exports = function(grunt) {
         jshint: configs.jshint(paths),
         jscs: configs.jscs(paths),
         nodestatic: configs["static"](paths),
-        s3: configs.s3(paths.dist, paths.build, pkg.version),
+        aws_s3: configs.s3(paths.dist, paths.build, pkg.version),
         shell: configs.shell(paths, customBuildDest),
         // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
         strip_code: configs.stripcode(paths, customBuildDest),
