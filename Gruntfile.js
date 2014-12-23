@@ -11,7 +11,8 @@ module.exports = function(grunt) {
 
     require("time-grunt")(grunt);
 
-    var allBrowsers, async, browsers, configs, customBuildDest, fineUploaderModules, fs, name, path, paths, pkg, spawn, tasks, utils, uuid;
+    var allBrowsers, async, browsers, configs, fineUploaderModules, fs, name, path, paths, pkg, spawn, tasks, utils, uuid;
+
     fs = require("fs");
     uuid = require("uuid");
     async = require("async");
@@ -28,35 +29,28 @@ module.exports = function(grunt) {
         src: "./client",
         html: "./client/html/templates",
         docs: "./docs",
-        test: "./test",
-        custom: "./_custom"
+        test: "./test"
     };
-    customBuildDest = path.join(paths.custom, uuid.v1(1), "custom." + pkg.name + "-" + pkg.version);
     allBrowsers = require("./lib/browsers");
     browsers = allBrowsers.browsers;
     fineUploaderModules = require("./lib/modules");
     grunt.initConfig({
         pkg: pkg,
         clean: configs.clean(paths),
-        compress: configs.compress(paths, customBuildDest),
+        compress: configs.compress(paths),
         concat: configs.concat(paths),
         copy: configs.copy(paths),
-        cssmin: configs.cssmin(paths, customBuildDest),
+        cssmin: configs.cssmin(paths),
         jshint: configs.jshint(paths),
         jscs: configs.jscs(paths),
         nodestatic: configs["static"](paths),
         aws_s3: configs.s3(paths.dist, paths.build, pkg.version),
-        shell: configs.shell(paths, customBuildDest),
-        strip_code: configs.stripcode(paths, customBuildDest),
-        uglify: configs.uglify(paths, customBuildDest),
-        usebanner: configs.banner(paths, customBuildDest),
+        shell: configs.shell(paths),
+        strip_code: configs.stripcode(paths),
+        uglify: configs.uglify(paths),
+        usebanner: configs.banner(paths),
         version: configs.version(pkg),
         watch: configs.watch(paths),
-        custom: {
-            options: {
-                dest: customBuildDest
-            }
-        },
         tests: {
             local: "karma-local.conf.js",
             travis: "karma-travis.conf.js"
@@ -71,30 +65,4 @@ module.exports = function(grunt) {
 
     grunt.loadTasks(tasks);
 
-    grunt.registerTask("build_details", function() {
-        grunt.log.writeln("\n##########");
-        grunt.log.writeln("Custom Build Generated: ");
-        grunt.log.write("### " + customBuildDest + " ###");
-        return grunt.log.writeln("\n##########\n");
-    });
-
-    grunt.registerTask("custom", "Build a custom version", function(modules) {
-        var dest;
-        dest = customBuildDest;
-        if ((modules != null)) {
-            utils.build.call(utils, dest, modules.split(","));
-        } else {
-            utils.build.call(utils, dest, []);
-        }
-        return grunt.task.run([
-            "uglify:custom",
-            "cssmin:custom",
-            "strip_code:custom",
-            "shell:version_custom_templates",
-            "usebanner:customhead",
-            "usebanner:customfoot",
-            "compress:custom",
-            "build_details"
-        ]);
-    });
 };
