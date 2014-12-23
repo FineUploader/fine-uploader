@@ -13,9 +13,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "grunt test",
-    "docs": "make docs",
-    "build": "make build"
+    "build": "grunt package"
   },
   "keywords": [
     "upload",
