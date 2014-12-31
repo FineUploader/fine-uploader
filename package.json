@@ -1,5 +1,5 @@
 {
-  "name": "fineuploader",
+  "name": "fine-uploader",
   "title": "Fine Uploader",
   "version": "5.1.0",
   "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
@@ -10,16 +10,33 @@
   ],
   "directories": {
     "doc": "docs",
+    "lib": "client",
     "test": "test"
   },
   "scripts": {
     "build": "grunt package"
   },
   "keywords": [
+    "jquery-plugin",
     "upload",
     "file",
     "chunking",
-    "file-uploader"
+    "file-uploader",
+    "input",
+    "jquery",
+    "file",
+    "upload",
+    "widget",
+    "multiple",
+    "selection",
+    "drag",
+    "drop",
+    "progress",
+    "preview",
+    "cross-domain",
+    "cross-site",
+    "chunk",
+    "resume"
   ],
   "repository": {
     "type": "git",
