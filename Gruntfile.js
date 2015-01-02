@@ -36,6 +36,7 @@ module.exports = function(grunt) {
     fineUploaderModules = require("./lib/modules");
     grunt.initConfig({
         pkg: pkg,
+        paths: paths,
         clean: configs.clean(paths),
         compress: configs.compress(paths),
         concat: configs.concat(paths),
