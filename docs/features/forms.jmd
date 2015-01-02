@@ -82,8 +82,8 @@ file that integrates Fine Uploader into an existing form:
 <html>
     <head>
         <script src="http://code.jquery.com/jquery-latest.js"></script>
-        <script src="fineuploader.js"</script>
-        <link href="fineuploader.css">
+        <script src="fine-uploader.js"</script>
+        <link href="fine-uploader.css">
         <script type="text/template" id="qq-template">
             <div class="qq-uploader-selector qq-uploader">
                 <div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>

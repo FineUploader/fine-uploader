@@ -102,7 +102,7 @@ Now our Fine Uploader page should look something like this:
 ```html
 <html>
   <head>
-      <link href="fineuploader-{{ PKG['version']|e }}.css" rel="stylesheet" type="text/css"/>
+      <link href="fine-uploader-{{ PKG['version']|e }}.css" rel="stylesheet" type="text/css"/>
   </head>
   <body>
 
@@ -114,7 +114,7 @@ Now our Fine Uploader page should look something like this:
     <script src="http://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
 
     <!-- Fine Uploader-jQuery -->
-    <script src="jquery.fineuploader-{{ PKG['version']|e }}.min.js" type="text/javascript"></script>
+    <script src="jquery.fine-uploader-{{ PKG['version']|e }}.min.js" type="text/javascript"></script>
 
     <script>
     // Wait until the DOM is 'ready'
