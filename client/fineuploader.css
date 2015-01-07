@@ -185,10 +185,6 @@ INPUT.qq-edit-filename.qq-editing {
     margin-right: 5px;
 }
 
-INPUT.qq-edit-filename.qq-editing ~ .qq-upload-cancel {
-    display: none;
-}
-
 .qq-hide {
     display: none;
 }

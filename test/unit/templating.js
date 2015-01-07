@@ -220,19 +220,23 @@ describe("templating.js", function() {
         });
 
         it("hides and shows total progress bar", function() {
-            var totalProgressEl = $fixture.find(".qq-total-progress-bar-container-selector");
+            var totalProgressEl = $fixture.find(".qq-total-progress-bar-container-selector"),
+                totalProgressBar = totalProgressEl.find('.qq-total-progress-bar-selector');
 
             // we're in progress, show total progress
             templating.updateTotalProgress(50, 100);
             assert.ok(!totalProgressEl.hasClass(HIDE_CSS));
+            assert.equal(totalProgressBar.attr("aria-valuenow"), "50");
 
             // we've ended, hide total progress
             templating.updateTotalProgress(100, 100);
             assert.ok(totalProgressEl.hasClass(HIDE_CSS));
+            assert.equal(totalProgressBar.attr("aria-valuenow"), "100");
 
             // we're back in progress, show total progress
             templating.updateTotalProgress(1, 100);
             assert.ok(!totalProgressEl.hasClass(HIDE_CSS));
+            assert.equal(totalProgressBar.attr("aria-valuenow"), "1");
 
             // hide even if we are in progress
             templating.hideTotalProgress();

@@ -542,7 +542,10 @@ qq.Templating = function(spec) {
                 bar = qq(bar).getByClass(progressBarSelector)[0];
             }
 
-            bar && qq(bar).css({width: percent + "%"});
+            if (bar) {
+                qq(bar).css({width: percent + "%"});
+                bar.setAttribute("aria-valuenow", percent);
+            }
         },
 
         show = function(el) {
