@@ -119,13 +119,6 @@ qq.UploadButton = function(o) {
             qq(options.element).removeClass(options.focusClass);
         });
 
-        // IE and Opera, unfortunately have 2 tab stops on file input
-        // which is unacceptable in our case, disable keyboard access
-        if (window.attachEvent) {
-            // it is IE or Opera
-            input.setAttribute("tabIndex", "-1");
-        }
-
         return input;
     }
 
