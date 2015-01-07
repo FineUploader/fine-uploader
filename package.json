@@ -5,7 +5,7 @@
   "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
   "main": "./fine-uploader/js/fineuploader.js",
   "maintainers": [
-    "Ray Nicholus <rnicholus@widen.com>",
+    "Ray Nicholus <ray@fineuploader.com>",
     "Mark Feltner <mfeltner@widen.com>"
   ],
   "directories": {
@@ -17,30 +17,33 @@
     "build": "grunt package"
   },
   "keywords": [
-    "jquery-plugin",
-    "upload",
-    "file",
+    "amazon",
+    "aws",
+    "azure",
+    "chunk",
     "chunking",
+    "cross-domain",
+    "cross-site",
+    "drag",
+    "drop",
+    "file",
+    "file-input",
     "file-uploader",
     "input",
     "jquery",
-    "file",
-    "upload",
-    "widget",
+    "jquery-plugin",
     "multiple",
-    "selection",
-    "drag",
-    "drop",
-    "progress",
     "preview",
-    "cross-domain",
-    "cross-site",
-    "chunk",
-    "resume"
+    "progress",
+    "resume",
+    "s3",
+    "selection",
+    "upload",
+    "widget"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/Widen/fine-uploader.git"
+    "url": "git://github.com/FineUploader/fine-uploader.git"
   },
   "author": "Widen Enterprises, Inc.",
   "licenses": [
@@ -50,7 +53,7 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/Widen/fine-uploader/issues"
+    "url": "https://github.com/FineUploader/fine-uploader/issues"
   },
   "devDependencies": {
     "async": "0.2.9",
