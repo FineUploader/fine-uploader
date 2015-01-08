@@ -1543,7 +1543,7 @@
         _onValidateCallbackFailure: function(items, index, params, endpoint) {
             var nextIndex = index + 1;
 
-            this._fileOrBlobRejected(items[0].id, items[0].file.name);
+            this._fileOrBlobRejected(items[index].id, items[index].file.name);
 
             this._maybeProcessNextItemAfterOnValidateCallback(false, items, nextIndex, params, endpoint);
         },
