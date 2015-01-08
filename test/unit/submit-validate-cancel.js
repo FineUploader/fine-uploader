@@ -6,7 +6,6 @@ if (qqtest.canDownloadFileAsBlob) {
         var oldWrapCallbacks,
             testImgKey = "up.jpg",
             testImgType = "image/jpeg",
-            fileTestHelper = helpme.setupFileTests(),
             testBlob;
 
         before(function() {
@@ -100,6 +99,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
         it("handles a file rejected via onValidate callback", function(done) {
             var filesValidated = 0,
+                fileTestHelper = helpme.setupFileTests(),
                 uploader = new qq.FineUploaderBasic({
                     validation: {
                         stopOnFirstInvalidFile: false
