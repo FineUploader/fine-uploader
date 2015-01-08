@@ -113,7 +113,6 @@ if (qqtest.canDownloadFileAsBlob) {
                             done();
                         },
                         onValidate: function(blobData, button) {
-                            qq.log("VALIDATING" + blobData.name);
                             filesValidated++;
 
                             if (filesValidated === 2) {
