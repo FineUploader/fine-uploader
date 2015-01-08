@@ -99,16 +99,15 @@ if (qqtest.canDownloadFileAsBlob) {
 
         it("handles a file rejected via onValidate callback", function(done) {
             var filesValidated = 0,
-                fileTestHelper = helpme.setupFileTests(),
                 uploader = new qq.FineUploaderBasic({
                     validation: {
                         stopOnFirstInvalidFile: false
                     },
                     callbacks: {
                         onAllComplete: function(succeeded, failed) {
-                            assert.equal(succeeded.length, 1, "wrong succeeded count");
-                            assert.equal(failed.length, 0, "wrong failed count");
-                            assert.equal(uploader.getUploads({id: 0}).status, qq.status.UPLOAD_SUCCESSFUL);
+                            assert.equal(succeeded.length, 0, "wrong succeeded count");
+                            assert.equal(failed.length, 1, "wrong failed count");
+                            assert.equal(uploader.getUploads({id: 0}).status, qq.status.UPLOAD_FAILED);
                             assert.equal(uploader.getUploads({id: 1}).status, qq.status.REJECTED);
                             done();
                         },
@@ -123,14 +122,10 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
 
             qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
-                fileTestHelper.mockXhr();
-
                 uploader.addFiles([
                     {blob: blob, name: "name1"},
                     {blob: blob, name: "name2"}
                 ]);
-
-                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
             });
         });
 
