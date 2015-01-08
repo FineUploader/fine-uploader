@@ -6,6 +6,7 @@ if (qqtest.canDownloadFileAsBlob) {
         var oldWrapCallbacks,
             testImgKey = "up.jpg",
             testImgType = "image/jpeg",
+            fileTestHelper = helpme.setupFileTests(),
             testBlob;
 
         before(function() {
@@ -94,6 +95,43 @@ if (qqtest.canDownloadFileAsBlob) {
                     {blob: blob, name: "name2"}
                 ]);
                 done();
+            });
+        });
+
+        it("handles a file rejected via onValidate callback", function(done) {
+            var filesValidated = 0,
+                uploader = new qq.FineUploaderBasic({
+                    validation: {
+                        stopOnFirstInvalidFile: false
+                    },
+                    callbacks: {
+                        onAllComplete: function(succeeded, failed) {
+                            assert.equal(succeeded.length, 1, "wrong succeeded count");
+                            assert.equal(failed.length, 0, "wrong failed count");
+                            assert.equal(uploader.getUploads({id: 0}).status, qq.status.UPLOAD_SUCCESSFUL);
+                            assert.equal(uploader.getUploads({id: 1}).status, qq.status.REJECTED);
+                            done();
+                        },
+                        onValidate: function(blobData, button) {
+                            qq.log("VALIDATING" + blobData.name);
+                            filesValidated++;
+
+                            if (filesValidated === 2) {
+                                return false;
+                            }
+                        }
+                    }
+                });
+
+            qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
+                fileTestHelper.mockXhr();
+
+                uploader.addFiles([
+                    {blob: blob, name: "name1"},
+                    {blob: blob, name: "name2"}
+                ]);
+
+                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
             });
         });
 
