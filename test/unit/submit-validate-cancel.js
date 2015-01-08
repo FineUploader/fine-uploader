@@ -97,6 +97,38 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+        it("handles a file rejected via onValidate callback", function(done) {
+            var filesValidated = 0,
+                uploader = new qq.FineUploaderBasic({
+                    validation: {
+                        stopOnFirstInvalidFile: false
+                    },
+                    callbacks: {
+                        onAllComplete: function(succeeded, failed) {
+                            assert.equal(succeeded.length, 0, "wrong succeeded count");
+                            assert.equal(failed.length, 1, "wrong failed count");
+                            assert.equal(uploader.getUploads({id: 0}).status, qq.status.UPLOAD_FAILED);
+                            assert.equal(uploader.getUploads({id: 1}).status, qq.status.REJECTED);
+                            done();
+                        },
+                        onValidate: function(blobData, button) {
+                            filesValidated++;
+
+                            if (filesValidated === 2) {
+                                return false;
+                            }
+                        }
+                    }
+                });
+
+            qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
+                uploader.addFiles([
+                    {blob: blob, name: "name1"},
+                    {blob: blob, name: "name2"}
+                ]);
+            });
+        });
+
         describe("file rejection via callback", function() {
             function setupUploader(callback, blob, done, useQ) {
                 var uploader = new qq.FineUploaderBasic({
