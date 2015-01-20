@@ -246,6 +246,10 @@
                     this._templating.hideEditIcon(id);
                 }
             }
+
+            if (newStatus === qq.status.UPLOAD_RETRYING) {
+                this._templating.setStatusText(id);
+            }
         },
 
         _bindFilenameInputFocusInEvent: function() {
