@@ -94,7 +94,7 @@ An example of the payload for this request sent by Fine Uploader would look like
 
 If you need to perform some specific task to verify the file server-side at this point, you can do so when
 handling this request and let Fine Uploader know if there is a problem with this file by returning a response with an
-appropriate (non-200) status code.  Furthermore, you can include a message to be displayed (FineUploader/default-UI mode)
+appropriate (anything other than 200-204) status code.  Furthermore, you can include a message to be displayed (FineUploader/default-UI mode)
 and passed to your `onError` callback handler via an `error` property in the payload of your response.  In this case,
 the response payload must be valid JSON.  Furthermore, you can tell Fine Uploader to prevent any retries by including
 a `preventRetry` property in the payload of your JSON response with a value of "true".

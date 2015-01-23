@@ -33,11 +33,6 @@ qq.traditional.AllChunksDoneAjaxRequester = function(o) {
         acceptHeader: "application/json",
         validMethods: [method],
         method: method,
-        successfulResponseCodes: (function() {
-            var codes = {};
-            codes[method] = [200, 201, 202];
-            return codes;
-        }()),
         endpointStore: endpointHandler,
         allowXRequestedWithAndCacheControl: false,
         cors: options.cors,

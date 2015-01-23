@@ -190,10 +190,7 @@ qq.s3.RequestSigner = function(o) {
         customHeaders: options.signatureSpec.customHeaders,
         log: options.log,
         onComplete: handleSignatureReceived,
-        cors: options.cors,
-        successfulResponseCodes: {
-            POST: [200]
-        }
+        cors: options.cors
     }));
 
     qq.extend(this, {

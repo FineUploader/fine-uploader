@@ -67,7 +67,7 @@ Fine Uploader will also include the following parameters that describe the under
 - qqtotalparts: the total number of parts that make up the underlying file.
 
 #### Expected response for the chunking success POST
-For successful responses, you may return an empty body with a status of 200, 201, or 202.  Any
+For successful responses, you may return an empty body with a status of 200-204.  Any
 other status code is determined to be a failure.  You can also return a JSON response with
 any data your would like passed to your `onComplete` handler.  Furthermore, you can include
 an `error` property in your response with the error message you would like to have displayed

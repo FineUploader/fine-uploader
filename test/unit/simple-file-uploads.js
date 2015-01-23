@@ -68,6 +68,101 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+        it("treats upload w/ status of 201 as success", function(done) {
+            assert.expect(12, done);
+
+            var uploader = getSimpleUploader(false, true);
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+
+                var request;
+
+                uploader.addFiles({name: "test", blob: blob});
+                uploader.uploadStoredFiles();
+
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+
+                fileTestHelper.getRequests()[0].respond(201, null, JSON.stringify({success: true}));
+            });
+        });
+
+        it("treats upload w/ status of 202 as success", function(done) {
+            assert.expect(12, done);
+
+            var uploader = getSimpleUploader(false, true);
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+
+                var request;
+
+                uploader.addFiles({name: "test", blob: blob});
+                uploader.uploadStoredFiles();
+
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+
+                fileTestHelper.getRequests()[0].respond(202, null, JSON.stringify({success: true}));
+            });
+        });
+
+        it("treats upload w/ status of 203 as success", function(done) {
+            assert.expect(12, done);
+
+            var uploader = getSimpleUploader(false, true);
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+
+                var request;
+
+                uploader.addFiles({name: "test", blob: blob});
+                uploader.uploadStoredFiles();
+
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+
+                fileTestHelper.getRequests()[0].respond(203, null, JSON.stringify({success: true}));
+            });
+        });
+
+        it("treats upload w/ status of 204 as success", function(done) {
+            assert.expect(12, done);
+
+            var uploader = getSimpleUploader(false, true);
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+
+                var request;
+
+                uploader.addFiles({name: "test", blob: blob});
+                uploader.uploadStoredFiles();
+
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+
+                fileTestHelper.getRequests()[0].respond(204, null, JSON.stringify({success: true}));
+            });
+        });
+
+        it("treats upload w/ status of 204 as success", function(done) {
+            assert.expect(12, done);
+
+            var uploader = getSimpleUploader(false, true);
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+
+                var request;
+
+                uploader.addFiles({name: "test", blob: blob});
+                uploader.uploadStoredFiles();
+
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+
+                fileTestHelper.getRequests()[0].respond(204, null, JSON.stringify({success: true}));
+            });
+        });
+
         it("handles a simple successful single MPE file upload request correctly", function(done) {
             assert.expect(18, done);
 

@@ -161,7 +161,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
 {{ api_parent_option("retry", "retry", "",
     (
         ("retry.autoAttemptDelay", "autoAttemptDelay", "The number of seconds to wait between auto retry attempts.", "Integer", "5",),
-        ("retry.enableAuto", "enableAuto", "Enable or disable retrying uploads that receive any error or non-200 response.", "Boolean", "false",),
+        ("retry.enableAuto", "enableAuto", "Enable or disable retrying uploads that receive any error response.", "Boolean", "false",),
         ("retry.maxAutoAttempts", "maxAutoAttempts", "The maximum number of times to attempt to retry a failed upload.", "Integer", "3",),
         ("retry.preventRetryResponseProperty", "preventRetryResponseProperty", "This property will be looked for in the server response and, if found and `true`, will indicate that no more retries should be attempted for this item.", "String", "preventRetry",),
     )

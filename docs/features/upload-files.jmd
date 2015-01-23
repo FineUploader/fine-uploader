@@ -23,7 +23,7 @@ endpoints.""", "warn") }}
 
 ### Successfully Uploading
 
-Upload success will occur when the server's response status is 200 and the
+Upload success will occur when the server's response status is 200-204 and the
 request body is a JSON string `{ "success": "true" }`
 
 ### Auto/Manual Uploading

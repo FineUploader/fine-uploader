@@ -19,7 +19,7 @@ qq.AjaxRequester = function(o) {
             allowXRequestedWithAndCacheControl: true,
             successfulResponseCodes: {
                 DELETE: [200, 202, 204],
-                POST: [200, 204],
+                POST: [200, 201, 202, 203, 204],
                 GET: [200]
             },
             cors: {
