@@ -52,7 +52,7 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
      */
     function createForm(id, iframe) {
         var params = options.paramsStore.get(id),
-            method = options.demoMode ? "GET" : "POST",
+            method = "POST",
             endpoint = options.endpointStore.get(id),
             name = getName(id);
 

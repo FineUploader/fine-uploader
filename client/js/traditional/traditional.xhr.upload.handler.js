@@ -127,7 +127,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
 
         setParamsAndGetEntityToSend = function(params, xhr, fileOrBlob, id) {
             var formData = new FormData(),
-                method = spec.demoMode ? "GET" : "POST",
+                method = spec.method,
                 endpoint = spec.endpointStore.get(id),
                 name = getName(id),
                 size = getSize(id);

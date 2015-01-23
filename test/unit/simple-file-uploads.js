@@ -39,6 +39,35 @@ if (qqtest.canDownloadFileAsBlob) {
             return uploader;
         }
 
+        it("respects custom request.method", function(done) {
+            var uploader = new qq.FineUploaderBasic({
+                autoUpload: false,
+                request: {
+                    endpoint: testUploadEndpoint,
+                    method: "PUT"
+                }
+            });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+
+                var request,
+                    requestParams;
+
+                uploader.addFiles({name: "test", blob: blob});
+                uploader.uploadStoredFiles();
+
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                request = fileTestHelper.getRequests()[0];
+
+                assert.equal(request.method, "PUT", "Wrong request method");
+
+                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+
+                done();
+            });
+        });
+
         it("handles a simple successful single MPE file upload request correctly", function(done) {
             assert.expect(18, done);
 

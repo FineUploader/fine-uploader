@@ -106,7 +106,7 @@ qq.s3.FormUploadHandler = function(options, proxy) {
      */
     function createForm(id, iframe) {
         var promise = new qq.Promise(),
-            method = options.demoMode ? "GET" : "POST",
+            method = "POST",
             endpoint = options.endpointStore.get(id),
             fileName = getName(id);
 
