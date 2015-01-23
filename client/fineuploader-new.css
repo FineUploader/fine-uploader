@@ -31,7 +31,14 @@
 ------------------------------------------ */
 .qq-uploader {
     position: relative;
+    min-height: 200px;
+    max-height: 450px;
+    overflow-y: scroll;
     width: inherit;
+    border-radius: 6px;
+    background-color: #FDFDFD;
+    border: 1px dashed #CCCCCC;
+    padding: 20px;
 }
 .qq-upload-drop-area, .qq-upload-extra-drop-area {
     position: absolute;
@@ -63,7 +70,7 @@
     min-height: 40px;
 }
 .qq-upload-drop-area-active {
-    background: #FEFEFE;
+    background: #FDFDFD;
     border-radius: 4px;
     border: 1px dashed #CCCCCC;
 }
