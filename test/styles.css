@@ -1,27 +1,27 @@
-/*H1 {*/
-    /*text-align: center;*/
-/*}*/
+H1 {
+    text-align: center;
+}
 
-/*#examples {*/
-    /*padding-left: 10px;*/
-/*}*/
+#examples {
+    padding-left: 10px;
+}
 
-/*.endingRemark {*/
-    /*margin-top: 30px;*/
-/*}*/
+.endingRemark {
+    margin-top: 30px;
+}
 
-/*DIV.example {*/
-    /*margin-top: 50px;*/
-/*}*/
+DIV.example {
+    margin-top: 50px;
+}
 
-/*DIV.example ul {*/
-    /*width: 650px;*/
-/*}*/
+DIV.example ul {
+    width: 650px;
+}
 
-/*A {*/
-    /*color: green;*/
-/*}*/
+A {
+    color: green;
+}
 
-/*A.decorate {*/
-    /*text-decoration: underline;*/
-/*}*/
+A.decorate {
+    text-decoration: underline;
+}

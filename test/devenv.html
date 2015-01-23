@@ -61,18 +61,21 @@
                         </div>
                         <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
                         <img class="qq-thumbnail-selector" qq-max-size="150" qq-server-scale>
-                        <div style="position:relative">
-                            <span class="qq-upload-file-selector qq-upload-file"></span>
-                            <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
-                        </div>
-                        <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
-                        <span class="qq-upload-size-selector qq-upload-size"></span>
-                        <span class="qq-upload-cancel-selector qq-upload-cancel"><strong style="position:relative; top:-2px;">x</strong></span>
+                        <button class="qq-upload-cancel-selector qq-upload-cancel">X</button>
                         <button class="qq-upload-retry-selector qq-upload-retry">Retry</button>
-                        <button class="qq-upload-delete-selector qq-upload-delete">Delete</button>
-                        <button class="qq-upload-pause-selector qq-upload-pause">Pause</button>
-                        <button class="qq-upload-continue-selector qq-upload-continue">Continue</button>
-                        <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+
+                        <div class="qq-file-info">
+                            <div style="position:relative">
+                                <span class="qq-upload-file-selector qq-upload-file"></span>
+                                <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+                            </div>
+                            <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                            <span class="qq-upload-size-selector qq-upload-size"></span>
+                            <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
+                            <button class="qq-upload-delete-selector qq-upload-delete">Delete</button>
+                            <button class="qq-upload-pause-selector qq-upload-pause">Pause</button>
+                            <button class="qq-upload-continue-selector qq-upload-continue">Continue</button>
+                        </div>
                     </li>
                 </ul>
             </div>
