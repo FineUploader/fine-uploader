@@ -467,7 +467,7 @@ if (qqtest.canDownloadFileAsBlob) {
             );
 
             startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
-                var uploadSuccessRequest, uploadSuccessRequestParsedBody;
+                var uploadSuccessRequest;
 
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
                 uploadRequest.respond(200, null, null);
@@ -476,6 +476,32 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(uploadSuccessRequest.url, uploadSuccessUrl);
                 uploadSuccessRequest.respond(200, null, JSON.stringify({success: false}));
                 assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+            });
+        });
+
+        it("Allows upload success to be sent as something other than a POST.", function(done) {
+            var uploadSuccessUrl = "/upload/success",
+                uploader = new qq.s3.FineUploaderBasic({
+                    request:typicalRequestOption,
+                    signature: typicalSignatureOption,
+                    uploadSuccess: {
+                        endpoint: uploadSuccessUrl,
+                        method: "PUT"
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var uploadSuccessRequest, uploadSuccessRequestParsedBody;
+
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+                uploadRequest.respond(200, null, null);
+
+                uploadSuccessRequest = fileTestHelper.getRequests()[2];
+                assert.equal(uploadSuccessRequest.method, "PUT");
+                uploadSuccessRequest.respond(200, null, null);
+                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                done();
             });
         });
     });

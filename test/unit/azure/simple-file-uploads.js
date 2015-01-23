@@ -353,5 +353,35 @@ if (qqtest.canDownloadFileAsBlob) {
 
             });
         });
+
+        it("allows an upload success request to be sent using a method other than POST", function(done) {
+            var uploadSuccessUrl = "/upload/success",
+                uploader = new qq.azure.FineUploaderBasic({
+                    request: {endpoint: testEndpoint},
+                    signature: {endpoint: testSignatureEndoint},
+                    uploadSuccess: {
+                        endpoint: uploadSuccessUrl,
+                        method: "PATCH"
+                    }
+                });
+
+            startTypicalTest(uploader, function(signatureRequest) {
+                var uploadSuccessRequest, uploadSuccessRequestParsedBody;
+
+                signatureRequest.respond(200, null, "http://sasuri.com");
+
+                setTimeout(function() {
+                    var uploadRequest = fileTestHelper.getRequests()[1];
+                    uploadRequest.respond(201, null, "");
+
+                    uploadSuccessRequest = fileTestHelper.getRequests()[2];
+                    assert.equal(uploadSuccessRequest.method, "PATCH");
+                    uploadSuccessRequest.respond(200, null, null);
+                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                    done();
+                }, 0);
+
+            });
+        });
     });
 }

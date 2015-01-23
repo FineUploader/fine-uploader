@@ -84,6 +84,7 @@ alert("`request.customHeaders` does **not** apply to Fine Uploader Azure.")
     (
         ("uploadSuccess.customHeaders", "customHeaders", "Additional headers sent along with each signature request.", "Object", "{}",),
         ("uploadSuccess.endpoint", "endpoint", "An endpoint that Fine Uploader should POST to when a file has been successfully uploaded to Azure Blob Storage.", "String", "null",),
+        ("uploadSuccess.method", "method", "The request method (i.e. POST/PUT).", "String", "POST",),
         ("uploadSuccess.params", "params", "Any additional parameters to attach to upload success file requests. Note that Fine Uploader will still send the blob name, container URL, filename, and UUID as well", "Object", "{}",),
     )
 )}}

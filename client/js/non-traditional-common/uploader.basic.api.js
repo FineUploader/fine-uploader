@@ -34,6 +34,7 @@
                 onCompleteArgs = arguments,
                 successEndpoint = this._uploadSuccessEndpointStore.get(id),
                 successCustomHeaders = this._options.uploadSuccess.customHeaders,
+                successMethod = this._options.uploadSuccess.method,
                 cors = this._options.cors,
                 promise = new qq.Promise(),
                 uploadSuccessParams = this._uploadSuccessParamsStore.get(id),
@@ -80,6 +81,7 @@
             if (success && successEndpoint) {
                 successAjaxRequester = new qq.UploadSuccessAjaxRequester({
                     endpoint: successEndpoint,
+                    method: successMethod,
                     customHeaders: successCustomHeaders,
                     cors: cors,
                     log: qq.bind(this.log, this)
