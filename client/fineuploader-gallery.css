@@ -254,7 +254,7 @@ INPUT.qq-edit-filename {
 INPUT.qq-edit-filename.qq-editing {
     position: static;
     height: 28px;
-    width: -webkit-fit-content;
+    width: 90px;
     width: -moz-available;
     padding: 0 8px;
     margin-bottom: 3px;
