@@ -150,6 +150,11 @@
     text-align: left;
     overflow: hidden;
 }
+
+.qq-file-info .qq-file-name {
+    position: relative;
+}
+
 .qq-upload-file {
     display: block;
     margin-right: 0;
