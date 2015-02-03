@@ -303,10 +303,15 @@ INPUT.qq-edit-filename.qq-editing {
 /* Thumbnail
 ------------------------------------------ */
 .qq-thumbnail-wrapper {
-    text-align: center;
     overflow: hidden;
+    height: 120px;
+    width: 120px;
+    position: relative;
 }
 .qq-thumbnail-selector {
-    height: 120px;
     border-radius: 2px 2px 0 0;
+    position:absolute;
+    top:0;
+    bottom:0;
+    margin:auto;
 }
