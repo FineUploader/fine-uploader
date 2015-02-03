@@ -6,10 +6,12 @@
 /* Upload Button
 ------------------------------------------ */
 .qq-upload-button {
-    display: block;
+    display: inline;
     width: 105px;
+    margin-bottom: 10px;
     padding: 7px 10px;
     text-align: center;
+    float: left;
     background: #00ABC7;
     color: #FFFFFF;
     border-radius: 2px;
@@ -32,8 +34,8 @@
 .qq-uploader {
     position: relative;
     min-height: 200px;
-    max-height: 450px;
-    overflow-y: scroll;
+    max-height: 490px;
+    overflow-y: hidden;
     width: inherit;
     border-radius: 6px;
     background-color: #FDFDFD;
@@ -78,6 +80,8 @@
     margin: 0;
     padding: 0;
     list-style: none;
+    max-height: 450px;
+    overflow-y: auto;
     box-shadow: 0px 1px 0px rgba(15, 15, 50, 0.14);
 }
 
@@ -191,7 +195,10 @@
 }
 
 .qq-total-progress-bar-container {
-    margin: 9px;
+    margin-left: 9px;
+    display: inline;
+    float: right;
+    width: 500px;
 }
 
 INPUT.qq-edit-filename {
@@ -216,7 +223,6 @@ INPUT.qq-edit-filename.qq-editing {
     position: static;
     height: 28px;
     padding: 0 8px;
-    /*margin-top: -5px;*/
     margin-right: 10px;
     margin-bottom: -5px;
     border: 1px solid #ccc;
