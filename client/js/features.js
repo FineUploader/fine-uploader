@@ -4,6 +4,7 @@ qq.supportedFeatures = (function() {
 
     var supportsUploading,
         supportsUploadingBlobs,
+        supportsFileDrop,
         supportsAjaxFileUploading,
         supportsFolderDrop,
         supportsChunking,
@@ -91,13 +92,22 @@ qq.supportedFeatures = (function() {
         }
     }
 
+    function isDragAndDropSupported() {
+        var span = document.createElement("span");
+
+        return ("draggable" in span || ("ondragstart" in span && "ondrop" in span)) &&
+            !qq.android() && !qq.ios();
+    }
+
     supportsUploading = testSupportsFileInputElement();
 
     supportsAjaxFileUploading = supportsUploading && qq.isXhrUploadSupported();
 
     supportsUploadingBlobs = supportsAjaxFileUploading && !qq.androidStock();
 
-    supportsFolderDrop = supportsAjaxFileUploading && isChrome21OrHigher();
+    supportsFileDrop = supportsAjaxFileUploading && isDragAndDropSupported();
+
+    supportsFolderDrop = supportsFileDrop && isChrome21OrHigher();
 
     supportsChunking = supportsAjaxFileUploading && qq.isFileChunkingSupported();
 
@@ -132,7 +142,7 @@ qq.supportedFeatures = (function() {
         deleteFileCors: supportsDeleteFileCors,
         deleteFileCorsXdr: supportsDeleteFileXdr, //NOTE: will also return true in IE10, where XDR is also supported
         deleteFileCorsXhr: supportsDeleteFileCorsXhr,
-        fileDrop: supportsAjaxFileUploading, //NOTE: will also return true for touch-only devices.  It's not currently possible to accurately test for touch-only devices
+        fileDrop: supportsFileDrop,
         folderDrop: supportsFolderDrop,
         folderSelection: supportsFolderSelection,
         imagePreviews: supportsImagePreviews,

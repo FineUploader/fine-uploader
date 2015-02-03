@@ -17,6 +17,7 @@ qq.Templating = function(spec) {
         THUMBNAIL_SERVER_SCALE_ATTR = "qq-server-scale",
         // This variable is duplicated in the DnD module since it can function as a standalone as well
         HIDE_DROPZONE_ATTR = "qq-hide-dropzone",
+        DROPZPONE_TEXT_ATTR = "qq-drop-area-text",
         isCancelDisabled = false,
         generatedThumbnails = 0,
         thumbnailQueueMonitorRunning = false,
@@ -48,6 +49,7 @@ qq.Templating = function(spec) {
         },
         selectorClasses = {
             button: "qq-upload-button-selector",
+            uploader: "qq-uploader-selector",
             drop: "qq-upload-drop-area-selector",
             list: "qq-upload-list-selector",
             progressBarContainer: "qq-progress-bar-container-selector",
@@ -65,6 +67,7 @@ qq.Templating = function(spec) {
             statusText: "qq-upload-status-text-selector",
             editFilenameInput: "qq-edit-filename-selector",
             editNameIcon: "qq-edit-filename-icon-selector",
+            dropText: "qq-upload-drop-area-text-selector",
             dropProcessing: "qq-drop-processing-selector",
             dropProcessingSpinner: "qq-drop-processing-spinner-selector",
             thumbnail: "qq-thumbnail-selector"
@@ -326,7 +329,9 @@ qq.Templating = function(spec) {
                 defaultButton,
                 dropArea,
                 thumbnail,
-                dropProcessing;
+                dropProcessing,
+                dropTextEl,
+                uploaderEl;
 
             log("Parsing template");
 
@@ -357,6 +362,7 @@ qq.Templating = function(spec) {
             scriptHtml = qq.trimStr(scriptHtml);
             tempTemplateEl = document.createElement("div");
             tempTemplateEl.appendChild(qq.toElement(scriptHtml));
+            uploaderEl = qq(tempTemplateEl).getByClass(selectorClasses.uploader)[0];
 
             // Don't include the default template button in the DOM
             // if an alternate button container has been specified.
@@ -377,7 +383,6 @@ qq.Templating = function(spec) {
                 if (dropProcessing) {
                     qq(dropProcessing).remove();
                 }
-
             }
 
             dropArea = qq(tempTemplateEl).getByClass(selectorClasses.drop)[0];
@@ -389,15 +394,22 @@ qq.Templating = function(spec) {
                 qq(dropArea).remove();
             }
 
-            // If there is a drop area defined in the template, and the current UA doesn't support DnD,
-            // and the drop area is marked as "hide before enter", ensure it is hidden as the DnD module
-            // will not do this (since we will not be loading the DnD module)
-            if (dropArea && !qq.supportedFeatures.fileDrop &&
-                qq(dropArea).hasAttribute(HIDE_DROPZONE_ATTR)) {
+            if (!qq.supportedFeatures.fileDrop) {
+                // don't display any "drop files to upload" background text
+                uploaderEl.removeAttribute(DROPZPONE_TEXT_ATTR);
 
-                qq(dropArea).css({
-                    display: "none"
-                });
+                if (dropArea && qq(dropArea).hasAttribute(HIDE_DROPZONE_ATTR)) {
+                    // If there is a drop area defined in the template, and the current UA doesn't support DnD,
+                    // and the drop area is marked as "hide before enter", ensure it is hidden as the DnD module
+                    // will not do this (since we will not be loading the DnD module)
+                    qq(dropArea).css({
+                        display: "none"
+                    });
+                }
+            }
+            else if (qq(uploaderEl).hasAttribute(DROPZPONE_TEXT_ATTR) && dropArea) {
+                dropTextEl = qq(dropArea).getByClass(selectorClasses.dropText)[0];
+                dropTextEl && qq(dropTextEl).remove();
             }
 
             // Ensure the `showThumbnails` flag is only set if the thumbnail element
@@ -625,9 +637,11 @@ qq.Templating = function(spec) {
         addFile: function(id, name, prependInfo) {
             var fileEl = qq.toElement(templateHtml.fileTemplate),
                 fileNameEl = getTemplateEl(fileEl, selectorClasses.file),
+                uploaderEl = getTemplateEl(container, selectorClasses.uploader),
                 thumb;
 
             qq(fileEl).addClass(FILE_CLASS_PREFIX + id);
+            uploaderEl.removeAttribute(DROPZPONE_TEXT_ATTR);
             fileNameEl && qq(fileNameEl).setText(name);
             fileEl.setAttribute(FILE_ID_ATTR, id);
 

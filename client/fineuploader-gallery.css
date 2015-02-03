@@ -41,6 +41,16 @@
     background-color: #FDFDFD;
     padding: 20px;
 }
+.qq-uploader:before {
+    content: attr(qq-drop-area-text);
+    position: absolute;
+    font-size: 200%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    top: 45%;
+    opacity: 0.25;
+}
 .qq-upload-drop-area, .qq-upload-extra-drop-area {
     position: absolute;
     top: 0;
