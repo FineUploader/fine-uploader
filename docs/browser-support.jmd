@@ -391,6 +391,7 @@ Feature     | Description
 `blobUploading` | Is it possible to upload `Blob` objects in this browser?
 `canDetermineSize` | Can file size be determined client-side?
 `chunking` | Is chunking supported?
+`dialogElement` | Does this browser support the `<dialog>` element?
 `fileDrop` | Is dragging and dropping files supported?
 `folderDrop` | Is drag and dropping folders supported?
 `folderSelection` | Can folders be selected via a file dialog?

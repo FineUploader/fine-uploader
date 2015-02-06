@@ -232,5 +232,23 @@ is a promissory callback**, meaning it requires a [promise](async-tasks-and-prom
 includes a simple example that overrides this default implementation using bootbox.  The default implementation here simply
 uses `window.prompt`.
 
+
+#### Support for the HTML 5.1 `<dialog>` element
+Fine Uploader UI v5.2 will include support for [the `<dialog>` element, which is part of the HTML 5.1 specification](http://blog.teamtreehouse.com/a-preview-of-the-new-dialog-element).
+For any browsers that support this element, you may replace all message, confirm, and prompt alerts with
+`<dialog>` elements.  Fine Uploader will look in your template for the presence of a `<dialog>` element for
+each type of message and render it at the appropriate time instead of the `alert` dialog if it finds a match
+AND if the current browser has support for the `<dialog>` element.
+
+Please see [one of the template file examples](https://github.com/FineUploader/fine-uploader/tree/master/client/html/templates)
+for an example of the `<dialog>` elements that must be present in your template if you'd like to make use of
+this new native dialog in your uploader instance.  Including the proper markup in your template is all that is
+required of you - Fine Uploader will take care of the showing, hiding, and all other logic required to
+determine if a `<dialog>` should be used.  Fine Uploader will default back to an `alert` if the browser does
+not support the `<dialog>` element.  If a `<dialog>` element is rendered, it will be displayed as a modal dialog.
+
+You may also continue to override the `showMessage`, `showConfirm`, and/or `showPrompt` methods to display your
+own dialog instead.
+
 {% endmarkdown %}
 {% endblock %}

@@ -315,3 +315,12 @@ INPUT.qq-edit-filename.qq-editing {
     bottom:0;
     margin:auto;
 }
+
+
+.qq-uploader DIALOG {
+    display: none;
+}
+
+.qq-uploader DIALOG[open] {
+    display: block;
+}

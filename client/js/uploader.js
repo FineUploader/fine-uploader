@@ -5,6 +5,8 @@
 qq.FineUploader = function(o, namespace) {
     "use strict";
 
+    var self = this;
+
     // By default this should inherit instance data from FineUploaderBasic, but this can be overridden
     // if the (internal) caller defines a different parent.  The parent is also used by
     // the private and public API functions that need to delegate to a parent function.
@@ -93,17 +95,32 @@ qq.FineUploader = function(o, namespace) {
         },
 
         showMessage: function(message) {
-            setTimeout(function() {
-                window.alert(message);
-            }, 0);
+            if (self._templating.hasDialog("alert")) {
+                return self._templating.showDialog("alert", message);
+            }
+            else {
+                setTimeout(function() {
+                    window.alert(message);
+                }, 0);
+            }
         },
 
         showConfirm: function(message) {
-            return window.confirm(message);
+            if (self._templating.hasDialog("confirm")) {
+                return self._templating.showDialog("confirm", message);
+            }
+            else {
+                return window.confirm(message);
+            }
         },
 
         showPrompt: function(message, defaultValue) {
-            return window.prompt(message, defaultValue);
+            if (self._templating.hasDialog("prompt")) {
+                return self._templating.showDialog("prompt", message, defaultValue);
+            }
+            else {
+                return window.prompt(message, defaultValue);
+            }
         }
     }, true);
 

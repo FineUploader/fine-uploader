@@ -36,13 +36,15 @@ qq(window).attach("load", function() {
                 showButton: true
             },
             deleteFile: {
-                enabled: true
+                enabled: true,
+                forceConfirm: true
             },
             display: {
                 fileSizeOnSubmit: true
             },
             paste: {
-                targetElement: document
+                targetElement: document,
+                promptForName: true
             },
             thumbnails: {
                 placeholders: {
