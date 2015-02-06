@@ -221,12 +221,14 @@ with Fine Uploader's dialogs check out: [Alertify your Notifications and Dialogs
 as you see fit.  This is possible by overriding the `showMessage` function option.  The default `showMessage` function
 simply invokes `alert` with the message text.  One instance in which this is used is when the user attempts to select an
 invalid file for upload.  There are general message types with default text that can be overriden as well.
-* `showConfirm: function(message, okCallback, cancelCallback) {...}` - This function is used to display a confirm dialog.  One
+
+* `showConfirm: function(message) {...}` - This function is used to display a confirm dialog.  One
 such feature that optionally uses this is the `deleteFile` feature. Note that **this
 is a promissory callback**, meaning it requires a [promise](async-tasks-and-promises.html) to
 be returned.The default implementation uses `window.confirm`, but you
 may override this with something a bit nicer, if you choose.  The okCallback will be executed if the user clicks "ok" and the
 `cancelCallback` if the user clicks "cancel".  The `cancelCallback` is optional, but the `okCallback` is required.
+
 * `showPrompt: function(message, defaultValue) {...}` - This function is used to prompt the user for a value.  Note that **this
 is a promissory callback**, meaning it requires a [promise](async-tasks-and-promises.html) to be returned.  The [promise documentation](features/async-tasks-and-promises.html)
 includes a simple example that overrides this default implementation using bootbox.  The default implementation here simply
