@@ -142,6 +142,7 @@ qq.supportedFeatures = (function() {
         deleteFileCors: supportsDeleteFileCors,
         deleteFileCorsXdr: supportsDeleteFileXdr, //NOTE: will also return true in IE10, where XDR is also supported
         deleteFileCorsXhr: supportsDeleteFileCorsXhr,
+        dialogElement: !!window.HTMLDialogElement,
         fileDrop: supportsFileDrop,
         folderDrop: supportsFolderDrop,
         folderSelection: supportsFolderSelection,

@@ -49,6 +49,12 @@ qq.Templating = function(spec) {
         },
         selectorClasses = {
             button: "qq-upload-button-selector",
+            alertDialog: "qq-alert-dialog-selector",
+            dialogCancelButton: "qq-cancel-button-selector",
+            confirmDialog: "qq-confirm-dialog-selector",
+            dialogMessage: "qq-dialog-message-selector",
+            dialogOkButton: "qq-ok-button-selector",
+            promptDialog: "qq-prompt-dialog-selector",
             uploader: "qq-uploader-selector",
             drop: "qq-upload-drop-area-selector",
             list: "qq-upload-list-selector",
@@ -205,6 +211,10 @@ qq.Templating = function(spec) {
 
         getContinue = function(id) {
             return getTemplateEl(getFile(id), selectorClasses.continueButton);
+        },
+
+        getDialog = function(type) {
+            return getTemplateEl(container, selectorClasses[type + "Dialog"]);
         },
 
         getDelete = function(id) {
@@ -438,6 +448,11 @@ qq.Templating = function(spec) {
 
             fileListHtml = fileListNode.innerHTML;
             fileListNode.innerHTML = "";
+
+            // We must call `createElement` in IE8 in order to target and hide any <dialog> via CSS
+            if (tempTemplateEl.getElementsByTagName("DIALOG").length) {
+                document.createElement("dialog");
+            }
 
             log("Template parsing complete");
 
@@ -930,6 +945,51 @@ qq.Templating = function(spec) {
         updateThumbnail: function(id, thumbnailUrl, showWaitingImg) {
             thumbGenerationQueue.push({update: true, id: id, thumbnailUrl: thumbnailUrl, showWaitingImg: showWaitingImg});
             !thumbnailQueueMonitorRunning && generateNextQueuedPreview();
+        },
+
+        hasDialog: function(type) {
+            return qq.supportedFeatures.dialogElement && !!getDialog(type);
+        },
+
+        showDialog: function(type, message, defaultValue) {
+            var dialog = getDialog(type),
+                messageEl = getTemplateEl(dialog, selectorClasses.dialogMessage),
+                inputEl = dialog.getElementsByTagName("INPUT")[0],
+                cancelBtn = getTemplateEl(dialog, selectorClasses.dialogCancelButton),
+                okBtn = getTemplateEl(dialog, selectorClasses.dialogOkButton),
+                promise = new qq.Promise(),
+
+                closeHandler = function() {
+                    cancelBtn.removeEventListener("click", cancelClickHandler);
+                    okBtn && okBtn.removeEventListener("click", okClickHandler);
+                    promise.failure();
+                },
+
+                cancelClickHandler = function() {
+                    cancelBtn.removeEventListener("click", cancelClickHandler);
+                    dialog.close();
+                },
+
+                okClickHandler = function() {
+                    dialog.removeEventListener("close", closeHandler);
+                    okBtn.removeEventListener("click", okClickHandler);
+                    dialog.close();
+
+                    promise.success(inputEl && inputEl.value);
+                };
+
+            dialog.addEventListener("close", closeHandler);
+            cancelBtn.addEventListener("click", cancelClickHandler);
+            okBtn && okBtn.addEventListener("click", okClickHandler);
+
+            if (inputEl) {
+                inputEl.value = defaultValue;
+            }
+            messageEl.textContent = message;
+
+            dialog.showModal();
+
+            return promise;
         }
     });
 };
