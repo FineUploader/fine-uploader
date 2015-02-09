@@ -1,93 +1,93 @@
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
-            </a>
+            </button>
 
             <div class="nav-collapse collapse">
                 <ul class="nav">
-                    <li><a class="brand" href="http://fineuploader.com/"><img style="margin-top: -10px; height: 20px" src="http://fineuploader.com/img/FineUploader_logo.png"></img></a></li>
-                    <li><a href="{{ URL_ROOT }}">Docs</li></a>
-                    <li><a href="http://blog.fineuploader.com/">Blog</li></a>
+                    <li><a class="brand" href="http://fineuploader.com/"><img style="margin-top: -10px; height: 20px" src="http://fineuploader.com/img/FineUploader_logo.png"></a></li>
+                    <li><a href="{{ URL_ROOT }}">Docs</a></li>
+                    <li><a href="http://blog.fineuploader.com/">Blog</a></li>
 
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Features <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="{{ URL_ROOT }}/features/async-tasks-and-promises.html">Async Tasks & Promises</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/azure.html">Azure Blob Storage Uploads</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/cancellable-uploads.html">Cancelling</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/chunking.html">Chunking</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/concurrent-chunking.html">Concurrent Chunking</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/CORS.html">CORS</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/delete.html">Delete</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/drag-and-drop.html">Drag and Drop</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/handling-errors.html">Error Handling</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/filename-edit.html">Filename Editing</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/forms.html">Form Support</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/session.html">Initial File Lists</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/extra-buttons.html">Multiple Upload Buttons</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/no-server-uploads.html">No-Server Uploads</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/paste-to-upload.html">Paste</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/pause.html">Pause In-Progress Uploads</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/progress-bars.html">Progress Bars</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/thumbnails.html">Previews & Thumbnails</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/request-parameters.html">Request</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/resume.html">Resuming</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/retry.html">Retrying</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/s3.html">S3 Uploads</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/statistics-and-status-updates.html">Stats & Status</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/styling.html">Styling</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/upload-files.html">Uploading</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/scaling.html">Upload Scaled Images</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/upload-from-mobile-camera.html">Upload via Mobile Camera</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/validation.html">Validation</a></li>
+                        <button id="features-menu-trigger" class="dropdown-toggle btn btn-link" data-toggle="dropdown">Features <b class="caret"></b></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="features-menu-trigger">
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/async-tasks-and-promises.html">Async Tasks & Promises</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/azure.html">Azure Blob Storage Uploads</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/cancellable-uploads.html">Cancelling</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/chunking.html">Chunking</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/concurrent-chunking.html">Concurrent Chunking</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/CORS.html">CORS</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/delete.html">Delete</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/drag-and-drop.html">Drag and Drop</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/handling-errors.html">Error Handling</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/filename-edit.html">Filename Editing</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/forms.html">Form Support</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/session.html">Initial File Lists</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/extra-buttons.html">Multiple Upload Buttons</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/no-server-uploads.html">No-Server Uploads</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/paste-to-upload.html">Paste</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/pause.html">Pause In-Progress Uploads</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/progress-bars.html">Progress Bars</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/thumbnails.html">Previews & Thumbnails</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/request-parameters.html">Request</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/resume.html">Resuming</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/retry.html">Retrying</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/s3.html">S3 Uploads</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/statistics-and-status-updates.html">Stats & Status</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/styling.html">Styling</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/upload-files.html">Uploading</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/scaling.html">Upload Scaled Images</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/upload-from-mobile-camera.html">Upload via Mobile Camera</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/validation.html">Validation</a></li>
                         </ul>
                     </li>
 
 
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">API <b class="caret"></b></a>
-                        <ul class="dropdown-menu api">
+                        <button id="api-menu-trigger" class="dropdown-toggle btn btn-link" data-toggle="dropdown">API <b class="caret"></b></button>
+                        <ul class="dropdown-menu api" role="menu" aria-labelledby="api-menu-trigger">
                                 <li><b>Options</b></li>
-                                <li><a href="{{ URL_ROOT }}/api/options.html">Core</a></li>
-                                <li><a href="{{ URL_ROOT }}/api/options-ui.html">UI</a></li>
-                                <li><a href="{{ URL_ROOT }}/api/options-s3.html">S3</a></li>
-                                <li><a href="{{ URL_ROOT }}/api/options-azure.html">Azure</a></li>
+                                <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/api/options.html">Core</a></li>
+                                <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/api/options-ui.html">UI</a></li>
+                                <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/api/options-s3.html">S3</a></li>
+                                <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/api/options-azure.html">Azure</a></li>
                                 <li class="divider"></li>
                                 <li><b>Methods</b></li>
-                                <li><a href="{{ URL_ROOT }}/api/methods.html">Core & UI</a></li>
-                                <li><a href="{{ URL_ROOT }}/api/methods-s3.html">S3</a></li>
-                                <li><a href="{{ URL_ROOT }}/api/methods-azure.html">Azure</a></li>
+                                <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/api/methods.html">Core & UI</a></li>
+                                <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/api/methods-s3.html">S3</a></li>
+                                <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/api/methods-azure.html">Azure</a></li>
                                 <li class="divider"></li>
                                 <li><b>Events</b></li>
-                                <li><a href="{{ URL_ROOT }}/api/events.html">Core & UI</a></li>
-                                <li><a href="{{ URL_ROOT }}/api/events-s3.html">S3</a></li>
+                                <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/api/events.html">Core & UI</a></li>
+                                <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/api/events-s3.html">S3</a></li>
                                 <li class="divider"></li>
-                                <li><a style="margin-left: -20px;"href="{{ URL_ROOT }}/api/qq.html">Utilities</a></li>
+                                <li role="presentation"><a role="menuitem" style="margin-left: -20px;"href="{{ URL_ROOT }}/api/qq.html">Utilities</a></li>
                         </ul>
                     </li>
 
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Servers <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <ul><a href="{{ URL_ROOT }}/endpoint_handlers/traditional.html">Traditional</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/endpoint_handlers/amazon-s3.html">Amazon S3</a></ul>
-                            <ul><a href="{{ URL_ROOT }}/endpoint_handlers/azure.html">Azure Blob Storage</a></ul>
+                        <button id="servers-dropdown-trigger" class="dropdown-toggle btn btn-link" data-toggle="dropdown">Servers <b class="caret"></b></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="servers-dropdown-trigger">
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/endpoint_handlers/traditional.html">Traditional</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/endpoint_handlers/amazon-s3.html">Amazon S3</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/endpoint_handlers/azure.html">Azure Blob Storage</a></li>
                         </ul>
                     </li>
 
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Support <b class="caret"></b></a>
-                        <ul class="dropdown-menu support">
-                            <li><a href="{{ URL_ROOT }}/browser-support.html">Browser Support</a></li>
-                            <li><a href="http://stackoverflow.com/questions/tagged/fine-uploader">Community Support</a></li>
-                            <li><a href="{{ URL_ROOT }}/faq.html">FAQ</a></li>
-                            <li><a href="{{ URL_ROOT }}/features/handling-errors.html">Handling Errors</a></li>
-                            <li><a href="https://github.com/Widen/fine-uploader/issues">Issue/Feature Tracker</a></li>
-                            <li><a href="http://fineuploader.com/purchase">Purchase Support</a></li>
+                        <button id="support-dropdown-trigger" class="dropdown-toggle btn btn-link" data-toggle="dropdown">Support <b class="caret"></b></button>
+                        <ul class="dropdown-menu support" role="menu" aria-labelledby="support-dropdown-trigger">
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/browser-support.html">Browser Support</a></li>
+                            <li role="presentation"><a role="menuitem" href="http://stackoverflow.com/questions/tagged/fine-uploader">Community Support</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/faq.html">FAQ</a></li>
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}/features/handling-errors.html">Handling Errors</a></li>
+                            <li role="presentation"><a role="menuitem" href="https://github.com/Widen/fine-uploader/issues">Issue/Feature Tracker</a></li>
+                            <li role="presentation"><a role="menuitem" href="http://fineuploader.com/purchase">Purchase Support</a></li>
                         </ul>
                     </li>
 
@@ -103,11 +103,11 @@
                     {% endif %}
                     {% set active_page = GIT_REF_VAL %}
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version <b class="caret"></b>
-                        <ul class="dropdown-menu">
-                            <li class><a href="{{ URL_ROOT }}">Current: {{ PKG['version'] }}</a></li>
+                        <button id="version-dropdown-trigger" class="dropdown-toggle btn btn-link" data-toggle="dropdown">Version <b class="caret"></b></button>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="version-dropdown-trigger">
+                            <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}">Current: {{ PKG['version'] }}</a></li>
                             {% for href, id, caption in version_bar %}
-                                <li{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}">{{ caption|e }}</a></li>
+                                <li role="presentation">{% if id == active_page %} class="active"{% endif %}><a role="menuitem" href="{{ href|e }}">{{ caption|e }}</a></li>
                             {% endfor %}
                         </ul>
                     </li>
@@ -132,14 +132,7 @@
                     <input type="text" name="q" maxlength="255" placeholder="Search&hellip;" class="span2" style="margin-top: 4px;"/>
                     <input type="submit" value="DuckDuckGo Search" style="visibility: hidden;" />
                 </form>
-
-
-                    <!--
-                    <div class="pull-right">
-                        <iframe src="http://duckduckgo.com/search.html?site=docs.fineuploader.com&prefill=Search documentation&focus=yes" style="overflow:hidden;margin:0;padding:0;width:208px;height:10px;" frameborder="0"></iframe>
-                    </div>
-                    -->
-            </div><!--/.nav-collapse -->
+            </div>
         </div>
     </div>
 </div>

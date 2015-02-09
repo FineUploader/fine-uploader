@@ -5,7 +5,7 @@
             {%- if type %} alert-{{ type }}{% endif -%}
             {%- if close_button %} fade in{% endif %}">
 {% if close_button -%}
-<a class="close" data-dismiss="alert">&times;</a>
+<button class="close btn btn-link" data-dismiss="alert">&times;</button>
 {%- endif %}
 {% if alert_header -%}
 <h4 class="alert-heading">{{ alert_header|safe }}</h4>
