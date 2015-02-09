@@ -146,7 +146,9 @@ h2, h3, h4, h5
 .navbar .nav > li > button.btn.btn-link.dropdown-toggle
 {
     padding-top: 10px;
+    padding-bottom: 8px;
     margin-top: 0px;
+    font-family:'Maven Pro', sans-serif !important;
 }
 
 .content { width: 80%; max-width: 960px; }
