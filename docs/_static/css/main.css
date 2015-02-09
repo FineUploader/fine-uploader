@@ -79,7 +79,8 @@ h2, h3, h4, h5
     text-transform:uppercase;
     text-decoration: none;
 }
-.navbar-inverse .brand, .navbar-inverse .nav > li > a:hover
+.navbar-inverse .brand, .navbar-inverse .nav > li > a:hover,
+.navbar-inverse .brand, .navbar-inverse .nav > li > button:hover
 {
     color: #F87436 !important;
 }
@@ -116,7 +117,9 @@ h2, h3, h4, h5
     color:#F87436;
 }
 .navbar-inverse .nav .active > a:hover,
-.navbar-inverse .nav .active > a:focus {
+.navbar-inverse .nav .active > a:focus,
+.navbar-inverse .nav .active > button:focus
+{
     color:#005580;
     text-decoration:underline;
 }
@@ -148,7 +151,9 @@ h2, h3, h4, h5
 
 .content { width: 80%; max-width: 960px; }
 
-a:hover {
+a:hover,
+button.btn-link
+{
     -webkit-transition: all .15s ease-in-out;
     -moz-transition: all .15s ease-in-out;
     transition: all .15s ease-in-out;
