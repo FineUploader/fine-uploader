@@ -107,7 +107,7 @@
                         <ul class="dropdown-menu" role="menu" aria-labelledby="version-dropdown-trigger">
                             <li role="presentation"><a role="menuitem" href="{{ URL_ROOT }}">Current: {{ PKG['version'] }}</a></li>
                             {% for href, id, caption in version_bar %}
-                                <li role="presentation">{% if id == active_page %} class="active"{% endif %}><a role="menuitem" href="{{ href|e }}">{{ caption|e }}</a></li>
+                                <li role="presentation">{% if id == active_page %} class="active"{% endif %}<a role="menuitem" href="{{ href|e }}">{{ caption|e }}</a></li>
                             {% endfor %}
                         </ul>
                     </li>
