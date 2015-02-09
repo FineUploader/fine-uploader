@@ -140,6 +140,12 @@ h2, h3, h4, h5
     border:none;
 }
 
+.navbar .nav > li > button.btn.btn-link.dropdown-toggle
+{
+    padding-top: 10px;
+    margin-top: 0px;
+}
+
 .content { width: 80%; max-width: 960px; }
 
 a:hover {
