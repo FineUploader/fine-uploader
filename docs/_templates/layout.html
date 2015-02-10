@@ -1,8 +1,6 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 {% block head %}
     <head>
         <title>{% block page_title %}{{ page_title }}{% if page_title %} | {% endif %}Fine Uploader Documentation{% endblock %}</title>
@@ -27,7 +25,7 @@
         {% endblock %}
 
         {% block css_extra %}{% endblock %}
-
+        
         {% block js_modernizr %}
         <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
         {% endblock %}
