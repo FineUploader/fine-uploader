@@ -101,7 +101,7 @@ specified will be added to the query string.  For POST requests, the UUID is sen
 parameter is sent with a value of "DELETE".  All POST request parameters are sent in the request payload.
 
 Success of the request will depend solely on the response code.  Acceptable response codes that indicate success are 200,
-202, and 204 for DELETE requests and 200 or 204 for POST requests.
+202, and 204 for DELETE requests and 200-204 for POST requests.
 
 If you would like to enable the delete file feature for cross-origin environments in IE9 or older, you will need to set
 the `allowXdr` property of the `cors` client-side option and adjust your server-side code appropriately.  Keep in mind

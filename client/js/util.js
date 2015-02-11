@@ -477,8 +477,7 @@ var qq = function(element) {
     };
 
     /**
-     * Searches for a given element in the array, returns -1 if it is not present.
-     * @param {Number} [from] The index at which to begin the search
+     * Searches for a given element (elt) in the array, returns -1 if it is not present.
      */
     qq.indexOf = function(arr, elt, from) {
         if (arr.indexOf) {

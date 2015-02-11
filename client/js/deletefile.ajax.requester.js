@@ -10,7 +10,6 @@ qq.DeleteFileAjaxRequester = function(o) {
             maxConnections: 3,
             customHeaders: function(id) {return {};},
             paramsStore: {},
-            demoMode: false,
             cors: {
                 expected: false,
                 sendCredentials: false
@@ -43,7 +42,6 @@ qq.DeleteFileAjaxRequester = function(o) {
         customHeaders: function(id) {
             return options.customHeaders.get(id);
         },
-        demoMode: options.demoMode,
         log: options.log,
         onSend: options.onDelete,
         onComplete: options.onDeleteComplete,

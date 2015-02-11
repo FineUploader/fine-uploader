@@ -86,7 +86,7 @@ will not send the file to S3 until the issue is addressed.
 #### Signing the policy
 If your server determines that the policy document is accurate, it should then base-64 encode the policy document,
 generate a base-64 encoded HMAC SHA1 of the policy document using your AWS secret key, and then return the base-64
-encoded policy document and the base-64 encoded signature in the response payload with a status of 200 and a Content-Type
+encoded policy document and the base-64 encoded signature in the response payload with a status of 200-204 and a Content-Type
 of "application/json".  Your response payload should follow this format:
 
 ```javascript
@@ -134,7 +134,7 @@ Parsing url-encoded payloads should be trivial and handled by most web applicati
 
 If you need to perform some specific task to verify the file server-side at this point, you can do so when
 handling this request and let Fine Uploader know if there is a problem with this file by returning a response with an
-appropriate (non-200) status code.  Furthermore, you can include a message to be displayed (FineUploader/default-UI mode)
+appropriate (anything other than 200-204) status code.  Furthermore, you can include a message to be displayed (FineUploader/default-UI mode)
 and passed to your `onError` callback handler via an `error` property in the payload of your response.  In this case,
 the response payload must be valid JSON.
 

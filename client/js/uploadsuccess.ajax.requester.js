@@ -80,10 +80,7 @@ qq.UploadSuccessAjaxRequester = function(o) {
         customHeaders: options.customHeaders,
         log: options.log,
         onComplete: handleSuccessResponse,
-        cors: options.cors,
-        successfulResponseCodes: {
-            POST: [200]
-        }
+        cors: options.cors
     }));
 
     qq.extend(this, {

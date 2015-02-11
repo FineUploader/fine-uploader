@@ -53,7 +53,7 @@ then it will look for the `error` property of the response body and will pass
 that value to the `onError` callback.
 
 If the server indicates failure in the response, but does not include an
-`error` property and the response status code is `200`, then the
+`error` property and the response status indicates failure, then the
 `defaultResponseError` property will be used as the error message.
 
 ```javascript

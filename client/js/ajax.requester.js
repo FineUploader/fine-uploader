@@ -8,7 +8,7 @@ qq.AjaxRequester = function(o) {
         requestData = {},
         options = {
             acceptHeader: null,
-            validMethods: ["POST"],
+            validMethods: ["PATCH", "POST", "PUT"],
             method: "POST",
             contentType: "application/x-www-form-urlencoded",
             maxConnections: 3,
@@ -19,7 +19,9 @@ qq.AjaxRequester = function(o) {
             allowXRequestedWithAndCacheControl: true,
             successfulResponseCodes: {
                 DELETE: [200, 202, 204],
-                POST: [200, 204],
+                PATCH: [200, 201, 202, 203, 204],
+                POST: [200, 201, 202, 203, 204],
+                PUT: [200, 201, 202, 203, 204],
                 GET: [200]
             },
             cors: {

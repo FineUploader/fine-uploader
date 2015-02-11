@@ -75,7 +75,9 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         },
 
         isErrorUploadResponse = function(xhr, response) {
-            return xhr.status !== 200 || !response.success || response.reset;
+            return qq.indexOf([200, 201, 202, 203, 204], xhr.status) < 0 ||
+                !response.success ||
+                response.reset;
         },
 
         onUploadOrChunkComplete = function(id, xhr) {
@@ -127,7 +129,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
 
         setParamsAndGetEntityToSend = function(params, xhr, fileOrBlob, id) {
             var formData = new FormData(),
-                method = spec.demoMode ? "GET" : "POST",
+                method = spec.method,
                 endpoint = spec.endpointStore.get(id),
                 name = getName(id),
                 size = getSize(id);

@@ -27,6 +27,8 @@
             uploadSuccess: {
                 endpoint: null,
 
+                method: "POST",
+
                 // In addition to the default params sent by Fine Uploader
                 params: {},
 

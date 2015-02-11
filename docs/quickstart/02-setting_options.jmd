@@ -155,7 +155,7 @@ Now our Fine Uploader page should look something like this:
                     <span class="qq-upload-spinner-selector qq-upload-spinner"></span>
                     <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
                     <span class="qq-upload-file-selector qq-upload-file"></span>
-                    <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+                    <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text" title="edit filename">
                     <span class="qq-upload-size-selector qq-upload-size"></span>
                     <button class="qq-upload-cancel-selector qq-upload-cancel">Cancel</button>
                     <button class="qq-upload-retry-selector qq-upload-retry">Retry</button>

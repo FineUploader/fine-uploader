@@ -161,7 +161,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
 {{ api_parent_option("retry", "retry", "",
     (
         ("retry.autoAttemptDelay", "autoAttemptDelay", "The number of seconds to wait between auto retry attempts.", "Integer", "5",),
-        ("retry.enableAuto", "enableAuto", "Enable or disable retrying uploads that receive any error or non-200 response.", "Boolean", "false",),
+        ("retry.enableAuto", "enableAuto", "Enable or disable retrying uploads that receive any error response.", "Boolean", "false",),
         ("retry.maxAutoAttempts", "maxAutoAttempts", "The maximum number of times to attempt to retry a failed upload.", "Integer", "3",),
         ("retry.preventRetryResponseProperty", "preventRetryResponseProperty", "This property will be looked for in the server response and, if found and `true`, will indicate that no more retries should be attempted for this item.", "String", "preventRetry",),
     )
@@ -175,6 +175,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
         ("request.filenameParam", "filenameParam", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent.", "String", "qqfilename",),
         ("request.forceMultipart", "forceMultipart", "Force all uploads to use multipart encoding", "Boolean", "true",),
         ("request.inputName", "inputName", "The attribute of the input element which will contain the file name. Not applicable to non AJAX uploads.", "String", "qqfile",),
+        ("request.method", "method", "Specify a method to use when sending files to a traditional endpoint.  This option is ignored in older browsers (such as IE 9 and older).", "String", "POST",),
         ("request.params", "params", "The parameters that shall be sent with each upload request.", "Object", "{}",),
         ("request.paramsInBody", "paramsInBody", "Enable or disable sending parameters in the request body. If `false`, parameters are sent in the URL. Otherwise, parameters are sent in the request body.", "Boolean", "true",),
         ("request.uuidName", "uuidName", "The name of the parameter the uniquely identifies each associated item. The value is a [Level 4 UUID](http://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_.28random.29).", "String", "qquuid",),

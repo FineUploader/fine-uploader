@@ -67,7 +67,9 @@ h2, h3, h4, h5
 }
 
 .navbar-inverse .brand, .navbar-inverse .nav > li > a,
+.navbar-inverse .brand, .navbar-inverse .nav > li > button,
 .navbar-inverse .nav-collapse .nav > li > a,
+.navbar-inverse .nav-collapse .nav > li > button,
 .navbar-inverse .nav-collapse .dropdown-menu a
 {
     color: #6C6C6C;
@@ -75,8 +77,10 @@ h2, h3, h4, h5
     font-size:13px;
     font-weight: normal;
     text-transform:uppercase;
+    text-decoration: none;
 }
-.navbar-inverse .brand, .navbar-inverse .nav > li > a:hover
+.navbar-inverse .brand, .navbar-inverse .nav > li > a:hover,
+.navbar-inverse .brand, .navbar-inverse .nav > li > button:hover
 {
     color: #F87436 !important;
 }
@@ -102,7 +106,8 @@ h2, h3, h4, h5
 {
     background-color:#F7631E;
 }
-.navbar-inverse .nav-collapse .nav > li > a:hover
+.navbar-inverse .nav-collapse .nav > li > a:hover,
+.navbar-inverse .nav-collapse .nav > li > button:hover
 {
     background-color:#FFFfff;
 }
@@ -112,7 +117,9 @@ h2, h3, h4, h5
     color:#F87436;
 }
 .navbar-inverse .nav .active > a:hover,
-.navbar-inverse .nav .active > a:focus {
+.navbar-inverse .nav .active > a:focus,
+.navbar-inverse .nav .active > button:focus
+{
     color:#005580;
     text-decoration:underline;
 }
@@ -136,9 +143,19 @@ h2, h3, h4, h5
     border:none;
 }
 
+.navbar .nav > li > button.btn.btn-link.dropdown-toggle
+{
+    padding-top: 10px;
+    padding-bottom: 8px;
+    margin-top: 0px;
+    font-family:'Maven Pro', sans-serif !important;
+}
+
 .content { width: 80%; max-width: 960px; }
 
-a:hover {
+a:hover,
+button.btn-link
+{
     -webkit-transition: all .15s ease-in-out;
     -moz-transition: all .15s ease-in-out;
     transition: all .15s ease-in-out;

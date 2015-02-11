@@ -15,15 +15,16 @@
             autoUpload: true,
 
             request: {
-                endpoint: "/server/upload",
-                params: {},
-                paramsInBody: true,
                 customHeaders: {},
+                endpoint: "/server/upload",
+                filenameParam: "qqfilename",
                 forceMultipart: true,
                 inputName: "qqfile",
-                uuidName: "qquuid",
+                method: "POST",
+                params: {},
+                paramsInBody: true,
                 totalFileSizeName: "qqtotalfilesize",
-                filenameParam: "qqfilename"
+                uuidName: "qquuid"
             },
 
             validation: {

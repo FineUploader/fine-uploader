@@ -440,7 +440,6 @@
                 customHeaders: this._deleteFileCustomHeadersStore,
                 paramsStore: this._deleteFileParamsStore,
                 endpointStore: this._deleteFileEndpointStore,
-                demoMode: this._options.demoMode,
                 cors: this._options.cors,
                 log: qq.bind(self.log, self),
                 onDelete: function(id) {
@@ -640,7 +639,6 @@
                     debug: this._options.debug,
                     maxConnections: this._options.maxConnections,
                     cors: this._options.cors,
-                    demoMode: this._options.demoMode,
                     paramsStore: this._paramsStore,
                     endpointStore: this._endpointStore,
                     chunking: this._options.chunking,
