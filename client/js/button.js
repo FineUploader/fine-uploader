@@ -56,6 +56,7 @@ qq.UploadButton = function(o) {
         var input = document.createElement("input");
 
         input.setAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME, buttonId);
+        input.setAttribute("title", "file input");
 
         self.setMultiple(options.multiple, input);
 
