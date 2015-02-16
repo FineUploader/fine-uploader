@@ -25,7 +25,7 @@ Fine Uploader comes with two different modes pertaining to the user interface.
 ##### [Core Mode](../modes/core.html)
 The most basic Fine Uploader mode.  Core mode assumes that the developer will code their own UI
 but still make use of Fine Uploader's API. Core mode is suggested for advanced developers
-who wish for to heavily customize the uploader's user interface. To use Core Mode:
+who wish to heavily customize the uploader's user interface. To use Core Mode:
 
 ```javascript
 var uploader = new qq.FineUploaderBasic({/* options go here .... */});
@@ -138,7 +138,7 @@ var uploader = new qq.FineUploader({
 
 ##### jQuery
 The jQuery plugin uses a slightly different callback syntax. This syntax will
-be familiar to thsoe used to working with jQuery plugins. Note that an extra
+be familiar to those used to working with jQuery plugins. Note that an extra
 [`Event`](http://api.jquery.com/Types/#Event) object is passed into the handler
 function as the first parameter, the consecutive parameters are the same as
 those listed in the [events documentation](../api/events.html).
