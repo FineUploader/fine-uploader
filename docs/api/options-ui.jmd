@@ -98,7 +98,7 @@ options for `messages`""", "info", "Note:") }}
 {{ api_parent_option("retry", "retry", "",
     (
         ("retry.autoRetryNote", "autoRetryNote", "The text of the note that will optionally appear next to the item during automatic retry attempts. Ignored if `showAutoRetryNote` is false.", "String", "Retrying {retryNum}/{maxAuto} ...",),
-        ("retry.showButton", "showButton", "Enable or disable the showing of a button/link nex to the failed item after all retry attempts have been exchausted. Clicking the button/link will force the uploader to make another attempt.", "Boolean", "false",),
+        ("retry.showButton", "showButton", "Enable or disable the showing of a button/link next to the failed item after all retry attempts have been exhausted. Clicking the button/link will force the uploader to make another attempt.", "Boolean", "false",),
         ("retry.showAutoRetryNote", "showAutoRetryNote", "Enable or disable a status message appearing next to the item during auto retry attempts.", "Boolean", "true",),
     )
 )}}
