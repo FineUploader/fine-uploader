@@ -40,6 +40,38 @@ class UploadHandler {
         return $this->uploadName;
     }
 
+    public function combineChunks($uploadDirectory, $name = null) {
+        $uuid = $_POST['qquuid'];
+        $name = $this->getName();
+        $targetFolder = $this->chunksFolder.DIRECTORY_SEPARATOR.$uuid;
+        $totalParts = isset($_REQUEST['qqtotalparts']) ? (int)$_REQUEST['qqtotalparts'] : 1;
+
+        $target = join(DIRECTORY_SEPARATOR, array($uploadDirectory, $uuid, $name));
+        $this->uploadName = $name;
+
+        if (!file_exists($target)){
+            mkdir(dirname($target));
+        }
+        $target = fopen($target, 'wb');
+
+        for ($i=0; $i<$totalParts; $i++){
+            $chunk = fopen($targetFolder.DIRECTORY_SEPARATOR.$i, "rb");
+            stream_copy_to_stream($chunk, $target);
+            fclose($chunk);
+        }
+
+        // Success
+        fclose($target);
+
+        for ($i=0; $i<$totalParts; $i++){
+            unlink($targetFolder.DIRECTORY_SEPARATOR.$i);
+        }
+
+        rmdir($targetFolder);
+
+        return array("success" => true, "uuid" => $uuid);
+    }
+
     /**
      * Process the upload.
      * @param string $uploadDirectory Target directory.
@@ -130,36 +162,6 @@ class UploadHandler {
 
             $target = $targetFolder.'/'.$partIndex;
             $success = move_uploaded_file($_FILES[$this->inputName]['tmp_name'], $target);
-
-            // Last chunk saved successfully
-            if ($success AND ($totalParts-1 == $partIndex)){
-
-                $target = join(DIRECTORY_SEPARATOR, array($uploadDirectory, $uuid, $name));
-                //$target = $this->getUniqueTargetPath($uploadDirectory, $name);
-                $this->uploadName = $name;
-
-                if (!file_exists($target)){
-                    mkdir(dirname($target));
-                }
-                $target = fopen($target, 'wb');
-
-                for ($i=0; $i<$totalParts; $i++){
-                    $chunk = fopen($targetFolder.DIRECTORY_SEPARATOR.$i, "rb");
-                    stream_copy_to_stream($chunk, $target);
-                    fclose($chunk);
-                }
-
-                // Success
-                fclose($target);
-
-                for ($i=0; $i<$totalParts; $i++){
-                    unlink($targetFolder.DIRECTORY_SEPARATOR.$i);
-                }
-
-                rmdir($targetFolder);
-
-                return array("success" => true, "uuid" => $uuid);
-            }
 
             return array("success" => true, "uuid" => $uuid);
 
@@ -335,16 +337,16 @@ class UploadHandler {
         $folderInaccessible = ($isWin) ? !is_writable($directory) : ( !is_writable($directory) && !is_executable($directory) );
         return $folderInaccessible;
     }
-    
+
     /**
      * Determines is the OS is Windows or not
-     * 
+     *
      * @return boolean
      */
-    
+
     protected function isWindows() {
     	$isWin = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
     	return $isWin;
     }
-    
+
 }

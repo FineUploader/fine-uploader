@@ -47,6 +47,9 @@ if ($method == "POST") {
     if (isset($_POST["generateError"])) {
         $result["error"] = "Forced error";
     }
+    else if (isset($_GET["done"])) {
+        $result = $uploader->combineChunks("files");
+    }
     else {
         // Call handleUpload() with the name of the folder, relative to PHP's getcwd()
         $result = $uploader->handleUpload("files");
