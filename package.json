@@ -91,5 +91,8 @@
     "underscore": "1.5.2",
     "uuid": "1.4.1"
   },
-  "dependencies": {}
+  "scripts": {
+    "setup-dev": "(cd test/dev/handlers/s3; php composer.phar install)",
+    "start-local-dev": "php -S localhost:9090 -t . -c test/dev/handlers/php.ini"
+  }
 }

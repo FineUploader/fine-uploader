@@ -36,3 +36,8 @@ bin/
 build/
 
 src
+
+test/dev/handlers/s3/vendor
+test/dev/handlers/s3/composer.lock
+test/dev/handlers/traditional/files
+s3keys.php
