@@ -39,7 +39,6 @@ src
 
 npm-debug.log
 
-test/dev/handlers/s3/vendor
 test/dev/handlers/s3/composer.lock
 test/dev/handlers/traditional/files
 test/dev/handlers/traditional/chunks
