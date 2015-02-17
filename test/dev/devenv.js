@@ -28,7 +28,8 @@ qq(window).attach("load", function() {
         chunking: {
             enabled: true,
             concurrent: {
-                enabled: true
+                // TODO adjust PHP dev server to handle concurrent chunking
+                enabled: false
             },
             successEndpoint: "/upload/receiver?done"
         },

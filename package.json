@@ -92,7 +92,8 @@
     "uuid": "1.4.1"
   },
   "scripts": {
-    "setup-dev": "(cd test/dev/handlers/s3; php composer.phar install)",
-    "start-local-dev": "php -S localhost:9090 -t . -c test/dev/handlers/php.ini"
+    "setup-dev": "mkdir test/dev/handlers/traditional/files; mkdir test/dev/handlers/traditional/chunks",
+    "start-local-dev": "php -S localhost:9090 -t . -c test/dev/handlers/php.ini",
+    "start-c9-dev": "php -S $IP:$PORT -t . -c test/dev/handlers/php.ini"
   }
 }
