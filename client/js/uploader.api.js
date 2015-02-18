@@ -250,6 +250,9 @@
             if (newStatus === qq.status.UPLOAD_RETRYING) {
                 this._templating.setStatusText(id);
             }
+            else if (newStatus === qq.status.UPLOAD_FAILED) {
+                this._templating.hidePause(id);
+            }
         },
 
         _bindFilenameInputFocusInEvent: function() {
@@ -351,7 +354,7 @@
                 qq(fileContainer).removeClass(self._classes.retrying);
                 templating.hideProgress(id);
 
-                if (!self._options.disableCancelForFormUploads || qq.supportedFeatures.ajaxUploading) {
+                if (self.getUploads({id: id}).status !== qq.status.UPLOAD_FAILED) {
                     templating.hideCancel(id);
                 }
                 templating.hideSpinner(id);
