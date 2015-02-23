@@ -38,7 +38,7 @@
     width: inherit;
     border-radius: 6px;
     border: 1px dashed #CCCCCC;
-    background-color: #FDFDFD;
+    background-color: #FAFAFA;
     padding: 20px;
 }
 .qq-uploader:before {
@@ -103,7 +103,7 @@
     line-height: 16px;
     font-size: 13px;
     color: #424242;
-    background-color: #F9F9F9;
+    background-color: #FFFFFF;
     border-radius: 2px;
     box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.22);
     vertical-align: top;
@@ -121,10 +121,13 @@
 .qq-upload-delete, .qq-upload-pause, .qq-upload-continue {
     border:none;
     background: none;
-    text-decoration: underline;
+    /*text-decoration: underline;*/
     color: #00A0BA;
-    font-size: 11px;
+    font-size: 12px;
     padding: 0;
+}
+.qq-upload-delete:hover, .qq-upload-pause:hover, .qq-upload-continue:hover {
+    text-decoration: underline;
 }
 .qq-upload-status-text {
     color: #333333;
@@ -217,11 +220,11 @@
 }
 .qq-upload-list li.qq-upload-fail {
     background-color: #F5EDED;
+    box-shadow: 0 0 1px 0 red;
 }
-.qq-upload-list li.qq-upload-fail .qq-file-info {
-    border: 1px solid #BF2828;
-    border-top: none;
-}
+/*.qq-upload-list li.qq-upload-fail .qq-file-info {*/
+    /*border-top: none;*/
+/*}*/
 .qq-progress-bar {
     display: block;
     background: #00abc7;
@@ -294,6 +297,14 @@ INPUT.qq-edit-filename.qq-editing {
     height: 15px;
     vertical-align: text-bottom;
 }
+.qq-delete-icon {
+    /*display: none;*/
+    background: url("trash.gif");
+    width: 15px;
+    height: 15px;
+    vertical-align: sub;
+    display: inline-block;
+}
 
 .qq-hide {
     display: none;
@@ -304,13 +315,13 @@ INPUT.qq-edit-filename.qq-editing {
 ------------------------------------------ */
 .qq-thumbnail-wrapper {
     overflow: hidden;
-    height: 120px;
+    /*height: 120px;*/
     width: 120px;
     position: relative;
 }
 .qq-thumbnail-selector {
     border-radius: 2px 2px 0 0;
-    position:absolute;
+    /*position:absolute;*/
     top:0;
     bottom:0;
     margin:auto;

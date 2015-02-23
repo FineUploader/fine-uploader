@@ -2,6 +2,58 @@
 /* Fine Uploader Styles
 /* ---------------------------------------
 
+/* Buttons
+------------------------------------------ */
+.qq-btn
+{
+    box-shadow: 0 1px 1px rgba(255, 255, 255, 0.37) inset,
+                1px 0 1px rgba(255, 255, 255, 0.07) inset,
+                0 1px 0 rgba(0, 0, 0, 0.36),
+                0 -2px 12px rgba(0, 0, 0, 0.08) inset;
+    padding: 3px 4px;
+    border: 1px solid #CCCCCC;
+    border-radius: 2px;
+    color: inherit;
+    background-color: #FFFFFF;
+}
+.qq-upload-delete, .qq-upload-pause, .qq-upload-continue {
+    display: inline;
+}
+.qq-upload-delete
+{
+    background-color: #e65c47;
+    color: #FAFAFA;
+    border-color: #dc523d;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
+}
+.qq-upload-delete:hover {
+    background-color: #f56b56;
+ }
+.qq-upload-cancel
+{
+    background-color: #F5D7D7;
+    border-color: #e6c8c8;
+}
+.qq-upload-cancel:hover {
+    background-color: #ffe1e1;
+}
+.qq-upload-retry
+{
+    background-color: #EBF6E0;
+    border-color: #d2ddc7;
+}
+.qq-upload-retry:hover {
+    background-color: #f7ffec;
+}
+.qq-upload-pause, .qq-upload-continue {
+    background-color: #00ABC7;
+    color: #FAFAFA;
+    border-color: #2dadc2;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
+}
+.qq-upload-pause:hover, .qq-upload-continue:hover {
+    background-color: #0fbad6;
+}
 
 /* Upload Button
 ------------------------------------------ */
@@ -15,11 +67,11 @@
     background: #00ABC7;
     color: #FFFFFF;
     border-radius: 2px;
-    border: 1px solid #37B7CC;
+    border: 1px solid #2dadc2;
     box-shadow: 0 1px 1px rgba(255, 255, 255, 0.37) inset,
                 1px 0 1px rgba(255, 255, 255, 0.07) inset,
                 0 1px 0 rgba(0, 0, 0, 0.36),
-                0 -2px 12px rgba(0, 0, 0, 0.08) inset
+                0 -2px 12px rgba(0, 0, 0, 0.08) inset;
 }
 .qq-upload-button-hover {
     background: #33B6CC;
@@ -142,14 +194,10 @@
     vertical-align: text-bottom;
 }
 
-.qq-upload-delete, .qq-upload-pause, .qq-upload-continue {
-    display: inline;
-}
-
-.qq-upload-retry, .qq-upload-delete, .qq-upload-cancel,
-.qq-upload-pause, .qq-upload-continue {
-    color: #000000;
-}
+/*.qq-upload-retry, .qq-upload-delete, .qq-upload-cancel,*/
+/*.qq-upload-pause, .qq-upload-continue {*/
+    /*color: #000000;*/
+/*}*/
 
 .qq-upload-size, .qq-upload-cancel, .qq-upload-retry,
 .qq-upload-delete, .qq-upload-pause, .qq-upload-continue {
