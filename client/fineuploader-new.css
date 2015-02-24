@@ -240,6 +240,7 @@
 }
 .qq-progress-bar {
     display: block;
+    display: block;
     background: #00abc7;
     width: 0%;
     height: 15px;

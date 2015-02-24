@@ -3,6 +3,13 @@
 /* ---------------------------------------
 
 
+/* Buttons
+------------------------------------------ */
+.qq-btn
+{
+    float: right;
+}
+
 /* Upload Button
 ------------------------------------------ */
 .qq-upload-button {
@@ -121,7 +128,6 @@
 .qq-upload-delete, .qq-upload-pause, .qq-upload-continue {
     border:none;
     background: none;
-    /*text-decoration: underline;*/
     color: #00A0BA;
     font-size: 12px;
     padding: 0;
@@ -153,9 +159,22 @@
 .qq-upload-retry {
     cursor: pointer;
     position: absolute;
-    top: 53px;
+    top: 30px;
     left: 50%;
-    margin-left: -22px;
+    margin-left: -31px;
+    box-shadow: 0 1px 1px rgba(255, 255, 255, 0.37) inset,
+                1px 0 1px rgba(255, 255, 255, 0.07) inset,
+                0 4px 4px rgba(0, 0, 0, 0.5),
+                0 -2px 12px rgba(0, 0, 0, 0.08) inset;
+    padding: 3px 4px;
+    border: 1px solid #d2ddc7;
+    border-radius: 2px;
+    color: inherit;
+    background-color: #EBF6E0;
+    z-index: 1;
+}
+.qq-upload-retry:hover {
+    background-color: #f7ffec;
 }
 
 .qq-file-info {
@@ -222,9 +241,6 @@
     background-color: #F5EDED;
     box-shadow: 0 0 1px 0 red;
 }
-/*.qq-upload-list li.qq-upload-fail .qq-file-info {*/
-    /*border-top: none;*/
-/*}*/
 .qq-progress-bar {
     display: block;
     background: #00abc7;
@@ -298,8 +314,29 @@ INPUT.qq-edit-filename.qq-editing {
     vertical-align: text-bottom;
 }
 .qq-delete-icon {
-    /*display: none;*/
     background: url("trash.gif");
+    width: 15px;
+    height: 15px;
+    vertical-align: sub;
+    display: inline-block;
+}
+.qq-retry-icon {
+    background: url("retry.gif");
+    width: 15px;
+    height: 15px;
+    vertical-align: sub;
+    display: inline-block;
+    float: none;
+}
+.qq-continue-icon {
+    background: url("continue.gif");
+    width: 15px;
+    height: 15px;
+    vertical-align: sub;
+    display: inline-block;
+}
+.qq-pause-icon {
+    background: url("pause.gif");
     width: 15px;
     height: 15px;
     vertical-align: sub;
@@ -315,13 +352,11 @@ INPUT.qq-edit-filename.qq-editing {
 ------------------------------------------ */
 .qq-thumbnail-wrapper {
     overflow: hidden;
-    /*height: 120px;*/
     width: 120px;
     position: relative;
 }
 .qq-thumbnail-selector {
     border-radius: 2px 2px 0 0;
-    /*position:absolute;*/
     top:0;
     bottom:0;
     margin:auto;
