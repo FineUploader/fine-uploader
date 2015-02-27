@@ -788,7 +788,7 @@ qq.Templating = function(spec) {
         },
 
         isEditIcon: function(el) {
-            return qq(el).hasClass(selectorClasses.editNameIcon);
+            return qq(el).hasClass(selectorClasses.editNameIcon, true);
         },
 
         getEditInput: function(id) {
@@ -796,7 +796,7 @@ qq.Templating = function(spec) {
         },
 
         isEditInput: function(el) {
-            return qq(el).hasClass(selectorClasses.editFilenameInput);
+            return qq(el).hasClass(selectorClasses.editFilenameInput, true);
         },
 
         updateProgress: function(id, loaded, total) {
@@ -853,7 +853,7 @@ qq.Templating = function(spec) {
         },
 
         isCancel: function(el)  {
-            return qq(el).hasClass(selectorClasses.cancel);
+            return qq(el).hasClass(selectorClasses.cancel, true);
         },
 
         allowPause: function(id) {
@@ -872,11 +872,11 @@ qq.Templating = function(spec) {
         },
 
         isPause: function(el) {
-            return qq(el).hasClass(selectorClasses.pause);
+            return qq(el).hasClass(selectorClasses.pause, true);
         },
 
         isContinueButton: function(el) {
-            return qq(el).hasClass(selectorClasses.continueButton);
+            return qq(el).hasClass(selectorClasses.continueButton, true);
         },
 
         allowContinueButton: function(id) {
@@ -899,11 +899,11 @@ qq.Templating = function(spec) {
         },
 
         isDeleteButton: function(el) {
-            return qq(el).hasClass(selectorClasses.deleteButton);
+            return qq(el).hasClass(selectorClasses.deleteButton, true);
         },
 
         isRetry: function(el) {
-            return qq(el).hasClass(selectorClasses.retry);
+            return qq(el).hasClass(selectorClasses.retry, true);
         },
 
         updateSize: function(id, text) {

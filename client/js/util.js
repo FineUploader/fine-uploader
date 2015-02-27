@@ -86,9 +86,9 @@ var qq = function(element) {
             return this;
         },
 
-        hasClass: function(name) {
+        hasClass: function(name, considerParent) {
             var re = new RegExp("(^| )" + name + "( |$)");
-            return re.test(element.className);
+            return re.test(element.className) || !!(considerParent && re.test(element.parentNode.className));
         },
 
         addClass: function(name) {
