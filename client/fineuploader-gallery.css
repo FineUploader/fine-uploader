@@ -114,6 +114,9 @@
     border-radius: 2px;
     box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.22);
     vertical-align: top;
+
+    /* to ensure consistent size of tiles - may need to change if qq-max-size attr on preview img changes */
+    height: 186px;
 }
 
 .qq-upload-spinner, .qq-upload-size,
@@ -135,13 +138,28 @@
 .qq-upload-delete:hover, .qq-upload-pause:hover, .qq-upload-continue:hover {
     text-decoration: underline;
 }
+
+/* to ensure consistent size of tiles - only display status text before auto-retry or after failure */
 .qq-upload-status-text {
     color: #333333;
     font-size: 12px;
-    display: block;
     padding-top: 2px;
     width: inherit;
+    display: none;
 }
+.qq-upload-fail .qq-upload-status-text {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-x: hidden;
+    display: block;
+}
+.qq-upload-retrying .qq-upload-status-text {
+    display: inline-block;
+}
+.qq-upload-retrying .qq-progress-bar-container {
+    display: none;
+}
+
 .qq-upload-cancel {
     background-color: #525252;
     color: #F7F7F7;
@@ -193,8 +211,11 @@
     display: block;
     margin-right: 0;
     margin-bottom: 3px;
-    -ms-word-wrap: break-word;
-    word-wrap: break-word;
+
+    /* to ensure consistent size of tiles - constrain text to single line */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-x: hidden;
 }
 .qq-upload-spinner {
     display: inline-block;
@@ -266,7 +287,7 @@
     font-size: 11px;
     color: #929292;
     margin-bottom: 3px;
-    display: block;
+    display: inline-block;
 }
 
 INPUT.qq-edit-filename {
@@ -352,16 +373,30 @@ INPUT.qq-edit-filename.qq-editing {
 ------------------------------------------ */
 .qq-thumbnail-wrapper {
     overflow: hidden;
-    width: 120px;
     position: relative;
+
+    /* to ensure consistent size of tiles - should match qq-max-size attribute value on qq-thumbnail-selector IMG element */
+    height: 120px;
+    width: 120px;
 }
 .qq-thumbnail-selector {
     border-radius: 2px 2px 0 0;
-    top:0;
     bottom:0;
     margin:auto;
+    /* we will override this in the next selector (to help center the preview) for everything other than IE8 */
+    top: 0;
 }
 
+/* hack to ensure we don't try to center preview in IE8, since -ms-filter doesn't mimic translateY as expected in all cases */
+:root *> .qq-thumbnail-selector {
+    /* vertically center preview image on tile */
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    -moz-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+}
 
 .qq-uploader DIALOG {
     display: none;

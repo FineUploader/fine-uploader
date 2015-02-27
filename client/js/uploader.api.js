@@ -249,6 +249,7 @@
 
             if (newStatus === qq.status.UPLOAD_RETRYING) {
                 this._templating.setStatusText(id);
+                qq(this._templating.getFileContainer(id)).removeClass(this._classes.retrying);
             }
         },
 
