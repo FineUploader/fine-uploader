@@ -1,0 +1,2 @@
+upload_max_filesize = 10M
+post_max_size = 10M
