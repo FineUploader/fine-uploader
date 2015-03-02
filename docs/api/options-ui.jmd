@@ -78,7 +78,6 @@ options for `deleteFile`.
 {{ api_parent_option("failedUploadTextDisplay", "failedUploadTextDisplay", "",
     (
         ("failedUploadTextDisplay.enableTooltip", "enableTooltip", "Enable or disable a tooltip that will display the full contents of the error message when the mouse pointer hovers over the failed item.", "Boolean", "true",),
-        ("failedUploadTextDisplay.maxChars", "maxChars", "The maximum amount of characters to display next to each item. Ignored unless `mode` is `'custom'`", "Integer", "50",),
         ("failedUploadTextDisplay.mode", "mode", "Set the message to display next to each failed file. One of: `'default'` which displays the `failedUploadText`, `'custom'` which displays the error response from the server, or `'none'` which displays no text.", "String", "default",),
         ("failedUploadTextDisplay.responseProperty", "responseProperty", "The property from the server response that contains the error text to display next to a failed item. Ignored unless `mode` is `'custom'`", "String", "error",),
     )

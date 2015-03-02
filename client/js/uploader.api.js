@@ -613,24 +613,18 @@
         },
 
         _controlFailureTextDisplay: function(id, response) {
-            var mode, maxChars, responseProperty, failureReason, shortFailureReason;
+            var mode, responseProperty, failureReason;
 
             mode = this._options.failedUploadTextDisplay.mode;
-            maxChars = this._options.failedUploadTextDisplay.maxChars;
             responseProperty = this._options.failedUploadTextDisplay.responseProperty;
 
             if (mode === "custom") {
                 failureReason = response[responseProperty];
-                if (failureReason) {
-                    if (failureReason.length > maxChars) {
-                        shortFailureReason = failureReason.substring(0, maxChars) + "...";
-                    }
-                }
-                else {
+                if (!failureReason) {
                     failureReason = this._options.text.failUpload;
                 }
 
-                this._templating.setStatusText(id, shortFailureReason || failureReason);
+                this._templating.setStatusText(id, failureReason);
 
                 if (this._options.failedUploadTextDisplay.enableTooltip) {
                     this._showTooltip(id, failureReason);

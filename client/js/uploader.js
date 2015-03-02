@@ -47,7 +47,6 @@ qq.FineUploader = function(o, namespace) {
 
         failedUploadTextDisplay: {
             mode: "default", //default, custom, or none
-            maxChars: 50,
             responseProperty: "error",
             enableTooltip: true
         },

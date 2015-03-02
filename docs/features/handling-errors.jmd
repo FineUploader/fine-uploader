@@ -103,7 +103,6 @@ $("#fine-uploader").fineUploader({
     // These are all the DEFAULT values...
     failedUploadTextDisplay: {
         mode: 'default',
-        maxChars: 50,
         responseProperty: 'error',
         enableTooltip: true
     }

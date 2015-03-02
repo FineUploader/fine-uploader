@@ -657,7 +657,12 @@ qq.Templating = function(spec) {
 
             qq(fileEl).addClass(FILE_CLASS_PREFIX + id);
             uploaderEl.removeAttribute(DROPZPONE_TEXT_ATTR);
-            fileNameEl && qq(fileNameEl).setText(name);
+
+            if (fileNameEl) {
+                qq(fileNameEl).setText(name);
+                fileNameEl.setAttribute("title", name);
+            }
+
             fileEl.setAttribute(FILE_ID_ATTR, id);
 
             if (prependInfo) {
@@ -722,9 +727,12 @@ qq.Templating = function(spec) {
         },
 
         updateFilename: function(id, name) {
-            var filename = getFilename(id);
+            var filenameEl = getFilename(id);
 
-            filename && qq(filename).setText(name);
+            if (filenameEl) {
+                qq(filenameEl).setText(name);
+                filenameEl.setAttribute("title", name);
+            }
         },
 
         hideFilename: function(id) {

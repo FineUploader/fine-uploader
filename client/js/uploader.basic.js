@@ -124,9 +124,6 @@
             },
 
             formatFileName: function(fileOrBlobName) {
-                if (fileOrBlobName !== undefined && fileOrBlobName.length > 33) {
-                    fileOrBlobName = fileOrBlobName.slice(0, 19) + "..." + fileOrBlobName.slice(-14);
-                }
                 return fileOrBlobName;
             },
 

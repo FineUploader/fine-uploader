@@ -215,8 +215,7 @@ qq(window).attach("load", function() {
         },
         debug: true,
         failedUploadTextDisplay: {
-            mode: "custom",
-            maxChars: 5
+            mode: "custom"
         },
         retry: {
             enableAuto: true,
