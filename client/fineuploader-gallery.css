@@ -382,10 +382,14 @@ INPUT.qq-edit-filename.qq-editing {
 }
 .qq-thumbnail-selector {
     border-radius: 2px 2px 0 0;
-    bottom:0;
-    margin:auto;
-    /* we will override this in the next selector (to help center the preview) for everything other than IE8 */
+    bottom: 0;
+
+    /* we will override this in the :root thumbnail selector (to help center the preview) for everything other than IE8 */
     top: 0;
+
+    /* center the thumb horizontally in the tile */
+    margin:auto;
+    display: block;
 }
 
 /* hack to ensure we don't try to center preview in IE8, since -ms-filter doesn't mimic translateY as expected in all cases */
