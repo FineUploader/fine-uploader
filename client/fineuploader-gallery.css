@@ -49,7 +49,7 @@
     padding: 20px;
 }
 .qq-uploader:before {
-    content: attr(qq-drop-area-text);
+    content: attr(qq-drop-area-text) " ";
     position: absolute;
     font-size: 200%;
     left: 0;
