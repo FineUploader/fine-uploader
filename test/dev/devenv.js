@@ -46,9 +46,9 @@ qq(window).attach("load", function() {
                 notAvailablePath: "/client/placeholders/not_available-generic.png"
             }
         },
-        scaling: {
-            sizes: [{name: "small", maxSize: 300}, {name: "medium", maxSize: 600}]
-        },
+        //scaling: {
+        //    sizes: [{name: "small", maxSize: 300}, {name: "medium", maxSize: 600}]
+        //},
         callbacks: {
             onError: errorHandler,
             onUpload: function (id, filename) {
@@ -116,7 +116,8 @@ qq(window).attach("load", function() {
             fileSizeOnSubmit: true
         },
         paste: {
-            targetElement: document
+            targetElement: document,
+            promptForName: true
         },
         thumbnails: {
             placeholders: {
