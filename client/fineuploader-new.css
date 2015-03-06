@@ -175,6 +175,11 @@
 }
 .qq-upload-file {
     vertical-align: middle;
+    display: inline-block;
+    width: 300px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-x: hidden;
 }
 .qq-upload-spinner {
     display: inline-block;
@@ -193,12 +198,6 @@
     height: 24px;
     vertical-align: text-bottom;
 }
-
-/*.qq-upload-retry, .qq-upload-delete, .qq-upload-cancel,*/
-/*.qq-upload-pause, .qq-upload-continue {*/
-    /*color: #000000;*/
-/*}*/
-
 .qq-upload-size, .qq-upload-cancel, .qq-upload-retry,
 .qq-upload-delete, .qq-upload-pause, .qq-upload-continue {
     font-size: 12px;
@@ -207,7 +206,9 @@
     vertical-align: middle;
 }
 .qq-upload-status-text {
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    display: block;
 }
 .qq-upload-failed-text {
     display: none;
