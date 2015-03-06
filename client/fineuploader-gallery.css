@@ -96,6 +96,7 @@
     list-style: none;
     max-height: 450px;
     overflow-y: auto;
+    clear: both;
 }
 
 
