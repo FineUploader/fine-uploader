@@ -403,10 +403,37 @@ INPUT.qq-edit-filename.qq-editing {
     -webkit-transform: translateY(-50%);
 }
 
+/* <dialog> element styles */
 .qq-uploader DIALOG {
     display: none;
 }
 
 .qq-uploader DIALOG[open] {
     display: block;
+}
+
+.qq-uploader DIALOG {
+    display: none;
+}
+
+.qq-uploader DIALOG[open] {
+    display: block;
+}
+
+.qq-uploader DIALOG .qq-dialog-buttons {
+    text-align: center;
+    padding-top: 10px;
+}
+
+.qq-uploader DIALOG .qq-dialog-buttons BUTTON {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.qq-uploader DIALOG .qq-dialog-message-selector {
+    padding-bottom: 10px;
+}
+
+.qq-uploader DIALOG::backdrop {
+    background-color: rgba(0, 0, 0, 0.7);
 }
