@@ -48,31 +48,6 @@ describe("uploader.basic.api.js", function () {
         }
     });
 
-    describe("formatFileName", function () {
-
-        beforeEach(function () {
-            fineuploader = new qq.FineUploaderBasic({
-                element: $uploader[0]
-            });
-        });
-
-        it("shortens a long (> 33 chars) filename", function () {
-            var filename = "EWDPYZFAMDDOLNQEJXVUEWDPYZFAMDDOLN";
-            var filename_fmt = fineuploader._options.formatFileName(filename);
-            assert.equal(filename_fmt,
-                "EWDPYZFAMDDOLNQEJXV...EWDPYZFAMDDOLN",
-                "expect filename to be shortened");
-        });
-
-        it("refuses to shorten a short (<= 33 chars) filename", function () {
-            var filename = "abcdefg";
-            var filename_fmt = fineuploader._options.formatFileName(filename);
-            assert.equal(filename_fmt,
-                "abcdefg",
-                "expect filename to NOT be shortened");
-        });
-    });
-
     describe("setParams", function () {
 
         beforeEach(function () {
