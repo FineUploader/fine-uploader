@@ -159,6 +159,7 @@
 .qq-gallery .qq-upload-status-text {
     color: #333333;
     font-size: 12px;
+    padding-left: 3px;
     padding-top: 2px;
     width: inherit;
     display: none;
