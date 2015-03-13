@@ -8,6 +8,10 @@
 .qq-gallery .qq-btn
 {
     float: right;
+    border: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
 }
 
 /* Upload Button
@@ -97,6 +101,7 @@
     max-height: 450px;
     overflow-y: auto;
     clear: both;
+    box-shadow: none;
 }
 
 
@@ -129,6 +134,12 @@
 .qq-gallery .qq-upload-continue {
     display: inline;
 }
+.qq-gallery .qq-upload-retry:hover,
+.qq-gallery .qq-upload-delete:hover,
+.qq-gallery .qq-upload-pause:hover,
+.qq-gallery .qq-upload-continue:hover {
+    background-color: transparent;
+}
 .qq-gallery .qq-upload-delete,
 .qq-gallery .qq-upload-pause,
 .qq-gallery .qq-upload-continue,
@@ -144,12 +155,6 @@
     font-size: 12px;
     padding: 0;
 }
-.qq-gallery ,qq-upload-delete:hover,
-.qq-gallery .qq-upload-pause:hover,
-.qq-gallery .qq-upload-continue:hover {
-    text-decoration: underline;
-}
-
 /* to ensure consistent size of tiles - only display status text before auto-retry or after failure */
 .qq-gallery .qq-upload-status-text {
     color: #333333;
@@ -185,6 +190,11 @@
     position: absolute;
     right: -5px;
     top: -6px;
+    margin: 0;
+    line-height: 17px;
+}
+.qq-gallery .qq-upload-cancel:hover {
+    background-color: #525252;
 }
 .qq-gallery .qq-upload-retry {
     cursor: pointer;
@@ -223,6 +233,7 @@
     display: block;
     margin-right: 0;
     margin-bottom: 3px;
+    width: auto;
 
     /* to ensure consistent size of tiles - constrain text to single line */
     text-overflow: ellipsis;
@@ -299,6 +310,7 @@
     font-size: 11px;
     color: #929292;
     margin-bottom: 3px;
+    margin-right: 0;
     display: inline-block;
 }
 
