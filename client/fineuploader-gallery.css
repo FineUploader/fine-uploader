@@ -284,6 +284,7 @@
 .qq-gallery .qq-upload-list li.qq-upload-fail {
     background-color: #F5EDED;
     box-shadow: 0 0 1px 0 red;
+    border: 0;
 }
 .qq-gallery .qq-progress-bar {
     display: block;
