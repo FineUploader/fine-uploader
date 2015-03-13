@@ -5,14 +5,14 @@
 
 /* Buttons
 ------------------------------------------ */
-.qq-btn
+.qq-gallery .qq-btn
 {
     float: right;
 }
 
 /* Upload Button
 ------------------------------------------ */
-.qq-upload-button {
+.qq-gallery .qq-upload-button {
     display: inline;
     width: 105px;
     padding: 7px 10px;
@@ -27,17 +27,17 @@
     0 1px 0 rgba(0, 0, 0, 0.36),
     0 -2px 12px rgba(0, 0, 0, 0.08) inset
 }
-.qq-upload-button-hover {
+.qq-gallery .qq-upload-button-hover {
     background: #33B6CC;
 }
-.qq-upload-button-focus {
+.qq-gallery .qq-upload-button-focus {
     outline: 1px dotted #000000;
 }
 
 
 /* Drop Zone
 ------------------------------------------ */
-.qq-uploader {
+.qq-gallery.qq-uploader {
     position: relative;
     min-height: 200px;
     max-height: 490px;
@@ -48,7 +48,7 @@
     background-color: #FAFAFA;
     padding: 20px;
 }
-.qq-uploader:before {
+.qq-gallery.qq-uploader:before {
     content: attr(qq-drop-area-text) " ";
     position: absolute;
     font-size: 200%;
@@ -58,7 +58,7 @@
     top: 45%;
     opacity: 0.25;
 }
-.qq-upload-drop-area, .qq-upload-extra-drop-area {
+.qq-gallery .qq-upload-drop-area, .qq-upload-extra-drop-area {
     position: absolute;
     top: 0;
     left: 0;
@@ -70,7 +70,7 @@
     border-radius: 4px;
     text-align: center;
 }
-.qq-upload-drop-area span {
+.qq-gallery .qq-upload-drop-area span {
     display: block;
     position: absolute;
     top: 50%;
@@ -78,7 +78,7 @@
     margin-top: -8px;
     font-size: 16px;
 }
-.qq-upload-extra-drop-area {
+.qq-gallery .qq-upload-extra-drop-area {
     position: relative;
     margin-top: 50px;
     font-size: 16px;
@@ -86,11 +86,11 @@
     height: 20px;
     min-height: 40px;
 }
-.qq-upload-drop-area-active {
+.qq-gallery .qq-upload-drop-area-active {
     background: #FDFDFD;
     border-radius: 4px;
 }
-.qq-upload-list {
+.qq-gallery .qq-upload-list {
     margin: 0;
     padding: 10px 0 0;
     list-style: none;
@@ -102,7 +102,7 @@
 
 /* Uploaded Elements
 ------------------------------------------ */
-.qq-upload-list li {
+.qq-gallery .qq-upload-list li {
     display: inline-block;
     position: relative;
     max-width: 120px;
@@ -120,28 +120,38 @@
     height: 186px;
 }
 
-.qq-upload-spinner, .qq-upload-size,
-.qq-upload-retry, .qq-upload-failed-text,
-.qq-upload-delete, .qq-upload-pause, .qq-upload-continue {
+.qq-gallery .qq-upload-spinner,
+.qq-gallery .qq-upload-size,
+.qq-gallery .qq-upload-retry,
+.qq-gallery .qq-upload-failed-text,
+.qq-gallery .qq-upload-delete,
+.qq-gallery .qq-upload-pause,
+.qq-gallery .qq-upload-continue {
     display: inline;
 }
-.qq-upload-delete, .qq-upload-pause, .qq-upload-continue,
-.qq-upload-cancel {
+.qq-gallery .qq-upload-delete,
+.qq-gallery .qq-upload-pause,
+.qq-gallery .qq-upload-continue,
+.qq-gallery .qq-upload-cancel {
     cursor: pointer;
 }
-.qq-upload-delete, .qq-upload-pause, .qq-upload-continue {
+.qq-gallery .qq-upload-delete,
+.qq-gallery .qq-upload-pause,
+.qq-gallery .qq-upload-continue {
     border:none;
     background: none;
     color: #00A0BA;
     font-size: 12px;
     padding: 0;
 }
-.qq-upload-delete:hover, .qq-upload-pause:hover, .qq-upload-continue:hover {
+.qq-gallery ,qq-upload-delete:hover,
+.qq-gallery .qq-upload-pause:hover,
+.qq-gallery .qq-upload-continue:hover {
     text-decoration: underline;
 }
 
 /* to ensure consistent size of tiles - only display status text before auto-retry or after failure */
-.qq-upload-status-text {
+.qq-gallery .qq-upload-status-text {
     color: #333333;
     font-size: 12px;
     padding-top: 2px;
@@ -149,20 +159,20 @@
     display: none;
     width: 108px;
 }
-.qq-upload-fail .qq-upload-status-text {
+.qq-gallery .qq-upload-fail .qq-upload-status-text {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow-x: hidden;
     display: block;
 }
-.qq-upload-retrying .qq-upload-status-text {
+.qq-gallery .qq-upload-retrying .qq-upload-status-text {
     display: inline-block;
 }
-.qq-upload-retrying .qq-progress-bar-container {
+.qq-gallery .qq-upload-retrying .qq-progress-bar-container {
     display: none;
 }
 
-.qq-upload-cancel {
+.qq-gallery .qq-upload-cancel {
     background-color: #525252;
     color: #F7F7F7;
     font-weight: bold;
@@ -176,7 +186,7 @@
     right: -5px;
     top: -6px;
 }
-.qq-upload-retry {
+.qq-gallery .qq-upload-retry {
     cursor: pointer;
     position: absolute;
     top: 30px;
@@ -193,11 +203,11 @@
     background-color: #EBF6E0;
     z-index: 1;
 }
-.qq-upload-retry:hover {
+.qq-gallery .qq-upload-retry:hover {
     background-color: #f7ffec;
 }
 
-.qq-file-info {
+.qq-gallery .qq-file-info {
     padding: 10px 6px 4px;
     margin-top: -3px;
     border-radius: 0 0 2px 2px;
@@ -205,11 +215,11 @@
     overflow: hidden;
 }
 
-.qq-file-info .qq-file-name {
+.qq-gallery .qq-file-info .qq-file-name {
     position: relative;
 }
 
-.qq-upload-file {
+.qq-gallery .qq-upload-file {
     display: block;
     margin-right: 0;
     margin-bottom: 3px;
@@ -219,7 +229,7 @@
     white-space: nowrap;
     overflow-x: hidden;
 }
-.qq-upload-spinner {
+.qq-gallery .qq-upload-spinner {
     display: inline-block;
     background: url("loading.gif");
     position: absolute;
@@ -230,41 +240,41 @@
     height: 15px;
     vertical-align: text-bottom;
 }
-.qq-drop-processing {
+.qq-gallery .qq-drop-processing {
     display: block;
 }
-.qq-drop-processing-spinner {
+.qq-gallery .qq-drop-processing-spinner {
     display: inline-block;
     background: url("processing.gif");
     width: 24px;
     height: 24px;
     vertical-align: text-bottom;
 }
-.qq-upload-failed-text {
+.qq-gallery .qq-upload-failed-text {
     display: none;
     font-style: italic;
     font-weight: bold;
 }
-.qq-upload-failed-icon {
+.qq-gallery .qq-upload-failed-icon {
     display:none;
     width:15px;
     height:15px;
     vertical-align:text-bottom;
 }
-.qq-upload-fail .qq-upload-failed-text {
+.qq-gallery .qq-upload-fail .qq-upload-failed-text {
     display: inline;
 }
-.qq-upload-retrying .qq-upload-failed-text {
+.qq-gallery .qq-upload-retrying .qq-upload-failed-text {
     display: inline;
 }
-.qq-upload-list li.qq-upload-success {
+.qq-gallery .qq-upload-list li.qq-upload-success {
     background-color: #F2F7ED;
 }
-.qq-upload-list li.qq-upload-fail {
+.qq-gallery .qq-upload-list li.qq-upload-fail {
     background-color: #F5EDED;
     box-shadow: 0 0 1px 0 red;
 }
-.qq-progress-bar {
+.qq-gallery .qq-progress-bar {
     display: block;
     background: #00abc7;
     width: 0%;
@@ -273,26 +283,26 @@
     margin-bottom: 3px;
 }
 
-.qq-total-progress-bar {
+.qq-gallery .qq-total-progress-bar {
     height: 25px;
     border-radius: 9px;
 }
 
-.qq-total-progress-bar-container {
+.qq-gallery .qq-total-progress-bar-container {
     margin-left: 9px;
     display: inline;
     float: right;
     width: 500px;
 }
 
-.qq-upload-size {
+.qq-gallery .qq-upload-size {
     font-size: 11px;
     color: #929292;
     margin-bottom: 3px;
     display: inline-block;
 }
 
-INPUT.qq-edit-filename {
+.qq-gallery INPUT.qq-edit-filename {
     position: absolute;
     opacity: 0;
     filter: alpha(opacity=0);
@@ -300,12 +310,12 @@ INPUT.qq-edit-filename {
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 }
 
-.qq-upload-file.qq-editable {
+.qq-gallery .qq-upload-file.qq-editable {
     cursor: pointer;
     margin-right: 20px;
 }
 
-.qq-edit-filename-icon.qq-editable {
+.qq-gallery .qq-edit-filename-icon.qq-editable {
     display: inline-block;
     cursor: pointer;
     position: absolute;
@@ -313,7 +323,7 @@ INPUT.qq-edit-filename {
     top: 0;
 }
 
-INPUT.qq-edit-filename.qq-editing {
+.qq-gallery INPUT.qq-edit-filename.qq-editing {
     position: static;
     height: 28px;
     width: 90px;
@@ -329,21 +339,21 @@ INPUT.qq-edit-filename.qq-editing {
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 }
 
-.qq-edit-filename-icon {
+.qq-gallery .qq-edit-filename-icon {
     display: none;
     background: url("edit.gif");
     width: 15px;
     height: 15px;
     vertical-align: text-bottom;
 }
-.qq-delete-icon {
+.qq-gallery .qq-delete-icon {
     background: url("trash.gif");
     width: 15px;
     height: 15px;
     vertical-align: sub;
     display: inline-block;
 }
-.qq-retry-icon {
+.qq-gallery .qq-retry-icon {
     background: url("retry.gif");
     width: 15px;
     height: 15px;
@@ -351,14 +361,14 @@ INPUT.qq-edit-filename.qq-editing {
     display: inline-block;
     float: none;
 }
-.qq-continue-icon {
+.qq-gallery .qq-continue-icon {
     background: url("continue.gif");
     width: 15px;
     height: 15px;
     vertical-align: sub;
     display: inline-block;
 }
-.qq-pause-icon {
+.qq-gallery .qq-pause-icon {
     background: url("pause.gif");
     width: 15px;
     height: 15px;
@@ -366,14 +376,14 @@ INPUT.qq-edit-filename.qq-editing {
     display: inline-block;
 }
 
-.qq-hide {
+.qq-gallery .qq-hide {
     display: none;
 }
 
 
 /* Thumbnail
 ------------------------------------------ */
-.qq-thumbnail-wrapper {
+.qq-gallery .qq-thumbnail-wrapper {
     overflow: hidden;
     position: relative;
 
@@ -381,7 +391,7 @@ INPUT.qq-edit-filename.qq-editing {
     height: 120px;
     width: 120px;
 }
-.qq-thumbnail-selector {
+.qq-gallery .qq-thumbnail-selector {
     border-radius: 2px 2px 0 0;
     bottom: 0;
 
@@ -394,7 +404,7 @@ INPUT.qq-edit-filename.qq-editing {
 }
 
 /* hack to ensure we don't try to center preview in IE8, since -ms-filter doesn't mimic translateY as expected in all cases */
-:root *> .qq-thumbnail-selector {
+:root *> .qq-gallery .qq-thumbnail-selector {
     /* vertically center preview image on tile */
     position: relative;
     top: 50%;
@@ -405,36 +415,36 @@ INPUT.qq-edit-filename.qq-editing {
 }
 
 /* <dialog> element styles */
-.qq-uploader DIALOG {
+.qq-gallery.qq-uploader DIALOG {
     display: none;
 }
 
-.qq-uploader DIALOG[open] {
+.qq-gallery.qq-uploader DIALOG[open] {
     display: block;
 }
 
-.qq-uploader DIALOG {
+.qq-gallery.qq-uploader DIALOG {
     display: none;
 }
 
-.qq-uploader DIALOG[open] {
+.qq-gallery.qq-uploader DIALOG[open] {
     display: block;
 }
 
-.qq-uploader DIALOG .qq-dialog-buttons {
+.qq-gallery.qq-uploader DIALOG .qq-dialog-buttons {
     text-align: center;
     padding-top: 10px;
 }
 
-.qq-uploader DIALOG .qq-dialog-buttons BUTTON {
+.qq-gallery.qq-uploader DIALOG .qq-dialog-buttons BUTTON {
     margin-left: 5px;
     margin-right: 5px;
 }
 
-.qq-uploader DIALOG .qq-dialog-message-selector {
+.qq-gallery.qq-uploader DIALOG .qq-dialog-message-selector {
     padding-bottom: 10px;
 }
 
-.qq-uploader DIALOG::backdrop {
+.qq-gallery .qq-uploader DIALOG::backdrop {
     background-color: rgba(0, 0, 0, 0.7);
 }
