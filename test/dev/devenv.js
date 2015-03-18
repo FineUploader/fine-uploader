@@ -225,6 +225,12 @@ qq(window).attach("load", function() {
             enableAuto: true,
             showButton: true
         },
+        thumbnails: {
+            placeholders: {
+                waitingPath: "/client/placeholders/waiting-generic.png",
+                notAvailablePath: "/client/placeholders/not_available-generic.png"
+            }
+        },
         callbacks: {
             onError: errorHandler
         }
