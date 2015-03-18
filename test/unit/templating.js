@@ -175,9 +175,11 @@ describe("templating.js", function() {
         it("hides and shows spinner", function() {
             templating.hideSpinner(0);
             assert.ok($(fileContainer0).find(".qq-upload-spinner-selector").hasClass(HIDE_CSS));
+            assert.ok(!$(fileContainer0).hasClass("qq-in-progress"));
 
             templating.showSpinner(0);
             assert.ok(!$(fileContainer0).find(".qq-upload-spinner-selector").hasClass(HIDE_CSS));
+            assert.ok($(fileContainer0).hasClass("qq-in-progress"));
         });
 
         it("updates status text", function() {

@@ -365,6 +365,7 @@
                 }
                 else {
                     qq(fileContainer).addClass(self._classes.fail);
+                    templating.showCancel(id);
 
                     if (templating.isRetryPossible() && !self._preventRetries[id]) {
                         qq(fileContainer).addClass(self._classes.retryable);

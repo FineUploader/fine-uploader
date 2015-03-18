@@ -61,6 +61,7 @@
     text-align: center;
     top: 45%;
     opacity: 0.25;
+    filter: alpha(opacity=25);
 }
 .qq-gallery .qq-upload-drop-area, .qq-upload-extra-drop-area {
     position: absolute;
@@ -397,6 +398,11 @@
 
 /* Thumbnail
 ------------------------------------------ */
+.qq-gallery .qq-in-progress .qq-thumbnail-wrapper {
+    /* makes the spinner on top of the thumbnail more visible */
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
 .qq-gallery .qq-thumbnail-wrapper {
     overflow: hidden;
     position: relative;

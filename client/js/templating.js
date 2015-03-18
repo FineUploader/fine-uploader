@@ -18,6 +18,7 @@ qq.Templating = function(spec) {
         // This variable is duplicated in the DnD module since it can function as a standalone as well
         HIDE_DROPZONE_ATTR = "qq-hide-dropzone",
         DROPZPONE_TEXT_ATTR = "qq-drop-area-text",
+        IN_PROGRESS_CLASS = "qq-in-progress",
         isCancelDisabled = false,
         generatedThumbnails = 0,
         thumbnailQueueMonitorRunning = false,
@@ -938,10 +939,12 @@ qq.Templating = function(spec) {
         },
 
         hideSpinner: function(id) {
+            qq(getFile(id)).removeClass(IN_PROGRESS_CLASS);
             hide(getSpinner(id));
         },
 
         showSpinner: function(id) {
+            qq(getFile(id)).addClass(IN_PROGRESS_CLASS);
             show(getSpinner(id));
         },
 
