@@ -181,7 +181,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow-x: hidden;
-    height: 16px;
+    height: 18px;
 }
 .qq-upload-spinner {
     display: inline-block;
