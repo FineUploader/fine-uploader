@@ -14,14 +14,13 @@ you will want to read the [upgrading to 4.x document](../upgrading-to-4.html) as
 This document applies to Fine Uploader UI mode only, and aims to help you customize the default UI using
 the built-in templating feature.
 
-### Template
+### Templates
 
-A default template, `default.html` in the `templates` directory, is bundled with each version.  In the future,
+Some defaults templates are bundled with each version in the `templates` directory.  In the future,
 alternate templates may be included as well.  Note that you must include a template in your markup/document
-when using Fine Uploader UI.  Everything should work just fine if you simply use the provided template as is,
-without changing anything.  However, you can certainly customize the default template to match your
-web application's look and feel.  The rest of this section includes examples of some changes you may want to
-make to the template.
+when using Fine Uploader UI.  Everything should work just fine if you simply use the provided templates as is,
+without changing anything.  However, you can certainly customize any of the default templates to match your
+web application's look and feel.
 
 The templates are, by default, included in a `<script>` tag with the `type` attribute set to "text/template".
 The template does not have to be included in a `<script>` tag.  For example, you may instead include the template
@@ -35,7 +34,42 @@ want to contribute your own styles, but you should only remove the selector clas
 Uploader UI to track/address the associated template element."""
 )}}
 
-#### Re-style the progress bar
+#### default.html
+
+The "default" template bundled with Fine Uploader contains, more or less, a very basic UI for Fine Uploader. There are
+no thumbnails/previews generated when using this template. You may use the legacy fine-uploader.css file or the new/modern
+fine-uploader-new.css file.
+
+This template also renders a visible drop zone, but only with the fine-uploader-new.css file. The fine-uploader-new.css
+file will include a customizable "drop files" message in the background of the drop zone if the current browser supports
+file dropping.
+
+#### simple.thumbnails.html
+
+This template is similar to "default", except it will render previews of images and placeholders for non-previewable images
+(provided you make preview images accessible via the `template.placeholders` option). There are several instances of this
+template in use (both customized and non-customized) at http://fineuploader.com/demos. You may use the legacy fine-uploader.css
+file or the new/modern fine-uploader-new.css file.
+
+This template also renders a visible drop zone, but only with the fine-uploader-new.css file. The fine-uploader-new.css
+file will include a customizable "drop files" message in the background of the drop zone if the current browser supports
+file dropping.
+
+#### gallery.html
+
+This is a template that represents each submitted file as a "tile". You can see a couple examples of this template in action
+on http://fineuploader.com/demo. The S3 example notably uses a modified version of the gallery template. You *must* use the
+fine-uploader-gallery.css file, and you also must be sure to include all ".gif" files packaged with the uploader.
+The gallery view uses icons to represent buttons (such as retry/pause/continue/delete/cancel) in almost all cases.
+
+Like the fine-uploader-new.css file, the fine-uploader-gallery.css file will include a "drop files" message in the background
+of the visible drop zone if the current browser supports file dropping.
+
+When using the fine-uploader-gallery.css file, you *must* ensure that the container element for your template contains a
+"qq-gallery" class. This is already included in the proper location in the gallery.html template bundled with the library.
+
+
+#### Re-styling the progress bar
 
 Don't like [the default progress bar](progress-bars.html#per-file-progress) included with Fine Uploader's CSS file?
 No problem!  You can easily use, for example, a Bootstrap-styled progress bar.
@@ -58,7 +92,8 @@ To this:
 You can do the same for the [total progress bar](progress-bars.html#total-progress).
 
 
-#### Omit a portion of the template that does not apply to your app
+#### Omitting a portion of the template that does not apply to your app
+
 You can omit any element of the template that does not apply to your uploader except for:
 
 * The parent div that contains the contents of the template (qq-uploader-selector element)
@@ -70,54 +105,28 @@ filename feature, simply omit any elements with class names that start with qq-e
 to have the delete button appear after a successful upload, omit the qq-upload-delete-selector element.  If you don't
 want the progress bar at all, omit the qq-progress-bar elements, etc, etc.
 
-#### Change default text
+
+#### Changing any default text
 
 Any of the text nodes in the template can be changed to match your language or preferences.  In some cases, Fine
 Uploader UI dynamically sets text, such as with the qq-upload-status-text-selector and qq-upload-size-selector
 elements.  See the [`text` option](../api/options-ui.html#text-option) for adjusting these types of strings.
 
-#### Re-arrange the order of the template elements
+
+#### Re-arranging the order of the template elements
 
 You may also change the order of the elements in the template.  Note that you should not move file-related elements
 out of the qq-upload-list-selector container or it's immediate child container though.
 
-#### Move the file list to an alternate location in the DOM
+
+#### Moving the file list to an alternate location in the DOM
 
 If you would like to locate the file list (contents of the qq-upload-list-selector element) elsewhere in your document,
 you may do so via the [`listElement` option](../api/options-ui.html) which allows you to specify an existing
 container element where Fine Uploader UI will render the file list item elements.
 
-#### Move the default drop zone into the file list
 
-Suppose you want to combine the file list (qq-upload-list-selector element) and the drop zone (qq-upload-drop-area-selector element).
-You can accomplish this simply by following these steps:
-
-First, make the file list a child of the drop zone:
-
-```html
-<div class="qq-upload-drop-area-selector">
-    <ul class="qq-upload-list-selector qq-upload-list" aria-live="polite" aria-relevant="additions removals">
-        <li>
-            ....
-        </li>
-    </ul>
-</div>
-
-```
-Notice that the default styling class for the drop area has been removed, you may want to contribute your own CSS class
-to match your web application's style.  Also notice that the `qq-hide-dropzone` attribute has been omitted from
-the drop area container.  By removing this (or setting its value to "false", we are telling Fine Uploader UI
-to keep the contents of this drop zone visible at all times.  When this attribute is present, the contents are
-only visible when an item enters the drop zone.
-
-Then, you may want to specify some custom styles for the drop zone.  Perhaps a `min-height` is important to ensure
-that the drop zone is not 0-sized when the uploader first loads (before any files have been submitted).  You may also
-want to consider setting a `background` image, adjusting the `opacity` (so the default background color that Fine
-Uploader UI adds when you enter the drop zone is visible), or something else.  You can contribute these styles directly
-to the qq-drop-area-selector element in the template via a `style` attribute, or define a CSS class elsewhere in the
-document with these styles and simply append this custom class to the drop-area element signature.
-
-#### Customize the buttons/links
+#### Customizing the buttons/links
 
 It is trivial to re-style the delete, cancel, retry, and upload buttons.  For example, you can utilize Bootstrap's
 button styling to re-skin the upload button by changing this:
@@ -136,8 +145,11 @@ to this:
 </div>
 ```
 
+Note that you cannot use a `<button>` element if you plan on supported Internet Explorer, as this will not trigger
+the file chooser dialog.
 
-#### Include other custom elements in your template
+
+#### Including any other custom elements in your template
 
 Suppose you want to include a link to the uploaded file next to each file item element.  You can modify the template
 to include a styled anchor link, hidden initially, and then show the anchor and set its `href` attribute
@@ -203,6 +215,7 @@ elements dynamically/on-demand.  The following `classes` option properties exist
         ("success", "qq-upload-success", "Added to the file item container after a successful upload."),
     )
 ) }}
+
 
 ### Dialogs
 
