@@ -391,12 +391,11 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
                     /* jshint eqnull:true */
                     if (key == null) {
-                        key = new qq.Promise();
-                        handler._setThirdPartyFileId(id, key);
+                        handler._setThirdPartyFileId(id, promise);
                         onGetKeyName(id, getName(id)).then(
-                            function(key) {
-                                handler._setThirdPartyFileId(id, key);
-                                promise.success(key);
+                            function(keyName) {
+                                handler._setThirdPartyFileId(id, keyName);
+                                promise.success(keyName);
                             },
                             function(errorReason) {
                                 handler._setThirdPartyFileId(id, null);
@@ -405,7 +404,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                         );
                     }
                     else if (qq.isGenericPromise(key)) {
-                        promise.then(key.success, key.failure);
+                        key.then(promise.success, promise.failure);
                     }
                     else {
                         promise.success(key);
