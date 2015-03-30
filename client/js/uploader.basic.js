@@ -216,7 +216,7 @@
             workarounds: {
                 iosEmptyVideos: true,
                 ios8SafariUploads: true,
-                ios8BrowserCrash: true
+                ios8BrowserCrash: false
             }
         };
 
