@@ -244,7 +244,7 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         describe("file rejection via internal validation", function() {
-            function setupUploader(limits, numBlobs, statusChangeLogic) {
+            function setupUploader(limits, numBlobsOrTheBlob, statusChangeLogic) {
                 var uploader = new qq.FineUploaderBasic({
                     autoUpload: false,
                     validation: limits,
@@ -255,19 +255,24 @@ if (qqtest.canDownloadFileAsBlob) {
                     }
                 });
 
-                qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
-                    numBlobs = [].concat(numBlobs);
-                    qq.each(numBlobs, function(idx, num) {
-                        var blobs = [],
-                            i;
+                if (qq.isBlob(numBlobsOrTheBlob)) {
+                    uploader.addFiles(numBlobsOrTheBlob);
+                }
+                else {
+                    qqtest.downloadFileAsBlob(testImgKey, testImgType).then(function(blob) {
+                        numBlobsOrTheBlob = [].concat(numBlobsOrTheBlob);
+                        qq.each(numBlobsOrTheBlob, function(idx, num) {
+                            var blobs = [],
+                                i;
 
-                        for (i = 0; i < num; i++) {
-                            blobs.push(blob);
-                        }
+                            for (i = 0; i < num; i++) {
+                                blobs.push(blob);
+                            }
 
-                        uploader.addFiles(blobs);
+                            uploader.addFiles(blobs);
+                        });
                     });
-                });
+                }
             }
 
             it("prevents too many items from being submitted at once", function(done) {
@@ -315,6 +320,18 @@ if (qqtest.canDownloadFileAsBlob) {
                         assert.equal(this.getUploads({status: qq.status.REJECTED}).length, 2);
                         done();
                     }
+                });
+            });
+
+            it("prevents empty files from being submitted", function(done) {
+                qqtest.downloadFileAsBlob("empty.txt", "text/plain").then(function(emptyFile) {
+                    setupUploader({}, emptyFile, function(id, oldStatus, newStatus) {
+                        if (newStatus === qq.status.REJECTED) {
+                            assert.equal(this.getUploads().length, 1);
+                            assert.equal(this.getUploads({status: qq.status.REJECTED}).length, 1);
+                            done();
+                        }
+                    });
                 });
             });
 

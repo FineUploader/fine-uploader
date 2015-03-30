@@ -74,7 +74,7 @@ qq.UploadData = function(uploaderProxy) {
                     name: spec.name,
                     originalName: spec.name,
                     uuid: spec.uuid,
-                    size: spec.size || -1,
+                    size: spec.size == null ? -1 : spec.size,
                     status: status
                 }) - 1;
 
