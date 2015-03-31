@@ -1,4 +1,4 @@
-/* globals describe, beforeEach, $fixture, qq, assert, it, qqtest, helpme, purl */
+/* globals describe, beforeEach, afterEach, $fixture, qq, assert, it, qqtest, helpme, purl */
 if (qqtest.canDownloadFileAsBlob) {
     describe("chunked uploads", function() {
         "use strict";
@@ -19,23 +19,26 @@ if (qqtest.canDownloadFileAsBlob) {
                 totalParts: "testtotalparts"
             };
 
-        function testChunkedUpload(mpe, customParams, chunkingParamNames, done) {
-            customParams = customParams || {};
-            chunkingParamNames = chunkingParamNames || new qq.FineUploaderBasic({})._options.chunking.paramNames;
+        function testChunkedUpload(spec) {
+            var customParams = spec.customParams || {},
+                chunkingParamNames = spec.chunkingParamNames || new qq.FineUploaderBasic({})._options.chunking.paramNames;
 
-            assert.expect(3 + (expectedChunks * (20 + (Object.keys(customParams).length))), done);
+            assert.expect(3 + (expectedChunks * (20 + (Object.keys(customParams).length))), spec.done);
 
             var uploader = new qq.FineUploaderBasic({
                     request: {
                         endpoint: testUploadEndpoint,
-                        paramsInBody: mpe,
-                        forceMultipart: mpe,
+                        paramsInBody: !!spec.mpe,
+                        forceMultipart: !!spec.mpe,
                         params: customParams
                     },
                     chunking: {
                         enabled: true,
                         partSize: chunkSize,
                         paramNames: chunkingParamNames
+                    },
+                    resume: {
+                        enabled: !!spec.resume
                     },
                     callbacks: {
                         onUploadChunk: function (id, name, chunkData) {
@@ -59,7 +62,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
                             chunksSucceeded++;
 
-                            if (mpe) {
+                            if (spec.mpe) {
                                 requestParams = request.requestBody.fields;
                             }
                             else {
@@ -72,7 +75,7 @@ if (qqtest.canDownloadFileAsBlob) {
                             assert.equal(requestParams.qqtotalfilesize, expectedFileSize, "Wrong total file size param");
                             assert.equal(requestParams[chunkingParamNames.totalParts], expectedChunks, "Wrong total parts param");
                             assert.equal(requestParams.qqfilename, uploader.getName(id), "Wrong filename param");
-                            assert.equal(requestParams[chunkingParamNames.chunkSize], mpe ? requestParams.qqfile.size : request.requestBody.size, "Wrong chunk size param");
+                            assert.equal(requestParams[chunkingParamNames.chunkSize], spec.mpe ? requestParams.qqfile.size : request.requestBody.size, "Wrong chunk size param");
                             assert.equal(id, 0, "Wrong ID passed to onUpoadChunkSuccess");
 
                             qq.each(customParams, function(key, val) {
@@ -195,27 +198,44 @@ if (qqtest.canDownloadFileAsBlob) {
         }
 
         it("sends proper number of chunks when chunking is enabled, MPE", function(done) {
-            testChunkedUpload(true, null, null, done);
+            testChunkedUpload({
+                mpe: true,
+                done: done
+            });
         });
 
         it("sends proper number of chunks when chunking is enabled, non-MPE", function(done) {
-            testChunkedUpload(false, null, null, done);
+            testChunkedUpload({done: done});
         });
 
         it("sends custom parameters along with each chunk, MPE", function(done) {
-            testChunkedUpload(true, params, null, done);
+            testChunkedUpload({
+                mpe: true,
+                customParams: params,
+                done: done
+            });
         });
 
         it("sends custom parameters along with each chunk, non-MPE", function(done) {
-            testChunkedUpload(false, params, null, done);
+            testChunkedUpload({
+                customParams: params,
+                done: done
+            });
         });
 
         it("specifies custom values for the various chunking parameters, MPE", function(done) {
-            testChunkedUpload(true, null, overridenChunkingParamNames, done);
+            testChunkedUpload({
+                mpe: true,
+                chunkingParamNames: overridenChunkingParamNames,
+                done: done
+            });
         });
 
         it("specifies custom values for the various chunking parameters, non-MPE", function(done) {
-            testChunkedUpload(false, null, overridenChunkingParamNames, done);
+            testChunkedUpload({
+                chunkingParamNames: overridenChunkingParamNames,
+                done: done
+            });
         });
 
         it("fails the last chunk once, then recovers", function(done) {
@@ -224,6 +244,27 @@ if (qqtest.canDownloadFileAsBlob) {
 
         it("fails the last chunk once, then restarts with the first chunk", function(done) {
             testChunkedFailureAndRecovery(true, done);
+        });
+
+        describe("resume feature tests", function() {
+            var nativeLocalStorage = window.localStorage;
+
+            beforeEach(function() {
+                window.localStorage.setItem = function() {
+                    throw new qq.Error("Intentional localStorage error");
+                };
+            });
+
+            afterEach(function() {
+                window.localStorage = nativeLocalStorage;
+            });
+
+            it("ensures failure to use localStorage does not prevent uploading", function(done) {
+                testChunkedUpload({
+                    resume: true,
+                    done: done
+                });
+            });
         });
 
         describe("chunking determination logic", function() {

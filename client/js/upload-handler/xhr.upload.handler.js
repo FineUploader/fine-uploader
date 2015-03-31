@@ -395,7 +395,12 @@ qq.XhrUploadHandler = function(spec) {
                     lastUpdated: Date.now()
                 };
 
-                localStorage.setItem(localStorageId, JSON.stringify(persistedData));
+                try {
+                    localStorage.setItem(localStorageId, JSON.stringify(persistedData));
+                }
+                catch (error) {
+                    log(qq.format("Unable to save resume data for '{}' due to error: '{}'.", id, error.toString()), "warn");
+                }
             }
         },
 
