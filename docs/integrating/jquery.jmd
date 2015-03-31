@@ -102,6 +102,12 @@ option, you should be aware that the `callbacks` function will always be evaluat
 the `callbacks` function will be accepted instead of the return value from the jQuery event handler if the return
 value of the `callbacks` function is non-null.""", "info", "Note:") }}
 
+{{ alert(
+"""When passing a jQuery object as the value for an option or API method parameter, all elements represented by the selector will
+be resolved IFF the expected data type is an array. Otherwise, only the first element matched by the selector will be used.
+For an example of the latter situation please see [case #1375 in the issue tracker](https://github.com/FineUploader/fine-uploader/issues/1375).
+""", "info", "Note:") }}
+
 ## API Methods
 
 All public API methods are also accessible when using the jQuery plugin, but -- as with callbacks --
