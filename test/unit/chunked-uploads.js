@@ -247,7 +247,7 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         describe("resume feature tests", function() {
-            var nativeLocalStorage = window.localStorage;
+            var nativeLocalStorageSetItem = window.localStorage.setItem;
 
             beforeEach(function() {
                 window.localStorage.setItem = function() {
@@ -256,7 +256,7 @@ if (qqtest.canDownloadFileAsBlob) {
             });
 
             afterEach(function() {
-                window.localStorage = nativeLocalStorage;
+                window.localStorage.setItem = nativeLocalStorageSetItem;
             });
 
             it("ensures failure to use localStorage does not prevent uploading", function(done) {
