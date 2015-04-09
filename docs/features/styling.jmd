@@ -169,14 +169,21 @@ To do this, the file list portion of the template can be modified to include thi
 Your `complete` event handler would look something like this:
 
 ```javascript
-$("#myUploader").on("complete", function(event, id, name, response) {
-    var serverPathToFile = response.filePath,
-        $fileItem = $(this).fineUploader("getItemByFileId", id);
+var uploader = new qq.FineUploader({
+    /* other required config options left out for brevity */
 
-    if (response.success) {
-        $fileItem.find(".view-btn")
-            .attr("href", serverPathToFile)
-            .removeClass("hide");
+    callbacks: {
+        onComplete: function(id, name, response) {
+            var serverPathToFile = response.filePath,
+                fileItem = this.getItemByFileId(id);
+
+            if (response.success) {
+                var viewBtn = qq(fileItem).getByClass("view-btn")[0];
+
+                viewBtn.setAttribute("href", serverPathToFile);
+                qq(viewBtn).removeClass("hide");
+            }
+        }
     }
 });
 ```

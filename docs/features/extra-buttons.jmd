@@ -17,8 +17,7 @@ The new [`extraButtons` option](../api/options.html#extrabuttons-option) allows 
 at styled containers that you would like to use as upload buttons.  This option takes an array of objects, and
 each object must, at least, define an `element` property with a value of your styled upload button container.
 Fine Uploader will then attach a file input element to this container and track it just as it tracks the default
-upload button it creates.  You can specify an `HTMLElement`, or even a `jQuery` object (if you are using the
-Fine Uploader jQuery plugin) as the value for the `element` property.
+upload button it creates.  You can specify an `HTMLElement` as the value for the `element` property.
 
 By default, each extra button will inherit the root `multiple` and `validation` option values from the root option
 set.  You can override these values for each button by simply contributing alternate `multiple` and `validation`
@@ -33,14 +32,15 @@ selected by both buttons. Your HTML and javascript might look something like thi
 ```
 
 ```javascript
-$("#uploader").fineUploader({
+var uploader = new qq.FineUploader({
+    element: document.getElementById("myUploader"),
     validation: {
         allowedExtensions: ["jpeg", "jpg"],
         sizeLimit: 5000000 // 5 MiB
     }
     extraButtons: [
         {
-            element: $("#pdfButton"),
+            element: document.getElementById("pdfButton"),
             validation: {
                 allowedExtensions: ["pdf"]
             }
@@ -62,8 +62,7 @@ Suppose you want to apply custom validation rules to a specific button.  No prob
 `validateBatch` events contain a `button` as the last parameter passed to your handler.  This `button` parameter
 will be the container element for the button that was used to select/submit the associated file to the uploader.
 If a drop zone was used to submit the file, or if an input element or source outside of Fine Uploader was used
-to submit the file (such as via the `addFiles` method), the `button` parameter will be undefined.  Note that, if
-you are using the jQuery plug-in, the `button` parameter will be a jQuery object.
+to submit the file (such as via the `addFiles` method), the `button` parameter will be undefined.
 
 
 ## Associate file ID to a button (per-button endpoints, params, etc)
@@ -73,14 +72,20 @@ For example, if you want to attach specific parameters to a file, or send it to 
 on the button that selected it, you can do so in an appropriate event handler, such as `upload`.  For example:
 
 ```javascript
-$("#uploader").on("upload", function(event, id, name) {
-    var $button = $(this).fineUploader("getButton", id);
+var uploader = new qq.FineUploader({
+    /* other required config options left out for brevity */
 
-    if ($("#pdfButton").is($button)) {
-        $(this).fineUploader("setParams", {type: "pdf"}, id);
-    }
-    else {
-        $(this).fineUploader("setParams", {type: "jpeg"}, id);
+    callbacks: {
+        onUpload: function(id, name) {
+            var button = this.getButton(id);
+
+            if (button.id === "pdfButton") {
+                this.setParams({type: "pdf"}, id);
+            }
+            else {
+                this.setParams({type: "jpeg"}, id);
+            }
+        }
     }
 });
 ```
@@ -102,13 +107,15 @@ also assuming you only want this button to appear if folder selection is possibl
 ```javascript
 // only show the folders button if folder selection is possible in the current browser
 if (!qq.supportedFeatures.folderSelection) {
-    $("#foldersButton").hide();
+    document.getElementById("foldersButton").style.display = "none";
 }
 
-$("#uploader").fineUploader({
+var uploader = new qq.FineUploader({
+    /* other required config options left out for brevity */
+
     extraButtons: [
         {
-            element: $("#foldersButton"),
+            element: document.getElementById("foldersButton"),
             folders: true
         }
     ]
@@ -132,17 +139,19 @@ blog, now using the extra buttons feature:
 ```javascript
 // only show this button in iOS
 if (!qq.ios()) {
-    $("#cameraButtonContainer").hide();
+    document.getElementById("cameraButtonContainer").style.display = "none";
 }
 
-$("myFineUploader").fineUploader({
+var uploader = new qq.FineUploader({
+    /* other required config options left out for brevity */
+
     camera: {
         ios: true,
-        button: ${"#cameraButtonContainer")
+        button: document.getElementById("cameraButtonContainer")
     }
     extraButtons: [
         {
-            element: $("#cameraButtonContainer")
+            element: document.getElementById("cameraButtonContainer")
         }
     ]
 });

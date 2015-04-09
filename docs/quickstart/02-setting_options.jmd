@@ -24,7 +24,7 @@ this is the path endpoint on your server that will handle upload requests.
 More information on the [`request` option here](../api/options.html).
 
 ```javascript
-$("#fine-uploader").fineUploader({
+var uploader = new qq.FineUploader({
     request: {
         endpoint: '/uploads'
     }
@@ -37,7 +37,7 @@ Debug mode is used to begin diagnosing any application errors. Debug mode can
 be enabled in the options of Fine Uploader:
 
 ```javascript
-$("#fine-uploader").fineUploader({
+var uploader = new qq.FineUploader({
     debug: true,
     request: {
         endpoint: '/uploads'
@@ -57,7 +57,7 @@ Networks can be unreliable, and if your upload fails, Fine Uploader offers the
 ability to retry. The `retry` option can be set to enable this:
 
 ```javascript
-$("#fine-uploader").fineUploader({
+var uploader = new qq.FineUploader({
     request: {
         endpoint: '/uploads'
     },
@@ -82,7 +82,7 @@ options.
 You can also send a delete request via the `deleteFile` [API method](../api/methods.html).
 
 ```javascript
-$("#fine-uploader").fineUploader({
+var uploader = new qq.FineUploader({
     request: {
         endpoint: '/uploads'
     },
@@ -110,30 +110,8 @@ Now our Fine Uploader page should look something like this:
     <div id="fine-uploader">
     </div>
 
-    <!-- jQuery version 1.10.x (if you are using the jQuery plugin -->
-    <script src="http://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
-
-    <!-- Fine Uploader-jQuery -->
-    <script src="jquery.fine-uploader-{{ PKG['version']|e }}.min.js" type="text/javascript"></script>
-
-    <script>
-    // Wait until the DOM is 'ready'
-    $(document).ready(function () {
-        $("#fine-uploader").fineUploader({
-            debug: true,
-            request: {
-                endpoint: '/uploads'
-            },
-            deleteFile: {
-                enabled: true,
-                endpoint: '/uploads'
-            },
-            retry: {
-               enableAuto: true
-            }
-        });
-    });
-    </script>
+    <!-- Fine Uploader -->
+    <script src="fine-uploader.min.js" type="text/javascript"></script>
 
     <script type="text/template" id="qq-template">
         <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
@@ -194,6 +172,22 @@ Now our Fine Uploader page should look something like this:
         </div>
     </script>
 
+    <script>
+        var uploader = new qq.FineUploader({
+            debug: true,
+            element: document.getElementById('fine-uploader'),
+            request: {
+                endpoint: '/uploads'
+            },
+            deleteFile: {
+                enabled: true,
+                endpoint: '/uploads'
+            },
+            retry: {
+               enableAuto: true
+            }
+        });
+    </script>
   </body>
 </html>
 ```

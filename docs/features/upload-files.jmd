@@ -36,7 +36,9 @@ By default `autoUpload` is enabled.
 
 ```javascript
 // Upload automatically
-$("#fine-uploader").fineUploader({
+var uploader = new qq.FineUploader({
+    /* other required config options left out for brevity */
+
     request: {
         endpoint: '/server/upload'
     }
@@ -49,19 +51,19 @@ the uploads via the API time. Uploads can be triggered by calling the `uploadSto
 <!-- http://stackoverflow.com/questions/16471503/fineuploader-uploads-the-same-file-multiple-times-at-the-same-time -->
 ```javascript
 // Manually upload
-$("#fine-uploader").fineUploader({
+var uploader = new qq.FineUploader({
+    /* other required config options left out for brevity */
+
     autoUpload: false,
     request: {
         endpoint: '/server/upload'
     }
 });
 
-$("#upload-button").on('click', function () {
-    $("#fine-uploader").fineUploader('uploadStoredFiles');
+qq(document.getElementById("upload-button")).attach('click', function() {
+    uploader.uploadStoredFiles();
 });
 ```
-
-{{ alert("jQuery 1.7+ is required to use the `on` function.") }}
 
 {% endmarkdown %}
 {% endblock %}

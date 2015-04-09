@@ -24,7 +24,7 @@ Fine Uploader S3, the endpoint should point to your S3 bucket.
 More information on the [`request` option here](../api/options-s3.html#request-option).
 
 ```javascript
-$("#fine-uploader").fineUploaderS3({
+var uploader = new qq.s3.FineUploader({
     request: {
         endpoint: '{ YOUR_BUCKET_NAME }.s3.amazonaws.com'
         accessKey: '{ YOUR_ACCESS_KEY }'
@@ -47,7 +47,7 @@ Debug mode is used to begin diagnosing any application errors. Debug mode can
 be enabled in the options of Fine Uploader:
 
 ```javascript
-$("#fine-uploader").fineUploaderS3({
+var uploader = new qq.s3.FineUploader({
     debug: true,
     /* ...other options... */
 });
@@ -65,7 +65,7 @@ Networks can be unreliable, and if your upload fails, Fine Uploader offers the
 ability to retry. The `retry` option can be set to enable this:
 
 ```javascript
-$("#fine-uploader").fineUploaderS3({
+var uploader = new qq.s3.FineUploader({
     /* ...other options... */
     retry: {
        enableAuto: true // defaults to false
@@ -87,7 +87,7 @@ options.
 You can also send a delete request via the `deleteFile` [API method](../api/methods.html).
 
 ```javascript
-$("#fine-uploader").fineUploaderS3({
+var uploader = new qq.s3.FineUploader({
     /* ...other options... */
     deleteFile: {
         enabled: true, // defaults to false
@@ -113,40 +113,8 @@ Now our Fine Uploader page should look something like this:
     <div id="fine-uploader">
     </div>
 
-    <!-- jQuery version 1.10.x (if you are using the jQuery plugin -->
-    <script src="http://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
-
-    <!-- Fine Uploader-jQuery -->
-    <script src="jquery.fine-uploader-{{ PKG['version']|e }}.min.js" type="text/javascript"></script>
-
-    <script>
-    // Wait until the DOM is 'ready'
-    $(document).ready(function () {
-        $("#fine-uploader").fineUploaderS3({
-            debug: true,
-            request: {
-                endpoint: '{ YOUR_BUCKET_NAME }.s3.amazonaws.com'
-                accessKey: '{ YOUR_ACCESS_KEY }'
-            },
-            signature: {
-                endpoint: '/s3/signature'
-            },
-            uploadSuccess: {
-                endpoint: '/s3/success'
-            },
-            iframeSupport: {
-                localBlankPagePath: '/success.html'
-            },
-            retry: {
-               enableAuto: true // defaults to false
-            },
-            deleteFile: {
-                enabled: true,
-                endpoint: '/s3handler'
-            }
-        });
-    });
-    </script>
+    <!-- Fine Uploader -->
+    <script src="s3.fine-uploader.min.js" type="text/javascript"></script>
 
     <script type="text/template" id="qq-template">
         <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
@@ -207,6 +175,32 @@ Now our Fine Uploader page should look something like this:
         </div>
     </script>
 
+    <script>
+        var uploader = new qq.s3.FineUploader({
+            debug: true,
+            element: document.getElementById('fine-uploader'),
+            request: {
+                endpoint: '{ YOUR_BUCKET_NAME }.s3.amazonaws.com'
+                accessKey: '{ YOUR_ACCESS_KEY }'
+            },
+            signature: {
+                endpoint: '/s3/signature'
+            },
+            uploadSuccess: {
+                endpoint: '/s3/success'
+            },
+            iframeSupport: {
+                localBlankPagePath: '/success.html'
+            },
+            retry: {
+               enableAuto: true // defaults to false
+            },
+            deleteFile: {
+                enabled: true,
+                endpoint: '/s3handler'
+            }
+        });
+    </script>
   </body>
 </html>
 ```

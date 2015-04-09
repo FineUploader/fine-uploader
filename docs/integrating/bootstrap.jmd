@@ -1,6 +1,0 @@
-{% extends "_templates/base.html" %}
-{% block content %}
-{% markdown %}
-
-{% endmarkdown %}
-{% endblock %}

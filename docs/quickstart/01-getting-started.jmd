@@ -77,48 +77,12 @@ If you need to support IE9 and older, you will need to load/use Fine Uploader wi
 handler if the value of `qq.supportedFeatures.ajaxUploading` is `false`.") }}
 
 
-#### [jQuery](../integrating/jquery.html)
-
-Fine Uploader is also easily used as a jQuery plugin. This plugin gives you
-the ability to use either Core or UI mode.
-
-To use Core Mode with the jQuery plugin simply set the uploaderType to be
-'basic':
-
-```javascript
-$("#fine-uploader").fineUploader({uploaderType: 'basic' /* options go here... */});
-```
-
-To use UI Mode with the jQuery plugin:
-```javascript
-$("#fine-uploader").fineUploader({/* options go here... */});
-```
-
-To use Fine Uploader S3 with the jQuery plugin:
-```javascript
-$("#fine-uploader").fineUploaderS3({/* options go here... */});
-```
-
-To use Fine Uploader Azure with the jQuery plugin:
-```javascript
-$("#fine-uploader").fineUploaderAzure({/* options go here... */});
-```
-
-{{ alert(
-"""Henceforth this walkthrough will utilize the jQuery plugin of Fine Uploader.
-This is because jQuery is more or less ubiquitous on the web, and its a safe bet
-to assume it is included somewhere on your page. If you are forced to use the
-non-jQuery version, then keep in mind that the syntax will be slightly different.""") }}
-
 #### Callbacks
 Like many other JavaScript libraries, Fine Uploader implements a event system
 that uses callbacks to execute user-provided functions at runtime, based on
-specific events. These [events are listed here](../api/events.html). Depending
-on whether you are using the jQuery plugin or not, the callback syntax is a
-bit different:
+specific events. These [events are listed here](../api/events.html).
 
-##### non-jQuery
-With the non-jQuery plugin, callbacks are defined in the `callbacks` option
+Callbacks are defined in the `callbacks` option
 property. The parameters for the callbacks are the same as listed in the
 [documentation](../api/events.html).
 
@@ -135,35 +99,6 @@ var uploader = new qq.FineUploader({
     }
 });
 ```
-
-##### jQuery
-The jQuery plugin uses a slightly different callback syntax. This syntax will
-be familiar to thsoe used to working with jQuery plugins. Note that an extra
-[`Event`](http://api.jquery.com/Types/#Event) object is passed into the handler
-function as the first parameter, the consecutive parameters are the same as
-those listed in the [events documentation](../api/events.html).
-
-**Example:**
-
-```javascript
-$("#fine-uploader")
-    .fineUploader({/* options go here... */})
-    .on('upload', function (event, id, name) {
-        // callback code here...
-    })
-    .on('submitted', function (event, id, name) {
-        // callback code here...
-    });
-```
-
-{{ alert(
-"""You may use traditional callback handler functions with the jQuery plug-in if you wish.
-If you do contribute traditional callback functions via the `callbacks` option, you should disregard event handler section
-of the above example as this will bypass the jQuery plug-in entirely.  Also, while it is possible to contribute
-two callbacks of the same type via a jQuery event handler and a `callbacks` option, you should be aware that the
-`callbacks` function will always be evaluated first, and the return value from the `callbacks` function will be
-accepted instead of the return value from the jQuery event handler if the return value of the `callbacks`
-function is non-null.""", "info", "Note:") }}
 
 Next, let's check out some of Fine Uploader's options.
 

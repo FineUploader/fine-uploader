@@ -3,16 +3,13 @@
 {% block content %}
 {% markdown %}
 
-# jQuery Plugin {: .page-header }
+# jQuery Plugin Wrapper {: .page-header }
 
-[jQuery](http://jquery.com/) is a cross-browser JavaScript library designed to
-simplify client-side scripting of HTML.
-It provides tons of workarounds for various browsers, and makes developing
-client-side JavaScript for the web much easier. Overall, it is recommended to
-use jQuery unless you are specifically trying to develop without it.
+While Fine Uploader provides wrapper code that integrates with jQuery
+while still allowing the integrator to choose between Core and UI modes, [there is no obvious benefit to using jQuery in the context of Fine Uploader](https://github.com/FineUploader/fine-uploader/issues/1310).
+However, if you prefer to use the jQuery wrapper, this page will serve as a guide, explaining the syntax differences between
+the jQuery wrapper and the core library sans jQuery.
 
-Fortunately, Fine Uploader provides wrapper code that integrates with jQuery
-while still allowing the integrator to choose between Core and UI modes.
 The Fine Uploader jQuery plugin has a couple of syntactical differences than
 the regular Fine Uploader plugin. Also, some of the options are defined
 differently.  Note that all conventions commonly associated with jQuery plug-ins are followed faithfully here, so

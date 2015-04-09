@@ -30,7 +30,7 @@ handler if the value of `qq.supportedFeatures.ajaxUploading` is `false`.") }}
 
 ```javascript
 if (qq.supportedFeatures.ajaxUploading) {
-    $("#fine-uploader").fineUploaderAzure({
+    var uploader = new qq.azure.FineUploader
         request: {
             endpoint: 'https://{ YOUR_STORAGE_ACCOUNT_NAME }.blob.core.windows.net/{ YOUR_CONTAINER_NAME }'
         },
@@ -50,7 +50,7 @@ Debug mode is used to begin diagnosing any application errors. Debug mode can
 be enabled in the options of Fine Uploader:
 
 ```javascript
-$("#fine-uploader").fineUploaderAzure({
+var uploader = new qq.azure.FineUploader
     debug: true,
     /* ...other options... */
 });
@@ -68,7 +68,7 @@ Networks can be unreliable, and if your upload fails, Fine Uploader offers the
 ability to retry. The `retry` option can be set to enable this:
 
 ```javascript
-$("#fine-uploader").fineUploaderAzure({
+var uploader = new qq.azure.FineUploader
     /* ...other options... */
     retry: {
        enableAuto: true // defaults to false
@@ -91,7 +91,7 @@ Note that Fine Uploader Azure will send delete file requests directly to Azure v
 `endpoint` property of the `deleteFile` feature is irrelevant.
 
 ```javascript
-$("#fine-uploader").fineUploaderAzure({
+var uploader = new qq.azure.FineUploader
     /* ...other options... */
     deleteFile: {
         enabled: true // default is false
@@ -116,34 +116,8 @@ Now our Fine Uploader page should look something like this:
     <div id="fine-uploader">
     </div>
 
-    <!-- jQuery version 1.10.x (if you are using the jQuery plugin -->
-    <script src="http://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
-
-    <!-- Fine Uploader-jQuery -->
-    <script src="jquery.fine-uploader-{{ PKG['version']|e }}.min.js" type="text/javascript"></script>
-
-    <script>
-    // Wait until the DOM is 'ready'
-    $(document).ready(function () {
-        $("#fine-uploader").fineUploaderAzure({
-            request: {
-                endpoint: 'https://{ YOUR_STORAGE_ACCOUNT_NAME }.blob.core.windows.net/{ YOUR_CONTAINER_NAME }'
-            },
-            signature: {
-                endpoint: '/signature'
-            },
-            uploadSuccess: {
-                endpoint: '/success'
-            },
-            retry: {
-               enableAuto: true
-            },
-            deleteFile: {
-                enabled: true
-            }
-        });
-    });
-    </script>
+    <!-- Fine Uploader -->
+    <script src="azure.fine-uploader.min.js" type="text/javascript"></script>
 
     <script type="text/template" id="qq-template">
         <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
@@ -204,6 +178,26 @@ Now our Fine Uploader page should look something like this:
         </div>
     </script>
 
+    <script>
+        var uploader = new qq.azure.FineUploader
+            element: document.getElementById('fine-uploader'),
+            request: {
+                endpoint: 'https://{ YOUR_STORAGE_ACCOUNT_NAME }.blob.core.windows.net/{ YOUR_CONTAINER_NAME }'
+            },
+            signature: {
+                endpoint: '/signature'
+            },
+            uploadSuccess: {
+                endpoint: '/success'
+            },
+            retry: {
+               enableAuto: true
+            },
+            deleteFile: {
+                enabled: true
+            }
+        });
+    </script>
   </body>
 </html>
 ```
