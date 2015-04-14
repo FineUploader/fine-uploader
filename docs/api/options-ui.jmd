@@ -108,7 +108,7 @@ options for `retry`""", "info", "Note:") }}
 
 {{ api_parent_option("thumbnails", "thumbnails", "",
     (
-        ("thumbnails.maxCount", "maxCount", "Maximum number of client-side generated previews to render per Fine Uploader instance.  A call to the reset method resets this value as well.", "Integer", "0",),
+        ("thumbnails.maxCount", "maxCount", "Maximum number of previews to render per Fine Uploader instance.  A call to the reset method resets this value as well.", "Integer", "0",),
         ("thumbnails.timeBetweenThumbs", "timeBetweenThumbs", "The amount of time, in milliseconds, to pause between each preview generation process.  This is in place to prevent the UI thread from locking up for a continuously long period of time, as preview generation can be a resource-intensive process.", "Integer", "750",),
     )
 )}}
