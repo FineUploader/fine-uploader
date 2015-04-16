@@ -44,7 +44,7 @@ This template also renders a visible drop zone, but only with the fine-uploader-
 file will include a customizable "drop files" message in the background of the drop zone if the current browser supports
 file dropping.
 
-#### simple.thumbnails.html
+#### simple-thumbnails.html
 
 This template is similar to "default", except it will render previews of images and placeholders for non-previewable images
 (provided you make preview images accessible via the `template.placeholders` option). There are several instances of this
