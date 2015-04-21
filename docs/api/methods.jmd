@@ -53,7 +53,7 @@ A `CanvasWrapper` object:
         {
             "name": "files",
             "type": "Array",
-            "description": "An array of `File`s, `<input>`s, `FileList`s, `Blob`s, `BlobWrapper` objects, `<canvas>`es, or `CanvasWrapper` objects"
+            "description": "An array of `File`s, `<input>`s, `Blob`s, `BlobWrapper` objects, `<canvas>`es, or `CanvasWrapper` objects. You may also pass in a `FileList`."
         },
     {
         "name": "params",
