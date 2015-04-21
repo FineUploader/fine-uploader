@@ -163,6 +163,40 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+        it("handles a simple successful single file upload request correctly where a file input element is passed into addFiles", function(done) {
+            assert.expect(18, done);
+
+            var uploader = getSimpleUploader(false, true);
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+
+                var request,
+                    requestParams,
+                    fakeFileInput = {
+                        tagName: "input",
+                        type: "file",
+                        files: [{name: "test", blob: blob}]
+                    };
+
+                uploader.addFiles(fakeFileInput);
+                uploader.uploadStoredFiles();
+
+                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                request = fileTestHelper.getRequests()[0];
+                requestParams = request.requestBody.fields;
+
+                assert.equal(requestParams.qquuid, uploader.getUuid(0), "Wrong UUID param sent with request");
+                assert.equal(requestParams.qqfilename, uploader.getName(0), "Wrong filename param sent with request");
+                assert.equal(requestParams.qqtotalfilesize, uploader.getSize(0), "Wrong file size param sent with request");
+                assert.ok(qq.isBlob(requestParams.qqfile), "File is incorrect");
+                assert.equal(request.method, "POST", "Wrong request method");
+                assert.equal(request.url, testUploadEndpoint, "Wrong request url");
+
+                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+            });
+        });
+
         it("handles a simple successful single MPE file upload request correctly", function(done) {
             assert.expect(18, done);
 
