@@ -48,10 +48,11 @@
 
                 processFileOrInput = qq.bind(function(fileOrInput) {
                     if (qq.isInput(fileOrInput) && qq.supportedFeatures.ajaxUploading) {
-                        var files = Array.prototype.slice.call(fileOrInput.files);
+                        var files = Array.prototype.slice.call(fileOrInput.files),
+                            self = this;
 
                         qq.each(files, function(idx, file) {
-                            this._handleNewFile(file, batchId, verifiedFiles);
+                            self._handleNewFile(file, batchId, verifiedFiles);
                         });
                     }
                     else {
