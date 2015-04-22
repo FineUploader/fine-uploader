@@ -42,10 +42,11 @@
                 sessionToken: null
             },
 
-            // optional/ignored if `credentials` is provided
+            // All but `version` are ignored if `credentials` is provided.
             signature: {
+                customHeaders: {},
                 endpoint: null,
-                customHeaders: {}
+                version: 2
             },
 
             uploadSuccess: {
