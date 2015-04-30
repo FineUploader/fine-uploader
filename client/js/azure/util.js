@@ -15,7 +15,7 @@ qq.azure.util = qq.azure.util || (function() {
          * @param name Name of the Request Header parameter to construct a (possibly) prefixed name.
          * @returns {String} A valid Request Header parameter name.
          */
-        _getPrefixedParamName: function (name) {
+        _getPrefixedParamName: function(name) {
             switch (name)
             {
                 //
