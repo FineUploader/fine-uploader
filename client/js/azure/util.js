@@ -15,7 +15,7 @@ qq.azure.util = qq.azure.util || (function() {
          * @param name Name of the Request Header parameter to construct a (possibly) prefixed name.
          * @returns {String} A valid Request Header parameter name.
          */
-        _getPrefixedParamName: function(name) {
+        _paramNameMatchesAzureParameter: function(name) {
             switch (name)
             {
                 //
@@ -30,10 +30,17 @@ qq.azure.util = qq.azure.util || (function() {
                 case "x-ms-blob-content-disposition":
                 case "x-ms-blob-content-md5":
                 case "x-ms-blob-cache-control":
-                    return name;
+                    return true;
                 default:
-                    return qq.azure.util.AZURE_PARAM_PREFIX + name;
+                    return false;
             }
+        },
+
+        _getPrefixedParamName: function (name) {
+            if (qq.azure.util._paramNameMatchesAzureParameter(name))
+                return name;
+            else
+                return qq.azure.util.AZURE_PARAM_PREFIX + name;
         },
 
         getParamsAsHeaders: function(params) {
@@ -47,6 +54,9 @@ qq.azure.util = qq.azure.util || (function() {
                 }
                 else if (qq.isObject(val)) {
                     qq.extend(headers, qq.azure.util.getParamsAsHeaders(val));
+                }
+                else if (qq.azure.util._paramNameMatchesAzureParameter(name)) {
+                    headers[headerName] = val;
                 }
                 else {
                     headers[headerName] = encodeURIComponent(String(val));
