@@ -6,14 +6,10 @@ qq.azure.util = qq.azure.util || (function() {
     return {
         AZURE_PARAM_PREFIX: "x-ms-meta-",
 
-        /** Create Prefixed request headers which are appropriate for Azure.
-         *
-         * If the request header is appropriate for Azure (e.g. Cache-Control) then pass
-         * it along without a metadata prefix. For all other request header parameter names,
-         * apply qq.azure.util.AZURE_PARAM_PREFIX before the name.
+        /** Test if a request header is actually a known Azure parameter.
          *
          * @param name Name of the Request Header parameter to construct a (possibly) prefixed name.
-         * @returns {String} A valid Request Header parameter name.
+         * @returns {Boolean} Test result.
          */
         _paramNameMatchesAzureParameter: function(name) {
             switch (name)
@@ -36,6 +32,15 @@ qq.azure.util = qq.azure.util || (function() {
             }
         },
 
+        /** Create Prefixed request headers which are appropriate for Azure.
+         *
+         * If the request header is appropriate for Azure (e.g. Cache-Control) then it should be
+         * passed along without a metadata prefix. For all other request header parameter names,
+         * qq.azure.util.AZURE_PARAM_PREFIX should be prepended.
+         *
+         * @param name Name of the Request Header parameter to construct a (possibly) prefixed name.
+         * @returns {String} A valid Request Header parameter name.
+         */
         _getPrefixedParamName: function(name) {
             if (qq.azure.util._paramNameMatchesAzureParameter(name)) {
                 return name;
