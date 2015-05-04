@@ -37,10 +37,12 @@ qq.azure.util = qq.azure.util || (function() {
         },
 
         _getPrefixedParamName: function (name) {
-            if (qq.azure.util._paramNameMatchesAzureParameter(name))
+            if (qq.azure.util._paramNameMatchesAzureParameter(name)) {
                 return name;
-            else
+            }
+            else {
                 return qq.azure.util.AZURE_PARAM_PREFIX + name;
+            }
         },
 
         getParamsAsHeaders: function(params) {
