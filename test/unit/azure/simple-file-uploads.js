@@ -392,8 +392,7 @@ if (qqtest.canDownloadFileAsBlob) {
             );
             
             var params = {
-                "foo1": "bar", 
-                
+                "foo1": "bar",
                 "Content-Encoding": "1rawvalue==" ,
                 "Content-Disposition": "2rawvalue==",
                 "Content-MD5": "3rawvalue==",
