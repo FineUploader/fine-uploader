@@ -172,7 +172,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
     (
         ("request.customHeaders", "customHeaders", "Additional headers sent along with each upload request.", "Object", "{}",),
         ("request.endpoint", "endpoint", "The endpoint to send upload requests to.", "String", "/server/upload",),
-        ("request.filenameParam", "filenameParam", "The name of the parameter passed if the original filename has been editied or a `Blob` is being sent.", "String", "qqfilename",),
+        ("request.filenameParam", "filenameParam", "The name of the parameter passed if the original filename has been edited or a `Blob` is being sent.", "String", "qqfilename",),
         ("request.forceMultipart", "forceMultipart", "Force all uploads to use multipart encoding", "Boolean", "true",),
         ("request.inputName", "inputName", "The attribute of the input element which will contain the file name. Not applicable to non AJAX uploads.", "String", "qqfile",),
         ("request.method", "method", "Specify a method to use when sending files to a traditional endpoint.  This option is ignored in older browsers (such as IE 9 and older).", "String", "POST",),
