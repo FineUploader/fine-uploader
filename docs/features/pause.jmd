@@ -26,8 +26,8 @@ If you want "pause" and/or "continue" buttons to appear next to your files at th
 add the following to your template:
 
 ```html
-<button class="qq-upload-pause-selector qq-upload-pause">Pause</button>
-<button class="qq-upload-continue-selector qq-upload-continue">Continue</button>
+<button type="button" class="qq-upload-pause-selector qq-upload-pause">Pause</button>
+<button type="button" class="qq-upload-continue-selector qq-upload-continue">Continue</button>
 ```
 These elements must be added under the qq-upload-list-selector container in your template in order for Fine Uploader
 UI to find them.
