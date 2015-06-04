@@ -512,6 +512,10 @@ qq.Templating = function(spec) {
                         });
                     }
                 }
+                // File element in template may have been removed, so move on to next item in queue
+                else {
+                    generateNextQueuedPreview();
+                }
             }
             else if (thumbnail) {
                 displayWaitingImg(thumbnail);
