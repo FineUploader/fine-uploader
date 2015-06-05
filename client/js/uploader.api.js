@@ -684,7 +684,14 @@
         _maybeUpdateThumbnail: function(fileId) {
             var thumbnailUrl = this._thumbnailUrls[fileId];
 
-            this._templating.updateThumbnail(fileId, thumbnailUrl);
+            if (thumbnailUrl ||
+                this._options.thumbnails.placeholders.waitUntilResponse ||
+                !qq.supportedFeatures.imagePreviews) {
+
+                // This will replace the "waiting" placeholder with a "preview not available" placeholder
+                // if called with a null thumbnailUrl.
+                this._templating.updateThumbnail(fileId, thumbnailUrl);
+            }
         },
 
         _addCannedFile: function(sessionData) {
