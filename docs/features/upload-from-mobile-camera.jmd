@@ -14,7 +14,73 @@ Note that due to limitations related to camera access in iOS, setting this to tr
 multiple files at once.")
 }}
 
-[For more information, see the associated blog post](http://blog.fineuploader.com/2013/05/09/upload-directly-via-a-camera-on-mobile-devices/)
+If you’d like to easily ensure camera access is available in iOS, your Fine Uploader instance would look something like this:
+
+```javascript
+var uploader = new qq.FineUploader({
+  element: document.getElementById("myFineUploader"),
+  camera: {
+    ios: true
+  }
+});
+```
+
+The downside to setting the `camera.ios` property to `true` is that you will not be able to select multiple files at once.
+This is a limitation of iOS. If you really want to allow users to select multiple files and have camera access,
+you can create your own `<input type="file" accept="image/*;capture=camera">` element, register an `onchange` handler,
+and pass the input element to Fine Uploader’s [addFiles API method](../api/methods.html#addFiles) (in your onchange handler).
+This button will be used exclusively for camera access and the button provided by Fine Uploader will be used for multiple file selection.
+You would, of course, not set the `camera.ios` to `true` in this case. Here’s an example:
+
+```css
+#cameraButtonContainer
+{
+    position: relative;
+    overflow: hidden;
+    direction: ltr;
+    display: none;
+}
+
+#cameraButtonContainer .ios
+{
+    display: block;
+}
+
+#cameraButton
+{
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    font-family: Arial;
+    font-size: 118px;
+    margin: 0px;
+    padding: 0px;
+    cursor: pointer;
+    opacity: 0;
+}
+```
+
+```html
+<div id="cameraButtonContainer" class="qq-upload-button">
+  <div>Camera</div>
+  <input id="cameraButton" type="file" name="camera" accept="image/*;capture=camera">
+</div>
+<div id="myFineUploader"></div>
+```
+
+```javascript
+var uploader = new qq.FineUploader({
+  element: document.getElementById("myFineUploader");
+});
+
+if (qq.ios()) {
+  qq(document.getElementById("cameraButtonContainer")).addClass('ios');
+
+  qq(document.getElementById("cameraButton")).attach("change", function() {
+    uploader.addFiles(this);
+  });
+}
+```
 
 {% endmarkdown %}
 {% endblock %}

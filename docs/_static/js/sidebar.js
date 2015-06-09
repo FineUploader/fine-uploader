@@ -18,18 +18,18 @@ var renderSidebarNav = function(type, headers) {
                                         "<ul class='nav nav-list'>";
         $typeEl.children('.' + type).each(function (idx, sub_type) {
             var el = "h4",
-                $type = $(sub_type).find(el);
-                title = $type.attr('id');
-                link = '#'+title;
+                $type = $(sub_type).find(el),
+                title = type === 'event' ? $type.text() : $type.attr('id'),
+                link = '#' + $type.attr('id');
 
             sidebarContents +=  "<li><a href='" + link + "'>" + title + "</a></li>";
         });
 
         $typeEl.children('.' + type + '-parent').each(function (idx, sub_type) {
             var el = "h3",
-                $type = $(sub_type).find(el);
-                title = $type.attr('id');
-                link = '#'+title;
+                $type = $(sub_type).find(el),
+                title = type === 'event' ? $type.text() : $type.attr('id'),
+                link = '#' + $type.attr('id');
 
             sidebarContents +=  "<li><a href='" + link + "'>" + title + "</a></li>";
         });

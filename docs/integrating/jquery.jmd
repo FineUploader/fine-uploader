@@ -3,43 +3,53 @@
 {% block content %}
 {% markdown %}
 
+[button]: ../api/options.html#button
+[callbacks]: ../api/events.html
+[element]: ../api/options-ui.html#element
+[extradropzones]: ../api/options-ui.html#dragAndDrop.extraDropzones
+
+
 # jQuery Plugin Wrapper {: .page-header }
 
-While Fine Uploader provides wrapper code that integrates with jQuery
-while still allowing the integrator to choose between Core and UI modes, [there is no obvious benefit to using jQuery in the context of Fine Uploader](https://github.com/FineUploader/fine-uploader/issues/1310).
+**While Fine Uploader provides wrapper code that integrates with jQuery while still allowing the integrator to choose
+between Core and UI modes, [there is no common benefit to using jQuery in the context of Fine Uploader](https://github.com/FineUploader/fine-uploader/issues/1310).**
 However, if you prefer to use the jQuery wrapper, this page will serve as a guide, explaining the syntax differences between
-the jQuery wrapper and the core library sans jQuery.
+the jQuery wrapper and the core library (sans jQuery).
 
-The Fine Uploader jQuery plugin has a couple of syntactical differences than
-the regular Fine Uploader plugin. Also, some of the options are defined
-differently.  Note that all conventions commonly associated with jQuery plug-ins are followed faithfully here, so
-if you have worked with jQuery plug-ins before, this should all be quite intuitive.
+{{
+    alert("You must include jQuery and the jQuery wrapped version of Fine Uploader on your page if you wish to use jQuery-wrapped Fine Uploader.")
+}}
 
-## DOM elements
+The Fine Uploader jQuery wrapper has a couple of syntactical differences compared to the the unwrapped library.
+Also, some of the options are defined differently.  Note that all conventions commonly associated with jQuery
+plug-ins are followed faithfully here, so if you have worked with jQuery plug-ins before, this should all be quite intuitive.
 
-With the Fine Uploader jQuery plugin there is no need to specify the `element` option. Instead,
-using the jQuery plugin syntax, you provide the element or elements you would like to associate with your
-Fine Uploader instance like so:
+
+## Working With HTML elements
+
+When using the Fine Uploader jQuery plugin there is no need to specify [the `element` option][element]. Instead,
+using the jQuery plugin syntax, you simply provide the element (or elements) you would like to associate with your
+Fine Uploader instance, like so:
+
 ```javascript
-// This will instantiate an instance of Fine Uploader on the element
-// with an id of "fine-uploader"
+// This will instantiate an instance of Fine Uploader on the page element
+// that has an `id` of "fine-uploader".
 $("#fine-uploader").fineUploader({
     /* options go here */
 });
 ```
 
-Also, Fine Uploader is smart enough to know you are using jQuery and allows you to
-pass in `jQuery` objects instead of `HTMLElement`s or `Node`s.
+Fine Uploader's jQuery wrapper is smart enough to know you are using jQuery and allows you to
+pass in `jQuery` objects instead of `HTMLElement`s or `Node`s. In fact, the wrapper intercepts these jQuery objects
+and converts them to HTML `Element`s for use by the library.
 
-For example, if you specify the `button` option, the value can be `$("#myButton")`
+For example, if you specify [the `button` option][button], the value can be `$("#myButton")`
 rather than `$("#myButton")[0]` or `document.getElementById("button")`.
 
-If the option takes an array of `HTMLElements` any item in the array that is a
-jQuery object will be evaluated and all `HTMLElements` associated with that
-jQuery object will be added to the array when it is passed to the native Fine Uploader.
-For instance, if you specify a value for `extraDropzones` which is
-`[$(".myExtraDropzone")]`, and the element contains three child elements, then
-the plugin will pass all three elements to the native Fine Uploader.
+If the option takes an array of `HTMLElements`, any item in the array that is a jQuery object will be evaluated and
+all `HTMLElements` associated with that jQuery object will be added to the array when it is passed to Fine Uploader.
+For instance, if you specify a value for [`extraDropzones`][extradropzones] which is `[$(".myExtraDropzone")]`, and the element
+contains three child elements, then the plugin will pass all three elements to Fine Uploader.
 
 ```javascript
 $("#fine-uploader").fineUploader({
@@ -51,13 +61,12 @@ $("#fine-uploader").fineUploader({
 });
 ```
 
+
 ## Uploader Type
 
-The Fine Uploader jQuery plugin still provides integrators with a way to specify
-whether they are using basic or ui mode by specifying the `uploaderType` option
-on instantiation.
-
-When the type is `'basic'` then basic mode is used, otherwise UI mode is assumed.
+The Fine Uploader jQuery wrapper still provides integrators with a way to specify whether they are using core or
+UI mode by specifying an `uploaderType` option on instantiation. When the type is `'basic'` then core/basic mode
+is used, otherwise UI mode is assumed.
 
 ```javascript
 $("#fine-uploader").fineUploader({
@@ -65,18 +74,15 @@ $("#fine-uploader").fineUploader({
 });
 ```
 
+
 ## Callbacks and Events
 
 The biggest syntactical difference between the jQuery and non-jQuery plugin is the callback syntax.
-All callbacks defined in Fine Uploader are still avaiable to jQuery plugin users.
-
-{{
-    alert("Use of the `on` function is not possible until jQuery >=1.7")
-}}
+All callbacks defined in Fine Uploader are available to jQuery plugin users.
 
 {{ alert(
-"""When using the jQuery plugin, **all** events pass an extra `event` parameter
- as the <strong>first</strong> parameter to your callback functions.""", "info", "Note:") }}
+"""When using the jQuery plugin, **all** event function handlers are passed an `event` parameter
+ as the <strong>first</strong> argument to your callback function.""", "info", "Note:") }}
 
 ```javascript
 $("#fine-uploader").fineUploader({
@@ -90,14 +96,13 @@ $("#fine-uploader").fineUploader({
 });
 ```
 
-{{ alert(
-"""You may use traditional callback handler functions with the jQuery plug-in if you wish.
-If you do contribute traditional callback functions via the `callbacks` option, you should disregard everything on this
+You may use traditional callback handler functions with the jQuery plug-in if you wish.
+If you do contribute traditional callback functions via [the `callbacks` option][callbacks], you should disregard everything on this
 page when writing code inside of your callback functions as this will bypass the jQuery plug-in entirely.
 Also, while it is possible to contribute two callbacks of the same type via a jQuery event handler and a `callbacks`
 option, you should be aware that the `callbacks` function will always be evaluated first, and the return value from
 the `callbacks` function will be accepted instead of the return value from the jQuery event handler if the return
-value of the `callbacks` function is non-null.""", "info", "Note:") }}
+value of the `callbacks` function is non-null.
 
 {{ alert(
 """When passing a jQuery object as the value for an option or API method parameter, all elements represented by the selector will
@@ -107,8 +112,8 @@ For an example of the latter situation please see [case #1375 in the issue track
 
 ## API Methods
 
-All public API methods are also accessible when using the jQuery plugin, but -- as with callbacks --
-there are just a few syntactical differences.
+All public API methods are also accessible when using the jQuery plugin, but, as with callbacks,
+there are a few syntactical differences.
 
 ```javascript
 // To call a method on Fine Uploader, refer to it's jQuery object:
@@ -120,6 +125,7 @@ $("#cancel-button").click(function (event) {
 });
 ```
 
+
 ## Endpoint Handlers
 
 The jQuery plugin cares not about what your endpoint is, but if you plan to use
@@ -127,7 +133,14 @@ the S3 uploader rather than the traditional uploader, ensure that you are using
 the right plugin name:
 
 ```javascript
-$("#s3-fine-uploader").fineUploaderS3({ /* options ... */ });
+// Fine Uploader
+$("#fine-uploader").fineUploader({ /* options ... */ });
+
+// Fine Uploader S3
+$("#fine-uploader").fineUploaderS3({ /* options ... */ });
+
+// Fine Uploader Azure
+$("#fine-uploader").fineUploaderAzure({ /* options ... */ });
 ```
 
 {% endmarkdown %}

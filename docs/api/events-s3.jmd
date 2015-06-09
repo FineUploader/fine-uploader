@@ -2,45 +2,53 @@
 {% set page_title = "S3 Methods" %}
 
 {% block sidebar %}
-<ul class="nav nav-tabs nav-stacked">
-    <li><a href="#credentialsexpired">credentialsExpired</a></li>
-</ul>
+<div id="sidebar-accordion" class="accordion"></div>
+{% endblock %}
+
+{% block js_head %}
+<script src="{{ ASSETS }}/js/sidebar.js"></script>
+{% endblock %}
+
+{% block js_footer %}
+<script type="text/javascript">
+$(document).ready(function() {
+    renderEventsSidebarNav(['all']);
+});
+</script>
 {% endblock %}
 
 {% block content %}
 {% markdown %}
 
-# Events <small>S3</small>{: .page-header }
+# Events <small>S3</small> {: .page-header }
 
 The S3 uploader provides many of the same events as the traditional
-uploader, but there are some additional events exclusive to S3 endpoints.
+uploader, but there are some additional events _exclusive_ to S3 endpoints.
 If you plan to use the S3 uploader, then use the following table as your event
-reference.  All methods outlined in the core/traditional documentation are also available
-in Fine Uploader S3, unless otherwise noted here.
+reference.  **All methods outlined in the core/traditional documentation are also available
+in Fine Uploader S3, unless otherwise noted here.**
 
 ### Syntax
 
 The following syntax is the correct way to define event handlers:
 
-```
+```javascript
 callbacks: {
     onDelete: function(id) {
-
+        //...
     },
     onDeleteComplete: function(id, xhr, isError) {
-    //...
+        //...
     }
 }
 ```
 
-#### credentialsExpired
-
-Called before a request is sent to S3 if the temporary credentials have expired.  You must return
-a promise.  If your attempt to refresh the temporary credentials is successful, you must fulfill
-the promise via the `success` method, passing the new `credentials` object.  Otherwise, call `failure`
-with a descriptive reason.
-
-----
-
 {% endmarkdown %}
+<div class="events-all">
+
+{{ api_event("credentialsExpired", "onCredentialsExpired",
+"Called before a request is sent to S3 if the temporary credentials have expired.  You must return a promise.  If your attempt to refresh the temporary credentials is successful, you must fulfill the promise via the `success` method, passing the new `credentials` object.  Otherwise, call `failure` with a descriptive reason.", [])}}
+
+</div>
+
 {% endblock %}

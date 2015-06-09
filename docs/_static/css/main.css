@@ -235,3 +235,9 @@ h4 a, a:hover, a:focus, :visited {
 .method-params > hr {
     margin: 2px;
 }
+
+.version-number {
+    padding: 1px;
+    margin-right: 5px;
+    font-size: 18px;
+}

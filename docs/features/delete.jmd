@@ -11,18 +11,76 @@
 # Deleting Files {: .page-header }
 
 Enabling the deletion of files means your users can delete files after they have been uploaded.
-You can only delete files that have been uploaded during the current session or which have been passed in by using the
-[initial file list][session] feature.
-If you upload a file, leave the page, and come back then you cannot delete that file through Fine Uploader.
+If you upload a file, leave the page, and come back then you cannot delete that file
+through Fine Uploader _unless_ you have enabled the [initial file list feature](../features/session.html).
 
-A file is eligible for deletion only after it has been successfully uploaded.
+
+## Overview
+
+A file is eligible for deletion only after it has been successfully uploaded. In UI mode, if this feature is enabled,
+a customizable delete link will appear next to the file after it has successfully uploaded.
+
+When the user clicks on this link, first, your [`onSubmitDelete` callback](../api/events.html#submitDelete) will be invoked.
+You may return `false` in your callback handler if you want to abort the request (or [a promise](async-tasks-and-promises.html)
+that you may resolve later). If not the user will see a (customizable) confirm dialog (if the `deleteFile.forceConfirm property has been set).
+If they click “ok” (or if the `deleteFile.forceConfirm` option has been disabled), a DELETE request will be sent to the server
+after Fine Uploader invokes [your onDelete callback](../api/events.html#delete).
+
+In UI mode, a status message, along with a spinner, will appear next to the file while Fine Uploader is waiting for the server response.
+Once the response is received, Fine Uploader will invoke [your onDeleteComplete callback](../api/events#deleteComplete).
+If the server indicates success in its response, the file will be removed from the UI and [its status](statistics-and-status-updates.html)
+will be updated. If the server indicates failure, a failure status message will be displayed next to the file (in UI mode).
+If an error has been detected in the response, [your `onError` callback](../api/events.html#error) will also be invoked.
+
+In core mode, you can order a delete request via the new `deleteFile` API function. All of the callbacks invoked while
+in UI mode will also be invoked in core mode if you order a delete via this API function.
+
+
+## The Request (and server-side handling)
+
+Fine Uploader sends a separate DELETE request for each file marked for deletion. The UUID of the file is passed as the
+last item in the request URI. For example, if the UUID of a file, ordered for deletion, is “6a9955d3-8f1e-4c70-ae47-b01b35dd1562″,
+and the endpoint property specified in the deleteFile option object is “/server/upload” and the domain is http://mysite.com,
+Fine Uploader will send a DELETE request to the following endpoint:
+
+>http://mysite.com/server/upload/6a9955d3-8f1e-4c70-ae47-b01b35dd1562.
 
 {{
 alert("""Fine Uploader appends a `_method` parameter to the request object with a value of DELETE when the HTTP method is
 POST instead of DELETE.  This makes it easier to determine the intended semantics of the request server-side.""")
 }}
 
-[For more information, see the associated blog post](http://blog.fineuploader.com/2013/01/25/delete-an-uploaded-file-in-3-3/)
+Note that you can specify custom parameter and additional headers that are sent along with this request as well.
+If you specify custom parameters, they will be sent as part of the query string, NOT the request payload.
+This is due to the fact that many servers will either rip out any request body associated with a DELETE request, or simply
+throw an error/reject the request. In other words, a DELETE request is much like a GET request.
+
+
+## The (Expected) Response
+
+You may return any response you like, as the `XMLHttpRequest` object will be passed to your `onDeleteComplete` handler
+for further examination. However, the response code you return is important to Fine Uploader, as it uses this to determine
+if the delete has succeeded or not. The following response codes indicate success for this specific request: 200, 202, and 204.
+Any other response code indicates a failure.
+
+
+## Enabling the Feature
+
+The following is an example of a VERY basic setup that enables you to use the new delete files feature.
+
+```javascript
+var uploader = new qq.FineUploader({
+    element: document.getElementById('myUploader'),
+    request: {
+        endpoint: 'server/upload'
+    }
+    deleteFile: {
+        enabled: true,
+        forceConfirm: true,
+        endpoint: 'server/file'
+    }
+});
+```
 
 {% endmarkdown %}
 {% endblock %}

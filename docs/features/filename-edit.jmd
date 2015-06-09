@@ -9,24 +9,66 @@
 # Filename Editing {: .page-header }
 
 Fine Uploader provides methods and options to enable client-side editing
-of filenames before upload.
-
-In Core mode, integrators can use the API methods `getName` and `setName` for
-this. In UI mode, if the `editFilename` feature is enabled via the template, then when a user
+of filenames before upload. In core mode, integrators can use the API methods `getName` and `setName` for
+this. In UI mode, if the feature is enabled via the template, then when a user
 clicks a file that they have submitted to the uploader the text will become
 an input element that they can use to change the name.
 
 {{
-alert(
-"""The filename will be sent with the request as the `qqfilename` parameter.
-   Be sure to read this parameter when naming your file server-side.", "info", "Note:")
+alert("You will need to have the `autoUpload` option disabled when using the edit filename feature.")
 }}
 
-{{
-alert("You will want to have `autoUpload` disabled when using the edit filename feature.")
-}}
+## Turning on the edit filename feature in UI mode
 
-[For more information, see the associated blog post](http://blog.fineuploader.com/2013/06/23/3-7-edit-override-file-names/)
+In order to enable this feature, you must disabled `autoUpload` and include the following elements in your template:
+
+```html
+<span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
+<input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
+```
+
+You can read more about templates in the [styling](styling.html) section of the documentation. Also, a live demo of the
+edit feature, along with the needed code, can be found in [the demo section of the home page](http://fineuploader.com/demos#manually-trigger-uploads).
+
+
+## Editing a file name
+
+When this feature is properly enabled, you will notice an edit icon next to each submitted file in the UI, assuming the
+filename is editable at the time. Also, notice the cursor will be set to “pointer” in this case. A filename is editable
+only while the upload status is SUBMITTED. This means that you may edit your file after submitting it, before calling the
+[`uploadStoredFiles` API method](../api/methods.html#uploadStoredFiles).
+
+When an editable file name is clicked/touched, a text input will appear. Here, the filename can be changed. Note that the
+extension is not modifiable. The original extension will always be appended to the filename after the name edit is complete.
+The extension is not editable to ensure that any validation rules surrounding file type are not violated.
+
+After editing a filename, you have a few options:
+
+* Press ENTER to save the change.
+* Click or touch some other area on the page to save the change.
+* Hit TAB to edit the name of the next file in the UI (and save the name entered into the current input box).
+
+Note that an empty file name is not an acceptable value. In this case, the original or previously overridden file name will be used instead.
+
+
+## Things to be aware of
+
+When a file name has been modified, please keep the following in mind:
+
+* Fine Uploader cannot change the filename listed in the header of the associated file’s multipart boundary. The new file name is sent as a parameter along with the request. See the server-side section below for more details.
+* The [`getUploads` API method](statistics-and-status-updates.html) can be used to obtain the original file name.
+All objects returned by this method will include an `originalName` property. The name property will be set to the
+current file name.
+* The [`getName` API method](../api/methods.html#getName) will return the current file name, not the original file name.
+* All name parameters passed to callback handlers will equal the new file name, not the original file name.
+* The resume feature will key on the most current (not necessarily the original) file name when deciding if a submitted
+file is resumable. This determination is made by Fine Uploader just before the first upload request for the file request is sent. If you submit a previously interrupted file with an overridden name, you must ensure the file name is again changed to ensure the file is properly resumed.
+
+
+## Handling an overridden / new file name server-side
+
+The filename will be sent with the request as the `qqfilename` parameter. Be sure to read this parameter when naming
+your file server-side.
 
 {% endmarkdown %}
 {% endblock %}
