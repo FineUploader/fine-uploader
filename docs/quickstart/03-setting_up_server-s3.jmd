@@ -3,7 +3,7 @@
 
 {% block content %}
 {% markdown %}
-# Server Set-Up <small>Amazon S3</small>{: .page-header}
+# Server Set-Up <small>Amazon S3</small> {: .page-header}
 
 For this tutorial we are going to use [Node.js](http://nodejs.org/) to develop
 a simple server which will accept uploads from our Fine Uploader instance. If
