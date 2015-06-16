@@ -2,7 +2,7 @@
 {% set page_title = "Setting Options Azure" %}
 {% block content %}
 {% markdown %}
-# Setting Fine Uploader Options <small>Azure Blob Storage</small>{: .page-header }
+# Setting Fine Uploader Options <small>Azure Blob Storage</small> {: .page-header }
 
 At this point in the tutorial you should have an very simple HTML page with a
 Fine Uploader Azure instance. This section will get you started with setting some of
