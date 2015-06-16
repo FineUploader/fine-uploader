@@ -33,10 +33,10 @@ uploaded one-at-a-time (with concurrent chunking disabled). When maxing out the 
 for that file (3 chunks at once, concurrent chunking enabled) the same file uploaded in about 12 seconds.
 
 
-### Server-side Implications
+### Server-side Implications (traditional endpoints only)
 
-There are only server-side implications for traditional endpoints.  If you using Fine Uploader S3, or
-Fine Uploader Azure, for example, you can skip this section entirely.
+**There are only server-side implications for traditional endpoints.  If you using Fine Uploader S3, or
+Fine Uploader Azure, for example, you can skip this section entirely.**
 
 If you specify a path for the `chunking.success.endpoint` option, Fine Uploader (traditional) will send
 a POST request, giving your server an opportunity to combine all parts into a single file.  This option

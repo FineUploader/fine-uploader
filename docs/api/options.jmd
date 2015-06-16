@@ -28,20 +28,20 @@ $(document).ready(function() {
 
 Fine Uploader has a **plethora** of options. Many of these options change meaning
 depending on what sort of uploader you are using. Pay close attention to the
-mode you are in and keep that in mind when determining which options do what.
+mode you are in and keep that in mind when determining the meaning of a particular option.
 
 ## Core
 {% endmarkdown %}
 
-{{ api_option("autoUpload", "autoUpload", "Set to `false` if you want to be able to upload queued items later by calling the `uploadStoredFiles()` method.", "Boolean", "true") }}
+{{ api_option("autoUpload", "autoUpload", "Set to `false` if you want to be able to upload queued items later by calling the [`uploadStoredFiles()` method](methods.html#uploadStoredFiles).", "Boolean", "true") }}
 
-{{ api_option("button", "button", "Specify an element to use as the 'select files' button. Cannot be a `<button>` ([#33](https://github.com/Widen/fine-uploader/issues/33))", "HTMLElement", "null") }}
+{{ api_option("button", "button", "Specify an element to use as the 'select files' button. [Cannot be a `<button>`](https://github.com/Widen/fine-uploader/issues/33).", "HTMLElement", "null") }}
 
 {{ api_option("debug", "debug", "This will result in log messages being written to the [`window.console`](https://developer.mozilla.org/en-USDOM/console.log) object", "Boolean", "false") }}
 
 {{ api_option("disableCancelForFormUploads", "disableCancelForFormUploads", "When true the cancel link does not appear next to files when the form uploader is used.", "Boolean", "false") }}
 
-{{ api_option("formatFileName", "formatFileName", "Provide a function to control the display of file names. The raw file name is passed into the function when it is invoked. Your function may return a modified file name. Note that this does not affect the *actual* file name, only the displayed file name.", "Function", "") }}
+{{ api_option("formatFileName", "formatFileName", "Provide a function to control the display of file names. The raw file name is passed into the function when it is invoked. Your function may return a modified file name. Note that this does not affect the *actual* file name, only the _displayed_ file name.", "Function", "") }}
 
 {{ api_option("maxConnections", "maxConnections", "Maximum allowable concurrent requests", "Integer", "3") }}
 
@@ -56,7 +56,7 @@ mode you are in and keep that in mind when determining which options do what.
 
 {{ api_parent_option("camera", "camera", "",
     (
-        ("camera.button", "button", "`null` means allow camera access on the default button in iOS, otherwise, provide an extra button container element to target.", "HTMLElement", "null",),
+        ("camera.button", "button", "`null` allows camera access on the default button in iOS. Otherwise provide an extra button container element to target.", "HTMLElement", "null",),
         ("camera.ios", "ios", "Enable or disable camera access on iOS (iPod, iPhone, and iPad) devices. Note: Enabling this will disable multiple file selection.", "Boolean", "false",),
     )
 )
@@ -69,16 +69,16 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
     (
         ("chunking.concurrent.enabled", "concurrent.enabled", "Allow multiple chunks to be uploaded simultaneously per file", "Boolean", "false",),
 
-        ("chunking.enabled", "enabled", "Enable or disable splitting the file separate parts. Each part is sent in a separate request.", "Boolean", "false",),
-        ("chunking.mandatory", "mandatory", "Ensure EVERY file is uploaded in chunks, even if the file can only be split up into 1 chunk.  Does not apply if chunking is not possible in the current browser.", "Boolean", "false",),
-        ("chunking.partSize", "partSize", "The maximum size of each part, in bytes.", "Integer", "2000000",),
+        ("chunking.enabled", "enabled", "Enable or disable splitting the file separate chunks. Each chunks is sent in a separate request.", "Boolean", "false",),
+        ("chunking.mandatory", "mandatory", "Ensure _every_ file is uploaded in chunks, even if the file can only be split up into 1 chunk.  Does not apply if chunking is not possible in the current browser.", "Boolean", "false",),
+        ("chunking.partSize", "partSize", "The maximum size of each chunk, in bytes.", "Integer", "2000000",),
 
         ("chunking.paramNames.chunkSize", "paramNames.chunkSize", "Name of the parameter passed with a chunked request that specifies the size in bytes of the associated chunk.", "String", "qqchunksize",),
         ("chunking.paramNames.partByteOffset", "paramNames.partByteOffset", "Name of the parameter passed with a chunked request that specifies the starting byte of the associated chunk.", "String", "qqpartbyteoffset",),
         ("chunking.paramNames.partIndex", "paramNames.partIndex", "Name of the parameter passed with a chunked request that specifies the index of the associated partition.", "String", "qqpartindex",),
         ("chunking.paramNames.totalParts", "paramNames.totalParts", "Name of the parameter passed with a chunked request that specifies the total number of chunks associated with the `File` or `Blob`.", "String", "qqtotalparts",),
 
-        ("chunking.success.endpoint", "success.endpoint", "Endpoint to send a POST after all chunks have been successfully uploaded for each file.  Required if the concurrent option is set.", "String", "null",),
+        ("chunking.success.endpoint", "success.endpoint", "Endpoint to send a POST after all chunks have been successfully uploaded for each file.  Required if the [`concurrent.enabled` option](#chunking.concurrent.enabled) is set.", "String", "null",),
     )
 )
 }}
@@ -132,9 +132,9 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
         ("messages.minSizeError", "minSizeError", "Text passed to the error event handler if the item is too small.", "String", "{file} is too small, minimum file size is {minSizeLimit}.",),
         ("messages.noFilesError", "noFilesError", "Text passed to the error event handler if any empty array of items is submitted.", "String", "No files to upload.",),
         ("messages.onLeave", "onLeave", "Text displayed to the user when they attempt to leave the page while uploads are still in progress.", "String", "The files are being uploaded, if you leave now the upload will be canceled.",),
-        ("messages.retryFailTooManyItemsError", "retryFailTooManyItemsError", "Text passed to the error event handler if a retry attempt is declared a failed due to a violation of the `validation.itemLimit` rule.", "String", "Retry failed - you have reached your file limit.",),
+        ("messages.retryFailTooManyItemsError", "retryFailTooManyItemsError", "Text passed to the error event handler if a retry attempt is declared a failed due to a violation of [the `validation.itemLimit` rule](#validation.itemLimit).", "String", "Retry failed - you have reached your file limit.",),
         ("messages.sizeError", "sizeError", "Text passed to the error event handler if a submitted item is too large.", "String", "{file} is too large, maximum file size is {sizeLimit}.",),
-        ("messages.tooManyItemsError", "tooManyItemsError", "Text passed to the error event handler if a submit is ignored due to a violation of the `validation.itemLimit` rules.", "String", "Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.",),
+        ("messages.tooManyItemsError", "tooManyItemsError", "Text passed to the error event handler if a submit is ignored due to a violation of [the `validation.itemLimit` rules](#validation.itemLimit).", "String", "Too many items ({netItems}) would be uploaded.  Item limit is {itemLimit}.",),
         ("messages.typeError", "typeError", "Text passed to the error event handler if an invalid file type is detected.", "String", "{file} has an invalid extension. Valid extension(s): {extensions}.",),
         ("messages.unsupportedBrowserIos8Safari", "unsupportedBrowserIos8Safari", "Message displayed if the browser is iOS8 Safari and the corresponding workarounds option is not disabled.", "String", "Unrecoverable error - this browser does not permit file uploading of any kind due to serious bugs in iOS8 Safari.  Please use iOS8 Chrome until Apple fixes these issues.",),
     )

@@ -37,10 +37,10 @@ The following syntax is the correct way to define event handlers:
 ```
 callbacks: {
     onDelete: function(id) {
-    // ...
+        // ...
     },
     onDeleteComplete: function(id, xhr, isError) {
-    //...
+        //...
     }
 }
 ```
@@ -48,7 +48,7 @@ callbacks: {
 {% endmarkdown %}
 <div class="events-all">
 
-{{ api_event("autoRetry", "autoRetry", "Called before each automatic retry attempt for a failed item.",
+{{ api_event("autoRetry", "onAutoRetry", "Called before each automatic retry attempt for a failed item.",
     [
         {
             "name": "id",
@@ -68,7 +68,7 @@ callbacks: {
     ])
 }}
 
-{{ api_event("cancel", "cancel",
+{{ api_event("cancel", "onCancel",
 """Called when the item has been canceled. Return `false` to prevent the
 upload from being canceled. Also can return a promise if non-blocking
 work is required here. Calling `failure()` on the promise is equivalent to
@@ -91,7 +91,7 @@ the upload may actually complete until the promise has actually be fullfilled.
     ])
 }}
 
-{{ api_event("complete", "complete",
+{{ api_event("complete", "onComplete",
 """Called when the item has finished uploading.
 
 The `responseJSON` will contain the raw response from the server including the
@@ -120,7 +120,7 @@ The `responseJSON` will contain the raw response from the server including the
     ])
 }}
 
-{{ api_event("allComplete", "allComplete",
+{{ api_event("allComplete", "onAllComplete",
 "Called when all submitted items have reached a point of termination.  A file has reached a point of termination
 if it has been cancelled, rejected, or uploaded (failed or successful).  For example, if a file in the group is paused,
 and all other files in the group have uploaded successfully the allComplete event will not be invoked for the group
@@ -141,7 +141,7 @@ called if all files in the group have been cancelled or rejected (i.e. if none o
     ])
 }}
 
-{{ api_event("delete", "delete", "Called just before a delete request is sent for the associated item.",
+{{ api_event("delete", "onDelete", "Called just before a delete request is sent for the associated item.",
     [
         {
             "name": "id",
@@ -151,7 +151,7 @@ called if all files in the group have been cancelled or rejected (i.e. if none o
     ])
 }}
 
-{{ api_event("deleteComplete", "deleteComplete", "Called just after receiving a response from the server for a delete file request.",
+{{ api_event("deleteComplete", "onDeleteComplete", "Called just after receiving a response from the server for a delete file request.",
     [
         {
             "name": "id",
@@ -171,7 +171,7 @@ called if all files in the group have been cancelled or rejected (i.e. if none o
     ])
 }}
 
-{{ api_event("error", "error", "Called whenever an exceptional condition occurs (see [Handling Errors](../features/handling-errors.html))",
+{{ api_event("error", "onError", "Called whenever an exceptional condition occurs (see [Handling Errors](../features/handling-errors.html))",
     [
         {
             "name": "id",
@@ -196,7 +196,7 @@ called if all files in the group have been cancelled or rejected (i.e. if none o
     ])
 }}
 
-{{ api_event("manualRetry", "manualRetry",
+{{ api_event("manualRetry", "onManualRetry",
 """Called before each manual retry attempt.
 
 Return `false` to prevent this an all future retry attempts on the associated item.""",
@@ -214,7 +214,7 @@ Return `false` to prevent this an all future retry attempts on the associated it
     ])
 }}
 
-{{ api_event("pasteReceived", "pasteReceived",
+{{ api_event("pasteReceived", "onPasteReceived",
 """Called when a pasted image has been received (before upload).
 
 The pasted image is represented as a `Blob`. Also can return a promise if non-blocking work is required here. If using a Promise the value of the success parameter must be the name to associate with the pasted image. If the associated attempt is marked a failure then you should include a string explaining the reason in your failure callback for the Promise.
@@ -232,7 +232,7 @@ The `promptForName` option, if `true`, will effectively wipe away any custom imp
     ])
 }}
 
-{{ api_event("progress", "progress",
+{{ api_event("progress", "onProgress",
 """ Called during the upload, as it progresses, but only for the AJAX uploader.
 
 For chunked uploads, this will be called for each chunk.
@@ -263,7 +263,7 @@ Useful for implementing a progress bar.
     ])
 }}
 
-{{ api_event("resume", "resume",
+{{ api_event("resume", "onResume",
 """ Called just before an upload is resumed. See the [`uploadChunk`](#uploadChunk)
  event for more info on the `chunkData` object.
 """,
@@ -286,7 +286,7 @@ Useful for implementing a progress bar.
     ])
 }}
 
-{{ api_event("sessionRequestComplete", "sessionRequestComplete",
+{{ api_event("sessionRequestComplete", "onSessionRequestComplete",
 """ Invoked when a session request has completed.  The `response` will be either an `Array` containing the response data
 or `null` if the response did not contain valid JSON.  The `success` parameter will be `false` if ANY of the file items
 represented in the response could not be parsed (due to bad syntax, missing name/UUID property, etc).
@@ -312,7 +312,7 @@ See the [Initial File List feature page](../features/session.html) for more deta
     ])
 }}
 
-{{ api_event("statusChange", "statusChange",
+{{ api_event("statusChange", "onStatusChange",
 """ Invoked whenever the status changes for any item submitted by the uploader.
 
 The status values correspond to those found in the `qq.status` object. For reference:
@@ -350,7 +350,7 @@ The status values correspond to those found in the `qq.status` object. For refer
     ])
 }}
 
-{{ api_event("submit", "submit",
+{{ api_event("submit", "onSubmit",
 """ Called when the item has been selected and is a candidate for uploading.
 
 This does not mean the item is going to be uploaded. Return `false` to prevent
@@ -372,7 +372,7 @@ If a promise is returned, a call to failure is the same as returning `false`.
     ])
 }}
 
-{{ api_event("submitDelete", "submitDelete",
+{{ api_event("submitDelete", "onSubmitDelete",
 """ Called before an item has been marked for deletion has been submitted to
 the uploader.
 
@@ -390,7 +390,7 @@ returned, a call to failure is the same as returning `false`.
     ])
 }}
 
-{{ api_event("submitted", "submitted",
+{{ api_event("submitted", "onSubmitted",
 """Called when the item has been successfully submitted to the uploader.
 
 The file will upload immediately if there is a) at least one free connection
@@ -417,7 +417,7 @@ been added to the DOM immediately before this callback is invoked.
     ])
 }}
 
-{{ api_event("totalProgress", "totalProgress",
+{{ api_event("totalProgress", "onTotalProgress",
 """ Called during a batch of uploads, as they progress, but only for the AJAX uploader.  This represents the total
 progress of all files in the batch.
 
@@ -437,7 +437,7 @@ Useful for implementing an aggregate progress bar.
     ])
 }}
 
-{{ api_event("upload", "upload", "Called just before an item begins uploading to the server.",
+{{ api_event("upload", "onUpload", "Called just before an item begins uploading to the server.",
     [
         {
             "name": "id",
@@ -452,7 +452,7 @@ Useful for implementing an aggregate progress bar.
     ])
 }}
 
-{{ api_event("uploadChunk", "uploadChunk",
+{{ api_event("uploadChunk", "onUploadChunk",
 """ Called just before a chunk request is sent.
 
 The `chunkData` object, which is passed into the 'uploadChunk' event handler, has 4 properties:
@@ -482,7 +482,7 @@ The `chunkData` object, which is passed into the 'uploadChunk' event handler, ha
     ])
 }}
 
-{{ api_event("uploadChunkSuccess", "uploadChunkSuccess",
+{{ api_event("uploadChunkSuccess", "onUploadChunkSuccess",
 """ This is similar to the [`complete` event](#complete), except it is invoked after each chunk
 has been **successfully** uploaded.
 
@@ -512,7 +512,7 @@ See the [`uploadChunk` event](#uploadChunk) for more information on the `chunkDa
     ])
 }}
 
-{{ api_event("validate", "validate",
+{{ api_event("validate", "onValidate",
 """ Called once for each selected, dropped, or `addFiles` submitted file.
 
 This callback is always invoked before the default Fine Uploader validators
@@ -546,7 +546,7 @@ The `blobData` object has two properties: `name` and `size`. The `size` property
     ])
 }}
 
-{{ api_event("validateBatch", "validateBatch",
+{{ api_event("validateBatch", "onValidateBatch",
 """ This callback is always invoked before the default Fine Uploader validators
 execute.
 

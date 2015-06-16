@@ -1,7 +1,7 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Cancellable Uploads" %}
 {% block sidebar %}
-{{ api_links(['disableCancelForFormUploads'], ['cancel', 'cancelAll'], ['cancel']) }}
+{{ api_links(None, ['cancel', 'cancelAll'], ['cancel']) }}
 {% endblock %}
 
 {% block content %}
@@ -9,15 +9,14 @@
 
 # Cancellable Uploads {: .page-header }
 
-Fine Uploader allows for the cancellation of in-progress uploads.
+Fine Uploader allows file uploads to be cancelled via the API or the UI.
 
-Uploads can be canceled programmatically by calling the [`cancel`](../../api/methods.html#cancel) or [`cancelAll`](../../api/methods.html#cancelAll) API methods.  The ['cancel'](../../api/events.html#cancel) event will be fired and handled by a callback whenever an item is canceled.
+Uploads can be canceled programmatically by calling the [`cancel`](../api/methods.html#cancel) or [`cancelAll`](../api/methods.html#cancelAll) API methods.
+The ['cancel'](../api/events.html#cancel) event will be fired and handled by a callback whenever an item is canceled.
 
-The cancel button will appear if included in the template. [`disableCancelForFormUploads`](../../api/options.html#disableCancelForFormUploads)
-option can control whether the cancel button is shown or not when using the form uploader.
+In [UI mode](../modes/ui.html), The cancel button will appear if [included in the template](../features/styling.html)
+In Fine Uploader UI mode, cancelling an upload will remove that element from the DOM as well.
 
-In Fine Uploader UI mode, cancelling an upload will remove that element from
-the DOM as well.
 
 {% endmarkdown %}
 {% endblock %}

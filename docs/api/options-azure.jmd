@@ -36,7 +36,7 @@ behavior for the Traditional or Azure uploader.
 {% endmarkdown %}
 
 {{
-alert("The `chunking.paramNames` option does **not** apply to Fine Uploader Azure.")
+alert("The [`chunking.paramNames` option](options.html#chunking) does **not** apply to Azure.")
 }}
 {{ api_parent_option("chunking", "chunking", "",
     (
@@ -47,7 +47,7 @@ alert("The `chunking.paramNames` option does **not** apply to Fine Uploader Azur
 
 {{ api_parent_option("cors", "cors", "",
     (
-        ("cors.allowXdr", "allowXdr", "Enables or disables cross-domain ajax calls (if `expected` property is true) in IE9 and older.", "Boolean", "true",),
+        ("cors.allowXdr", "allowXdr", "Enables or disables cross-domain ajax calls (if [`expected` property](options.html#core.expected) is true) in IE9 and older.", "Boolean", "true",),
     )
 )}}
 
@@ -58,11 +58,11 @@ alert("The `chunking.paramNames` option does **not** apply to Fine Uploader Azur
 )}}
 
 {{
-alert("The `resume.paramNames` option does **not** apply to Fine Uploader Azure.")
+alert("The [`resume.paramNames` option](options.html#resume) does **not** apply to Azure.")
 }}
 
 {{
-alert("`request.customHeaders` does **not** apply to Fine Uploader Azure.")
+alert("The [`request.customHeaders` option](options.html#request.customHeaders) does **not** apply to Azure.")
 }}
 
 {{ api_parent_option("request", "request", "",

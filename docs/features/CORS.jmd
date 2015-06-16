@@ -14,15 +14,70 @@ or Cross-origin resource sharing allows client-side JavaScript to make AJAX requ
 Fine Uploader has support for uploading and sending requests via CORS, but there are a few
 caveats depending on which browser is being used.
 
-{{ alert(
-"""
-CORS in IE8 and IE9 is supported via the [`XDomainRequest`](http://msdn.microsoft.com/en-us/library/windows/apps/Hh767443.aspx)
-object. `XDomainRequest` does not support setting the 'Content-Type' header
-(or any headers for that matter) so for some server-side languages and
-frameworks you are going to actually need to parse the request payload
-programmatically rather than relying on the framework to do it for you.
-""", "warn") }}
-[For more information, see the associated blog post](http://blog.fineuploader.com/2013/01/31/cors-support-in-3-3/)
+
+## Support exceptions
+
+* In IE8 and IE9, the response from the request iframe is passed to the uploader window via window.postMessage.
+* Delete file CORS requests in IE9 and earlier are not supported. This is due to the fact that DELETE requests must be preflighted.
+IE9 and earlier require `XDomainRequest` to be used when sending CORS requests, and `XDomainRequest` does not support preflighting.
+The delete files feature will be automatically disabled in IE9 and earlier if Fine Uploader CORS support is enabled.
+
+
+## Enabling CORS support
+
+If you set the `core.expected` property to `true`, it is assumed that all requests will be cross-domain requests.
+If you set this value to `true` and do not respond using the cross-domain response convention outlined in the next section for non-XHR requests,
+even if the request is NOT cross-domain, it will be considered a failure.
+
+```javascript
+var uploader = new qq.FineUploader({
+    element: document.getElementById('myUploader'),
+    request: {
+        endpoint: 'server/upload'
+    }
+    cors: {
+        //all requests are expected to be cross-domain requests
+        expected: true,
+
+        //if you want cookies to be sent along with the request
+        sendCredentials: true
+    }
+});
+```
+
+
+## Handling XHR CORS requests server-side
+
+You will know if an incoming upload request was sent via `XMLHttpRequest` if the request has an `X-Requested-With` header
+with a value of “XMLHttpRequest”. If CORS support is enabled in Fine Uploader, you must properly handle the associated
+requests and format your responses accordingly. Note that, since non-standards headers are sent with all Fine Uploader requests,
+ALL XHR requests are preflighted. This applies to both delete file requests (which are all XHR requests) and upload requests
+on browsers that support the File API. This means that you will need to handle an OPTIONS request as well. Your responses
+must include the appropriate Access-Control headers. If you set the `cors.sendCredentials` property to `true`, you should be aware
+that your responses must NOT include wildcard `Access-Control-Allow-Origin` headers, and you must also include the
+`Access-Control-Allow-Credentials` header. The actual response text for CORS XHR requests will not differ at all from
+response text for non-CORS requests.
+
+
+## Handling iframe CORS upload requests server-side
+
+An incoming upload request has been sent sent by Fine Uploader via a form submission inside of a hidden iframe if the request does not have an
+`X-Requested-With` header, or if the `X-Requested-With` header has a value other than “XMLHttpRequest”. Handling cross-domain
+iframe/form-submit-initiated uploads (in browsers that do not support the File API) is a bit tricky for Fine Uploader.
+Your response for iframe based request (such as required when using IE8 or IE9), will look very similar to your normal response,
+except it must have a `Content-Type` header value of “text/html”, and your response must import a helper javascript file
+via a `<script>` tag immediately preceding your valid JSON response. For example:
+
+```json
+"{\"success\": true, \"uuid\": \"9da17ad5-ad6a-40cd-81b5-226e837db45b\"}<script src=\"http://<YOUR_SERVER_DOMAIN>/iframe.xss.response-<VERSION>.js/"></script>"
+```
+
+All cross-domain iframe-initiated responses must end with the script tag above, and the valid JSON portion _must_ include
+the UUID of the associated file. Note that you must host the iframe.xss.response.js file on an accessible server and
+reference it in the `<script>` tag accordingly. When the contents of your response is returned to the iframe tracked by
+Fine Uploader, the associated javascript file imported by the script tag above will be executed, and will pass the JSON
+portion of your response to the uploader via `window.postMessage`.
+
 
 {% endmarkdown %}
 {% endblock %}

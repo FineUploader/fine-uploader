@@ -13,13 +13,14 @@ you can easily create multiple upload buttons with varying validation rules, sty
 
 ## Adding additional upload buttons
 
-The new [`extraButtons` option](../api/options.html#extrabuttons-option) allows you to point Fine Uploader
+The new [`extraButtons` option](../api/options.html#extraButtons) allows you to point Fine Uploader
 at styled containers that you would like to use as upload buttons.  This option takes an array of objects, and
-each object must, at least, define an `element` property with a value of your styled upload button container.
+each object must, at least, define an [`element` property](../api/options-ui.html#element) with a value of your styled upload button container.
 Fine Uploader will then attach a file input element to this container and track it just as it tracks the default
 upload button it creates.  You can specify an `HTMLElement` as the value for the `element` property.
 
-By default, each extra button will inherit the root `multiple` and `validation` option values from the root option
+By default, each extra button will inherit the root [`multiple`](../api/options.html#multiple) and
+[`validation` option](../api/options.html#validation) values from the root option
 set.  You can override these values for each button by simply contributing alternate `multiple` and `validation`
 properties for a specific extra button object.  For example, say your default upload button allows jpegs,
 to be selected, but you have an extra button elsewhere on your page that deals specifically with PDFs.  You
@@ -27,7 +28,7 @@ also want to enforce a 5 MiB limit (where supported) for all types of accepted f
 selected by both buttons. Your HTML and javascript might look something like this:
 
 ```html
-<div id="pdfButton" class="myCustomCssClassForStyling">Select a PDF</div>
+<div id="pdfButton" role="button" class="myCustomCssClassForStyling">Select a PDF</div>
 <div id="uploader"></div>
 ```
 
@@ -52,24 +53,25 @@ var uploader = new qq.FineUploader({
 As always, Fine Uploader creates a default upload button (in Fine Uploader UI) for you,
 and attaches the limitations specified via the `validation` option to that button and any drop zones.
 Fine Uploader will also attach an invisible file input element to the `#pdfButton` element and track it.
-Note that, in the above code, the extra button inherits the `sizeLimit` from the base `validation` option,
-but overrides the `allowedExtensions` property.
+Note that, in the above code, the extra button inherits the [`sizeLimit`](api/options.html#validation.sizeLimit)
+from the base `validation` option, but overrides the [`allowedExtensions` property](api/options.html#validation.allowedExtensions).
 
 
 ## Custom per-button validation rules
 
-Suppose you want to apply custom validation rules to a specific button.  No problem!  The `validate` and
-`validateBatch` events contain a `button` as the last parameter passed to your handler.  This `button` parameter
-will be the container element for the button that was used to select/submit the associated file to the uploader.
-If a drop zone was used to submit the file, or if an input element or source outside of Fine Uploader was used
-to submit the file (such as via the `addFiles` method), the `button` parameter will be undefined.
+Suppose you want to apply custom validation rules to a specific button.  No problem!  The [`validate`](../api/events.html#validate) and
+[`validateBatch`](../api/events.html#validateBatch) events contain a `button` as the last parameter passed to your handler.
+This `button` parameter will be the container element for the button that was used to select/submit the associated file
+to the uploader. If a drop zone was used to submit the file, or if an input element or source outside of Fine Uploader was used
+to submit the file (such as via the [`addFiles` method](../api/methods.html#addFiles)), the `button` parameter will be undefined.
 
 
 ## Associate file ID to a button (per-button endpoints, params, etc)
 
 You can also, at any time, associate any file with the button that was used to select/submit the file.
 For example, if you want to attach specific parameters to a file, or send it to a different endpoint based
-on the button that selected it, you can do so in an appropriate event handler, such as `upload`.  For example:
+on the button that selected it, you can do so in an appropriate event handler, [such as `onUpload`](..api/events.html#upload).
+For example:
 
 ```javascript
 var uploader = new qq.FineUploader({
@@ -90,6 +92,7 @@ var uploader = new qq.FineUploader({
 });
 ```
 
+
 ## Allow an extra upload button to be used to select folders
 
 Fine Uploader already allows you to drop folders that you would like to upload (Chrome & Opera 15+ only).
@@ -100,7 +103,7 @@ selection, and contribute an extra button marked as "folder selection" (Chrome &
 also assuming you only want this button to appear if folder selection is possible in the current browser:
 
 ```html
-<div id="foldersButton">Select Folders</div>
+<div id="foldersButton" role="button">Select Folders</div>
 <div id="uploader"></div>
 ```
 

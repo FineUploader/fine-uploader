@@ -1,8 +1,11 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "No-Server Uploads" %}
+{% block sidebar %}
+{{ api_links(options=['credentials-s3'], events=['credentialsExpired-s3'], methods=['setCredentials-s3']) }}
+{% endblock %}
 {% block content %}
 {% markdown %}
-# Upload Without Server-side Code {: .page-header }
+# Upload Without a Server {: .page-header }
 
 ### Summary
 Enabling file uploads for your web application is easier than ever with Fine Uploader S3's client-side

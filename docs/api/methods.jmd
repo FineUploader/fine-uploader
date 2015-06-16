@@ -78,7 +78,7 @@ A `CanvasWrapper` object:
 
 {{ api_method("cancelAll", "cancelAll ()", "Cancels all queued or currently uploading items.") }}
 
-{{ api_method("clearStoredFiles", "clearStoredFiles ()", "Clears the internal list of stored items. Only applies when `autoUpload` is `false`") }}
+{{ api_method("clearStoredFiles", "clearStoredFiles ()", "Clears the internal list of stored items. Only applies when [`autoUpload`](options.html#autoUpload) is `false`") }}
 
 {{ api_method("continueUpload", "continueUpload (id)", "Attempts to continue a paused upload.",
 [
@@ -176,7 +176,7 @@ A `CanvasWrapper` object:
     }
 ]) }}
 
-{{ api_method("getInProgress", "getInProgress ()", "Returns the number of items that are either currently uploading or waiting for an available connection (`qq.status.QUEUED`). If called inside of a `cancel` event handler, then this method will return a value that includes the upload associated with the `cancel` event handler. This is because the upload will not be canceled until the event handler returns.", none, [
+{{ api_method("getInProgress", "getInProgress ()", "Returns the number of items that are either currently uploading or waiting for an available connection (`qq.status.QUEUED`). If called inside of [a `cancel` event](events.html#cancel) handler, then this method will return a value that includes the upload associated with the `cancel` event handler. This is because the upload will not be canceled until the event handler returns.", none, [
     {
         "type": "Integer",
         "description": "The number of items that are currently uploading or queued."
@@ -224,7 +224,7 @@ A `CanvasWrapper` object:
 
 ]) }}
 
-{{ api_method("getRemainingAllowedItems", "getRemainingAllowedItems ()", "Returns the numer of remaining allowed items that may be submitted for upload based on `validation.itemLimit`.", null,
+{{ api_method("getRemainingAllowedItems", "getRemainingAllowedItems ()", "Returns the numer of remaining allowed items that may be submitted for upload based on [`validation.itemLimit`](options.html#validation.itemLimit).", null,
 [
     {
         "type": "Integer",
@@ -375,7 +375,7 @@ A `CanvasWrapper` object:
     }
 ], null) }}
 
-{{ api_method("setEndpoint", "setEndpoint (path[, identifier])", "Modify the location where upload requests should be directed. Pass in a file id or `HTMLElement` to change the endpoint for that specific item.",
+{{ api_method("setEndpoint", "setEndpoint (path[, identifier])", "Modify the location where upload requests should be directed. Pass in a file id to change the endpoint for that specific item.",
 [
     {
         "name": "path",
@@ -385,7 +385,7 @@ A `CanvasWrapper` object:
     {
         "name": "identifier",
         "type": "Integer or HTMLElement",
-        "description": "Either an integer corresponding to a file, or an `HTMLElement` corresponding to an upload button."
+        "description": "An integer corresponding to a file."
     }
 ], null) }}
 
@@ -403,21 +403,21 @@ A `CanvasWrapper` object:
     }
 ], null) }}
 
-{{ api_method("setDeleteFileEndpoint", "setDeleteFileEndpoint (path[, identifier])", "Modify the location where upload requests should be directed. Pass in a file id or `HTMLElement` to change the endpoint for that specific item.",
+{{ api_method("setDeleteFileEndpoint", "setDeleteFileEndpoint (path[, identifier])", "Modify the location where [delete requests](../features/delete.html) should be directed. Pass in a file id to change the endpoint for that specific item.",
 [
     {
         "name": "path",
         "type": "String",
-        "description": "A valid URI where deleterequests will be sent."
+        "description": "A valid URI where delete requests will be sent."
     },
     {
         "name": "identifier",
         "type": "Integer or HTMLElement",
-        "description": "Either an integer corresponding to a file, or an `HTMLElement` corresponding to an upload button."
+        "description": "An integer corresponding to a file."
     }
 ], null) }}
 
-{{ api_method("setDeleteFileParams", "setDeleteFileParams (params[, id])", "Set the parameters for a delete request. Pass in a file id to make the parameters specific to that file.",
+{{ api_method("setDeleteFileParams", "setDeleteFileParams (params[, id])", "Set the parameters for [a delete request](../features/delete.html). Pass in a file id to make the parameters specific to that file.",
 [
     {
         "name": "params",
@@ -432,7 +432,7 @@ A `CanvasWrapper` object:
 
 ], null) }}
 
-{{ api_method("setItemLimit", "setItemLimit (newItemLimit)", "Change the `validation.itemLimit` option set during construction/initialization.",
+{{ api_method("setItemLimit", "setItemLimit (newItemLimit)", "Change [the `validation.itemLimit` option](options.html#validation.itemLimit) set during construction/initialization.",
 [
     {
         "name": "newItemLimit",

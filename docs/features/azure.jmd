@@ -7,13 +7,15 @@
 # Uploading Directly to Azure Blob Storage {: .page-header }
 
 ### Summary
-Fine Uploader Azure allows your users to upload files directly to your [Azure Blob Storage][blobstorage] container without filtering
-the file bytes through one of your servers first.  This will, among other things, allow your application to be a bit
+
+Fine Uploader Azure allows your users to upload files directly to your [Azure Blob Storage][blobstorage] container without the need
+to send the file through one of your servers first.  This will, among other things, allow your application to be a bit
 more efficient and scalable.
 
 
 ### How do uploads work?
-When a user submits a file to Fine Uploader Azure, the following occurs in the simplest setup:
+
+When a user submits a file to Fine Uploader Azure, the following occurs:
 
 1. Fine Uploader constructs a URL that will represent the file as a blob once it is in the blob storage container.
 2. Fine Uploader sends a GET request to your [signature server][azureserver].  Your server must then create a [Shared Access Signature][sas]
@@ -24,7 +26,7 @@ request is the SAS URI returned by your server in step 2.
 you have specified an [`uploadSuccess.endpoint`][uploadsuccess] in your [Fine Uploader Azure options configuration][azureoptions].
 If the upload failed, start over at step 2 automatically if the [`retry.enableAuto` option][retryoption] is set to `true`.
 
-The above steps are slightly different if Fine Uploader is [chunking][chunkingfeat] the file.  Instead of a [Put Blob][putblob]
+**The above steps are slightly different if Fine Uploader is [chunking][chunkingfeat] the file.**  Instead of a [Put Blob][putblob]
 request, Fine Uploader will send a [Put Block][putblock] request to Azure for each piece of the file.
 Once all pieces have been successfully uploaded, Fine Uploader will then send a [Put Block List][putblocklist] request,
 which asks Azure to combine all the blocks into a blob. Fine Uploader will call your [signature server][azureserver]
@@ -32,6 +34,7 @@ before each and every request, asking for a [SAS][sas] URI.
 
 
 ### How do delete file requests work?
+
 If this feature is enabled, Fine Uploader will send a [Delete Blob][deleteblob] request directly to Azure when
 asked to delete a file.  As usual, your [signature server][azureserver] will be called on to provide a [SAS][sas] URI
 before this request is sent to Azure.  Note that even if this feature is disabled, Fine Uploader will issue a [Delete Blob][deleteblob]
@@ -39,15 +42,18 @@ request to Azure if a user cancels an in-progress [chunked][chunkingfeat] upload
 uncommitted blocks are cleaned up by Azure.
 
 
-### What features are available?
-All features present in the traditional endpoint uploader are also available in Fine Uploader Azure, with one notable
-omission.  Fine Uploader Azure does not support IE9 and older.  This is due to the fact that Azure's API does
+### Which features are available?
+
+**All features present in the traditional endpoint uploader are also available in Fine Uploader Azure**, with one notable
+omission.  **Fine Uploader Azure does not support IE9 and older**.  This is due to the fact that Azure's API does
 not allow files to be uploaded via multipart encoded POST requests, which is critical for IE9 and older support.
 If you need to support IE9 and older, you will need to load/use Fine Uploader with its traditional endpoint
 handler if the value of [`qq.supportedFeatures.ajaxUploading`][supportedfeatures] is `false`.
 
+
 ### Is this secure?
-There is nothing inherently insecure about this workflow, provided you take appropriate precautions:
+
+There is nothing inherently insecure about this workflow, provided you take appropriate precautions. For example:
 
 * Ensure your [SAS][sas] URIs are short-lived.  An expiration date of a few minutes or seconds is appropriate.
 * When constructing your [SAS][sas] URI, only attach the required permission(s) to the URI.
@@ -60,7 +66,9 @@ is NOT a security mechanism.
 
 
 ### How do I use this?
-Please see the getting started guides on [the home page of this documentation site](/#quickstart).
+
+Please see the getting started guides on [the home page of this documentation site](../quickstart/01-getting-started.html).
+
 
 [blobstorage]: http://www.windowsazure.com/en-us/documentation/articles/storage-dotnet-how-to-use-blobs-20/
 [azureserver]: ../endpoint_handlers/azure.html

@@ -1,7 +1,7 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Paste to Upload" %}
 {% block sidebar %}
-{{ api_links(options=['paste', 'paste-s3'], events=['pasteReceived']) }}
+{{ api_links(options=['paste'], events=['pasteReceived']) }}
 {% endblock %}
 {% block content %}
 {% markdown %}
@@ -17,17 +17,38 @@ currently present in your clipboard. For example, suppose you take a screenshot
 and add it directly to your clipboard. You can then paste it into your Fine
 Uploader instance.
 
+
+## Handling pasted images in Core mode
+
+In order to enable this feature, you must provide a `paste.targetElement` option value. This is the element that should
+receive pasted images. This target element must have focus before the paste event can be handled. This is normally
+accomplished by clicking on the element before pasting the image from the clipboard, or by programmatically giving it focus.
+
+Once the image has been pasted, the `onPasteReceived` callback will be invoked with the associated `Blob` as a parameter.
+This is a promissory callback, and a `qq.Promise` MUST be returned if you provide your own implementation of this callback.
+Via the promise object, you can return a string that determines the name of the associated image. This will be passed along
+with the upload request. Fine Uploader will also append an extension to the name, based on the image type. This callback
+can be used if you need to make an ajax call to determine the name of the pasted image, or if you need to display a
+(blocking or non-blocking) modal dialog to ask the user for this information. If you do not contribute a custom implementation
+for this callback, the `paste.defaultName` configuration property, along with an appropriate extension, will be used to
+name the pasted image.
+
+
+## Handling pasted images in UI mode
+
+Everything in the above previous section also applies to UI mode, but a small nicety in the form of an overridable name
+prompt is available. In other words, if you want a basic prompt dialog to ask the user for a name after an image has been pasted,
+you can do so simply by setting the `paste.promptForName` configuration option. If you want to ask the user to name a
+pasted image, you don’t have to worry about the `onPasteReceived` callback at all. You can also use a more appropriate
+prompt dialog by overriding the `paste.showPrompt` option function. A simple example of this, using a bootbox modal prompt,
+is described [at the end of the promises documentation](async-tasks-and-promises.html#example).
+
+
 {{
 alert(
 """The filename will be sent with the request as the `qqfilename` parameter.
    Be sure to read this parameter when naming your file server-side.", "info", "Note:")
 }}
-
-{{ alert(
-"""This feature is only supported by browsers that feature the [Clipboard API](http://www.w3.org/TR/clipboard-apis/).
-Currently, only Chrome & Opera 15+ support this completely.", "info", "Note:") }}
-
-[For more information, see the associated blog post](http://blog.fineuploader.com/2013/03/04/upload-an-image-via-paste-in-3-4/)
 
 {% endmarkdown %}
 {% endblock %}

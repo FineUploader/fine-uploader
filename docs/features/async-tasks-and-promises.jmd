@@ -5,6 +5,9 @@
 
 [q]: https://github.com/kriskowal/q
 [rsvp]: https://github.com/tildeio/rsvp.js/
+[showconfirm]: ../api/options-ui.html#showConfirm
+[showmessage]: ../api/options-ui.html#showMessage
+[showprompt]: ../api/options-ui.html#showPrompt
 
 # Async Tasks and Promises {: .page-header }
 
@@ -44,6 +47,10 @@ does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog 
 
 ## qq.Promise API
 
+{{ alert(
+"""Fine Uploader's internal `qq.Promise` object is _not_ compilant with the A+ specification. If this is a problem for you,
+feel free to use any compliant promise library of your choice instead.""", "info", "Note:") }}
+
 {% endmarkdown %}
 {{ api_method("then", "then (successCallback, failureCallback)", "Register callbacks from success *and* failure. The promise instance that `then` is called on will pass any values into the provided callbacks. If success or failure have already occurred before these callbacks have been registered, then they will be called immediately after this call has been executed. Each subsequent call to `then` registers an additional set of callbacks.",
 [
@@ -79,12 +86,12 @@ does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog 
         "description": "An instance of a promise."
     }
 ]) }}
-{{ api_method("success", "success (callback)", "Call this on a promise to indicate success. The parameter values will depend on the situation.",
+{{ api_method("success", "success (param)", "Call this on a promise to indicate success. The parameter values will depend on the situation.",
 [
         {
-            "name": "callback",
-            "type": "Function",
-            "description": "The function to call when all promises have been fulfilled"
+            "name": "param",
+            "type": "Object",
+            "description": "The value to pass to the promise's success handler."
         },
 ],
 [
@@ -93,12 +100,12 @@ does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog 
         "description": "An instance of a promise."
     }
 ]) }}
-{{ api_method("failure", "failure (callback)", "Call this on a promise to indicate success. The parameter values will depend on the situation.",
+{{ api_method("failure", "failure (param)", "Call this on a promise to indicate success. The parameter values will depend on the situation.",
 [
         {
-            "name": "callback",
-            "type": "Function",
-            "description": "The function to call when all promises have been fulfilled."
+            "name": "param",
+            "type": "Object",
+            "description": "The value to pass to the promise's failure handler."
         },
 ],
 [
@@ -111,7 +118,7 @@ does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog 
 
 ## Promissory Options
 
-The `showPrompt` and `showConfirm` options in Fine Uploader accept promissory return values.
+The [`showConfirm`][showconfirm], [`showMessage`][showmessage], and [`showPrompt`][showprompt] UI options in Fine Uploader accept promissory return values.
 This makes it trivial to do work (such as launching a confirmation window and waiting for user input)
 without blocking the rest of the UI thread (and thus stopping downloads).
 
@@ -151,8 +158,6 @@ from the user, of a pasted image.  In this case
 once the result has been updated on the promise instance, Fine Uploader will
 proceed to upload the pasted image using the
 name supplied by the user.
-
-[For more information, see the associated blog post](http://blog.fineuploader.com/2013/05/07/callbacks-that-permit-asynchronous-returns/)
 
 {% endmarkdown %}
 {% endblock %}
