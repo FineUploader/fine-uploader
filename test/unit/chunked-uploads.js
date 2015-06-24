@@ -293,7 +293,7 @@ if (qqtest.canDownloadFileAsBlob) {
                                 acknowledgeRequests(testUploadEndpoint);
                             },
                             onUploadChunkSuccess: function(id) {
-                                if (chunksUploaded++) {
+                                if (chunksUploaded++ === 1) {
                                     assert.ok(uploader.getResumableFilesData().length, "Empty resumable files data!");
                                     done();
                                 }
