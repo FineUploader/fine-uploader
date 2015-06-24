@@ -247,22 +247,63 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         describe("resume feature tests", function() {
-            var nativeLocalStorageSetItem = window.localStorage.setItem;
-
-            beforeEach(function() {
-                window.localStorage.setItem = function() {
-                    throw new qq.Error("Intentional localStorage error");
-                };
-            });
+            var nativeLocalStorageSetItem = window.localStorage.setItem,
+                acknowledgeRequests = function(endpoint) {
+                    ackTimer = setTimeout(function() {
+                        qq.each(fileTestHelper.getRequests(), function(idx, req) {
+                            if (!req.ack && (!endpoint || endpoint === req.url)) {
+                                req.ack = true;
+                                req.respond(200, null, JSON.stringify({success: true, testParam: "testVal"}));
+                            }
+                        });
+                    }, 10);
+                }, ackTimer;
 
             afterEach(function() {
                 window.localStorage.setItem = nativeLocalStorageSetItem;
+                clearTimeout(ackTimer);
             });
 
             it("ensures failure to use localStorage does not prevent uploading", function(done) {
+                window.localStorage.setItem = function() {
+                    throw new qq.Error("Intentional localStorage error");
+                };
+
                 testChunkedUpload({
                     resume: true,
                     done: done
+                });
+            });
+
+            it("getResumableFilesData", function(done) {
+                var chunksUploaded = 0,
+                    uploader = new qq.FineUploaderBasic({
+                        request: {
+                            endpoint: testUploadEndpoint
+                        },
+                        resume: {
+                            enabled: true
+                        },
+                        chunking: {
+                            enabled: true,
+                            partSize: chunkSize
+                        },
+                        callbacks: {
+                            onUploadChunk: function() {
+                                acknowledgeRequests(testUploadEndpoint);
+                            },
+                            onUploadChunkSuccess: function(id) {
+                                if (chunksUploaded++) {
+                                    assert.ok(uploader.getResumableFilesData().length, "Empty resumable files data!");
+                                    done();
+                                }
+                            }
+                        }
+                    });
+
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                    fileTestHelper.mockXhr();
+                    uploader.addFiles({name: "test", blob: blob});
                 });
             });
         });
