@@ -61,9 +61,8 @@ need to include: "x-amz-acl", "x-amz-meta-qqfilename", "x-amz-date", and "author
 you will also need to authorize headers for any custom parameters (user metadata) you want to attach to the object in S3.
 All parameters are sent as headers in the "Initiate Multipart Upload" request sent by Fine Uploader with a prefix of
 "x-amz-meta-".
-* If you are using the [scaling feature][scaling], and you have elected to have the original/parent image uploaded,
-you will need to account for these headers in your CORS configuration as well: "x-amz-meta-qquuid",
-"x-amz-meta-qqparentuuid", and "x-amz-meta-qqparentsize".
+* If you are using the [scaling feature][scaling], you will need to account for these headers in your CORS configuration as well:
+"x-amz-meta-qquuid", "x-amz-meta-qqparentuuid", and "x-amz-meta-qqparentsize".
 
 
 ## Signing non-chunked upload requests (required: all browsers)

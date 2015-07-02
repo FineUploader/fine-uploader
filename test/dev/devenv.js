@@ -47,6 +47,7 @@ qq(window).attach("load", function() {
             }
         },
         scaling: {
+            sendOriginal: false,
             sizes: [{name: "small", maxSize: 300}, {name: "medium", maxSize: 600}]
         },
         callbacks: {
