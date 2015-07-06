@@ -64,7 +64,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
-            <td>Chrome for iOS 6+</td>
+            <td>Chrome iOS 6+</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}<a style="font-size: 24px" href="#ios-multiple">*</a></td>
             <td>{{ label('-', "") }}</td>
@@ -84,7 +84,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
-            <td>Chrome for Android 4+</td>
+            <td>Chrome Android 4+</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('-', "") }}</td>
@@ -225,7 +225,7 @@ Note: Any features not listed here are supported in all browsers.
         </tr>
         <tr>
             <td>Android
-                4 stock</td>
+                4+ stock</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -288,7 +288,7 @@ Note: Any features not listed here are supported in all browsers.
         </tr>
         <tr>
             <td>Safari
-                6</td>
+                6+</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
