@@ -1,6 +1,5 @@
 {
   "name": "fine-uploader",
-  "version": "5.3.0-2",
   "devDependencies": {
     "jquery": "1.10.0",
     "purl": "https://github.com/allmarkedup/purl.git#~2.3.1",
