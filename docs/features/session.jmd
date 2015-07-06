@@ -16,7 +16,7 @@ previously uploaded.  All items returned from your server will be loaded into Fi
 optionally delete these files.  All relevant API methods can be used on these pre-loaded files.  If you are using
 Fine Uploader UI, they will be displayed as successfully uploaded files as well.
 
-The API includes a [`session` option](../api/options.html#session-option)
+The API includes a [`session` option](../api/options.html#session)
 and a [`sessionRequestComplete` event](../api/events.html#sessionRequestComplete).
 
 
