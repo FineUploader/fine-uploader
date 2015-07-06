@@ -63,10 +63,12 @@ qq.azure.util = qq.azure.util || (function() {
                     value = String(val);
                 }
 
-                if (qq.azure.util._paramNameMatchesAzureParameter(name)) {
-                    headers[headerName] = value;
-                } else {
-                    headers[headerName] = encodeURIComponent(value);
+                if (value !== null) {
+                    if (qq.azure.util._paramNameMatchesAzureParameter(name)) {
+                        headers[headerName] = value;
+                    } else {
+                        headers[headerName] = encodeURIComponent(value);
+                    }
                 }
             });
 
