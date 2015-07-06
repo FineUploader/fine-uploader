@@ -50,8 +50,8 @@ qq.azure.util = qq.azure.util || (function() {
             var headers = {};
 
             qq.each(params, function(name, val) {
-                var headerName = qq.azure.util._getPrefixedParamName(name);
-                var value = null;
+                var headerName = qq.azure.util._getPrefixedParamName(name),
+                    value = null;
 
                 if (qq.isFunction(val)) {
                     value = String(val());
