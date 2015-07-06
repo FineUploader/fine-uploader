@@ -6,18 +6,14 @@ qq.azure.util = qq.azure.util || (function() {
     return {
         AZURE_PARAM_PREFIX: "x-ms-meta-",
 
-        /** Test if a request header is actually a known Azure parameter.
+        /** Test if a request header is actually a known Azure parameter. See: https://msdn.microsoft.com/en-us/library/azure/dd179451.aspx
          *
-         * @param name Name of the Request Header parameter to construct a (possibly) prefixed name.
+         * @param name Name of the Request Header parameter.
          * @returns {Boolean} Test result.
          */
         _paramNameMatchesAzureParameter: function(name) {
             switch (name)
             {
-                //
-                // Valid request headers (not sent by fine-uploader) which should be returned as-is (case-sensitive)
-                // see: https://msdn.microsoft.com/en-us/library/azure/dd179451.aspx
-                //
                 case "Cache-Control":
                 case "Content-Disposition":
                 case "Content-Encoding":
@@ -55,18 +51,22 @@ qq.azure.util = qq.azure.util || (function() {
 
             qq.each(params, function(name, val) {
                 var headerName = qq.azure.util._getPrefixedParamName(name);
+                var value = null;
 
                 if (qq.isFunction(val)) {
-                    headers[headerName] = encodeURIComponent(String(val()));
+                    value = String(val());
                 }
                 else if (qq.isObject(val)) {
                     qq.extend(headers, qq.azure.util.getParamsAsHeaders(val));
                 }
-                else if (qq.azure.util._paramNameMatchesAzureParameter(name)) {
-                    headers[headerName] = val;
-                }
                 else {
-                    headers[headerName] = encodeURIComponent(String(val));
+                    value = String(val);
+                }
+
+                if (qq.azure.util._paramNameMatchesAzureParameter(name)) {
+                    headers[headerName] = value;
+                } else {
+                    headers[headerName] = encodeURIComponent(value);
                 }
             });
 

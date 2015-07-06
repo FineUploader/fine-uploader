@@ -399,7 +399,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 "Cache-Control": "4rawvalue==",
                 "x-ms-blob-content-encoding": "5rawvalue==",
                 "x-ms-blob-content-disposition": "6rawvalue==",
-                "x-ms-blob-content-md5": "7rawvalue==",
+                "x-ms-blob-content-md5": function() { return "7rawvalue=="; },
                 "x-ms-blob-cache-control": "8rawvalue=="
             };
             
@@ -420,7 +420,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.equal(uploadRequest.requestHeaders["Cache-Control"], params["Cache-Control"]);
                     assert.equal(uploadRequest.requestHeaders["x-ms-blob-content-encoding"], params["x-ms-blob-content-encoding"]);
                     assert.equal(uploadRequest.requestHeaders["x-ms-blob-content-disposition"], params["x-ms-blob-content-disposition"]);
-                    assert.equal(uploadRequest.requestHeaders["x-ms-blob-content-md5"], params["x-ms-blob-content-md5"]);
+                    assert.equal(uploadRequest.requestHeaders["x-ms-blob-content-md5"], params["x-ms-blob-content-md5"]());
                     assert.equal(uploadRequest.requestHeaders["x-ms-blob-cache-control"], params["x-ms-blob-cache-control"]);
                     done();
                 }, 0);
