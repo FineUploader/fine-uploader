@@ -284,7 +284,27 @@ describe("templating.js", function() {
         });
     });
 
-    describe("file elements are two levels below the file container", function() {
+    describe("permanently hidden files tests", function() {
+        var fileContainer0;
+
+        beforeEach(function () {
+            renderTemplate(defaultTemplate);
+            templating.addFile(0, "foobar", false, true);
+            fileContainer0 = templating.getFileContainer(0);
+        });
+
+        afterEach(function () {
+            templating.clearFiles();
+        });
+
+        it("adds permanently hidden files to the DOM, but ensures they are never visible", function() {
+            assert.equal(templating.getFileContainer(0).style.display, "none");
+            assert.ok(templating.isHiddenForever(0));
+        });
+    });
+
+
+        describe("file elements are two levels below the file container", function() {
         var fileContainer, deleteButtonEl, cancelButtonEl, retryButtonEl;
 
         it("is able to find the file ID given a button elememnt", function() {
