@@ -304,7 +304,7 @@ describe("templating.js", function() {
     });
 
 
-        describe("file elements are two levels below the file container", function() {
+    describe("file elements are two levels below the file container", function() {
         var fileContainer, deleteButtonEl, cancelButtonEl, retryButtonEl;
 
         it("is able to find the file ID given a button elememnt", function() {
