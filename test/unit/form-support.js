@@ -72,12 +72,19 @@ describe("test form support", function() {
         });
     });
 
-    it("switches to manual upload mode if a form is attached", function() {
+    it("switches to manual upload mode if a form is attached via options", function() {
         var uploader = new qq.FineUploaderBasic({
             form: {
                 element: document.createElement("form")
             }
         });
+
+        assert.ok(!uploader._options.autoUpload);
+    });
+
+    it("switches to manual upload mode if a form is attached via API", function() {
+        var uploader = new qq.FineUploaderBasic();
+        uploader.setForm(document.createElement("form"));
 
         assert.ok(!uploader._options.autoUpload);
     });
@@ -148,15 +155,24 @@ describe("test form support", function() {
 
             var fileTestHelper = helpme.setupFileTests(),
                 testUploadEndpoint = "/test/upload",
+
                 formHtml = "<form id='qq-form'><input type='text' name='text_test' value='test'></form>",
                 $form = $(formHtml),
-                testUploadWithForm = function(uploader, endopint, done) {
+
+                dynamicFormHtml = "<form id='qq-dynamic-form'><input type='text' name='text_test' value='test'></form>",
+                $dynamicForm = $(dynamicFormHtml),
+
+                testUploadWithForm = function(uploader, endopint, dynamic, done) {
                     assert.expect(4, done);
 
                     qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                         fileTestHelper.mockXhr();
 
                         var request, requestParams;
+
+                        if (dynamic) {
+                            uploader.setForm($dynamicForm[0]);
+                        }
 
                         uploader.addFiles(blob);
 
@@ -171,7 +187,7 @@ describe("test form support", function() {
                     });
                 };
 
-            it("attaches to form automatically if all conventions are used", function(done) {
+            it("initial form - attaches to form automatically if all conventions are used", function(done) {
                 $fixture.append($form);
 
                 var uploader = new qq.FineUploaderBasic({
@@ -180,7 +196,19 @@ describe("test form support", function() {
                     }
                 });
 
-                testUploadWithForm(uploader, testUploadEndpoint, done);
+                testUploadWithForm(uploader, testUploadEndpoint, false, done);
+            });
+
+            it("dynamic form - attaches to form automatically if all conventions are used", function(done) {
+                $fixture.append($dynamicForm);
+
+                var uploader = new qq.FineUploaderBasic({
+                    request: {
+                        endpoint: testUploadEndpoint
+                    }
+                });
+
+                testUploadWithForm(uploader, testUploadEndpoint, true, done);
             });
 
             it("attaches to form automatically if an alternate form ID is specified", function(done) {
@@ -196,7 +224,7 @@ describe("test form support", function() {
                     }
                 });
 
-                testUploadWithForm(uploader, testUploadEndpoint, done);
+                testUploadWithForm(uploader, testUploadEndpoint, false, done);
             });
 
             it("attaches to form automatically if an element is specified", function(done) {
@@ -212,16 +240,24 @@ describe("test form support", function() {
                     }
                 });
 
-                testUploadWithForm(uploader, testUploadEndpoint, done);
+                testUploadWithForm(uploader, testUploadEndpoint, false, done);
             });
 
-            it("uses action attribute as endpoint, if specified", function(done) {
+            it("initial form - uses action attribute as endpoint, if specified", function(done) {
                 var $newForm = $form.clone().attr("action", "/form/action");
                 $fixture.append($newForm);
 
                 var uploader = new qq.FineUploaderBasic({});
 
-                testUploadWithForm(uploader, "/form/action", done);
+                testUploadWithForm(uploader, "/form/action", false, done);
+            });
+
+            it("dynamic form - uses action attribute as endpoint, if specified", function(done) {
+                $dynamicForm.attr("action", "/form/action");
+
+                var uploader = new qq.FineUploaderBasic({});
+
+                testUploadWithForm(uploader, "/form/action", true, done);
             });
         });
     }

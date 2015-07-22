@@ -364,6 +364,10 @@
             this._endpointStore.set(endpoint, id);
         },
 
+        setForm: function(elementOrId) {
+            this._updateFormSupportAndParams(elementOrId);
+        },
+
         setItemLimit: function(newItemLimit) {
             this._currentItemLimit = newItemLimit;
         },
@@ -474,10 +478,11 @@
             });
         },
 
-        _createStore: function(initialValue, readOnlyValues) {
+        _createStore: function(initialValue, _readOnlyValues_) {
             var store = {},
                 catchall = initialValue,
                 perIdReadOnlyValues = {},
+                readOnlyValues = _readOnlyValues_,
                 copy = function(orig) {
                     if (qq.isObject(orig)) {
                         return qq.extend({}, orig);
@@ -531,8 +536,20 @@
                 addReadOnly: function(id, values) {
                     // Only applicable to Object stores
                     if (qq.isObject(store)) {
-                        perIdReadOnlyValues[id] = perIdReadOnlyValues[id] || {};
-                        qq.extend(perIdReadOnlyValues[id], values);
+                        // If null ID, apply readonly values to all files
+                        if (id === null) {
+                            if (qq.isFunction(values)) {
+                                readOnlyValues = values;
+                            }
+                            else {
+                                readOnlyValues = readOnlyValues || {};
+                                qq.extend(readOnlyValues, values);
+                            }
+                        }
+                        else {
+                            perIdReadOnlyValues[id] = perIdReadOnlyValues[id] || {};
+                            qq.extend(perIdReadOnlyValues[id], values);
+                        }
                     }
                 },
 
@@ -1672,6 +1689,23 @@
 
             if (buttonId) {
                 this._buttonIdsForFileIds[id] = buttonId;
+            }
+        },
+
+        _updateFormSupportAndParams: function(formElementOrId) {
+            this._options.form.element = formElementOrId;
+
+            this._formSupport = qq.FormSupport && new qq.FormSupport(
+                    this._options.form, qq.bind(this.uploadStoredFiles, this), qq.bind(this.log, this)
+                );
+
+            if (this._formSupport && this._formSupport.attachedToForm) {
+                this._paramsStore.addReadOnly(null, this._formSupport.getFormInputsAsObject);
+
+                this._options.autoUpload = this._formSupport.newAutoUpload;
+                if (this._formSupport.newEndpoint) {
+                    this.setEndpoint(this._formSupport.newEndpoint);
+                }
             }
         },
 
