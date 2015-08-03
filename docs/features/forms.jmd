@@ -1,7 +1,7 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Support for Forms" %}
 {% block sidebar %}
-{{ api_links(options=['form']) }}
+{{ api_links(options=['form'], methods=['setForm']) }}
 {% endblock %}
 {% block content %}
 {% markdown %}
@@ -42,7 +42,8 @@ that they are done filling out the form and choosing files.  You can allow your 
 all files to be uploaded by simply providing a submit button in your form.
 
 If you don't want to rely on some of these default behaviors, you can override them.  See the [form option][form]
-for details.
+for details. Note that, as of Fine Uploader 5.3, you can _also_ attach a form to Fine Uploader at any time using the new
+[setForm API method](../api/methods.html#setForm)!
 
 #### Validation
 Fine Uploader will respect any [validation attributes on your form elements][validationattrs], provided the current browser

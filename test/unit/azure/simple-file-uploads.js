@@ -383,5 +383,48 @@ if (qqtest.canDownloadFileAsBlob) {
 
             });
         });
+        
+        it("test if azure specific header keys and their values remain as-is", function(done) {
+            var uploader = new qq.azure.FineUploaderBasic({
+                    request: {endpoint: testEndpoint},
+                    signature: {endpoint: testSignatureEndoint}
+                }
+            );
+            
+            var params = {
+                "foo1": "bar",
+                "Content-Encoding": "1rawvalue==" ,
+                "Content-Disposition": "2rawvalue==",
+                "Content-MD5": "3rawvalue==",
+                "Cache-Control": "4rawvalue==",
+                "x-ms-blob-content-encoding": "5rawvalue==",
+                "x-ms-blob-content-disposition": "6rawvalue==",
+                "x-ms-blob-content-md5": function() { return "7rawvalue=="; },
+                "x-ms-blob-cache-control": "8rawvalue=="
+            };
+            
+            uploader.setParams(params);
+
+            startTypicalTest(uploader, function(signatureRequest) {
+                signatureRequest.respond(200, null, "http://sasuri.com");
+
+                setTimeout(function() {
+                    var uploadRequest = fileTestHelper.getRequests()[1];
+                    uploadRequest.respond(201, null, "");
+
+                    assert.equal(uploadRequest.requestHeaders["x-ms-meta-foo1"], "bar");
+                    
+                    assert.equal(uploadRequest.requestHeaders["Content-Encoding"], params["Content-Encoding"]);
+                    assert.equal(uploadRequest.requestHeaders["Content-Disposition"], params["Content-Disposition"]);
+                    assert.equal(uploadRequest.requestHeaders["Content-MD5"], params["Content-MD5"]);
+                    assert.equal(uploadRequest.requestHeaders["Cache-Control"], params["Cache-Control"]);
+                    assert.equal(uploadRequest.requestHeaders["x-ms-blob-content-encoding"], params["x-ms-blob-content-encoding"]);
+                    assert.equal(uploadRequest.requestHeaders["x-ms-blob-content-disposition"], params["x-ms-blob-content-disposition"]);
+                    assert.equal(uploadRequest.requestHeaders["x-ms-blob-content-md5"], params["x-ms-blob-content-md5"]());
+                    assert.equal(uploadRequest.requestHeaders["x-ms-blob-cache-control"], params["x-ms-blob-cache-control"]);
+                    done();
+                }, 0);
+            });
+        });
     });
 }

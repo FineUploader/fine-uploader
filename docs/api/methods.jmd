@@ -442,6 +442,16 @@ A `CanvasWrapper` object:
 
 ], null) }}
 
+{{ api_method("setForm", "setForm (formElementOrId)", "Bind a `<form>` to Fine Uploader dynamically. See the [form support feature page](../features/forms.html) for more details.",
+[
+    {
+        "name": "formElementOrId",
+        "type": "HTMLFormElement or String",
+        "description": "A form element or a form element's ID."
+    }
+
+], null) }}
+
 {{ api_method("setName", "setName (id, name)", "Change the name of a file.",
 [
     {

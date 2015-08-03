@@ -147,11 +147,10 @@ what you are doing.
 
 ### Tracking Scaled Files Server-Side
 Fine Uploader will send request parameters along with some scaled files to make it easy for you to connect them to
-the original/parent file server-side.  If you have not set the [scaling.sendOriginal option][sendOriginal]
-to `false`, "qqparentuuid" and "qqparentsize" parameters will be sent with each scaled image upload request.  These
-parameters link the scaled image to the parent/original image.  Note that the parent images will also include
-a "qquuid" request parameter as well.  If you are using [Fine Uploader S3][s3] or [Azure][azure], these parameters
-will be associated with the file in your bucket or blob container.
+the original/parent file server-side and group them together.  "qqparentuuid" and "qqparentsize" parameters will be sent
+with each scaled image upload request.  These parameters link the scaled image to the parent/original image.  Note that
+the parent images will include a "qquuid" request parameter instead.  If you are using [Fine Uploader S3][s3] or
+[Azure][azure], these parameters will be associated with the file in your bucket or blob container.
 
 
 ### Notices
