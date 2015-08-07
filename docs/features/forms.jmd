@@ -1,7 +1,7 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Support for Forms" %}
 {% block sidebar %}
-{{ api_links(options=['form']) }}
+{{ api_links(options=['form'], methods=['setForm']) }}
 {% endblock %}
 {% block content %}
 {% markdown %}
@@ -42,7 +42,8 @@ that they are done filling out the form and choosing files.  You can allow your 
 all files to be uploaded by simply providing a submit button in your form.
 
 If you don't want to rely on some of these default behaviors, you can override them.  See the [form option][form]
-for details.
+for details. Note that, as of Fine Uploader 5.3, you can _also_ attach a form to Fine Uploader at any time using the new
+[setForm API method](../api/methods.html#setForm)!
 
 #### Validation
 Fine Uploader will respect any [validation attributes on your form elements][validationattrs], provided the current browser
@@ -109,9 +110,9 @@ file that integrates Fine Uploader into an existing form:
                         <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
                         <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
                         <span class="qq-upload-size-selector qq-upload-size"></span>
-                        <button class="qq-btn qq-upload-cancel-selector qq-upload-cancel">Cancel</button>
-                        <button class="qq-btn qq-upload-retry-selector qq-upload-retry">Retry</button>
-                        <button class="qq-btn qq-upload-delete-selector qq-upload-delete">Delete</button>
+                        <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">Cancel</button>
+                        <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">Retry</button>
+                        <button type="button" class="qq-btn qq-upload-delete-selector qq-upload-delete">Delete</button>
                         <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
                     </li>
                 </ul>
@@ -119,15 +120,15 @@ file that integrates Fine Uploader into an existing form:
                 <dialog class="qq-alert-dialog-selector">
                     <div class="qq-dialog-message-selector"></div>
                     <div class="qq-dialog-buttons">
-                        <button class="qq-cancel-button-selector">Close</button>
+                        <button type="button" class="qq-cancel-button-selector">Close</button>
                     </div>
                 </dialog>
 
                 <dialog class="qq-confirm-dialog-selector">
                     <div class="qq-dialog-message-selector"></div>
                     <div class="qq-dialog-buttons">
-                        <button class="qq-cancel-button-selector">No</button>
-                        <button class="qq-ok-button-selector">Yes</button>
+                        <button type="button" class="qq-cancel-button-selector">No</button>
+                        <button type="button" class="qq-ok-button-selector">Yes</button>
                     </div>
                 </dialog>
 
@@ -135,8 +136,8 @@ file that integrates Fine Uploader into an existing form:
                     <div class="qq-dialog-message-selector"></div>
                     <input type="text">
                     <div class="qq-dialog-buttons">
-                        <button class="qq-cancel-button-selector">Cancel</button>
-                        <button class="qq-ok-button-selector">Ok</button>
+                        <button type="button" class="qq-cancel-button-selector">Cancel</button>
+                        <button type="button" class="qq-ok-button-selector">Ok</button>
                     </div>
                 </dialog>
             </div>

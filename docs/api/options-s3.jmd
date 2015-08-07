@@ -29,7 +29,7 @@ If you are using the S3 uploader, all of Fine Uploader's options are still
 present, and most of them still function the same way. However, some of the
 options are slightly different. This page will list any new or different options
 for the S3 uploader. Any option not listed here can be assumed to have the same
-behavior for the Traditional or S3 uploader.
+behavior as the traditional endpoint uploader.
 
 ## Core
 
@@ -45,7 +45,7 @@ behavior for the Traditional or S3 uploader.
 )}}
 
 {{
-alert("The `chunking.paramNames` option does **not** apply to S3.")
+alert("The [`chunking.paramNames` option](options.html#chunking) does **not** apply to S3.")
 }}
 {{ api_parent_option("chunking", "chunking", "",
     (
@@ -55,7 +55,7 @@ alert("The `chunking.paramNames` option does **not** apply to S3.")
 
 {{ api_parent_option("cors", "cors", "",
     (
-        ("cors.allowXdr", "allowXdr", "Enables or disables cross-domain ajax calls (if `expected` property is true) in IE9 and older.", "Boolean", "true",),
+        ("cors.allowXdr", "allowXdr", "Enables or disables cross-domain ajax calls (if [the `expected` property](options.html#cors.expected) is true) in IE9 and older.", "Boolean", "true",),
     )
 )}}
 
@@ -77,16 +77,17 @@ alert("The `chunking.paramNames` option does **not** apply to S3.")
 )}}
 
 {{
-alert("The `resume.paramNames` option does **not** apply to S3.")
+alert("The [`resume.paramNames` option](options.html#resume) does **not** apply to S3.")
 }}
 
 {{
-alert("`request.customHeaders` does **not** apply to S3.")
+alert("The [`request.customHeaders` option](options.html#request.customHeaders) does **not** apply to S3.")
 }}
+
 {{ api_parent_option("request", "request", "",
     (
-        ("request.accessKey", "accessKey", "Your AWS public key. **NOT YOUR SECRET KEY**. Ignored if `credentials` have been set.", "String", "null",),
-        ("request.endpoint", "endpoint", "URL for your S3 bucket or the URL of a CDN that forwards the request to S3.  All valid bucket URLs documented by Amazon are supported, including custom domains.  SSL is also supported.  If you use a CDN address, be sure to specify the bucket via the `objectProperties.bucket` option.", "String", "null",),
+        ("request.accessKey", "accessKey", "Your AWS public key. **NOT YOUR SECRET KEY**. Ignored if [`credentials`](#credentials) have been set.", "String", "null",),
+        ("request.endpoint", "endpoint", "URL for your S3 bucket or the URL of a CDN that forwards the request to S3.  All valid bucket URLs documented by Amazon are supported, including custom domains.  SSL is also supported.  If you use a CDN address, be sure to specify the bucket via [the `objectProperties.bucket` option](#objectProperties.bucket).", "String", "null",),
         ("request.filenameParam", "filenameParam", "Part of the parameter name that contains the name of the associated file which may differ from the key name. Prefixed with 'x-amz-meta-' by Fine Uploader.", "String", "qqfilename",),
         ("request.params", "params", "Parameters passed along with each upload request.", "Object", "{}",),
     )

@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ERROR);
 /**
  * PHP Server-Side Example for Fine Uploader S3.
  * Maintained by Widen Enterprises.

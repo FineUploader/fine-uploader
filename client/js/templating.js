@@ -19,6 +19,7 @@ qq.Templating = function(spec) {
         HIDE_DROPZONE_ATTR = "qq-hide-dropzone",
         DROPZPONE_TEXT_ATTR = "qq-drop-area-text",
         IN_PROGRESS_CLASS = "qq-in-progress",
+        HIDDEN_FOREVER_CLASS = "qq-hidden-forever",
         isCancelDisabled = false,
         generatedThumbnails = 0,
         thumbnailQueueMonitorRunning = false,
@@ -512,6 +513,10 @@ qq.Templating = function(spec) {
                         });
                     }
                 }
+                // File element in template may have been removed, so move on to next item in queue
+                else {
+                    generateNextQueuedPreview();
+                }
             }
             else if (thumbnail) {
                 displayWaitingImg(thumbnail);
@@ -650,7 +655,7 @@ qq.Templating = function(spec) {
             isCancelDisabled = true;
         },
 
-        addFile: function(id, name, prependInfo) {
+        addFile: function(id, name, prependInfo, hideForever) {
             var fileEl = qq.toElement(templateHtml.fileTemplate),
                 fileNameEl = getTemplateEl(fileEl, selectorClasses.file),
                 uploaderEl = getTemplateEl(container, selectorClasses.uploader),
@@ -673,30 +678,36 @@ qq.Templating = function(spec) {
                 fileList.appendChild(fileEl);
             }
 
-            hide(getProgress(id));
-            hide(getSize(id));
-            hide(getDelete(id));
-            hide(getRetry(id));
-            hide(getPause(id));
-            hide(getContinue(id));
-
-            if (isCancelDisabled) {
-                this.hideCancel(id);
+            if (hideForever) {
+                fileEl.style.display = "none";
+                qq(fileEl).addClass(HIDDEN_FOREVER_CLASS);
             }
+            else {
+                hide(getProgress(id));
+                hide(getSize(id));
+                hide(getDelete(id));
+                hide(getRetry(id));
+                hide(getPause(id));
+                hide(getContinue(id));
 
-            thumb = getThumbnail(id);
-            if (thumb && !thumb.src) {
-                cachedWaitingForThumbnailImg.then(function(waitingImg) {
-                    thumb.src = waitingImg.src;
-                    if (waitingImg.style.maxHeight && waitingImg.style.maxWidth) {
-                        qq(thumb).css({
-                            maxHeight: waitingImg.style.maxHeight,
-                            maxWidth: waitingImg.style.maxWidth
-                        });
-                    }
+                if (isCancelDisabled) {
+                    this.hideCancel(id);
+                }
 
-                    show(thumb);
-                });
+                thumb = getThumbnail(id);
+                if (thumb && !thumb.src) {
+                    cachedWaitingForThumbnailImg.then(function(waitingImg) {
+                        thumb.src = waitingImg.src;
+                        if (waitingImg.style.maxHeight && waitingImg.style.maxWidth) {
+                            qq(thumb).css({
+                                maxHeight: waitingImg.style.maxHeight,
+                                maxWidth: waitingImg.style.maxWidth
+                            });
+                        }
+
+                        show(thumb);
+                    });
+                }
             }
         },
 
@@ -788,6 +799,10 @@ qq.Templating = function(spec) {
             var icon = getEditIcon(id);
 
             icon && qq(icon).addClass(options.classes.editable);
+        },
+
+        isHiddenForever: function(id) {
+            return qq(getFile(id)).hasClass(HIDDEN_FOREVER_CLASS);
         },
 
         hideEditIcon: function(id) {
@@ -949,13 +964,17 @@ qq.Templating = function(spec) {
         },
 
         generatePreview: function(id, optFileOrBlob) {
-            thumbGenerationQueue.push({id: id, optFileOrBlob: optFileOrBlob});
-            !thumbnailQueueMonitorRunning && generateNextQueuedPreview();
+            if (!this.isHiddenForever(id)) {
+                thumbGenerationQueue.push({id: id, optFileOrBlob: optFileOrBlob});
+                !thumbnailQueueMonitorRunning && generateNextQueuedPreview();
+            }
         },
 
         updateThumbnail: function(id, thumbnailUrl, showWaitingImg) {
-            thumbGenerationQueue.push({update: true, id: id, thumbnailUrl: thumbnailUrl, showWaitingImg: showWaitingImg});
-            !thumbnailQueueMonitorRunning && generateNextQueuedPreview();
+            if (!this.isHiddenForever(id)) {
+                thumbGenerationQueue.push({update: true, id: id, thumbnailUrl: thumbnailUrl, showWaitingImg: showWaitingImg});
+                !thumbnailQueueMonitorRunning && generateNextQueuedPreview();
+            }
         },
 
         hasDialog: function(type) {

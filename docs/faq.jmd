@@ -3,6 +3,11 @@
 {% markdown %}
 ## Frequently Asked Questions (FAQ)
 
+**Q**: Are multiple instances of Fine Uploader on a single page supported?
+
+**A**: Absolutely! In fact, our internal development page has 4 different instances of Fine Uploader running at all times. [The demo page](http://fineuploader.com/demos) is another example where multiple instances of the library are running side-by-side.
+
+<br/>
 **Q**: Why can't I select multiple files at once in Android?
 
 **A**: Android doesn't officially support the multiple attribute on file input elements.  I believe
@@ -10,8 +15,8 @@ some builds of Android unofficially supported this, but I can't recall which spe
 See case [#840](https://github.com/Widen/fine-uploader/issues/840) for more details.
 
 <br/>
-**Q**: I'm using FineUploaderBasic mode, but I don't want to write my own code to handle dropped files and folders.  Can
-I use the DnD module used by FineUploader mode?
+**Q**: I'm using core mode, but I don't want to write my own code to handle dropped files and folders.  Can
+I use the DnD module used by UI mode?
 
 **A**: Certainly, and it's quite easy to do so!  Head on over to the [DnD Module Documentation](features/drag-and-drop.html) for more information.
 
@@ -23,15 +28,15 @@ probably read advice from others that claim "text/html" is also safe.  This is n
 of "text/html" if your JSON response contains HTML.
 
 <br/>
-**Q:** I like FineUploader mode, but I don't want to allow my users to utilize the drag & drop feature.  How can I do this?
+**Q:** I like UI mode, but I don't want to allow my users to utilize the drag & drop feature.  How can I do this?
 
 **A:** Simply remove the drop zone elements from the template.
 
 <br/>
-**Q:** Using the jQuery plug-in in FineUploaderBasic mode, I can't seem to get my upload button to appear.
+**Q:** Using the jQuery plug-in in core mode, I can't seem to get my upload button to appear.
 
 **A:** It is important to understand that the target of your plug-in should be an existing container element for your upload
-component, *NOT* the button element.  Your button element must be specified separately via the `button` option.
+component, _not_ the button element.  Your button element must be specified separately via the `button` option.
 
 <br/>
 **Q:** Why am I seeing an "Access Denied" error in IE's javascript console?
@@ -54,11 +59,6 @@ These are all required to give you the best possible experience.
 Apple doesn't appear to be interested in maintaining Safari for Windows anymore either.  Switch to Chrome.
 
 <br/>
-**Q:** Why isn't IOS5 supported?
-
-**A:** IOS5 doesn't even support file input elements.
-
-<br/>
 **Q:** Why isn't folder drag & drop uploading supported in any browser other than Chrome 21+ & Opera 15+?
 
 **A:** Chrome 21 was the first browser version to implement the HTML5 Filesystem API.  This is required to handle dropped folders.
@@ -68,14 +68,14 @@ Chrome.
 <br/>
 **Q:** I have created a `<button>` element for my uploader button, but this doesn't seem to work in IE.  Why?
 
-**A:** In IE, the button element receives the click event, instead of the child input element.  Use a `<div>` or a `<span>` or an `<a>` instead.
+**A:** In IE, the button element receives the click event, instead of the child input element.  Use a `<div>` or a `<span>` or an `<a>` instead. Be sure to add a `role` attribute with a value of "button" to this element for accessibility reasons.
 
 <br/>
-**Q:** Why do I only see a "Processing..." message next to a file (in FineUploader mode for the traditional uploader)
+**Q:** Why do I only see a "Processing..." message next to a file (in UI mode for the traditional uploader)
 in Chrome, Safari, & Opera after the last byte has been sent but the server has yet to respond?
 
 **A:** The implementation of the onProgress notification that tells us the status of the bytes sent to the server varies from browser to browser, unfortunately.
-Webkit browsers have elected to follow the "spirit" of the W3C spec, while Firefox, and (I beleive) IE10, obey the spec in the most strict sense.  I have discussed
+Webkit browsers have elected to follow the "spirit" of the W3C spec, while Firefox, and (I believe) IE10, obey the spec in the most strict sense.  I have discussed
 this in some detail [in the "processing" status message feature case](https://github.com/Widen/fine-uploader/issues/404#issuecomment-10124160).
 
 <br/>

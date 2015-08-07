@@ -21,7 +21,7 @@ $(document).ready(function() {
 
 {% block content %}
 {% markdown %}
-# Methods <small>Azure</small>{: .page-header }
+# Methods <small>Azure</small> {: .page-header }
 {% endmarkdown %}
 
 <div class="all-methods" data-spy="" data-target="">

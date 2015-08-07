@@ -4,25 +4,21 @@
 {% markdown %}
 # Fine Uploader Core Mode {: .page-header }
 
-Fine Uploader Core mode offers all the features of Fine Uploader UI mode, 
-but rather than make assumptions about the UI, allows the developer to 
-explicitly define which elements in the DOM Fine Uploader should act upon. 
-This opens the door for finely tuned integration between Fine Uploader and 
-your existing application. Choose this mode if you need very tight control 
-over your uploader’s UI.
+[solo-dnd]: ../features/drag-and-drop.html#drag-and-drop-standalone-module
+[ui]: ui.html
 
-Fine Uploader Core mode is defined in the qq.FineUploaderBasic module in the code. 
+If you need to design an exceptionally unique upload experience for you users, _and_ require the
+power that Fine Uploader provides in its feature set, core mode is most appropriate. While [UI mode][ui]
+provides a customizable default UI, core mode is designed to allow you to develop your own UI that builds on
+Fine Uploader's rich API and configuration options. There is _also_ a [standalone drag and drop module][solo-dnd]
+available for you to integrate into your custom UI.
+
+Fine Uploader Core mode is defined in the `qq.FineUploaderBasic` module in the code.
 This is the base module for Fine Uploader, and provides all functions that do not 
 involve UI components.
 
-Fine Uploader Core mode has a couple more options that need to be set than regular 
-Fine Uploader UI mode.
-
-For more information, see:
-
-* [Core Mode Options](../api/options.html)
-* [API Methods](../api/methods.html)
-* [Events](../api/events.html)
+For more information on the events, API methods, and configuration options available to UI mode,
+have a look at the menu at the top of the page.
 
 {% endmarkdown %}
 {% endblock %}

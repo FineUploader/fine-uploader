@@ -1,27 +1,85 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Resume" %}
 {% block sidebar %}
-{{ api_links(options=['resume'], methods=['getResumableFilesData']) }}
+{{ api_links(options=['resume'], methods=['getResumableFilesData'], events=['resume']) }}
 {% endblock %}
 {% block content %}
 {% markdown %}
 
 # Resuming Uploads {: .page-header }
 
-The ability to resume an upload that was somehow interrupted is
-dependant on the support for [chunking](chunking.html) and `localStorage` by the client.
-Essentially, to support resumable uploads, Fine Uploader just needs to keep track of
-where it currently is in the upload process.  To do this it stores session data in a
-record that is saved on the client before each chunk is sent to the server.
+Suppose you’re sitting in a coffee shop, slowly uploading a very large file. Your lunch break is over and you have to
+head back to the office, but your upload is no where near complete. If you're using Fine Uploader, you can simply close
+your browser, head back to the office, and re-select or drop the file back into the uploader. It will pick up where you left off.
+Perhaps you are uploading another large file, but your PC blue-screens in the middle of the upload. Once you get your
+browser back up and running again, simply drop or select the file again and Fine Uploader will resume your file upload.
 
-Note that resuming is disabled by default, and the local storage record is stored for 7 days (by default)
-(both of these options can be easily changed).
 
-{{
-    alert("The `resume.paramNames` properties are not applicable to the S3 & Azure uploaders.")
-}}
+## High-level summary
 
-[For more information, see the associated blog post](http://blog.fineuploader.com/2013/01/01/resume-uploads-from-previous-sessions-in-3-2/)
+The ability to resume an upload is dependent [the chunking feature](chunking.html). Before each chunk is sent to the server,
+Fine Uploader creates a `localStorage` entry with all of the information required to resume the upload. This is done to
+cover termination of the browser session before the chunk has been successfully received by the server. After Fine Uploader
+has confirmed that the chunk has been successfully processed, the storage entry is either deleted (if there are no more
+chunks left for this file) or updated with the metadata for the next chunk.
+
+
+## Configuring
+
+We have provided the ability to enable or disable the resume feature (it’s disabled by default). Also, the number of
+days a resume storage entry can live is configurable, but defaults to 7 days. Finally, you may specify an ID property
+that will be used to further distinguish resume cookies stored by the uploader. You may find this useful, if, for instance,
+you would like to tie resumable files to a specific user.
+
+Note that you _must_ also enable the chunking feature if you want to use resume.
+
+
+## Callbacks
+
+We've also provided a callback, `onResume`, with some useful parameters. The callback is invoked _before_ a resume begins.
+The file ID, along with the name of the file and some data specific to the chunk to be sent are passed to the callback.
+If you want to abort the resume attempt browser-side and simply start uploading from the first chunk, you can return `false`
+in your callback handler.
+
+
+## API
+
+We have also added a new method to the API: `getResumableFilesData`. This allows you to obtain a list of files that are
+resumable in the current session. You may find this useful if you want to display a message to the user after the uploader
+is initialized.
+
+
+## Server-side support
+
+On the server side, there is very little you have to do if you are already accounting for chunked uploads. You can
+determine when a resume has been ordered by looking for a “qqresume” parameter in the request with a value of `true`.
+This parameter will be sent with the first request of the resume attempt.
+
+It is important that you keep chunks around on the server until either the entire file has been uploaded and all chunks
+have been merged, or until the number of days specified in the `resume.recordsExpireIn` option have passed.
+If, for some reason, you receive a request that indicates a resume has been ordered, and one or more of the previously
+uploaded chunks is missing or invalid, you can return a valid JSON response containing a “reset” property with a value of “true”.
+This will let Fine Uploader know that it should start the file upload from the first chunk instead of the last failed chunk.
+
+
+## Example
+
+It’s really quite simple to start using the resume feature:
+
+```javascript
+var uploader = new qq.FineUploader({
+    element: document.getElementById('myUploader'),
+    request: {
+        endpoint: '/my/endpoint'
+    },
+    chunking: {
+        enabled: true
+    },
+    resume: {
+        enabled: true
+    }
+});
+```
 
 {% endmarkdown %}
 {% endblock %}

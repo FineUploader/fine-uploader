@@ -2,7 +2,7 @@
 {% set page_title = "Contributing" %}
 {% block content %}
 {% markdown %}
-# Contributing
+# Building From Source & Contributing
 
 ## Build status
 
@@ -27,13 +27,16 @@
 
 ## Building
 
-If you are developing a non-commercial project (and are not using Fine Uploader for commercial purposes) or if you have
-purchased a [Widen Commercial License](https://raw.githubusercontent.com/FineUploader/fine-uploader/master/LICENSE),
-you can build your own version-stamped copy of Fine Uploader's combined source code using the build file
+You can build your own version-stamped copy of Fine Uploader's combined source code using the build file
 located in the root of the repository.  In either case, you can download a development or stable copy on the
 website as well.
 
-The following instructions are aimed at *nix OSes, such as OSX, Linux, BSD, etc.  If you are using Windows,
+{{ alert(
+"""If you are developing a commercial project or are using Fine Uploader for commercial purposes, you must [purchase a Widen Commercial License](http://fineuploader.com/purchase)
+before using Fine Uploader in your product."""
+)}}
+
+The following instructions are aimed at unix/linux operating systems, such as OSX, Ubuntu, BSD, etc.  If you are using Windows,
 you'll need to make the appropriate adjustments to the following steps.
 
 To build Fine Uploader, you must:

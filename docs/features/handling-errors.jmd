@@ -8,23 +8,21 @@
 
 # Handling Errors {: .page-header }
 
-Fine Uploader has a wealth of ways to respond to error messages.
+Fine Uploader has a wealth of ways to respond to error messages. By default, Fine Uploader assumes an error when the
+server response does not have a key of `success` set to `true`. If any error is thrown, then the `onError` callback will be invoked.
 
-By default, Fine Uploader assumes an error when the server response does not
-have a key of `success` set to `true`.
-
-If any error is thrown, then the `onError` callback will be called.
 
 ## Debugging Errors
 
 Sometimes errors are not intended, or unexpected. Fine Uploader provides the
 `debug` option which will make the plugin spit out logging messages to the
-client's JavaScript log.
+browser's developer tools console.
 
 To enable debug mode, set the `debug` option of Fine Uploader to `true`
 and open the developer console in your browser. Interact with Fine Uploader
 and notice that it is logging specifically what is happening. These messages
-can be crucial in deciphering why something is not working as expected.
+can be crucial in determining why something is not working as expected.
+
 
 ## Handling Errors
 
@@ -48,10 +46,11 @@ var uploader = new qq.FineUploader({
 });
 ```
 
-## The `error` Response Property
 
-By default, if Fine Uploader does **not** receive a successful server response
-then it will look for the `error` property of the response body and will pass
+## The Error Response Property
+
+By default, if Fine Uploader does _not_ receive a successful server response,
+it will look for the `error` property of the response body and will pass
 that value to the `onError` callback.
 
 If the server indicates failure in the response, but does not include an
@@ -70,7 +69,7 @@ var uploader = new qq.FineUploader({
 
 ## Changing Error Messages
 
-The `messages` property in the main Fine Upload options object provides a
+The [`messages` property in the core Fine Uploader options](../api/options.html#messages) provides a
 handful of properties one can override to display custom error messages.
 
 ```javascript
@@ -84,6 +83,7 @@ var uploader = new qq.FineUploader({
 });
 ```
 
+
 ### Error Messages
 
 Error messages include primitive `String` interpolation that allows integrators
@@ -96,8 +96,9 @@ messages: {
 }
 ```
 
-and the filename of the file which the error was thrown on will be injected
+The filename of the file which the error was thrown on will be injected
 instead of the `"{file}"` `String`.
+
 
 ## Modifying the Text for Failed Uploads
 

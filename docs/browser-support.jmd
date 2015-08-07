@@ -15,13 +15,6 @@ Currently, Fine Uploader supports the following browsers:
 * iOS 6+
 * Safari 5+ (OS X)
 
-We plan on supporting the following browsers/OSes in the very near future:
-
-* Mobile Firefox (probably already works)
-* Opera Mini
-* Firefox OS
-* Dolphin
-
 ## Feature Support Matrix
 
 Note: Any features not listed here are supported in all browsers.
@@ -71,15 +64,15 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
-            <td>Chrome for iOS 6+</td>
+            <td>Chrome iOS 6+</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}<a style="font-size: 24px" href="#ios-multiple">*</a></td>
-            <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "") }}</td>
+            <td>{{ label('-', "") }}</td>
+            <td>{{ label('-', "") }}</td>
+            <td>{{ label('-', "") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('x', "") }}</td>
+            <td>{{ label('-', "") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -91,15 +84,15 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
-            <td>Chrome for Android 4+</td>
+            <td>Chrome Android 4+</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "") }}</td>
+            <td>{{ label('-', "") }}</td>
+            <td>{{ label('-', "") }}</td>
+            <td>{{ label('-', "") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('x', "") }}</td>
+            <td>{{ label('-', "") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -232,12 +225,12 @@ Note: Any features not listed here are supported in all browsers.
         </tr>
         <tr>
             <td>Android
-                4 stock</td>
+                4+ stock</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "") }}</td>
+            <td>{{ label('-', "") }}</td>
+            <td>{{ label('-', "") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -256,9 +249,9 @@ Note: Any features not listed here are supported in all browsers.
                 2.3.x stock</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
-            <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "") }}</td>
+            <td>{{ label('-', "") }}</td>
+            <td>{{ label('-', "") }}</td>
+            <td>{{ label('-', "") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -277,9 +270,9 @@ Note: Any features not listed here are supported in all browsers.
                 6+</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}<a style="font-size: 24px" href="#ios-multiple">*</a></td>
-            <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "") }}</td>
-            <td>{{ label('x', "") }}</td>
+            <td>{{ label('-', "") }}</td>
+            <td>{{ label('-', "") }}</td>
+            <td>{{ label('-', "") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('x', "important") }}</td>
@@ -295,7 +288,7 @@ Note: Any features not listed here are supported in all browsers.
         </tr>
         <tr>
             <td>Safari
-                6</td>
+                6+</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -338,8 +331,7 @@ Note: Any features not listed here are supported in all browsers.
     </tbody>
 </table>
 
-<small><a style="font-size: 24px" name="ios-multiple">*</a> - iOS browsers are unable to upload multiple files when video files are allowed to be uploaded due to a long-standing iOS bug. See case <a href="https://github.com/Widen/fine-uploader/issues/990">#990</a> on our bug tracker for more details.</small>
-<small><a style="font-size: 24px" name="ios-multiple">*</a> - iOS8 Safari is unable to upload any files due to bugs in Apple's code.  Please see [the blog post on this topic for more details](http://blog.fineuploader.com/2014/09/10/ios8-presents-serious-issues-that-prevent-file-uploading/).</small>
+<small><a style="font-size: 24px" name="ios-multiple">*</a> - Some iOS browsers are unable to upload multiple files when video files are allowed to be uploaded due to a long-standing iOS bug. See case <a href="https://github.com/Widen/fine-uploader/issues/990">#990</a> on our bug tracker for more details.</small>
 
 
 ### Upload size Limitations
@@ -373,6 +365,8 @@ for users of these older browsers, or if you are not using chunking, make sure y
 [Source](http://blogs.msdn.com/b/ieinternals/archive/2011/03/10/wininet-internet-explorer-file-download-and-upload-maximum-size-limits.aspx)
 
 # Feature Detection
+
+You can programmatically detect support for all of Fine Uploader's features at runtime by checking the bundled `qq.supportedFeatures` object.
 
 ## Feature Flags
 
@@ -412,9 +406,9 @@ Feature     | Description
 `uploadViaPaste` | Is uploading via paste supported?
 
 
-## Mobile Safari (iOS)
+## iOS (iPhone, iPad, iPod, etc) Browsers
 
-Fine Uploader supports mobile Safari found on iOS 6+. One caveat to take into
+Fine Uploader supports mobile Safari and mobile Chrome found on iOS 6+. One caveat to take into
 account is that iOS saves all image files on the camera roll is "image.jpg".
 Ensure that your server is saving files with some sort of unique identifier appended to the path
 because otherwise your iOS users will be overwriting each others' images.
@@ -423,8 +417,7 @@ UUID along with the request to the server in the `qquuid` parameter.
 
 ## Internet Explorer
 
-IE continues to lag far behind all other browsers in terms of features. IE10 finally competes
-with existing modern browsers. For those of you with customers suffering with IE9 and older, here are some of the limitations
+IE10 finally competes with existing modern browsers. For those of you with customers suffering with IE9 and older, here are some of the limitations
 you may want to be aware of when using Fine Uploader. The limitations that are overcome
 by upgrading to IE10 are listed as well.
 
@@ -475,7 +468,7 @@ by upgrading to IE10 are listed as well.
         <tr>
             <td>No logging
             </td>
-            <td><code>console.log</code> is not implemented (IE8 and older only)
+            <td><code>console.log</code> is not available unless developer tools are open (IE9 and older).
             </td>
             <td>
                 <span class="label label-success">Yes</span>

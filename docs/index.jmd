@@ -15,8 +15,8 @@ different parts. It's recommended that you first check out the
 [quickstart](quickstart/01-getting-started.html) for Fine Uploader. If you’d rather dive into the
 internals of Fine Uploader, check out the exhaustive
 Features reference or API documentation (see the navigation menu bar at the top).
-For assistance in getting your upload server set up, check out the docs on
-the Servers section.
+For assistance in getting your upload server set up, check out the docs in
+the Servers section (also available via the navigation menu).
 
 ## Getting Started
 
@@ -25,9 +25,9 @@ human-readable and accessible to those looking to get started with Fine Uploader
 For experts, or developers looking to view more technical documentation, refer
 to the API documentation section.
 
-### Quickstart
+### Quick-start
 
-#### Traditional Uploader
+#### Traditional / Generic Endpoint Uploader
 
 1. [Getting Started with Fine Uploader](quickstart/01-getting-started.html)
 2. [Setting Fine Uploader options](quickstart/02-setting_options.html)
@@ -48,40 +48,39 @@ to the API documentation section.
 
 ### Fine Uploader Modes
 
-* [Core](modes/core.html)
-* [UI](modes/ui.html)
+* [Core](modes/core.html) - Most API methods and options available, build your own UI from scratch
+* [UI](modes/ui.html) - Inherits from core, provides additional UI-specific options and API methods. Default customizable UI.
 
 
-### Plugins
+### Plug-ins
 
-* [jQuery](integrating/jquery.html)
+* [jQuery](integrating/jquery.html) - _Not_ required to use _any_ feature of Fine Uploader. Simply wraps the library as a jQuery plug-in.
 
 
 ### Endpoint Handlers (server-side guidelines)
 
-* [Traditional Server](endpoint_handlers/traditional.html)
-* [Amazon S3](endpoint_handlers/amazon-s3.html)
-* [Azure Blob Storage](endpoint_handlers/azure.html)
-* [Examples](https://github.com/Widen/fine-uploader-server)
+* [Traditional Server](endpoint_handlers/traditional.html) - For upload servers that you control and build.
+* [Amazon S3](endpoint_handlers/amazon-s3.html) - For uploads directly to S3 from the browser.
+* [Azure Blob Storage](endpoint_handlers/azure.html) - For uploads directly to Azure from the browser.
+* [Examples](https://github.com/Widen/fine-uploader-server) - GitHub repo of server-side examples to handle all types of Fine Uploader requests.
 
 
 ### Additional Information
 
-* [Browser Support](browser-support.html)
-* [Build Your Own](contributing.html)
-* [Contributing](https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md)
-* [Changelog](http://blog.fineuploader.com/category/changelog/)
-* [Support](support.html)
+* [Browser Support](browser-support.html) - Matrix of support for all major features. Also contains information on how to determine features support via JavaScript at runtime using Fine Uploader's API.
+* [Build Your Own](contributing.html) - Instructions on building Fine Uploader from source and running tests.
+* [Contributing](https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md) - Guidelines and rules for contributing code and opening issues.
+* [Changelog](http://blog.fineuploader.com/category/changelog/) - High-level summary of all releases.
 * [FAQ](faq.html)
 
 
 ### Links
 
-* [Official Site](http://fineuploader.com/index.html)
+* [Official Site](http://fineuploader.com)
 * [Blog](http://blog.fineuploader.com/)
-* [Issue Tracker](https://github.com/Widen/fine-uploader/issues)
-* [Support Forum](http://stackoverflow.com/questions/tagged/fine-uploader)
-* [GitHub repo](https://github.com/Widen/fine-uploader)
+* [Issue Tracker](https://github.com/Widen/fine-uploader/issues) - File bugs and feature requests here.
+* [Support Q&A](http://stackoverflow.com/questions/tagged/fine-uploader) - Community support for Fine Uploader with participation from Fine Uploader developers. Not for bugs or feature requests.
+* [GitHub repository](https://github.com/Widen/fine-uploader)
 
 {% endmarkdown %}
 {% endblock %}

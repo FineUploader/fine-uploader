@@ -24,7 +24,7 @@ Dragging and dropping of _folders_ is currently only supported in Chrome 21+ & O
 
 # Drag and Drop Standalone Module
 
-If you are integrating Fine Uploader and utilizing FineUploaderBasic mode,
+If you are integrating Fine Uploader and utilizing core mode,
 you are likely building you own UI entirely. In case you want to support drag
 and drop of folders and files, you probably don't want to re-invent the wheel, since
 Fine Uploader already has code to handle this in Fine Uploader mode.
@@ -42,8 +42,8 @@ you are running this in UI mode, then take a look at the `dragAndDrop` Fine Uplo
 
 {% endmarkdown %}
 
-{{ api_option("allowMultipleItems", "allowMultipleItems", "Set to `false` if you would to prevent the user from dropping more than one item at once.", "boolean", "`true`",)}}
-{{ api_option("dropZoneElements", "dropZoneElements", "Specify all container elements that should be treated as drop zones.", "Array", "`[ ]`",)}}
+{{ api_option("allowMultipleItems", "allowMultipleItems", "Set to `false` if you want to prevent the user from dropping more than one item at once.", "boolean", "true",)}}
+{{ api_option("dropZoneElements", "dropZoneElements", "Specify all container elements that should be treated as drop zones.", "Array", "[ ]",)}}
 
 {{api_parent_option("classes", "classes", "",
     (
@@ -163,8 +163,6 @@ var dragAndDropModule = new qq.DragAndDrop({
     }
   });
 ```
-
-[For more information, see the associated blog post](http://blog.fineuploader.com/2013/04/05/standalone-file-drag-drop-module-in-3-5/)
 
 {% endmarkdown %}
 {% endblock %}

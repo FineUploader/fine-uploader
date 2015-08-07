@@ -7,17 +7,21 @@
 {% markdown %}
 # Initial File List {: .page-header }
 
+
 ### Summary
+
 This feature is targeted at integrators with an application that requires a list of files from a previous session to be
 fed into the uploader during initialization.  If enabled, Fine Uploader will ask your server for metadata about file items
 previously uploaded.  All items returned from your server will be loaded into Fine Uploader, and you will be able to
 optionally delete these files.  All relevant API methods can be used on these pre-loaded files.  If you are using
 Fine Uploader UI, they will be displayed as successfully uploaded files as well.
 
-The API includes a [`session` option](../api/options.html#session-option)
-and a [`sessionRequestComplete` event](../api/events.html#sessionrequestcomplete).
+The API includes a [`session` option](../api/options.html#session)
+and a [`sessionRequestComplete` event](../api/events.html#sessionRequestComplete).
+
 
 ### Fine Uploader Core Support
+
 After the array of file items has been retrieved from the server, all valid items will be loaded into the uploader
 instance.  Internal data structures will be updated with this data, making all relevant API methods possible, such as
 `getName`, `getUuid`, `getUploads`, `deleteFile`, etc.
@@ -26,16 +30,27 @@ All loaded file items will include a [status of `qq.status.UPLOAD_SUCCESSFUL`](s
 Fine Uploader will assign IDs to each file item as well.  Also note that file items loaded into Fine Uploader will be
 counted when determining if you have reached your [`validation.itemLimit`](validation.html).
 
+
 ### Fine Uploader UI Support
+
 In addition to everything described in the above core session, all files loaded into Fine Uploader on startup
-(or after a reset) will be displayed in Fine Uploader UI as successfully uploaded files.  If the delete file feature
+(or after a reset) will be displayed in Fine Uploader UI as successfully uploaded files.  If the [delete file feature](delete.html)
 is enabled, a delete button will appear next to each file as well.
 
+
 ### File Uploader S3 Support
+
 Support for S3 with or without UI mode is the same, except an additional property for each file item is required: `s3Key`.
 The value of this property must be the current key of the file in your S3 bucket.
 
+### File Uploader Azure Support
+
+Support for Azure with or without UI mode is the same, except an additional property for each file item is required: `blobName`.
+The value of this property must be the current name of the Azure blob.
+
+
 ### Server
+
 If you have specified a value for the `session.endpoint` option, Fine Uploader will send a GET request to your endpoint
 on startup (and optionally when the instance is reset).  The response to this request must be valid JSON.  More
 specifically, it must be a JSON array containing `Object`s for each file to be fed into the uploader.
@@ -55,9 +70,10 @@ Here are the following properties of each `Object` that Fine Uploader recognizes
 The response will be converted into a JavaScript `Array` and passed to your `sessionRequestComplete` event handler.
 So, any non-standard object properties passed with your server response will also be passed to your event handler.
 
-Cross-origin endpoints are supported in all browsers.
+Additionally:
 
-Your server must respond with a status of 200.
+* Cross-origin endpoints are supported in all browsers.
+* Your server must respond with a status of 200.
 
 {% endmarkdown %}
 {% endblock %}

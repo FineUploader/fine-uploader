@@ -3,9 +3,9 @@
 {% block content %}
 {% markdown %}
 
-# qq Utilities {: .page-header }
+# Utilities {: .page-header }
 
-Fine Uploader contains a number of utility functions and polyfills to keep
+Fine Uploader contains a number of utility functions and shims to keep
 it dependency free and lightweight. These functions are found in the same
 namespace as Fine Uploader, `qq`.
 
@@ -30,7 +30,7 @@ api_method("qq", "qq (element)",
 [
     {
         "type": "qq instance",
-        "description": "A 'wrapped' DOM object with a variety of cross-browser polyfills and shims as methods."
+        "description": "A wrapped DOM object with a variety of cross-browser shims as methods."
     },
 ])
 }}
@@ -57,7 +57,7 @@ var children = qqMyDiv.children();
 ```
 
 Once you've wrapped an element, you have access to a wealth of cross-browser
-polyfills that will let you manipulate the DOM and CSS as you please. Just make
+shims that will let you manipulate the DOM and CSS as you please. Just make
 sure to wrap any elements before calling these methods on them.
 
 ### DOM Selection and Traversal
@@ -137,7 +137,7 @@ sure to wrap any elements before calling these methods on them.
 
 {% markdown %}
 
-### CSS Manipulation
+### CSS Operations
 
 {% endmarkdown %}
 {{ api_method("qq.addClass", "addClass (className)", "Add a class to this element.",
@@ -165,7 +165,7 @@ sure to wrap any elements before calling these methods on them.
 ]
 ) }}
 
-{{ api_method("qq.getByClass", "getByClass (className)", "Returns an array of all descendants of this element that contain the passed in class name.",
+{{ api_method("qq.getByClass", "getByClass (className)", "Returns an array of all descendants of this element that contain a specific class name.",
 [
     {
         "name": "className",
@@ -273,7 +273,7 @@ sure to wrap any elements before calling these methods on them.
 ## Utility Functions
 {% endmarkdown %}
 
-{{ api_method("qq.bind", "bind (oldFunc, context)", "polyfill for `Function.prototype.bind`. Creates a new function that, when called, has its `this` keyword set to the provided `context`. Pass comma-separated values after the `context parameter for all arguments to be passed into the new function (when invoked). you can still pass in additional arguments during invocation.",
+{{ api_method("qq.bind", "bind (oldFunc, context)", "Shim for `Function.prototype.bind`. Creates a new function that, when called, has its `this` keyword set to the provided `context`. Pass comma-separated values after the `context parameter for all arguments to be passed into the new function (when invoked). you can still pass in additional arguments during invocation.",
 [
     {
         "name": "oldFunc",
@@ -293,7 +293,7 @@ sure to wrap any elements before calling these methods on them.
     }
 ]) }}
 
-{{ api_method("qq.each", "each (iterable, callback)", "polyfill iterator. iterates through a collection, passing the key and value into the provided callback. `return false;` to stop iteration.",
+{{ api_method("qq.each", "each (iterable, callback)", "Iterates through a collection, passing the key and value into the provided callback. `return false;` to stop iteration.",
 [
     {
         "name": "iterable",
@@ -307,7 +307,7 @@ sure to wrap any elements before calling these methods on them.
     }
 ]) }}
 
-{{ api_method("qq.extend", "extend (firstObj, secondObj[, extendNested])", "shallowly copies the parameters of `secondobj` to `firstobj`. if `extendnested` is true then a deep-copy is performed.",
+{{ api_method("qq.extend", "extend (firstObj, secondObj[, extendNested])", "Shallowly copies the parameters of `secondobj` to `firstobj`. if `extendnested` is true then a deep-copy is performed.",
 [
     {
         "name": "firstObj",
@@ -322,7 +322,7 @@ sure to wrap any elements before calling these methods on them.
     {
         "name": "extendNested",
         "type": "Boolean",
-        "description": "If `true` then a deep-copy is performed, else a shallow-copy is."
+        "description": "If `true` then a deep-copy is performed, else a shallow copy."
     },
 ],
 [
@@ -332,7 +332,7 @@ sure to wrap any elements before calling these methods on them.
     }
 ]) }}
 
-{{ api_method("qq.format", "format (message)", "returns a string, swapping argument values with the associated occurrence of {} in the passed string.",
+{{ api_method("qq.format", "format (message)", "Returns a string, swapping argument values with the associated occurrence of {} in the passed string.",
 [
     {
         "name": "message",
@@ -347,7 +347,13 @@ sure to wrap any elements before calling these methods on them.
     }
 ]) }}
 
-{{ api_method("qq.indexof", "indexOf (array, item[, startingIndex])", "returns the index of `item` in the `array` starting the search from `startingindex`.",
+{{ api_method("qq.getextension", "getExtension (filename)", "Return the extension for the filename, if any.", [ { "name": "filename", "type": "String", "description": "The file's name to rip the extension off of." } ],
+[ { "type": "String", "description": "The new filename" }] )}}
+
+{{ api_method("qq.getUniqueId ()", "getUniqueId", "Returns a version4 uuid", [],
+[ { "type": "String", "description": "A version 4 unique identifier" } ]) }}
+
+{{ api_method("qq.indexof", "indexOf (array, item[, startingIndex])", "Returns the index of `item` in the `Array` starting the search from `startingindex`.",
 [
     {
         "name": "array",
@@ -372,19 +378,23 @@ sure to wrap any elements before calling these methods on them.
     }
 ]) }}
 
-{{ api_method("qq.isobject", "isObject (obj)", "`true` if the parameter is a 'simple' object.",
-[ { "name": "obj", "type": "Object", "description": "The 'thing' to test."}],
-[ { "type": "Boolean", "description": "Result of the `isobject` test" }]) }}
-
 {{ api_method("qq.isfunction", "isFunction (func)", "`true` if the parameter is a function.",
 [ { "name": "func", "type": "Object", "description": "The Object to test." } ],
 [ { "type": "Boolean", "description": "The result of the `isfunction` test." } ]) }}
+
+{{ api_method("qq.isobject", "isObject (obj)", "`true` if the parameter is a 'simple' object.",
+[ { "name": "obj", "type": "Object", "description": "The 'thing' to test."}],
+[ { "type": "Boolean", "description": "Result of the `isobject` test" }]) }}
 
 {{ api_method("qq.isstring", "isString (str)", "`true` if the parameter is a string.",
 [ { "name": "str", "type": "Object", "description": "The Object to test" } ],
 [ { "type": "Boolean", "description": "The result of the `isstring` test." } ]) }}
 
-{{ api_method("qq.preventdefault", "preventDefault (event)", "prevent the user agent's default action on an event. useful inside of event handlers.",
+{{ api_method("qq.log", "log (logMessage[, logLevel])", "Log a message to the console. no-op if console logging is not supported. shim for `console.log`.",
+[ { "name": "logmessage", "type": "String", "description": "The message to log." },
+  { "name": "logLevel", "type": "String", "description": "The logging level, such as 'warn' and 'info'. If `null`, then 'info' is assumed." } ]) }}
+
+{{ api_method("qq.preventdefault", "preventDefault (event)", "Prevent the browser's default action on an event.",
 [
     {
         "name": "event",
@@ -393,22 +403,12 @@ sure to wrap any elements before calling these methods on them.
     }
 ]) }}
 
-{{ api_method("qq.trimstr", "trimstr (str)", "removes whitespace from the ends of a string. poylfill for `String.prototype.trim`.",
-[ { "name": "str", "type": "String", "description": "The string to remove whitespace from." } ],
-[ { "type" : "String", "description": "The new string sans whitespace." } ]) }}
-
-{{ api_method("qq.toelement", "toElement (str)", "creates and returns a new `div` element",
+{{ api_method("qq.toelement", "toElement (str)", "Creates and returns a new `<div>` element",
 [ { "name": "str", "type": "String", "description": "Valid HTML that can be parsed by a browser." }],
 [ { "type": "HTMLElement", "description": "An newly created `HTMLElement` from the input." } ]) }}
 
-{{ api_method("qq.log", "log (logMessage[, logLevel])", "log a message to the console. no-op if console logging is not supported. polyfill for th user-agent's logging function corresponding to that passed logging level. generally delegates to `console.log`",
-[ { "name": "logmessage", "type": "String", "description": "The message to log." },
-  { "name": "logLevel", "type": "String", "description": "The logging level. Supports native browser levels (such as 'info' and 'error'), and custom levels." } ]) }}
-
-{{ api_method("qq.getUniqueId ()", "getUniqueId", "returns a version4 uuid", [],
-[ { "type": "String", "description": "A version 4 unique identifier" } ]) }}
-
-{{ api_method("qq.getextension", "getExtension (filename)", "return the extension for the filename, if any.", [ { "name": "filename", "type": "String", "description": "The file's name to rip the extension off of." } ],
-[ { "type": "String", "description": "The new filename" }] )}}
+{{ api_method("qq.trimstr", "trimstr (str)", "Removes whitespace from the ends of a string. Shim for `String.prototype.trim`.",
+[ { "name": "str", "type": "String", "description": "The string to remove whitespace from." } ],
+[ { "type" : "String", "description": "The new string sans whitespace." } ]) }}
 
 {% endblock %}

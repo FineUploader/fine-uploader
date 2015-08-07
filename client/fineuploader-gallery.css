@@ -310,6 +310,7 @@
 }
 
 .qq-gallery .qq-upload-size {
+    float: left;
     font-size: 11px;
     color: #929292;
     margin-bottom: 3px;

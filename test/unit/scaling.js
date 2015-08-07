@@ -51,7 +51,7 @@ if (qq.supportedFeatures.scaling) {
                     scaler = new qq.Scaler(({sizes: sizes, sendOriginal: includeOriginal})),
                     records = scaler.getFileRecords("originalUuid", "originalName.jpeg", originalFile);
 
-                assert.equal(records.length, includeOriginal ? 4 : 3);
+                assert.equal(records.length, 4);
 
                 assert.equal(records[0].name, "originalName (small).jpeg");
                 assert.notEqual(records[0].uuid, "originalUuid");
@@ -65,11 +65,10 @@ if (qq.supportedFeatures.scaling) {
                 assert.notEqual(records[2].uuid, "originalUuid");
                 assert.ok(records[2].blob instanceof qq.BlobProxy);
 
-                if (includeOriginal) {
-                    assert.equal(records[3].name, "originalName.jpeg");
-                    assert.equal(records[3].uuid, "originalUuid");
-                    assert.equal(records[3].blob, originalFile);
-                }
+                assert.equal(records[3].name, "originalName.jpeg");
+                assert.equal(records[3].uuid, "originalUuid");
+                assert.equal(records[3].size, originalFile.size);
+                assert.equal(records[3].blob, includeOriginal ? originalFile : null);
             }
 
             function runTestWithNonImage(includeOriginal) {
@@ -577,8 +576,6 @@ if (qq.supportedFeatures.scaling) {
         });
 
         it("uploads scaled files as expected, excluding the original: non-chunked, default options", function(done) {
-            assert.expect(19, done);
-
             var referenceFileSize,
                 sizes = [
                     {
@@ -595,8 +592,8 @@ if (qq.supportedFeatures.scaling) {
                 expectedUploadCallbacks = [
                     {id: 0, name: "up (small).jpeg"},
                     {id: 1, name: "up (medium).jpeg"},
-                    {id: 2, name: "up2 (small).jpeg"},
-                    {id: 3, name: "up2 (medium).jpeg"}
+                    {id: 3, name: "up2 (small).jpeg"},
+                    {id: 4, name: "up2 (medium).jpeg"}
                 ],
                 actualUploadCallbacks = [],
                 uploader = new qq.FineUploaderBasic({
@@ -613,8 +610,28 @@ if (qq.supportedFeatures.scaling) {
 
                             actualUploadCallbacks.push({id: id, name: name});
                             setTimeout(function() {
-                                var req = fileTestHelper.getRequests()[id],
-                                    blob = req.requestBody.fields.qqfile;
+                                var requestIndex = (function() {
+                                        if (id > 2) {
+                                            return id-1;
+                                        }
+                                        return id;
+                                    }()),
+                                    req = fileTestHelper.getRequests()[requestIndex],
+                                    blob = req.requestBody.fields.qqfile,
+                                    parentUuid = req.requestBody.fields.qqparentuuid,
+                                    parentSize = req.requestBody.fields.qqparentsize,
+                                    parentId = uploader.getParentId(id),
+                                    file = req.requestBody.fields.qqfile;
+
+                                if (parentId !== null) {
+                                    assert.equal(parentUuid, uploader.getUuid(parentId));
+                                    assert.equal(parentSize, uploader.getSize(parentId));
+                                }
+                                else {
+                                    assert.equal(parentUuid, undefined);
+                                    assert.equal(parentSize, undefined);
+                                }
+
 
                                 new qq.Exif(blob, function(){}).parse().then(function(tags) {
                                     // Some versions of Safari insert some EXIF data back into the scaled version
@@ -633,9 +650,12 @@ if (qq.supportedFeatures.scaling) {
                             }, 10);
                         },
                         onAllComplete: function(successful, failed) {
+                            assert.equal(uploader.getUploads({id: 2}).status, qq.status.REJECTED);
+                            assert.equal(uploader.getUploads({id: 5}).status, qq.status.REJECTED);
                             assert.equal(successful.length, 4);
                             assert.equal(failed.length, 0);
                             assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
+                            done();
                         }
                     }
                 });

@@ -2,7 +2,7 @@
 {% set page_title = "Setting Options S3" %}
 {% block content %}
 {% markdown %}
-# Setting Fine Uploader Options <small>Amazon S3</small>{: .page-header }
+# Setting Fine Uploader Options <small>Amazon S3</small> {: .page-header }
 
 At this point in the tutorial you should have an very simple HTML page with a
 Fine Uploader instance. This section will get you started with setting some of
@@ -142,9 +142,9 @@ Now our Fine Uploader page should look something like this:
                     <span class="qq-edit-filename-icon-selector qq-edit-filename-icon" aria-label="Edit filename"></span>
                     <input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">
                     <span class="qq-upload-size-selector qq-upload-size"></span>
-                    <button class="qq-btn qq-upload-cancel-selector qq-upload-cancel">Cancel</button>
-                    <button class="qq-btn qq-upload-retry-selector qq-upload-retry">Retry</button>
-                    <button class="qq-btn qq-upload-delete-selector qq-upload-delete">Delete</button>
+                    <button type="button" class="qq-btn qq-upload-cancel-selector qq-upload-cancel">Cancel</button>
+                    <button type="button" class="qq-btn qq-upload-retry-selector qq-upload-retry">Retry</button>
+                    <button type="button" class="qq-btn qq-upload-delete-selector qq-upload-delete">Delete</button>
                     <span role="status" class="qq-upload-status-text-selector qq-upload-status-text"></span>
                 </li>
             </ul>
@@ -152,15 +152,15 @@ Now our Fine Uploader page should look something like this:
             <dialog class="qq-alert-dialog-selector">
                 <div class="qq-dialog-message-selector"></div>
                 <div class="qq-dialog-buttons">
-                    <button class="qq-cancel-button-selector">Close</button>
+                    <button type="button" class="qq-cancel-button-selector">Close</button>
                 </div>
             </dialog>
 
             <dialog class="qq-confirm-dialog-selector">
                 <div class="qq-dialog-message-selector"></div>
                 <div class="qq-dialog-buttons">
-                    <button class="qq-cancel-button-selector">No</button>
-                    <button class="qq-ok-button-selector">Yes</button>
+                    <button type="button" class="qq-cancel-button-selector">No</button>
+                    <button type="button" class="qq-ok-button-selector">Yes</button>
                 </div>
             </dialog>
 
@@ -168,8 +168,8 @@ Now our Fine Uploader page should look something like this:
                 <div class="qq-dialog-message-selector"></div>
                 <input type="text">
                 <div class="qq-dialog-buttons">
-                    <button class="qq-cancel-button-selector">Cancel</button>
-                    <button class="qq-ok-button-selector">Ok</button>
+                    <button type="button" class="qq-cancel-button-selector">Cancel</button>
+                    <button type="button" class="qq-ok-button-selector">Ok</button>
                 </div>
             </dialog>
         </div>
