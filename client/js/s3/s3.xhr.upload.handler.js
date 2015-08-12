@@ -24,7 +24,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
         region = spec.objectProperties.region,
         serverSideEncryption = spec.objectProperties.serverSideEncryption,
         validation = spec.validation,
-        signature = spec.signature,
+        signature = qq.extend({region: region}, spec.signature),
         handler = this,
         credentialsProvider = spec.signature.credentialsProvider,
 

@@ -25,9 +25,11 @@ qq.s3.RequestSigner = function(o) {
             signatureSpec: {
                 credentialsProvider: {},
                 endpoint: null,
-                customHeaders: {}
+                customHeaders: {},
+                version: 2
             },
             maxConnections: 3,
+            endpointStore: {},
             paramsStore: {},
             cors: {
                 expected: false,
@@ -35,7 +37,113 @@ qq.s3.RequestSigner = function(o) {
             },
             log: function(str, level) {}
         },
-        credentialsProvider;
+        credentialsProvider,
+
+        v2 = {
+            getStringToSign: function(signatureSpec) {
+                return qq.format("{}\n\n{}\n\n{}/{}/{}",
+                    signatureSpec.method,
+                    signatureSpec.contentType || "",
+                    signatureSpec.headersStr || "\n",
+                    signatureSpec.bucket,
+                    signatureSpec.endOfUrl);
+            }
+        },
+
+        v4 = {
+            getCanonicalQueryString: function(endOfUri) {
+                var queryParamIdx = endOfUri.indexOf("?"),
+                    canonicalQueryString = "",
+                    encodedQueryParams, queryStrings;
+
+                if (queryParamIdx >= 0) {
+                    encodedQueryParams = {};
+                    queryStrings = endOfUri.substr(queryParamIdx + 1).split("&");
+
+                    qq.each(queryStrings, function(idx, queryString) {
+                        var nameAndVal = queryString.split("="),
+                            paramVal = nameAndVal[1];
+
+                        if (paramVal == null) {
+                            paramVal = "";
+                        }
+
+                        encodedQueryParams[encodeURIComponent(nameAndVal[0])] = encodeURIComponent(paramVal);
+                    });
+
+                    Object.keys(encodedQueryParams).sort().forEach(function(encodedQueryParamName, idx) {
+                        canonicalQueryString += encodedQueryParamName + "=" + encodedQueryParams[encodedQueryParamName];
+                        if (idx < encodedQueryParams.length - 1) {
+                            canonicalQueryString += "&";
+                        }
+                    });
+                }
+
+                return canonicalQueryString;
+            },
+
+            getCanonicalRequest: function(signatureSpec) {
+                return qq.format("{}\n{}\n{}\n{}\n{}\n{}",
+                    signatureSpec.method,
+                    v4.getCanonicalUri(signatureSpec.endOfUrl),
+                    v4.getCanonicalQueryString(signatureSpec.endOfUrl),
+                    signatureSpec.headersStr || "\n",
+                    v4.getSignedHeaders(signatureSpec.headerNames),
+                    v4.getEncodedHashedPayload(signatureSpec.content));
+            },
+
+            getCanonicalUri: function(endOfUri) {
+                var path = endOfUri,
+                    queryParamIdx = endOfUri.indexOf("?");
+
+                if (queryParamIdx > 0) {
+                    path = endOfUri.substr(0, queryParamIdx);
+                }
+                return "/" + encodeURI(path);
+            },
+
+            getEncodedHashedPayload: function(body) {
+                body = body || "";
+
+                return CryptoJS.SHA256(body).toString();
+            },
+
+            getScope: function(date, region) {
+                return qq.s3.util.getCredentialsDate(date) + "/" +
+                    region + "/s3/aws4_request";
+            },
+
+            getStringToSign: function(signatureSpec) {
+                var canonicalRequest;
+
+                // If sending Multipart Upload API file chunks
+                if (signatureSpec.method.toUpperCase() === "PUT") {
+                    // TODO follow streaming request signing process at https://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-streaming.html
+                    qq.log("v4 PUT not yet supported!", "error");
+                }
+
+                // All other Multipart Upload API requests
+                canonicalRequest = v4.getCanonicalRequest(signatureSpec);
+                return "AWS4-HMAC-SHA256" + "\n" +
+                    qq.s3.util.getV4PolicyDate(signatureSpec.date) + "\n" +
+                    v4.getScope(signatureSpec.date, options.signatureSpec.region) + "\n" +
+                    CryptoJS.SHA256(canonicalRequest).toString();
+            },
+
+            getSignedHeaders: function(headerNames) {
+                var signedHeaders = "";
+
+                headerNames.forEach(function(headerName, idx) {
+                    signedHeaders += headerName.toLowerCase();
+
+                    if (idx < headerNames.length - 1) {
+                        signedHeaders += ";";
+                    }
+                });
+
+                return signedHeaders;
+            }
+        };
 
     qq.extend(options, o, true);
     credentialsProvider = options.signatureSpec.credentialsProvider;
@@ -93,49 +201,68 @@ qq.s3.RequestSigner = function(o) {
         }
     }
 
-    function getToSignAndEndOfUrl(type, bucket, key, contentType, headers, uploadId, partNum) {
+    function getStringToSignArtifacts(id, version, requestInfo) {
         var method = "POST",
             headerNames = [],
-            headersAsString = "",
-            endOfUrl;
+            headersStr = "",
+            now = new Date(),
+            endOfUrl, signatureSpec;
 
         /*jshint indent:false */
-        switch (type) {
+        switch (requestInfo.type) {
             case thisSignatureRequester.REQUEST_TYPE.MULTIPART_ABORT:
                 method = "DELETE";
-                endOfUrl = qq.format("uploadId={}", uploadId);
+                endOfUrl = qq.format("uploadId={}", requestInfo.uploadId);
                 break;
             case thisSignatureRequester.REQUEST_TYPE.MULTIPART_INITIATE:
                 endOfUrl = "uploads";
                 break;
             case thisSignatureRequester.REQUEST_TYPE.MULTIPART_COMPLETE:
-                endOfUrl = qq.format("uploadId={}", uploadId);
+                endOfUrl = qq.format("uploadId={}", requestInfo.uploadId);
                 break;
             case thisSignatureRequester.REQUEST_TYPE.MULTIPART_UPLOAD:
                 method = "PUT";
-                endOfUrl = qq.format("partNumber={}&uploadId={}", partNum, uploadId);
+                endOfUrl = qq.format("partNumber={}&uploadId={}", requestInfo.partNum, requestInfo.uploadId);
                 break;
         }
 
-        endOfUrl = key + "?" + endOfUrl;
+        endOfUrl = requestInfo.key + "?" + endOfUrl;
 
-        qq.each(headers, function(name) {
+        if (version === 4) {
+            requestInfo.headers.Host = /(?:http|https):\/\/(.+)(?:\/.+)?/.exec(options.endpointStore.get(id))[1];
+            requestInfo.headers["x-amz-content-sha256"] = v4.getEncodedHashedPayload(requestInfo.content);
+            requestInfo.headers["x-amz-date"] = qq.s3.util.getV4PolicyDate(now);
+        }
+
+        qq.each(requestInfo.headers, function(name) {
             headerNames.push(name);
         });
         headerNames.sort();
 
         qq.each(headerNames, function(idx, name) {
-            headersAsString += name + ":" + headers[name] + "\n";
+            headersStr += name.toLowerCase() + ":" + requestInfo.headers[name].trim() + "\n";
         });
 
+        signatureSpec = {
+            bucket: requestInfo.bucket,
+            content: requestInfo.content,
+            contentType: requestInfo.contentType,
+            date: now,
+            endOfUrl: endOfUrl,
+            headerNames: headerNames,
+            headersStr: headersStr,
+            method: method
+        };
+
         return {
-            toSign: qq.format("{}\n\n{}\n\n{}/{}/{}",
-                        method, contentType || "", headersAsString || "\n", bucket, endOfUrl),
-            endOfUrl: endOfUrl
+            date: now,
+            endOfUrl: endOfUrl,
+            signedHeaders: version === 4 ? v4.getSignedHeaders(signatureSpec.headerNames) : null,
+            toSign: version === 2 ? v2.getStringToSign(signatureSpec) : v4.getStringToSign(signatureSpec)
         };
     }
 
-    function determineSignatureClientSide(toBeSigned, signatureEffort, updatedAccessKey, updatedSessionToken) {
+    function determineSignatureClientSide(id, toBeSigned, signatureEffort, updatedAccessKey, updatedSessionToken) {
         var updatedHeaders;
 
         // REST API request
@@ -146,7 +273,7 @@ qq.s3.RequestSigner = function(o) {
                 toBeSigned.signatureConstructor.withHeaders(updatedHeaders);
             }
 
-            signApiRequest(toBeSigned.signatureConstructor.getToSign().stringToSign, signatureEffort);
+            signApiRequest(toBeSigned.signatureConstructor.getToSign(id).stringToSign, signatureEffort);
         }
         // Form upload (w/ policy document)
         else {
@@ -208,12 +335,12 @@ qq.s3.RequestSigner = function(o) {
 
             if (credentialsProvider.get().secretKey && window.CryptoJS) {
                 if (credentialsProvider.get().expiration.getTime() > Date.now()) {
-                    determineSignatureClientSide(toBeSigned, signatureEffort);
+                    determineSignatureClientSide(id, toBeSigned, signatureEffort);
                 }
                 // If credentials are expired, ask for new ones before attempting to sign request
                 else {
                     credentialsProvider.onExpired().then(function() {
-                        determineSignatureClientSide(toBeSigned,
+                        determineSignatureClientSide(id, toBeSigned,
                             signatureEffort,
                             credentialsProvider.get().accessKey,
                             credentialsProvider.get().sessionToken);
@@ -227,7 +354,7 @@ qq.s3.RequestSigner = function(o) {
                 options.log("Submitting S3 signature request for " + id);
 
                 if (params.signatureConstructor) {
-                    params = {headers: params.signatureConstructor.getToSign().stringToSign};
+                    params = {headers: params.signatureConstructor.getToSign(id).stringToSign};
                 }
 
                 requester.initTransport(id)
@@ -244,7 +371,7 @@ qq.s3.RequestSigner = function(o) {
 
         constructStringToSign: function(type, bucket, key) {
             var headers = {},
-                uploadId, contentType, partNum, toSignAndEndOfUrl;
+                uploadId, content, contentType, partNum, artifacts;
 
             return {
                 withHeaders: function(theHeaders) {
@@ -254,6 +381,11 @@ qq.s3.RequestSigner = function(o) {
 
                 withUploadId: function(theUploadId) {
                     uploadId = theUploadId;
+                    return this;
+                },
+
+                withContent: function(theContent) {
+                    content = theContent;
                     return this;
                 },
 
@@ -267,7 +399,7 @@ qq.s3.RequestSigner = function(o) {
                     return this;
                 },
 
-                getToSign: function() {
+                getToSign: function(id) {
                     var sessionToken = credentialsProvider.get().sessionToken;
 
                     headers["x-amz-date"] = new Date().toUTCString();
@@ -276,7 +408,16 @@ qq.s3.RequestSigner = function(o) {
                         headers[qq.s3.util.SESSION_TOKEN_PARAM_NAME] = sessionToken;
                     }
 
-                    toSignAndEndOfUrl = getToSignAndEndOfUrl(type, bucket, key, contentType, headers, uploadId, partNum);
+                    artifacts = getStringToSignArtifacts(id, options.signatureSpec.version, {
+                        bucket: bucket,
+                        content: content,
+                        contentType: contentType,
+                        headers: headers,
+                        key: key,
+                        partNum: partNum,
+                        type: type,
+                        uploadId: uploadId
+                    });
 
                     return {
                         headers: (function() {
@@ -286,8 +427,10 @@ qq.s3.RequestSigner = function(o) {
 
                             return headers;
                         }()),
-                        endOfUrl: toSignAndEndOfUrl.endOfUrl,
-                        stringToSign: toSignAndEndOfUrl.toSign
+                        date: artifacts.date,
+                        endOfUrl: artifacts.endOfUrl,
+                        signedHeaders: artifacts.signedHeaders,
+                        stringToSign: artifacts.toSign
                     };
                 },
 
@@ -296,7 +439,15 @@ qq.s3.RequestSigner = function(o) {
                 },
 
                 getEndOfUrl: function() {
-                    return toSignAndEndOfUrl && toSignAndEndOfUrl.endOfUrl;
+                    return artifacts && artifacts.endOfUrl;
+                },
+
+                getRequestDate: function() {
+                    return artifacts && artifacts.date;
+                },
+
+                getSignedHeaders: function() {
+                    return artifacts && artifacts.signedHeaders;
                 }
             };
         }

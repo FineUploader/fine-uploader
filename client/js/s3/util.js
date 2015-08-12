@@ -318,9 +318,9 @@ qq.s3.util = qq.s3.util || (function() {
         },
 
         getCredentialsDate: function(date) {
-            return date.getFullYear() + "" +
-                (date.getMonth() + 1) + "" +
-                date.getDate();
+            return date.getUTCFullYear() + "" +
+                ("0" + (date.getUTCMonth() + 1)).slice(-2) +
+                ("0" + date.getUTCDate()).slice(-2);
         },
 
         getPolicyDate: function(date, _minutesToAdd_) {
@@ -415,9 +415,9 @@ qq.s3.util = qq.s3.util || (function() {
 
         getV4PolicyDate: function(date) {
             return qq.s3.util.getCredentialsDate(date) + "T" +
-                    date.getHours() + "" +
-                    date.getMinutes() + "" +
-                    date.getSeconds() +
+                    ("0" + date.getUTCHours()).slice(-2) +
+                    ("0" + date.getUTCMinutes()).slice(-2) +
+                    ("0" + date.getUTCSeconds()).slice(-2) +
                     "Z";
         },
 

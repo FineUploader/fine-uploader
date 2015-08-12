@@ -111,7 +111,11 @@ function signRequest() {
 }
 
 function signRestRequest($headersStr) {
-    if (isValidRestRequest($headersStr)) {
+    if (isset($_REQUEST["v4"])) {
+        $response = array('signature' => signV4RestRequest($headersStr));
+        echo json_encode($response);
+    }
+    else if (isValidRestRequest($headersStr)) {
         $response = array('signature' => sign($headersStr));
         echo json_encode($response);
     }
@@ -192,6 +196,20 @@ function signV4Policy($stringToSign, $policyObj) {
 
     $pattern = "/.+\/(.+)\\/(.+)\/s3\/aws4_request/";
     preg_match($pattern, $credentialCondition, $matches);
+
+    $dateKey = hash_hmac('sha256', $matches[1], 'AWS4' . $clientPrivateKey, true);
+    $dateRegionKey = hash_hmac('sha256', $matches[2], $dateKey, true);
+    $dateRegionServiceKey = hash_hmac('sha256', 's3', $dateRegionKey, true);
+    $signingKey = hash_hmac('sha256', 'aws4_request', $dateRegionServiceKey, true);
+
+    return hash_hmac('sha256', $stringToSign, $signingKey);
+}
+
+function signV4RestRequest($stringToSign) {
+    global $clientPrivateKey;
+
+    $pattern = "/.+\\n.+\\n(\\d+)\/(.+)\/s3\/.+\\n(.+)/";
+    preg_match($pattern, $stringToSign, $matches);
 
     $dateKey = hash_hmac('sha256', $matches[1], 'AWS4' . $clientPrivateKey, true);
     $dateRegionKey = hash_hmac('sha256', $matches[2], $dateKey, true);

@@ -25,6 +25,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
 
     // Transport for requesting signatures (for the "Complete" requests) from the local server
     getSignatureAjaxRequester = new qq.s3.RequestSigner({
+        endpointStore: options.endpointStore,
         signatureSpec: options.signatureSpec,
         cors: options.cors,
         log: options.log
@@ -42,7 +43,6 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
     function getHeaders(id, uploadId) {
         var headers = {},
             promise = new qq.Promise(),
-            endpoint = options.endpointStore.get(id),
             bucket = options.getBucket(id),
             signatureConstructor = getSignatureAjaxRequester.constructStringToSign
                 (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_ABORT, bucket, options.getKey(id))

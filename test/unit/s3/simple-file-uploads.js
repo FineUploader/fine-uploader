@@ -71,7 +71,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.equal(conditions["x-amz-algorithm"], "AWS4-HMAC-SHA256");
                     assert.equal(conditions.key, uploader.getKey(0));
                     assert.equal(conditions.key, uploader.getUuid(0) + ".jpg");
-                    assert.equal(conditions["x-amz-credential"], testAccessKey + "/" + now.getFullYear() + (now.getMonth() + 1) + now.getDate() + "/us-east-1/s3/aws4_request");
+                    assert.equal(conditions["x-amz-credential"], testAccessKey + "/" + now.getUTCFullYear() + ("0" + (now.getUTCMonth() + 1)).slice(-2) + ("0" + now.getUTCDate()).slice(-2) + "/us-east-1/s3/aws4_request");
                     policyDate = conditions["x-amz-date"];
                     assert.ok(policyDate);
                     assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
@@ -89,7 +89,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.equal(uploadRequestParams.acl, "private");
                     assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
                     assert.equal(uploadRequestParams["x-amz-algorithm"], "AWS4-HMAC-SHA256");
-                    assert.equal(uploadRequestParams["x-amz-credential"], testAccessKey + "/" + now.getFullYear() + (now.getMonth() + 1) + now.getDate() + "/us-east-1/s3/aws4_request");
+                    assert.equal(uploadRequestParams["x-amz-credential"], testAccessKey + "/" + now.getUTCFullYear() + ("0" + (now.getUTCMonth() + 1)).slice(-2) + ("0" + now.getUTCDate()).slice(-2) + "/us-east-1/s3/aws4_request");
                     assert.equal(uploadRequestParams["x-amz-date"], policyDate);
 
                     assert.ok(uploadRequestParams.file);
