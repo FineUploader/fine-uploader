@@ -12,33 +12,28 @@ more information on uploading to Amazon's Simple Storage Service,
 read the [Fine Uploader S3 server documentation](../endpoint_handlers/amazon-s3.html).""",
 "warn") }}
 
-For this tutorial we are going to use [Node.js](http://nodejs.org/) to develop
-a simple server which will accept uploads from our Fine Uploader instance. If
-you don't have Node.js, now's the time to [get it](http://nodejs.org/download/).
+For this tutorial we are going to use PHP to develop a simple server which will accept uploads from our Fine Uploader instance.
 
-If Node.js is not your style, then feel free to browse the other
+If PHP is not your style, then feel free to browse the other
 [server-side demos repository](http://github.com/Widen/fine-uploader-server).  **It's quite important for you to read
 the [traditional server-side integration instructions](../endpoint_handlers/traditional.html) before you do any of this,
 though**.
 
-#### Getting Started
+## Getting Started
 
-Let's rock! First, download express:
+### Step 1: Download the example PHP server
 
-`npm install express rimraf mkdirp`
 
-Now let's download our server:
+### Step 2: Prepare your environment
 
-`wget -O server.js https://raw.github.com/Widen/fine-uploader-server/master/nodejs/nodejs.js`
 
-Coooool. Create a new file in your text editor called `server.js`. Time to code the first part of the server:
+### Step 3: Start the PHP server
 
-And let's have node run it!
 
-`node server.js`
+### Step 4: Verify your Fine Uploader client-side configuration
 
-Make sure to set the request endpoint on your Fine Uploader instance to point to the corresponding URL on the express server. In this case, the endpoint is `/uploads`.
 
-Booyakosha! You are on the fast-track to upload nirvana. Continue forth in your quest to learn to integrate Fine Uploader with your application by reviewing the rest of the [documentation](../)
+### Step 5: Start uploading!
+
 {% endmarkdown %}
 {% endblock %}
