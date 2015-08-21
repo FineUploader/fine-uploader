@@ -1,0 +1,5 @@
+{
+  "require": {
+    "fineuploader/php-traditional-server": "1.0.0"
+  }
+}
