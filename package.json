@@ -92,9 +92,9 @@
     "uuid": "1.4.1"
   },
   "scripts": {
-    "setup-dev": "(cd test/dev/handlers; curl -sS https://getcomposer.org/installer | php; php composer.phar install",
-    "update-dev": "(cd test/dev/handlers; php composer.phar update",
-    "start-local-dev": "php -S 0.0.0.0:9090 -t . -c test/dev/handlers/php.ini",
+    "setup-dev": "(cd test/dev/handlers; curl -sS https://getcomposer.org/installer | php; php composer.phar install)",
+    "update-dev": "(cd test/dev/handlers; php composer.phar update)",
+    "start-local-dev": "(. test/dev/handlers/s3keys.sh; php -S 0.0.0.0:9090 -t . -c test/dev/handlers/php.ini)",
     "start-c9-dev": "php -S $IP:$PORT -t . -c test/dev/handlers/php.ini"
   }
 }

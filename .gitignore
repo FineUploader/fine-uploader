@@ -43,6 +43,7 @@ test/dev/handlers/s3/composer.lock
 test/dev/handlers/traditional/files
 test/dev/handlers/traditional/chunks
 s3keys.php
+s3keys.sh
 
 test/dev/handlers/vendor/*
 test/dev/handlers/composer.lock

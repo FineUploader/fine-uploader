@@ -83,10 +83,10 @@ qq(window).attach("load", function() {
             accessKey: "AKIAJEQ4NDFBCZAMWGUQ"
         },
         signature: {
-            endpoint: "/test/dev/handlers/s3/s3.php"
+            endpoint: "/test/dev/handlers/vendor/fineuploader/php-s3-server/endpoint.php"
         },
         uploadSuccess: {
-            endpoint: "/test/dev/handlers/s3/s3.php?success"
+            endpoint: "/test/dev/handlers/vendor/fineuploader/php-s3-server/endpoint.php?success"
         },
         iframeSupport: {
             localBlankPagePath: "success.html"
@@ -106,7 +106,7 @@ qq(window).attach("load", function() {
         },
         deleteFile: {
             enabled: true,
-            endpoint: "/test/dev/handlers/s3/s3.php",
+            endpoint: "/test/dev/handlers/vendor/fineuploader/php-s3-server/endpoint.php",
             forceConfirm: true,
             params: {
                 foo: "bar"
