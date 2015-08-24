@@ -171,7 +171,6 @@
                 },
 
                 onRetry: function(fileId) {
-                    qq(self._templating.getFileContainer(fileId)).removeClass(self._classes.retryable);
                     self.retry(fileId);
                 },
 
