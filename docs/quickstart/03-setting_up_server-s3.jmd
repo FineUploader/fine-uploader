@@ -3,6 +3,12 @@
 
 {% block content %}
 {% markdown %}
+
+[blog]: http://blog.fineuploader.com/2013/08/16/fine-uploader-s3-upload-directly-to-amazon-s3-from-your-browser/
+[packagist-url]: https://packagist.org/packages/fineuploader/php-s3-server
+[repo]: https://github.com/FineUploader/php-s3-server
+
+
 # Server Set-Up <small>Amazon S3</small> {: .page-header}
 
 For this tutorial we are going to use PHP to develop a simple server which will sign requests bound for S3.
@@ -13,24 +19,117 @@ the [Amazon S3 server-side integration instructions](../endpoint_handlers/amazon
 though**.
 
 
-## Getting Started
+### Getting Started
 
-### Step 1: Setup your S3 bucket & IAM user
+#### Step 1: Setup your S3 bucket & IAM user
 
-
-### Step 2: Download the sample PHP S3 signature server
-
-
-### Step 3: Prepare your environment & customize the server code
+Please read [our blog post on Fine Uploader S3][blog] for more information regarding setup of your buckets and IAM users.
 
 
-### Step 4: Start the PHP server
+#### Step 2: Download the sample PHP S3 signature server
+
+We've [published an S3 endpoint PHP server for Fine Uploader to Packagist][packagist-url], which means you can easily download
+it to your project using [composer][composer]!
+
+Follow these simple steps to get a copy of the PHP traditional endpoint using Composer:
+
+1. Download Composer: `curl -sS https://getcomposer.org/installer | php`.
+2. Create a composer.json file and place it in the root of your project. See below for an example file.
+3. Install the Fine Uploader S3 endpoint code: `php composer.phar install`.
+
+An example composer.json file may look like this:
+
+```json
+{
+  "require": {
+    "fineuploader/php-s3-server": "1.0.0"
+  }
+}
+```
+
+Be sure to update the version with the appropriate version of Fine Uploader's S3 PHP server.
 
 
-### Step 5: Verify your Fine Uploader client-side configuration
+#### Step 3: Prepare your environment
+
+Youy will need to set 4 environment variables before starting the server. These variables will store your AWS client-side
+secret key, AWS server-side public key, AWS server-side secret key, and the name of your S3 bucket. You set up
+your bucket, along with all of your keys, in step 1 above.
+
+To set your environment variables on a Unix or Linux system, you may execute 4 lines, similar to this:
+
+```bash
+export AWS_CLIENT_SECRET_KEY=fake/client-private-key
+export AWS_SERVER_PUBLIC_KEY=fake-server-public-key
+export AWS_SERVER_PRIVATE_KEY=fake/server-private-key
+export S3_BUCKET_NAME=mybucket
+```
 
 
-### Step 6: Start uploading!
+#### Step 4: Start the PHP server
+
+You can easily start up a simple HTTP server using PHP. Run the following command in the root of your web server:
+
+```bash
+php -S 0.0.0.0:8080
+```
+
+The above command will spawn a server on port 8080.
+
+
+#### Step 5: Verify your Fine Uploader client-side configuration
+
+Ensure all relevant configuration options are pointing to the path of the downloaded S3 signature endpoint server.
+For example, if you placed composer.json in the root of your web server, the path to your PHP server will be
+`/vendor/fineuploader/php-s3-server/endpoint.php`. You'll need to be aware of this endpoint when setting
+the [`request.endpoint`](../api/options-s3.html#request.endpoint), [`signature.endpoint`](../api/options-s3.html#signature.endpoint),
+and [`uploadSuccess.endpoint`](../api/options-s3.html#uploadSuccess.endpoint), and
+[`deleteFile.endpoint`](../api/options.html#deleteFile.endpoint) configuration options.
+
+A typical configuration may look like this:
+
+```javascript
+var s3Uploader = new qq.s3.FineUploader({
+        element: document.getElementById("fineuploader-container"),
+        debug: true,
+        request: {
+            endpoint: "http://mybucket.s3.amazonaws.com",
+            accessKey: "my-client-public-key"
+        },
+        signature: {
+            endpoint: "/vendor/fineuploader/php-s3-server/endpoint.php"
+        },
+        uploadSuccess: {
+            endpoint: "/vendor/fineuploader/php-s3-server/endpoint.php?success"
+        },
+        iframeSupport: {
+            localBlankPagePath: "success.html"
+        },
+        chunking: {
+            enabled: true,
+            concurrent: {
+                enabled: true
+            }
+        },
+        resume: {
+            enabled: true
+        },
+        retry: {
+            enableAuto: true,
+            showButton: true
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: "/vendor/fineuploader/php-s3-server/endpoint.php"
+        }
+    });
+```
+
+
+#### Step 6: Start uploading!
+
+You're all set! If you do run into any problems you can ask a question on [Stack Overflow under the fine-uploader tag][so].
+Server example bugs should be reported in the [php-s3-server GitHub repository][repo].
 
 {% endmarkdown %}
 {% endblock %}
