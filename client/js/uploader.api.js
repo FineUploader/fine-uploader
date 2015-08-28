@@ -171,8 +171,6 @@
                 },
 
                 onRetry: function(fileId) {
-                    qq(self._templating.getFileContainer(fileId)).removeClass(self._classes.retryable);
-                    self._templating.hideRetry(fileId);
                     self.retry(fileId);
                 },
 
@@ -250,6 +248,7 @@
             }
 
             if (newStatus === qq.status.UPLOAD_RETRYING) {
+                this._templating.hideRetry(id);
                 this._templating.setStatusText(id);
                 qq(this._templating.getFileContainer(id)).removeClass(this._classes.retrying);
             }
