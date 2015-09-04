@@ -1,0 +1,7 @@
+{
+  "minimum-stability": "alpha",
+  "require": {
+    "fineuploader/php-traditional-server": "1.0.0",
+    "fineuploader/php-s3-server": "0.1.1"
+  }
+}

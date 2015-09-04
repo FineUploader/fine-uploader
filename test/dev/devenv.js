@@ -15,11 +15,11 @@ qq(window).attach("load", function() {
             fileSizeOnSubmit: true
         },
         request: {
-            endpoint: "/test/dev/handlers/traditional/endpoint.php"
+            endpoint: "/test/dev/handlers/vendor/fineuploader/php-traditional-server/endpoint.php"
         },
         deleteFile: {
             enabled: true,
-            endpoint: "/test/dev/handlers/traditional/endpoint.php",
+            endpoint: "/test/dev/handlers/vendor/fineuploader/php-traditional-server/endpoint.php",
             forceConfirm: true,
             params: {
                 foo: "bar"
@@ -31,7 +31,7 @@ qq(window).attach("load", function() {
                 enabled: true
             },
             success: {
-                endpoint: "/test/dev/handlers/traditional/endpoint.php?done"
+                endpoint: "/test/dev/handlers/vendor/fineuploader/php-traditional-server/endpoint.php?done"
             }
         },
         resume: {
@@ -47,8 +47,10 @@ qq(window).attach("load", function() {
             }
         },
         scaling: {
-            sendOriginal: false,
-            sizes: [{name: "small", maxSize: 300}, {name: "medium", maxSize: 600}]
+            sizes: [{name: "small", maxSize: 300}]
+        },
+        validation: {
+            itemLimit: 4
         },
         callbacks: {
             onError: errorHandler,
@@ -81,10 +83,10 @@ qq(window).attach("load", function() {
             accessKey: "AKIAJEQ4NDFBCZAMWGUQ"
         },
         signature: {
-            endpoint: "/test/dev/handlers/s3/s3.php"
+            endpoint: "/test/dev/handlers/vendor/fineuploader/php-s3-server/endpoint.php"
         },
         uploadSuccess: {
-            endpoint: "/test/dev/handlers/s3/s3.php?success"
+            endpoint: "/test/dev/handlers/vendor/fineuploader/php-s3-server/endpoint.php?success"
         },
         iframeSupport: {
             localBlankPagePath: "success.html"
@@ -104,7 +106,7 @@ qq(window).attach("load", function() {
         },
         deleteFile: {
             enabled: true,
-            endpoint: "/test/dev/handlers/s3/s3.php",
+            endpoint: "/test/dev/handlers/vendor/fineuploader/php-s3-server/endpoint.php",
             forceConfirm: true,
             params: {
                 foo: "bar"

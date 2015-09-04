@@ -3,6 +3,14 @@
 
 {% block content %}
 {% markdown %}
+
+[composer]: https://getcomposer.org/
+[packagist-url]: https://packagist.org/packages/fineuploader/php-traditional-server
+[phpini]: http://php.net/manual/en/configuration.file.php
+[repo]: https://github.com/FineUploader/php-traditional-server
+[so]: http://stackoverflow.com/questions/tagged/fine-uploader
+
+
 # Server Set-Up {: .page-header}
 
 {{ alert(
@@ -12,33 +20,107 @@ more information on uploading to Amazon's Simple Storage Service,
 read the [Fine Uploader S3 server documentation](../endpoint_handlers/amazon-s3.html).""",
 "warn") }}
 
-For this tutorial we are going to use [Node.js](http://nodejs.org/) to develop
-a simple server which will accept uploads from our Fine Uploader instance. If
-you don't have Node.js, now's the time to [get it](http://nodejs.org/download/).
+For this tutorial we are going to use PHP to develop a simple server which will accept uploads from our Fine Uploader instance.
 
-If Node.js is not your style, then feel free to browse the other
+If PHP is not your style, then feel free to browse the other
 [server-side demos repository](http://github.com/Widen/fine-uploader-server).  **It's quite important for you to read
 the [traditional server-side integration instructions](../endpoint_handlers/traditional.html) before you do any of this,
 though**.
 
-#### Getting Started
+### Getting Started
 
-Let's rock! First, download express:
+#### Step 1: Download the example PHP server
 
-`npm install express rimraf mkdirp`
+We've [published a traditional endpoint PHP server for Fine Uploader to Packagist][packagist-url], which means you can easily download
+it to your project using [composer][composer]!
 
-Now let's download our server:
+Follow these simple steps to get a copy of the PHP traditional endpoint using Composer:
 
-`wget -O server.js https://raw.github.com/Widen/fine-uploader-server/master/nodejs/nodejs.js`
+1. Download Composer: `curl -sS https://getcomposer.org/installer | php`.
+2. Create a composer.json file and place it in the root of your project. See below for an example file.
+3. Install the Fine Uploader endpoint code: `php composer.phar install`.
 
-Coooool. Create a new file in your text editor called `server.js`. Time to code the first part of the server:
+An example composer.json file may look like this:
 
-And let's have node run it!
+```json
+{
+  "require": {
+    "fineuploader/php-traditional-server": "1.0.0"
+  }
+}
+```
 
-`node server.js`
+Be sure to update the version with the appropriate version of Fine Uploader's traditional PHP server.
 
-Make sure to set the request endpoint on your Fine Uploader instance to point to the corresponding URL on the express server. In this case, the endpoint is `/uploads`.
 
-Booyakosha! You are on the fast-track to upload nirvana. Continue forth in your quest to learn to integrate Fine Uploader with your application by reviewing the rest of the [documentation](../)
+#### Step 2: Prepare your environment
+
+Be sure to include [a php.ini file][phpini] in the root of your web server with sensible request limits.
+An example php.ini file looks like this:
+
+
+```php
+upload_max_filesize = 10M
+post_max_size = 10M
+```
+
+
+#### Step 3: Start the PHP server
+
+You can easily start up a simple HTTP server using PHP. Run the following command in the root of your web server:
+
+```bash
+php -S 0.0.0.0:8080 -t . -c php.ini
+```
+
+The above command will spawn a server on port 8080.
+
+
+#### Step 4: Verify your Fine Uploader client-side configuration
+
+Ensure all configuration options are pointing to the path of the downloaded traditional endpoint server. For example,
+if you placed composer.json in the root of your web server, the path to your PHP server will be
+`/vendor/fineuploader/php-traditional-server/endpoint.php`. You'll need to be aware of this endpoint when setting
+the [`request.endpoint`](../api/options.html#request.endpoint), [`deleteFile.endpoint`](../api/options.html#deleteFile.endpoint),
+and [`chunking.success.endpoint`](../api/options.html#chunking.success.endpoint) configuration options.
+
+
+A typical configuration may look like this:
+
+```javascript
+var manualUploader = new qq.FineUploader({
+        element: document.getElementById("fineuploader-container"),
+        request: {
+            endpoint: "/vendor/fineuploader/php-traditional-server/endpoint.php"
+        },
+        deleteFile: {
+            enabled: true,
+            endpoint: "/vendor/fineuploader/php-traditional-server/endpoint.php"
+        },
+        chunking: {
+            enabled: true,
+            concurrent: {
+                enabled: true
+            },
+            success: {
+                endpoint: "/vendor/fineuploader/php-traditional-server/endpoint.php?done"
+            }
+        },
+        resume: {
+            enabled: true
+        },
+        retry: {
+            enableAuto: true,
+            showButton: true
+        }
+    });
+```
+
+#### Step 5: Start uploading!
+
+You're all set! If you do run into any problems you can ask a question on [Stack Overflow under the fine-uploader tag][so].
+Server example bugs should be reported in the [php-traditional-server GitHub repository][repo].
+
+
 {% endmarkdown %}
 {% endblock %}
