@@ -1630,7 +1630,7 @@
 
                 setTimeout(function() {
                     self._session.refresh().then(function(response, xhrOrXdr) {
-
+                        self._sessionRequestComplete();
                         self._options.callbacks.onSessionRequestComplete(response, true, xhrOrXdr);
 
                     }, function(response, xhrOrXdr) {
@@ -1640,6 +1640,8 @@
                 }, 0);
             }
         },
+
+        _sessionRequestComplete: function() {},
 
         _setSize: function(id, newSize) {
             this._uploadData.updateSize(id, newSize);
