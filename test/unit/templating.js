@@ -101,7 +101,7 @@ describe("templating.js", function() {
             assert.ok(templating.getButton() == null);
             templating.hideDropProcessing();
             templating.showDropProcessing();
-            assert.ok(templating.getDropZone() !== null);
+            assert.ok(templating.getDropZone() == null);
             assert.ok(!templating.isEditFilenamePossible());
             assert.ok(!templating.isRetryPossible());
             assert.ok(templating.getFileContainer(0) != null);

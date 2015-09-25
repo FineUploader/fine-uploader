@@ -154,6 +154,25 @@ describe("util.js", function () {
 
     }); // getByClass
 
+    describe("getFirstByClass", function () {
+        it("gets the first element that matches a specific class", function () {
+            var result, q;
+
+            $fixture.empty();
+            q = qq($fixture[0]);
+            $fixture.append("<div class='foo one'></div>");
+            $fixture.append("<div class='bar two'></div>");
+            $fixture.append("<div class='foo bar three'></div>");
+
+            result = q.getFirstByClass("foo");
+            assert.ok(qq(result).hasClass("one"), "wrong element");
+
+            result = q.getFirstByClass("bar");
+            assert.ok(qq(result).hasClass("two"), "wrong element");
+        });
+
+    });
+
     describe("children", function () {
         it("returns a list of children of an element", function () {
             var results, q;

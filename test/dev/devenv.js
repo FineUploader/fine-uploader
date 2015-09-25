@@ -1,7 +1,7 @@
 qq(window).attach("load", function() {
     "use strict";
 
-    var errorHandler = function(event, id, fileName, reason) {
+    var errorHandler = function(id, fileName, reason) {
             return qq.log("id: " + id + ", fileName: " + fileName + ", reason: " + reason);
         },
         azureUploader, s3Uploader, manualUploader, validatingUploader, failingUploader;
@@ -9,7 +9,7 @@ qq(window).attach("load", function() {
     manualUploader = new qq.FineUploader({
         element: document.getElementById("manual-example"),
         autoUpload: false,
-        debug: true,
+        debug: false,
         uploadButtonText: "Select Files",
         display: {
             fileSizeOnSubmit: true
@@ -28,7 +28,7 @@ qq(window).attach("load", function() {
         chunking: {
             enabled: true,
             concurrent: {
-                enabled: true
+                enabled: false
             },
             success: {
                 endpoint: "/test/dev/handlers/vendor/fineuploader/php-traditional-server/endpoint.php?done"
@@ -46,11 +46,15 @@ qq(window).attach("load", function() {
                 notAvailablePath: "/client/placeholders/not_available-generic.png"
             }
         },
-        scaling: {
-            sizes: [{name: "small", maxSize: 300}]
+        //scaling: {
+        //    sizes: [{name: "small", maxSize: 300}]
+        //},
+        session: {
+            //endpoint: "/test/dev/handlers/vendor/fineuploader/php-traditional-server/endpoint.php?initial"
         },
         validation: {
-            itemLimit: 4
+            //sizeLimit: 10000000,
+            //itemLimit: 4
         },
         callbacks: {
             onError: errorHandler,
@@ -60,13 +64,13 @@ qq(window).attach("load", function() {
                     "ho": "foobar"
                 }, id);
 
-            },
-            onStatusChange: function (id, oldS, newS) {
-                qq.log("id: " + id + " " + newS);
-            },
-            onComplete: function (id, name, response) {
-                qq.log(response);
             }
+            //onStatusChange: function (id, oldS, newS) {
+            //    qq.log("id: " + id + " " + newS);
+            //},
+            //onComplete: function (id, name, response) {
+            //    qq.log(response);
+            //}
         }
     });
 

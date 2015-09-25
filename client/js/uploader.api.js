@@ -564,12 +564,12 @@
                 }
             }
 
-            this._templating.addFile(id, this._options.formatFileName(name), prependData, dontDisplay);
-
             if (canned) {
+                this._templating.addFileToCache(id, this._options.formatFileName(name), prependData, dontDisplay);
                 this._thumbnailUrls[id] && this._templating.updateThumbnail(id, this._thumbnailUrls[id], true);
             }
             else {
+                this._templating.addFile(id, this._options.formatFileName(name), prependData, dontDisplay);
                 this._templating.generatePreview(id, this.getFile(id));
             }
 
@@ -707,6 +707,11 @@
             this._parent.prototype._setSize.apply(this, arguments);
 
             this._templating.updateSize(id, this._formatSize(newSize));
+        },
+
+        _sessionRequestComplete: function() {
+            this._templating.addCacheToDom();
+            this._parent.prototype._sessionRequestComplete.apply(this, arguments);
         }
     };
 }());

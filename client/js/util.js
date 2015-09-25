@@ -104,11 +104,14 @@ var qq = function(element) {
             return this;
         },
 
-        getByClass: function(className) {
+        getByClass: function(className, first) {
             var candidates,
                 result = [];
 
-            if (element.querySelectorAll) {
+            if (first && element.querySelector) {
+                return element.querySelector("." + className);
+            }
+            else if (element.querySelectorAll) {
                 return element.querySelectorAll("." + className);
             }
 
@@ -119,7 +122,11 @@ var qq = function(element) {
                     result.push(val);
                 }
             });
-            return result;
+            return first ? result[0] : result;
+        },
+
+        getFirstByClass: function(className) {
+            return qq(element).getByClass(className, true);
         },
 
         children: function() {
