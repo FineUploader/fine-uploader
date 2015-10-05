@@ -76,21 +76,34 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
              * @param chunkIdx Index of the chunk to PUT
              * @returns {qq.Promise}
              */
-            initHeaders: function(id, chunkIdx) {
+            initHeaders: function(id, chunkIdx, blob) {
                 var headers = {},
-                    endpoint = spec.endpointStore.get(id),
                     bucket = upload.bucket.getName(id),
                     key = upload.key.urlSafe(id),
                     promise = new qq.Promise(),
                     signatureConstructor = requesters.restSignature.constructStringToSign
                         (requesters.restSignature.REQUEST_TYPE.MULTIPART_UPLOAD, bucket, key)
                         .withPartNum(chunkIdx + 1)
+                        .withContent(blob)
                         .withUploadId(handler._getPersistableData(id).uploadId);
 
                 // Ask the local server to sign the request.  Use this signature to form the Authorization header.
                 requesters.restSignature.getSignature(id + "." + chunkIdx, {signatureConstructor: signatureConstructor}).then(function(response) {
                     headers = signatureConstructor.getHeaders();
-                    headers.Authorization = "AWS " + credentialsProvider.get().accessKey + ":" + response.signature;
+
+                    if (signature.version === 4) {
+                        headers.Authorization = qq.s3.util.V4_ALGORITHM_PARAM_VALUE +
+                            " Credential=" + signature.credentialsProvider.get().accessKey + "/" +
+                            qq.s3.util.getCredentialsDate(signatureConstructor.getRequestDate()) + "/" +
+                            signature.region + "/" +
+                            "s3/aws4_request," +
+                            "SignedHeaders=" + signatureConstructor.getSignedHeaders() + "," +
+                            "Signature=" + response.signature;
+                    }
+                    else {
+                        headers.Authorization = "AWS " + credentialsProvider.get().accessKey + ":" + response.signature;
+                    }
+
                     promise.success(headers, signatureConstructor.getEndOfUrl());
                 }, promise.failure);
 
@@ -105,7 +118,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
                 // Add appropriate headers to the multipart upload request.
                 // Once these have been determined (asynchronously) attach the headers and send the chunk.
-                chunked.initHeaders(id, chunkIdx).then(function(headers, endOfUrl) {
+                chunked.initHeaders(id, chunkIdx, chunkData.blob).then(function(headers, endOfUrl) {
                     var url = domain + "/" + endOfUrl;
                     handler._registerProgressHandler(id, chunkIdx, chunkData.size);
                     upload.track(id, xhr, chunkIdx).then(promise.success, promise.failure);
@@ -240,6 +253,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
             }),
 
             restSignature: new qq.s3.RequestSigner({
+                endpointStore: endpointStore,
                 signatureSpec: signature,
                 cors: spec.cors,
                 log: log

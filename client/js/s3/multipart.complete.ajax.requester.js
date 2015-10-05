@@ -53,7 +53,20 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
         getSignatureAjaxRequester.getSignature(id, {signatureConstructor: signatureConstructor}).then(function(response) {
             headers = signatureConstructor.getHeaders();
-            headers.Authorization = "AWS " + options.signatureSpec.credentialsProvider.get().accessKey + ":" + response.signature;
+
+            if (options.signatureSpec.version === 4) {
+                headers.Authorization = qq.s3.util.V4_ALGORITHM_PARAM_VALUE +
+                    " Credential=" + options.signatureSpec.credentialsProvider.get().accessKey + "/" +
+                    qq.s3.util.getCredentialsDate(signatureConstructor.getRequestDate()) + "/" +
+                    options.signatureSpec.region + "/" +
+                    "s3/aws4_request," +
+                    "SignedHeaders=" + signatureConstructor.getSignedHeaders() + "," +
+                    "Signature=" + response.signature;
+            }
+            else {
+                headers.Authorization = "AWS " + options.signatureSpec.credentialsProvider.get().accessKey + ":" + response.signature;
+            }
+
             promise.success(headers, signatureConstructor.getEndOfUrl());
         }, promise.failure);
 

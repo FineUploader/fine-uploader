@@ -54,7 +54,7 @@ qq.s3.RequestSigner = function(o) {
             getCanonicalQueryString: function(endOfUri) {
                 var queryParamIdx = endOfUri.indexOf("?"),
                     canonicalQueryString = "",
-                    encodedQueryParams, queryStrings;
+                    encodedQueryParams, encodedQueryParamNames, queryStrings;
 
                 if (queryParamIdx >= 0) {
                     encodedQueryParams = {};
@@ -71,9 +71,10 @@ qq.s3.RequestSigner = function(o) {
                         encodedQueryParams[encodeURIComponent(nameAndVal[0])] = encodeURIComponent(paramVal);
                     });
 
-                    Object.keys(encodedQueryParams).sort().forEach(function(encodedQueryParamName, idx) {
+                    encodedQueryParamNames = Object.keys(encodedQueryParams).sort();
+                    encodedQueryParamNames.forEach(function(encodedQueryParamName, idx) {
                         canonicalQueryString += encodedQueryParamName + "=" + encodedQueryParams[encodedQueryParamName];
-                        if (idx < encodedQueryParams.length - 1) {
+                        if (idx < encodedQueryParamNames.length - 1) {
                             canonicalQueryString += "&";
                         }
                     });
@@ -103,11 +104,19 @@ qq.s3.RequestSigner = function(o) {
             },
 
             getEncodedHashedPayload: function(body) {
-                var promise = new qq.Promise();
+                var promise = new qq.Promise(),
+                    reader;
 
                 if (qq.isBlob(body)) {
                     // TODO hash blob in webworker
-                    qq.log("Chunked V4 requests not yet supported");
+                    reader = new FileReader();
+                    reader.onloadend = function(e) {
+                        if (e.target.readyState === FileReader.DONE) {
+                            var wordArray = CryptoJS.lib.WordArray.create(e.target.result);
+                            promise.success(CryptoJS.SHA256(wordArray).toString());
+                        }
+                    };
+                    reader.readAsArrayBuffer(body);
                 }
                 else {
                     body = body || "";
