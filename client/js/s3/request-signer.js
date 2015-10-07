@@ -456,6 +456,7 @@ qq.s3.RequestSigner = function(o) {
                                     headers["Content-Type"] = contentType;
                                 }
 
+                                delete headers.Host; // we don't want this to be set on the XHR-initiated request
                                 return headers;
                             }()),
                             date: artifacts.date,
