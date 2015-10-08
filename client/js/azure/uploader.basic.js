@@ -105,7 +105,11 @@
             if (qq.isString(blobNameOptionValue)) {
                 switch (blobNameOptionValue) {
                     case "uuid":
-                        return new qq.Promise().success(uuid + "." + fileExtension);
+                        var blobNameToUse = uuid;
+                        if (fileExtension !== undefined) {
+                            blobNameToUse += "." + fileExtension;
+                        }
+                        return new qq.Promise().success(blobNameToUse);
                     case "filename":
                         return new qq.Promise().success(filename);
                     default:
