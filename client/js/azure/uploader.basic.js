@@ -100,12 +100,12 @@
                 blobNameOptionValue = this._options.blobProperties.name,
                 uuid = this.getUuid(id),
                 filename = this.getName(id),
-                fileExtension = qq.getExtension(filename);
+                fileExtension = qq.getExtension(filename),
+                blobNameToUse = uuid;
 
             if (qq.isString(blobNameOptionValue)) {
                 switch (blobNameOptionValue) {
                     case "uuid":
-                        var blobNameToUse = uuid;
                         if (fileExtension !== undefined) {
                             blobNameToUse += "." + fileExtension;
                         }
