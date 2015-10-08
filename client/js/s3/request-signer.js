@@ -127,12 +127,17 @@ qq.s3.RequestSigner = function(o) {
                     reader;
 
                 if (qq.isBlob(body)) {
-                    // TODO hash blob in webworker
+                    // TODO hash blob in webworker if this becomes a notable perf issue
                     reader = new FileReader();
                     reader.onloadend = function(e) {
                         if (e.target.readyState === FileReader.DONE) {
-                            var wordArray = CryptoJS.lib.WordArray.create(e.target.result);
-                            promise.success(CryptoJS.SHA256(wordArray).toString());
+                            if (e.target.error) {
+                                promise.failure(e.target.error);
+                            }
+                            else {
+                                var wordArray = CryptoJS.lib.WordArray.create(e.target.result);
+                                promise.success(CryptoJS.SHA256(wordArray).toString());
+                            }
                         }
                     };
                     reader.readAsArrayBuffer(body);
