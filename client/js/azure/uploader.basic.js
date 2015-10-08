@@ -100,12 +100,16 @@
                 blobNameOptionValue = this._options.blobProperties.name,
                 uuid = this.getUuid(id),
                 filename = this.getName(id),
-                fileExtension = qq.getExtension(filename);
+                fileExtension = qq.getExtension(filename),
+                blobNameToUse = uuid;
 
             if (qq.isString(blobNameOptionValue)) {
                 switch (blobNameOptionValue) {
                     case "uuid":
-                        return new qq.Promise().success(uuid + "." + fileExtension);
+                        if (fileExtension !== undefined) {
+                            blobNameToUse += "." + fileExtension;
+                        }
+                        return new qq.Promise().success(blobNameToUse);
                     case "filename":
                         return new qq.Promise().success(filename);
                     default:
