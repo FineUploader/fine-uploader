@@ -88,24 +88,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                         .withUploadId(handler._getPersistableData(id).uploadId);
 
                 // Ask the local server to sign the request.  Use this signature to form the Authorization header.
-                requesters.restSignature.getSignature(id + "." + chunkIdx, {signatureConstructor: signatureConstructor}).then(function(response) {
-                    headers = signatureConstructor.getHeaders();
-
-                    if (signature.version === 4) {
-                        headers.Authorization = qq.s3.util.V4_ALGORITHM_PARAM_VALUE +
-                            " Credential=" + signature.credentialsProvider.get().accessKey + "/" +
-                            qq.s3.util.getCredentialsDate(signatureConstructor.getRequestDate()) + "/" +
-                            signature.region + "/" +
-                            "s3/aws4_request," +
-                            "SignedHeaders=" + signatureConstructor.getSignedHeaders() + "," +
-                            "Signature=" + response.signature;
-                    }
-                    else {
-                        headers.Authorization = "AWS " + credentialsProvider.get().accessKey + ":" + response.signature;
-                    }
-
-                    promise.success(headers, signatureConstructor.getEndOfUrl());
-                }, promise.failure);
+                requesters.restSignature.getSignature(id + "." + chunkIdx, {signatureConstructor: signatureConstructor}).then(promise.success, promise.failure);
 
                 return promise;
             },

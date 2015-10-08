@@ -39,6 +39,25 @@ qq.s3.RequestSigner = function(o) {
         },
         credentialsProvider,
 
+        generateHeaders = function(signatureConstructor, signature, promise) {
+            var headers = signatureConstructor.getHeaders();
+
+            if (options.signatureSpec.version === 4) {
+                headers.Authorization = qq.s3.util.V4_ALGORITHM_PARAM_VALUE +
+                    " Credential=" + options.signatureSpec.credentialsProvider.get().accessKey + "/" +
+                    qq.s3.util.getCredentialsDate(signatureConstructor.getRequestDate()) + "/" +
+                    options.signatureSpec.region + "/" +
+                    "s3/aws4_request," +
+                    "SignedHeaders=" + signatureConstructor.getSignedHeaders() + "," +
+                    "Signature=" + signature;
+            }
+            else {
+                headers.Authorization = "AWS " + options.signatureSpec.credentialsProvider.get().accessKey + ":" + signature;
+            }
+
+            promise.success(headers, signatureConstructor.getEndOfUrl());
+        },
+
         v2 = {
             getStringToSign: function(signatureSpec) {
                 return qq.format("{}\n\n{}\n\n{}/{}/{}",
@@ -161,6 +180,7 @@ qq.s3.RequestSigner = function(o) {
         var responseJson = xhrOrXdr.responseText,
             pendingSignatureData = pendingSignatures[id],
             promise = pendingSignatureData.promise,
+            signatureConstructor = pendingSignatureData.signatureConstructor,
             errorMessage, response;
 
         delete pendingSignatures[id];
@@ -204,6 +224,9 @@ qq.s3.RequestSigner = function(o) {
             }
 
             promise.failure(errorMessage);
+        }
+        else if (signatureConstructor) {
+            generateHeaders(signatureConstructor, response.signature, promise);
         }
         else {
             promise.success(response);
@@ -296,7 +319,7 @@ qq.s3.RequestSigner = function(o) {
             }
 
             toBeSigned.signatureConstructor.getToSign(id).then(function(signatureArtifacts) {
-                signApiRequest(signatureArtifacts.stringToSign, signatureEffort);
+                signApiRequest(toBeSigned.signatureConstructor, signatureArtifacts.stringToSign, signatureEffort);
             });
         }
         // Form upload (w/ policy document)
@@ -319,12 +342,12 @@ qq.s3.RequestSigner = function(o) {
         }, updatedAccessKey, updatedSessionToken);
     }
 
-    function signApiRequest(headersStr, signatureEffort) {
+    function signApiRequest(signatureConstructor, headersStr, signatureEffort) {
         var headersWordArray = CryptoJS.enc.Utf8.parse(headersStr),
             headersHmacSha1 = CryptoJS.HmacSHA1(headersWordArray, credentialsProvider.get().secretKey),
             headersHmacSha1Base64 = CryptoJS.enc.Base64.stringify(headersHmacSha1);
 
-        signatureEffort.success({signature: headersHmacSha1Base64});
+        generateHeaders(signatureConstructor, headersHmacSha1Base64, signatureEffort);
     }
 
     requester = qq.extend(this, new qq.AjaxRequester({
@@ -379,7 +402,10 @@ qq.s3.RequestSigner = function(o) {
 
                 if (params.signatureConstructor) {
                     params.signatureConstructor.getToSign(id).then(function(signatureArtifacts) {
-                        params = {headers: signatureArtifacts.stringToSign};
+                        params = {
+                            signatureConstructor: params.signatureConstructor,
+                            headers: signatureArtifacts.stringToSign
+                        };
                         requester.initTransport(id)
                             .withParams(params)
                             .send();
@@ -392,7 +418,8 @@ qq.s3.RequestSigner = function(o) {
                 }
 
                 pendingSignatures[id] = {
-                    promise: signatureEffort
+                    promise: signatureEffort,
+                    signatureConstructor: params.signatureConstructor
                 };
             }
 
