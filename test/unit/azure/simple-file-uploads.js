@@ -6,12 +6,13 @@ if (qqtest.canDownloadFileAsBlob) {
         var fileTestHelper = helpme.setupFileTests(),
             testEndpoint = "https://testcontainer.com",
             testSignatureEndoint = "http://signature-server.com/signature",
-            startTypicalTest = function(uploader, callback) {
+            startTypicalTest = function(uploader, callback, filename) {
+                filename = filename || "test.jpg";
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
                     var signatureRequest;
 
                     fileTestHelper.mockXhr();
-                    uploader.addFiles({name: "test.jpg", blob: blob});
+                    uploader.addFiles({name: filename, blob: blob});
 
                     setTimeout(function() {
                         assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
@@ -79,6 +80,26 @@ if (qqtest.canDownloadFileAsBlob) {
             startTypicalTest(uploader, function(signatureRequest) {
                 assert.equal(signatureRequest.requestHeaders.foo, expectedSignatureHeaders.foo);
             });
+        });
+
+        it("test most basic upload w/ signature request uses the uuid as the blob name - original filename has no extension", function(done) {
+            assert.expect(3, done);
+
+            var uploader = new qq.azure.FineUploaderBasic({
+                    request: {endpoint: testEndpoint},
+                    signature: {endpoint: testSignatureEndoint}
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest) {
+                var blobName = uploader.getBlobName(0),
+                    blobUri = testEndpoint + "/" + blobName,
+                    purlSignatureUrl = purl(signatureRequest.url);
+
+
+                assert.equal(blobName, uploader.getUuid(0));
+                assert.equal(purlSignatureUrl.param("bloburi"), blobUri);
+            }, "test");
         });
 
         it("test most basic upload w/ signature request uses the filename as the blob name", function(done) {
