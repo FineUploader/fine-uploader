@@ -378,6 +378,7 @@ qq.s3.RequestSigner = function(o) {
          */
         getSignature: function(id, toBeSigned) {
             var params = toBeSigned,
+                signatureConstructor = toBeSigned.signatureConstructor,
                 signatureEffort = new qq.Promise();
 
             if (credentialsProvider.get().secretKey && window.CryptoJS) {
@@ -400,12 +401,9 @@ qq.s3.RequestSigner = function(o) {
             else {
                 options.log("Submitting S3 signature request for " + id);
 
-                if (params.signatureConstructor) {
-                    params.signatureConstructor.getToSign(id).then(function(signatureArtifacts) {
-                        params = {
-                            signatureConstructor: params.signatureConstructor,
-                            headers: signatureArtifacts.stringToSign
-                        };
+                if (signatureConstructor) {
+                    signatureConstructor.getToSign(id).then(function(signatureArtifacts) {
+                        params = {headers: signatureArtifacts.stringToSign};
                         requester.initTransport(id)
                             .withParams(params)
                             .send();
@@ -419,7 +417,7 @@ qq.s3.RequestSigner = function(o) {
 
                 pendingSignatures[id] = {
                     promise: signatureEffort,
-                    signatureConstructor: params.signatureConstructor
+                    signatureConstructor: signatureConstructor
                 };
             }
 
