@@ -58,7 +58,7 @@ if (qqtest.canDownloadFileAsBlob) {
                         policyDate;
 
                     assert.equal(signatureRequest.method, "POST");
-                    assert.equal(signatureRequest.url, testSignatureEndoint);
+                    assert.equal(signatureRequest.url, testSignatureEndoint + "?v4=true");
                     assert.equal(signatureRequest.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
 
                     assert.ok(new Date(policyDoc.expiration).getTime() > Date.now());

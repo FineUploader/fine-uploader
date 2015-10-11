@@ -384,7 +384,12 @@ qq.s3.RequestSigner = function(o) {
         getSignature: function(id, toBeSigned) {
             var params = toBeSigned,
                 signatureConstructor = toBeSigned.signatureConstructor,
-                signatureEffort = new qq.Promise();
+                signatureEffort = new qq.Promise(),
+                queryParams;
+
+            if (options.signatureSpec.version === 4) {
+                queryParams = {v4: true};
+            }
 
             if (credentialsProvider.get().secretKey && window.CryptoJS) {
                 if (credentialsProvider.get().expiration.getTime() > Date.now()) {
@@ -411,12 +416,14 @@ qq.s3.RequestSigner = function(o) {
                         params = {headers: signatureArtifacts.stringToSign};
                         requester.initTransport(id)
                             .withParams(params)
+                            .withQueryParams(queryParams)
                             .send();
                     });
                 }
                 else {
                     requester.initTransport(id)
                         .withParams(params)
+                        .withQueryParams(queryParams)
                         .send();
                 }
 
