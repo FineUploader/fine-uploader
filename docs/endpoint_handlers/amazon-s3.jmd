@@ -3,7 +3,11 @@
 {% block content %}
 {% markdown %}
 
+[s3-php]: https://github.com/FineUploader/php-s3-server
+[s3-rest]: http://docs.aws.amazon.com/AmazonS3/latest/API/APIRest.html
+[s3-version4-auth]: http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
 [scaling]: ../features/scaling.html
+[v4-post]: http://docs.aws.amazon.com/AmazonS3/latest/API/sigv4-authentication-HTTPPOST.html
 
 # S3 Server-Side Notes & Requirements {: .page-header }
 
@@ -66,16 +70,21 @@ All parameters are sent as headers in the "Initiate Multipart Upload" request se
 
 
 ## Signing non-chunked upload requests (required: all browsers)
-The only required server-side task for all browsers is an endpoint that provides a version 2 signature for the policy document.  This endpoint
-corresponds to the `signature.endpoint` property.
+The only required server-side task for all browsers is an endpoint that provides a version 2 _or_ version 4 signature for the policy document.  This endpoint
+corresponds to the `signature.endpoint` property. Be sure you set the [`signature.version` configuration option](../api/options-s3.html#signature.version) to `4` if you are sending files to a bucket in a region that only supports version 4 signatures.
 
 Fine Uploader will construct a policy document (required for securely uploading the file to your S3 bucket)
 which then must be signed using your AWS secret key.  When Fine Uploader requires this signature, it will send a
 POST request to the endpoint specified in your `signature.endpoint` option, passing the JSON policy document in the
 request payload with a Content-Type of "application/json".  You can read more about [policy documents on Amazon's developer site](http://docs.aws.amazon.com/AmazonS3/latest/dev/HTTPPOSTForms.html#HTTPPOSTConstructPolicy).
 
+For version 4 signatures, a query parameter of "v4" will be appended to the signature endpoint's URI. This will make it easy for your signature server to determine the correct signing algorithm to use.
+
 #### Verifying the policy
-When your server receives this policy document, it should first verify that the policy contains expected properties.
+When your server receives this policy document, it should first verify that the policy contains expected properties. Some common
+properties to validate on a policy include the "bucket" and the "content-length-range". The [PHP server-side example][s3-php] maintained
+by Fine Uploader developers validates these two properties.
+
 If the policy document appears incorrect (due to client-side tampering), your server should immediately return a response
 with a status code of 500, a Content-Type of "application/json" and the following payload:
 
@@ -88,7 +97,8 @@ with a status code of 500, a Content-Type of "application/json" and the followin
 The above response will let Fine Uploader know that the policy document may have been tampered with client-side, and it
 will not send the file to S3 until the issue is addressed.
 
-#### Signing the policy
+
+#### Signing the policy - version 2 signatures
 If your server determines that the policy document is accurate, it should then base-64 encode the policy document,
 generate a base-64 encoded HMAC SHA1 of the policy document using your AWS secret key, and then return the base-64
 encoded policy document and the base-64 encoded signature in the response payload with a status of 200-204 and a Content-Type
@@ -102,14 +112,35 @@ of "application/json".  Your response payload should follow this format:
 ```
 
 It's quite simple to sign the policy document server-side.  Amazon's developer site also provides some
-[code in several languages illustrating how to do this](http://aws.amazon.com/articles/1434/#signyours3postform). Fine Uploader currently supports version 2 signatures.
+[code in several languages illustrating how to do this](http://aws.amazon.com/articles/1434/#signyours3postform).
+
+
+#### Signing the policy - version 4 signatures
+Amazon has made the version 4 signature algorithm quite complicated to implement for unknown reasons. If you'd like to see
+an example of signing a policy document supplied by Fine Uploader S3 using the version 4 signing process, have a look at the
+[Fine Uploader PHP S3 signature server example][s3-php]. The general process is as follows:
+
+1. Handle the policy signature request from Fine Uploader S3. Look at the query string to determine if this is a version 4 signature, or not.
+2. Locate the policy document in the request body. Note that the entire contents of the request body represent this JSON policy.
+3. Locate the "conditions" array in the policy.
+4. Locate the "x-amz-condition" item in the conditions array.
+5. Generate the signature as outlined in the [AWS version 4 signature calculate guide][v4-post]. The relevant section is at the bottom of the linked page. All of the values you need for the "Signing Key" section are included in the value of the "x-amz-condition" element in the policy document.
+6. Return a JSON response with two properties: `"policy"` which includes the base-64-encoded policy document, and `"signature"` which includes the generated signature.
+
+Note that you will have to base64-encode the policy document to generate the "SigningKey", which is needed for the last step
+in the signature generation process.
+
 
 ## Signing chunked uploads (required: modern browsers)
-Fine Uploader S3 uses [Amazon S3's REST API](http://docs.aws.amazon.com/AmazonS3/latest/API/APIRest.html)
+Fine Uploader S3 uses [Amazon S3's REST API][s3-rest]
 to initiate, upload, complete, and
 abort multipart uploads. The REST API handles authentication by signing
 canonically formatted headers. This signing is something you need to implement
-server-side. All your server needs to do to authenticate and supported chunked
+server-side.
+
+
+### Providing a chunked upload signature - version 2 signatures
+All your server needs to do to authenticate and supported chunked
 uploads direct to Amazon S3 is sign a string representing the headers of the
 request that Fine Uploader sends to S3. This string is found in the payload of
 the signature request:
@@ -128,6 +159,18 @@ should respond with the following in the body of an 'application/json' response:
     { "signature": /* signed headers string */ }
 
 
+### Providing a chunked upload signature - version 4 signatures
+If you'd like to see an example of generating a signature for a chunked upload request created by Fine Uploader S3 using the
+version 4 signing process, have a look at the [Fine Uploader PHP S3 signature server example][s3-php]. The general process is as
+follows:
+
+1. Handle a chunked upload signature request from Fine Uploader. Look at the query string to determine if this is a version 4 request, or not. The presence of a `"header"` property in the JSON-encoded message body indicates that this is indeed related to a chunked upload request.
+2. Follow the signing process outlined in the diagram on [Amazon's version 4 header-based auth documentation page][s3-version4-auth].
+3. The `"headers"` string provided by Fine Uploader corresponds to the "StringToSign" portion of the diagram on the page referenced in the previous step. Simply generate the signature using this provided "StringToSign" by following the logic
+in the third step titled "Signature".
+4. Return a JSON response with the generated signature as the value of a `"signature"` property.
+
+
 ## Supporting IE9 (and older) and Android 2.3.x (and older)
 For browsers that do not support the File API, Fine Uploader must submit selected files inside of form, targeting a specific
 dynamically-generated iframe.  When the response comes in, Fine Uploader will not be able to determine if the upload was
@@ -139,7 +182,7 @@ Your `iframeSupport.localBlankPagePath` value must point to a page on your serve
 but it MUST reside on the same origin/domain as the one hosting your upload page.
 
 
-## Supporting the upload Success POST to your server (optional)
+## Supporting the upload success POST to your server (optional)
 If you would like Fine Uploader to notify your server when any file has been successfully uploaded to S3, you should
 set the `uploadSuccess.endpoint` property.  If this is set, Fine Uploader will send a POST request
 to your server with a Content-Type of "application/x-www-form-urlencoded".  The payload of this request, by default,
