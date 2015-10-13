@@ -78,6 +78,11 @@ qq.AjaxRequester = function(o) {
 
             if (xhrOrXdr.withCredentials === undefined) {
                 xhrOrXdr = new XDomainRequest();
+                // Workaround for XDR bug in IE9 - https://social.msdn.microsoft.com/Forums/ie/en-US/30ef3add-767c-4436-b8a9-f1ca19b4812e/ie9-rtm-xdomainrequest-issued-requests-may-abort-if-all-event-handlers-not-specified?forum=iewebdevelopment
+                xhrOrXdr.onload = function () {};
+                xhrOrXdr.onerror = function () {};
+                xhrOrXdr.ontimeout = function () {};
+                xhrOrXdr.onprogress = function () {};
             }
         }
 
