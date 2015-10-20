@@ -66,6 +66,27 @@ qq.s3.RequestSigner = function(o) {
                     signatureSpec.headersStr || "\n",
                     signatureSpec.bucket,
                     signatureSpec.endOfUrl);
+            },
+
+            signApiRequest: function(signatureConstructor, headersStr, signatureEffort) {
+                var headersWordArray = CryptoJS.enc.Utf8.parse(headersStr),
+                    headersHmacSha1 = CryptoJS.HmacSHA1(headersWordArray, credentialsProvider.get().secretKey),
+                    headersHmacSha1Base64 = CryptoJS.enc.Base64.stringify(headersHmacSha1);
+
+                generateHeaders(signatureConstructor, headersHmacSha1Base64, signatureEffort);
+            },
+
+            signPolicy: function(policy, signatureEffort, updatedAccessKey, updatedSessionToken) {
+                var policyStr = JSON.stringify(policy),
+                    policyWordArray = CryptoJS.enc.Utf8.parse(policyStr),
+                    base64Policy = CryptoJS.enc.Base64.stringify(policyWordArray),
+                    policyHmacSha1 = CryptoJS.HmacSHA1(base64Policy, credentialsProvider.get().secretKey),
+                    policyHmacSha1Base64 = CryptoJS.enc.Base64.stringify(policyHmacSha1);
+
+                signatureEffort.success({
+                    policy: base64Policy,
+                    signature: policyHmacSha1Base64
+                }, updatedAccessKey, updatedSessionToken);
             }
         },
 
@@ -175,6 +196,51 @@ qq.s3.RequestSigner = function(o) {
                 });
 
                 return signedHeaders;
+            },
+
+            signApiRequest: function(signatureConstructor, headersStr, signatureEffort) {
+                var secretKey = credentialsProvider.get().secretKey,
+                    headersPattern = /.+\n.+\n(\d+)\/(.+)\/s3\/.+\n(.+)/,
+                    matches = headersPattern.exec(headersStr),
+                    dateKey, dateRegionKey, dateRegionServiceKey, signingKey;
+
+                dateKey = CryptoJS.HmacSHA256(matches[1], "AWS4" + secretKey);
+                dateRegionKey = CryptoJS.HmacSHA256(matches[2], dateKey);
+                dateRegionServiceKey = CryptoJS.HmacSHA256("s3", dateRegionKey);
+                signingKey = CryptoJS.HmacSHA256("aws4_request", dateRegionServiceKey);
+
+                generateHeaders(signatureConstructor, CryptoJS.HmacSHA256(headersStr, signingKey), signatureEffort);
+            },
+
+            signPolicy: function(policy, signatureEffort, updatedAccessKey, updatedSessionToken) {
+                var policyStr = JSON.stringify(policy),
+                    policyWordArray = CryptoJS.enc.Utf8.parse(policyStr),
+                    base64Policy = CryptoJS.enc.Base64.stringify(policyWordArray),
+                    secretKey = credentialsProvider.get().secretKey,
+                    credentialPattern = /.+\/(.+)\/(.+)\/s3\/aws4_request/,
+                    credentialCondition = (function() {
+                        var credential = null;
+                        qq.each(policy.conditions, function(key, condition) {
+                            var val = condition["x-amz-credential"];
+                            if (val) {
+                                credential = val;
+                                return false;
+                            }
+                        });
+                        return credential;
+                    }()),
+                    matches, dateKey, dateRegionKey, dateRegionServiceKey, signingKey;
+
+                matches = credentialPattern.exec(credentialCondition);
+                dateKey = CryptoJS.HmacSHA256(matches[1], "AWS4" + secretKey);
+                dateRegionKey = CryptoJS.HmacSHA256(matches[2], dateKey);
+                dateRegionServiceKey = CryptoJS.HmacSHA256("s3", dateRegionKey);
+                signingKey = CryptoJS.HmacSHA256("aws4_request", dateRegionServiceKey);
+
+                signatureEffort.success({
+                    policy: base64Policy,
+                    signature: CryptoJS.HmacSHA256(base64Policy, signingKey).toString()
+                }, updatedAccessKey, updatedSessionToken);
             }
         };
 
@@ -335,24 +401,21 @@ qq.s3.RequestSigner = function(o) {
     }
 
     function signPolicy(policy, signatureEffort, updatedAccessKey, updatedSessionToken) {
-        var policyStr = JSON.stringify(policy),
-            policyWordArray = CryptoJS.enc.Utf8.parse(policyStr),
-            base64Policy = CryptoJS.enc.Base64.stringify(policyWordArray),
-            policyHmacSha1 = CryptoJS.HmacSHA1(base64Policy, credentialsProvider.get().secretKey),
-            policyHmacSha1Base64 = CryptoJS.enc.Base64.stringify(policyHmacSha1);
-
-        signatureEffort.success({
-            policy: base64Policy,
-            signature: policyHmacSha1Base64
-        }, updatedAccessKey, updatedSessionToken);
+        if (options.signatureSpec.version === 4) {
+            v4.signPolicy(policy, signatureEffort, updatedAccessKey, updatedSessionToken);
+        }
+        else {
+            v2.signPolicy(policy, signatureEffort, updatedAccessKey, updatedSessionToken);
+        }
     }
 
     function signApiRequest(signatureConstructor, headersStr, signatureEffort) {
-        var headersWordArray = CryptoJS.enc.Utf8.parse(headersStr),
-            headersHmacSha1 = CryptoJS.HmacSHA1(headersWordArray, credentialsProvider.get().secretKey),
-            headersHmacSha1Base64 = CryptoJS.enc.Base64.stringify(headersHmacSha1);
-
-        generateHeaders(signatureConstructor, headersHmacSha1Base64, signatureEffort);
+        if (options.signatureSpec.version === 4) {
+            v4.signApiRequest(signatureConstructor, headersStr, signatureEffort);
+        }
+        else {
+            v2.signApiRequest(signatureConstructor, headersStr, signatureEffort);
+        }
     }
 
     requester = qq.extend(this, new qq.AjaxRequester({

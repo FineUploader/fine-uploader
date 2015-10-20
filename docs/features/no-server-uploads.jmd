@@ -17,7 +17,8 @@ S3 bucket, such as in the [official Fine Uploader S3 no-server example][1].
 A [`credentials` option][2] has been created for Fine Uploader S3 to support this workflow.  It allows you to
 pass temporary credentials (secret & public AWS keys) to Fine Uploader S3 during initialization.  An `expiration` date
 for the credentials must also be provided.  Additionally, if you are using temporary credentials from the
-AWS Security Token Service, you will also need to provide a `sessionToken`.
+AWS Security Token Service, you will also need to provide a `sessionToken`. If you would like to use version 4
+signatures, instead the default version 2, be sure to set [the `signature.version` option][6] to `4`.
 
 When your credentials expire, your [`credentialsExpired` event handler][3] will be invoked.  You must then return a
 [promise][4] and fulfill it by passing the new credentials via the `success` method on the promise.  The
@@ -43,6 +44,7 @@ malicious users to gain access to your secret key), there are some precautionary
 [3]: ../api/events-s3.html#credentialsexpired
 [4]: async-tasks-and-promises.html
 [5]: ../api/methods-s3.html
+[6]: ../api/options-s3.html#signature.version
 
 {% endmarkdown %}
 {% endblock %}
