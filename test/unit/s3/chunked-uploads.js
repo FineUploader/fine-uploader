@@ -213,7 +213,7 @@ if (qqtest.canDownloadFileAsBlob) {
                                 assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploadId=123");
                                 assert.ok(multipartCompleteRequest.requestHeaders["x-amz-date"]);
 
-                                var authParts = multipartCompleteRequest.requestHeaders.Authorization.split(";");
+                                authParts = multipartCompleteRequest.requestHeaders.Authorization.split(";");
                                 assert.equal(authParts.length, 3);
                                 assert.equal(authParts[0].split(",")[1], "SignedHeaders=host");
                                 assert.equal(authParts[1], "x-amz-content-sha256");
