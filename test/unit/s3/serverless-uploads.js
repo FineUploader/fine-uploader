@@ -11,7 +11,7 @@ describe("S3 serverless upload tests", function() {
                 testSecretKey = "testSecretKey",
                 testSessionToken = "testSessionToken";
 
-            describe.only("v4 signatures", function() {
+            describe("v4 signatures", function() {
                 it("test simple upload with only mandatory credentials specified as options", function(done) {
                     var testExpiration = new Date(Date.now() + 10000),
                         uploader = new qq.s3.FineUploaderBasic({
