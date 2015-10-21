@@ -22,7 +22,7 @@ signatures, instead the default version 2, be sure to set [the `signature.versio
 
 When your credentials expire, your [`credentialsExpired` event handler][3] will be invoked.  You must then return a
 [promise][4] and fulfill it by passing the new credentials via the `success` method on the promise.  The
-validity of credentials is checked internall by Fine Uploader S3 just before a request is sent to S3.  If the
+validity of credentials is checked internally by Fine Uploader S3 just before a request is sent to S3.  If the
 credentials have expired, the request will be held up until your event handler specifies a new set of credentials or
 fails its attempt to do so.
 
