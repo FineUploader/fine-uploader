@@ -4,10 +4,6 @@
   "version": "5.4.0-5",
   "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
   "main": "./fine-uploader/js/fineuploader.js",
-  "maintainers": [
-    "Ray Nicholus <ray@fineuploader.com>",
-    "Mark Feltner <mfeltner@widen.com>"
-  ],
   "directories": {
     "doc": "docs",
     "lib": "client",
