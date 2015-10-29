@@ -71,6 +71,7 @@ alert("The [`chunking.paramNames` option](options.html#chunking) does **not** ap
         ("objectProperties.bucket", "bucket", "Describes the name of the bucket used to house the file in S3.  This is required if the bucket cannot be determined by examining the endpoint (such as if you are using a CDN as an endpoint).  Possible values are a string representing the bucket name, or a function.  If the value is a function, Fine Uploader S3 will pass the associated file ID as a parameter when invoking your function. If the value is a function it may return one of a promise or a `String`.", "String or Function", "(assumes the bucket can be determined by parsing the endpoint string)",),
         ("objectProperties.key", "key", "Describes the object key used to identify the file in your S3 bucket. Possible values are 'uuid', 'filename' or a function.  If the value is a function, Fine Uploader S3 will pass the associated file ID as a parameter when invoking your function. If the value is a function it may return one of a promise or a `String`.", "String or Function", "uuid",),
         ("objectProperties.reducedRedundancy", "reducedRedundancy", "Set this to true if you would like to use the reduced redundancy storage class for all objects uploaded to S3.", "Boolean", "false",),
+        ("objectProperties.region", "region", "Version 4 signatures only: The [S3 region identifier](http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region) for the target bucket.", "String", "us-east-1",),
         ("objectProperties.serverSideEncryption", "serverSideEncryption", "Set this to true if you would like all uploaded files to be encrypted by AWS.", "Boolean", "false",),
     )
 )}}
@@ -96,6 +97,7 @@ alert("The [`request.customHeaders` option](options.html#request.customHeaders) 
     (
         ("signature.customHeaders", "customHeaders", "Additional headers sent along with each signature request.  If you declare a function as the value, the associated file's ID will be passed to your function when it is invoked.", "Object, Function", "{}",),
         ("signature.endpoint", "endpoint", "The endpoint that Fine Uploader can use to send policy documents (HTML form uploads) or other strings to sign (REST requests) before sending requests off to S3.", "String", "null",),
+        ("signature.version", "version", "The AWS/S3 signature version to use. Currently supported values are `2` and `4`. Directly related to [`objectProperties.region`](#objectProperties.region).", "Integer", "2",),
     )
 )}}
 

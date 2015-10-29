@@ -11,6 +11,58 @@ describe("S3 serverless upload tests", function() {
                 testSecretKey = "testSecretKey",
                 testSessionToken = "testSessionToken";
 
+            describe("v4 signatures", function() {
+                it("test simple upload with only mandatory credentials specified as options", function(done) {
+                    var testExpiration = new Date(Date.now() + 10000),
+                        uploader = new qq.s3.FineUploaderBasic({
+                            request: {
+                                endpoint: testS3Endpoint
+                            },
+                            signature: {
+                                version: 4
+                            },
+                            credentials: {
+                                accessKey: testAccessKey,
+                                secretKey: testSecretKey,
+                                expiration: testExpiration
+                            }
+                        });
+
+                    qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                        var request, requestParams;
+
+                        fileTestHelper.mockXhr();
+                        uploader.addFiles({name: "test", blob: blob});
+
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+
+                        request = fileTestHelper.getRequests()[0];
+                        requestParams = request.requestBody.fields;
+
+                        assert.equal(request.url, testS3Endpoint);
+                        assert.equal(request.method, "POST");
+
+                        assert.equal(requestParams["Content-Type"], "image/jpeg");
+                        assert.equal(requestParams.success_action_status, 200);
+                        assert.equal(requestParams[qq.s3.util.SESSION_TOKEN_PARAM_NAME], null);
+                        assert.equal(requestParams["x-amz-storage-class"], null);
+                        assert.equal(requestParams["x-amz-meta-qqfilename"], "test");
+                        assert.equal(requestParams.key, uploader.getKey(0));
+                        assert.equal(requestParams.acl, "private");
+                        assert.ok(requestParams.file);
+
+
+                        assert.equal(requestParams["x-amz-algorithm"], "AWS4-HMAC-SHA256");
+                        assert.ok(new RegExp(testAccessKey + "\\/\\d{8}\\/us-east-1\\/s3\\/aws4_request").test(requestParams["x-amz-credential"]));
+                        assert.ok(requestParams["x-amz-date"]);
+                        assert.ok(requestParams["x-amz-signature"]);
+                        assert.ok(requestParams.policy);
+
+                        done();
+                    });
+                });
+            });
+
             it("test simple upload with only mandatory credentials specified as options", function(done) {
                 assert.expect(14, done);
 

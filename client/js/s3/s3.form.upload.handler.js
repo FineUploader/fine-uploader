@@ -22,6 +22,7 @@ qq.s3.FormUploadHandler = function(options, proxy) {
         endpointStore = options.endpointStore,
         aclStore = options.aclStore,
         reducedRedundancy = options.objectProperties.reducedRedundancy,
+        region = options.objectProperties.region,
         serverSideEncryption = options.objectProperties.serverSideEncryption,
         validation = options.validation,
         signature = options.signature,
@@ -95,7 +96,9 @@ qq.s3.FormUploadHandler = function(options, proxy) {
             maxFileSize: validation.maxSizeLimit,
             successRedirectUrl: successRedirectUrl,
             reducedRedundancy: reducedRedundancy,
+            region: region,
             serverSideEncryption: serverSideEncryption,
+            signatureVersion: signature.version,
             log: log
         },
         qq.bind(getSignatureAjaxRequester.getSignature, this, id));

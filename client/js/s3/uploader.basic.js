@@ -27,6 +27,9 @@
 
                 reducedRedundancy: false,
 
+                // Defined at http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region
+                region: "us-east-1",
+
                 serverSideEncryption: false
             },
 
@@ -42,10 +45,11 @@
                 sessionToken: null
             },
 
-            // optional/ignored if `credentials` is provided
+            // All but `version` are ignored if `credentials` is provided.
             signature: {
+                customHeaders: {},
                 endpoint: null,
-                customHeaders: {}
+                version: 2
             },
 
             uploadSuccess: {

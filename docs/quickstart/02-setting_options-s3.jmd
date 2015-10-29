@@ -41,6 +41,11 @@ var uploader = new qq.s3.FineUploader({
 });
 ```
 
+{{ alert(
+"""If you wish to send files to an S3 bucket in a region that only supports version 4 signatures, you will
+have to set [the `signature.version` option](../api/options-s3.html#signature.version) to `4`.""") }}
+
+
 ### Debug mode
 
 Debug mode is used to begin diagnosing any application errors. Debug mode can
