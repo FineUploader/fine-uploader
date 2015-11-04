@@ -118,7 +118,8 @@ if (qqtest.canDownloadFileAsBlob) {
 
                         assert.equal(initiateToSign.headers.indexOf("AWS4-HMAC-SHA256"), 0);
                         assert.ok(initiateToSign.headers.indexOf("/us-east-1/s3/aws4_request") > 0);
-                        assert.equal(initiateToSign.headers.split("\n").length, 4);
+                        assert.equal(initiateToSign.headers.split("\n").length, 14);
+                        assert.ok(initiateToSign.headers.indexOf("host:mytestbucket.s3.amazonaws.com"));
                         initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
                         // initiate multipart upload request
@@ -150,7 +151,8 @@ if (qqtest.canDownloadFileAsBlob) {
                             assert.ok(uploadPartToSign1.headers);
                             assert.equal(uploadPartToSign1.headers.indexOf("AWS4-HMAC-SHA256"), 0);
                             assert.ok(uploadPartToSign1.headers.indexOf("/us-east-1/s3/aws4_request") > 0);
-                            assert.equal(uploadPartToSign1.headers.split("\n").length, 4);
+                            assert.equal(uploadPartToSign1.headers.split("\n").length, 12);
+                            assert.ok(uploadPartToSign1.headers.indexOf("host:mytestbucket.s3.amazonaws.com"));
                             uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
                             // upload part 1 request
@@ -177,7 +179,8 @@ if (qqtest.canDownloadFileAsBlob) {
                                 assert.ok(uploadPartToSign2.headers);
                                 assert.equal(uploadPartToSign2.headers.indexOf("AWS4-HMAC-SHA256"), 0);
                                 assert.ok(uploadPartToSign2.headers.indexOf("/us-east-1/s3/aws4_request") > 0);
-                                assert.equal(uploadPartToSign2.headers.split("\n").length, 4);
+                                assert.equal(uploadPartToSign2.headers.split("\n").length, 12);
+                                assert.ok(uploadPartToSign2.headers.indexOf("host:mytestbucket.s3.amazonaws.com"));
                                 uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
                                 // upload part 2 request
@@ -203,7 +206,8 @@ if (qqtest.canDownloadFileAsBlob) {
                                 assert.ok(uploadCompleteToSign.headers);
                                 assert.equal(uploadCompleteToSign.headers.indexOf("AWS4-HMAC-SHA256"), 0);
                                 assert.ok(uploadCompleteToSign.headers.indexOf("/us-east-1/s3/aws4_request") > 0);
-                                assert.equal(uploadCompleteToSign.headers.split("\n").length, 4);
+                                assert.equal(uploadCompleteToSign.headers.split("\n").length, 12);
+                                assert.ok(uploadCompleteToSign.headers.indexOf("host:mytestbucket.s3.amazonaws.com"));
                                 uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
                                 // multipart complete request

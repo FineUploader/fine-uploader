@@ -177,11 +177,16 @@ qq.s3.RequestSigner = function(o) {
             },
 
             getStringToSign: function(signatureSpec) {
-                var canonicalRequest = v4.getCanonicalRequest(signatureSpec);
-                return "AWS4-HMAC-SHA256" + "\n" +
-                    qq.s3.util.getV4PolicyDate(signatureSpec.date) + "\n" +
-                    v4.getScope(signatureSpec.date, options.signatureSpec.region) + "\n" +
-                    CryptoJS.SHA256(canonicalRequest).toString();
+                var canonicalRequest = v4.getCanonicalRequest(signatureSpec),
+                    date = qq.s3.util.getV4PolicyDate(signatureSpec.date),
+                    hashedRequest = CryptoJS.SHA256(canonicalRequest).toString(),
+                    scope = v4.getScope(signatureSpec.date, options.signatureSpec.region),
+                    stringToSignTemplate = "AWS4-HMAC-SHA256\n{}\n{}\n{}";
+
+                return {
+                    hashed: qq.format(stringToSignTemplate, date, scope, hashedRequest),
+                    raw: qq.format(stringToSignTemplate, date, scope, canonicalRequest)
+                };
             },
 
             getSignedHeaders: function(headerNames) {
@@ -310,7 +315,7 @@ qq.s3.RequestSigner = function(o) {
             headerNames = [],
             headersStr = "",
             now = new Date(),
-            endOfUrl, signatureSpec,
+            endOfUrl, signatureSpec, toSign,
 
             generateStringToSign = function(requestInfo) {
                 qq.each(requestInfo.headers, function(name) {
@@ -333,11 +338,14 @@ qq.s3.RequestSigner = function(o) {
                     method: method
                 };
 
+                toSign = version === 2 ? v2.getStringToSign(signatureSpec) : v4.getStringToSign(signatureSpec);
+
                 return {
                     date: now,
                     endOfUrl: endOfUrl,
                     signedHeaders: version === 4 ? v4.getSignedHeaders(signatureSpec.headerNames) : null,
-                    toSign: version === 2 ? v2.getStringToSign(signatureSpec) : v4.getStringToSign(signatureSpec)
+                    toSign: version === 4 ? toSign.hashed : toSign,
+                    toSignRaw: version === 4 ? toSign.raw : toSign
                 };
             };
 
@@ -476,7 +484,7 @@ qq.s3.RequestSigner = function(o) {
 
                 if (signatureConstructor) {
                     signatureConstructor.getToSign(id).then(function(signatureArtifacts) {
-                        params = {headers: signatureArtifacts.stringToSign};
+                        params = {headers: signatureArtifacts.stringToSignRaw};
                         requester.initTransport(id)
                             .withParams(params)
                             .withQueryParams(queryParams)
@@ -562,7 +570,8 @@ qq.s3.RequestSigner = function(o) {
                             date: artifacts.date,
                             endOfUrl: artifacts.endOfUrl,
                             signedHeaders: artifacts.signedHeaders,
-                            stringToSign: artifacts.toSign
+                            stringToSign: artifacts.toSign,
+                            stringToSignRaw: artifacts.toSignRaw
                         });
                     });
 
