@@ -414,7 +414,8 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 },
 
                 urlSafe: function(id) {
-                    return encodeURIComponent(handler.getThirdPartyFileId(id));
+                    var encodedKey = encodeURIComponent(handler.getThirdPartyFileId(id));
+                    return encodedKey.replace(/%2F/g, "/");
                 }
             },
 
