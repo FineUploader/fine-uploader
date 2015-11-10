@@ -62,23 +62,16 @@ qq.s3.util = qq.s3.util || (function() {
 
             return bucket;
         },
-        
+
         /** Create Prefixed request headers which are appropriate for S3.
          *
          * If the request header is appropriate for S3 (e.g. Cache-Control) then pass
          * it along without a metadata prefix. For all other request header parameter names,
          * apply qq.s3.util.AWS_PARAM_PREFIX before the name.
-         *
-         * @param name Name of the Request Header parameter to construct a (possibly) prefixed name.
-         * @returns {String} A valid Request Header parameter name.
+         * See: http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPUT.html
          */
-        _getPrefixedParamName: function (name) {
-            switch (name)
-            {
-                //
-                // Valid request headers (not sent by fine-uploader) which should be returned as-is (case-sensitive)
-                // see: http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPUT.html 
-                //
+        _getPrefixedParamName: function(name) {
+            switch (name) {
                 case "Cache-Control":
                 case "Content-Disposition":
                 case "Content-Encoding":
