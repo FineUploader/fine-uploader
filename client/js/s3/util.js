@@ -62,6 +62,35 @@ qq.s3.util = qq.s3.util || (function() {
 
             return bucket;
         },
+        
+        /** Create Prefixed request headers which are appropriate for S3.
+         *
+         * If the request header is appropriate for S3 (e.g. Cache-Control) then pass
+         * it along without a metadata prefix. For all other request header parameter names,
+         * apply qq.s3.util.AWS_PARAM_PREFIX before the name.
+         *
+         * @param name Name of the Request Header parameter to construct a (possibly) prefixed name.
+         * @returns {String} A valid Request Header parameter name.
+         */
+        _getPrefixedParamName: function (name) {
+            switch (name)
+            {
+                //
+                // Valid request headers (not sent by fine-uploader) which should be returned as-is (case-sensitive)
+                // see: http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPUT.html 
+                //
+                case "Cache-Control":
+                case "Content-Disposition":
+                case "Content-Encoding":
+                case "Content-MD5": // CAW: Content-MD5 might not be appropriate from user-land
+                case "x-amz-server-side-encryption-customer-algorithm":
+                case "x-amz-server-side-encryption-customer-key":
+                case "x-amz-server-side-encryption-customer-key-MD5":
+                    return name;
+                default:
+                    return qq.s3.util.AWS_PARAM_PREFIX + name;
+            }
+        },
 
         /**
          * Create a policy document to be signed and sent along with the S3 upload request.
@@ -143,7 +172,7 @@ qq.s3.util = qq.s3.util || (function() {
 
             // user metadata
             qq.each(params, function(name, val) {
-                var awsParamName = qq.s3.util.AWS_PARAM_PREFIX + name,
+                var awsParamName = qq.s3.util._getPrefixedParamName(name),
                     param = {};
 
                 param[awsParamName] = encodeURIComponent(val);
@@ -186,7 +215,7 @@ qq.s3.util = qq.s3.util || (function() {
          * Generates all parameters to be passed along with the S3 upload request.  This includes invoking a callback
          * that is expected to asynchronously retrieve a signature for the policy document.  Note that the server
          * signing the request should reject a "tainted" policy document that includes unexpected values, since it is
-         * still possible for a malicious user to tamper with these values during policy document generation, b
+         * still possible for a malicious user to tamper with these values during policy document generation,
          * before it is sent to the server for signing.
          *
          * @param spec Object with properties: `params`, `type`, `key`, `accessKey`, `acl`, `expectedStatus`, `successRedirectUrl`,
@@ -244,9 +273,10 @@ qq.s3.util = qq.s3.util || (function() {
             awsParams.acl = acl;
 
             // Custom (user-supplied) params must be prefixed with the value of `qq.s3.util.AWS_PARAM_PREFIX`.
-            // Custom param values will be URI encoded as well.
+            // Params such as Cache-Control or Content-Disposition will not be prefixed.
+            // All param values will be URI encoded as well.
             qq.each(customParams, function(name, val) {
-                var awsParamName = qq.s3.util.AWS_PARAM_PREFIX + name;
+                var awsParamName = qq.s3.util._getPrefixedParamName(name);
                 awsParams[awsParamName] = encodeURIComponent(val);
             });
 
