@@ -60,7 +60,7 @@ describe("uploader.basic.js", function () {
         assert.ok(!qq(getFileInput($button)).hasAttribute("multiple"));
     });
 
-    it("Excludes or includes the multiple attribute on 'extra' file input elements appropriately, taking extraButton properties into consideration", function() {
+    qq.supportedFeatures.ajaxUploading && it("Excludes or includes the multiple attribute on 'extra' file input elements appropriately, taking extraButton properties into consideration", function() {
         var uploader = new qq.FineUploaderBasic({
             element: $fixture[0],
             button: $button[0],
