@@ -43,7 +43,7 @@ describe("uploader.basic.js", function () {
             button: $button[0]
         });
 
-        assert.equal(qq(getFileInput($button)).hasAttribute("multiple"), qq.supportedFeatures.ajaxUploading && !qq.ios7());
+        assert.equal(qq(getFileInput($button)).hasAttribute("multiple"), qq.supportedFeatures.ajaxUploading && !qq.ios());
     });
 
     it("Excludes the multiple attribute on the file input element if requested", function() {
