@@ -1,4 +1,10 @@
 /* globals qq, CryptoJS */
+
+// IE 10 does not support Uint8ClampedArray. We don't need it, but CryptoJS attempts to reference it
+// inside a conditional via an instanceof check, which breaks S3 v4 signatures for chunked uploads.
+if (!window.Uint8ClampedArray) {
+    window.Uint8ClampedArray = function() {};
+}
 /**
  * Handles signature determination for HTML Form Upload requests and Multipart Uploader requests (via the S3 REST API).
  *
