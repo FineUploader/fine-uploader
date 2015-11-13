@@ -23,6 +23,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             maxConnections: 3,
             getContentType: function(id) {},
             getBucket: function(id) {},
+            getHost: function(id) {},
             getKey: function(id) {},
             getName: function(id) {},
             log: function(str, level) {}
@@ -49,6 +50,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
      */
     function getHeaders(id) {
         var bucket = options.getBucket(id),
+            host = options.getHost(id),
             headers = {},
             promise = new qq.Promise(),
             key = options.getKey(id),
@@ -71,7 +73,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         });
 
         signatureConstructor = getSignatureAjaxRequester.constructStringToSign
-            (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_INITIATE, bucket, key)
+            (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_INITIATE, bucket, host, key)
             .withContentType(options.getContentType(id))
             .withHeaders(headers);
 

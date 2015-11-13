@@ -22,6 +22,11 @@
                     return qq.s3.util.getBucket(this.getEndpoint(id));
                 }, this),
 
+                // string or a function which may be promissory - only used for V4 multipart uploads
+                host: qq.bind(function(id) {
+                    return (/(?:http|https):\/\/(.+)(?:\/.+)?/).exec(this._endpointStore.get(id))[1];
+                }, this),
+
                 // 'uuid', 'filename', or a function which may be promissory
                 key: "uuid",
 
@@ -107,6 +112,7 @@
         this._cannedBuckets = {};
 
         this._buckets = {};
+        this._hosts = {};
     };
 
     // Inherit basic public & private API methods.
@@ -144,6 +150,7 @@
             qq.FineUploaderBasic.prototype.reset.call(this);
             this._failedSuccessRequestCallbacks = [];
             this._buckets = {};
+            this._hosts = {};
         },
 
         setCredentials: function(credentials, ignoreEmpty) {
@@ -189,6 +196,7 @@
                 additionalOptions = {
                     aclStore: this._aclStore,
                     getBucket: qq.bind(this._determineBucket, this),
+                    getHost: qq.bind(this._determineHost, this),
                     getKeyName: qq.bind(this._determineKeyName, this),
                     iframeSupport: this._options.iframeSupport,
                     objectProperties: this._options.objectProperties,
@@ -267,35 +275,43 @@
             return qq.FineUploaderBasic.prototype._createUploadHandler.call(this, additionalOptions, "s3");
         },
 
-        _determineBucket: function(id) {
-            var maybeBucket = this._options.objectProperties.bucket,
+        _determineObjectPropertyValue: function(id, property) {
+            var maybe = this._options.objectProperties[property],
                 promise = new qq.Promise(),
                 self = this;
 
-            if (qq.isFunction(maybeBucket)) {
-                maybeBucket = maybeBucket(id);
-                if (qq.isGenericPromise(maybeBucket)) {
-                    promise = maybeBucket;
+            if (qq.isFunction(maybe)) {
+                maybe = maybe(id);
+                if (qq.isGenericPromise(maybe)) {
+                    promise = maybe;
                 }
                 else {
-                    promise.success(maybeBucket);
+                    promise.success(maybe);
                 }
             }
-            else if (qq.isString(maybeBucket)) {
-                promise.success(maybeBucket);
+            else if (qq.isString(maybe)) {
+                promise.success(maybe);
             }
 
             promise.then(
-                function success(bucket) {
-                    self._buckets[id] = bucket;
+                function success(value) {
+                    self["_" + property + "s"][id] = value;
                 },
 
                 function failure(errorMsg) {
-                    qq.log("Problem determining bucket for ID " + id + " (" + errorMsg + ")", "error");
+                    qq.log("Problem determining " + property + " for ID " + id + " (" + errorMsg + ")", "error");
                 }
             );
 
             return promise;
+        },
+
+        _determineBucket: function(id) {
+            return this._determineObjectPropertyValue(id, "bucket");
+        },
+
+        _determineHost: function(id) {
+            return this._determineObjectPropertyValue(id, "host");
         },
 
         /**

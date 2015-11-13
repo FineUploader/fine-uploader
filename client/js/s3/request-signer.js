@@ -378,7 +378,7 @@ qq.s3.RequestSigner = function(o) {
         if (version === 4) {
             v4.getEncodedHashedPayload(requestInfo.content).then(function(hashedContent) {
                 requestInfo.headers["x-amz-content-sha256"] = hashedContent;
-                requestInfo.headers.Host = /(?:http|https):\/\/(.+)(?:\/.+)?/.exec(options.endpointStore.get(id))[1];
+                requestInfo.headers.Host = requestInfo.host;
                 requestInfo.headers["x-amz-date"] = qq.s3.util.getV4PolicyDate(now);
                 requestInfo.hashedContent = hashedContent;
 
@@ -513,7 +513,7 @@ qq.s3.RequestSigner = function(o) {
             return signatureEffort;
         },
 
-        constructStringToSign: function(type, bucket, key) {
+        constructStringToSign: function(type, bucket, host, key) {
             var headers = {},
                 uploadId, content, contentType, partNum, artifacts;
 
@@ -558,6 +558,7 @@ qq.s3.RequestSigner = function(o) {
                         content: content,
                         contentType: contentType,
                         headers: headers,
+                        host: host,
                         key: key,
                         partNum: partNum,
                         type: type,

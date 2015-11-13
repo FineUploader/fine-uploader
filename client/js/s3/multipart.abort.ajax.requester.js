@@ -16,6 +16,7 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
             signatureSpec: null,
             maxConnections: 3,
             getBucket: function(id) {},
+            getHost: function(id) {},
             getKey: function(id) {},
             log: function(str, level) {}
         },
@@ -44,8 +45,9 @@ qq.s3.AbortMultipartAjaxRequester = function(o) {
         var headers = {},
             promise = new qq.Promise(),
             bucket = options.getBucket(id),
+            host = options.getHost(id),
             signatureConstructor = getSignatureAjaxRequester.constructStringToSign
-                (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_ABORT, bucket, options.getKey(id))
+                (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_ABORT, bucket, host, options.getKey(id))
                 .withUploadId(uploadId);
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.

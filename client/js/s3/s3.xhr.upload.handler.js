@@ -15,6 +15,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
         log = proxy.log,
         expectedStatus = 200,
         onGetBucket = spec.getBucket,
+        onGetHost = spec.getHost,
         onGetKeyName = spec.getKeyName,
         filenameParam = spec.filenameParam,
         paramsStore = spec.paramsStore,
@@ -79,10 +80,11 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
             initHeaders: function(id, chunkIdx, blob) {
                 var headers = {},
                     bucket = upload.bucket.getName(id),
+                    host = upload.host.getName(id),
                     key = upload.key.urlSafe(id),
                     promise = new qq.Promise(),
                     signatureConstructor = requesters.restSignature.constructStringToSign
-                        (requesters.restSignature.REQUEST_TYPE.MULTIPART_UPLOAD, bucket, key)
+                        (requesters.restSignature.REQUEST_TYPE.MULTIPART_UPLOAD, bucket, host, key)
                         .withPartNum(chunkIdx + 1)
                         .withContent(blob)
                         .withUploadId(handler._getPersistableData(id).uploadId);
@@ -186,6 +188,9 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 getBucket: function(id) {
                     return upload.bucket.getName(id);
                 },
+                getHost: function(id) {
+                    return upload.host.getName(id);
+                },
                 getKey: function(id) {
                     return upload.key.urlSafe(id);
                 }
@@ -198,6 +203,9 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 log: log,
                 getBucket: function(id) {
                     return upload.bucket.getName(id);
+                },
+                getHost: function(id) {
+                    return upload.host.getName(id);
                 },
                 getKey: function(id) {
                     return upload.key.urlSafe(id);
@@ -219,6 +227,9 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 },
                 getBucket: function(id) {
                     return upload.bucket.getName(id);
+                },
+                getHost: function(id) {
+                    return upload.host.getName(id);
                 },
                 getKey: function(id) {
                     return upload.key.urlSafe(id);
@@ -369,6 +380,29 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 }
             },
 
+            host: {
+                promise: function(id) {
+                    var promise = new qq.Promise(),
+                        cachedHost = handler._getFileState(id).host;
+
+                    if (cachedHost) {
+                        promise.success(cachedHost);
+                    }
+                    else {
+                        onGetHost(id).then(function(host) {
+                            handler._getFileState(id).host = host;
+                            promise.success(host);
+                        }, promise.failure);
+                    }
+
+                    return promise;
+                },
+
+                getName: function(id) {
+                    return handler._getFileState(id).host;
+                }
+            },
+
             done: function(id, xhr) {
                 var response = upload.response.parse(id, xhr),
                     isError = response.success !== true;
@@ -491,13 +525,15 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
                 upload.key.promise(id).then(function() {
                     upload.bucket.promise(id).then(function() {
-                        /* jshint eqnull:true */
-                        if (optChunkIdx == null) {
-                            simple.send(id).then(promise.success, promise.failure);
-                        }
-                        else {
-                            chunked.send(id, optChunkIdx).then(promise.success, promise.failure);
-                        }
+                        upload.host.promise(id).then(function() {
+                            /* jshint eqnull:true */
+                            if (optChunkIdx == null) {
+                                simple.send(id).then(promise.success, promise.failure);
+                            }
+                            else {
+                                chunked.send(id, optChunkIdx).then(promise.success, promise.failure);
+                            }
+                        });
                     });
                 },
                 function(errorReason) {

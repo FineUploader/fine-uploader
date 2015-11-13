@@ -18,6 +18,7 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
             signatureSpec: null,
             maxConnections: 3,
             getBucket: function(id) {},
+            getHost: function(id) {},
             getKey: function(id) {},
             log: function(str, level) {}
         },
@@ -44,8 +45,9 @@ qq.s3.CompleteMultipartAjaxRequester = function(o) {
         var headers = {},
             promise = new qq.Promise(),
             bucket = options.getBucket(id),
+            host = options.getHost(id),
             signatureConstructor = getSignatureAjaxRequester.constructStringToSign
-                (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_COMPLETE, bucket, options.getKey(id))
+                (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_COMPLETE, bucket, host, options.getKey(id))
                 .withUploadId(uploadId)
                 .withContent(body)
                 .withContentType("application/xml; charset=UTF-8");
