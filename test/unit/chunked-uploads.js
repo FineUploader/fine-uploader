@@ -275,7 +275,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             });
 
-            it("getResumableFilesData", function(done) {
+            qq.supportedFeatures.resume && it("getResumableFilesData", function(done) {
                 var chunksUploaded = 0,
                     uploader = new qq.FineUploaderBasic({
                         request: {

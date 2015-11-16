@@ -84,7 +84,9 @@ qq.supportedFeatures = (function() {
 
     function isLocalStorageSupported() {
         try {
-            return !!window.localStorage;
+            return !!window.localStorage &&
+                // unpatched versions of IE10/11 have buggy impls of localStorage where setItem is a string
+                qq.isFunction(window.localStorage.setItem);
         }
         catch (error) {
             // probably caught a security exception, so no localStorage for you

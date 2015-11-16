@@ -5,15 +5,25 @@ qq.s3.util = qq.s3.util || (function() {
     "use strict";
 
     return {
+        ALGORITHM_PARAM_NAME: "x-amz-algorithm",
+
         AWS_PARAM_PREFIX: "x-amz-meta-",
 
-        SESSION_TOKEN_PARAM_NAME: "x-amz-security-token",
+        CREDENTIAL_PARAM_NAME: "x-amz-credential",
+
+        DATE_PARAM_NAME: "x-amz-date",
 
         REDUCED_REDUNDANCY_PARAM_NAME: "x-amz-storage-class",
         REDUCED_REDUNDANCY_PARAM_VALUE: "REDUCED_REDUNDANCY",
 
         SERVER_SIDE_ENCRYPTION_PARAM_NAME: "x-amz-server-side-encryption",
         SERVER_SIDE_ENCRYPTION_PARAM_VALUE: "AES256",
+
+        SESSION_TOKEN_PARAM_NAME: "x-amz-security-token",
+
+        V4_ALGORITHM_PARAM_VALUE: "AWS4-HMAC-SHA256",
+
+        V4_SIGNATURE_PARAM_NAME: "x-amz-signature",
 
         /**
          * This allows for the region to be specified in the bucket's endpoint URL, or not.
@@ -53,6 +63,28 @@ qq.s3.util = qq.s3.util || (function() {
             return bucket;
         },
 
+        /** Create Prefixed request headers which are appropriate for S3.
+         *
+         * If the request header is appropriate for S3 (e.g. Cache-Control) then pass
+         * it along without a metadata prefix. For all other request header parameter names,
+         * apply qq.s3.util.AWS_PARAM_PREFIX before the name.
+         * See: http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPUT.html
+         */
+        _getPrefixedParamName: function(name) {
+            switch (name) {
+                case "Cache-Control":
+                case "Content-Disposition":
+                case "Content-Encoding":
+                case "Content-MD5": // CAW: Content-MD5 might not be appropriate from user-land
+                case "x-amz-server-side-encryption-customer-algorithm":
+                case "x-amz-server-side-encryption-customer-key":
+                case "x-amz-server-side-encryption-customer-key-MD5":
+                    return name;
+                default:
+                    return qq.s3.util.AWS_PARAM_PREFIX + name;
+            }
+        },
+
         /**
          * Create a policy document to be signed and sent along with the S3 upload request.
          *
@@ -63,10 +95,11 @@ qq.s3.util = qq.s3.util || (function() {
             var policy = {},
                 conditions = [],
                 bucket = spec.bucket,
+                date = spec.date,
                 key = spec.key,
+                accessKey = spec.accessKey,
                 acl = spec.acl,
                 type = spec.type,
-                expirationDate = new Date(),
                 expectedStatus = spec.expectedStatus,
                 sessionToken = spec.sessionToken,
                 params = spec.params,
@@ -74,9 +107,11 @@ qq.s3.util = qq.s3.util || (function() {
                 minFileSize = spec.minFileSize,
                 maxFileSize = spec.maxFileSize,
                 reducedRedundancy = spec.reducedRedundancy,
-                serverSideEncryption = spec.serverSideEncryption;
+                region = spec.region,
+                serverSideEncryption = spec.serverSideEncryption,
+                signatureVersion = spec.signatureVersion;
 
-            policy.expiration = qq.s3.util.getPolicyExpirationDate(expirationDate);
+            policy.expiration = qq.s3.util.getPolicyExpirationDate(date);
 
             conditions.push({acl: acl});
             conditions.push({bucket: bucket});
@@ -109,11 +144,28 @@ qq.s3.util = qq.s3.util || (function() {
                 conditions[conditions.length - 1][qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME] = qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE;
             }
 
-            conditions.push({key: key});
+            if (signatureVersion === 2) {
+                conditions.push({key: key});
+            }
+            else if (signatureVersion === 4) {
+                conditions.push({});
+                conditions[conditions.length - 1][qq.s3.util.ALGORITHM_PARAM_NAME] = qq.s3.util.V4_ALGORITHM_PARAM_VALUE;
+
+                conditions.push({});
+                conditions[conditions.length - 1].key = key;
+
+                conditions.push({});
+                conditions[conditions.length - 1][qq.s3.util.CREDENTIAL_PARAM_NAME] =
+                    qq.s3.util.getV4CredentialsString({date: date, key: accessKey, region: region});
+
+                conditions.push({});
+                conditions[conditions.length - 1][qq.s3.util.DATE_PARAM_NAME] =
+                    qq.s3.util.getV4PolicyDate(date);
+            }
 
             // user metadata
             qq.each(params, function(name, val) {
-                var awsParamName = qq.s3.util.AWS_PARAM_PREFIX + name,
+                var awsParamName = qq.s3.util._getPrefixedParamName(name),
                     param = {};
 
                 param[awsParamName] = encodeURIComponent(val);
@@ -156,18 +208,17 @@ qq.s3.util = qq.s3.util || (function() {
          * Generates all parameters to be passed along with the S3 upload request.  This includes invoking a callback
          * that is expected to asynchronously retrieve a signature for the policy document.  Note that the server
          * signing the request should reject a "tainted" policy document that includes unexpected values, since it is
-         * still possible for a malicious user to tamper with these values during policy document generation, b
+         * still possible for a malicious user to tamper with these values during policy document generation,
          * before it is sent to the server for signing.
          *
          * @param spec Object with properties: `params`, `type`, `key`, `accessKey`, `acl`, `expectedStatus`, `successRedirectUrl`,
-         * `reducedRedundancy`, serverSideEncryption, and `log()`, along with any options associated with `qq.s3.util.getPolicy()`.
+         * `reducedRedundancy`, `region`, `serverSideEncryption`, `version`, and `log()`, along with any options associated with `qq.s3.util.getPolicy()`.
          * @returns {qq.Promise} Promise that will be fulfilled once all parameters have been determined.
          */
         generateAwsParams: function(spec, signPolicyCallback) {
             var awsParams = {},
                 customParams = spec.params,
                 promise = new qq.Promise(),
-                policyJson = qq.s3.util.getPolicy(spec),
                 sessionToken = spec.sessionToken,
                 type = spec.type,
                 key = spec.key,
@@ -176,11 +227,17 @@ qq.s3.util = qq.s3.util || (function() {
                 expectedStatus = spec.expectedStatus,
                 successRedirectUrl = qq.s3.util.getSuccessRedirectAbsoluteUrl(spec.successRedirectUrl),
                 reducedRedundancy = spec.reducedRedundancy,
+                region = spec.region,
                 serverSideEncryption = spec.serverSideEncryption,
-                log = spec.log;
+                signatureVersion = spec.signatureVersion,
+                now = new Date(),
+                log = spec.log,
+                policyJson;
+
+            spec.date = now;
+            policyJson = qq.s3.util.getPolicy(spec);
 
             awsParams.key = key;
-            awsParams.AWSAccessKeyId = accessKey;
 
             if (type) {
                 awsParams["Content-Type"] = type;
@@ -209,22 +266,39 @@ qq.s3.util = qq.s3.util || (function() {
             awsParams.acl = acl;
 
             // Custom (user-supplied) params must be prefixed with the value of `qq.s3.util.AWS_PARAM_PREFIX`.
-            // Custom param values will be URI encoded as well.
+            // Params such as Cache-Control or Content-Disposition will not be prefixed.
+            // All param values will be URI encoded as well.
             qq.each(customParams, function(name, val) {
-                var awsParamName = qq.s3.util.AWS_PARAM_PREFIX + name;
+                var awsParamName = qq.s3.util._getPrefixedParamName(name);
                 awsParams[awsParamName] = encodeURIComponent(val);
             });
+
+            if (signatureVersion === 2) {
+                awsParams.AWSAccessKeyId = accessKey;
+            }
+            else if (signatureVersion === 4) {
+                awsParams[qq.s3.util.ALGORITHM_PARAM_NAME] = qq.s3.util.V4_ALGORITHM_PARAM_VALUE;
+                awsParams[qq.s3.util.CREDENTIAL_PARAM_NAME] = qq.s3.util.getV4CredentialsString({date: now, key: accessKey, region: region});
+                awsParams[qq.s3.util.DATE_PARAM_NAME] = qq.s3.util.getV4PolicyDate(now);
+            }
 
             // Invoke a promissory callback that should provide us with a base64-encoded policy doc and an
             // HMAC signature for the policy doc.
             signPolicyCallback(policyJson).then(
                 function(policyAndSignature, updatedAccessKey, updatedSessionToken) {
                     awsParams.policy = policyAndSignature.policy;
-                    awsParams.signature = policyAndSignature.signature;
 
-                    if (updatedAccessKey) {
-                        awsParams.AWSAccessKeyId = updatedAccessKey;
+                    if (spec.signatureVersion === 2) {
+                        awsParams.signature = policyAndSignature.signature;
+
+                        if (updatedAccessKey) {
+                            awsParams.AWSAccessKeyId = updatedAccessKey;
+                        }
                     }
+                    else if (spec.signatureVersion === 4) {
+                        awsParams[qq.s3.util.V4_SIGNATURE_PARAM_NAME] = policyAndSignature.signature;
+                    }
+
                     if (updatedSessionToken) {
                         awsParams[qq.s3.util.SESSION_TOKEN_PARAM_NAME] = updatedSessionToken;
                     }
@@ -263,16 +337,29 @@ qq.s3.util = qq.s3.util || (function() {
         },
 
         getPolicyExpirationDate: function(date) {
+            return qq.s3.util.getPolicyDate(date, 5);
+        },
+
+        getCredentialsDate: function(date) {
+            return date.getUTCFullYear() + "" +
+                ("0" + (date.getUTCMonth() + 1)).slice(-2) +
+                ("0" + date.getUTCDate()).slice(-2);
+        },
+
+        getPolicyDate: function(date, _minutesToAdd_) {
+            var minutesToAdd = _minutesToAdd_ || 0,
+                pad, r;
+
             /*jshint -W014 */
             // Is this going to be a problem if we encounter this moments before 2 AM just before daylight savings time ends?
-            date.setMinutes(date.getMinutes() + 5);
+            date.setMinutes(date.getMinutes() + (minutesToAdd || 0));
 
             if (Date.prototype.toISOString) {
                 return date.toISOString();
             }
             else {
-                var pad = function(number) {
-                    var r = String(number);
+                pad = function(number) {
+                    r = String(number);
 
                     if (r.length === 1) {
                         r = "0" + r;
@@ -282,13 +369,13 @@ qq.s3.util = qq.s3.util || (function() {
                 };
 
                 return date.getUTCFullYear()
-                        + "-" + pad(date.getUTCMonth() + 1)
-                        + "-" + pad(date.getUTCDate())
-                        + "T" + pad(date.getUTCHours())
-                        + ":" + pad(date.getUTCMinutes())
-                        + ":" + pad(date.getUTCSeconds())
-                        + "." + String((date.getUTCMilliseconds() / 1000).toFixed(3)).slice(2, 5)
-                        + "Z";
+                    + "-" + pad(date.getUTCMonth() + 1)
+                    + "-" + pad(date.getUTCDate())
+                    + "T" + pad(date.getUTCHours())
+                    + ":" + pad(date.getUTCMinutes())
+                    + ":" + pad(date.getUTCSeconds())
+                    + "." + String((date.getUTCMilliseconds() / 1000).toFixed(3)).slice(2, 5)
+                    + "Z";
             }
         },
 
@@ -341,6 +428,20 @@ qq.s3.util = qq.s3.util || (function() {
                     return targetAnchor.href;
                 }
             }
+        },
+
+        getV4CredentialsString: function(spec) {
+            return spec.key + "/" +
+                qq.s3.util.getCredentialsDate(spec.date) + "/" +
+                spec.region + "/s3/aws4_request";
+        },
+
+        getV4PolicyDate: function(date) {
+            return qq.s3.util.getCredentialsDate(date) + "T" +
+                    ("0" + date.getUTCHours()).slice(-2) +
+                    ("0" + date.getUTCMinutes()).slice(-2) +
+                    ("0" + date.getUTCSeconds()).slice(-2) +
+                    "Z";
         },
 
         // AWS employs a strict interpretation of [RFC 3986](http://tools.ietf.org/html/rfc3986#page-12).

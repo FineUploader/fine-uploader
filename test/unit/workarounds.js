@@ -125,7 +125,7 @@ describe("browser-specific workarounds", function() {
             assert.equal(qq(getFileInput($button)).hasAttribute("multiple"), false);
         });
 
-        it("ensures the file input does have a multiple attr if the multiple option is set in iOS6", function() {
+        qq.supportedFeatures.ajaxUploading && it("ensures the file input does have a multiple attr if the multiple option is set in iOS6", function() {
             qq.ios6 = function() {return true;};
 
             var uploader = new qq.FineUploaderBasic({
@@ -141,7 +141,7 @@ describe("browser-specific workarounds", function() {
             assert.equal(qq(getFileInput($button)).hasAttribute("multiple"), true);
         });
 
-        it("ensures the file input does have a multiple attr if the multiple option is set in iOS8 & the workaround is disabled", function() {
+        qq.supportedFeatures.ajaxUploading && it("ensures the file input does have a multiple attr if the multiple option is set in iOS8 & the workaround is disabled", function() {
             qq.ios6 = function() {return false;};
 
             var uploader = new qq.FineUploaderBasic({
