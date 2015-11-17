@@ -21,7 +21,7 @@ qq.Templating = function(spec) {
         IN_PROGRESS_CLASS = "qq-in-progress",
         HIDDEN_FOREVER_CLASS = "qq-hidden-forever",
         fileBatch = {
-            content: document.createElement("span"),
+            content: document.createDocumentFragment(),
             map: {}
         },
         isCancelDisabled = false,
@@ -726,7 +726,7 @@ qq.Templating = function(spec) {
 
         addCacheToDom: function() {
             fileList.appendChild(fileBatch.content);
-            fileBatch.content = document.createElement("span");
+            fileBatch.content = document.createDocumentFragment();
             fileBatch.map = {};
         },
 
