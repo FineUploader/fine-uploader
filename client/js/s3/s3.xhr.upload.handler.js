@@ -15,15 +15,17 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
         log = proxy.log,
         expectedStatus = 200,
         onGetBucket = spec.getBucket,
+        onGetHost = spec.getHost,
         onGetKeyName = spec.getKeyName,
         filenameParam = spec.filenameParam,
         paramsStore = spec.paramsStore,
         endpointStore = spec.endpointStore,
         aclStore = spec.aclStore,
         reducedRedundancy = spec.objectProperties.reducedRedundancy,
+        region = spec.objectProperties.region,
         serverSideEncryption = spec.objectProperties.serverSideEncryption,
         validation = spec.validation,
-        signature = spec.signature,
+        signature = qq.extend({region: region}, spec.signature),
         handler = this,
         credentialsProvider = spec.signature.credentialsProvider,
 
@@ -75,23 +77,20 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
              * @param chunkIdx Index of the chunk to PUT
              * @returns {qq.Promise}
              */
-            initHeaders: function(id, chunkIdx) {
+            initHeaders: function(id, chunkIdx, blob) {
                 var headers = {},
-                    endpoint = spec.endpointStore.get(id),
                     bucket = upload.bucket.getName(id),
+                    host = upload.host.getName(id),
                     key = upload.key.urlSafe(id),
                     promise = new qq.Promise(),
                     signatureConstructor = requesters.restSignature.constructStringToSign
-                        (requesters.restSignature.REQUEST_TYPE.MULTIPART_UPLOAD, bucket, key)
+                        (requesters.restSignature.REQUEST_TYPE.MULTIPART_UPLOAD, bucket, host, key)
                         .withPartNum(chunkIdx + 1)
+                        .withContent(blob)
                         .withUploadId(handler._getPersistableData(id).uploadId);
 
                 // Ask the local server to sign the request.  Use this signature to form the Authorization header.
-                requesters.restSignature.getSignature(id + "." + chunkIdx, {signatureConstructor: signatureConstructor}).then(function(response) {
-                    headers = signatureConstructor.getHeaders();
-                    headers.Authorization = "AWS " + credentialsProvider.get().accessKey + ":" + response.signature;
-                    promise.success(headers, signatureConstructor.getEndOfUrl());
-                }, promise.failure);
+                requesters.restSignature.getSignature(id + "." + chunkIdx, {signatureConstructor: signatureConstructor}).then(promise.success, promise.failure);
 
                 return promise;
             },
@@ -104,7 +103,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
                 // Add appropriate headers to the multipart upload request.
                 // Once these have been determined (asynchronously) attach the headers and send the chunk.
-                chunked.initHeaders(id, chunkIdx).then(function(headers, endOfUrl) {
+                chunked.initHeaders(id, chunkIdx, chunkData.blob).then(function(headers, endOfUrl) {
                     var url = domain + "/" + endOfUrl;
                     handler._registerProgressHandler(id, chunkIdx, chunkData.size);
                     upload.track(id, xhr, chunkIdx).then(promise.success, promise.failure);
@@ -189,6 +188,9 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 getBucket: function(id) {
                     return upload.bucket.getName(id);
                 },
+                getHost: function(id) {
+                    return upload.host.getName(id);
+                },
                 getKey: function(id) {
                     return upload.key.urlSafe(id);
                 }
@@ -201,6 +203,9 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 log: log,
                 getBucket: function(id) {
                     return upload.bucket.getName(id);
+                },
+                getHost: function(id) {
+                    return upload.host.getName(id);
                 },
                 getKey: function(id) {
                     return upload.key.urlSafe(id);
@@ -223,6 +228,9 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 getBucket: function(id) {
                     return upload.bucket.getName(id);
                 },
+                getHost: function(id) {
+                    return upload.host.getName(id);
+                },
                 getKey: function(id) {
                     return upload.key.urlSafe(id);
                 },
@@ -239,6 +247,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
             }),
 
             restSignature: new qq.s3.RequestSigner({
+                endpointStore: endpointStore,
                 signatureSpec: signature,
                 cors: spec.cors,
                 log: log
@@ -273,7 +282,9 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                     minFileSize: validation.minSizeLimit,
                     maxFileSize: validation.maxSizeLimit,
                     reducedRedundancy: reducedRedundancy,
+                    region: region,
                     serverSideEncryption: serverSideEncryption,
+                    signatureVersion: signature.version,
                     log: log
                 },
                 qq.bind(requesters.policySignature.getSignature, this, id));
@@ -369,6 +380,29 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 }
             },
 
+            host: {
+                promise: function(id) {
+                    var promise = new qq.Promise(),
+                        cachedHost = handler._getFileState(id).host;
+
+                    if (cachedHost) {
+                        promise.success(cachedHost);
+                    }
+                    else {
+                        onGetHost(id).then(function(host) {
+                            handler._getFileState(id).host = host;
+                            promise.success(host);
+                        }, promise.failure);
+                    }
+
+                    return promise;
+                },
+
+                getName: function(id) {
+                    return handler._getFileState(id).host;
+                }
+            },
+
             done: function(id, xhr) {
                 var response = upload.response.parse(id, xhr),
                     isError = response.success !== true;
@@ -414,7 +448,8 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 },
 
                 urlSafe: function(id) {
-                    return encodeURIComponent(handler.getThirdPartyFileId(id));
+                    var encodedKey = encodeURIComponent(handler.getThirdPartyFileId(id));
+                    return encodedKey.replace(/%2F/g, "/");
                 }
             },
 
@@ -490,13 +525,15 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
                 upload.key.promise(id).then(function() {
                     upload.bucket.promise(id).then(function() {
-                        /* jshint eqnull:true */
-                        if (optChunkIdx == null) {
-                            simple.send(id).then(promise.success, promise.failure);
-                        }
-                        else {
-                            chunked.send(id, optChunkIdx).then(promise.success, promise.failure);
-                        }
+                        upload.host.promise(id).then(function() {
+                            /* jshint eqnull:true */
+                            if (optChunkIdx == null) {
+                                simple.send(id).then(promise.success, promise.failure);
+                            }
+                            else {
+                                chunked.send(id, optChunkIdx).then(promise.success, promise.failure);
+                            }
+                        });
                     });
                 },
                 function(errorReason) {

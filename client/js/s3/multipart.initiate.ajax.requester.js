@@ -23,6 +23,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             maxConnections: 3,
             getContentType: function(id) {},
             getBucket: function(id) {},
+            getHost: function(id) {},
             getKey: function(id) {},
             getName: function(id) {},
             log: function(str, level) {}
@@ -32,6 +33,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
     qq.extend(options, o);
 
     getSignatureAjaxRequester = new qq.s3.RequestSigner({
+        endpointStore: options.endpointStore,
         signatureSpec: options.signatureSpec,
         cors: options.cors,
         log: options.log
@@ -48,6 +50,7 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
      */
     function getHeaders(id) {
         var bucket = options.getBucket(id),
+            host = options.getHost(id),
             headers = {},
             promise = new qq.Promise(),
             key = options.getKey(id),
@@ -70,16 +73,12 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         });
 
         signatureConstructor = getSignatureAjaxRequester.constructStringToSign
-            (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_INITIATE, bucket, key)
+            (getSignatureAjaxRequester.REQUEST_TYPE.MULTIPART_INITIATE, bucket, host, key)
             .withContentType(options.getContentType(id))
             .withHeaders(headers);
 
         // Ask the local server to sign the request.  Use this signature to form the Authorization header.
-        getSignatureAjaxRequester.getSignature(id, {signatureConstructor: signatureConstructor}).then(function(response) {
-            headers = signatureConstructor.getHeaders();
-            headers.Authorization = "AWS " + options.signatureSpec.credentialsProvider.get().accessKey + ":" + response.signature;
-            promise.success(headers, signatureConstructor.getEndOfUrl());
-        }, promise.failure);
+        getSignatureAjaxRequester.getSignature(id, {signatureConstructor: signatureConstructor}).then(promise.success, promise.failure);
 
         return promise;
     }

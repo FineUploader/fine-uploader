@@ -12,8 +12,12 @@ if (qqtest.canDownloadFileAsBlob) {
                 accessKey: testAccessKey,
                 endpoint: testS3Endpoint
             },
-            typicalSignatureOption = {
+            v2SignatureOption = {
                 endpoint: testSignatureEndoint
+            },
+            v4SignatureOption = {
+                endpoint: testSignatureEndoint,
+                version: 4
             },
             startTypicalTest = function(uploader, callback) {
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
@@ -40,12 +44,68 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             };
 
-        it("test most basic upload w/ signature request", function(done) {
-            assert.expect(24, done);
+        describe("v4 signatures", function() {
+            it("test most basic upload w/ signature request", function(done) {
+                var uploader = new qq.s3.FineUploaderBasic({
+                        request: typicalRequestOption,
+                        signature: v4SignatureOption
+                    }
+                );
 
+                startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                    var uploadRequestParams,
+                        now = new Date(),
+                        policyDate;
+
+                    assert.equal(signatureRequest.method, "POST");
+                    assert.equal(signatureRequest.url, testSignatureEndoint + "?v4=true");
+                    assert.equal(signatureRequest.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
+
+                    assert.ok(new Date(policyDoc.expiration).getTime() > Date.now());
+                    assert.equal(policyDoc.conditions.length, 9);
+
+                    assert.equal(conditions.acl, "private");
+                    assert.equal(conditions.bucket, testBucketName);
+                    assert.equal(conditions["Content-Type"], "image/jpeg");
+                    assert.equal(conditions.success_action_status, 200);
+                    assert.equal(conditions["x-amz-algorithm"], "AWS4-HMAC-SHA256");
+                    assert.equal(conditions.key, uploader.getKey(0));
+                    assert.equal(conditions.key, uploader.getUuid(0) + ".jpg");
+                    assert.equal(conditions["x-amz-credential"], testAccessKey + "/" + now.getUTCFullYear() + ("0" + (now.getUTCMonth() + 1)).slice(-2) + ("0" + now.getUTCDate()).slice(-2) + "/us-east-1/s3/aws4_request");
+                    policyDate = conditions["x-amz-date"];
+                    assert.ok(policyDate);
+                    assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
+
+                    signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                    uploadRequestParams = uploadRequest.requestBody.fields;
+
+                    assert.equal(uploadRequest.url, testS3Endpoint);
+                    assert.equal(uploadRequest.method, "POST");
+
+                    assert.equal(uploadRequestParams.key, uploader.getUuid(0) + ".jpg");
+                    assert.equal(uploadRequestParams["Content-Type"], "image/jpeg");
+                    assert.equal(uploadRequestParams.success_action_status, 200);
+                    assert.equal(uploadRequestParams.acl, "private");
+                    assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
+                    assert.equal(uploadRequestParams["x-amz-algorithm"], "AWS4-HMAC-SHA256");
+                    assert.equal(uploadRequestParams["x-amz-credential"], testAccessKey + "/" + now.getUTCFullYear() + ("0" + (now.getUTCMonth() + 1)).slice(-2) + ("0" + now.getUTCDate()).slice(-2) + "/us-east-1/s3/aws4_request");
+                    assert.equal(uploadRequestParams["x-amz-date"], policyDate);
+
+                    assert.ok(uploadRequestParams.file);
+
+                    assert.equal(uploadRequestParams["x-amz-signature"], "thesignature");
+                    assert.equal(uploadRequestParams.policy, "thepolicy");
+
+                    done();
+                });
+            });
+        });
+
+        it("test most basic upload w/ signature request", function(done) {
             var uploader = new qq.s3.FineUploaderBasic({
                     request: typicalRequestOption,
-                    signature: typicalSignatureOption
+                    signature: v2SignatureOption
                 }
             );
 
@@ -84,15 +144,15 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 assert.equal(uploadRequestParams.signature, "thesignature");
                 assert.equal(uploadRequestParams.policy, "thepolicy");
+
+                done();
             });
         });
 
         it("converts all parameters (metadata) to lower case before sending them to S3", function(done) {
-            assert.expect(5, done);
-
             var uploader = new qq.s3.FineUploaderBasic({
                     request: typicalRequestOption,
-                    signature: typicalSignatureOption
+                    signature: v2SignatureOption
                 }
             );
 
@@ -114,15 +174,15 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 assert.equal(uploadRequestParams["x-amz-meta-mixedcase"], "value");
                 assert.equal(uploadRequestParams["x-amz-meta-mixedcasefunc"], "value2");
+
+                done();
             });
         });
 
         it("respects the objectProperties.key option w/ a value of 'filename'", function(done) {
-            assert.expect(5, done);
-
             var uploader = new qq.s3.FineUploaderBasic({
                 request:typicalRequestOption,
-                signature: typicalSignatureOption,
+                signature: v2SignatureOption,
                 objectProperties: {
                     key: "filename"
                 }
@@ -140,16 +200,16 @@ if (qqtest.canDownloadFileAsBlob) {
                 uploadRequestParams = uploadRequest.requestBody.fields;
 
                 assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
+
+                done();
             });
         });
 
         it("respects the objectProperties.key option w/ a custom key generation function", function(done) {
-            assert.expect(5, done);
-
             var customKeyPrefix = "testcustomkey_",
                 uploader = new qq.s3.FineUploaderBasic({
                     request:typicalRequestOption,
-                    signature: typicalSignatureOption,
+                    signature: v2SignatureOption,
                     objectProperties: {
                         key: function(id) {
                             return customKeyPrefix + this.getName(id);
@@ -168,6 +228,8 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploadRequestParams = uploadRequest.requestBody.fields;
                 assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
+
+                done();
             });
         });
 
@@ -177,7 +239,7 @@ if (qqtest.canDownloadFileAsBlob) {
             function runTest(keyFunc, done) {
                 var uploader = new qq.s3.FineUploaderBasic({
                         request:typicalRequestOption,
-                        signature: typicalSignatureOption,
+                        signature: v2SignatureOption,
                         objectProperties: {
                             key: keyFunc
                         }
@@ -222,7 +284,7 @@ if (qqtest.canDownloadFileAsBlob) {
             function runTest(keyFunc, done) {
                 var uploader = new qq.s3.FineUploaderBasic({
                         request:typicalRequestOption,
-                        signature: typicalSignatureOption,
+                        signature: v2SignatureOption,
                         objectProperties: {
                             key: keyFunc
                         }
@@ -259,7 +321,7 @@ if (qqtest.canDownloadFileAsBlob) {
             function runTest(keyFunc, done) {
                 var uploader = new qq.s3.FineUploaderBasic({
                         request:typicalRequestOption,
-                        signature: typicalSignatureOption,
+                        signature: v2SignatureOption,
                         objectProperties: {
                             key: keyFunc
                         },
@@ -298,11 +360,9 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("respects the objectProperties.acl option w/ a custom value set via option", function(done) {
-            assert.expect(3, done);
-
             var uploader = new qq.s3.FineUploaderBasic({
                     request:typicalRequestOption,
-                    signature: typicalSignatureOption,
+                    signature: v2SignatureOption,
                     objectProperties: {
                         acl: "public-read"
                     }
@@ -317,15 +377,15 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploadRequestParams = uploadRequest.requestBody.fields;
                 assert.equal(uploadRequestParams.acl, "public-read");
+
+                done();
             });
         });
 
         it("respects the objectProperties.acl option w/ a custom value set via API", function(done) {
-            assert.expect(3, done);
-
             var uploader = new qq.s3.FineUploaderBasic({
                     request:typicalRequestOption,
-                    signature: typicalSignatureOption,
+                    signature: v2SignatureOption,
                     objectProperties: {
                         acl: "public-read"
                     }
@@ -342,15 +402,15 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploadRequestParams = uploadRequest.requestBody.fields;
                 assert.equal(uploadRequestParams.acl, "test-acl");
+
+                done();
             });
         });
 
         it("respects the objectProperties.reducedRedundancy option w/ a value of true", function(done) {
-            assert.expect(3, done);
-
             var uploader = new qq.s3.FineUploaderBasic({
                     request:typicalRequestOption,
-                    signature: typicalSignatureOption,
+                    signature: v2SignatureOption,
                     objectProperties: {
                         reducedRedundancy: true
                     }
@@ -365,15 +425,15 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploadRequestParams = uploadRequest.requestBody.fields;
                 assert.equal(uploadRequestParams[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME], qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE);
+
+                done();
             });
         });
 
         it("respects the objectProperties.serverSideEncryption option w/ a value of true", function(done) {
-            assert.expect(3, done);
-
             var uploader = new qq.s3.FineUploaderBasic({
                     request:typicalRequestOption,
-                    signature: typicalSignatureOption,
+                    signature: v2SignatureOption,
                     objectProperties: {
                         serverSideEncryption: true
                     }
@@ -388,14 +448,14 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploadRequestParams = uploadRequest.requestBody.fields;
                 assert.equal(uploadRequestParams[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE);
+
+                done();
             });
         });
 
         it("respects custom headers to be sent with signature request", function(done) {
-            assert.expect(2, done);
-
             var customHeader = {"test-header-name": "test-header-value"},
-                customSignatureOptions = qq.extend({}, typicalSignatureOption),
+                customSignatureOptions = qq.extend({}, v2SignatureOption),
                 uploader = new qq.s3.FineUploaderBasic({
                     request:typicalRequestOption,
                     signature: qq.extend(customSignatureOptions, {customHeaders: customHeader})
@@ -404,6 +464,8 @@ if (qqtest.canDownloadFileAsBlob) {
 
             startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
                 assert.equal(signatureRequest.requestHeaders["test-header-name"], customHeader["test-header-name"]);
+
+                done();
             });
         });
 
@@ -413,7 +475,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 uploadSuccessHeaders = {"test-header-name": "test-header-value"},
                 uploader = new qq.s3.FineUploaderBasic({
                     request:typicalRequestOption,
-                    signature: typicalSignatureOption,
+                    signature: v2SignatureOption,
                     uploadSuccess: {
                         endpoint: "foo/bar",
                         params: uploadSuccessParams,
@@ -454,12 +516,10 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         it("Declares an upload as a failure if uploadSuccess response indicates a problem with the file.  Also tests uploadSuccessRequest endpoint option.", function(done) {
-            assert.expect(3, done);
-
             var uploadSuccessUrl = "/upload/success",
                 uploader = new qq.s3.FineUploaderBasic({
                     request:typicalRequestOption,
-                    signature: typicalSignatureOption,
+                    signature: v2SignatureOption,
                     uploadSuccess: {
                         endpoint: uploadSuccessUrl
                     }
@@ -476,6 +536,8 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(uploadSuccessRequest.url, uploadSuccessUrl);
                 uploadSuccessRequest.respond(200, null, JSON.stringify({success: false}));
                 assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+
+                done();
             });
         });
 
@@ -483,7 +545,7 @@ if (qqtest.canDownloadFileAsBlob) {
             var uploadSuccessUrl = "/upload/success",
                 uploader = new qq.s3.FineUploaderBasic({
                     request:typicalRequestOption,
-                    signature: typicalSignatureOption,
+                    signature: v2SignatureOption,
                     uploadSuccess: {
                         endpoint: uploadSuccessUrl,
                         method: "PUT"
@@ -501,6 +563,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(uploadSuccessRequest.method, "PUT");
                 uploadSuccessRequest.respond(200, null, null);
                 assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+
                 done();
             });
         });
