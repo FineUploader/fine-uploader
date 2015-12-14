@@ -52,7 +52,7 @@ Be sure to update the version with the appropriate version of Fine Uploader's S3
 
 #### Step 3: Prepare your environment
 
-Youy will need to set 4 environment variables before starting the server. These variables will store your AWS client-side
+You will need to set 4 environment variables before starting the server. These variables will store your AWS client-side
 secret key, AWS server-side public key, AWS server-side secret key, and the name of your S3 bucket. You set up
 your bucket, along with all of your keys, in step 1 above.
 
