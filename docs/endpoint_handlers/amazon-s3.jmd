@@ -68,6 +68,7 @@ All parameters are sent as headers in the "Initiate Multipart Upload" request se
 "x-amz-meta-".
 * If you are using the [scaling feature][scaling], you will need to account for these headers in your CORS configuration as well:
 "x-amz-meta-qquuid", "x-amz-meta-qqparentuuid", and "x-amz-meta-qqparentsize".
+* If you are using version 4 signature support, you will _also_ need to account for a header of "x-amz-content-sha256" for all chunked uploads.
 
 
 ## Signing non-chunked upload requests (required: all browsers)
