@@ -60,7 +60,25 @@ var uploader = new qq.s3.FineUploader({
 });
 ```
 
+### Accounting for browser/client clock drift
+If the clock on the machine running Fine Uploader is too far off of the current date, S3 may reject any requests
+sent from this machine. To overcome this situation, you can include a [clock drift value][drift-option], in milliseconds, when
+creating a new Fine Uploader instance. One way to set this value is to subtract the current time according to the
+browser from the current unix time according to your server. For example:
 
+```javascript
+var uploader = new s3.FineUploader({
+    request: {
+        clockDrift: SERVER_UNIX_TIME_IN_MS - Date.now()
+    }
+})
+```
+
+If this value is non-zero, Fine Uploader S3 will use it to pad the `x-amz-date` header and the policy expiration
+date sent to S3.
+
+
+[drift-option]: ../api/options-s3.html#request.clockDrift
 [fastly]: http://www.fastly.com/
 [issue1016]: https://github.com/FineUploader/fine-uploader/issues/1016
 [objectpropertiesbucket]: ../api/options-s3.html#objectProperties.bucket

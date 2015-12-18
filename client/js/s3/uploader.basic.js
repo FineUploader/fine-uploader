@@ -11,7 +11,10 @@
         var options = {
             request: {
                 // public key (required for server-side signing, ignored if `credentials` have been provided)
-                accessKey: null
+                accessKey: null,
+
+                // padding, in milliseconds, to add to the x-amz-date header & the policy expiration date
+                clockDrift: 0
             },
 
             objectProperties: {
