@@ -13,6 +13,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
     var getName = proxy.getName,
         log = proxy.log,
+        clockDrift = spec.clockDrift,
         expectedStatus = 200,
         onGetBucket = spec.getBucket,
         onGetHost = spec.getHost,
@@ -25,7 +26,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
         region = spec.objectProperties.region,
         serverSideEncryption = spec.objectProperties.serverSideEncryption,
         validation = spec.validation,
-        signature = qq.extend({region: region}, spec.signature),
+        signature = qq.extend({region: region, drift: clockDrift}, spec.signature),
         handler = this,
         credentialsProvider = spec.signature.credentialsProvider,
 
@@ -271,6 +272,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
                 return qq.s3.util.generateAwsParams({
                     endpoint: endpointStore.get(id),
+                    clockDrift: clockDrift,
                     params: customParams,
                     type: handler._getMimeType(id),
                     bucket: upload.bucket.getName(id),

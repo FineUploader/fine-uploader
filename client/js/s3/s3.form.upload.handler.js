@@ -11,6 +11,7 @@ qq.s3.FormUploadHandler = function(options, proxy) {
     "use strict";
 
     var handler = this,
+        clockDrift = options.clockDrift,
         onUuidChanged = proxy.onUuidChanged,
         getName = proxy.getName,
         getUuid = proxy.getUuid,
@@ -86,6 +87,7 @@ qq.s3.FormUploadHandler = function(options, proxy) {
 
         return qq.s3.util.generateAwsParams({
             endpoint: endpointStore.get(id),
+            clockDrift: clockDrift,
             params: customParams,
             bucket: handler._getFileState(id).bucket,
             key: handler.getThirdPartyFileId(id),

@@ -204,6 +204,7 @@
                     iframeSupport: this._options.iframeSupport,
                     objectProperties: this._options.objectProperties,
                     signature: this._options.signature,
+                    clockDrift: this._options.request.clockDrift,
                     // pass size limit validation values to include in the request so AWS enforces this server-side
                     validation: {
                         minSizeLimit: this._options.validation.minSizeLimit,

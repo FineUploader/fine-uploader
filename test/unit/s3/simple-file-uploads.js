@@ -100,6 +100,60 @@ if (qqtest.canDownloadFileAsBlob) {
                     done();
                 });
             });
+
+            it("handles slow browser system clock", function(done) {
+                var clockDrift = 1000 * 60 * 60, // slow by 1 hour
+                    uploader = new qq.s3.FineUploaderBasic({
+                            request: {
+                                accessKey: testAccessKey,
+                                clockDrift: clockDrift,
+                                endpoint: testS3Endpoint
+                            },
+                            signature: v4SignatureOption
+                        }
+                    );
+
+                startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                    var uploadRequestParams,
+                        now = new Date(new Date().getTime() + clockDrift),
+                        policyDate;
+
+                    assert.ok(new Date(policyDoc.expiration).getTime() > now);
+                    policyDate = conditions["x-amz-date"];
+                    signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                    uploadRequestParams = uploadRequest.requestBody.fields;
+                    assert.equal(uploadRequestParams["x-amz-date"], policyDate);
+                    done();
+                });
+            });
+
+            it("handles fast browser system clock", function(done) {
+                var clockDrift = -1000 * 60 * 60, // fast by 1 hour
+                    uploader = new qq.s3.FineUploaderBasic({
+                        request: {
+                            accessKey: testAccessKey,
+                            clockDrift: clockDrift,
+                            endpoint: testS3Endpoint
+                        },
+                        signature: v4SignatureOption
+                    }
+                );
+
+                startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                    var uploadRequestParams,
+                        now = new Date(new Date().getTime() + clockDrift),
+                        policyDate;
+
+                    assert.ok(new Date(policyDoc.expiration).getTime() > now);
+                    policyDate = conditions["x-amz-date"];
+                    signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                    uploadRequestParams = uploadRequest.requestBody.fields;
+                    assert.equal(uploadRequestParams["x-amz-date"], policyDate);
+                    done();
+                });
+            });
         });
 
         it("test most basic upload w/ signature request", function(done) {
@@ -145,6 +199,60 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(uploadRequestParams.signature, "thesignature");
                 assert.equal(uploadRequestParams.policy, "thepolicy");
 
+                done();
+            });
+        });
+
+        it("handles slow browser system clock", function(done) {
+            var clockDrift = 1000 * 60 * 60, // slow by 1 hour
+                uploader = new qq.s3.FineUploaderBasic({
+                        request: {
+                            accessKey: testAccessKey,
+                            clockDrift: clockDrift,
+                            endpoint: testS3Endpoint
+                        },
+                        signature: v2SignatureOption
+                    }
+                );
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var uploadRequestParams,
+                    now = new Date(new Date().getTime() + clockDrift),
+                    policyDate;
+
+                assert.ok(new Date(policyDoc.expiration).getTime() > now);
+                policyDate = conditions["x-amz-date"];
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                uploadRequestParams = uploadRequest.requestBody.fields;
+                assert.equal(uploadRequestParams["x-amz-date"], policyDate);
+                done();
+            });
+        });
+
+        it("handles fast browser system clock", function(done) {
+            var clockDrift = -1000 * 60 * 60, // fast by 1 hour
+                uploader = new qq.s3.FineUploaderBasic({
+                        request: {
+                            accessKey: testAccessKey,
+                            clockDrift: clockDrift,
+                            endpoint: testS3Endpoint
+                        },
+                        signature: v2SignatureOption
+                    }
+                );
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var uploadRequestParams,
+                    now = new Date(new Date().getTime() + clockDrift),
+                    policyDate;
+
+                assert.ok(new Date(policyDoc.expiration).getTime() > now);
+                policyDate = conditions["x-amz-date"];
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                uploadRequestParams = uploadRequest.requestBody.fields;
+                assert.equal(uploadRequestParams["x-amz-date"], policyDate);
                 done();
             });
         });

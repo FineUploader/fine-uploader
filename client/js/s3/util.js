@@ -96,6 +96,7 @@ qq.s3.util = qq.s3.util || (function() {
                 conditions = [],
                 bucket = spec.bucket,
                 date = spec.date,
+                drift = spec.clockDrift,
                 key = spec.key,
                 accessKey = spec.accessKey,
                 acl = spec.acl,
@@ -111,7 +112,7 @@ qq.s3.util = qq.s3.util || (function() {
                 serverSideEncryption = spec.serverSideEncryption,
                 signatureVersion = spec.signatureVersion;
 
-            policy.expiration = qq.s3.util.getPolicyExpirationDate(date);
+            policy.expiration = qq.s3.util.getPolicyExpirationDate(date, drift);
 
             conditions.push({acl: acl});
             conditions.push({bucket: bucket});
@@ -160,7 +161,7 @@ qq.s3.util = qq.s3.util || (function() {
 
                 conditions.push({});
                 conditions[conditions.length - 1][qq.s3.util.DATE_PARAM_NAME] =
-                    qq.s3.util.getV4PolicyDate(date);
+                    qq.s3.util.getV4PolicyDate(date, drift);
             }
 
             // user metadata
@@ -220,6 +221,7 @@ qq.s3.util = qq.s3.util || (function() {
                 customParams = spec.params,
                 promise = new qq.Promise(),
                 sessionToken = spec.sessionToken,
+                drift = spec.clockDrift,
                 type = spec.type,
                 key = spec.key,
                 accessKey = spec.accessKey,
@@ -279,7 +281,7 @@ qq.s3.util = qq.s3.util || (function() {
             else if (signatureVersion === 4) {
                 awsParams[qq.s3.util.ALGORITHM_PARAM_NAME] = qq.s3.util.V4_ALGORITHM_PARAM_VALUE;
                 awsParams[qq.s3.util.CREDENTIAL_PARAM_NAME] = qq.s3.util.getV4CredentialsString({date: now, key: accessKey, region: region});
-                awsParams[qq.s3.util.DATE_PARAM_NAME] = qq.s3.util.getV4PolicyDate(now);
+                awsParams[qq.s3.util.DATE_PARAM_NAME] = qq.s3.util.getV4PolicyDate(now, drift);
             }
 
             // Invoke a promissory callback that should provide us with a base64-encoded policy doc and an
@@ -336,8 +338,9 @@ qq.s3.util = qq.s3.util || (function() {
             }
         },
 
-        getPolicyExpirationDate: function(date) {
-            return qq.s3.util.getPolicyDate(date, 5);
+        getPolicyExpirationDate: function(date, drift) {
+            var adjustedDate = new Date(date.getTime() + drift);
+            return qq.s3.util.getPolicyDate(adjustedDate, 5);
         },
 
         getCredentialsDate: function(date) {
@@ -436,11 +439,13 @@ qq.s3.util = qq.s3.util || (function() {
                 spec.region + "/s3/aws4_request";
         },
 
-        getV4PolicyDate: function(date) {
-            return qq.s3.util.getCredentialsDate(date) + "T" +
-                    ("0" + date.getUTCHours()).slice(-2) +
-                    ("0" + date.getUTCMinutes()).slice(-2) +
-                    ("0" + date.getUTCSeconds()).slice(-2) +
+        getV4PolicyDate: function(date, drift) {
+            var adjustedDate = new Date(date.getTime() + drift);
+
+            return qq.s3.util.getCredentialsDate(adjustedDate) + "T" +
+                    ("0" + adjustedDate.getUTCHours()).slice(-2) +
+                    ("0" + adjustedDate.getUTCMinutes()).slice(-2) +
+                    ("0" + adjustedDate.getUTCSeconds()).slice(-2) +
                     "Z";
         },
 

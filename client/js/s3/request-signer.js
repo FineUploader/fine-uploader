@@ -29,6 +29,7 @@ qq.s3.RequestSigner = function(o) {
             expectingPolicy: false,
             method: "POST",
             signatureSpec: {
+                drift: 0,
                 credentialsProvider: {},
                 endpoint: null,
                 customHeaders: {},
@@ -184,7 +185,7 @@ qq.s3.RequestSigner = function(o) {
 
             getStringToSign: function(signatureSpec) {
                 var canonicalRequest = v4.getCanonicalRequest(signatureSpec),
-                    date = qq.s3.util.getV4PolicyDate(signatureSpec.date),
+                    date = qq.s3.util.getV4PolicyDate(signatureSpec.date, signatureSpec.drift),
                     hashedRequest = CryptoJS.SHA256(canonicalRequest).toString(),
                     scope = v4.getScope(signatureSpec.date, options.signatureSpec.region),
                     stringToSignTemplate = "AWS4-HMAC-SHA256\n{}\n{}\n{}";
@@ -337,6 +338,7 @@ qq.s3.RequestSigner = function(o) {
                     bucket: requestInfo.bucket,
                     contentType: requestInfo.contentType,
                     date: now,
+                    drift: options.signatureSpec.drift,
                     endOfUrl: endOfUrl,
                     hashedContent: requestInfo.hashedContent,
                     headerNames: headerNames,
@@ -379,7 +381,7 @@ qq.s3.RequestSigner = function(o) {
             v4.getEncodedHashedPayload(requestInfo.content).then(function(hashedContent) {
                 requestInfo.headers["x-amz-content-sha256"] = hashedContent;
                 requestInfo.headers.Host = requestInfo.host;
-                requestInfo.headers["x-amz-date"] = qq.s3.util.getV4PolicyDate(now);
+                requestInfo.headers["x-amz-date"] = qq.s3.util.getV4PolicyDate(now, options.signatureSpec.drift);
                 requestInfo.hashedContent = hashedContent;
 
                 promise.success(generateStringToSign(requestInfo));
@@ -545,9 +547,10 @@ qq.s3.RequestSigner = function(o) {
 
                 getToSign: function(id) {
                     var sessionToken = credentialsProvider.get().sessionToken,
-                        promise = new qq.Promise();
+                        promise = new qq.Promise(),
+                        adjustedDate = new Date(Date.now() + options.signatureSpec.drift);
 
-                    headers["x-amz-date"] = new Date().toUTCString();
+                    headers["x-amz-date"] = adjustedDate.toUTCString();
 
                     if (sessionToken) {
                         headers[qq.s3.util.SESSION_TOKEN_PARAM_NAME] = sessionToken;
