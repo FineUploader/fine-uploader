@@ -104,14 +104,13 @@ if (qqtest.canDownloadFileAsBlob) {
             it("handles slow browser system clock", function(done) {
                 var clockDrift = 1000 * 60 * 60, // slow by 1 hour
                     uploader = new qq.s3.FineUploaderBasic({
-                            request: {
-                                accessKey: testAccessKey,
-                                clockDrift: clockDrift,
-                                endpoint: testS3Endpoint
-                            },
-                            signature: v4SignatureOption
-                        }
-                    );
+                        request: {
+                            accessKey: testAccessKey,
+                            clockDrift: clockDrift,
+                            endpoint: testS3Endpoint
+                        },
+                        signature: v4SignatureOption
+                    });
 
                 startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
                     var uploadRequestParams,
@@ -206,14 +205,13 @@ if (qqtest.canDownloadFileAsBlob) {
         it("handles slow browser system clock", function(done) {
             var clockDrift = 1000 * 60 * 60, // slow by 1 hour
                 uploader = new qq.s3.FineUploaderBasic({
-                        request: {
-                            accessKey: testAccessKey,
-                            clockDrift: clockDrift,
-                            endpoint: testS3Endpoint
-                        },
-                        signature: v2SignatureOption
-                    }
-                );
+                    request: {
+                        accessKey: testAccessKey,
+                        clockDrift: clockDrift,
+                        endpoint: testS3Endpoint
+                    },
+                    signature: v2SignatureOption
+                });
 
             startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
                 var uploadRequestParams,
@@ -233,14 +231,13 @@ if (qqtest.canDownloadFileAsBlob) {
         it("handles fast browser system clock", function(done) {
             var clockDrift = -1000 * 60 * 60, // fast by 1 hour
                 uploader = new qq.s3.FineUploaderBasic({
-                        request: {
-                            accessKey: testAccessKey,
-                            clockDrift: clockDrift,
-                            endpoint: testS3Endpoint
-                        },
-                        signature: v2SignatureOption
-                    }
-                );
+                    request: {
+                        accessKey: testAccessKey,
+                        clockDrift: clockDrift,
+                        endpoint: testS3Endpoint
+                    },
+                    signature: v2SignatureOption
+                });
 
             startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
                 var uploadRequestParams,
