@@ -25,6 +25,23 @@ qq.s3.util = qq.s3.util || (function() {
 
         V4_SIGNATURE_PARAM_NAME: "x-amz-signature",
 
+        CASE_SENSITIVE_PARAM_NAMES: [
+            "Cache-Control",
+            "Content-Disposition",
+            "Content-Encoding",
+            "Content-MD5"
+        ],
+
+        UNPREFIXED_PARAM_NAMES: [
+            "Cache-Control",
+            "Content-Disposition",
+            "Content-Encoding",
+            "Content-MD5",
+            "x-amz-server-side-encryption-customer-algorithm",
+            "x-amz-server-side-encryption-customer-key",
+            "x-amz-server-side-encryption-customer-key-MD5"
+        ],
+
         /**
          * This allows for the region to be specified in the bucket's endpoint URL, or not.
          *
@@ -71,18 +88,10 @@ qq.s3.util = qq.s3.util || (function() {
          * See: http://docs.aws.amazon.com/AmazonS3/latest/API/RESTObjectPUT.html
          */
         _getPrefixedParamName: function(name) {
-            switch (name) {
-                case "Cache-Control":
-                case "Content-Disposition":
-                case "Content-Encoding":
-                case "Content-MD5": // CAW: Content-MD5 might not be appropriate from user-land
-                case "x-amz-server-side-encryption-customer-algorithm":
-                case "x-amz-server-side-encryption-customer-key":
-                case "x-amz-server-side-encryption-customer-key-MD5":
-                    return name;
-                default:
-                    return qq.s3.util.AWS_PARAM_PREFIX + name;
+            if (qq.indexOf(qq.s3.util.UNPREFIXED_PARAM_NAMES, name) >= 0) {
+                return name;
             }
+            return qq.s3.util.AWS_PARAM_PREFIX + name;
         },
 
         /**
@@ -169,7 +178,13 @@ qq.s3.util = qq.s3.util || (function() {
                 var awsParamName = qq.s3.util._getPrefixedParamName(name),
                     param = {};
 
-                param[awsParamName] = encodeURIComponent(val);
+                if (qq.indexOf(qq.s3.util.UNPREFIXED_PARAM_NAMES, awsParamName) >= 0) {
+                    param[awsParamName] = val;
+                }
+                else {
+                    param[awsParamName] = encodeURIComponent(val);
+                }
+
                 conditions.push(param);
             });
 
@@ -269,10 +284,16 @@ qq.s3.util = qq.s3.util || (function() {
 
             // Custom (user-supplied) params must be prefixed with the value of `qq.s3.util.AWS_PARAM_PREFIX`.
             // Params such as Cache-Control or Content-Disposition will not be prefixed.
-            // All param values will be URI encoded as well.
+            // Prefixed param values will be URI encoded as well.
             qq.each(customParams, function(name, val) {
                 var awsParamName = qq.s3.util._getPrefixedParamName(name);
-                awsParams[awsParamName] = encodeURIComponent(val);
+
+                if (qq.indexOf(qq.s3.util.UNPREFIXED_PARAM_NAMES, awsParamName) >= 0) {
+                    awsParams[awsParamName] = val;
+                }
+                else {
+                    awsParams[awsParamName] = encodeURIComponent(val);
+                }
             });
 
             if (signatureVersion === 2) {

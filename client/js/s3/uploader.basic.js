@@ -227,7 +227,7 @@
                 };
             });
 
-            // Param names should be lower case to avoid signature mismatches
+            // Some param names should be lower case to avoid signature mismatches
             qq.override(this._paramsStore, function(super_) {
                 return {
                     get: function(id) {
@@ -235,7 +235,13 @@
                             modifiedParams = {};
 
                         qq.each(oldParams, function(name, val) {
-                            modifiedParams[name.toLowerCase()] = qq.isFunction(val) ? val() : val;
+                            var paramName = name;
+
+                            if (qq.indexOf(qq.s3.util.CASE_SENSITIVE_PARAM_NAMES, paramName) < 0) {
+                                paramName = paramName.toLowerCase();
+                            }
+
+                            modifiedParams[paramName] = qq.isFunction(val) ? val() : val;
                         });
 
                         return modifiedParams;
