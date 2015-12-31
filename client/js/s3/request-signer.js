@@ -326,7 +326,8 @@ qq.s3.RequestSigner = function(o) {
             endOfUrl, signatureSpec, toSign,
 
             generateStringToSign = function(requestInfo) {
-                var contentMd5;
+                var contentMd5,
+                    headerIndexesToRemove = [];
 
                 qq.each(requestInfo.headers, function(name) {
                     headerNames.push(name);
@@ -340,6 +341,13 @@ qq.s3.RequestSigner = function(o) {
                     else if (headerName === "Content-MD5") {
                         contentMd5 = requestInfo.headers[headerName];
                     }
+                    else {
+                        headerIndexesToRemove.unshift(idx);
+                    }
+                });
+
+                qq.each(headerIndexesToRemove, function(idx, headerIdx) {
+                    headerNames.splice(headerIdx, 1);
                 });
 
                 signatureSpec = {
