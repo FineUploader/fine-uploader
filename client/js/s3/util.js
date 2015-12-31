@@ -32,6 +32,13 @@ qq.s3.util = qq.s3.util || (function() {
             "Content-MD5"
         ],
 
+        UNSIGNABLE_REST_HEADER_NAMES: [
+            "Cache-Control",
+            "Content-Disposition",
+            "Content-Encoding",
+            "Content-MD5"
+        ],
+
         UNPREFIXED_PARAM_NAMES: [
             "Cache-Control",
             "Content-Disposition",

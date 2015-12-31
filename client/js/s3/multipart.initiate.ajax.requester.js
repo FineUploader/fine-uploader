@@ -69,7 +69,12 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
         headers[qq.s3.util.AWS_PARAM_PREFIX + options.filenameParam] = encodeURIComponent(options.getName(id));
 
         qq.each(options.paramsStore.get(id), function(name, val) {
-            headers[qq.s3.util.AWS_PARAM_PREFIX + name] = encodeURIComponent(val);
+            if (qq.indexOf(qq.s3.util.UNPREFIXED_PARAM_NAMES, name) >= 0) {
+                headers[name] = val;
+            }
+            else {
+                headers[qq.s3.util.AWS_PARAM_PREFIX + name] = encodeURIComponent(val);
+            }
         });
 
         signatureConstructor = getSignatureAjaxRequester.constructStringToSign

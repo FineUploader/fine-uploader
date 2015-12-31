@@ -67,8 +67,9 @@ qq.s3.RequestSigner = function(o) {
 
         v2 = {
             getStringToSign: function(signatureSpec) {
-                return qq.format("{}\n\n{}\n\n{}/{}/{}",
+                return qq.format("{}\n{}\n{}\n\n{}/{}/{}",
                     signatureSpec.method,
+                    signatureSpec.contentMd5 || "",
                     signatureSpec.contentType || "",
                     signatureSpec.headersStr || "\n",
                     signatureSpec.bucket,
@@ -325,17 +326,25 @@ qq.s3.RequestSigner = function(o) {
             endOfUrl, signatureSpec, toSign,
 
             generateStringToSign = function(requestInfo) {
+                var contentMd5;
+
                 qq.each(requestInfo.headers, function(name) {
                     headerNames.push(name);
                 });
                 headerNames.sort();
 
-                qq.each(headerNames, function(idx, name) {
-                    headersStr += name.toLowerCase() + ":" + requestInfo.headers[name].trim() + "\n";
+                qq.each(headerNames, function(idx, headerName) {
+                    if (qq.indexOf(qq.s3.util.UNSIGNABLE_REST_HEADER_NAMES, headerName) < 0) {
+                        headersStr += headerName.toLowerCase() + ":" + requestInfo.headers[headerName].trim() + "\n";
+                    }
+                    else if (headerName === "Content-MD5") {
+                        contentMd5 = requestInfo.headers[headerName];
+                    }
                 });
 
                 signatureSpec = {
                     bucket: requestInfo.bucket,
+                    contentMd5: contentMd5,
                     contentType: requestInfo.contentType,
                     date: now,
                     drift: options.signatureSpec.drift,
