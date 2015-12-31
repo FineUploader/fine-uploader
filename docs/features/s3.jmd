@@ -78,13 +78,34 @@ If this value is non-zero, Fine Uploader S3 will use it to pad the `x-amz-date` 
 date sent to S3.
 
 
+### Headers
+
+If you would like to attach HTTP headers to objects uploaded to your S3 bucket via Fine Uploader S3,
+you must specify them as parameters, either via [the `setParams` API method][setparams], or [the `request.params` option][params].
+All parameter/header names will be prefixes with "x-amz-meta-", _and_ values will be URI encoded, _except_ for the
+following "special" headers:
+
+* Cache-Control
+* Content-Disposition
+* Content-Encoding
+* Content-MD5
+* x-amz-server-side-encryption-customer-algorithm
+* x-amz-server-side-encryption-customer-key
+* x-amz-server-side-encryption-customer-key-MD5
+
+The above header names and values will be untouched. If any of these values needs to be encoded in some way,
+you are responsible for doing so _before_ passing the header to Fine Uploader S3.
+
+
 [drift-option]: ../api/options-s3.html#request.clockDrift
 [fastly]: http://www.fastly.com/
 [issue1016]: https://github.com/FineUploader/fine-uploader/issues/1016
 [objectpropertiesbucket]: ../api/options-s3.html#objectProperties.bucket
 [objectpropertieshost]: ../api/options-s3.html#objectProperties.host
+[params]: ../api/options.html#request.params
 [requestendpoint]: ../api/options-s3.html#request.endpoint
 [s3blog]: http://blog.fineuploader.com/2013/08/16/fine-uploader-s3-upload-directly-to-amazon-s3-from-your-browser/
+[setparams]: ../api/methods.html#setParams
 
 {% endmarkdown %}
 {% endblock %}
