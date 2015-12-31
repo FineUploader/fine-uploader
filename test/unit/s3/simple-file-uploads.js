@@ -254,7 +254,7 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
-        it("converts all parameters (metadata) to lower case before sending them to S3", function(done) {
+        it("converts all parameters (metadata) to lower case before sending them to S3, except for special params", function(done) {
             var uploader = new qq.s3.FineUploaderBasic({
                     request: typicalRequestOption,
                     signature: v2SignatureOption
@@ -265,7 +265,10 @@ if (qqtest.canDownloadFileAsBlob) {
                 mIxEdCaSe: "value",
                 mIxEdCaSeFunc: function() {
                     return "value2";
-                }
+                },
+                "Content-Disposition": "attachment; filename=foo.bar;",
+                "Cache-Control": "foo",
+                "Content-Encoding": "bar"
             });
 
             startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
@@ -273,12 +276,18 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 assert.equal(conditions["x-amz-meta-mixedcase"], "value");
                 assert.equal(conditions["x-amz-meta-mixedcasefunc"], "value2");
+                assert.equal(conditions["Content-Disposition"], "attachment; filename=foo.bar;");
+                assert.equal(conditions["Cache-Control"], "foo");
+                assert.equal(conditions["Content-Encoding"], "bar");
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
                 uploadRequestParams = uploadRequest.requestBody.fields;
 
                 assert.equal(uploadRequestParams["x-amz-meta-mixedcase"], "value");
                 assert.equal(uploadRequestParams["x-amz-meta-mixedcasefunc"], "value2");
+                assert.equal(uploadRequestParams["Content-Disposition"], "attachment; filename=foo.bar;");
+                assert.equal(uploadRequestParams["Cache-Control"], "foo");
+                assert.equal(uploadRequestParams["Content-Encoding"], "bar");
 
                 done();
             });
