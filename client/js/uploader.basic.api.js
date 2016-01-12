@@ -733,6 +733,10 @@
                         self._onUploadChunk(id, chunkData);
                         self._options.callbacks.onUploadChunk(id, name, chunkData);
                     },
+                    onProcessingChunkData: function(id, chunkData, processedDataCallback) {
+                        self._options.callbacks.onProcessingChunkData.apply(self, arguments);
+                        self._onProcessingChunkData(id, chunkData, processedDataCallback);
+                    },
                     onUploadChunkSuccess: function(id, chunkData, result, xhr) {
                         self._options.callbacks.onUploadChunkSuccess.apply(self, arguments);
                     },
@@ -1507,6 +1511,11 @@
 
         _onUploadChunk: function(id, chunkData) {
             //nothing to do in the base uploader
+        },
+
+        _onProcessingChunkData: function(id, chunkData, processedDataCallback) {
+            if (!chunkData.handled)
+                processedDataCallback();
         },
 
         _onUploadStatusChange: function(id, oldStatus, newStatus) {

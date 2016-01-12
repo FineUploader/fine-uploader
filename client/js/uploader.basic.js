@@ -51,6 +51,7 @@
                 onUpload: function(id, name) {},
                 onUploadChunk: function(id, name, chunkData) {},
                 onUploadChunkSuccess: function(id, chunkData, responseJSON, xhr) {},
+                onProcessingChunkData: function(id, chunkData, processedDataCallback) {},
                 onResume: function(id, fileName, chunkData) {},
                 onProgress: function(id, name, loaded, total) {},
                 onTotalProgress: function(loaded, total) {},
