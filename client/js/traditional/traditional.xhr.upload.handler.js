@@ -21,11 +21,11 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             var size = getSize(id),
                 name = getName(id);
 
-            params[spec.chunking.paramNames.partIndex] = chunkData.part;
-            params[spec.chunking.paramNames.partByteOffset] = chunkData.start;
-            params[spec.chunking.paramNames.chunkSize] = chunkData.size;
-            params[spec.chunking.paramNames.totalParts] = chunkData.count;
-            params[spec.totalFileSizeName] = size;
+            params[spec.chunking.paramNames.partIndex] = params.partIndex || chunkData.part;
+            params[spec.chunking.paramNames.partByteOffset] = params.partByteOffset || chunkData.start;
+            params[spec.chunking.paramNames.chunkSize] = params.chunkSize || chunkData.size;
+            params[spec.chunking.paramNames.totalParts] = params.totalParts || chunkData.count;
+            params[spec.totalFileSizeName] = params.totalFileSize || size;
 
             /**
              * When a Blob is sent in a multipart request, the filename value in the content-disposition header is either "blob"

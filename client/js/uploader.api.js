@@ -425,6 +425,10 @@
             }
         },
 
+        _onProcessingChunkData: function(id, chunkData, processedDataCallback) {
+            this._parent.prototype._onProcessingChunkData.apply(this, arguments);
+        },
+
         _onCancel: function(id, name) {
             this._parent.prototype._onCancel.apply(this, arguments);
             this._removeFileItem(id);

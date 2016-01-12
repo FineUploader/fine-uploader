@@ -72,6 +72,17 @@ qq.XhrUploadHandler = function(spec) {
             delete handler._getFileState(id).temp.cachedChunks[chunkIdx];
         },
 
+        updateCachedChunk: function(id, chunkIndex, blob) {
+            var chunkSize = chunking.partSize,
+                fileSize = getSize(id),
+                fileOrBlob = handler.getFile(id),
+                startBytes = chunkSize * chunkIndex,
+                endBytes = startBytes + chunkSize >= fileSize ? fileSize : startBytes + chunkSize,
+                cachedChunks = this._getFileState(id).temp.cachedChunks;
+
+            cachedChunks[chunkIndex] = blob || qq.sliceBlob(fileOrBlob, startBytes, endBytes);
+        },
+
         clearXhr: function(id, chunkIdx) {
             var tempState = handler._getFileState(id).temp;
 
@@ -248,7 +259,8 @@ qq.XhrUploadHandler = function(spec) {
                 partIndex: chunkData.part,
                 startByte: chunkData.start + 1,
                 endByte: chunkData.end,
-                totalParts: chunkData.count
+                totalParts: chunkData.count,
+                chunkSize: chunkData.size
             };
         },
 
