@@ -11,7 +11,10 @@
         var options = {
             request: {
                 // public key (required for server-side signing, ignored if `credentials` have been provided)
-                accessKey: null
+                accessKey: null,
+
+                // padding, in milliseconds, to add to the x-amz-date header & the policy expiration date
+                clockDrift: 0
             },
 
             objectProperties: {
@@ -201,6 +204,7 @@
                     iframeSupport: this._options.iframeSupport,
                     objectProperties: this._options.objectProperties,
                     signature: this._options.signature,
+                    clockDrift: this._options.request.clockDrift,
                     // pass size limit validation values to include in the request so AWS enforces this server-side
                     validation: {
                         minSizeLimit: this._options.validation.minSizeLimit,
@@ -223,7 +227,7 @@
                 };
             });
 
-            // Param names should be lower case to avoid signature mismatches
+            // Some param names should be lower case to avoid signature mismatches
             qq.override(this._paramsStore, function(super_) {
                 return {
                     get: function(id) {
@@ -231,7 +235,13 @@
                             modifiedParams = {};
 
                         qq.each(oldParams, function(name, val) {
-                            modifiedParams[name.toLowerCase()] = qq.isFunction(val) ? val() : val;
+                            var paramName = name;
+
+                            if (qq.indexOf(qq.s3.util.CASE_SENSITIVE_PARAM_NAMES, paramName) < 0) {
+                                paramName = paramName.toLowerCase();
+                            }
+
+                            modifiedParams[paramName] = qq.isFunction(val) ? val() : val;
                         });
 
                         return modifiedParams;

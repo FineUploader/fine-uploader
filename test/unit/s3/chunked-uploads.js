@@ -700,7 +700,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             });
 
-            it("converts all parameters (metadata) to lower case before sending them to S3", function(done) {
+            it("converts all non-special parameters (metadata) to lower case before sending them to S3 and omits some specific params from string to sign", function(done) {
                 assert.expect(5, done);
 
                 var uploader = new qq.s3.FineUploaderBasic({
@@ -714,16 +714,30 @@ if (qqtest.canDownloadFileAsBlob) {
                     mIxEdCaSe: "value",
                     mIxEdCaSeFunc: function() {
                         return "value2";
-                    }
+                    },
+                    "Content-Disposition": "attachment; filename=foo.bar;",
+                    "Cache-Control": "foo",
+                    "Content-Encoding": "bar",
+                    "Content-MD5": "something"
                 });
 
                 startTypicalTest(uploader, function(initiateSignatureRequest, initiateToSign) {
                     var initiateRequest;
 
+                    assert.ok(initiateToSign.headers.indexOf("something") >= 0);
                     assert.ok(initiateToSign.headers.indexOf("x-amz-meta-mixedcase:value") >= 0);
                     assert.ok(initiateToSign.headers.indexOf("x-amz-meta-mixedcasefunc:value2") >= 0);
+                    assert.ok(initiateToSign.headers.indexOf("Cache-Control:foo") < 0);
+                    assert.ok(initiateToSign.headers.indexOf("Content-Encoding:bar") < 0);
+                    assert.ok(initiateToSign.headers.indexOf("Content-Disposition:attachment; filename=foo.bar;") < 0);
+
                     initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
                     initiateRequest = fileTestHelper.getRequests()[1];
+
+                    assert.equal(initiateRequest.requestHeaders["Content-MD5"], "something");
+                    assert.equal(initiateRequest.requestHeaders["Content-Disposition"], "attachment; filename=foo.bar;");
+                    assert.equal(initiateRequest.requestHeaders["Content-Encoding"], "bar");
+                    assert.equal(initiateRequest.requestHeaders["Cache-Control"], "foo");
                     assert.equal(initiateRequest.requestHeaders["x-amz-meta-mixedcase"], "value");
                     assert.equal(initiateRequest.requestHeaders["x-amz-meta-mixedcasefunc"], "value2");
                 });

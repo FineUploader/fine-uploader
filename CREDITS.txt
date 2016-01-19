@@ -6,6 +6,6 @@ MegaPixImage module
     Copyright (c) 2012 Shinichi Tomita <shinichi.tomita@gmail.com>
 
 CryptoJS
-    Licensed under the New BSD License (http://opensource.org/licenses/BSD-3-Clause)
+    Licensed under MIT (https://code.google.com/p/crypto-js/wiki/License)
     https://code.google.com/p/crypto-js/
     Copyright (c) 2009-2013 Jeff Mott <Jeff.Mott.OR@gmail.com>

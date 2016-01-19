@@ -84,7 +84,7 @@ qq(window).attach("load", function() {
         debug: true,
         request: {
             endpoint: "http://fineuploadertest.s3.amazonaws.com",
-            accessKey: "AKIAJEQ4NDFBCZAMWGUQ"
+            accessKey: "AKIAIXVR6TANOGNBGANQ"
         },
         signature: {
             endpoint: "/test/dev/handlers/vendor/fineuploader/php-s3-server/endpoint.php"
