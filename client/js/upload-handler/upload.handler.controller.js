@@ -176,6 +176,9 @@ qq.UploadHandlerController = function(o, namespace) {
                         else if (chunked.hasMoreParts(id)) {
                             chunked.sendNext(id);
                         }
+                        else {
+                            log(qq.format("File ID {} has no more chunks to send and these chunk indexes are still marked as in-progress: {}", id, JSON.stringify(inProgressChunks)));
+                        }
                     },
 
                     // upload chunk failure

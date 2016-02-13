@@ -136,15 +136,32 @@ qq.XhrUploadHandler = function(spec) {
         },
 
         moveInProgressToRemaining: function(id, optInProgress, optRemaining) {
-            var inProgress = optInProgress || handler._getFileState(id).chunking.inProgress,
-                remaining = optRemaining || handler._getFileState(id).chunking.remaining;
+            var inProgressChunkIndexes = optInProgress || handler._getFileState(id).chunking.inProgress,
+                remaining = optRemaining || handler._getFileState(id).chunking.remaining,
+                stillInProgressChunkIndexes = [];
 
-            if (inProgress) {
-                inProgress.reverse();
-                qq.each(inProgress, function(idx, chunkIdx) {
-                    remaining.unshift(chunkIdx);
+            if (inProgressChunkIndexes) {
+                inProgressChunkIndexes.reverse();
+                qq.each(inProgressChunkIndexes, function(idx, chunkIdx) {
+                    if (id == null) {
+                        remaining.unshift(chunkIdx);
+                    }
+                    else {
+                        var xhr = handler._getXhr(id, chunkIdx);
+                        // If this request wasn't explicitly cancelled, don't move it back to "remaining".
+                        if (xhr && xhr.readyState === 0) {
+                            remaining.unshift(chunkIdx);
+                        }
+                        else {
+                            stillInProgressChunkIndexes.push(chunkIdx);
+                            log(qq.format("Ignoring order to move chunk idx {} for file {}. Is transport null: {}. Request readyState: {}.", idx, id, xhr == null, xhr && xhr.readyState), "error");
+                        }
+                    }
                 });
-                inProgress.length = 0;
+
+                if (id != null) {
+                    handler._getFileState(id).chunking.inProgress = stillInProgressChunkIndexes;
+                }
             }
         },
 
