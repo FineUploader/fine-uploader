@@ -135,9 +135,10 @@ qq.UploadHandlerController = function(o, namespace) {
 
             // Send the next chunk
             else {
-                log("Sending chunked upload request for item " + id + ": bytes " + (chunkData.start + 1) + "-" + chunkData.end + " of " + size);
+                log(qq.format("Sending chunked upload request for item {}.{}, bytes {}-{} of {}.", id, chunkIdx, chunkData.start + 1, chunkData.end, size));
                 options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
 
+                log(qq.format("Marking item {}.{} as in-progress among these existing in-progress chunks: {}. These chunks are still remaining: {}", id, chunkIdx, JSON.stringify(inProgressChunks), JSON.stringify(handler._getFileState(id).chunking.remaining)));
                 inProgressChunks.push(chunkIdx);
                 handler._getFileState(id).chunking.inProgress = inProgressChunks;
 
@@ -158,14 +159,16 @@ qq.UploadHandlerController = function(o, namespace) {
 
                         var inProgressChunks = handler._getFileState(id).chunking.inProgress || [],
                             responseToReport = upload.normalizeResponse(response, true),
-                            inProgressChunkIdx = qq.indexOf(inProgressChunks, chunkIdx);
+                            inProgressChunkIdx = qq.indexOf(inProgressChunks, chunkIdx),
+                            completedChunk;
 
                         log(qq.format("Chunk {} for file {} uploaded successfully.", chunkIdx, id));
 
                         chunked.done(id, chunkIdx, responseToReport, xhr);
 
                         if (inProgressChunkIdx >= 0) {
-                            inProgressChunks.splice(inProgressChunkIdx, 1);
+                            completedChunk = inProgressChunks.splice(inProgressChunkIdx, 1);
+                            log(qq.format("Successfully uploaded item {}.{} has been removed from in progress chunk queue, which now look like this: {}", id, completedChunk, JSON.stringify(inProgressChunks)));
                         }
 
                         handler._maybePersistChunkedState(id);
@@ -209,7 +212,9 @@ qq.UploadHandlerController = function(o, namespace) {
                             if (concurrentChunkingPossible) {
                                 handler._getFileState(id).temp.ignoreFailure = true;
 
+                                log(qq.format("Going to attempt to abort these chunks: {}. These are currently in-progress: {}, and these are remaining: {}.", JSON.stringify(Object.keys(handler._getXhrs(id))), JSON.stringify(handler._getFileState(id).chunking.inProgress), JSON.stringify(handler._getFileState(id).chunking.remaining)));
                                 qq.each(handler._getXhrs(id), function(ckid, ckXhr) {
+                                    log(qq.format("Attempting to abort file {}.{}. XHR readyState {}. ", id, ckid, ckXhr.readyState));
                                     ckXhr.abort();
                                 });
 
@@ -264,6 +269,7 @@ qq.UploadHandlerController = function(o, namespace) {
                 connectionsIndex = qq.indexOf(connectionManager._open, id),
                 nextId;
 
+            log("Deleting these open chunks from connection manager: " + JSON.stringify(connectionManager._openChunks[id]));
             delete connectionManager._openChunks[id];
 
             if (upload.getProxyOrBlob(id) instanceof qq.BlobProxy) {
