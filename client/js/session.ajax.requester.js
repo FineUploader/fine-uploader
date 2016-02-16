@@ -30,7 +30,7 @@ qq.SessionAjaxRequester = function(spec) {
         /* jshint eqnull:true */
         if (xhrOrXdr.responseText != null) {
             try {
-                response = qq.parseJson(xhrOrXdr.responseText);
+                response = JSON.parse(xhrOrXdr.responseText);
             }
             catch (err) {
                 options.log("Problem parsing session response: " + err.message, "error");

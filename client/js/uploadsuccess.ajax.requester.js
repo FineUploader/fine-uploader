@@ -39,7 +39,7 @@ qq.UploadSuccessAjaxRequester = function(o) {
         options.log(qq.format("Received the following response body to an upload success request for id {}: {}", id, responseJson));
 
         try {
-            parsedResponse = qq.parseJson(responseJson);
+            parsedResponse = JSON.parse(responseJson);
 
             // If this is a cross-origin request, the server may return a 200 response w/ error or success properties
             // in order to ensure any specific error message is picked up by Fine Uploader for all browsers,

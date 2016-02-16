@@ -795,19 +795,6 @@ var qq = function(element) {
     };
 
     /**
-     * Not recommended for use outside of Fine Uploader since this falls back to an unchecked eval if JSON.parse is not
-     * implemented.  For a more secure JSON.parse polyfill, use Douglas Crockford's json2.js.
-     */
-    qq.parseJson = function(json) {
-        /*jshint evil: true*/
-        if (window.JSON && qq.isFunction(JSON.parse)) {
-            return JSON.parse(json);
-        } else {
-            return eval("(" + json + ")");
-        }
-    };
-
-    /**
      * Retrieve the extension of a file, if it exists.
      *
      * @param filename
