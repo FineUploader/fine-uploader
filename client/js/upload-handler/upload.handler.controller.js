@@ -216,6 +216,9 @@ qq.UploadHandlerController = function(o, namespace) {
                                 qq.each(handler._getXhrs(id), function(ckid, ckXhr) {
                                     log(qq.format("Attempting to abort file {}.{}. XHR readyState {}. ", id, ckid, ckXhr.readyState));
                                     ckXhr.abort();
+                                    // Flag the transport, in case we are waiting for some other async operation
+                                    // to complete before attempting to upload the chunk
+                                    ckXhr._cancelled = true;
                                 });
 
                                 // We must indicate that all aborted chunks are no longer in progress
