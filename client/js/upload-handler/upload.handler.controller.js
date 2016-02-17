@@ -212,7 +212,7 @@ qq.UploadHandlerController = function(o, namespace) {
                             if (concurrentChunkingPossible) {
                                 handler._getFileState(id).temp.ignoreFailure = true;
 
-                                log(qq.format("Going to attempt to abort these chunks: {}. These are currently in-progress: {}, and these are remaining: {}.", JSON.stringify(Object.keys(handler._getXhrs(id))), JSON.stringify(handler._getFileState(id).chunking.inProgress), JSON.stringify(handler._getFileState(id).chunking.remaining)));
+                                log(qq.format("Going to attempt to abort these chunks: {}. These are currently in-progress: {}.", JSON.stringify(Object.keys(handler._getXhrs(id))), JSON.stringify(handler._getFileState(id).chunking.inProgress)));
                                 qq.each(handler._getXhrs(id), function(ckid, ckXhr) {
                                     log(qq.format("Attempting to abort file {}.{}. XHR readyState {}. ", id, ckid, ckXhr.readyState));
                                     ckXhr.abort();

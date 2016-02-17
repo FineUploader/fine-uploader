@@ -140,7 +140,7 @@ qq.XhrUploadHandler = function(spec) {
                 remaining = optRemaining || handler._getFileState(id).chunking.remaining;
 
             if (inProgress) {
-                log(qq.format("Moving these chunks from in-progress {}, to remaining {}.", JSON.stringify(inProgress), JSON.stringify(remaining)));
+                log(qq.format("Moving these chunks from in-progress {}, to remaining.", JSON.stringify(inProgress)));
                 inProgress.reverse();
                 qq.each(inProgress, function(idx, chunkIdx) {
                     remaining.unshift(chunkIdx);
