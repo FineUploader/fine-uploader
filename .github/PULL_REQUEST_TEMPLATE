@@ -1,28 +1,21 @@
-# Please Read This BEFORE Opening Up a New Issue or Pull Request #
-
-The issue tracker in this project is for bug reports or feature requests ONLY.  If you have a support question,
-please see http://fineuploader.com/support.html which contains instructions on where you can browse and open support 
-requests.
+## Brief description of the changes [REQUIRED]
+{also describe what problem(s) these changes solve}
 
 
-## Bug Reports ##
-If you believe you have discovered a bug, please include the following information in your report:
-* The version of Fine Uploader you are using
-* Your client-side javascript and HTML that relates to your use of Fine Uploader
-* Related browser(s)
-* Related operating system(s) or device(s)
-* The contents of your javascript console (when reproducing the error) with the `debug` option set to "true"
+## What browsers and operating systems have you tested these changes on? [REQUIRED]
+{example: Safari on iOS 9.1.0 and IE11 on Windows 8.1}
 
 
-
-## Pull Requests ##
-When opening up a new pull request, please be sure (and note) that you have at least tested your changes in a browser that
-supports the File API (Chrome, Firefox, Safari, IE10) as well as a browser that does not support the File API (IE9 or older).
-Also, please note that all pull requests should be against the "develop" branch, and NOT master.
+## Are all automated tests passing? [REQUIRED]
+{Choose one: "yes" or "no". If "no", then why not?}
 
 
-## Contributor Agreement ##
-**If you are contributing any code whatsoever, you must agree to the terms below. Please indicate your agreement in your pull request.**
+## Is this pull request against develop or some other non-master branch? [REQUIRED]
+{Choose one: "yes" or "no". If "no", then why not?}
+
+
+## Contributor Agreement
+**If you are contributing any code whatsoever, you _must_ agree to the terms below. Please indicate your agreement by typing your name below this line.**
 
 
 In order to clarify the intellectual property license granted with Contributions from any person or entity, Widen must have a Contributor License Agreement (“CLA”) on file that has been signed by each Contributor, indicating agreement to the license terms below. This license is for your protection as a Contributor as well as the protection of Widen; it does not change your rights to use your own Contributions for any other purpose.
