@@ -140,6 +140,7 @@ qq.XhrUploadHandler = function(spec) {
                 remaining = optRemaining || handler._getFileState(id).chunking.remaining;
 
             if (inProgress) {
+                log(qq.format("Moving these chunks from in-progress {}, to remaining.", JSON.stringify(inProgress)));
                 inProgress.reverse();
                 qq.each(inProgress, function(idx, chunkIdx) {
                     remaining.unshift(chunkIdx);
@@ -227,8 +228,8 @@ qq.XhrUploadHandler = function(spec) {
                 totalChunks = handler._getTotalChunks(id),
                 cachedChunks = this._getFileState(id).temp.cachedChunks,
 
-                // To work around a Webkit GC bug, we must keep each chunk `Blob` in scope until we are done with it.
-                // See https://github.com/Widen/fine-uploader/issues/937#issuecomment-41418760
+            // To work around a Webkit GC bug, we must keep each chunk `Blob` in scope until we are done with it.
+            // See https://github.com/Widen/fine-uploader/issues/937#issuecomment-41418760
                 blob = cachedChunks[chunkIndex] || qq.sliceBlob(fileOrBlob, startBytes, endBytes);
 
             cachedChunks[chunkIndex] = blob;

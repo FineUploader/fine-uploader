@@ -105,16 +105,22 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 // Add appropriate headers to the multipart upload request.
                 // Once these have been determined (asynchronously) attach the headers and send the chunk.
                 chunked.initHeaders(id, chunkIdx, chunkData.blob).then(function(headers, endOfUrl) {
-                    var url = domain + "/" + endOfUrl;
-                    handler._registerProgressHandler(id, chunkIdx, chunkData.size);
-                    upload.track(id, xhr, chunkIdx).then(promise.success, promise.failure);
-                    xhr.open("PUT", url, true);
+                    if (xhr._cancelled) {
+                        log(qq.format("Upload of item {}.{} cancelled. Upload will not start after successful signature request.", id, chunkIdx));
+                        promise.failure({error: "Chunk upload cancelled"});
+                    }
+                    else {
+                        var url = domain + "/" + endOfUrl;
+                        handler._registerProgressHandler(id, chunkIdx, chunkData.size);
+                        upload.track(id, xhr, chunkIdx).then(promise.success, promise.failure);
+                        xhr.open("PUT", url, true);
 
-                    qq.each(headers, function(name, val) {
-                        xhr.setRequestHeader(name, val);
-                    });
+                        qq.each(headers, function(name, val) {
+                            xhr.setRequestHeader(name, val);
+                        });
 
-                    xhr.send(chunkData.blob);
+                        xhr.send(chunkData.blob);
+                    }
                 }, function() {
                     promise.failure({error: "Problem signing the chunk!"}, xhr);
                 });
