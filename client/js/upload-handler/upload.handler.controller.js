@@ -137,8 +137,6 @@ qq.UploadHandlerController = function(o, namespace) {
             else {
                 log(qq.format("Sending chunked upload request for item {}.{}, bytes {}-{} of {}.", id, chunkIdx, chunkData.start + 1, chunkData.end, size));
                 options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
-
-                log(qq.format("Marking item {}.{} as in-progress among these existing in-progress chunks: {}. These chunks are still remaining: {}", id, chunkIdx, JSON.stringify(inProgressChunks), JSON.stringify(handler._getFileState(id).chunking.remaining)));
                 inProgressChunks.push(chunkIdx);
                 handler._getFileState(id).chunking.inProgress = inProgressChunks;
 
@@ -159,16 +157,14 @@ qq.UploadHandlerController = function(o, namespace) {
 
                         var inProgressChunks = handler._getFileState(id).chunking.inProgress || [],
                             responseToReport = upload.normalizeResponse(response, true),
-                            inProgressChunkIdx = qq.indexOf(inProgressChunks, chunkIdx),
-                            completedChunk;
+                            inProgressChunkIdx = qq.indexOf(inProgressChunks, chunkIdx);
 
                         log(qq.format("Chunk {} for file {} uploaded successfully.", chunkIdx, id));
 
                         chunked.done(id, chunkIdx, responseToReport, xhr);
 
                         if (inProgressChunkIdx >= 0) {
-                            completedChunk = inProgressChunks.splice(inProgressChunkIdx, 1);
-                            log(qq.format("Successfully uploaded item {}.{} has been removed from in progress chunk queue, which now look like this: {}", id, completedChunk, JSON.stringify(inProgressChunks)));
+                            inProgressChunks.splice(inProgressChunkIdx, 1);
                         }
 
                         handler._maybePersistChunkedState(id);
@@ -272,7 +268,6 @@ qq.UploadHandlerController = function(o, namespace) {
                 connectionsIndex = qq.indexOf(connectionManager._open, id),
                 nextId;
 
-            log("Deleting these open chunks from connection manager: " + JSON.stringify(connectionManager._openChunks[id]));
             delete connectionManager._openChunks[id];
 
             if (upload.getProxyOrBlob(id) instanceof qq.BlobProxy) {
