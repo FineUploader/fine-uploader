@@ -51,7 +51,7 @@ qq.s3.FormUploadHandler = function(options, proxy) {
     function isValidResponse(id, iframe) {
         var response,
             endpoint = options.endpointStore.get(id),
-            bucket = qq.s3.util.getBucket(endpoint),
+            bucket = handler._getFileState(id).bucket,
             doc,
             innerHtml,
             responseData;
