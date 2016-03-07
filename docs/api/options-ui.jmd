@@ -55,7 +55,7 @@ can be overridden.
         ("deleteFile.confirmMessage", "confirmMessage", "The message displayed in the confirm delete dialog.", "String", "Are you sure you want to delete {filename}?",),
         ("deleteFile.deletingFailedText", "deletingFailedText", "The status message to appear next to a file that has failed to delete.", "String", "Delete failed",),
         ("deleteFile.deletingStatusText", "deletingStatusText", "The status message to appear next to a file that is pending deletion.", "String", "Deleting...",),
-        ("deleteFile.forceConfirm", "forceConfirm", "Bypass prompting the user for confirmation for file deletion, and continue with delete instead.", "Boolean", "false",),
+        ("deleteFile.forceConfirm", "forceConfirm", "If this value is set to `true`, the user will be required to confirm the file delete request via a confirmation dialog.", "Boolean", "false",),
     )
 )}}
 
