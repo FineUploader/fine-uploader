@@ -11,9 +11,48 @@ describe("file list initialization tests", function() {
         fileHelper.mockXhr();
     });
 
-    it("adds valid items to the initial file list", function(done) {
-        assert.expect(23, done);
+    it("adds valid items to the initial file list via API", function() {
+        var uploader = new qq.FineUploaderBasic({
+            validation: {
+                itemLimit: 5
+            }
+        });
 
+
+        uploader.addInitialFiles([
+            {
+                name: "up.jpg",
+                uuid: "123",
+                size: 456
+            },
+            {
+                name: "up2.jpg",
+                uuid: "abc"
+            }
+        ]);
+
+        assert.equal(uploader.getUploads().length, 2, "wrong number of pre-populated uploads recorded");
+        assert.equal(uploader.getUploads({status: qq.status.UPLOAD_SUCCESSFUL}).length, 2, "wrong status for one or more recorded files");
+
+        assert.equal(uploader.getUuid(0), "123", "123 UUID was not recorded");
+        assert.equal(uploader.getUuid(1), "abc", "abc UUID was not recorded");
+
+        assert.equal(uploader.getSize(0), 456, "wrong size for first file");
+        assert.equal(uploader.getSize(1), -1, "wrong size for second file");
+
+        assert.equal(uploader.getName(0), "up.jpg", "wrong name for first file");
+        assert.equal(uploader.getName(1), "up2.jpg", "wrong name for second file");
+
+        assert.equal(uploader.getFile(0), null, "unexpected return value for getFile");
+        assert.equal(uploader.getFile(1), null, "unexpected return value for getFile");
+
+        assert.equal(uploader.getInProgress(), 0, "unexpected getInProgress value");
+        assert.equal(uploader.getNetUploads(), 2, "unexpected getNetUploads value");
+
+        assert.equal(uploader.getRemainingAllowedItems(), 3, "wrong number of remaining allowed items");
+    });
+
+    it("adds valid items to the initial file list via GET request", function(done) {
         var expectedSessionResponse = [
                 {
                     name: "up.jpg",
@@ -80,6 +119,8 @@ describe("file list initialization tests", function() {
             uploader.setName(0, "raynicholus");
             assert.equal(uploader.getName(0), "raynicholus", "name was not changed correctly");
             assert.equal(uploader.getName(1), "up2.jpg", "second file name was changed unexpectedly");
+
+            done();
         }, 0);
     });
 

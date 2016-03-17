@@ -11,6 +11,14 @@
             this.addFiles(blobDataOrArray, params, endpoint);
         },
 
+        addInitialFiles: function(cannedFileList) {
+            var self = this;
+
+            qq.each(cannedFileList, function(index, cannedFile) {
+                self._addCannedFile(cannedFile);
+            });
+        },
+
         addFiles: function(data, params, endpoint) {
             this._maybeHandleIos8SafariWorkaround();
 

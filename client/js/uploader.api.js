@@ -6,6 +6,11 @@
     "use strict";
 
     qq.uiPublicApi = {
+        addInitialFiles: function(cannedFileList) {
+            this._parent.prototype.addInitialFiles.apply(this, arguments);
+            this._templating.addCacheToDom();
+        },
+
         clearStoredFiles: function() {
             this._parent.prototype.clearStoredFiles.apply(this, arguments);
             this._templating.clearFiles();
@@ -566,7 +571,7 @@
 
             if (canned) {
                 this._templating.addFileToCache(id, this._options.formatFileName(name), prependData, dontDisplay);
-                this._thumbnailUrls[id] && this._templating.updateThumbnail(id, this._thumbnailUrls[id], true);
+                this._templating.updateThumbnail(id, this._thumbnailUrls[id], true);
             }
             else {
                 this._templating.addFile(id, this._options.formatFileName(name), prependData, dontDisplay);

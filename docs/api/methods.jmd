@@ -67,6 +67,15 @@ A `CanvasWrapper` object:
     }
 ]) }}
 
+{{ api_method("addInitialFiles", "addInitialFiles (initialFiles)", "Submit one or more canned/initial files to the uploader. See the [Initial File List feature page](../features/session.html) for more details.",
+[
+    {
+        "name": "initialFiles",
+        "type": "Array",
+        "description": "An array of objects that describe files already on the server."
+    }
+]) }}
+
 {{ api_method("cancel", "cancel (id)", "Cancel the queued or currently uploading item which corresponds to the `id`.",
 [
     {
