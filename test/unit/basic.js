@@ -92,4 +92,24 @@ describe("uploader.basic.js", function () {
         assert.equal(qq(getFileInput($extraButton2)).hasAttribute("multiple"), false);
         assert.equal(qq(getFileInput($extraButton3)).hasAttribute("multiple"), true);
     });
+
+    it("applies the correct title attribute to a file input", function() {
+        var uploader = new qq.FineUploaderBasic({
+            text: {
+                fileInputTitle: "default title"
+            },
+            extraButtons: [
+                {
+                    element: $extraButton[0]
+                },
+                {
+                    element: $extraButton2[0],
+                    fileInputTitle: "extrabutton2"
+                }
+            ]
+        });
+
+        assert.equal(getFileInput($extraButton).title, "default title");
+        assert.equal(getFileInput($extraButton2).title, "extrabutton2");
+    });
 });

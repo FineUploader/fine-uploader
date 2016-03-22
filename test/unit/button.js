@@ -42,6 +42,21 @@ describe("button.js", function () {
         assert.ok(qq(button.getInput()).hasAttribute("multiple"), "the multiple attribute should be added to new button after reset");
     });
 
+    it("respects the 'title' option", function() {
+        $fixture.append("<div id='foo'></div>");
+
+        var button = new qq.UploadButton({
+            element: $fixture.find("#foo")[0],
+            title: "foo-bar"
+        });
+
+        var input = button.getInput();
+        assert.equal(button.getInput().title, "foo-bar");
+
+        button.reset();
+        assert.equal(button.getInput().title, "foo-bar");
+    });
+
     it("does add an internal tracker ID to the input button, and re-adds it on reset", function() {
         $fixture.append("<div id='foo'></div>");
 

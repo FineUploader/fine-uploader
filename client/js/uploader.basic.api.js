@@ -631,17 +631,18 @@
             }
 
             button = new qq.UploadButton({
-                element: spec.element,
-                folders: spec.folders,
-                name: this._options.request.inputName,
-                multiple: allowMultiple(),
                 acceptFiles: acceptFiles,
+                element: spec.element,
+                focusClass: this._options.classes.buttonFocus,
+                folders: spec.folders,
+                hoverClass: this._options.classes.buttonHover,
+                ios8BrowserCrashWorkaround: this._options.workarounds.ios8BrowserCrash,
+                multiple: allowMultiple(),
+                name: this._options.request.inputName,
                 onChange: function(input) {
                     self._onInputChange(input);
                 },
-                hoverClass: this._options.classes.buttonHover,
-                focusClass: this._options.classes.buttonFocus,
-                ios8BrowserCrashWorkaround: this._options.workarounds.ios8BrowserCrash
+                title: spec.title == null ? this._options.text.fileInputTitle : spec.title
             });
 
             this._disposeSupport.addDisposer(function() {
@@ -1061,11 +1062,12 @@
         // Creates an extra button element
         _initExtraButton: function(spec) {
             var button = this._createUploadButton({
-                element: spec.element,
-                multiple: spec.multiple,
                 accept: spec.validation.acceptFiles,
+                allowedExtensions: spec.validation.allowedExtensions,
+                element: spec.element,
                 folders: spec.folders,
-                allowedExtensions: spec.validation.allowedExtensions
+                multiple: spec.multiple,
+                title: spec.fileInputTitle
             });
 
             this._extraButtonSpecs[button.getButtonId()] = spec;

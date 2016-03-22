@@ -106,6 +106,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
 {{ api_parent_option("extraButtons", "extraButtons", "This must contain an array of objects. Each object will describe an “extra” button that Fine Uploader will track along with the default upload button. Each button object can contain the following properties:",
     (
         ("extraButtons.element", "element", "REQUIRED: The container element for the upload button.", "HTMLElement", "undefined",),
+        ("extraButtons.fileInputTitle", "fileInputTitle", "This value will be used when creating the `title` attribute for the underlying `<input type=\"file\">`. If not provided, the [`text.fileInputTitle` option](#text.fileInputTitle) will be used instead.", "Boolean", "false",),
         ("extraButtons.folders", "folders", "`true` to allow folders to be selected, `false` to allow files to be selected. See the browser support page for details regarding the limited user agent support for this feature.", "Boolean", "false",),
         ("extraButtons.multiple", "multiple", "Specify to override the default `multiple` value.", "Boolean", "true",),
         ("extraButtons.validation", "validation", "Specify to override the default `validation` option specified. Any `validation` properties not specified will be inherited from the default `validation` option.", "Object", "`validation`",),
@@ -210,6 +211,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
 {{ api_parent_option("text", "text", "",
     (
         ("text.defaultResponseError", "defaultResponseError", "In the event of non-200 response from the server sans the 'error' property, this message will be passed to the 'error' event handler.", "String", "Upload failure reason unknown",),
+        ("text.fileInputTitle", "fileInputTitle", "The value for the `title` attribute attached to the `<input type=\"file\">` maintained by Fine Uploader for each upload button. This is used as hover text, among other things.``", "String", "file input",),
         ("text.sizeSymbols", "sizeSymbols", "Symbols used to represent file size, in ascending order.", "Array", "['kB', 'MB', 'GB', 'TB', 'PB', 'EB']",),
     )
 )

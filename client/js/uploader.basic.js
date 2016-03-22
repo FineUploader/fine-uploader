@@ -129,6 +129,7 @@
 
             text: {
                 defaultResponseError: "Upload failure reason unknown",
+                fileInputTitle: "file input",
                 sizeSymbols: ["kB", "MB", "GB", "TB", "PB", "EB"]
             },
 
@@ -255,7 +256,10 @@
         this._deleteHandler = qq.DeleteFileAjaxRequester && this._createDeleteHandler();
 
         if (this._options.button) {
-            this._defaultButtonId = this._createUploadButton({element: this._options.button}).getButtonId();
+            this._defaultButtonId = this._createUploadButton({
+                element: this._options.button,
+                title: this._options.text.fileInputTitle
+            }).getButtonId();
         }
 
         this._generateExtraButtonSpecs();

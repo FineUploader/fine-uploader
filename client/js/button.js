@@ -19,17 +19,24 @@ qq.UploadButton = function(o) {
         disposeSupport = new qq.DisposeSupport(),
 
         options = {
-            // "Container" element
-            element: null,
-
-            // If true adds `multiple` attribute to `<input type="file">`
-            multiple: false,
-
             // Corresponds to the `accept` attribute on the associated `<input type="file">`
             acceptFiles: null,
 
+            // "Container" element
+            element: null,
+
+            focusClass: "qq-upload-button-focus",
+
             // A true value allows folders to be selected, if supported by the UA
             folders: false,
+
+            // **This option will be removed** in the future as the :hover CSS pseudo-class is available on all supported browsers
+            hoverClass: "qq-upload-button-hover",
+
+            ios8BrowserCrashWorkaround: false,
+
+            // If true adds `multiple` attribute to `<input type="file">`
+            multiple: false,
 
             // `name` attribute of `<input type="file">`
             name: "qqfile",
@@ -37,12 +44,7 @@ qq.UploadButton = function(o) {
             // Called when the browser invokes the onchange handler on the `<input type="file">`
             onChange: function(input) {},
 
-            ios8BrowserCrashWorkaround: false,
-
-            // **This option will be removed** in the future as the :hover CSS pseudo-class is available on all supported browsers
-            hoverClass: "qq-upload-button-hover",
-
-            focusClass: "qq-upload-button-focus"
+            title: null
         },
         input, buttonId;
 
@@ -56,7 +58,7 @@ qq.UploadButton = function(o) {
         var input = document.createElement("input");
 
         input.setAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME, buttonId);
-        input.setAttribute("title", "file input");
+        input.setAttribute("title", options.title);
 
         self.setMultiple(options.multiple, input);
 

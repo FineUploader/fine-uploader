@@ -37,7 +37,10 @@
             this._templating.reset();
 
             if (!this._options.button && this._templating.getButton()) {
-                this._defaultButtonId = this._createUploadButton({element: this._templating.getButton()}).getButtonId();
+                this._defaultButtonId = this._createUploadButton({
+                    element: this._templating.getButton(),
+                    title: this._options.text.fileInputTitle
+                }).getButtonId();
             }
 
             if (this._dnd) {

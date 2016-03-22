@@ -20,12 +20,14 @@ describe("uploader.basic.api.js", function () {
                 {
                     element: $btn1[0],
                     multiple: false,
-                    accept: ""
+                    accept: "",
+                    fileInputTitle: "title1"
                 },
                 {
                     element: $btn2[0],
                     multiple: false,
-                    accept: ""
+                    accept: "",
+                    fileInputTitle: "title2"
                 }
             ]
         });
@@ -45,6 +47,8 @@ describe("uploader.basic.api.js", function () {
                 assert.ok(!input.hasAttribute("multiple"));
                 assert.ok(!input.hasAttribute("accept"));
             }
+            assert.equal(fineuploader._buttons[0].getInput().title, "title1");
+            assert.equal(fineuploader._buttons[1].getInput().title, "title2");
         }
     });
 
