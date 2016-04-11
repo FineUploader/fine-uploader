@@ -141,7 +141,7 @@ called if all files in the group have been cancelled or rejected (i.e. if none o
     ])
 }}
 
-{{ api_event("delete", "onDelete", "Called just before a delete request is sent for the associated item.",
+{{ api_event("delete", "onDelete", "Called just before a delete request is sent for the associated item. Note that this is _not_ the correct callback to influence the delete request. To do that, use the [onSubmitDelete callback](#submitDelete) instead.",
     [
         {
             "name": "id",
@@ -380,6 +380,8 @@ A promise can be used if non-blocking work is required. Processing of
 this item is deferred until the promise is fullfilled. If a promise is
 returned, a call to failure is the same as returning `false`.
 
+Use this callback to influence the delete request. For example, you can change the
+custom parameters sent with the underlying delete request using the [`setDeleteParams` API method](methods.html#setDeleteFileParams).
 """,
     [
         {
