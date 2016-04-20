@@ -6,14 +6,15 @@
 
 Currently, Fine Uploader supports the following browsers:
 
-* Internet Explorer 8+
-* Firefox
 * Chrome
-* Chrome mobile (iOS & Android)
+* Firefox
+* Microsoft Edge 13.10586+
 * Opera 15+
 * Android 2.3.x+
 * iOS 6+
 * Safari 5+ (OS X)
+* Chrome mobile (iOS & Android)
+* Internet Explorer 8+
 
 ## Feature Support Matrix
 
@@ -125,6 +126,26 @@ Note: Any features not listed here are supported in all browsers.
         </tr>
         <tr>
             <td>Firefox</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+            <td>{{ label('√', "success") }}</td>
+        </tr>
+        <tr>
+            <td>Edge 13.10586+</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>

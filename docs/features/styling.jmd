@@ -145,7 +145,7 @@ to this:
 </div>
 ```
 
-Note that you cannot use a `<button>` element if you plan on supported Internet Explorer, as this will not trigger
+Note that you cannot use a `<button>` element if you plan on supporting Internet Explorer, as this will not trigger
 the file chooser dialog.
 
 

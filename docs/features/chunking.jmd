@@ -26,7 +26,7 @@ sizes to about 4GB) and servers (e.g. [PHP's `post_max_size`][postmaxsize]).
 the upload will be _not_ be chunked.", "default", "Amazon S3 Specific Note:") }}
 
 Chunking is made possible by the File API, and is supported in Chrome, Firefox,
-Safari (iOS 6+ and OS X), Internet Explorer 10+, and Opera 15+. Chunking is disabled in
+Safari (iOS 6+ and OS X), Internet Explorer 10+, Opera 15+, and Microsoft Edge 13.10586+. Chunking is disabled in
 Android's stock browser due to a bug in the browser's ability to upload Blobs.
 
 Each chunk is sent as a separate request, and each chunked request
