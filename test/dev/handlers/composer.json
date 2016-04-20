@@ -8,6 +8,6 @@
   ],
   "require": {
     "fineuploader/php-traditional-server": "1.0.1",
-    "fineuploader/php-s3-server": "dev-v4-signatures"
+    "fineuploader/php-s3-server": "1.1.0"
   }
 }
