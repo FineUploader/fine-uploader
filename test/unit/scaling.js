@@ -404,11 +404,11 @@ if (qq.supportedFeatures.scaling) {
                             acknowledgeRequests();
                         },
                         onUpload: function(id, name) {
+                            actualUploadCallbacks.push({id: id, name: name});
+
                             assert.ok(uploader.getSize(id) > 0);
                             assert.ok(qq.isBlob(uploader.getFile(id)));
                             assert.equal(uploader.getFile(id).size, referenceFileSize);
-
-                            actualUploadCallbacks.push({id: id, name: name});
                         },
                         onAllComplete: function(successful, failed) {
                             assert.equal(successful.length, 4);
