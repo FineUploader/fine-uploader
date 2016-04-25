@@ -1,6 +1,6 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-Version: 5.7.0-1
+Version: 5.7.0
 
 [![Build Status](https://travis-ci.org/FineUploader/fine-uploader.png?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
 
