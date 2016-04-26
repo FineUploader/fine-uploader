@@ -166,10 +166,10 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                             uploadIdPromise.success(uploadId);
                             promise.success(uploadId);
                         },
-                        function(errorMsg) {
+                        function(errorMsg, xhr) {
                             handler._getPersistableData(id).uploadId = null;
-                            promise.failure(errorMsg);
-                            uploadIdPromise.failure(errorMsg);
+                            promise.failure(errorMsg, xhr);
+                            uploadIdPromise.failure(errorMsg, xhr);
                         }
                     );
                 }
