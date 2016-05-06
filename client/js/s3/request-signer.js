@@ -77,19 +77,19 @@ qq.s3.RequestSigner = function(o) {
             },
 
             signApiRequest: function(signatureConstructor, headersStr, signatureEffort) {
-                var headersWordArray = CryptoJS.enc.Utf8.parse(headersStr),
-                    headersHmacSha1 = CryptoJS.HmacSHA1(headersWordArray, credentialsProvider.get().secretKey),
-                    headersHmacSha1Base64 = CryptoJS.enc.Base64.stringify(headersHmacSha1);
+                var headersWordArray = qq.CryptoJS.enc.Utf8.parse(headersStr),
+                    headersHmacSha1 = qq.CryptoJS.HmacSHA1(headersWordArray, credentialsProvider.get().secretKey),
+                    headersHmacSha1Base64 = qq.CryptoJS.enc.Base64.stringify(headersHmacSha1);
 
                 generateHeaders(signatureConstructor, headersHmacSha1Base64, signatureEffort);
             },
 
             signPolicy: function(policy, signatureEffort, updatedAccessKey, updatedSessionToken) {
                 var policyStr = JSON.stringify(policy),
-                    policyWordArray = CryptoJS.enc.Utf8.parse(policyStr),
-                    base64Policy = CryptoJS.enc.Base64.stringify(policyWordArray),
-                    policyHmacSha1 = CryptoJS.HmacSHA1(base64Policy, credentialsProvider.get().secretKey),
-                    policyHmacSha1Base64 = CryptoJS.enc.Base64.stringify(policyHmacSha1);
+                    policyWordArray = qq.CryptoJS.enc.Utf8.parse(policyStr),
+                    base64Policy = qq.CryptoJS.enc.Base64.stringify(policyWordArray),
+                    policyHmacSha1 = qq.CryptoJS.HmacSHA1(base64Policy, credentialsProvider.get().secretKey),
+                    policyHmacSha1Base64 = qq.CryptoJS.enc.Base64.stringify(policyHmacSha1);
 
                 signatureEffort.success({
                     policy: base64Policy,
@@ -164,8 +164,8 @@ qq.s3.RequestSigner = function(o) {
                                 promise.failure(e.target.error);
                             }
                             else {
-                                var wordArray = CryptoJS.lib.WordArray.create(e.target.result);
-                                promise.success(CryptoJS.SHA256(wordArray).toString());
+                                var wordArray = qq.CryptoJS.lib.WordArray.create(e.target.result);
+                                promise.success(qq.CryptoJS.SHA256(wordArray).toString());
                             }
                         }
                     };
@@ -173,7 +173,7 @@ qq.s3.RequestSigner = function(o) {
                 }
                 else {
                     body = body || "";
-                    promise.success(CryptoJS.SHA256(body).toString());
+                    promise.success(qq.CryptoJS.SHA256(body).toString());
                 }
 
                 return promise;
@@ -187,7 +187,7 @@ qq.s3.RequestSigner = function(o) {
             getStringToSign: function(signatureSpec) {
                 var canonicalRequest = v4.getCanonicalRequest(signatureSpec),
                     date = qq.s3.util.getV4PolicyDate(signatureSpec.date, signatureSpec.drift),
-                    hashedRequest = CryptoJS.SHA256(canonicalRequest).toString(),
+                    hashedRequest = qq.CryptoJS.SHA256(canonicalRequest).toString(),
                     scope = v4.getScope(signatureSpec.date, options.signatureSpec.region),
                     stringToSignTemplate = "AWS4-HMAC-SHA256\n{}\n{}\n{}";
 
@@ -217,18 +217,18 @@ qq.s3.RequestSigner = function(o) {
                     matches = headersPattern.exec(headersStr),
                     dateKey, dateRegionKey, dateRegionServiceKey, signingKey;
 
-                dateKey = CryptoJS.HmacSHA256(matches[1], "AWS4" + secretKey);
-                dateRegionKey = CryptoJS.HmacSHA256(matches[2], dateKey);
-                dateRegionServiceKey = CryptoJS.HmacSHA256("s3", dateRegionKey);
-                signingKey = CryptoJS.HmacSHA256("aws4_request", dateRegionServiceKey);
+                dateKey = qq.CryptoJS.HmacSHA256(matches[1], "AWS4" + secretKey);
+                dateRegionKey = qq.CryptoJS.HmacSHA256(matches[2], dateKey);
+                dateRegionServiceKey = qq.CryptoJS.HmacSHA256("s3", dateRegionKey);
+                signingKey = qq.CryptoJS.HmacSHA256("aws4_request", dateRegionServiceKey);
 
-                generateHeaders(signatureConstructor, CryptoJS.HmacSHA256(headersStr, signingKey), signatureEffort);
+                generateHeaders(signatureConstructor, qq.CryptoJS.HmacSHA256(headersStr, signingKey), signatureEffort);
             },
 
             signPolicy: function(policy, signatureEffort, updatedAccessKey, updatedSessionToken) {
                 var policyStr = JSON.stringify(policy),
-                    policyWordArray = CryptoJS.enc.Utf8.parse(policyStr),
-                    base64Policy = CryptoJS.enc.Base64.stringify(policyWordArray),
+                    policyWordArray = qq.CryptoJS.enc.Utf8.parse(policyStr),
+                    base64Policy = qq.CryptoJS.enc.Base64.stringify(policyWordArray),
                     secretKey = credentialsProvider.get().secretKey,
                     credentialPattern = /.+\/(.+)\/(.+)\/s3\/aws4_request/,
                     credentialCondition = (function() {
@@ -245,14 +245,14 @@ qq.s3.RequestSigner = function(o) {
                     matches, dateKey, dateRegionKey, dateRegionServiceKey, signingKey;
 
                 matches = credentialPattern.exec(credentialCondition);
-                dateKey = CryptoJS.HmacSHA256(matches[1], "AWS4" + secretKey);
-                dateRegionKey = CryptoJS.HmacSHA256(matches[2], dateKey);
-                dateRegionServiceKey = CryptoJS.HmacSHA256("s3", dateRegionKey);
-                signingKey = CryptoJS.HmacSHA256("aws4_request", dateRegionServiceKey);
+                dateKey = qq.CryptoJS.HmacSHA256(matches[1], "AWS4" + secretKey);
+                dateRegionKey = qq.CryptoJS.HmacSHA256(matches[2], dateKey);
+                dateRegionServiceKey = qq.CryptoJS.HmacSHA256("s3", dateRegionKey);
+                signingKey = qq.CryptoJS.HmacSHA256("aws4_request", dateRegionServiceKey);
 
                 signatureEffort.success({
                     policy: base64Policy,
-                    signature: CryptoJS.HmacSHA256(base64Policy, signingKey).toString()
+                    signature: qq.CryptoJS.HmacSHA256(base64Policy, signingKey).toString()
                 }, updatedAccessKey, updatedSessionToken);
             }
         };
@@ -487,7 +487,7 @@ qq.s3.RequestSigner = function(o) {
                 queryParams = {v4: true};
             }
 
-            if (credentialsProvider.get().secretKey && window.CryptoJS) {
+            if (credentialsProvider.get().secretKey && qq.CryptoJS) {
                 if (credentialsProvider.get().expiration.getTime() > Date.now()) {
                     determineSignatureClientSide(id, toBeSigned, signatureEffort);
                 }

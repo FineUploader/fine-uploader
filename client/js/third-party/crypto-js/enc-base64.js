@@ -6,7 +6,7 @@ code.google.com/p/crypto-js/wiki/License
 */
 (function () {
     // Shortcuts
-    var C = CryptoJS;
+    var C = qq.CryptoJS;
     var C_lib = C.lib;
     var WordArray = C_lib.WordArray;
     var C_enc = C.enc;
