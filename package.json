@@ -2,7 +2,7 @@
   "name": "fine-uploader",
   "title": "Fine Uploader",
   "main": "lib/traditional.js",
-  "version": "5.8.0",
+  "version": "5.8.0-1",
   "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
   "directories": {
     "doc": "docs",
