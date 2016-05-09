@@ -4,6 +4,8 @@ Version: 5.7.1
 
 [![Build Status](https://travis-ci.org/FineUploader/fine-uploader.png?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
 
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000)](https://gitter.im/FineUploader?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
+
 [**Download**](http://fineuploader.com/downloads.html) |
 [**Documentation**](http://docs.fineuploader.com) |
 [**Examples**](http://fineuploader.com/demos) |
