@@ -1,0 +1,248 @@
+{% extends "_templates/base.html" %}
+{% set page_title = "Importing Fine Uploader" %}
+{% block content %}
+{% markdown %}
+
+# Importing Fine Uploader {: .page-header }
+
+You have the following options when pulling Fine Uploader into your project:
+
+1. CommonJS (`require`).
+2. ES6 Modules (`import`).
+3. Globally scoped (`<script src="...">`)
+
+The first two options assume you are downloading [Fine Uploader via npm][npm]. However, all three options are available
+should you choose the download the library with npm. The _preferred_ way to download Fine Uploader is in fact through npm.
+
+A new "lib" directory is available in the npm package. Among the JavaScript and placeholder image files, the three CSS files
+are available as well, but with different names. The legacy css file is named "legacy.css". Generally speaking, you should
+avoid using this stylesheet unless you have old code that depends on these styles. The "fine-uploader-new.css" stylsheet that contains
+a more modern set of styles for a row-based uploader has been appropriately named "rows.css". Finally, the "fine-uploader-gallery.css"
+stylesheet which supports a gallery view of submitted files is named "gallery.css". For more information about styling
+your uploader, please see [the styling feature page](styling.html).
+
+The following sections cover, in detail, the three options you have for importing Fine Uploader, once you have downloaded
+the library. They are ordered by preference.
+
+
+## ES6 Modules
+
+At the writing of this feature page, the JavaScript modules specification is completed and part of the ECMAScript-262
+6th edition standard. However, at this time, no browser implements this specification. But there are still many options
+available to you should you choose to make use of ES6 modules when loading Fine Uploader into your project.
+Without native browser support, you must make use of a tool that compiles ES6 module syntax into a format that is
+parsable by all browsers. There are many such tools, but the more popular options are:
+
+- [Babel][babel] + [Webpack][webpack] v1
+- [Webpack][webpack] v2+
+- [Rollup][rollup]
+- [TypeScript][typescript]
+
+Importing your desired Fine Uploader resources is as simple as using `import` statements. For example:
+
+```javascript
+// use Fine Uploader core (non-ui) for traditional endpoints
+import qq from 'fine-uploader'
+
+const uploader = new qq.FineUploaderBasic({...})
+```
+
+```javascript
+// use Fine Uploader UI for traditional endpoints
+import qq from 'fine-uploader'
+
+// You may replace "rows" w/ "legacy" or "gallery" depending on your needs
+// This assumes you have a loader to handle importing css files, such as Webpack css-loader
+import 'fine-uploader/lib/rows.css'
+
+const uploader = new qq.FineUploader({...})
+```
+
+```javascript
+// use Fine Uploader S3
+import qq from 'fine-uploader/lib/s3'
+
+// You may replace "rows" w/ "legacy" or "gallery" depending on your needs
+// This assumes you have a loader to handle importing css files, such as Webpack css-loader
+import 'fine-uploader/lib/rows.css'
+
+const uploader = new qq.s3.FineUploader({...})
+```
+
+```javascript
+// use Fine Uploader Azure
+import qq from 'fine-uploader/lib/azure'
+
+// You may replace "rows" w/ "legacy" or "gallery" depending on your needs
+// This assumes you have a loader to handle importing css files, such as Webpack css-loader
+import 'fine-uploader/lib/rows.css'
+
+const uploader = new qq.azure.FineUploader({...})
+```
+
+```javascript
+// allow use of Fine Uploader S3, Azure, and/or traditional endpoint code
+import qq from 'fine-uploader/lib/all'
+
+// You may replace "rows" w/ "legacy" or "gallery" depending on your needs
+// This assumes you have a loader to handle importing css files, such as Webpack css-loader
+import 'fine-uploader/lib/rows.css'
+
+const traditionalUploader = new qq.FineUploader({...})
+const s3Uploader = new qq.s3.FineUploader({...})
+const azureUploader = new qq.azure.FineUploader({...})
+```
+
+
+## CommonJS
+
+If you would like to use [RequireJS][requirejs] or [Babel][babel] + [Webpack] v1, or even [Bublé][buble], you will want
+to import Fine Uploader using the `require` function. Importing your desired Fine Uploader resources is as simple
+as using `require` statements. For example:
+
+```javascript
+// use Fine Uploader core (non-ui) for traditional endpoints
+var qq = require('fine-uploader')
+
+var uploader = new qq.FineUploaderBasic({...})
+```
+
+```javascript
+// use Fine Uploader UI for traditional endpoints
+var qq = require('fine-uploader'_
+
+// You may replace "rows" w/ "legacy" or "gallery" depending on your needs
+// This assumes you have a loader to handle importing css files, such as Webpack css-loader
+require('fine-uploader/lib/rows.css')
+
+var uploader = new qq.FineUploader({...})
+```
+
+```javascript
+// use Fine Uploader S3
+var qq = require('fine-uploader/lib/s3')
+
+// You may replace "rows" w/ "legacy" or "gallery" depending on your needs
+// This assumes you have a loader to handle importing css files, such as Webpack css-loader
+require('fine-uploader/lib/rows.css')
+
+var uploader = new qq.s3.FineUploader({...})
+```
+
+```javascript
+// use Fine Uploader Azure
+var qq = require('fine-uploader/lib/azure')
+
+// You may replace "rows" w/ "legacy" or "gallery" depending on your needs
+// This assumes you have a loader to handle importing css files, such as Webpack css-loader
+require('fine-uploader/lib/rows.css')
+
+var uploader = new qq.azure.FineUploader({...})
+```
+
+```javascript
+// allow use of Fine Uploader S3, Azure, and/or traditional endpoint code
+var qq = require('fine-uploader/lib/all')
+
+// You may replace "rows" w/ "legacy" or "gallery" depending on your needs
+// This assumes you have a loader to handle importing css files, such as Webpack css-loader
+require('fine-uploader/lib/rows.css')
+
+var traditionalUploader = new qq.FineUploader({...})
+var s3Uploader = new qq.s3.FineUploader({...})
+var azureUploader = new qq.azure.FineUploader({...})
+```
+
+
+## Globally Scoped
+
+The traditional way to pull Fine Uploader onto a page is to do so using `<script>` and `<link>` tags. Before version
+5.8.0, this was the _only_ way to properly import Fine Uploader. The downside of this approach is that you are left with
+a global variable attached to `window` - `qq`. Importing Fine Uploader as a globally scoped object can be accomplished
+as follows:
+
+```html
+<!-- use Fine Uploader core (non-ui) for traditional endpoints -->
+<script src="node_modules/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+
+<script>
+    (function() {
+        var uploader = new qq.FineUploaderBasic({...})
+    }())
+</script>
+```
+
+```html
+<!-- use Fine Uploader UI for traditional endpoints -->
+<script src="node_modules/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+
+<link href="node_modules/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+
+<script>
+    (function() {
+        var uploader = new qq.FineUploader({...})
+    }())
+</script>
+```
+
+```javascript
+<!-- use Fine Uploader S3 -->
+<script src="node_modules/s3.fine-uploader/fine-uploader.js" type="text/javascript"></script>
+
+<link href="node_modules/s3.fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+
+<script>
+    (function() {
+        var uploader = new qq.s3.FineUploader({...})
+    }())
+</script>
+```
+
+```javascript
+<!-- use Fine Uploader Azure -->
+<script src="node_modules/azure.fine-uploader/fine-uploader.js" type="text/javascript"></script>
+
+<link href="node_modules/azure.fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+
+<script>
+    (function() {
+        var uploader = new qq.azure.FineUploader({...})
+    }())
+</script>
+```
+
+```javascript
+<!-- use Fine Uploader S3, Azure, or traditional -->
+<script src="node_modules/all.fine-uploader/fine-uploader.js" type="text/javascript"></script>
+
+<link href="node_modules/all.fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+
+<script>
+    (function() {
+        var traditionalUploader = new qq.FineUploader({...})
+        var s3Uploader = new qq.s3.FineUploader({...})
+        var azureUploader = new qq.azure.FineUploader({...})
+    }())
+</script>
+```
+
+
+## AMD
+
+Support for loading Fine Uploader via the Asynchronous Module Definition API is technically possible, and the code
+_should_ be in place to support this, but it is not _officially_ supported at this time. Demand for this type of loading
+is small, and we don't have a use for this in any of our projects. If you do find any issues with AMD support, please
+file an issue. We would also love to have this section of the documentation expanded to cover AMD support.
+
+
+
+[babel]: https://babeljs.io/
+[buble]: https://gitlab.com/Rich-Harris/buble
+[npm]: https://www.npmjs.com/package/fine-uploader
+[requirejs]: http://requirejs.org/
+[rollup]: http://rollupjs.org/
+[typescript]: https://www.typescriptlang.org/
+[webpack]: http://webpack.github.io/
+
+{% endmarkdown %}
+{% endblock %}

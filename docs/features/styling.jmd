@@ -11,6 +11,12 @@
 """Templating changed drastically in version 4.0.  If you are upgrading from a 3.x version to a 4.x version
 you will want to read the [upgrading to 4.x document](../upgrading-to-4.html) as well.""", "warn") }}
 
+{{ alert(
+"""If you are making use of ES6 modules, CommonJS, or AMD to import Fine Uploader into your project, please see
+the [modules feature page](modules.html) for information on the name changes to the stylesheets in the distributed
+lib directory.""") }}
+
+
 This document applies to Fine Uploader UI mode only, and aims to help you customize the default UI using
 the built-in templating feature.
 

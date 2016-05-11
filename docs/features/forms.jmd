@@ -79,6 +79,11 @@ The form support feature, like most other Fine Uploader features, works in all s
 The simplest use-case results in a very simple example, with only one line of JavaScript!  Here is a complete HTML
 file that integrates Fine Uploader into an existing form:
 
+{{ alert(
+"""There are many ways to load Fine Uploader into your project. The code below creates a global `qq` variable, but there are
+other, better options. Please see [modules feature page](modules.html) for more details.""") }}
+
+
 ```html
 <html>
     <head>

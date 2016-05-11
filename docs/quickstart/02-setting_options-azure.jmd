@@ -105,6 +105,10 @@ More information on [deleting files here](../features/delete.html).
 
 Now our Fine Uploader page should look something like this:
 
+{{ alert(
+"""There are many ways to load Fine Uploader into your project. The code below creates a global `qq` variable, but there are
+other, better options. Please see [modules feature page](../features/modules.html) for more details.""") }}
+
 ```html
 <html>
   <head>
