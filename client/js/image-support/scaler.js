@@ -342,7 +342,7 @@ qq.extend(qq.Scaler.prototype, {
 
         reader.onload = function() {
             originalImageDataUri = reader.result;
-            insertionEffort.success(ExifRestorer.restore(originalImageDataUri, scaledImageDataUri));
+            insertionEffort.success(qq.ExifRestorer.restore(originalImageDataUri, scaledImageDataUri));
         };
 
         reader.onerror = function() {

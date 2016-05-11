@@ -24,6 +24,7 @@ module.exports = function(grunt) {
     path = require("path");
     pkg = require("./package.json");
     paths = {
+        commonJs: "./lib/commonJs",
         dist: path.join("./_dist", pkg.version),
         build: "./_build",
         src: "./client",

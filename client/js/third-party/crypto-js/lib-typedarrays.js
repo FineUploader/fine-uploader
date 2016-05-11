@@ -11,7 +11,7 @@ code.google.com/p/crypto-js/wiki/License
     }
 
     // Shortcuts
-    var C = CryptoJS;
+    var C = qq.CryptoJS;
     var C_lib = C.lib;
     var WordArray = C_lib.WordArray;
 

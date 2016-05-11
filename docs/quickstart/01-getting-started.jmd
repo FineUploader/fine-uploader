@@ -100,6 +100,18 @@ var uploader = new qq.FineUploader({
 });
 ```
 
+### 3. Determine how you would like to import Fine Uploader
+
+You have the following options available to pull Fine Uploader into your project:
+
+1. CommonJS (`require`).
+2. ES6 Modules (`import`).
+3. Globally scoped (`<script src="...">`)
+
+For more information on how you can load Fine Uploader into your project, please see the
+[modules feature page](../features/modules.html).
+
+
 Next, let's check out some of Fine Uploader's options.
 
 Proceed by selecting either:

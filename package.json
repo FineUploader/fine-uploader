@@ -1,9 +1,9 @@
 {
   "name": "fine-uploader",
   "title": "Fine Uploader",
-  "version": "5.7.1",
+  "main": "lib/traditional.js",
+  "version": "5.8.0",
   "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
-  "main": "./fine-uploader/js/fineuploader.js",
   "directories": {
     "doc": "docs",
     "lib": "client",
@@ -54,6 +54,7 @@
   },
   "devDependencies": {
     "async": "0.2.9",
+    "fs-sync": "1.0.2",
     "glob": "3.2.6",
     "grunt": "^0.4.5",
     "grunt-aws-s3": "^0.10.0",

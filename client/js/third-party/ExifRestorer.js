@@ -1,7 +1,7 @@
 //Based on MinifyJpeg
 //http://elicon.blog57.fc2.com/blog-entry-206.html
 
-var ExifRestorer = (function()
+qq.ExifRestorer = (function()
 {
    
 	var ExifRestorer = {};
