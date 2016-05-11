@@ -1,3 +1,7 @@
+
+Don't Let Me Do It, Travis!!!
+====
+
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
 Version: 5.8.0
