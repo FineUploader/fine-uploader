@@ -6,7 +6,7 @@ sudo: false
 language: node_js
 
 node_js:
-- '0.10.33'
+- '5.0'
 
 env:
   global:
