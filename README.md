@@ -1,12 +1,11 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-Version: 5.8.0
-
 [![Build Status](https://travis-ci.org/FineUploader/fine-uploader.png?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
 
-[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000)](https://gitter.im/FineUploader?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
+[![npm](https://img.shields.io/npm/v/fine-uploader.svg)](https://www.npmjs.com/package/fine-uploader)
 
-[**Download**](http://fineuploader.com/downloads.html) |
+[![Freenode](https://img.shields.io/badge/chat-on%20freenode-brightgreen.svg)](irc://chat.freenode.net/#fineuploader)
+
 [**Documentation**](http://docs.fineuploader.com) |
 [**Examples**](http://fineuploader.com/demos) |
 [**Support**](http://fineuploader.com/support.html) |
@@ -15,14 +14,20 @@ Version: 5.8.0
 
 ---
 
-Fine Uploader aims to make file-uploading on the web possible in every browser and mobile device. It is **cross-browser**, **dependency-free**, and **100% Javascript**.
+Fine Uploader is:
 
-FineUploader is simple to use. You only need to include one JavaScript file. There are absolutely no other dependencies.
-For more information, please see the [**documentation**](http://docs.fineuploader.com).
+- Cross-browser
+- Dependency-free
+- 100% JavaScript
+- 100% Free Open Source Software
 
-### License ###
-This plugin is made available under the [Widen Commercial license](LICENSE).  If you are using Fine Uploader for commercial purposes,
-you must [purchase a license](http://fineuploader.com/purchase).
+FineUploader is also simple to use. In the simplest case, you only need to include one JavaScript file.
+There are absolutely no other required external dependencies. For more information, please see the [**documentation**](http://docs.fineuploader.com).
 
 
-*Fine Uploader is a code library maintained and developed by [Widen Enterprises, Inc.](http://www.widen.com/)*
+### License
+
+Fine Uploader is made available under the [MIT license](LICENSE).
+
+
+*Fine Uploader is a code library sponsored by [Widen Enterprises, Inc.](http://www.widen.com/)*

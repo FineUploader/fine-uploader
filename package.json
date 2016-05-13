@@ -2,16 +2,8 @@
   "name": "fine-uploader",
   "title": "Fine Uploader",
   "main": "lib/traditional.js",
-  "version": "5.8.0",
-  "description": "Multiple file upload component with progress-bar, drag-and-drop, support for all modern browsers.",
-  "directories": {
-    "doc": "docs",
-    "lib": "client",
-    "test": "test"
-  },
-  "scripts": {
-    "build": "grunt package"
-  },
+  "version": "5.9.0",
+  "description": "Multiple file upload plugin with progress-bar, drag-and-drop, direct-to-S3 & Azure uploading, client-side image scaling, preview generation, form support, chunking, auto-resume, and tons of other features.",
   "keywords": [
     "amazon",
     "api",
@@ -43,12 +35,7 @@
     "url": "git://github.com/FineUploader/fine-uploader.git"
   },
   "author": "Widen Enterprises, Inc.",
-  "licenses": [
-    {
-      "type": "Widen Commerical License",
-      "url": "https://raw.githubusercontent.com/FineUploader/fine-uploader/master/LICENSE"
-    }
-  ],
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/FineUploader/fine-uploader/issues"
   },
@@ -91,9 +78,10 @@
     "uuid": "1.4.1"
   },
   "scripts": {
+    "build": "grunt package",
     "setup-dev": "(cd test/dev/handlers; curl -sS https://getcomposer.org/installer | php; php composer.phar install)",
-    "update-dev": "(cd test/dev/handlers; php composer.phar update)",
     "start-local-dev": "(. test/dev/handlers/s3keys.sh; php -S 0.0.0.0:9090 -t . -c test/dev/handlers/php.ini)",
-    "start-c9-dev": "php -S $IP:$PORT -t . -c test/dev/handlers/php.ini"
+    "start-c9-dev": "php -S $IP:$PORT -t . -c test/dev/handlers/php.ini",
+    "update-dev": "(cd test/dev/handlers; php composer.phar update)"
   }
 }
