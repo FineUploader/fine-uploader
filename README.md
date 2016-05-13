@@ -25,4 +25,21 @@ FineUploader is also simple to use. In the simplest case, you only need to inclu
 There are absolutely no other required external dependencies. For more information, please see the [**documentation**](http://docs.fineuploader.com).
 
 
+## Contributing
+
+Fine Uploader and all other projects in this organization thrive thanks to donations by Widen (the project's sponsor)
+and support by developers in the community. If you'd like to help, the best way to do so is open up a pull request
+that addresses one of the open feature requests or bugs. In order to get started developing Fine Uploader, follow these
+steps to get the project up and running on your local development machine:
+
+1. Download the project repository: `git clone https://github.com/FineUploader/fine-uploader.git`.
+2. Install all project development dependencies: `npm install`.
+3. To run the tests & linter: `$(npm bin)/grunt dev test:firefox` (you'll need Firefox installed locally).
+4. Please follow the [Angular.js commit guidelines][angular-commit].
+5. Please follow the [Git Flow][git-flow] branching strategy.
+
+
 *Fine Uploader is a code library sponsored by [Widen Enterprises, Inc.](http://www.widen.com/)*
+
+[angular-commit]: https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit
+[git-flow]: http://nvie.com/posts/a-successful-git-branching-model/
