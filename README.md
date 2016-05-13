@@ -1,6 +1,6 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-[![Build Status](https://travis-ci.org/FineUploader/fine-uploader.png?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
+[![Build Status](https://travis-ci.org/FineUploader/fine-uploader.svg?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
 
 [![npm](https://img.shields.io/npm/v/fine-uploader.svg)](https://www.npmjs.com/package/fine-uploader)
 
