@@ -1,9 +1,7 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
 [![Build Status](https://travis-ci.org/FineUploader/fine-uploader.svg?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
-
 [![npm](https://img.shields.io/npm/v/fine-uploader.svg)](https://www.npmjs.com/package/fine-uploader)
-
 [![Freenode](https://img.shields.io/badge/chat-on%20freenode-brightgreen.svg)](irc://chat.freenode.net/#fineuploader)
 
 [**Documentation**](http://docs.fineuploader.com) |
