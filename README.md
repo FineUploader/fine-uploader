@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/FineUploader/fine-uploader.svg?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
 [![npm](https://img.shields.io/npm/v/fine-uploader.svg)](https://www.npmjs.com/package/fine-uploader)
+[![license](https://img.shields.io/npm/l/fine-uploader.svg)](LICENSE)
 [![Freenode](https://img.shields.io/badge/chat-on%20freenode-brightgreen.svg)](irc://chat.freenode.net/#fineuploader)
+[![Stackoverflow](https://img.shields.io/stackexchange/stackoverflow/t/fine-uploader.svg)](http://stackoverflow.com/questions/tagged/fine-uploader)
 
 [**Documentation**](http://docs.fineuploader.com) |
 [**Examples**](http://fineuploader.com/demos) |
@@ -21,11 +23,6 @@ Fine Uploader is:
 
 FineUploader is also simple to use. In the simplest case, you only need to include one JavaScript file.
 There are absolutely no other required external dependencies. For more information, please see the [**documentation**](http://docs.fineuploader.com).
-
-
-### License
-
-Fine Uploader is made available under the [MIT license](LICENSE).
 
 
 *Fine Uploader is a code library sponsored by [Widen Enterprises, Inc.](http://www.widen.com/)*
