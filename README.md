@@ -1,12 +1,11 @@
 [![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
 
-Version: 5.8.0
+[![Build Status](https://travis-ci.org/FineUploader/fine-uploader.svg?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
+[![npm](https://img.shields.io/npm/v/fine-uploader.svg)](https://www.npmjs.com/package/fine-uploader)
+[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
+[![Freenode](https://img.shields.io/badge/chat-on%20freenode-brightgreen.svg)](irc://chat.freenode.net/#fineuploader)
+[![Stackoverflow](https://img.shields.io/stackexchange/stackoverflow/t/fine-uploader.svg)](http://stackoverflow.com/questions/tagged/fine-uploader)
 
-[![Build Status](https://travis-ci.org/FineUploader/fine-uploader.png?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
-
-[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?maxAge=2592000)](https://gitter.im/FineUploader?utm_source=share-link&utm_medium=link&utm_campaign=share-link)
-
-[**Download**](http://fineuploader.com/downloads.html) |
 [**Documentation**](http://docs.fineuploader.com) |
 [**Examples**](http://fineuploader.com/demos) |
 [**Support**](http://fineuploader.com/support.html) |
@@ -15,14 +14,32 @@ Version: 5.8.0
 
 ---
 
-Fine Uploader aims to make file-uploading on the web possible in every browser and mobile device. It is **cross-browser**, **dependency-free**, and **100% Javascript**.
+Fine Uploader is:
 
-FineUploader is simple to use. You only need to include one JavaScript file. There are absolutely no other dependencies.
-For more information, please see the [**documentation**](http://docs.fineuploader.com).
+- Cross-browser
+- Dependency-free
+- 100% JavaScript
+- 100% Free Open Source Software
 
-### License ###
-This plugin is made available under the [Widen Commercial license](LICENSE).  If you are using Fine Uploader for commercial purposes,
-you must [purchase a license](http://fineuploader.com/purchase).
+FineUploader is also simple to use. In the simplest case, you only need to include one JavaScript file.
+There are absolutely no other required external dependencies. For more information, please see the [**documentation**](http://docs.fineuploader.com).
 
 
-*Fine Uploader is a code library maintained and developed by [Widen Enterprises, Inc.](http://www.widen.com/)*
+## Contributing
+
+Fine Uploader and all other projects in this organization thrive thanks to donations by Widen (the project's sponsor)
+and support by developers in the community. If you'd like to help, the best way to do so is open up a pull request
+that addresses one of the open feature requests or bugs. In order to get started developing Fine Uploader, follow these
+steps to get the project up and running on your local development machine:
+
+1. Download the project repository: `git clone https://github.com/FineUploader/fine-uploader.git`.
+2. Install all project development dependencies: `npm install`.
+3. To run the tests & linter: `$(npm bin)/grunt dev test:firefox` (you'll need Firefox installed locally).
+4. Please follow the [Angular.js commit guidelines][angular-commit].
+5. Please follow the [Git Flow][git-flow] branching strategy.
+
+
+*Fine Uploader is a code library sponsored by [Widen Enterprises, Inc.](http://www.widen.com/)*
+
+[angular-commit]: https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit
+[git-flow]: http://nvie.com/posts/a-successful-git-branching-model/

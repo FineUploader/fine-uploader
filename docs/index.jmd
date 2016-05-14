@@ -68,8 +68,7 @@ to the API documentation section.
 ### Additional Information
 
 * [Browser Support](browser-support.html) - Matrix of support for all major features. Also contains information on how to determine features support via JavaScript at runtime using Fine Uploader's API.
-* [Build Your Own](contributing.html) - Instructions on building Fine Uploader from source and running tests.
-* [Contributing](https://github.com/Widen/fine-uploader/blob/master/CONTRIBUTING.md) - Guidelines and rules for contributing code and opening issues.
+* [Contributing](https://github.com/FineUploader/fine-uploader#contributing) - Guidelines and options for contributing back to this free open source library.
 * [Changelog](http://blog.fineuploader.com/category/changelog/) - High-level summary of all releases.
 * [FAQ](faq.html)
 
@@ -78,8 +77,7 @@ to the API documentation section.
 
 * [Official Site](http://fineuploader.com)
 * [Blog](http://blog.fineuploader.com/)
-* [Issue Tracker](https://github.com/Widen/fine-uploader/issues) - File bugs and feature requests here.
-* [Support Q&A](http://stackoverflow.com/questions/tagged/fine-uploader) - Community support for Fine Uploader with participation from Fine Uploader developers. Not for bugs or feature requests.
+* [Support](http://fineuploader.com/support)
 * [GitHub repository](https://github.com/Widen/fine-uploader)
 
 {% endmarkdown %}
