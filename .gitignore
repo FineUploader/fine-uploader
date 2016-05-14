@@ -3,6 +3,7 @@
 *~
 .*.sw[a-z]
 *.iml
+*.iws
 !.github
 !.gitignore
 !.jshintrc
