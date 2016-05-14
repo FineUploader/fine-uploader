@@ -53,7 +53,7 @@ Are you interested in working on a very popular JavaScript-based file upload lib
 
 ### Help spread the word
 
-Are you using Fine Uploader in your library or project? If so, let us know and we may add a link to your project or application _and_ your logo to FineUploader.com. If you care to write an article about Fine Uploader, we would be open to read it and publicize it through our site, blog, or Twitter feed as well.
+Are you using Fine Uploader in your library or project? If so, let us know and we may add a link to your project or application _and_ your logo to FineUploader.com. If you care to write an article about Fine Uploader, we would be open to reading and publicizing it through our site, blog, or Twitter feed.
 
 
 ### Develop an integration library
