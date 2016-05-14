@@ -28,9 +28,11 @@ There are absolutely no other required external dependencies. For more informati
 ## Contributing
 
 Fine Uploader and all other projects in this organization thrive thanks to donations by Widen (the project's sponsor)
-and support by developers in the community. If you'd like to help, the best way to do so is open up a pull request
-that addresses one of the open feature requests or bugs. In order to get started developing Fine Uploader, follow these
-steps to get the project up and running on your local development machine:
+and support by developers in the community. If you'd like to help and keep this project strong and relevant, you have several options.
+
+### Contribute code
+
+The best way to contribute code is to open up a pull request that addresses one of the open [feature requests or bugs][issues]. In order to get started developing Fine Uploader, follow these steps to get the project up and running on your local development machine:
 
 1. Download the project repository: `git clone https://github.com/FineUploader/fine-uploader.git`.
 2. Install all project development dependencies: `npm install`.
@@ -39,7 +41,28 @@ steps to get the project up and running on your local development machine:
 5. Please follow the [Git Flow][git-flow] branching strategy.
 
 
+### File a bug report
+
+If you see something that isn't quite right, whether it be in the code, or on the docs site, or even on FineUploader.com (which is hosted on GitHub), _please_ file a bug report. Be sure to make sure the [bug hasn't already been filed][issues] by someone else. If it has, feel free to upvote the issue and/or add your comments.
+
+
+### Join the team
+
+Are you interested in working on a very popular JavaScript-based file upload library with countless users? If you're strong in JavaScript, HTML, and CSS, and have a desire to help push the FOSS movement forward, let us know! The project can always use more experts.
+
+
+### Help spread the word
+
+Are you using Fine Uploader in your library or project? If so, let us know and we may add a link to your project or application _and_ your logo to FineUploader.com. If you care to write an article about Fine Uploader, we would be open to read it and publicize it through our site, blog, or Twitter feed as well.
+
+
+### Develop an integration library
+
+Are you using Fine Uploader inside of a larger framework (such as React, Angular2, Ember.js, etc)? If so, perhaps you've already written a library that wraps Fine Uploader and makes it simple to use Fine Uploader in this context. Let us know and it may make sense to either link to your library, or even move it into the FineUploader GitHub organization (with your approval, of course). We'd also love to see libraries that make it simple to pair Fine Uploader with other useful libraries, such as image editors and rich text editors.
+
+
 *Fine Uploader is a code library sponsored by [Widen Enterprises, Inc.](http://www.widen.com/)*
 
 [angular-commit]: https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit
 [git-flow]: http://nvie.com/posts/a-successful-git-branching-model/
+[issues]: https://github.com/FineUploader/fine-uploader/issues
