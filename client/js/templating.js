@@ -590,7 +590,7 @@ qq.Templating = function(spec) {
         },
 
         useCachedPreview = function(targetThumbnailId, cachedThumbnailId) {
-            var targetThumnail = getThumbnail(targetThumbnailId),
+            var targetThumbnail = getThumbnail(targetThumbnailId),
                 cachedThumbnail = getThumbnail(cachedThumbnailId);
 
             log(qq.format("ID {} is the same file as ID {}.  Will use generated thumbnail from ID {} instead.", targetThumbnailId, cachedThumbnailId, cachedThumbnailId));
@@ -600,13 +600,13 @@ qq.Templating = function(spec) {
                 generatedThumbnails++;
                 previewGeneration[targetThumbnailId].success();
                 log(qq.format("Now using previously generated thumbnail created for ID {} on ID {}.", cachedThumbnailId, targetThumbnailId));
-                targetThumnail.src = cachedThumbnail.src;
-                show(targetThumnail);
+                targetThumbnail.src = cachedThumbnail.src;
+                show(targetThumbnail);
             },
             function() {
                 previewGeneration[targetThumbnailId].failure();
                 if (!options.placeholders.waitUntilUpdate) {
-                    maybeSetDisplayNotAvailableImg(targetThumbnailId, targetThumnail);
+                    maybeSetDisplayNotAvailableImg(targetThumbnailId, targetThumbnail);
                 }
             });
         };

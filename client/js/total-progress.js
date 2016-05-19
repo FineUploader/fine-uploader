@@ -66,7 +66,7 @@ qq.TotalProgress = function(callback, getSize) {
 
         /**
          * Invokes the callback with the current total progress of all files in the batch.  Called whenever it may
-         * be appropriate to re-calculate and dissemenate this data.
+         * be appropriate to re-calculate and disseminate this data.
          *
          * @param id ID of a file that has changed in some important way
          * @param newLoaded New loaded value for this file.  -1 if this value should no longer be part of calculations

@@ -123,7 +123,7 @@ upload errors are displayed.
 * `'default'` will display the `failUploadText` defined in the `text` option
 properties next to each item.
 * `'none'` will **not** display any text next to a failed item.
-* `'custom'` will display an error reponse text from the server next to each
+* `'custom'` will display an error response text from the server next to each
 failed item).
     * `'custom'` mode will use the provided `responseProperty` (which defaults
     to `'error'`) as its text
