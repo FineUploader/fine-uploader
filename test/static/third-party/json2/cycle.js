@@ -28,7 +28,7 @@ if (typeof JSON.decycle !== 'function') {
 // duplicate references (which might be forming cycles) are replaced with
 // an object of the form
 //      {$ref: PATH}
-// where the PATH is a JSONPath string that locates the first occurance.
+// where the PATH is a JSONPath string that locates the first occurrence.
 // So,
 //      var a = [];
 //      a[0] = a;

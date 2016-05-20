@@ -120,7 +120,7 @@ var sinon = (function (buster) {
                         target[prop] = arguments[i][prop];
                     }
 
-                    // DONT ENUM bug, only care about toString
+                    // DON'T ENUM bug, only care about toString
                     if (arguments[i].hasOwnProperty("toString") &&
                         arguments[i].toString != target.toString) {
                         target.toString = arguments[i].toString;

@@ -327,13 +327,13 @@ A `CanvasWrapper` object:
     {
         "name": "id",
         "type": "Integer",
-        "description": "The fild id."
+        "description": "The file id."
     }
 ],
 [
     {
         "type": "Boolean",
-        "description": "`true` if the attempt was succesful. `false` otherwise."
+        "description": "`true` if the attempt was successful. `false` otherwise."
     }
 
 ]) }}
@@ -565,7 +565,7 @@ A `CanvasWrapper` object:
     }
 ]) }}
 
-{{ api_method("removeExtraDropzone", "removeExtraDropzone (element)", "Uesd to un-mark an `element` as a drop zone.",
+{{ api_method("removeExtraDropzone", "removeExtraDropzone (element)", "Used to un-mark an `element` as a drop zone.",
 [
     {
         "name": "element",

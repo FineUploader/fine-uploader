@@ -37,7 +37,7 @@ reference.  All methods outlined in the core or UI documentation are also availa
 in Fine Uploader Azure, unless otherwise noted here.
 {% endmarkdown %}
 
-{{ api_method("getBlobName", "getBlobName (fileId)", "Retreive the blob name with the associated ID",
+{{ api_method("getBlobName", "getBlobName (fileId)", "Retrieve the blob name with the associated ID",
 [
         {
             "name": "fileId",

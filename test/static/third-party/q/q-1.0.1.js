@@ -714,7 +714,7 @@ Promise.prototype.race = function () {
  * accepts the operation name, a resolver, and any further arguments that would
  * have been forwarded to the appropriate method above had a method been
  * provided with the proper name.  The API makes no guarantees about the nature
- * of the returned object, apart from that it is usable whereever promises are
+ * of the returned object, apart from that it is usable wherever promises are
  * bought and sold.
  */
 Q.makePromise = Promise;
@@ -1563,7 +1563,7 @@ Promise.prototype.allSettled = function () {
 };
 
 /**
- * Captures the failure of a promise, giving an oportunity to recover
+ * Captures the failure of a promise, giving an opportunity to recover
  * with a callback.  If the given promise is fulfilled, the returned
  * promise is fulfilled.
  * @param {Any*} promise for something

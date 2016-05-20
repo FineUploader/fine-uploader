@@ -1413,7 +1413,7 @@
                 this._uploadData.setStatus(id, qq.status.DELETE_FAILED);
                 this.log("Delete request for '" + name + "' has failed.", "error");
 
-                // For error reporing, we only have accesss to the response status if this is not
+                // For error reporting, we only have access to the response status if this is not
                 // an `XDomainRequest`.
                 if (xhrOrXdr.withCredentials === undefined) {
                     this._options.callbacks.onError(id, name, "Delete request failed", xhrOrXdr);

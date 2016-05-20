@@ -90,8 +90,8 @@ if (qqtest.canDownloadFileAsBlob) {
                                 onUploadChunkSuccess: function(id, chunkData, response, xhr) {
                                     //should be called twice each (1 for each chunk)
                                     assert.equal(id, 0, "Wrong ID passed to onUploadChunkSuccess");
-                                    assert.ok(response, "Null response paassed to onUploadChunkSuccess");
-                                    assert.ok(xhr, "Null XHR paassed to onUploadChunkSuccess");
+                                    assert.ok(response, "Null response passed to onUploadChunkSuccess");
+                                    assert.ok(xhr, "Null XHR passed to onUploadChunkSuccess");
 
                                     verifyChunkData(true, chunkData);
                                 }
@@ -281,8 +281,8 @@ if (qqtest.canDownloadFileAsBlob) {
                             onUploadChunkSuccess: function(id, chunkData, response, xhr) {
                                 //should be called twice each (1 for each chunk)
                                 assert.equal(id, 0, "Wrong ID passed to onUploadChunkSuccess");
-                                assert.ok(response, "Null response paassed to onUploadChunkSuccess");
-                                assert.ok(xhr, "Null XHR paassed to onUploadChunkSuccess");
+                                assert.ok(response, "Null response passed to onUploadChunkSuccess");
+                                assert.ok(xhr, "Null XHR passed to onUploadChunkSuccess");
 
                                 verifyChunkData(true, chunkData);
                             }

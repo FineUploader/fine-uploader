@@ -27,7 +27,7 @@ qq.Identify = function(fileOrBlob, log) {
          */
         isPreviewable: function() {
             var self = this,
-                idenitifer = new qq.Promise(),
+                identifier = new qq.Promise(),
                 previewable = false,
                 name = fileOrBlob.name === undefined ? "blob" : fileOrBlob.name;
 
@@ -45,7 +45,7 @@ qq.Identify = function(fileOrBlob, log) {
                             // so, if this is a TIFF and the UA isn't Safari, declare this file "non-previewable".
                             if (mime !== "image/tiff" || qq.supportedFeatures.tiffPreviews) {
                                 previewable = true;
-                                idenitifer.success(mime);
+                                identifier.success(mime);
                             }
 
                             return false;
@@ -55,19 +55,19 @@ qq.Identify = function(fileOrBlob, log) {
                     log(qq.format("'{}' is {} able to be rendered in this browser", name, previewable ? "" : "NOT"));
 
                     if (!previewable) {
-                        idenitifer.failure();
+                        identifier.failure();
                     }
                 },
                 function() {
                     log("Error reading file w/ name '" + name + "'.  Not able to be rendered in this browser.");
-                    idenitifer.failure();
+                    identifier.failure();
                 });
             }
             else {
-                idenitifer.failure();
+                identifier.failure();
             }
 
-            return idenitifer;
+            return identifier;
         },
 
         /**

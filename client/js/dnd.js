@@ -95,7 +95,7 @@ qq.DragAndDrop = function(o) {
                 var newEntries = accumEntries ? accumEntries.concat(entries) : entries;
 
                 if (entries.length) {
-                    setTimeout(function() { // prevent stack oveflow, however unlikely
+                    setTimeout(function() { // prevent stack overflow, however unlikely
                         getFilesInDirectory(entry, dirReader, newEntries, promise);
                     }, 0);
                 }

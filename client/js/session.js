@@ -68,9 +68,9 @@ qq.Session = function(spec) {
             refreshCompleteCallback = function(response, success, xhrOrXdr) {
                 handleFileItems(response, success, xhrOrXdr, refreshEffort);
             },
-            requsterOptions = qq.extend({}, options),
+            requesterOptions = qq.extend({}, options),
             requester = new qq.SessionAjaxRequester(
-                qq.extend(requsterOptions, {onComplete: refreshCompleteCallback})
+                qq.extend(requesterOptions, {onComplete: refreshCompleteCallback})
             );
 
         requester.queryServer();

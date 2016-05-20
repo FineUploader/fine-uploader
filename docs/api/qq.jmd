@@ -399,7 +399,7 @@ sure to wrap any elements before calling these methods on them.
     {
         "name": "event",
         "type": "String",
-        "desciption": "The name of the default event to prevent."
+        "description": "The name of the default event to prevent."
     }
 ]) }}
 
