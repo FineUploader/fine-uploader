@@ -127,7 +127,7 @@ placeholders will be treated the same way as cross-origin server-generated thumb
 section above for details.  Re-orienting placeholder images is not supported, so, if you provide your own placeholder
 images, ensure they are already oriented correctly.
 
-### Using a third-party library to resize images
+#### Using a third-party library to resize images
 
 Fine Uploader's internal image resize code delegates to the `drawImage` method on the browser's native `CanvasRenderingContext2D` object.
 This object is used to manipulate a `<canvas>` element, which represents a submitted image `File or `Blob`.
