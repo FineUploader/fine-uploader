@@ -191,7 +191,7 @@ scaling: {
 ```
 
 That's it! The above code will result in a higher-quality scaled image, and pica even pushes resizing logic off to a
-[web worker][webworker] to reduce strain on the UI thread.
+[web worker][webworkers] to reduce strain on the UI thread.
 
 
 ### Notices

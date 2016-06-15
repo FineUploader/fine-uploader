@@ -7,6 +7,7 @@
 {% markdown %}
 
 [customResizer]: ../api/options-ui.html#thumbnails.customResizer
+[webworkers]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 
 
 # Previews & Thumbnails {: .page-header }
@@ -158,7 +159,7 @@ thumbnails: {
 ```
 
 That's it! The above code will result in a higher-quality scaled thumbnail, and pica even pushes resizing logic off to a
-[web worker][webworker] to reduce strain on the UI thread.
+[web worker][webworkers] to reduce strain on the UI thread.
 
 
 ### Core mode
