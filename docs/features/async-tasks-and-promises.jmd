@@ -26,17 +26,17 @@ For more information on promises in JavaScript, have a look at
 ## Promissory Callbacks
 
 Promises are acceptable return values in the following [event handlers](../api/events.html).
-All of these callbacks can also prevent an associated action from being executed
+Many of these callbacks can also prevent an associated action from being executed
 with a false return value (non-promise) or a call to `failure()` on a returned
-promise instance:
+promise instance (see individual event docs for more details):
 
-* `onSubmit`
 * `onCancel`
 * `onCredentialsExpired`
-* `onValidateBatch`
-* `onValidate`
-* `onSubmitDelete`
 * `onPasteReceived`
+* `onSubmit`
+* `onSubmitDelete`
+* `onValidate`
+* `onValidateBatch`
 
 You are not required to return a promise -- you can simply return `false` (or nothing).
 However, there are some instances where you may want to perform

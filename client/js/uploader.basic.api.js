@@ -163,15 +163,16 @@
         // returning a promise that is fulfilled when the attempt completes.
         // Thumbnail can either be based off of a URL for an image returned
         // by the server in the upload response, or the associated `Blob`.
-        drawThumbnail: function(fileId, imgOrCanvas, maxSize, fromServer) {
+        drawThumbnail: function(fileId, imgOrCanvas, maxSize, fromServer, customResizeFunction) {
             var promiseToReturn = new qq.Promise(),
                 fileOrUrl, options;
 
             if (this._imageGenerator) {
                 fileOrUrl = this._thumbnailUrls[fileId];
                 options = {
-                    scale: maxSize > 0,
-                    maxSize: maxSize > 0 ? maxSize : null
+                    customResizeFunction: customResizeFunction,
+                    maxSize: maxSize > 0 ? maxSize : null,
+                    scale: maxSize > 0
                 };
 
                 // If client-side preview generation is possible

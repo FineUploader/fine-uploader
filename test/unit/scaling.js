@@ -1,4 +1,4 @@
-/* globals describe, it, qq, assert, qqtest, helpme */
+/* globals describe, it, qq, assert, qqtest, helpme, pica */
 if (qq.supportedFeatures.scaling) {
     describe("scaling module tests", function() {
         "use strict";
@@ -13,6 +13,15 @@ if (qq.supportedFeatures.scaling) {
                         }
                     });
                 }, 10);
+            },
+            typicalCustomResizer = function(resizeInfo) {
+                var promise = new qq.Promise();
+
+                pica.resizeCanvas(resizeInfo.sourceCanvas, resizeInfo.targetCanvas, {}, function() {
+                    promise.success();
+                });
+
+                return promise;
             };
 
         it("is disabled if no sizes are specified", function() {
@@ -148,14 +157,17 @@ if (qq.supportedFeatures.scaling) {
         });
 
         describe("generates simple scaled image tests", function() {
-            function runScaleTest(orient, done) {
-                assert.expect(3, done);
-
+            function runScaleTest(orient, customResizer, done) {
                 var scalerContext = qq.extend({}, qq.Scaler.prototype),
                     scale = qq.bind(qq.Scaler.prototype._generateScaledImage, scalerContext);
 
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                    scale({maxSize: 50, orient: orient, log: function(){}}, blob).then(function(scaledBlob) {
+                    scale({
+                        maxSize: 50,
+                        orient: orient,
+                        log: function(){},
+                        customResizeFunction: customResizer
+                    }, blob).then(function(scaledBlob) {
                         var URL = window.URL && window.URL.createObjectURL ? window.URL :
                                   window.webkitURL && window.webkitURL.createObjectURL ? window.webkitURL :
                                   null,
@@ -167,6 +179,7 @@ if (qq.supportedFeatures.scaling) {
                         img.onload = function() {
                             assert.ok(this.width <= 50);
                             assert.ok(this.height <= 50);
+                            done();
                         };
 
                         img.onerror = function() {
@@ -178,13 +191,27 @@ if (qq.supportedFeatures.scaling) {
                 });
             }
 
-            it("generates a properly scaled & oriented image for a reference image", function(done) {
-                runScaleTest(true, done);
+            describe("using built-in resizer code", function() {
+                it("generates a properly scaled & oriented image for a reference image", function(done) {
+                    runScaleTest(true, null, done);
+                });
+
+                it("generates a properly scaled image for a reference image", function(done) {
+                    runScaleTest(false, null, done);
+                });
             });
 
-            it("generates a properly scaled image for a reference image", function(done) {
-                runScaleTest(false, done);
-            });
+            if (!qq.ios()) {
+                describe("using third-party resizer code", function() {
+                    it("generates a properly scaled & oriented image for a reference image", function(done) {
+                        runScaleTest(true, typicalCustomResizer, done);
+                    });
+
+                    it("generates a properly scaled image for a reference image", function(done) {
+                        runScaleTest(false, typicalCustomResizer, done);
+                    });
+                });
+            }
         });
 
 
@@ -257,119 +284,145 @@ if (qq.supportedFeatures.scaling) {
             });
         });
 
-        it("uploads scaled files as expected: non-chunked, default options", function(done) {
-            assert.expect(39, done);
+        describe("scaled files uploads (non-chunked, default options)", function() {
+            function runTest(customResizer, done) {
+                assert.expect(39, done);
 
-            var referenceFileSize,
-                sizes = [
-                    {
-                        name: "small",
-                        maxSize: 50
-                    },
-                    {
-                        name: "medium",
-                        maxSize: 400
-                    }
-                ],
-                expectedUploadCallbacks = [
-                    {id: 0, name: "up (small).jpeg"},
-                    {id: 1, name: "up (medium).jpeg"},
-                    {id: 2, name: "up.jpeg"},
-                    {id: 3, name: "up2 (small).jpeg"},
-                    {id: 4, name: "up2 (medium).jpeg"},
-                    {id: 5, name: "up2.jpeg"}
-                ],
-                actualUploadCallbacks = [],
-                uploader = new qq.FineUploaderBasic({
-                    request: {endpoint: "test/uploads"},
-                    scaling: {
-                        sizes: sizes
-                    },
-                    callbacks: {
-                        onUpload: function(id, name) {
-                            assert.ok(uploader.getSize(id) > 0, "Blob size is not greater than 0");
-                            assert.ok(qq.isBlob(uploader.getFile(id)), "file is not a Blob");
-                            assert.equal(uploader.getFile(id).size, referenceFileSize);
-
-                            actualUploadCallbacks.push({id: id, name: name});
-                            setTimeout(function() {
-                                var req = fileTestHelper.getRequests()[id],
-                                    parentUuid = req.requestBody.fields.qqparentuuid,
-                                    parentSize = req.requestBody.fields.qqparentsize,
-                                    parentId = uploader.getParentId(id),
-                                    file = req.requestBody.fields.qqfile;
-
-                                assert.equal(file.type, "image/jpeg");
-
-                                if (parentId !== null) {
-                                    assert.equal(parentUuid, uploader.getUuid(parentId));
-                                    assert.equal(parentSize, uploader.getSize(parentId));
-                                }
-                                else {
-                                    assert.equal(parentUuid, undefined);
-                                    assert.equal(parentSize, undefined);
-                                }
-
-                                req.respond(200, null, JSON.stringify({success: true}));
-                            }, 10);
+                var referenceFileSize,
+                    sizes = [
+                        {
+                            name: "small",
+                            maxSize: 50
                         },
-                        onAllComplete: function(successful, failed) {
-                            assert.equal(successful.length, 6);
-                            assert.equal(failed.length, 0);
-                            assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
+                        {
+                            name: "medium",
+                            maxSize: 400
                         }
-                    }
-                });
+                    ],
+                    expectedUploadCallbacks = [
+                        {id: 0, name: "up (small).jpeg"},
+                        {id: 1, name: "up (medium).jpeg"},
+                        {id: 2, name: "up.jpeg"},
+                        {id: 3, name: "up2 (small).jpeg"},
+                        {id: 4, name: "up2 (medium).jpeg"},
+                        {id: 5, name: "up2.jpeg"}
+                    ],
+                    actualUploadCallbacks = [],
+                    uploader = new qq.FineUploaderBasic({
+                        request: {endpoint: "test/uploads"},
+                        scaling: {
+                            sizes: sizes,
+                            customResizer: customResizer
+                        },
+                        callbacks: {
+                            onUpload: function(id, name) {
+                                assert.ok(uploader.getSize(id) > 0, "Blob size is not greater than 0");
+                                assert.ok(qq.isBlob(uploader.getFile(id)), "file is not a Blob");
+                                assert.equal(uploader.getFile(id).size, referenceFileSize);
 
-            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
-                fileTestHelper.mockXhr();
-                referenceFileSize = blob.size;
-                uploader.addFiles([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
+                                actualUploadCallbacks.push({id: id, name: name});
+                                setTimeout(function() {
+                                    var req = fileTestHelper.getRequests()[id],
+                                        parentUuid = req.requestBody.fields.qqparentuuid,
+                                        parentSize = req.requestBody.fields.qqparentsize,
+                                        parentId = uploader.getParentId(id),
+                                        file = req.requestBody.fields.qqfile;
+
+                                    assert.equal(file.type, "image/jpeg");
+
+                                    if (parentId !== null) {
+                                        assert.equal(parentUuid, uploader.getUuid(parentId));
+                                        assert.equal(parentSize, uploader.getSize(parentId));
+                                    }
+                                    else {
+                                        assert.equal(parentUuid, undefined);
+                                        assert.equal(parentSize, undefined);
+                                    }
+
+                                    req.respond(200, null, JSON.stringify({success: true}));
+                                }, 100);
+                            },
+                            onAllComplete: function(successful, failed) {
+                                assert.equal(successful.length, 6);
+                                assert.equal(failed.length, 0);
+                                assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
+                            }
+                        }
+                    });
+
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                    fileTestHelper.mockXhr();
+                    referenceFileSize = blob.size;
+                    uploader.addFiles([{blob: blob, name: "up.jpeg"}, {blob: blob, name: "up2.jpeg"}]);
+                });
+            }
+
+            it("uploads as expected with internal resizer code", function(done) {
+                runTest(null, done);
             });
+
+            if (!qq.ios()) {
+                it("uploads as expected with third-party resizer code", function (done) {
+                    runTest(typicalCustomResizer, done);
+                });
+            }
         });
 
-        it("ensure scaled versions of non-JPEGs are always PNGs", function(done) {
-            assert.expect(4, done);
+        describe("jpeg to PNG conversion behavior", function() {
+            function runTest(customResizer, done) {
+                assert.expect(4, done);
 
-            var expectedOutputTypes = [
-                    "image/png",
-                    "image/png",
-                    "image/png",
-                    "image/gif"
-                ],
-                sizes = [
-                    {
-                        name: "small",
-                        maxSize: 50
-                    }
-                ],
-                actualUploadCallbacks = [],
-                uploader = new qq.FineUploaderBasic({
-                    request: {endpoint: "test/uploads"},
-                    scaling: {
-                        sizes: sizes
-                    },
-                    callbacks: {
-                        onUpload: function(id, name) {
-                            actualUploadCallbacks.push({id: id, name: name});
-                            setTimeout(function() {
-                                var req = fileTestHelper.getRequests()[id],
-                                    file = req.requestBody.fields.qqfile;
-
-                                assert.equal(file.type, expectedOutputTypes[id]);
-
-                                req.respond(200, null, JSON.stringify({success: true}));
-                            }, 10);
+                var expectedOutputTypes = [
+                        "image/png",
+                        "image/png",
+                        "image/png",
+                        "image/gif"
+                    ],
+                    sizes = [
+                        {
+                            name: "small",
+                            maxSize: 50
                         }
-                    }
-                });
+                    ],
+                    actualUploadCallbacks = [],
+                    uploader = new qq.FineUploaderBasic({
+                        request: {endpoint: "test/uploads"},
+                        scaling: {
+                            customResizer: customResizer,
+                            sizes: sizes
+                        },
+                        callbacks: {
+                            onUpload: function(id, name) {
+                                actualUploadCallbacks.push({id: id, name: name});
+                                setTimeout(function() {
+                                    var req = fileTestHelper.getRequests()[id],
+                                        file = req.requestBody.fields.qqfile;
 
-            qqtest.downloadFileAsBlob("star.png", "image/png").then(function(star) {
-                qqtest.downloadFileAsBlob("drop-background.gif", "image/gif").then(function(drop) {
-                    fileTestHelper.mockXhr();
-                    uploader.addFiles([{blob: star, name: "star.png"}, {blob: drop, name: "drop.gif"}]);
+                                    assert.equal(file.type, expectedOutputTypes[id]);
+
+                                    req.respond(200, null, JSON.stringify({success: true}));
+                                }, 100);
+                            }
+                        }
+                    });
+
+                qqtest.downloadFileAsBlob("star.png", "image/png").then(function(star) {
+                    qqtest.downloadFileAsBlob("drop-background.gif", "image/gif").then(function(drop) {
+                        fileTestHelper.mockXhr();
+                        uploader.addFiles([{blob: star, name: "star.png"}, {blob: drop, name: "drop.gif"}]);
+                    });
                 });
+            }
+
+            it("behaves as expected with internal resizer", function(done) {
+                runTest(null, done);
             });
+
+            if (!qq.ios()) {
+                it("behaves as expected with custom resizer", function (done) {
+                    runTest(typicalCustomResizer, done);
+                });
+            }
         });
 
         it("uploads scaled files as expected: chunked, default options", function(done) {
@@ -512,67 +565,80 @@ if (qq.supportedFeatures.scaling) {
             });
         });
 
-        it("generates a scaled Blob of the original file's type if the requested type is not specified or is not valid", function(done) {
-            assert.expect(7, done);
+        describe("generating a scaled Blob of the original file's type if the requested type is not specified or is not valid", function() {
+            function runTest(customResizer, done) {
+                assert.expect(7, done);
 
-            var sizes = [
-                    {
-                        name: "one",
-                        maxSize: 100,
-                        type: "image/jpeg"
-                    },
-                    {
-                        name: "two",
-                        maxSize: 101,
-                        type: "image/blah"
-                    },
-                    {
-                        name: "three",
-                        maxSize: 102
-                    }
-                ],
-                expectedUploadCallbacks = [
-                    {id: 0, name: "test (one).jpeg"},
-                    {id: 1, name: "test (two).png"},
-                    {id: 2, name: "test (three).png"},
-                    {id: 3, name: "test.png"}
-                ],
-                expectedScaledBlobType = [
-                    "image/jpeg",
-                    "image/png",
-                    "image/png",
-                    "image/png"
-                ],
-                actualUploadCallbacks = [],
-                uploader = new qq.FineUploaderBasic({
-                    request: {endpoint: "test/uploads"},
-                    scaling: {
-                        defaultType: "image/png",
-                        sizes: sizes
-                    },
-                    callbacks: {
-                        onUpload: function(id, name) {
-                            actualUploadCallbacks.push({id: id, name: name});
-                            setTimeout(function() {
-                                var req = fileTestHelper.getRequests()[id],
-                                    actualType = req.requestBody.fields.qqfile.type;
-
-                                assert.equal(actualType, expectedScaledBlobType[id], "(" + id + ") Scaled blob type (" + actualType + ")  is incorrect.  Expected " + expectedScaledBlobType[id]);
-                                req.respond(200, null, JSON.stringify({success: true}));
-                            }, 10);
+                var sizes = [
+                        {
+                            name: "one",
+                            maxSize: 100,
+                            type: "image/jpeg"
                         },
-                        onAllComplete: function(successful, failed) {
-                            assert.equal(successful.length, 4);
-                            assert.equal(failed.length, 0);
-                            assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
+                        {
+                            name: "two",
+                            maxSize: 101,
+                            type: "image/blah"
+                        },
+                        {
+                            name: "three",
+                            maxSize: 102
                         }
-                    }
-                });
+                    ],
+                    expectedUploadCallbacks = [
+                        {id: 0, name: "test (one).jpeg"},
+                        {id: 1, name: "test (two).png"},
+                        {id: 2, name: "test (three).png"},
+                        {id: 3, name: "test.png"}
+                    ],
+                    expectedScaledBlobType = [
+                        "image/jpeg",
+                        "image/png",
+                        "image/png",
+                        "image/png"
+                    ],
+                    actualUploadCallbacks = [],
+                    uploader = new qq.FineUploaderBasic({
+                        request: {endpoint: "test/uploads"},
+                        scaling: {
+                            customResizer: customResizer,
+                            defaultType: "image/png",
+                            sizes: sizes
+                        },
+                        callbacks: {
+                            onUpload: function(id, name) {
+                                actualUploadCallbacks.push({id: id, name: name});
+                                setTimeout(function() {
+                                    var req = fileTestHelper.getRequests()[id],
+                                        actualType = req.requestBody.fields.qqfile.type;
 
-            qqtest.downloadFileAsBlob("star.png", "image/png").then(function(blob) {
-                fileTestHelper.mockXhr();
-                uploader.addFiles({blob: blob, name: "test.png"});
+                                    assert.equal(actualType, expectedScaledBlobType[id], "(" + id + ") Scaled blob type (" + actualType + ")  is incorrect.  Expected " + expectedScaledBlobType[id]);
+                                    req.respond(200, null, JSON.stringify({success: true}));
+                                }, 10);
+                            },
+                            onAllComplete: function(successful, failed) {
+                                assert.equal(successful.length, 4);
+                                assert.equal(failed.length, 0);
+                                assert.deepEqual(actualUploadCallbacks, expectedUploadCallbacks);
+                            }
+                        }
+                    });
+
+                qqtest.downloadFileAsBlob("star.png", "image/png").then(function(blob) {
+                    fileTestHelper.mockXhr();
+                    uploader.addFiles({blob: blob, name: "test.png"});
+                });
+            }
+
+            it("behaves as expected with internal resizer", function(done) {
+                runTest(null, done);
             });
+
+            if (!qq.ios()) {
+                it("behaves as expected with custom resizer", function (done) {
+                    runTest(typicalCustomResizer, done);
+                });
+            }
         });
 
         it("uploads scaled files as expected, excluding the original: non-chunked, default options", function(done) {
@@ -721,7 +787,7 @@ if (qq.supportedFeatures.scaling) {
         });
 
         describe("scaleImage API method tests", function() {
-            it("return a scaled version of an existing image file, fail a request for a missing file, fail a request for a non-image file", function(done) {
+            function runTest(customResizer, done) {
                 assert.expect(6, done);
 
                 var referenceFileSize,
@@ -731,7 +797,7 @@ if (qq.supportedFeatures.scaling) {
                             onUpload: acknowledgeRequests,
 
                             onAllComplete: function(successful, failed) {
-                                uploader.scaleImage(0, {maxSize: 10}).then(function(scaledBlob) {
+                                uploader.scaleImage(0, {customResizer: customResizer, maxSize: 10}).then(function(scaledBlob) {
                                     assert.ok(qq.isBlob(scaledBlob));
                                     assert.ok(scaledBlob.size < referenceFileSize);
                                     assert.equal(scaledBlob.type, "image/jpeg");
@@ -744,13 +810,13 @@ if (qq.supportedFeatures.scaling) {
                                 });
 
                                 // not an image
-                                uploader.scaleImage(1, {maxSize: 10}).then(function() {},
+                                uploader.scaleImage(1, {customResizer: customResizer, maxSize: 10}).then(function() {},
                                 function() {
                                     assert.ok(true);
                                 });
 
                                 //missing
-                                uploader.scaleImage(2, {maxSize: 10}).then(function() {},
+                                uploader.scaleImage(2, {customResizer: customResizer, maxSize: 10}).then(function() {},
                                 function() {
                                     assert.ok(true);
                                 });
@@ -766,64 +832,84 @@ if (qq.supportedFeatures.scaling) {
                         uploader.addFiles([{blob: up, name: "up.jpg"}, {blob: text, name: "text.txt"}]);
                     });
                 });
+            }
+
+            it("return a scaled version of an existing image file, fail a request for a missing file, fail a request for a non-image file - internal resizer", function(done) {
+                runTest(null, done);
+            });
+
+            it("return a scaled version of an existing image file, fail a request for a missing file, fail a request for a non-image file - custom resizer", function(done) {
+                runTest(typicalCustomResizer, done);
             });
         });
 
-        it("includes EXIF data in scaled image (only if requested & appropriate)", function(done) {
-            assert.expect(8, done);
+        describe("EXIF data inclusion in scaled images", function() {
+            function runTest(customResizer, done) {
+                assert.expect(8, done);
 
-            var getReqFor = function(uuid) {
-                    var theReq;
+                var getReqFor = function (uuid) {
+                        var theReq;
 
-                    qq.each(fileTestHelper.getRequests(), function(idx, req) {
-                        if (req.requestBody.fields.qquuid === uuid) {
-                            theReq = req;
-                            return false;
+                        qq.each(fileTestHelper.getRequests(), function (idx, req) {
+                            if (req.requestBody.fields.qquuid === uuid) {
+                                theReq = req;
+                                return false;
+                            }
+                        });
+
+                        return theReq;
+                    },
+                    uploader = new qq.FineUploaderBasic({
+                        request: {endpoint: "test/uploads"},
+                        scaling: {
+                            customResizer: customResizer,
+                            includeExif: true,
+                            sizes: [{name: "scaled", maxSize: 50}]
+                        },
+                        callbacks: {
+                            onUpload: function (id) {
+                                setTimeout(function () {
+                                    var req = getReqFor(uploader.getUuid(id)),
+                                        blob = req.requestBody.fields.qqfile,
+                                        name = req.requestBody.fields.qqfilename;
+
+                                    assert.ok(qq.isBlob(blob));
+                                    new qq.Exif(blob, function () {
+                                    }).parse().then(function (tags) {
+                                        if (name.indexOf("left") === 0) {
+                                            assert.equal(tags.Orientation, 6);
+                                        }
+                                        else {
+                                            assert.fail(null, null, name + " contains EXIF data, unexpectedly");
+                                        }
+                                    }, function () {
+                                        if (name.indexOf("star") === 0) {
+                                            assert.ok(true);
+                                        }
+                                        else {
+                                            assert.fail(null, null, name + " does not contains EXIF data, unexpectedly");
+                                        }
+                                    });
+                                    req.respond(200, null, JSON.stringify({success: true}));
+                                }, 10);
+                            }
                         }
                     });
 
-                    return theReq;
-                },
-                uploader = new qq.FineUploaderBasic({
-                request: {endpoint: "test/uploads"},
-                scaling: {
-                    includeExif: true,
-                    sizes: [{name: "scaled", maxSize: 50}]
-                },
-                callbacks: {
-                    onUpload: function(id) {
-                        setTimeout(function() {
-                            var req = getReqFor(uploader.getUuid(id)),
-                                blob = req.requestBody.fields.qqfile,
-                                name = req.requestBody.fields.qqfilename;
+                qqtest.downloadFileAsBlob("left.jpg", "image/jpeg").then(function (left) {
+                    qqtest.downloadFileAsBlob("star.png", "image/png").then(function (star) {
+                        fileTestHelper.mockXhr();
+                        uploader.addFiles([{blob: left, name: "left.jpg"}, {blob: star, name: "star.png"}]);
+                    });
+                });
+            }
 
-                            assert.ok(qq.isBlob(blob));
-                            new qq.Exif(blob, function(){}).parse().then(function(tags) {
-                                if (name.indexOf("left") === 0) {
-                                    assert.equal(tags.Orientation, 6);
-                                }
-                                else {
-                                    assert.fail(null, null, name + " contains EXIF data, unexpectedly");
-                                }
-                            }, function() {
-                                if (name.indexOf("star") === 0) {
-                                    assert.ok(true);
-                                }
-                                else {
-                                    assert.fail(null, null, name + " does not contains EXIF data, unexpectedly");
-                                }
-                            });
-                            req.respond(200, null, JSON.stringify({success: true}));
-                        }, 10);
-                    }
-                }
+            it("includes EXIF data only if requested & appropriate - internal resizer", function(done) {
+                runTest(null, done);
             });
 
-            qqtest.downloadFileAsBlob("left.jpg", "image/jpeg").then(function(left) {
-                qqtest.downloadFileAsBlob("star.png", "image/png").then(function(star) {
-                    fileTestHelper.mockXhr();
-                    uploader.addFiles([{blob: left, name: "left.jpg"}, {blob: star, name: "star.png"}]);
-                });
+            it("includes EXIF data only if requested & appropriate - custom resizer", function(done) {
+                runTest(typicalCustomResizer, done);
             });
         });
     });

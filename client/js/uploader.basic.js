@@ -194,6 +194,8 @@
 
             // scale images client side, upload a new file for each scaled version
             scaling: {
+                customResizer: null,
+
                 // send the original file as well
                 sendOriginal: true,
 

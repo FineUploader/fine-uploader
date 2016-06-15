@@ -1,6 +1,6 @@
 ---
 addons:
-  firefox: "38.0"
+  firefox: "latest"
 
 sudo: false
 language: node_js
@@ -21,15 +21,8 @@ env:
       awR42/q/Akos2eA8NWx5yU+hRC5rr+oQG5Eio0tzi9+y3a6VXDvgS1h2SaQz
       TR/MjA/29gFvV7bnp1LSs2TdZx+NGhLd4zHv01XZ+pQk/nQiW9w=
 
-before_install:
-- npm install -g grunt-cli
-- git submodule update --init --recursive
-
 before_script:
 - "sh -e /etc/init.d/xvfb start"
-
-script:
-- grunt travis
 
 branches:
     only:
@@ -38,6 +31,3 @@ branches:
         - /^feature.*$/
         - /^.*fix.*$/
         - /^release.*$/
-notifications:
-    slack:
-        secure: qb1LdOGlBVKCLxNi86tWrabIKs9TFa3ttpLIwu1vtEeh+R9XDeG32X89sM3a5CHRwLqkHwrs6JNcIC4qhTAKiUOiaPYPbv7PkZXX1GIuOPMBp20ghpnWA7QHv6SpmW4qDCTixZSzf0B0m97muzWm1VnotgRELbfKr9Cf/7h3jS0=

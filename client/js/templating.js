@@ -486,9 +486,10 @@ qq.Templating = function(spec) {
                 relatedThumbnailId = optFileOrBlob && optFileOrBlob.qqThumbnailId,
                 thumbnail = getThumbnail(id),
                 spec = {
+                    customResizeFunction: queuedThumbRequest.customResizeFunction,
                     maxSize: thumbnailMaxSize,
-                    scale: true,
-                    orient: true
+                    orient: true,
+                    scale: true
                 };
 
             if (qq.supportedFeatures.imagePreviews) {
@@ -534,8 +535,9 @@ qq.Templating = function(spec) {
                 showWaitingImg = queuedThumbRequest.showWaitingImg,
                 thumbnail = getThumbnail(id),
                 spec = {
-                    maxSize: thumbnailMaxSize,
-                    scale: serverScale
+                    customResizeFunction: queuedThumbRequest.customResizeFunction,
+                    scale: serverScale,
+                    maxSize: thumbnailMaxSize
                 };
 
             if (thumbnail) {
@@ -982,16 +984,16 @@ qq.Templating = function(spec) {
             show(getSpinner(id));
         },
 
-        generatePreview: function(id, optFileOrBlob) {
+        generatePreview: function(id, optFileOrBlob, customResizeFunction) {
             if (!this.isHiddenForever(id)) {
-                thumbGenerationQueue.push({id: id, optFileOrBlob: optFileOrBlob});
+                thumbGenerationQueue.push({id: id, customResizeFunction: customResizeFunction, optFileOrBlob: optFileOrBlob});
                 !thumbnailQueueMonitorRunning && generateNextQueuedPreview();
             }
         },
 
-        updateThumbnail: function(id, thumbnailUrl, showWaitingImg) {
+        updateThumbnail: function(id, thumbnailUrl, showWaitingImg, customResizeFunction) {
             if (!this.isHiddenForever(id)) {
-                thumbGenerationQueue.push({update: true, id: id, thumbnailUrl: thumbnailUrl, showWaitingImg: showWaitingImg});
+                thumbGenerationQueue.push({customResizeFunction: customResizeFunction, update: true, id: id, thumbnailUrl: thumbnailUrl, showWaitingImg: showWaitingImg});
                 !thumbnailQueueMonitorRunning && generateNextQueuedPreview();
             }
         },

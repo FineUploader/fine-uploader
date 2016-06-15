@@ -102,6 +102,18 @@ options for `messages`""", "info", "Note:") }}
 
 {{ api_parent_option("thumbnails", "thumbnails", "",
     (
+        ("thumbnails.customResizer", "customResizer", """Ignored if the current browser does not [support image previews](../browser-support.html). If you want to use an alternate library to resize the image, you must contribute a function for this option that returns a `Promise`. Once the resize is complete, your promise must be fulfilled. You may, of course, reject your returned `Promise` is the resize fails in some way.
+
+A `resizeInfo` object, which will be passed to the supplied function, contains the following properties:
+
+* `blob` - The original `File` or `Blob` object, if available.
+* `height` - Desired height of the image after the resize operation.
+* `image` - The original `HTMLImageElement` object, if available.
+* `sourceCanvas` - `HTMLCanvasElement` element containing the original image data (not resized).
+* `targetCanvas` - `HTMLCanvasElement` element containing the `HTMLCanvasElement` that should contain the resized image.
+* `width` - Desired width of the image after the resize operation.
+",
+        "Function", "undefined"),
         ("thumbnails.maxCount", "maxCount", "Maximum number of previews to render per Fine Uploader instance.  A call to the reset method resets this value as well.", "Integer", "0",),
         ("thumbnails.timeBetweenThumbs", "timeBetweenThumbs", "The amount of time, in milliseconds, to pause between each preview generation process.  This is in place to prevent the UI thread from locking up for a continuously long period of time, as preview generation can be a resource-intensive process.", "Integer", "750",),
     )
