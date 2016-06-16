@@ -44,7 +44,7 @@ if (qqtest.canDownloadFileAsBlob) {
                         onUploadChunk: function (id, name, chunkData) {
                             chunksSent++;
 
-                            assert.equal(id, 0, "Wrong ID passed to onUpoadChunk");
+                            assert.equal(id, 0, "Wrong ID passed to onUploadChunk");
                             assert.equal(name, uploader.getName(id), "Wrong name passed to onUploadChunk");
                             assert.equal(chunkData.partIndex, chunksSent - 1, "Wrong partIndex passed to onUploadChunk");
                             assert.equal(chunkData.startByte, (chunksSent - 1) * chunkSize + 1, "Wrong startByte passed to onUploadChunk");

@@ -113,8 +113,7 @@ A `CanvasWrapper` object:
     }
 ]) }}
 
-{{ api_method("drawThumbnail", "drawThumbnail (id, targetContainer[, maxSize[, fromServer]])",
-"Draws a thumbnail.",
+{{ api_method("drawThumbnail", "drawThumbnail (id, targetContainer[, maxSize[, fromServer[, customResizer]]])", "Draws a thumbnail.",
 [
     {
         "name": "id",
@@ -135,6 +134,21 @@ A `CanvasWrapper` object:
         "name": "fromServer",
         "type": "Boolean",
         "description": "`true` if the image data will come as a response from the server rather than be generated client-side."
+    },
+    {
+        "name": "customResizer",
+        "type": "function",
+        "description": "Ignored if the current browser does not [support image previews](../browser-support.html). If you want to use an alternate library to resize the image, you must contribute a function for this option that returns a `Promise`. Once the resize is complete, your promise must be fulfilled. You may, of course, reject your returned `Promise` is the resize fails in some way.
+
+A `resizeInfo` object, which will be passed to the supplied function, contains the following properties:
+
+* `blob` - The original `File` or `Blob` object, if available.
+* `height` - Desired height of the image after the resize operation.
+* `image` - The original `HTMLImageElement` object, if available.
+* `sourceCanvas` - `HTMLCanvasElement` element containing the original image data (not resized).
+* `targetCanvas` - `HTMLCanvasElement` element containing the `HTMLCanvasElement` that should contain the resized image.
+* `width` - Desired width of the image after the resize operation.
+"
     }
 ],
 [
@@ -327,13 +341,13 @@ A `CanvasWrapper` object:
     {
         "name": "id",
         "type": "Integer",
-        "description": "The fild id."
+        "description": "The file id."
     }
 ],
 [
     {
         "type": "Boolean",
-        "description": "`true` if the attempt was succesful. `false` otherwise."
+        "description": "`true` if the attempt was successful. `false` otherwise."
     }
 
 ]) }}
@@ -359,7 +373,24 @@ A `CanvasWrapper` object:
     {
         "name": "options",
         "type": "Object",
-        "description": "Information about the scaled image to generate.  The `maxSize` property is required (integer).  Optional properties are: `orient` (boolean, defaults to true), `type` (string, defaults to the type of the reference image), and `quality` (number between 0 and 100, defaults to 80), and `includeExif` (boolean, defaults to `false`)."
+        "description": "Information about the scaled image to generate.  The following properties are supported:
+
+* `maxSize` (**required**) (integer).
+* `orient` (boolean, defaults to true)
+* `type` (string, defaults to the type of the reference image)
+* `quality` (number between 0 and 100, defaults to 80)
+* `includeExif` (boolean, defaults to `false`).
+* `customResizer` (function) - Ignored if the current browser does not [support image previews](../browser-support.html). If you want to use an alternate library to resize the image, you must contribute a function for this option that returns a `Promise`. Once the resize is complete, your promise must be fulfilled. You may, of course, reject your returned `Promise` is the resize fails in some way.
+
+A `resizeInfo` object, which will be passed to your (optional) `customResizer` function, contains the following properties:
+
+* `blob` - The original `File` or `Blob` object, if available.
+* `height` - Desired height of the image after the resize operation.
+* `image` - The original `HTMLImageElement` object, if available.
+* `sourceCanvas` - `HTMLCanvasElement` element containing the original image data (not resized).
+* `targetCanvas` - `HTMLCanvasElement` element containing the `HTMLCanvasElement` that should contain the resized image.
+* `width` - Desired width of the image after the resize operation.
+"
     }
 ],
 [
@@ -565,7 +596,7 @@ A `CanvasWrapper` object:
     }
 ]) }}
 
-{{ api_method("removeExtraDropzone", "removeExtraDropzone (element)", "Uesd to un-mark an `element` as a drop zone.",
+{{ api_method("removeExtraDropzone", "removeExtraDropzone (element)", "Used to un-mark an `element` as a drop zone.",
 [
     {
         "name": "element",

@@ -20,23 +20,23 @@ can use any A+ certified promise implementation to communicate with Fine Uploade
 no longer bound to `qq.Promise`.  Instead, you can use [Q][q], or [RSVP][rsvp], for example, to return promises from any
 promissory callback handlers.
 
-For more informaton on promises in JavaScript, have a look at
+For more information on promises in JavaScript, have a look at
 [Promises -- an alternative way to approach asynchronous JavaScript](http://12devs.co.uk/articles/promises-an-alternative-way-to-approach-asynchronous-javascript/).
 
 ## Promissory Callbacks
 
 Promises are acceptable return values in the following [event handlers](../api/events.html).
-All of these callbacks can also prevent an associated action from being executed
+Many of these callbacks can also prevent an associated action from being executed
 with a false return value (non-promise) or a call to `failure()` on a returned
-promise instance:
+promise instance (see individual event docs for more details):
 
-* `onSubmit`
 * `onCancel`
 * `onCredentialsExpired`
-* `onValidateBatch`
-* `onValidate`
-* `onSubmitDelete`
 * `onPasteReceived`
+* `onSubmit`
+* `onSubmitDelete`
+* `onValidate`
+* `onValidateBatch`
 
 You are not required to return a promise -- you can simply return `false` (or nothing).
 However, there are some instances where you may want to perform
@@ -48,7 +48,7 @@ does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog 
 ## qq.Promise API
 
 {{ alert(
-"""Fine Uploader's internal `qq.Promise` object is _not_ compilant with the A+ specification. If this is a problem for you,
+"""Fine Uploader's internal `qq.Promise` object is _not_ compliant with the A+ specification. If this is a problem for you,
 feel free to use any compliant promise library of your choice instead.""", "info", "Note:") }}
 
 {% endmarkdown %}

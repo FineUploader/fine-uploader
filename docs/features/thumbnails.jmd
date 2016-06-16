@@ -5,6 +5,11 @@
 {% endblock %}
 {% block content %}
 {% markdown %}
+
+[customResizer]: ../api/options-ui.html#thumbnails.customResizer
+[webworkers]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
+
+
 # Previews & Thumbnails {: .page-header }
 
 ## Summary
@@ -121,6 +126,41 @@ Placeholders will also be scaled, if the `qq-max-size` attribute on the template
 placeholders will be treated the same way as cross-origin server-generated thumbnails.  See the "Cross-origin thumbnails"
 section above for details.  Re-orienting placeholder images is not supported, so, if you provide your own placeholder
 images, ensure they are already oriented correctly.
+
+#### Using a third-party library to resize images
+
+Fine Uploader's internal image resize code delegates to the `drawImage` method on the browser's native `CanvasRenderingContext2D` object.
+This object is used to manipulate a `<canvas>` element, which represents a submitted image `File` or `Blob`.
+Most browsers use linear interpolation when resizing images. This can lead to extreme aliasing and moire patterns
+which may result in lower quality displayed thumbnails.
+
+If speed is most important, and precise scaled thumbnail generation is _not_ paramount, you should continue to use Fine Uploader's
+internal scaling implementation. However, if you want to generate higher quality thumbnail images for display, you should
+instead use a third-party library to resize submitted image files, such as [pica] or [limby-resize]. As of version 5.10 of
+Fine Uploader, it is extremely easy to integrate such a plug-in into this library. In fact, Fine Uploader will continue
+to properly orient the submitted image file and then pass a properly sized `<canvas>` to the image scaling library of
+your choice to receive the resized image file, along with the original full-sized image file drawn onto a `<canvas>` for reference.
+The only caveat is that, due to issues with scaling larger images in iOS, you will likely need to continue to use
+Fine Uploader's internal scaling algorithm for that particular OS, as other third-party scaling libraries
+most likely do _not_ contain logic to handle this complex case. Luckily, that is easy to account for as well.
+
+If you'd like to, for example, use pica to generate higher-quality scaled images, simply pull pica into your project,
+and contribute a [`thumbnails.customResizer` function][customResizer], like so:
+
+```javascript
+thumbnails: {
+    customResizer: !qq.ios() && function(resizeInfo) {
+        return new Promise(function(resolve, reject) {
+            pica.resizeCanvas(resizeInfo.sourceCanvas, resizeInfo.targetCanvas, {}, resolve)
+        })
+    },
+    ...
+}
+```
+
+That's it! The above code will result in a higher-quality scaled thumbnail, and pica even pushes resizing logic off to a
+[web worker][webworkers] to reduce strain on the UI thread.
+
 
 ### Core mode
 For Core mode users that need to create their own highly-customized UI, there is a [`drawThumbnail` API method](../api/methods.html)

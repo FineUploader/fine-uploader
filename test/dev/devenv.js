@@ -41,20 +41,34 @@ qq(window).attach("load", function() {
             enableAuto: true
         },
         thumbnails: {
+            customResizer: !qq.ios() && function(resizeInfo) {
+                var promise = new qq.Promise();
+
+                pica.resizeCanvas(resizeInfo.sourceCanvas, resizeInfo.targetCanvas, {}, function() {
+                    promise.success();
+                })
+
+                return promise;
+            },
             placeholders: {
                 waitingPath: "/client/placeholders/waiting-generic.png",
                 notAvailablePath: "/client/placeholders/not_available-generic.png"
             }
         },
-        //scaling: {
-        //    sizes: [{name: "small", maxSize: 300}]
-        //},
+        scaling: {
+            customResizer: !qq.ios() && function(resizeInfo) {
+                var promise = new qq.Promise();
+
+                pica.resizeCanvas(resizeInfo.sourceCanvas, resizeInfo.targetCanvas, {}, function() {
+                    promise.success();
+                })
+
+                return promise;
+            },
+            sizes: [{name: "small", maxSize: 800}]
+        },
         session: {
             //endpoint: "/test/dev/handlers/vendor/fineuploader/php-traditional-server/endpoint.php?initial"
-        },
-        validation: {
-            //sizeLimit: 10000000,
-            //itemLimit: 4
         },
         callbacks: {
             onError: errorHandler,
@@ -65,12 +79,6 @@ qq(window).attach("load", function() {
                 }, id);
 
             }
-            //onStatusChange: function (id, oldS, newS) {
-            //    qq.log("id: " + id + " " + newS);
-            //},
-            //onComplete: function (id, name, response) {
-            //    qq.log(response);
-            //}
         }
     });
 

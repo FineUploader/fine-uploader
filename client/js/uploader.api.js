@@ -574,11 +574,11 @@
 
             if (canned) {
                 this._templating.addFileToCache(id, this._options.formatFileName(name), prependData, dontDisplay);
-                this._templating.updateThumbnail(id, this._thumbnailUrls[id], true);
+                this._templating.updateThumbnail(id, this._thumbnailUrls[id], true, this._options.thumbnails.customResizer);
             }
             else {
                 this._templating.addFile(id, this._options.formatFileName(name), prependData, dontDisplay);
-                this._templating.generatePreview(id, this.getFile(id));
+                this._templating.generatePreview(id, this.getFile(id), this._options.thumbnails.customResizer);
             }
 
             this._filesInBatchAddedToUi += 1;
@@ -696,7 +696,7 @@
 
                 // This will replace the "waiting" placeholder with a "preview not available" placeholder
                 // if called with a null thumbnailUrl.
-                this._templating.updateThumbnail(fileId, thumbnailUrl);
+                this._templating.updateThumbnail(fileId, thumbnailUrl, this._options.thumbnails.customResizer);
             }
         },
 

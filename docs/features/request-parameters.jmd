@@ -28,7 +28,7 @@ The `params` option is used to define request parameters when you instantiate a
 new Fine Uploader instance. Parameters defined this way are set on the request
 at the very last minute before it is sent to the server. Parameters can also
 be set for delete file requests. Simply modify the `params` property of the
-`deletFile` option. Either of these properties are capable of handling a
+`deleteFile` option. Either of these properties are capable of handling a
 variety of JavaScript objects.
 
 #### Simple Objects

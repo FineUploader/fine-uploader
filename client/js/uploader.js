@@ -80,6 +80,7 @@ qq.FineUploader = function(o, namespace) {
         },
 
         thumbnails: {
+            customResizer: null,
             maxCount: 0,
             placeholders: {
                 waitUntilResponse: false,

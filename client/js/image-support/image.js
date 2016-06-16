@@ -167,7 +167,8 @@ qq.ImageGenerator = function(log) {
                                 maxWidth: maxSize,
                                 maxHeight: maxSize,
                                 orientation: orientation,
-                                mime: mime
+                                mime: mime,
+                                resize: options.customResizeFunction
                             });
                         },
 
@@ -177,7 +178,8 @@ qq.ImageGenerator = function(log) {
                             mpImg.render(container, {
                                 maxWidth: maxSize,
                                 maxHeight: maxSize,
-                                mime: mime
+                                mime: mime,
+                                resize: options.customResizeFunction
                             });
                         }
                     );
@@ -193,7 +195,7 @@ qq.ImageGenerator = function(log) {
         return drawPreview;
     }
 
-    function drawOnCanvasOrImgFromUrl(url, canvasOrImg, draw, maxSize) {
+    function drawOnCanvasOrImgFromUrl(url, canvasOrImg, draw, maxSize, customResizeFunction) {
         var tempImg = new Image(),
             tempImgRender = new qq.Promise();
 
@@ -213,7 +215,8 @@ qq.ImageGenerator = function(log) {
                 mpImg.render(canvasOrImg, {
                     maxWidth: maxSize,
                     maxHeight: maxSize,
-                    mime: determineMimeOfFileName(url)
+                    mime: determineMimeOfFileName(url),
+                    resize: customResizeFunction
                 });
             },
 
@@ -287,7 +290,7 @@ qq.ImageGenerator = function(log) {
          *
          * @param fileBlobOrUrl a `File`, `Blob`, or a URL pointing to the image
          * @param container <img> or <canvas> to contain the preview
-         * @param options possible properties include `maxSize` (int), `orient` (bool - default true), and `resize` (bool - default true)
+         * @param options possible properties include `maxSize` (int), `orient` (bool - default true), resize` (bool - default true), and `customResizeFunction`.
          * @returns qq.Promise fulfilled when the preview has been drawn, or the attempt has failed
          */
         generate: function(fileBlobOrUrl, container, options) {

@@ -12,6 +12,7 @@ qq.Scaler = function(spec, log) {
     "use strict";
 
     var self = this,
+        customResizeFunction = spec.customResizer,
         includeOriginal = spec.sendOriginal,
         orient = spec.orient,
         defaultType = spec.defaultType,
@@ -30,10 +31,10 @@ qq.Scaler = function(spec, log) {
             var self = this,
                 records = [],
                 originalBlob = originalBlobOrBlobData.blob ? originalBlobOrBlobData.blob : originalBlobOrBlobData,
-                idenitifier = new qq.Identify(originalBlob, log);
+                identifier = new qq.Identify(originalBlob, log);
 
             // If the reference file cannot be rendered natively, we can't create scaled versions.
-            if (idenitifier.isPreviewableSync()) {
+            if (identifier.isPreviewableSync()) {
                 // Create records for each scaled version & add them to the records array, smallest first.
                 qq.each(sizes, function(idx, sizeRecord) {
                     var outputType = self._determineOutputType({
@@ -51,6 +52,7 @@ qq.Scaler = function(spec, log) {
                         }),
                         blob: new qq.BlobProxy(originalBlob,
                         qq.bind(self._generateScaledImage, self, {
+                            customResizeFunction: customResizeFunction,
                             maxSize: sizeRecord.maxSize,
                             orient: orient,
                             type: outputType,
@@ -170,6 +172,7 @@ qq.extend(qq.Scaler.prototype, {
             name = uploadData && uploadData.name,
             uuid = uploadData && uploadData.uuid,
             scalingOptions = {
+                customResizer: specs.customResizer,
                 sendOriginal: false,
                 orient: specs.orient,
                 defaultType: specs.type || null,
@@ -290,6 +293,7 @@ qq.extend(qq.Scaler.prototype, {
         "use strict";
 
         var self = this,
+            customResizeFunction = spec.customResizeFunction,
             log = spec.log,
             maxSize = spec.maxSize,
             orient = spec.orient,
@@ -303,7 +307,7 @@ qq.extend(qq.Scaler.prototype, {
 
         log("Attempting to generate scaled version for " + sourceFile.name);
 
-        imageGenerator.generate(sourceFile, canvas, {maxSize: maxSize, orient: orient}).then(function() {
+        imageGenerator.generate(sourceFile, canvas, {maxSize: maxSize, orient: orient, customResizeFunction: customResizeFunction}).then(function() {
             var scaledImageDataUri = canvas.toDataURL(type, quality),
                 signalSuccess = function() {
                     log("Success generating scaled version for " + sourceFile.name);

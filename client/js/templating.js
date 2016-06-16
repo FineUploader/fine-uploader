@@ -486,9 +486,10 @@ qq.Templating = function(spec) {
                 relatedThumbnailId = optFileOrBlob && optFileOrBlob.qqThumbnailId,
                 thumbnail = getThumbnail(id),
                 spec = {
+                    customResizeFunction: queuedThumbRequest.customResizeFunction,
                     maxSize: thumbnailMaxSize,
-                    scale: true,
-                    orient: true
+                    orient: true,
+                    scale: true
                 };
 
             if (qq.supportedFeatures.imagePreviews) {
@@ -534,8 +535,9 @@ qq.Templating = function(spec) {
                 showWaitingImg = queuedThumbRequest.showWaitingImg,
                 thumbnail = getThumbnail(id),
                 spec = {
-                    maxSize: thumbnailMaxSize,
-                    scale: serverScale
+                    customResizeFunction: queuedThumbRequest.customResizeFunction,
+                    scale: serverScale,
+                    maxSize: thumbnailMaxSize
                 };
 
             if (thumbnail) {
@@ -590,7 +592,7 @@ qq.Templating = function(spec) {
         },
 
         useCachedPreview = function(targetThumbnailId, cachedThumbnailId) {
-            var targetThumnail = getThumbnail(targetThumbnailId),
+            var targetThumbnail = getThumbnail(targetThumbnailId),
                 cachedThumbnail = getThumbnail(cachedThumbnailId);
 
             log(qq.format("ID {} is the same file as ID {}.  Will use generated thumbnail from ID {} instead.", targetThumbnailId, cachedThumbnailId, cachedThumbnailId));
@@ -600,13 +602,13 @@ qq.Templating = function(spec) {
                 generatedThumbnails++;
                 previewGeneration[targetThumbnailId].success();
                 log(qq.format("Now using previously generated thumbnail created for ID {} on ID {}.", cachedThumbnailId, targetThumbnailId));
-                targetThumnail.src = cachedThumbnail.src;
-                show(targetThumnail);
+                targetThumbnail.src = cachedThumbnail.src;
+                show(targetThumbnail);
             },
             function() {
                 previewGeneration[targetThumbnailId].failure();
                 if (!options.placeholders.waitUntilUpdate) {
-                    maybeSetDisplayNotAvailableImg(targetThumbnailId, targetThumnail);
+                    maybeSetDisplayNotAvailableImg(targetThumbnailId, targetThumbnail);
                 }
             });
         };
@@ -982,16 +984,16 @@ qq.Templating = function(spec) {
             show(getSpinner(id));
         },
 
-        generatePreview: function(id, optFileOrBlob) {
+        generatePreview: function(id, optFileOrBlob, customResizeFunction) {
             if (!this.isHiddenForever(id)) {
-                thumbGenerationQueue.push({id: id, optFileOrBlob: optFileOrBlob});
+                thumbGenerationQueue.push({id: id, customResizeFunction: customResizeFunction, optFileOrBlob: optFileOrBlob});
                 !thumbnailQueueMonitorRunning && generateNextQueuedPreview();
             }
         },
 
-        updateThumbnail: function(id, thumbnailUrl, showWaitingImg) {
+        updateThumbnail: function(id, thumbnailUrl, showWaitingImg, customResizeFunction) {
             if (!this.isHiddenForever(id)) {
-                thumbGenerationQueue.push({update: true, id: id, thumbnailUrl: thumbnailUrl, showWaitingImg: showWaitingImg});
+                thumbGenerationQueue.push({customResizeFunction: customResizeFunction, update: true, id: id, thumbnailUrl: thumbnailUrl, showWaitingImg: showWaitingImg});
                 !thumbnailQueueMonitorRunning && generateNextQueuedPreview();
             }
         },

@@ -78,7 +78,7 @@ describe("uploader.basic.api.js", function () {
 
         });
 
-        it("allows changing paramters for all files", function () {
+        it("allows changing parameters for all files", function () {
             var params = {"hello": "world"};
             fineuploader.setParams(params);
             assert.deepEqual(fineuploader._paramsStore.get(), params,

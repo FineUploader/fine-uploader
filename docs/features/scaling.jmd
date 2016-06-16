@@ -8,6 +8,8 @@
 
 [s3]: s3.html
 [azure]: azure.html
+[customResizer]: ../api/options.html#scaling.customResizer
+[pica]: https://github.com/nodeca/pica
 [scaling]: ../api/options.html#scaling
 [sizes]: ../api/options.html#scaling.sizes
 [defaulttype]: ../api/options.html#scaling.defaultType
@@ -16,10 +18,13 @@
 [orient]: ../api/options.html#scaling.orient
 [hidescaled]: ../api/options-ui.html#scaling.hideScaled
 [getfile]: ../api/methods.html#getFile
+[limby-resize]: https://github.com/danschumann/limby-resize
 [promise]: async-tasks-and-promises.html
 [data]: statistics-and-status-updates.html
 [api]: ../api/methods.html
 [itemlimit]: ../api/options.html#validation.itemLimit
+[webworkers]: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
+
 
 # Generate and Upload Scaled Images {: .page-header }
 
@@ -151,6 +156,42 @@ the original/parent file server-side and group them together.  "qqparentuuid" an
 with each scaled image upload request.  These parameters link the scaled image to the parent/original image.  Note that
 the parent images will include a "qquuid" request parameter instead.  If you are using [Fine Uploader S3][s3] or
 [Azure][azure], these parameters will be associated with the file in your bucket or blob container.
+
+
+### Using a third-party library to resize images
+
+Fine Uploader's internal image resize code delegates to the `drawImage` method on the browser's native `CanvasRenderingContext2D` object.
+This object is used to manipulate a `<canvas>` element, which represents a submitted image `File` or `Blob`.
+Most browsers use linear interpolation when resizing images. This can lead to extreme aliasing and moire patterns
+which is a deal breaker for anyone resizing images for art/photo galleries, albums, etc.
+These kinds of artifacts are impossible to remove after the fact.
+
+If speed is most important, and precise scaled image generation is _not_ paramount, you should continue to use Fine Uploader's
+internal scaling implementation. However, if you want to generate higher quality scaled images for upload, you should
+instead use a third-party library to resize submitted image files, such as [pica] or [limby-resize]. As of version 5.10 of
+Fine Uploader, it is extremely easy to integrate such a plug-in into this library. In fact, Fine Uploader will continue
+to properly orient the submitted image file and then pass a properly sized `<canvas>` to the image scaling library of
+your choice to receive the resized image file, along with the original full-sized image file drawn onto a `<canvas>` for reference.
+The only caveat is that, due to issues with scaling larger images in iOS, you may need to continue to use
+Fine Uploader's internal scaling algorithm for that particular OS, as other third-party scaling libraries
+most likely do _not_ contain logic to handle this complex case. Luckily, that is easy to account for as well.
+
+If you'd like to, for example, use pica to generate higher-quality scaled images, simply pull pica into your project,
+and contribute a [`scaling.customResizer` function][customResizer], like so:
+
+```javascript
+scaling: {
+    customResizer: !qq.ios() && function(resizeInfo) {
+        return new Promise(function(resolve, reject) {
+            pica.resizeCanvas(resizeInfo.sourceCanvas, resizeInfo.targetCanvas, {}, resolve)
+        })
+    },
+    ...
+}
+```
+
+That's it! The above code will result in a higher-quality scaled image, and pica even pushes resizing logic off to a
+[web worker][webworkers] to reduce strain on the UI thread.
 
 
 ### Notices

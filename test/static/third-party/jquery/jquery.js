@@ -3815,7 +3815,7 @@ jQuery.fn.extend({
 			i = 0,
 			elem = this[0];
 
-		// Special expections of .data basically thwart jQuery.access,
+		// Special exceptions of .data basically thwart jQuery.access,
 		// so implement the relevant behavior ourselves
 
 		// Gets all values
@@ -4649,7 +4649,7 @@ if ( !jQuery.support.style ) {
 		get: function( elem ) {
 			// Return undefined in the case of empty string
 			// Note: IE uppercases css property names, but if we were to .toLowerCase()
-			// .cssText, that would destroy case senstitivity in URL's, like in "background"
+			// .cssText, that would destroy case sensitivity in URL's, like in "background"
 			return elem.style.cssText || undefined;
 		},
 		set: function( elem, value ) {

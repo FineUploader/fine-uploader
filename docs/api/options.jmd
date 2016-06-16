@@ -187,6 +187,18 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
 
 {{ api_parent_option("scaling", "scaling", "See the [Upload Scaled Images feature page](../features/scaling.html) for more details.",
     (
+        ("scaling.customResizer", "customResizer", "Ignored if the current browser does not [support image previews](../browser-support.html). If you want to use an alternate scaling library, you must contribute a function for this option that returns a `Promise`. Once the resize is complete, your promise must be fulfilled. You may, of course, reject your returned `Promise` is the resize fails in some way.
+
+    A `resizeInfo` object, which will be passed to the supplied function, contains the following properties:
+
+* `blob` - The original `File` or `Blob` object, if available.
+* `height` - Desired height of the image after the resize operation.
+* `image` - The original `HTMLImageElement` object, if available.
+* `sourceCanvas` - `HTMLCanvasElement` element containing the original image data (not resized).
+* `targetCanvas` - `HTMLCanvasElement` element containing the `HTMLCanvasElement` that should contain the resized image.
+* `width` - Desired width of the image after the resize operation.
+",
+        "Function", "undefined"),
         ("scaling.defaultQuality", "defaultQuality", "A value between 1 and 100 that describes the requested quality of scaled images.  Ignored unless the scaled image type target is image/jpeg.", "Integer", "80",),
         ("scaling.defaultType", "defaultType", "Scaled images will assume this image type if you don't specify a specific type in your size object, or if the type specified in the size object is not valid.  You generally should not use any value other than image/jpeg or image/png here.  The default value of `null` will ensure the scaled image type is PNG, unless the original file is a JPEG, in which case the scaled file will also be a JPEG.  The default is probably the safest option.", "String", "null",),
         ("scaling.failureText", "failureText", "Text sent to your `complete` event handler as an `error` property of the `response` param if a scaled image could not be generated.", "String", "Failed to scale",),
