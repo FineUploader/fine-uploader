@@ -199,7 +199,7 @@ called if all files in the group have been cancelled or rejected (i.e. if none o
 {{ api_event("manualRetry", "onManualRetry",
 """Called before each manual retry attempt.
 
-Return `false` to prevent this an all future retry attempts on the associated item.""",
+Return `false` to prevent this and all future retry attempts on the associated item.""",
     [
         {
             "name": "id",
