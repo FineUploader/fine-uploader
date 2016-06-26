@@ -203,9 +203,15 @@
                     log: qq.bind(self.log, self)
                 });
 
-            getSas.request(id, blobUriStore.get(id)).then(
-                qq.bind(getSasSuccess, self, id),
-                qq.bind(getSasFailure, self, id));
+            // When we have no signing endpoint but we have a sasQuery, we can immediately call getSasSuccess with the URI
+            if (self._options.signature.sasQuery && self._options.signature.endpoint == null) {
+                getSasSuccess(id, blobUriStore.get(id) + "?" + self._options.signature.sasQuery);
+            } else {
+                getSas.request(id, blobUriStore.get(id)).then(
+                    qq.bind(getSasSuccess, self, id),
+                    qq.bind(getSasFailure, self, id));
+            }
+
         },
 
         _createDeleteHandler: function() {

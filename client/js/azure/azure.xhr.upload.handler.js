@@ -113,10 +113,17 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
                 promise.failure({error: "Problem communicating with local server"}, getSasXhr);
             },
             determineBlobUrlSuccess = function(blobUrl) {
-                api.getSasForPutBlobOrBlock.request(getSasId, blobUrl).then(
-                    getSasSuccess,
-                    getSasFailure
-                );
+                // When we already have a SAS query to use then return it here without actually making a request
+                // to the default signature endpoint
+                if (signature.sasQuery && signature.endpoint == null) {
+                    getSasSuccess(blobUrl + "?" + signature.sasQuery);
+                } else {
+                    api.getSasForPutBlobOrBlock.request(getSasId, blobUrl).then(
+                        getSasSuccess,
+                        getSasFailure
+                    );
+                }
+
             },
             determineBlobUrlFailure = function(reason) {
                 log(qq.format("Failed to determine blob name for ID {} - {}", id, reason), "error");
