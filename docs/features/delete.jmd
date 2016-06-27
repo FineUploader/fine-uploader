@@ -22,7 +22,7 @@ a customizable delete link will appear next to the file after it has successfull
 
 When the user clicks on this link, first, your [`onSubmitDelete` callback](../api/events.html#submitDelete) will be invoked.
 You may return `false` in your callback handler if you want to abort the request (or [a promise](async-tasks-and-promises.html)
-that you may resolve later). If not the user will see a (customizable) confirm dialog (if the `deleteFile.forceConfirm property has been set).
+that you may resolve later). If not the user will see a (customizable) confirm dialog (if the `deleteFile.forceConfirm` property has been set).
 If they click “ok” (or if the `deleteFile.forceConfirm` option has been disabled), a DELETE request will be sent to the server
 after Fine Uploader invokes [your onDelete callback](../api/events.html#delete).
 
