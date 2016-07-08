@@ -31,7 +31,7 @@ qq.ImageGenerator = function(log) {
     function determineMimeOfFileName(nameWithPath) {
         /*jshint -W015 */
         var pathSegments = nameWithPath.split("/"),
-            name = pathSegments[pathSegments.length - 1],
+            name = pathSegments[pathSegments.length - 1].split("?")[0],
             extension = qq.getExtension(name);
 
         extension = extension && extension.toLowerCase();
