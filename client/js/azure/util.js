@@ -12,7 +12,8 @@ qq.azure.util = qq.azure.util || (function() {
          * @returns {Boolean} Test result.
          */
         _paramNameMatchesAzureParameter: function(name) {
-            switch (name) {
+            switch (name)
+            {
                 case "Cache-Control":
                 case "Content-Disposition":
                 case "Content-Encoding":

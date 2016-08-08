@@ -20,8 +20,7 @@ master
 hardcopy*
 selenium.log*
 
-root-server.PID
-test-resources-server.PID
+pid.txt
 
 fine-uploader/
 test/upload/*
@@ -35,6 +34,8 @@ test/_vendor*
 node_modules/
 
 bin/
+
+build/
 
 src
 
