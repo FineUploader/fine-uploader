@@ -362,7 +362,10 @@ copy-build-to-dist:
 	mkdir -p $(PUB-DIR)/$(PUB-SUBDIR)
 	cp -pR $(BUILD-OUT-DIR)/placeholders $(BUILD-OUT-DIR)/templates $(PUB-DIR)/$(PUB-SUBDIR)
 	cp $(BUILD-OUT-DIR)/*.gif $(PUB-DIR)/$(PUB-SUBDIR)
+ifneq (,$(findstring jquery,$(PUB-SUBDIR)))
+else
 	cp $(BUILD-OUT-DIR)/$(PUB-SUBDIR).core.min* $(BUILD-OUT-DIR)/$(PUB-SUBDIR).core.js* $(PUB-DIR)/$(PUB-SUBDIR)/
+endif
 	cp $(BUILD-OUT-DIR)/$(PUB-SUBDIR).min* $(BUILD-OUT-DIR)/$(PUB-SUBDIR).js* $(PUB-DIR)/$(PUB-SUBDIR)
 	cp $(BUILD-OUT-DIR)/fine-uploader*.css* $(PUB-DIR)/$(PUB-SUBDIR)
 
@@ -390,9 +393,6 @@ copy-azure-jquery-dist:
 copy-all-dist:
 	make copy-build-to-dist PUB-SUBDIR=all.fine-uploader
 
-copy-all-jquery-dist:
-	make copy-build-to-dist PUB-SUBDIR=all.jquery.fine-uploader
-
 tag-release:
 	git tag $(VERSION)
 	git push origin $(VERSION)
@@ -409,7 +409,6 @@ publish: \
 	copy-azure-dist \
 	copy-azure-jquery-dist \
 	copy-all-dist \
-	copy-all-jquery-dist \
 	tag-release \
 	push-to-npm
 
