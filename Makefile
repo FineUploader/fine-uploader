@@ -413,8 +413,8 @@ push-to-npm:
 	(cd $(pub-dir) ; npm publish)
 
 publish: \
-	clean
-	build
+	clean \
+	build \
 	setup-dist \
 	copy-dnd \
 	copy-traditional-dist \
