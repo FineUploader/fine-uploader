@@ -52,7 +52,7 @@
         this._uploadSuccessParamsStore = this._createStore(this._options.uploadSuccess.params);
         this._uploadSuccessEndpointStore = this._createStore(this._options.uploadSuccess.endpoint);
 
-         // This will hold callbacks for failed uploadSuccess requests that will be invoked on retry.
+        // This will hold callbacks for failed uploadSuccess requests that will be invoked on retry.
         // Indexed by file ID.
         this._failedSuccessRequestCallbacks = {};
 

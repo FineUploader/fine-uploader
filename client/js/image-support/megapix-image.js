@@ -82,7 +82,7 @@
                 promise.success(
                     canvas.toDataURL(mime, options.quality || 0.8)
                 );
-            })
+            });
 
         return promise;
     }
@@ -98,7 +98,7 @@
             return {
                 newHeight: Math.round(Math.sqrt(maxPixels * (spec.origHeight / spec.origWidth))),
                 newWidth: Math.round(Math.sqrt(maxPixels * (spec.origWidth / spec.origHeight)))
-            }
+            };
         }
     }
 
@@ -127,7 +127,7 @@
                 resize: options.resize,
                 targetHeight: height,
                 targetWidth: width
-            })
+            });
         }
 
         if (!qq.supportedFeatures.unlimitedScaledImageSize) {
@@ -184,7 +184,7 @@
                 }
                 ctx.restore();
                 tmpCanvas = tmpCtx = null;
-            }())
+            }());
         }
         else {
             ctx.drawImage(img, 0, 0, width, height);
@@ -231,7 +231,7 @@
                     promise.success();
                 },
                 promise.failure
-            )
+            );
 
         return promise;
     }
@@ -351,7 +351,7 @@
             opt;
 
         if (this.imageLoadListeners) {
-            this.imageLoadListeners.push(function() { self.render(target, options) });
+            this.imageLoadListeners.push(function() { self.render(target, options); });
             return;
         }
 
@@ -385,7 +385,7 @@
                         target.src = dataUri;
                         oldTargetSrc === target.src && target.onload();
                     });
-            }())
+            }());
         } else if (tagName === "canvas") {
             renderImageToCanvas(this.srcImage, this.blob, target, opt, doSquash);
         }

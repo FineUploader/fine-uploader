@@ -30,13 +30,14 @@ There are absolutely no other required external dependencies. For more informati
 Fine Uploader and all other projects in this organization thrive thanks to donations by Widen (the project's sponsor)
 and support by developers in the community. If you'd like to help and keep this project strong and relevant, you have several options.
 
+
 ### Contribute code
 
 The best way to contribute code is to open up a pull request that addresses one of the open [feature requests or bugs][issues]. In order to get started developing Fine Uploader, follow these steps to get the project up and running on your local development machine:
 
 1. Download the project repository: `git clone https://github.com/FineUploader/fine-uploader.git`.
 2. Install all project development dependencies: `npm install`.
-3. To run the tests & linter: `$(npm bin)/grunt dev test:firefox` (you'll need Firefox installed locally).
+3. To build, run the tests & linter: `npm test` (you'll need Firefox installed locally).
 4. Please follow the [Angular.js commit guidelines][angular-commit].
 5. Please follow the [Git Flow][git-flow] branching strategy.
 
