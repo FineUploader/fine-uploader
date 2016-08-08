@@ -236,7 +236,7 @@ qq.UploadHandlerController = function(o, namespace) {
                 )
                     .done(function() {
                         handler.clearXhr(id, chunkIdx);
-                    }) ;
+                    });
             }
         }
     },

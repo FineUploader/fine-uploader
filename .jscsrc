@@ -1,10 +1,20 @@
 {
+  "excludeFiles": ["client/js/third-party/**/*.js"],
   "preset": "airbnb",
-
+  "disallowKeywordsOnNewLine": false,
+  "disallowMultipleVarDecl": false,
   "disallowSpaceAfterObjectKeys": true,
-
+  "disallowSpacesInCallExpression": false,
+  "maximumLineLength": false,
   "validateIndentation": 4,
   "validateQuoteMarks": "\"",
-
+  "requireDollarBeforejQueryAssignment": false,
+  "requirePaddingNewLinesAfterBlocks": false,
+  "requirePaddingNewLinesBeforeLineComments": false,
+  "requireSpaceAfterComma": false,
+  "requireSpacesInAnonymousFunctionExpression": false,
+  "requireSpaceBeforeBlockStatements": false,
+  "requireSpacesInsideObjectBrackets": false,
+  "requireTrailingComma": false,
   "safeContextKeyword": ["self", "handler", "thisSignatureRequester", "controller"]
 }

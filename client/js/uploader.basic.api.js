@@ -230,7 +230,7 @@
             return this._uploadData.retrieve({id: id}).name;
         },
 
-                // Parent ID for a specific file, or null if this is the parent, or if it has no parent.
+        // Parent ID for a specific file, or null if this is the parent, or if it has no parent.
         getParentId: function(id) {
             var uploadDataEntry = this.getUploads({id: id}),
                 parentId = null;

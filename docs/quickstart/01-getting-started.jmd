@@ -31,6 +31,9 @@ who wish to heavily customize the uploader's user interface. To use Core Mode:
 var uploader = new qq.FineUploaderBasic({/* options go here .... */});
 ```
 
+**Each endpoint handler has a "core" build artifact associated with it. For example, if
+you only need core functionality for Fine Uploader S3, you should import "s3.fine-uploader.core.js".**
+
 ##### [UI Mode](../modes/ui.html)
 Inherits everything from Core mode. UI mode also comes with a fully functional
 user interface which includes, but is not limited to: a default upload button,
@@ -42,6 +45,8 @@ UI via CSS. To use UI Mode:
 ```javascript
 var uploader = new qq.FineUploader({/* options go here ... */});
 ```
+**Each endpoint handler has a "ui" build artifact associated with it. For example, if
+you need core _and_ UI functionality for Fine Uploader S3, you should import "s3.fine-uploader.js".**
 
 {{ alert(
 """If you are using Fine Uploader UI, you MUST include a template in your document/markup.  You can

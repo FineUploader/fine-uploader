@@ -3,11 +3,8 @@ if (window.postMessage) {
     describe("iframe.xss.response", function () {
         "use strict";
 
-        var iframe, doc;
-        var script = "<scr" + "ipt type='text/javascript' src='/base/client/js/iframe.xss.response.js'></scr" + "ipt>";
-        if (window.mochaResults) {
-            script = "<scr" + "ipt type='text/javascript' src='/client/js/iframe.xss.response.js'></scr" + "ipt>";
-        }
+        var iframe, doc,
+            script = "<scr" + "ipt type='text/javascript' src='http://localhost:3001/client/js/iframe.xss.response.js'></scr" + "ipt>";
 
         beforeEach(function () {
             iframe = document.createElement("iframe");
