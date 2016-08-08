@@ -295,7 +295,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
         it("respects the objectProperties.key option w/ a value of 'filename'", function(done) {
             var uploader = new qq.s3.FineUploaderBasic({
-                request: typicalRequestOption,
+                request:typicalRequestOption,
                 signature: v2SignatureOption,
                 objectProperties: {
                     key: "filename"
@@ -322,7 +322,7 @@ if (qqtest.canDownloadFileAsBlob) {
         it("respects the objectProperties.key option w/ a custom key generation function", function(done) {
             var customKeyPrefix = "testcustomkey_",
                 uploader = new qq.s3.FineUploaderBasic({
-                    request: typicalRequestOption,
+                    request:typicalRequestOption,
                     signature: v2SignatureOption,
                     objectProperties: {
                         key: function(id) {
@@ -352,7 +352,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
             function runTest(keyFunc, done) {
                 var uploader = new qq.s3.FineUploaderBasic({
-                        request: typicalRequestOption,
+                        request:typicalRequestOption,
                         signature: v2SignatureOption,
                         objectProperties: {
                             key: keyFunc
@@ -393,10 +393,11 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         });
 
+
         describe("respects the objectProperties.key option w/ a custom key generation function that returns a failed promise (no reason)", function() {
             function runTest(keyFunc, done) {
                 var uploader = new qq.s3.FineUploaderBasic({
-                        request: typicalRequestOption,
+                        request:typicalRequestOption,
                         signature: v2SignatureOption,
                         objectProperties: {
                             key: keyFunc
@@ -433,7 +434,7 @@ if (qqtest.canDownloadFileAsBlob) {
         describe("respects the objectProperties.key option w/ a custom key generation function that returns a failed promise (w/ reason)", function() {
             function runTest(keyFunc, done) {
                 var uploader = new qq.s3.FineUploaderBasic({
-                        request: typicalRequestOption,
+                        request:typicalRequestOption,
                         signature: v2SignatureOption,
                         objectProperties: {
                             key: keyFunc
@@ -474,7 +475,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
         it("respects the objectProperties.acl option w/ a custom value set via option", function(done) {
             var uploader = new qq.s3.FineUploaderBasic({
-                    request: typicalRequestOption,
+                    request:typicalRequestOption,
                     signature: v2SignatureOption,
                     objectProperties: {
                         acl: "public-read"
@@ -497,7 +498,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
         it("respects the objectProperties.acl option w/ a custom value set via API", function(done) {
             var uploader = new qq.s3.FineUploaderBasic({
-                    request: typicalRequestOption,
+                    request:typicalRequestOption,
                     signature: v2SignatureOption,
                     objectProperties: {
                         acl: "public-read"
@@ -522,7 +523,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
         it("respects the objectProperties.reducedRedundancy option w/ a value of true", function(done) {
             var uploader = new qq.s3.FineUploaderBasic({
-                    request: typicalRequestOption,
+                    request:typicalRequestOption,
                     signature: v2SignatureOption,
                     objectProperties: {
                         reducedRedundancy: true
@@ -545,7 +546,7 @@ if (qqtest.canDownloadFileAsBlob) {
 
         it("respects the objectProperties.serverSideEncryption option w/ a value of true", function(done) {
             var uploader = new qq.s3.FineUploaderBasic({
-                    request: typicalRequestOption,
+                    request:typicalRequestOption,
                     signature: v2SignatureOption,
                     objectProperties: {
                         serverSideEncryption: true
@@ -570,7 +571,7 @@ if (qqtest.canDownloadFileAsBlob) {
             var customHeader = {"test-header-name": "test-header-value"},
                 customSignatureOptions = qq.extend({}, v2SignatureOption),
                 uploader = new qq.s3.FineUploaderBasic({
-                    request: typicalRequestOption,
+                    request:typicalRequestOption,
                     signature: qq.extend(customSignatureOptions, {customHeaders: customHeader})
                 }
             );
@@ -587,7 +588,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 uploadSuccessParams = {"test-param-name": "test-param-value"},
                 uploadSuccessHeaders = {"test-header-name": "test-header-value"},
                 uploader = new qq.s3.FineUploaderBasic({
-                    request: typicalRequestOption,
+                    request:typicalRequestOption,
                     signature: v2SignatureOption,
                     uploadSuccess: {
                         endpoint: "foo/bar",
@@ -631,7 +632,7 @@ if (qqtest.canDownloadFileAsBlob) {
         it("Declares an upload as a failure if uploadSuccess response indicates a problem with the file.  Also tests uploadSuccessRequest endpoint option.", function(done) {
             var uploadSuccessUrl = "/upload/success",
                 uploader = new qq.s3.FineUploaderBasic({
-                    request: typicalRequestOption,
+                    request:typicalRequestOption,
                     signature: v2SignatureOption,
                     uploadSuccess: {
                         endpoint: uploadSuccessUrl
@@ -657,7 +658,7 @@ if (qqtest.canDownloadFileAsBlob) {
         it("Allows upload success to be sent as something other than a POST.", function(done) {
             var uploadSuccessUrl = "/upload/success",
                 uploader = new qq.s3.FineUploaderBasic({
-                    request: typicalRequestOption,
+                    request:typicalRequestOption,
                     signature: v2SignatureOption,
                     uploadSuccess: {
                         endpoint: uploadSuccessUrl,

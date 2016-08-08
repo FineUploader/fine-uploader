@@ -51,6 +51,7 @@ describe("S3 serverless upload tests", function() {
                         assert.equal(requestParams.acl, "private");
                         assert.ok(requestParams.file);
 
+
                         assert.equal(requestParams["x-amz-algorithm"], "AWS4-HMAC-SHA256");
                         assert.ok(new RegExp(testAccessKey + "\\/\\d{8}\\/us-east-1\\/s3\\/aws4_request").test(requestParams["x-amz-credential"]));
                         assert.ok(requestParams["x-amz-date"]);
@@ -100,6 +101,7 @@ describe("S3 serverless upload tests", function() {
                     assert.equal(requestParams.AWSAccessKeyId, testAccessKey);
                     assert.equal(requestParams.acl, "private");
                     assert.ok(requestParams.file);
+
 
                     assert.ok(requestParams.signature);
                     assert.ok(requestParams.policy);
@@ -176,6 +178,7 @@ describe("S3 serverless upload tests", function() {
                     assert.equal(requestParams.acl, "private");
                     assert.ok(requestParams.file);
 
+
                     assert.ok(requestParams.signature);
                     assert.ok(requestParams.policy);
                 });
@@ -228,6 +231,7 @@ describe("S3 serverless upload tests", function() {
                             assert.equal(requestParams.AWSAccessKeyId, testAccessKeyFromCallback);
                             assert.equal(requestParams.acl, "private");
                             assert.ok(requestParams.file);
+
 
                             assert.ok(requestParams.signature);
                             assert.ok(requestParams.policy);

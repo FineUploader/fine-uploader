@@ -6,10 +6,11 @@ sudo: false
 language: node_js
 
 node_js:
-- '5.0.0'
+- '0.10.33'
 
 env:
   global:
+  - LOGS_DIR=/tmp/fineuploader-build/logs
   - DISPLAY=:99.0
   - secure: |-
       AZ/GEWzykeSzxh+4r14eKq2dMQnZyEvx99zFnTSp30Ke9QqJP3UQvMdwHzuV
@@ -22,3 +23,11 @@ env:
 
 before_script:
 - "sh -e /etc/init.d/xvfb start"
+
+branches:
+    only:
+        - master
+        - develop
+        - /^feature.*$/
+        - /^.*fix.*$/
+        - /^release.*$/
