@@ -96,7 +96,6 @@ if (qqtest.canDownloadFileAsBlob) {
                     blobUri = testEndpoint + "/" + blobName,
                     purlSignatureUrl = purl(signatureRequest.url);
 
-
                 assert.equal(blobName, uploader.getUuid(0));
                 assert.equal(purlSignatureUrl.param("bloburi"), blobUri);
             }, "test");
@@ -404,17 +403,17 @@ if (qqtest.canDownloadFileAsBlob) {
 
             });
         });
-        
+
         it("test if azure specific header keys and their values remain as-is", function(done) {
             var uploader = new qq.azure.FineUploaderBasic({
                     request: {endpoint: testEndpoint},
                     signature: {endpoint: testSignatureEndoint}
                 }
             );
-            
+
             var params = {
-                "foo1": "bar",
-                "Content-Encoding": "1rawvalue==" ,
+                foo1: "bar",
+                "Content-Encoding": "1rawvalue==",
                 "Content-Disposition": "2rawvalue==",
                 "Content-MD5": "3rawvalue==",
                 "Cache-Control": "4rawvalue==",
@@ -423,7 +422,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 "x-ms-blob-content-md5": function() { return "7rawvalue=="; },
                 "x-ms-blob-cache-control": "8rawvalue=="
             };
-            
+
             uploader.setParams(params);
 
             startTypicalTest(uploader, function(signatureRequest) {
@@ -434,7 +433,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     uploadRequest.respond(201, null, "");
 
                     assert.equal(uploadRequest.requestHeaders["x-ms-meta-foo1"], "bar");
-                    
+
                     assert.equal(uploadRequest.requestHeaders["Content-Encoding"], params["Content-Encoding"]);
                     assert.equal(uploadRequest.requestHeaders["Content-Disposition"], params["Content-Disposition"]);
                     assert.equal(uploadRequest.requestHeaders["Content-MD5"], params["Content-MD5"]);

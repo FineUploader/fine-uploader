@@ -30,16 +30,6 @@ There are absolutely no other required external dependencies. For more informati
 Fine Uploader and all other projects in this organization thrive thanks to donations by Widen (the project's sponsor)
 and support by developers in the community. If you'd like to help and keep this project strong and relevant, you have several options.
 
-### Contribute code
-
-The best way to contribute code is to open up a pull request that addresses one of the open [feature requests or bugs][issues]. In order to get started developing Fine Uploader, follow these steps to get the project up and running on your local development machine:
-
-1. Download the project repository: `git clone https://github.com/FineUploader/fine-uploader.git`.
-2. Install all project development dependencies: `npm install`.
-3. To run the tests & linter: `$(npm bin)/grunt dev test:firefox` (you'll need Firefox installed locally).
-4. Please follow the [Angular.js commit guidelines][angular-commit].
-5. Please follow the [Git Flow][git-flow] branching strategy.
-
 
 ### File a bug report
 
@@ -59,6 +49,35 @@ Are you using Fine Uploader in your library or project? If so, let us know and w
 ### Develop an integration library
 
 Are you using Fine Uploader inside of a larger framework (such as React, Angular2, Ember.js, etc)? If so, perhaps you've already written a library that wraps Fine Uploader and makes it simple to use Fine Uploader in this context. Let us know and it may make sense to either link to your library, or even move it into the FineUploader GitHub organization (with your approval, of course). We'd also love to see libraries that make it simple to pair Fine Uploader with other useful libraries, such as image editors and rich text editors.
+
+
+### Contribute code
+
+The best way to contribute code is to open up a pull request that addresses one of the open [feature requests or bugs][issues]. In order to get started developing Fine Uploader, read this entire section to get the project up and running on your local development machine. This section describes how you can build and test Fine Uploader locally. You may use these instructions to build a copy for yourself, or to contribute changes back to the library. 
+
+#### Setup
+
+You must have Node.js instaled locally (any version should be fine), _and_ you must have Unix-like environment to work with. Linux, FreeBSD/OS X, Cygwin, and Windows 10 bash all _should_ be acceptable environments. Please open up a new issue if you have trouble building. The build process is centered around a single Makefile, so GNU Make is required as well (though most if not all Unix-like OSes should already have this installed). Finally, you will need a git client.
+
+To pull down the project & build dependencies:
+
+1. Download the project repository: `git clone https://github.com/FineUploader/fine-uploader.git`.
+2. Install all project development dependencies: `npm install`.
+
+#### Generating build artifacts
+
+- To build all build artifacts for all endpoint types: `make build`. You can speed this process up a bit by using the parallel recipes feature of Make: `make build -j`. If you would like to build only a specific endpoint type, see the Makefile for the appropriate recipe. The build output will be created in the `_build` directory. 
+- To build zip files for all endpoint types: `make zip`. To build a zip for only a specific endpoint type, see the Makefile for the appropriate recipe. The zip files will be included alongside the build output in the `_build` directory.
+- To rev the version number: `make rev-version target=NEW_VERSION`, where `NEW_VERSION` is the semver-compatible target version identifier.
+
+#### Running tests
+
+To build, run the tests & linter: `npm test` (you'll need Firefox installed locally).
+
+#### Commiting new code and changes
+
+- Follow the [Angular.js commit guidelines][angular-commit].
+- Follow the [Git Flow][git-flow] branching strategy.
 
 
 *Fine Uploader is a code library sponsored by [Widen Enterprises, Inc.](http://www.widen.com/)*
