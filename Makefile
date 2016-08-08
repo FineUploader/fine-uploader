@@ -218,8 +218,8 @@ _build:
 	$(NPM-BIN)/cleancss --source-map $@/fine-uploader-gallery.css -o $@/fine-uploader-gallery.min.css
 	$(NPM-BIN)/cleancss --source-map $@/fine-uploader-new.css -o $@/fine-uploader-new.min.css
 
-uglify = $(NPM-BIN)/uglifyjs -b --preamble $(PREAMBLE) -e window:global -p relative
-uglify-min = $(NPM-BIN)/uglifyjs -c -m --preamble $(PREAMBLE) -e window:global -p relative
+uglify = $(NPM-BIN)/uglifyjs -b --preamble $(PREAMBLE) -e window:global -p relative --source-map-include-sources
+uglify-min = $(NPM-BIN)/uglifyjs -c -m --preamble $(PREAMBLE) -e window:global -p relative --source-map-include-sources
 
 build-dnd-standalone: _build
 	$(uglify) $(DND-FILES) -o $(BUILD-OUT-DIR)/dnd.js --source-map $(BUILD-OUT-DIR)/dnd.js.map
@@ -291,7 +291,7 @@ build-all-ui: _build
 	$(uglify) $(ALL-FILES) -o $(BUILD-OUT-DIR)/all.fine-uploader.js --source-map $(BUILD-OUT-DIR)/all.fine-uploader.js.map 
 
 build-all-ui-min: _build
-	$(uglify-min) $(ALL-FILES) -o $(BUILD-OUT-DIR)/all.fine-uploader.min.js -e window:global --source-map $(BUILD-OUT-DIR)/all.fine-uploader.min.js.map
+	$(uglify-min) $(ALL-FILES) -o $(BUILD-OUT-DIR)/all.fine-uploader.min.js --source-map $(BUILD-OUT-DIR)/all.fine-uploader.min.js.map
 
 build: \
 	build-dnd-standalone \
