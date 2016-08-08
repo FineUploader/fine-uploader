@@ -340,22 +340,27 @@ test: start-test-resources-server start-root-server build-all-ui
 	make stop-test-resources-server
 	make stop-root-server
 
-zip: zip-dnd zip-traditional zip-s3 zip-azure
+zip: zip-traditional zip-s3 zip-azure zip-all
 
-zip-dnd:
-	(cd $(BUILD-OUT-DIR) ; zip dnd.fine-uploader.zip LICENSE dnd*.*)
+common-zip-files = \
+	dnd*.* \
+	LICENSE \
+	placeholders/* \
+	templates/* \
+	*.gif \
+	fine-uploader*.css*
 
 zip-traditional:
-	(cd $(BUILD-OUT-DIR) ; zip fine-uploader.zip LICENSE placeholders/* templates/* *.gif fine-uploader*.* fine-uploader.core*.*)
+	(cd $(BUILD-OUT-DIR) ; zip fine-uploader.zip $(common-zip-files) fine-uploader*.*)
 
 zip-s3:
-	(cd $(BUILD-OUT-DIR) ; zip s3.fine-uploader.zip LICENSE placeholders/* templates/* *.gif fine-uploader*.css* s3*.*)
+	(cd $(BUILD-OUT-DIR) ; zip s3.fine-uploader.zip $(common-zip-files) s3*.*)
 
 zip-azure:
-	(cd $(BUILD-OUT-DIR) ; zip azure.fine-uploader.zip LICENSE placeholders/* templates/* *.gif fine-uploader*.css* azure*.*)
+	(cd $(BUILD-OUT-DIR) ; zip azure.fine-uploader.zip $(common-zip-files) azure*.*)
 
 zip-all:
-	(cd $(BUILD-OUT-DIR) ; zip all.fine-uploader.zip LICENSE placeholders/* templates/* *.gif fine-uploader*.css* all*.*)
+	(cd $(BUILD-OUT-DIR) ; zip all.fine-uploader.zip $(common-zip-files) all*.*)
 
 setup-dist:
 	mkdir -p $(PUB-DIR)
@@ -408,6 +413,8 @@ push-to-npm:
 	(cd $(PUB-DIR) ; npm publish)
 
 publish: \
+	clean
+	build
 	setup-dist \
 	copy-dnd \
 	copy-traditional-dist \
