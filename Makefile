@@ -211,6 +211,7 @@ _build:
 	mkdir -p $@
 	cp -pR $(SRC-DIR)/placeholders $@
 	cp -pR $(SRC-DIR)/html/templates $@
+	cp LICENSE $@
 	cp $(SRC-DIR)/*.css $@
 	cp $(SRC-DIR)/*.gif $@
 	$(NPM-BIN)/cleancss --source-map $@/fine-uploader.css -o $@/fine-uploader.min.css
@@ -339,19 +340,22 @@ test: start-test-resources-server start-root-server build-all-ui
 	make stop-test-resources-server
 	make stop-root-server
 
-zip: zip-traditional zip-s3 zip-azure
+zip: zip-dnd zip-traditional zip-s3 zip-azure
+
+zip-dnd:
+	(cd $(BUILD-OUT-DIR) ; zip fine-uploader.dnd.zip LICENSE dnd*.*)
 
 zip-traditional:
-	(cd $(BUILD-OUT-DIR) ; zip fine-uploader.zip placeholders/* templates/* *.gif fine-uploader*.* fine-uploader.core*.*)
+	(cd $(BUILD-OUT-DIR) ; zip fine-uploader.zip LICENSE placeholders/* templates/* *.gif fine-uploader*.* fine-uploader.core*.*)
 
 zip-s3:
-	(cd $(BUILD-OUT-DIR) ; zip s3.fine-uploader.zip placeholders/* templates/* *.gif fine-uploader*.css* s3*.*)
+	(cd $(BUILD-OUT-DIR) ; zip s3.fine-uploader.zip LICENSE placeholders/* templates/* *.gif fine-uploader*.css* s3*.*)
 
 zip-azure:
-	(cd $(BUILD-OUT-DIR) ; zip azure.fine-uploader.zip placeholders/* templates/* *.gif fine-uploader*.css* azure*.*)
+	(cd $(BUILD-OUT-DIR) ; zip azure.fine-uploader.zip LICENSE placeholders/* templates/* *.gif fine-uploader*.css* azure*.*)
 
 zip-all:
-	(cd $(BUILD-OUT-DIR) ; zip all.fine-uploader.zip placeholders/* templates/* *.gif fine-uploader*.css* all*.*)
+	(cd $(BUILD-OUT-DIR) ; zip all.fine-uploader.zip LICENSE placeholders/* templates/* *.gif fine-uploader*.css* all*.*)
 
 setup-dist:
 	mkdir -p $(PUB-DIR)
@@ -369,6 +373,9 @@ endif
 	cp $(BUILD-OUT-DIR)/$(PUB-SUBDIR).min* $(BUILD-OUT-DIR)/$(PUB-SUBDIR).js* $(PUB-DIR)/$(PUB-SUBDIR)
 	cp $(BUILD-OUT-DIR)/fine-uploader*.css* $(PUB-DIR)/$(PUB-SUBDIR)
 
+copy-dnd:
+	mkdir -p $(PUB-DIR)/dnd
+	cp $(BUILD-OUT-DIR)/dnd*.* $(PUB-DIR)/dnd
 
 copy-traditional-dist:
 	make copy-build-to-dist PUB-SUBDIR=fine-uploader
@@ -402,6 +409,7 @@ push-to-npm:
 
 publish: \
 	setup-dist \
+	copy-dnd \
 	copy-traditional-dist \
 	copy-traditional-jquery-dist \
 	copy-s3-dist \
