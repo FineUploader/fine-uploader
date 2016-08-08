@@ -415,6 +415,7 @@ push-to-npm:
 publish: \
 	clean \
 	build \
+	zip \
 	setup-dist \
 	copy-dnd \
 	copy-traditional-dist \
