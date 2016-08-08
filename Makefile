@@ -343,7 +343,7 @@ test: start-test-resources-server start-root-server build-all-ui
 zip: zip-dnd zip-traditional zip-s3 zip-azure
 
 zip-dnd:
-	(cd $(BUILD-OUT-DIR) ; zip fine-uploader.dnd.zip LICENSE dnd*.*)
+	(cd $(BUILD-OUT-DIR) ; zip dnd.fine-uploader.zip LICENSE dnd*.*)
 
 zip-traditional:
 	(cd $(BUILD-OUT-DIR) ; zip fine-uploader.zip LICENSE placeholders/* templates/* *.gif fine-uploader*.* fine-uploader.core*.*)
