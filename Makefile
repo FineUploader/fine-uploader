@@ -1,297 +1,297 @@
 .PHONY: clean _build publish
 
-VERSION=$(shell node -pe "require('./package.json').version")
-DIST-OUT-DIR = _dist
-PUB-DIR = $(DIST-OUT-DIR)/$(VERSION)
+version=$(shell node -pe "require('./package.json').version")
+dist-out-dir = _dist
+pub-dir = $(dist-out-dir)/$(version)
 
-NPM-BIN = $(shell npm bin)
+npm-bin = $(shell npm bin)
 
-BUILD-OUT-DIR = _build
-SRC-DIR = client
-JS-SRC-DIR = $(SRC-DIR)/js
-JS-3RDPARTY-SRC-DIR = $(JS-SRC-DIR)/third-party
-TEST-DIR = test
-UNIT-TEST-DIR = $(TEST-DIR)/unit
+build-out-dir = _build
+src-dir = client
+js-src-dir = $(src-dir)/js
+js-3rdparty-src-dir = $(js-src-dir)/third-party
+test-dir = test
+unit-test-dir = $(test-dir)/unit
 
-EXPORT-FILE = $(JS-SRC-DIR)/export.js
+export-file = $(js-src-dir)/export.js
 
-PREAMBLE = "// Fine Uploader $(VERSION) - (c) 2013-present Widen Enterprises, Inc. MIT licensed. http://fineuploader.com"
+preamble = "// Fine Uploader $(version) - (c) 2013-present Widen Enterprises, Inc. MIT licensed. http://fineuploader.com"
 
-CRYPTOJS-FILES = \
-	$(JS-3RDPARTY-SRC-DIR)/crypto-js/core.js \
-	$(JS-3RDPARTY-SRC-DIR)/crypto-js/enc-base64.js \
-	$(JS-3RDPARTY-SRC-DIR)/crypto-js/hmac.js \
-	$(JS-3RDPARTY-SRC-DIR)/crypto-js/sha1.js \
-	$(JS-3RDPARTY-SRC-DIR)/crypto-js/sha256.js \
-	$(JS-3RDPARTY-SRC-DIR)/crypto-js/lib-typedarrays.js
+cryptojs-files = \
+	$(js-3rdparty-src-dir)/crypto-js/core.js \
+	$(js-3rdparty-src-dir)/crypto-js/enc-base64.js \
+	$(js-3rdparty-src-dir)/crypto-js/hmac.js \
+	$(js-3rdparty-src-dir)/crypto-js/sha1.js \
+	$(js-3rdparty-src-dir)/crypto-js/sha256.js \
+	$(js-3rdparty-src-dir)/crypto-js/lib-typedarrays.js
 
-JQUERY-FILES = \
-	$(JS-SRC-DIR)/jquery-plugin.js
+jquery-files = \
+	$(js-src-dir)/jquery-plugin.js
 
-DND-FILES-ONLY = \
-	$(JS-SRC-DIR)/dnd.js
+dnd-files-only = \
+	$(js-src-dir)/dnd.js
 
-DND-FILES = \
-	$(JS-SRC-DIR)/util.js \
-	$(EXPORT-FILE) \
-	$(JS-SRC-DIR)/version.js \
-	$(JS-SRC-DIR)/features.js \
-	$(JS-SRC-DIR)/promise.js \
-	$(JS-SRC-DIR)/dnd.js
+dnd-files = \
+	$(js-src-dir)/util.js \
+	$(export-file) \
+	$(js-src-dir)/version.js \
+	$(js-src-dir)/features.js \
+	$(js-src-dir)/promise.js \
+	$(js-src-dir)/dnd.js
 
-DND-JQUERY-FILES = \
-	$(JQUERY-FILES) \
-	$(DND-FILES)
+dnd-jquery-files = \
+	$(jquery-files) \
+	$(dnd-files)
 
-CORE-FILES = \
-	$(JS-SRC-DIR)/util.js \
-	$(EXPORT-FILE) \
-	$(JS-SRC-DIR)/error/error.js \
-	$(JS-SRC-DIR)/version.js \
-	$(JS-SRC-DIR)/features.js \
-	$(JS-SRC-DIR)/promise.js \
-	$(JS-SRC-DIR)/blob-proxy.js \
-	$(JS-SRC-DIR)/button.js \
-	$(JS-SRC-DIR)/upload-data.js \
-	$(JS-SRC-DIR)/uploader.basic.api.js \
-	$(JS-SRC-DIR)/uploader.basic.js \
-	$(JS-SRC-DIR)/ajax.requester.js \
-	$(JS-SRC-DIR)/upload-handler/upload.handler.js \
-	$(JS-SRC-DIR)/upload-handler/upload.handler.controller.js \
-	$(JS-SRC-DIR)/upload-handler/form.upload.handler.js \
-	$(JS-SRC-DIR)/upload-handler/xhr.upload.handler.js \
-	$(JS-SRC-DIR)/deletefile.ajax.requester.js \
-	$(JS-SRC-DIR)/image-support/megapix-image.js \
-	$(JS-SRC-DIR)/image-support/image.js \
-	$(JS-SRC-DIR)/image-support/exif.js \
-	$(JS-SRC-DIR)/identify.js \
-	$(JS-SRC-DIR)/identify.js \
-	$(JS-SRC-DIR)/image-support/validation.image.js \
-	$(JS-SRC-DIR)/session.js \
-	$(JS-SRC-DIR)/session.ajax.requester.js \
-	$(JS-SRC-DIR)/image-support/scaler.js \
-	$(JS-SRC-DIR)/third-party/ExifRestorer.js \
-	$(JS-SRC-DIR)/total-progress.js \
-	$(JS-SRC-DIR)/paste.js \
-	$(JS-SRC-DIR)/form-support.js \
+core-files = \
+	$(js-src-dir)/util.js \
+	$(export-file) \
+	$(js-src-dir)/error/error.js \
+	$(js-src-dir)/version.js \
+	$(js-src-dir)/features.js \
+	$(js-src-dir)/promise.js \
+	$(js-src-dir)/blob-proxy.js \
+	$(js-src-dir)/button.js \
+	$(js-src-dir)/upload-data.js \
+	$(js-src-dir)/uploader.basic.api.js \
+	$(js-src-dir)/uploader.basic.js \
+	$(js-src-dir)/ajax.requester.js \
+	$(js-src-dir)/upload-handler/upload.handler.js \
+	$(js-src-dir)/upload-handler/upload.handler.controller.js \
+	$(js-src-dir)/upload-handler/form.upload.handler.js \
+	$(js-src-dir)/upload-handler/xhr.upload.handler.js \
+	$(js-src-dir)/deletefile.ajax.requester.js \
+	$(js-src-dir)/image-support/megapix-image.js \
+	$(js-src-dir)/image-support/image.js \
+	$(js-src-dir)/image-support/exif.js \
+	$(js-src-dir)/identify.js \
+	$(js-src-dir)/identify.js \
+	$(js-src-dir)/image-support/validation.image.js \
+	$(js-src-dir)/session.js \
+	$(js-src-dir)/session.ajax.requester.js \
+	$(js-src-dir)/image-support/scaler.js \
+	$(js-src-dir)/third-party/ExifRestorer.js \
+	$(js-src-dir)/total-progress.js \
+	$(js-src-dir)/paste.js \
+	$(js-src-dir)/form-support.js \
 
-UI-FILES = \
-	$(DND-FILES-ONLY) \
-	$(JS-SRC-DIR)/uploader.api.js \
-	$(JS-SRC-DIR)/uploader.js \
-	$(JS-SRC-DIR)/templating.js \
-	$(JS-SRC-DIR)/ui.handler.events.js \
-    $(JS-SRC-DIR)/ui.handler.click.filebuttons.js \
-	$(JS-SRC-DIR)/ui.handler.click.filename.js \
-	$(JS-SRC-DIR)/ui.handler.focusin.filenameinput.js \
-	$(JS-SRC-DIR)/ui.handler.focus.filenameinput.js \
-	$(JS-SRC-DIR)/ui.handler.edit.filename.js
+ui-files = \
+	$(dnd-files-only) \
+	$(js-src-dir)/uploader.api.js \
+	$(js-src-dir)/uploader.js \
+	$(js-src-dir)/templating.js \
+	$(js-src-dir)/ui.handler.events.js \
+    $(js-src-dir)/ui.handler.click.filebuttons.js \
+	$(js-src-dir)/ui.handler.click.filename.js \
+	$(js-src-dir)/ui.handler.focusin.filenameinput.js \
+	$(js-src-dir)/ui.handler.focus.filenameinput.js \
+	$(js-src-dir)/ui.handler.edit.filename.js
 
-TRADITIONAL-FILES-ONLY = \
-	$(JS-SRC-DIR)/traditional/traditional.form.upload.handler.js \
-	$(JS-SRC-DIR)/traditional/traditional.xhr.upload.handler.js \
-	$(JS-SRC-DIR)/traditional/all-chunks-done.ajax.requester.js \
+traditional-files-only = \
+	$(js-src-dir)/traditional/traditional.form.upload.handler.js \
+	$(js-src-dir)/traditional/traditional.xhr.upload.handler.js \
+	$(js-src-dir)/traditional/all-chunks-done.ajax.requester.js \
 
-TRADITIONAL-FILES = \
-	$(CORE-FILES) \
-	$(TRADITIONAL-FILES-ONLY)
+traditional-files = \
+	$(core-files) \
+	$(traditional-files-only)
 
-TRADITIONAL-JQUERY-FILES = \
-	$(JQUERY-FILES) \
-	$(TRADITIONAL-FILES)
+traditional-jquery-files = \
+	$(jquery-files) \
+	$(traditional-files)
 
-TRADITIONAL-UI-FILES = \
-	$(CORE-FILES) \
-	$(TRADITIONAL-FILES-ONLY) \
-	$(UI-FILES)
+traditional-ui-files = \
+	$(core-files) \
+	$(traditional-files-only) \
+	$(ui-files)
 
-TRADITIONAL-UI-JQUERY-FILES = \
-	$(JQUERY-FILES) \
-	$(TRADITIONAL-UI-FILES)
+traditional-ui-jquery-files = \
+	$(jquery-files) \
+	$(traditional-ui-files)
 
-S3-FILES-ONLY = \
-	$(CRYPTOJS-FILES) \
-	$(JS-SRC-DIR)/s3/util.js \
-	$(JS-SRC-DIR)/non-traditional-common/uploader.basic.api.js \
-	$(JS-SRC-DIR)/s3/uploader.basic.js \
-	$(JS-SRC-DIR)/s3/request-signer.js \
-	$(JS-SRC-DIR)/uploadsuccess.ajax.requester.js \
-	$(JS-SRC-DIR)/s3/multipart.initiate.ajax.requester.js \
-	$(JS-SRC-DIR)/s3/multipart.complete.ajax.requester.js \
-	$(JS-SRC-DIR)/s3/multipart.abort.ajax.requester.js \
-	$(JS-SRC-DIR)/s3/s3.xhr.upload.handler.js \
-	$(JS-SRC-DIR)/s3/s3.form.upload.handler.js
+s3-files-only = \
+	$(cryptojs-files) \
+	$(js-src-dir)/s3/util.js \
+	$(js-src-dir)/non-traditional-common/uploader.basic.api.js \
+	$(js-src-dir)/s3/uploader.basic.js \
+	$(js-src-dir)/s3/request-signer.js \
+	$(js-src-dir)/uploadsuccess.ajax.requester.js \
+	$(js-src-dir)/s3/multipart.initiate.ajax.requester.js \
+	$(js-src-dir)/s3/multipart.complete.ajax.requester.js \
+	$(js-src-dir)/s3/multipart.abort.ajax.requester.js \
+	$(js-src-dir)/s3/s3.xhr.upload.handler.js \
+	$(js-src-dir)/s3/s3.form.upload.handler.js
 
-S3-FILES = \
-	$(CORE-FILES) \
-	$(S3-FILES-ONLY)
+s3-files = \
+	$(core-files) \
+	$(s3-files-only)
 
-S3-JQUERY-FILES = \
-	$(JQUERY-FILES) \
-	$(S3-FILES)
+s3-jquery-files = \
+	$(jquery-files) \
+	$(s3-files)
 
-S3-UI-FILES-ONLY = \
-	$(JS-SRC-DIR)/s3/uploader.js
+s3-ui-files-only = \
+	$(js-src-dir)/s3/uploader.js
 
-S3-UI-FILES = \
-	$(CORE-FILES) \
-	$(S3-FILES-ONLY) \
-	$(UI-FILES) \
-	$(S3-UI-FILES-ONLY) \
+s3-ui-files = \
+	$(core-files) \
+	$(s3-files-only) \
+	$(ui-files) \
+	$(s3-ui-files-only) \
 
-S3-UI-JQUERY-FILES = \
-	$(JQUERY-FILES) \
-	$(S3-UI-FILES)
+s3-ui-jquery-files = \
+	$(jquery-files) \
+	$(s3-ui-files)
 
-AZURE-FILES-ONLY = \
-	$(JS-SRC-DIR)/azure/util.js \
-	$(JS-SRC-DIR)/non-traditional-common/uploader.basic.api.js \
-	$(JS-SRC-DIR)/azure/uploader.basic.js \
-	$(JS-SRC-DIR)/azure/azure.xhr.upload.handler.js \
-	$(JS-SRC-DIR)/azure/get-sas.js \
-	$(JS-SRC-DIR)/uploadsuccess.ajax.requester.js \
-	$(JS-SRC-DIR)/azure/rest/delete-blob.js \
-	$(JS-SRC-DIR)/azure/rest/put-blob.js \
-	$(JS-SRC-DIR)/azure/rest/put-block.js \
-	$(JS-SRC-DIR)/azure/rest/put-block-list.js
+azure-files-only = \
+	$(js-src-dir)/azure/util.js \
+	$(js-src-dir)/non-traditional-common/uploader.basic.api.js \
+	$(js-src-dir)/azure/uploader.basic.js \
+	$(js-src-dir)/azure/azure.xhr.upload.handler.js \
+	$(js-src-dir)/azure/get-sas.js \
+	$(js-src-dir)/uploadsuccess.ajax.requester.js \
+	$(js-src-dir)/azure/rest/delete-blob.js \
+	$(js-src-dir)/azure/rest/put-blob.js \
+	$(js-src-dir)/azure/rest/put-block.js \
+	$(js-src-dir)/azure/rest/put-block-list.js
 
-AZURE-FILES = \
-	$(CORE-FILES) \
-	$(AZURE-FILES-ONLY)
+azure-files = \
+	$(core-files) \
+	$(azure-files-only)
 
-AZURE-JQUERY-FILES = \
-	$(JQUERY-FILES) \
-	$(AZURE-FILES)
+azure-jquery-files = \
+	$(jquery-files) \
+	$(azure-files)
 
-AZURE-UI-FILES-ONLY = \
-	$(JS-SRC-DIR)/azure/uploader.js
+azure-ui-files-only = \
+	$(js-src-dir)/azure/uploader.js
 
-AZURE-UI-FILES = \
-	$(CORE-FILES) \
-	$(AZURE-FILES-ONLY) \
-	$(UI-FILES) \
-	$(AZURE-UI-FILES-ONLY)
+azure-ui-files = \
+	$(core-files) \
+	$(azure-files-only) \
+	$(ui-files) \
+	$(azure-ui-files-only)
 
-AZURE-UI-JQUERY-FILES = \
-	$(JQUERY-FILES) \
-	$(AZURE-UI-FILES)
+azure-ui-jquery-files = \
+	$(jquery-files) \
+	$(azure-ui-files)
 
-ALL-CORE-FILES = \
-	$(CORE-FILES) \
-	$(TRADITIONAL-FILES-ONLY) \
-	$(S3-FILES-ONLY) \
-	$(AZURE-FILES-ONLY)
+all-core-files = \
+	$(core-files) \
+	$(traditional-files-only) \
+	$(s3-files-only) \
+	$(azure-files-only)
 
-ALL-CORE-JQUERY-FILES = \
-	$(JQUERY-FILES) \
-	$(ALL-CORE-FILES)
+all-core-jquery-files = \
+	$(jquery-files) \
+	$(all-core-files)
 
-ALL-FILES = \
-	$(CORE-FILES) \
-	$(TRADITIONAL-FILES-ONLY) \
-	$(UI-FILES) \
-	$(S3-FILES-ONLY) \
-	$(S3-UI-FILES-ONLY) \
-	$(AZURE-FILES-ONLY) \
-	$(AZURE-UI-FILES-ONLY)
+all-files = \
+	$(core-files) \
+	$(traditional-files-only) \
+	$(ui-files) \
+	$(s3-files-only) \
+	$(s3-ui-files-only) \
+	$(azure-files-only) \
+	$(azure-ui-files-only)
 
-ALL-JQUERY-FILES = \
-	$(JQUERY-FILES) \
-	$(ALL-FILES)
+all-jquery-files = \
+	$(jquery-files) \
+	$(all-files)
 
 clean:
-	rm -rf $(BUILD-OUT-DIR)
-	rm -rf $(DIST-OUT-DIR)
+	rm -rf $(build-out-dir)
+	rm -rf $(dist-out-dir)
 
 lint:
-	$(NPM-BIN)/jscs $(JS-SRC-DIR)/*
-	$(NPM-BIN)/jshint $(JS-SRC-DIR)/* $(UNIT-TEST-DIR)/* $(TEST-DIR)/static/local/*
+	$(npm-bin)/jscs $(js-src-dir)/*
+	$(npm-bin)/jshint $(js-src-dir)/* $(unit-test-dir)/* $(test-dir)/static/local/*
 
 _build:
 	mkdir -p $@
-	cp -pR $(SRC-DIR)/placeholders $@
-	cp -pR $(SRC-DIR)/html/templates $@
+	cp -pR $(src-dir)/placeholders $@
+	cp -pR $(src-dir)/html/templates $@
 	cp LICENSE $@
-	cp $(SRC-DIR)/*.css $@
-	cp $(SRC-DIR)/*.gif $@
-	$(NPM-BIN)/cleancss --source-map $@/fine-uploader.css -o $@/fine-uploader.min.css
-	$(NPM-BIN)/cleancss --source-map $@/fine-uploader-gallery.css -o $@/fine-uploader-gallery.min.css
-	$(NPM-BIN)/cleancss --source-map $@/fine-uploader-new.css -o $@/fine-uploader-new.min.css
+	cp $(src-dir)/*.css $@
+	cp $(src-dir)/*.gif $@
+	$(npm-bin)/cleancss --source-map $@/fine-uploader.css -o $@/fine-uploader.min.css
+	$(npm-bin)/cleancss --source-map $@/fine-uploader-gallery.css -o $@/fine-uploader-gallery.min.css
+	$(npm-bin)/cleancss --source-map $@/fine-uploader-new.css -o $@/fine-uploader-new.min.css
 
-uglify = $(NPM-BIN)/uglifyjs -b --preamble $(PREAMBLE) -e window:global -p relative --source-map-include-sources
-uglify-min = $(NPM-BIN)/uglifyjs -c -m --preamble $(PREAMBLE) -e window:global -p relative --source-map-include-sources
+uglify = $(npm-bin)/uglifyjs -b --preamble $(preamble) -e window:global -p relative --source-map-include-sources
+uglify-min = $(npm-bin)/uglifyjs -c -m --preamble $(preamble) -e window:global -p relative --source-map-include-sources
 
 build-dnd-standalone: _build
-	$(uglify) $(DND-FILES) -o $(BUILD-OUT-DIR)/dnd.js --source-map $(BUILD-OUT-DIR)/dnd.js.map
+	$(uglify) $(dnd-files) -o $(build-out-dir)/dnd.js --source-map $(build-out-dir)/dnd.js.map
 
 build-dnd-standalone-min: _build
-	$(uglify-min) $(DND-FILES) -o $(BUILD-OUT-DIR)/dnd.min.js --source-map $(BUILD-OUT-DIR)/dnd.min.js.map
+	$(uglify-min) $(dnd-files) -o $(build-out-dir)/dnd.min.js --source-map $(build-out-dir)/dnd.min.js.map
 
 build-core-traditional: _build
-	$(uglify) $(TRADITIONAL-FILES) -o $(BUILD-OUT-DIR)/fine-uploader.core.js --source-map $(BUILD-OUT-DIR)/fine-uploader.core.js.map
+	$(uglify) $(traditional-files) -o $(build-out-dir)/fine-uploader.core.js --source-map $(build-out-dir)/fine-uploader.core.js.map
 
 build-core-traditional-min: _build
-	$(uglify-min) $(TRADITIONAL-FILES) -o $(BUILD-OUT-DIR)/fine-uploader.core.min.js --source-map $(BUILD-OUT-DIR)/fine-uploader.core.min.js.map
+	$(uglify-min) $(traditional-files) -o $(build-out-dir)/fine-uploader.core.min.js --source-map $(build-out-dir)/fine-uploader.core.min.js.map
 
 build-ui-traditional: _build
-	$(uglify) $(TRADITIONAL-UI-FILES) -o $(BUILD-OUT-DIR)/fine-uploader.js --source-map $(BUILD-OUT-DIR)/fine-uploader.js.map
+	$(uglify) $(traditional-ui-files) -o $(build-out-dir)/fine-uploader.js --source-map $(build-out-dir)/fine-uploader.js.map
 
 build-ui-traditional-min: _build
-	$(uglify-min) $(TRADITIONAL-UI-FILES) -o $(BUILD-OUT-DIR)/fine-uploader.min.js --source-map $(BUILD-OUT-DIR)/fine-uploader.min.js.map
+	$(uglify-min) $(traditional-ui-files) -o $(build-out-dir)/fine-uploader.min.js --source-map $(build-out-dir)/fine-uploader.min.js.map
 
 build-ui-traditional-jquery: _build
-	$(uglify) $(TRADITIONAL-UI-JQUERY-FILES) -o $(BUILD-OUT-DIR)/fine-uploader.jquery.js --source-map $(BUILD-OUT-DIR)/jquery.fine-uploader.js.map
+	$(uglify) $(traditional-ui-jquery-files) -o $(build-out-dir)/fine-uploader.jquery.js --source-map $(build-out-dir)/jquery.fine-uploader.js.map
 
 build-ui-traditional-jquery-min: _build
-	$(uglify-min) $(TRADITIONAL-UI-JQUERY-FILES) -o $(BUILD-OUT-DIR)/fine-uploader.jquery.min.js --source-map $(BUILD-OUT-DIR)/jquery.fine-uploader.min.js.map
+	$(uglify-min) $(traditional-ui-jquery-files) -o $(build-out-dir)/fine-uploader.jquery.min.js --source-map $(build-out-dir)/jquery.fine-uploader.min.js.map
 
 build-core-s3: _build
-	$(uglify) $(S3-FILES) -o $(BUILD-OUT-DIR)/s3.fine-uploader.core.js --source-map $(BUILD-OUT-DIR)/s3.fine-uploader.core.js.map
+	$(uglify) $(s3-files) -o $(build-out-dir)/s3.fine-uploader.core.js --source-map $(build-out-dir)/s3.fine-uploader.core.js.map
 
 build-core-s3-min: _build
-	$(uglify-min) $(S3-FILES) -o $(BUILD-OUT-DIR)/s3.fine-uploader.core.min.js --source-map $(BUILD-OUT-DIR)/s3.fine-uploader.core.min.js.map
+	$(uglify-min) $(s3-files) -o $(build-out-dir)/s3.fine-uploader.core.min.js --source-map $(build-out-dir)/s3.fine-uploader.core.min.js.map
 
 build-ui-s3: _build
-	$(uglify) $(S3-UI-FILES) -o $(BUILD-OUT-DIR)/s3.fine-uploader.js --source-map $(BUILD-OUT-DIR)/s3.fine-uploader.js.map
+	$(uglify) $(s3-ui-files) -o $(build-out-dir)/s3.fine-uploader.js --source-map $(build-out-dir)/s3.fine-uploader.js.map
 
 build-ui-s3-min: _build
-	$(uglify-min) $(S3-UI-JQUERY-FILES) -o $(BUILD-OUT-DIR)/s3.jquery.fine-uploader.min.js --source-map $(BUILD-OUT-DIR)/s3.jquery.fine-uploader.min.js.map
+	$(uglify-min) $(s3-ui-jquery-files) -o $(build-out-dir)/s3.jquery.fine-uploader.min.js --source-map $(build-out-dir)/s3.jquery.fine-uploader.min.js.map
 
 build-ui-s3-jquery: _build
-	$(uglify) $(S3-UI-JQUERY-FILES) -o $(BUILD-OUT-DIR)/s3.jquery.fine-uploader.js --source-map $(BUILD-OUT-DIR)/s3.jquery.fine-uploader.js.map
+	$(uglify) $(s3-ui-jquery-files) -o $(build-out-dir)/s3.jquery.fine-uploader.js --source-map $(build-out-dir)/s3.jquery.fine-uploader.js.map
 
 build-ui-s3-jquery-min: _build
-	$(uglify-min) $(S3-UI-FILES) -o $(BUILD-OUT-DIR)/s3.fine-uploader.min.js -e window:global --source-map $(BUILD-OUT-DIR)/s3.fine-uploader.min.js.map
+	$(uglify-min) $(s3-ui-files) -o $(build-out-dir)/s3.fine-uploader.min.js -e window:global --source-map $(build-out-dir)/s3.fine-uploader.min.js.map
 
 build-core-azure: _build
-	$(uglify) $(AZURE-FILES) -o $(BUILD-OUT-DIR)/azure.fine-uploader.core.js --source-map $(BUILD-OUT-DIR)/azure.fine-uploader.core.js.map 
+	$(uglify) $(azure-files) -o $(build-out-dir)/azure.fine-uploader.core.js --source-map $(build-out-dir)/azure.fine-uploader.core.js.map 
 
 build-core-azure-min: _build
-	$(uglify-min) $(AZURE-FILES) -o $(BUILD-OUT-DIR)/azure.fine-uploader.core.min.js -e window:global --source-map $(BUILD-OUT-DIR)/azure.fine-uploader.core.min.js.map
+	$(uglify-min) $(azure-files) -o $(build-out-dir)/azure.fine-uploader.core.min.js -e window:global --source-map $(build-out-dir)/azure.fine-uploader.core.min.js.map
 
 build-ui-azure: _build
-	$(uglify) $(AZURE-UI-FILES) -o $(BUILD-OUT-DIR)/azure.fine-uploader.js --source-map $(BUILD-OUT-DIR)/azure.fine-uploader.js.map 
+	$(uglify) $(azure-ui-files) -o $(build-out-dir)/azure.fine-uploader.js --source-map $(build-out-dir)/azure.fine-uploader.js.map 
 
 build-ui-azure-min: _build
-	$(uglify-min) $(AZURE-UI-FILES) -o $(BUILD-OUT-DIR)/azure.fine-uploader.min.js -e window:global --source-map $(BUILD-OUT-DIR)/azure.fine-uploader.min.js.map
+	$(uglify-min) $(azure-ui-files) -o $(build-out-dir)/azure.fine-uploader.min.js -e window:global --source-map $(build-out-dir)/azure.fine-uploader.min.js.map
 
 build-ui-azure-jquery: _build
-	$(uglify) $(AZURE-UI-JQUERY-FILES) -o $(BUILD-OUT-DIR)/azure.jquery.fine-uploader.js --source-map $(BUILD-OUT-DIR)/azure.jquery.fine-uploader.js.map 
+	$(uglify) $(azure-ui-jquery-files) -o $(build-out-dir)/azure.jquery.fine-uploader.js --source-map $(build-out-dir)/azure.jquery.fine-uploader.js.map 
 
 build-ui-azure-jquery-min: _build
-	$(uglify-min) $(AZURE-UI-JQUERY-FILES) -o $(BUILD-OUT-DIR)/azure.jquery.fine-uploader.min.js -e window:global --source-map $(BUILD-OUT-DIR)/azure.jquery.fine-uploader.min.js.map
+	$(uglify-min) $(azure-ui-jquery-files) -o $(build-out-dir)/azure.jquery.fine-uploader.min.js -e window:global --source-map $(build-out-dir)/azure.jquery.fine-uploader.min.js.map
 
 build-all-core: _build
-	$(uglify) $(ALL-CORE-FILES) -o $(BUILD-OUT-DIR)/all.fine-uploader.core.js --source-map $(BUILD-OUT-DIR)/all.fine-uploader.core.js.map 
+	$(uglify) $(all-core-files) -o $(build-out-dir)/all.fine-uploader.core.js --source-map $(build-out-dir)/all.fine-uploader.core.js.map 
 
 build-all-core-min: _build
-	$(uglify-min) $(ALL-CORE-FILES) -o $(BUILD-OUT-DIR)/all.fine-uploader.core.min.js -e window:global --source-map $(BUILD-OUT-DIR)/all.fine-uploader.core.min.js.map
+	$(uglify-min) $(all-core-files) -o $(build-out-dir)/all.fine-uploader.core.min.js -e window:global --source-map $(build-out-dir)/all.fine-uploader.core.min.js.map
 
 build-all-ui: _build
-	$(uglify) $(ALL-FILES) -o $(BUILD-OUT-DIR)/all.fine-uploader.js --source-map $(BUILD-OUT-DIR)/all.fine-uploader.js.map 
+	$(uglify) $(all-files) -o $(build-out-dir)/all.fine-uploader.js --source-map $(build-out-dir)/all.fine-uploader.js.map 
 
 build-all-ui-min: _build
-	$(uglify-min) $(ALL-FILES) -o $(BUILD-OUT-DIR)/all.fine-uploader.min.js --source-map $(BUILD-OUT-DIR)/all.fine-uploader.min.js.map
+	$(uglify-min) $(all-files) -o $(build-out-dir)/all.fine-uploader.min.js --source-map $(build-out-dir)/all.fine-uploader.min.js.map
 
 build: \
 	build-dnd-standalone \
@@ -324,10 +324,10 @@ start-test-resources-server: test-resources-server.PID
 start-root-server: root-server.PID
 
 test-resources-server.PID:
-	$(NPM-BIN)/static test/unit/resources -H '{"Access-Control-Allow-Origin": "*"}' -p 3000 & echo $$! > $@
+	$(npm-bin)/static test/unit/resources -H '{"Access-Control-Allow-Origin": "*"}' -p 3000 & echo $$! > $@
 
 root-server.PID:
-	$(NPM-BIN)/static . -p 3001 & echo $$! > $@
+	$(npm-bin)/static . -p 3001 & echo $$! > $@
 
 stop-test-resources-server: test-resources-server.PID
 	kill `cat $<` && rm $<
@@ -336,7 +336,7 @@ stop-root-server: root-server.PID
 	kill `cat $<` && rm $<
 
 test: start-test-resources-server start-root-server build-all-ui
-	$(NPM-BIN)/karma start config/karma.conf.js
+	$(npm-bin)/karma start config/karma.conf.js
 	make stop-test-resources-server
 	make stop-root-server
 
@@ -351,44 +351,44 @@ common-zip-files = \
 	fine-uploader*.css*
 
 zip-traditional:
-	(cd $(BUILD-OUT-DIR) ; zip fine-uploader.zip $(common-zip-files) fine-uploader*.*)
+	(cd $(build-out-dir) ; zip fine-uploader.zip $(common-zip-files) fine-uploader*.*)
 
 zip-s3:
-	(cd $(BUILD-OUT-DIR) ; zip s3.fine-uploader.zip $(common-zip-files) s3*.*)
+	(cd $(build-out-dir) ; zip s3.fine-uploader.zip $(common-zip-files) s3*.*)
 
 zip-azure:
-	(cd $(BUILD-OUT-DIR) ; zip azure.fine-uploader.zip $(common-zip-files) azure*.*)
+	(cd $(build-out-dir) ; zip azure.fine-uploader.zip $(common-zip-files) azure*.*)
 
 zip-all:
-	(cd $(BUILD-OUT-DIR) ; zip all.fine-uploader.zip $(common-zip-files) all*.*)
+	(cd $(build-out-dir) ; zip all.fine-uploader.zip $(common-zip-files) all*.*)
 
 setup-dist:
-	mkdir -p $(PUB-DIR)
-	cp LICENSE README.md package.json $(PUB-DIR)
-	cp -pR $(SRC-DIR)/commonjs/ $(PUB-DIR)/lib/
+	mkdir -p $(pub-dir)
+	cp LICENSE README.md package.json $(pub-dir)
+	cp -pR $(src-dir)/commonjs/ $(pub-dir)/lib/
 
 copy-build-to-dist:
-	mkdir -p $(PUB-DIR)/$(PUB-SUBDIR)
-	cp -pR $(BUILD-OUT-DIR)/placeholders $(BUILD-OUT-DIR)/templates $(PUB-DIR)/$(PUB-SUBDIR)
-	cp $(BUILD-OUT-DIR)/*.gif $(PUB-DIR)/$(PUB-SUBDIR)
+	mkdir -p $(pub-dir)/$(PUB-SUBDIR)
+	cp -pR $(build-out-dir)/placeholders $(build-out-dir)/templates $(pub-dir)/$(PUB-SUBDIR)
+	cp $(build-out-dir)/*.gif $(pub-dir)/$(PUB-SUBDIR)
 ifneq (,$(findstring jquery,$(PUB-SUBDIR)))
 else
-	cp $(BUILD-OUT-DIR)/$(PUB-SUBDIR).core.min* $(BUILD-OUT-DIR)/$(PUB-SUBDIR).core.js* $(PUB-DIR)/$(PUB-SUBDIR)/
+	cp $(build-out-dir)/$(PUB-SUBDIR).core.min* $(build-out-dir)/$(PUB-SUBDIR).core.js* $(pub-dir)/$(PUB-SUBDIR)/
 endif
-	cp $(BUILD-OUT-DIR)/$(PUB-SUBDIR).min* $(BUILD-OUT-DIR)/$(PUB-SUBDIR).js* $(PUB-DIR)/$(PUB-SUBDIR)
-	cp $(BUILD-OUT-DIR)/fine-uploader*.css* $(PUB-DIR)/$(PUB-SUBDIR)
+	cp $(build-out-dir)/$(PUB-SUBDIR).min* $(build-out-dir)/$(PUB-SUBDIR).js* $(pub-dir)/$(PUB-SUBDIR)
+	cp $(build-out-dir)/fine-uploader*.css* $(pub-dir)/$(PUB-SUBDIR)
 
 copy-dnd:
-	mkdir -p $(PUB-DIR)/dnd
-	cp $(BUILD-OUT-DIR)/dnd*.* $(PUB-DIR)/dnd
+	mkdir -p $(pub-dir)/dnd
+	cp $(build-out-dir)/dnd*.* $(pub-dir)/dnd
 
 copy-traditional-dist:
 	make copy-build-to-dist PUB-SUBDIR=fine-uploader
-	cp $(JS-SRC-DIR)/iframe.xss.response.js $(PUB-DIR)/fine-uploader
+	cp $(js-src-dir)/iframe.xss.response.js $(pub-dir)/fine-uploader
 
 copy-traditional-jquery-dist:
 	make copy-build-to-dist PUB-SUBDIR=jquery.fine-uploader
-	cp $(JS-SRC-DIR)/iframe.xss.response.js $(PUB-DIR)/jquery.fine-uploader
+	cp $(js-src-dir)/iframe.xss.response.js $(pub-dir)/jquery.fine-uploader
 
 copy-s3-dist:
 	make copy-build-to-dist PUB-SUBDIR=s3.fine-uploader
@@ -406,11 +406,11 @@ copy-all-dist:
 	make copy-build-to-dist PUB-SUBDIR=all.fine-uploader
 
 tag-release:
-	git tag $(VERSION)
-	git push origin $(VERSION)
+	git tag $(version)
+	git push origin $(version)
 
 push-to-npm:
-	(cd $(PUB-DIR) ; npm publish)
+	(cd $(pub-dir) ; npm publish)
 
 publish: \
 	clean
@@ -437,5 +437,5 @@ update-dev:
 	(cd test/dev/handlers; php composer.phar update)
 
 rev-version:
-	sed -i "" -e 's/$(VERSION)/$(target)/g' client/js/version.js
-	sed -i "" -e 's/$(VERSION)/$(target)/g' package.json
+	sed -i "" -e 's/$(version)/$(target)/g' client/js/version.js
+	sed -i "" -e 's/$(version)/$(target)/g' package.json
