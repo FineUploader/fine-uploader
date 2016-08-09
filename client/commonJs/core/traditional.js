@@ -1,3 +1,3 @@
 "use strict";
 
-module.exports = require("../fine-uploader/fine-uploader.core");
+module.exports = require("../../fine-uploader/fine-uploader.core");
