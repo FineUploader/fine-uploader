@@ -171,7 +171,7 @@ as follows:
 
 ```html
 <!-- use Fine Uploader core (non-ui) for traditional endpoints -->
-<script src="node_modules/fine-uploader/fine-uploader.core.js" type="text/javascript"></script>
+<script src="node_modules/fine-uploader/fine-uploader/fine-uploader.core.js" type="text/javascript"></script>
 
 <script>
     (function() {
@@ -212,7 +212,7 @@ endpoint folder as well.
 
 ```javascript
 <!-- use Fine Uploader Azure -->
-<script src="node_modules/azure.fine-uploader/azure.fine-uploader.js" type="text/javascript"></script>
+<script src="node_modules/fine-uploader/azure.fine-uploader/azure.fine-uploader.js" type="text/javascript"></script>
 
 <link href="node_modules/fine-uploader/azure.fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
 
@@ -227,7 +227,7 @@ endpoint folder as well.
 <!-- use Fine Uploader S3, Azure, or traditional -->
 <script src="node_modules/fine-uploader/all.fine-uploader/all.fine-uploader.js" type="text/javascript"></script>
 
-<link href="node_modules/all.fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<link href="node_modules/fine-uploader/all.fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
 
 <script>
     (function() {
