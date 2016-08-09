@@ -42,10 +42,14 @@ Importing your desired Fine Uploader resources is as simple as using `import` st
 
 ```javascript
 // use Fine Uploader core (non-ui) for traditional endpoints
-import qq from 'fine-uploader'
+import qq from 'fine-uploader/lib/core'
 
 const uploader = new qq.FineUploaderBasic({...})
 ```
+
+You will find core builds for S3, Azure, and "all" in `lib/core/s3.js`, `lib/core/azure.js`,
+and `lib/core/all.js` (respectively)
+
 
 ```javascript
 // use Fine Uploader UI for traditional endpoints
@@ -102,10 +106,14 @@ as using `require` statements. For example:
 
 ```javascript
 // use Fine Uploader core (non-ui) for traditional endpoints
-var qq = require('fine-uploader')
+var qq = require('fine-uploader/lib/core')
 
 var uploader = new qq.FineUploaderBasic({...})
 ```
+
+You will find core builds for S3, Azure, and "all" in `lib/core/s3.js`, `lib/core/azure.js`,
+and `lib/core/all.js` (respectively)
+
 
 ```javascript
 // use Fine Uploader UI for traditional endpoints
@@ -163,7 +171,7 @@ as follows:
 
 ```html
 <!-- use Fine Uploader core (non-ui) for traditional endpoints -->
-<script src="node_modules/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+<script src="node_modules/fine-uploader/fine-uploader.core.js" type="text/javascript"></script>
 
 <script>
     (function() {
@@ -172,11 +180,15 @@ as follows:
 </script>
 ```
 
+You will find similarly named core builds for S3, Azure, and "all" inside of each respective
+endpoint folder as well.
+
+
 ```html
 <!-- use Fine Uploader UI for traditional endpoints -->
-<script src="node_modules/fine-uploader/fine-uploader.js" type="text/javascript"></script>
+<script src="node_modules/fine-uploader/fine-uploader/fine-uploader.js" type="text/javascript"></script>
 
-<link href="node_modules/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<link href="node_modules/fine-uploader/fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
 
 <script>
     (function() {
@@ -187,9 +199,9 @@ as follows:
 
 ```javascript
 <!-- use Fine Uploader S3 -->
-<script src="node_modules/s3.fine-uploader/fine-uploader.js" type="text/javascript"></script>
+<script src="node_modules/fine-uploader/s3.fine-uploader/s3.fine-uploader.js" type="text/javascript"></script>
 
-<link href="node_modules/s3.fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<link href="node_modules/fine-uploader/s3.fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
 
 <script>
     (function() {
@@ -200,9 +212,9 @@ as follows:
 
 ```javascript
 <!-- use Fine Uploader Azure -->
-<script src="node_modules/azure.fine-uploader/fine-uploader.js" type="text/javascript"></script>
+<script src="node_modules/azure.fine-uploader/azure.fine-uploader.js" type="text/javascript"></script>
 
-<link href="node_modules/azure.fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
+<link href="node_modules/fine-uploader/azure.fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
 
 <script>
     (function() {
@@ -213,7 +225,7 @@ as follows:
 
 ```javascript
 <!-- use Fine Uploader S3, Azure, or traditional -->
-<script src="node_modules/all.fine-uploader/fine-uploader.js" type="text/javascript"></script>
+<script src="node_modules/fine-uploader/all.fine-uploader/all.fine-uploader.js" type="text/javascript"></script>
 
 <link href="node_modules/all.fine-uploader/fine-uploader-new.css" rel="stylesheet" type="text/css"/>
 
