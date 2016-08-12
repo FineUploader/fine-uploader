@@ -406,11 +406,21 @@ copy-all-dist:
 	make copy-build-to-dist PUB-SUBDIR=all.fine-uploader
 
 tag-release:
+ifeq ($(simulate), true)
+	@echo version is $(version)
+else
 	git tag $(version)
 	git push origin $(version)
+endif
 
 push-to-npm:
+ifeq ($(simulate), true)
+	@echo not publishing - simulation mode
+else
 	(cd $(pub-dir) ; npm publish)
+endif
+
+
 
 publish: \
 	clean \
