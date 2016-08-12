@@ -240,10 +240,10 @@ build-ui-traditional-min: _build
 	$(uglify-min) $(traditional-ui-files) -o $(build-out-dir)/fine-uploader.min.js --source-map $(build-out-dir)/fine-uploader.min.js.map
 
 build-ui-traditional-jquery: _build
-	$(uglify) $(traditional-ui-jquery-files) -o $(build-out-dir)/fine-uploader.jquery.js --source-map $(build-out-dir)/jquery.fine-uploader.js.map
+	$(uglify) $(traditional-ui-jquery-files) -o $(build-out-dir)/jquery.fine-uploader.js --source-map $(build-out-dir)/jquery.fine-uploader.js.map
 
 build-ui-traditional-jquery-min: _build
-	$(uglify-min) $(traditional-ui-jquery-files) -o $(build-out-dir)/fine-uploader.jquery.min.js --source-map $(build-out-dir)/jquery.fine-uploader.min.js.map
+	$(uglify-min) $(traditional-ui-jquery-files) -o $(build-out-dir)/jquery.fine-uploader.min.js --source-map $(build-out-dir)/jquery.fine-uploader.min.js.map
 
 build-core-s3: _build
 	$(uglify) $(s3-files) -o $(build-out-dir)/s3.fine-uploader.core.js --source-map $(build-out-dir)/s3.fine-uploader.core.js.map
