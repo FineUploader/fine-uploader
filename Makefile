@@ -351,7 +351,7 @@ common-zip-files = \
 	fine-uploader*.css*
 
 zip-traditional:
-	(cd $(build-out-dir) ; zip fine-uploader.zip $(common-zip-files) fine-uploader*.*)
+	(cd $(build-out-dir) ; zip fine-uploader.zip $(common-zip-files) fine-uploader*.* jquery.fine-uploader*.*)
 
 zip-s3:
 	(cd $(build-out-dir) ; zip s3.fine-uploader.zip $(common-zip-files) s3*.*)
@@ -419,8 +419,6 @@ ifeq ($(simulate), true)
 else
 	(cd $(pub-dir) ; npm publish)
 endif
-
-
 
 publish: \
 	clean \
