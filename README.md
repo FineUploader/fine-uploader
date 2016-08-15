@@ -1,4 +1,6 @@
-[![Fine Uploader](http://fineuploader.com/img/FineUploader_logo.png)](http://fineuploader.com/)
+<a href="http://fineuploader.com">
+   <img src="http://fineuploader.smartimage.com/pimg/a8680d51" width="300">
+</a>
 
 [![Build Status](https://travis-ci.org/FineUploader/fine-uploader.svg?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
 [![npm](https://img.shields.io/npm/v/fine-uploader.svg)](https://www.npmjs.com/package/fine-uploader)
