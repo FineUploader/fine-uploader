@@ -126,10 +126,6 @@ s3-files = \
 	$(core-files) \
 	$(s3-files-only)
 
-s3-jquery-files = \
-	$(jquery-files) \
-	$(s3-files)
-
 s3-ui-files-only = \
 	$(js-src-dir)/s3/uploader.js
 
@@ -141,6 +137,7 @@ s3-ui-files = \
 
 s3-ui-jquery-files = \
 	$(jquery-files) \
+    $(js-src-dir)/s3/jquery-plugin.js \
 	$(s3-ui-files)
 
 azure-files-only = \
@@ -159,10 +156,6 @@ azure-files = \
 	$(core-files) \
 	$(azure-files-only)
 
-azure-jquery-files = \
-	$(jquery-files) \
-	$(azure-files)
-
 azure-ui-files-only = \
 	$(js-src-dir)/azure/uploader.js
 
@@ -174,6 +167,7 @@ azure-ui-files = \
 
 azure-ui-jquery-files = \
 	$(jquery-files) \
+    $(js-src-dir)/azure/jquery-plugin.js \
 	$(azure-ui-files)
 
 all-core-files = \
