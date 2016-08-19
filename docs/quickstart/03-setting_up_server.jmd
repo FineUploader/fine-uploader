@@ -23,7 +23,7 @@ read the [Fine Uploader S3 server documentation](../endpoint_handlers/amazon-s3.
 For this tutorial we are going to use PHP to develop a simple server which will accept uploads from our Fine Uploader instance.
 
 If PHP is not your style, then feel free to browse the other
-[server-side demos repository](http://github.com/Widen/fine-uploader-server).  **It's quite important for you to read
+[server-side examples repository](https://github.com/FineUploader/server-examples).  **It's quite important for you to read
 the [traditional server-side integration instructions](../endpoint_handlers/traditional.html) before you do any of this,
 though**.
 
@@ -45,7 +45,7 @@ An example composer.json file may look like this:
 ```json
 {
   "require": {
-    "fineuploader/php-traditional-server": "1.0.0"
+    "fineuploader/php-traditional-server": "1.1.0"
   }
 }
 ```
