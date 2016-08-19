@@ -41,7 +41,7 @@ This will result in a "_build" directory with CSS, JS, image, and template files
 
 ### 2. Decide which build of Fine Uploader to use
 
-Fine Uploader builds are categorized by "endpoint type" _and_ by feature set. Each of the four endpoint type builds are available with each of the two supported feature sets.
+Fine Uploader builds are categorized by "endpoint type" _and_ by feature set. Each of the four endpoint type builds are available with each of the two supported feature sets. **Choose one of the following endpoint types _and_ one of the "feature sets" before moving on to step 3**.
 
 #### Endpoint types
 
@@ -78,7 +78,271 @@ The most basic Fine Uploader mode.  [The core feature set](../modes/core.html) a
 
 Inherits everything from the core feature set. [The UI feature set](../modes/ui.html) also comes with a fully functional user interface which includes, but is not limited to: a default upload button, progress bars, retry/cancel/delete buttons, proper display of error messages, and more. This feature set is recommended for those who are pleased with the default Fine Uploader interface or can sufficiently customize the default Fine Uploader UI using CSS overrides. **In most cases, the UI feature set will be the most appropriate choice.**
 
-### 3. Determine how you would like to import Fine Uploader
+### 3. Gather the appropriate Fine Uploader files
+
+After picking and endpoint type and a set of features from step 2, you can now properly gather the Fine Uploader files you will need to properly bring advanced file uploading capabilites to your project.
+
+#### Traditional endpoint, core feature set
+
+You will need the following JavaScript files:
+
+- fine-uploader/fine-uploader.core.js
+- fine-uploader/fine-uploader.core.map.js (optional, but useful for live-debugging)
+
+If you you aren't combining and minifying your project's JavaScript files, you will need these for your production environment _instead_ of the ones listed above:
+
+- fine-uploader/fine-uploader.core.min.js
+- fine-uploader/fine-uploader.core.min.js.map (optional, but useful for live-debugging)
+
+#### Traditional endpoint, UI feature set
+
+You will need the following JavaScript files:
+
+- fine-uploader/fine-uploader.js
+- fine-uploader/fine-uploader.map.js (optional, but useful for live-debugging)
+
+If you you aren't combining and minifying your project's JavaScript files, you will need these for your production environment _instead_ of the ones listed above:
+
+- fine-uploader/fine-uploader.min.js
+- fine-uploader/fine-uploader.min.js.map (optional, but useful for live-debugging)
+
+Next, decide if you'd like to adopt the "gallery layout" or the "row-based layout" for submitted files. See the [demos page](http://fineuploader.com/demos.html) for examples of both. The "Gallery View for Images" demo shows the gallery layout, and the "Manually Trigger Uploads & Edit File Names" demo illustrates a row-based layout.
+
+If you choose the gallery layout, you'll need these CSS files:
+
+- fine-uploader/fine-uploader-gallery.css
+- fine-uploader/fine-uploader-gallery.min.css (optional, but useful for live-debugging)
+
+...and this template file:
+
+- fine-uploader/templates/gallery.html
+
+If you you aren't combining and minifying your project's CSS files, you will need these for your production environment _instead_ of the ones listed above:
+
+- fine-uploader/fine-uploader-gallery.min.css
+- fine-uploader/fine-uploader-gallery.min.css.map (optional, but useful for live-debugging)
+
+If you've elected for a row-based UI layout, you'll need _these_ CSS files instead of the gallery files listed previously:
+
+- fine-uploader/fine-uploader-new.css
+- fine-uploader/fine-uploader-new.min.css (optional, but useful for live-debugging)
+
+...and this template file:
+
+- fine-uploader/templates/simple-thumbnails.html
+
+If you you aren't combining and minifying your project's CSS files, you will need these for your production environment _instead_ of the ones listed above:
+
+- fine-uploader/fine-uploader-new.min.css
+- fine-uploader/fine-uploader-new.min.css.map (optional, but useful for live-debugging)
+
+Finally, you'll need these image files:
+
+- fine-uploader/loading.gif
+- fine-uploader/processing.gif
+- fine-uploader/placeholders/not_available-generic.png
+- fine-uploader/placeholders/waiting-generic.png
+- fine-uploader/continue.gif (optional - only if using the pause upload feature)
+- fine-uploader/edit.gif (optional - only if using the edit filename feature)
+- fine-uploader/retry.gif (optional - only if using the retry failed upload feature)
+- fine-uploader/trash.gif (optional - only if using the delete file feature)
+
+#### S3 endpoint, core feature set
+
+You will need the following JavaScript files:
+
+- s3.fine-uploader/s3.fine-uploader.core.js
+- s3.fine-uploader/s3.fine-uploader.core.map.js (optional, but useful for live-debugging)
+
+If you you aren't combining and minifying your project's JavaScript files, you will need these for your production environment _instead_ of the ones listed above:
+
+- s3.fine-uploader/s3.fine-uploader.core.min.js
+- s3.fine-uploader/s3.fine-uploader.core.min.js.map (optional, but useful for live-debugging)
+
+#### S3 endpoint, UI feature set
+
+You will need the following JavaScript files:
+
+- s3.fine-uploader/s3.fine-uploader.js
+- s3.fine-uploader/s3.fine-uploader.map.js (optional, but useful for live-debugging)
+
+If you you aren't combining and minifying your project's JavaScript files, you will need these for your production environment _instead_ of the ones listed above:
+
+- s3.fine-uploader/s3.fine-uploader.min.js
+- s3.fine-uploader/s3.fine-uploader.min.js.map (optional, but useful for live-debugging)
+
+Next, decide if you'd like to adopt the "gallery layout" or the "row-based layout" for submitted files. See the [demos page](http://fineuploader.com/demos.html) for examples of both. The "Gallery View for Images" demo shows the gallery layout, and the "Manually Trigger Uploads & Edit File Names" demo illustrates a row-based layout.
+
+If you choose the gallery layout, you'll need these CSS files:
+
+- s3.fine-uploader/fine-uploader-gallery.css
+- s3.fine-uploader/fine-uploader-gallery.min.css (optional, but useful for live-debugging)
+
+...and this template file:
+
+- s3.fine-uploader/templates/gallery.html
+
+If you you aren't combining and minifying your project's CSS files, you will need these for your production environment _instead_ of the ones listed above:
+
+- s3.fine-uploader/fine-uploader-gallery.min.css
+- s3.fine-uploader/fine-uploader-gallery.min.css.map (optional, but useful for live-debugging)
+
+If you've elected for a row-based UI layout, you'll need _these_ CSS files instead of the gallery files listed previously:
+
+- s3.fine-uploader/fine-uploader-new.css
+- s3.fine-uploader/fine-uploader-new.min.css (optional, but useful for live-debugging)
+
+...and this template file:
+
+- s3.fine-uploader/templates/simple-thumbnails.html
+
+If you you aren't combining and minifying your project's CSS files, you will need these for your production environment _instead_ of the ones listed above:
+
+- s3.fine-uploader/fine-uploader-new.min.css
+- s3.fine-uploader/fine-uploader-new.min.css.map (optional, but useful for live-debugging)
+
+Finally, you'll need these image files:
+
+- s3.fine-uploader/loading.gif
+- s3.fine-uploader/processing.gif
+- s3.fine-uploader/placeholders/not_available-generic.png
+- s3.fine-uploader/placeholders/waiting-generic.png
+- s3.fine-uploader/continue.gif (optional - only if using the pause upload feature)
+- s3.fine-uploader/edit.gif (optional - only if using the edit filename feature)
+- s3.fine-uploader/retry.gif (optional - only if using the retry failed upload feature)
+- s3.fine-uploader/trash.gif (optional - only if using the delete file feature)
+
+#### Azure endpoint, core feature set
+
+You will need the following JavaScript files:
+
+- azure.fine-uploader/azure.fine-uploader.core.js
+- azure.fine-uploader/azure.fine-uploader.core.map.js (optional, but useful for live-debugging)
+
+If you you aren't combining and minifying your project's JavaScript files, you will need these for your production environment _instead_ of the ones listed above:
+
+- azure.fine-uploader/azure.fine-uploader.core.min.js
+- azure.fine-uploader/azure.fine-uploader.core.min.js.map (optional, but useful for live-debugging)
+
+#### Azure endpoint, UI feature set
+
+You will need the following JavaScript files:
+
+- azure.fine-uploader/azure.fine-uploader.js
+- azure.fine-uploader/azure.fine-uploader.map.js (optional, but useful for live-debugging)
+
+If you you aren't combining and minifying your project's JavaScript files, you will need these for your production environment _instead_ of the ones listed above:
+
+- azure.fine-uploader/azure.fine-uploader.min.js
+- azure.fine-uploader/azure.fine-uploader.min.js.map (optional, but useful for live-debugging)
+
+Next, decide if you'd like to adopt the "gallery layout" or the "row-based layout" for submitted files. See the [demos page](http://fineuploader.com/demos.html) for examples of both. The "Gallery View for Images" demo shows the gallery layout, and the "Manually Trigger Uploads & Edit File Names" demo illustrates a row-based layout.
+
+If you choose the gallery layout, you'll need these CSS files:
+
+- azure.fine-uploader/fine-uploader-gallery.css
+- azure.fine-uploader/fine-uploader-gallery.min.css (optional, but useful for live-debugging)
+
+...and this template file:
+
+- azure.fine-uploader/templates/gallery.html
+
+If you you aren't combining and minifying your project's CSS files, you will need these for your production environment _instead_ of the ones listed above:
+
+- azure.fine-uploader/fine-uploader-gallery.min.css
+- azure.fine-uploader/fine-uploader-gallery.min.css.map (optional, but useful for live-debugging)
+
+If you've elected for a row-based UI layout, you'll need _these_ CSS files instead of the gallery files listed previously:
+
+- azure.fine-uploader/fine-uploader-new.css
+- azure.fine-uploader/fine-uploader-new.min.css (optional, but useful for live-debugging)
+
+...and this template file:
+
+- azure.fine-uploader/templates/simple-thumbnails.html
+
+If you you aren't combining and minifying your project's CSS files, you will need these for your production environment _instead_ of the ones listed above:
+
+- azure.fine-uploader/fine-uploader-new.min.css
+- azure.fine-uploader/fine-uploader-new.min.css.map (optional, but useful for live-debugging)
+
+Finally, you'll need these image files:
+
+- azure.fine-uploader/loading.gif
+- azure.fine-uploader/processing.gif
+- azure.fine-uploader/placeholders/not_available-generic.png
+- azure.fine-uploader/placeholders/waiting-generic.png
+- azure.fine-uploader/continue.gif (optional - only if using the pause upload feature)
+- azure.fine-uploader/edit.gif (optional - only if using the edit filename feature)
+- azure.fine-uploader/retry.gif (optional - only if using the retry failed upload feature)
+- azure.fine-uploader/trash.gif (optional - only if using the delete file feature)
+
+#### All endpoint types, core feature set
+
+You will need the following JavaScript files:
+
+- all.fine-uploader/all.fine-uploader.core.js
+- all.fine-uploader/all.fine-uploader.core.map.js (optional, but useful for live-debugging)
+
+If you you aren't combining and minifying your project's JavaScript files, you will need these for your production environment _instead_ of the ones listed above:
+
+- all.fine-uploader/all.fine-uploader.core.min.js
+- all.fine-uploader/all.fine-uploader.core.min.js.map (optional, but useful for live-debugging)
+
+#### All endpoint types, UI feature set
+
+You will need the following JavaScript files:
+
+- all.fine-uploader/all.fine-uploader.js
+- all.fine-uploader/all.fine-uploader.map.js (optional, but useful for live-debugging)
+
+If you you aren't combining and minifying your project's JavaScript files, you will need these for your production environment _instead_ of the ones listed above:
+
+- all.fine-uploader/all.fine-uploader.min.js
+- all.fine-uploader/all.fine-uploader.min.js.map (optional, but useful for live-debugging)
+
+Next, decide if you'd like to adopt the "gallery layout" or the "row-based layout" for submitted files. See the [demos page](http://fineuploader.com/demos.html) for examples of both. The "Gallery View for Images" demo shows the gallery layout, and the "Manually Trigger Uploads & Edit File Names" demo illustrates a row-based layout.
+
+If you choose the gallery layout, you'll need these CSS files:
+
+- all.fine-uploader/fine-uploader-gallery.css
+- all.fine-uploader/fine-uploader-gallery.min.css (optional, but useful for live-debugging)
+
+...and this template file:
+
+- all.fine-uploader/templates/gallery.html
+
+If you you aren't combining and minifying your project's CSS files, you will need these for your production environment _instead_ of the ones listed above:
+
+- all.fine-uploader/fine-uploader-gallery.min.css
+- all.fine-uploader/fine-uploader-gallery.min.css.map (optional, but useful for live-debugging)
+
+If you've elected for a row-based UI layout, you'll need _these_ CSS files instead of the gallery files listed previously:
+
+- all.fine-uploader/fine-uploader-new.css
+- all.fine-uploader/fine-uploader-new.min.css (optional, but useful for live-debugging)
+
+...and this template file:
+
+- all.fine-uploader/templates/simple-thumbnails.html
+
+If you you aren't combining and minifying your project's CSS files, you will need these for your production environment _instead_ of the ones listed above:
+
+- all.fine-uploader/fine-uploader-new.min.css
+- all.fine-uploader/fine-uploader-new.min.css.map (optional, but useful for live-debugging)
+
+Finally, you'll need these image files:
+
+- all.fine-uploader/loading.gif
+- all.fine-uploader/processing.gif
+- all.fine-uploader/placeholders/not_available-generic.png
+- all.fine-uploader/placeholders/waiting-generic.png
+- all.fine-uploader/continue.gif (optional - only if using the pause upload feature)
+- all.fine-uploader/edit.gif (optional - only if using the edit filename feature)
+- all.fine-uploader/retry.gif (optional - only if using the retry failed upload feature)
+- all.fine-uploader/trash.gif (optional - only if using the delete file feature)
+
+### 4. Determine how you would like to import Fine Uploader
 
 You have the following options available to pull Fine Uploader into your project:
 
@@ -90,7 +354,7 @@ For more information on how you can load Fine Uploader into your project, please
 [modules feature page](../features/modules.html).
 
 
-### 4. Next, let's check out some of Fine Uploader's options.
+### 5. Next, let's check out some of Fine Uploader's options.
 
 Proceed by selecting either:
 
