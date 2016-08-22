@@ -9,7 +9,7 @@ We have provided a [sample C# endpoint handler for Fine Uploader Azure][csharp].
 to develop your own endpoint handler, or modify the example, you should read about [handling
 Fine Uploader Azure requests][azureserver] first.
 
-[csharp]: https://github.com/Widen/fine-uploader-server/tree/master/C%23/azure
+[csharp]: https://github.com/FineUploader/server-examples/tree/master/C%23/azure
 [azureserver]: ../endpoint_handlers/azure.html
 
 {% endmarkdown %}

@@ -14,7 +14,7 @@
 For this tutorial we are going to use PHP to develop a simple server which will sign requests bound for S3.
 
 If PHP is not your style, then feel free to browse the other
-[server-side demos repository](http://github.com/Widen/fine-uploader-server).  **It's quite important for you to read
+[server-side examples repository](https://github.com/FineUploader/server-examples).  **It's quite important for you to read
 the [Amazon S3 server-side integration instructions](../endpoint_handlers/amazon-s3.html) before you do any of this,
 though**.
 
@@ -42,7 +42,7 @@ An example composer.json file may look like this:
 ```json
 {
   "require": {
-    "fineuploader/php-s3-server": "1.0.0"
+    "fineuploader/php-s3-server": "1.1.0"
   }
 }
 ```
