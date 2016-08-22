@@ -280,7 +280,7 @@ Continue reading the section for the steps needed to integrate Fine Uploader int
 
 #### Globally scoped environments
 
-In a "globally scoped" environment, you simply reference the required Fine Uploader JavaScript and CSS files (along with other JS and CSS files specific to your prohect) directly via appropriate HTML tags. The sections below will show you how to necessary Fine Uploader files in a globally scoped environment, depending on the endpoint type and feature set you chose in step 2, using the files you gathered in step 3.
+In a "globally scoped" environment, you simply reference the required Fine Uploader JavaScript and CSS files (along with other JS and CSS files specific to your prohect) directly via appropriate HTML tags. The sections below will show you how to use Fine Uploader in a globally scoped environment, depending on the endpoint type and feature set you chose in step 2, using the files you gathered in step 3.
 
 ##### Traditional endpoint, core feature set
 

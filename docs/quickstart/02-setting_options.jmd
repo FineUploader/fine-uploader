@@ -13,7 +13,7 @@ the more common options of Fine Uploader. To see _all_ supported options, open t
 use the `default.html` file in the `templates` directory bundled with the library and customize it as desired.  See the
 [styling documentation page](../features/styling.html) for more details.""") }}
 
-## Initial Options
+## Basic Options
 
 Fine Uploader comes with a wealth of options. Most importantly, Fine Uploader
 requires you to specify the URL where it should send uploads and server
