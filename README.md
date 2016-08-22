@@ -3,7 +3,6 @@
 [![Build Status](https://travis-ci.org/FineUploader/fine-uploader.svg?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
 [![npm](https://img.shields.io/npm/v/fine-uploader.svg)](https://www.npmjs.com/package/fine-uploader)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
-[![Freenode](https://img.shields.io/badge/chat-on%20freenode-brightgreen.svg)](irc://chat.freenode.net/#fineuploader)
 [![Stackoverflow](https://img.shields.io/badge/ask-on%20stack%20overflow-brightgreen.svg)](http://stackoverflow.com/questions/tagged/fine-uploader)
 
 [**Documentation**](http://docs.fineuploader.com) |
