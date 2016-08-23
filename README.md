@@ -11,7 +11,7 @@
 [**Examples**](http://fineuploader.com/demos) |
 [**Support**](http://fineuploader.com/support.html) |
 [**Blog**](http://blog.fineuploader.com/) |
-[**Changelog**](../..//releases)
+[**Changelog**](../../releases)
 
 ---
 
