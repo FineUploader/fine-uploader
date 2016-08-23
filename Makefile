@@ -58,6 +58,7 @@ core-files = \
 	$(js-src-dir)/ajax.requester.js \
 	$(js-src-dir)/upload-handler/upload.handler.js \
 	$(js-src-dir)/upload-handler/upload.handler.controller.js \
+	$(js-src-dir)/window.receive.message.js \
 	$(js-src-dir)/upload-handler/form.upload.handler.js \
 	$(js-src-dir)/upload-handler/xhr.upload.handler.js \
 	$(js-src-dir)/deletefile.ajax.requester.js \
