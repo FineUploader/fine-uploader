@@ -194,6 +194,7 @@
                 }),
                 getSas = new qq.azure.GetSas({
                     cors: this._options.cors,
+                    customHeaders: this._options.signature.customHeaders,
                     endpointStore: {
                         get: function() {
                             return self._options.signature.endpoint;
