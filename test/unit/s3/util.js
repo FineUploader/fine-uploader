@@ -153,6 +153,16 @@ describe("s3/util.js", function () {
             assert.equal(response.etag, "789");
         });
     });
+    
+    describe("uriEscapePath",function(){
+        it("encodes params following s3 directives",function(){
+            assert.equal(qq.s3.util.uriEscapePath("pippo/pluto e topolino.jpg"),"pippo/pluto%20e%20topolino.jpg");
+            assert.equal(qq.s3.util.uriEscapePath("pippo/pluto & mickey+mouse.jpg"),"pippo/pluto%20%26%20mickey%2Bmouse.jpg");
+            assert.equal(qq.s3.util.uriEscapePath("pluto & àòè.jpg"),"pluto%20%26%20a%CC%80o%CC%80e%CC%80.jpg");
+            assert.equal(qq.s3.util.uriEscapePath("pluto & micke#22.jpg"),"pluto%20%26%20micke%2322.jpg");
+            assert.equal(qq.s3.util.uriEscapePath("pluto_lkjhàò=23£"),"pluto_lkjha%CC%80o%CC%80%3D23%C2%A3");
+        });
+    });
 
     describe("encodeQueryStringParam", function() {
         it("handles params with spaces correctly", function() {
