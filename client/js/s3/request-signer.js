@@ -402,6 +402,8 @@ qq.s3.RequestSigner = function(o) {
                 requestInfo.hashedContent = hashedContent;
 
                 promise.success(generateStringToSign(requestInfo));
+            }, function (err) {
+                promise.failure(err);
             });
         }
         else {
@@ -424,6 +426,8 @@ qq.s3.RequestSigner = function(o) {
 
             toBeSigned.signatureConstructor.getToSign(id).then(function(signatureArtifacts) {
                 signApiRequest(toBeSigned.signatureConstructor, signatureArtifacts.stringToSign, signatureEffort);
+            }, function (err) {
+                signatureEffort.failure(err);
             });
         }
         // Form upload (w/ policy document)
@@ -514,6 +518,9 @@ qq.s3.RequestSigner = function(o) {
                             .withParams(params)
                             .withQueryParams(queryParams)
                             .send();
+                    }, function (err) {
+                        options.log("Failed to construct signature. ", "error");
+                        signatureEffort.failure("Failed to construct signature.");
                     });
                 }
                 else {
@@ -600,6 +607,8 @@ qq.s3.RequestSigner = function(o) {
                             stringToSign: artifacts.toSign,
                             stringToSignRaw: artifacts.toSignRaw
                         });
+                    }, function (err) {
+                        promise.failure(err);
                     });
 
                     return promise;
