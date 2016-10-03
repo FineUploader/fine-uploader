@@ -47,7 +47,7 @@
                 onSubmitted: function(id, name) {},
                 onComplete: function(id, name, responseJSON, maybeXhr) {},
                 onAllComplete: function(successful, failed) {},
-                onCancel: function(id, name) {},
+                onCancel: function(id, name, reason) {},
                 onUpload: function(id, name) {},
                 onUploadChunk: function(id, name, chunkData) {},
                 onUploadChunkSuccess: function(id, chunkData, responseJSON, xhr) {},

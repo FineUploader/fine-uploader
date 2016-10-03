@@ -433,7 +433,7 @@
             }
         },
 
-        _onCancel: function(id, name) {
+        _onCancel: function(id, name, reason) {
             this._parent.prototype._onCancel.apply(this, arguments);
             this._removeFileItem(id);
 

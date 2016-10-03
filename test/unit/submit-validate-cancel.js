@@ -416,12 +416,12 @@ if (qqtest.canDownloadFileAsBlob) {
 
         describe("cancelling uploads", function() {
             function runCancelTest(batch, done) {
-                var canceledIds = [],
+                var canceledUploads = [],
                     uploader = new qq.FineUploaderBasic({
                     autoUpload: false,
                     callbacks: {
-                        onCancel: function(id) {
-                            canceledIds.push(id);
+                        onCancel: function(id, name, reason) {
+                            canceledUploads.push({id: id, reason: reason});
                         },
                         onStatusChange: function() {
                             if (uploader.getUploads({status: qq.status.SUBMITTED}).length === 2) {
@@ -435,13 +435,30 @@ if (qqtest.canDownloadFileAsBlob) {
                                     }
                                     else {
                                         uploader.cancel(0);
-                                        uploader.cancel(1);
+                                        uploader.cancel(1, "reason check");
                                     }
                                 }, 0);
                             }
 
                             if (uploader.getUploads({status: qq.status.CANCELED}).length === 2) {
-                                assert.deepEqual(canceledIds, [0, 1]);
+                                if (batch) {
+                                    assert.deepEqual(
+                                        canceledUploads,
+                                        [
+                                            {id: 0, reason: undefined},
+                                            {id: 1, reason: undefined}
+                                        ]
+                                    );
+                                }
+                                else {
+                                    assert.deepEqual(
+                                        canceledUploads,
+                                        [
+                                            {id: 0, reason: undefined},
+                                            {id: 1, reason: "reason check"}
+                                        ]
+                                    );
+                                }
                                 assert.equal(uploader.getUploads().length, 2);
                                 assert.equal(uploader.getUploads({status: qq.status.CANCELED}).length, 2);
                                 done();

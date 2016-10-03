@@ -88,6 +88,11 @@ the upload may actually complete until the promise has actually be fullfilled.
             "type": "String",
             "description": "The current file's name."
         },
+        {
+            "name": "reason",
+            "type": "String",
+            "description": "A reason for the cancellation, if supplied. Otherwise this will be undefined."
+        },
     ])
 }}
 

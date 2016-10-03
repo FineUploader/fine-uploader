@@ -111,8 +111,8 @@
             }
         },
 
-        cancel: function(id) {
-            this._handler.cancel(id);
+        cancel: function(id, reason) {
+            this._handler.cancel(id, reason);
         },
 
         cancelAll: function() {
@@ -715,12 +715,12 @@
                             self._options.callbacks.onComplete(id, name, result, xhr);
                         }
                     },
-                    onCancel: function(id, name, cancelFinalizationEffort) {
+                    onCancel: function(id, name, cancelFinalizationEffort, reason) {
                         var promise = new qq.Promise();
 
                         self._handleCheckedCallback({
                             name: "onCancel",
-                            callback: qq.bind(self._options.callbacks.onCancel, self, id, name),
+                            callback: qq.bind(self._options.callbacks.onCancel, self, id, name, reason),
                             onFailure: promise.failure,
                             onSuccess: function() {
                                 cancelFinalizationEffort.then(function() {
@@ -1367,7 +1367,7 @@
             }
         },
 
-        _onCancel: function(id, name) {
+        _onCancel: function(id) {
             this._netUploadedOrQueued--;
 
             clearTimeout(this._retryTimeouts[id]);

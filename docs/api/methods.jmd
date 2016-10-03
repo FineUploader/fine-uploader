@@ -76,12 +76,17 @@ A `CanvasWrapper` object:
     }
 ]) }}
 
-{{ api_method("cancel", "cancel (id)", "Cancel the queued or currently uploading item which corresponds to the `id`.",
+{{ api_method("cancel", "cancel (id, reason)", "Cancel the queued or currently uploading item which corresponds to the `id`.",
 [
     {
         "name": "id",
         "type": "Integer",
         "description": "The file's id"
+    },
+    {
+        "name": "reason",
+        "type": "String",
+        "description": "An optional reason for the upload cancellation. This will be passed on to the onCancel callback and may be used to influence other behaviors, such as the appearance of the file element in the UI."
     }
 ]) }}
 
