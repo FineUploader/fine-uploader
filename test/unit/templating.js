@@ -352,5 +352,63 @@ describe("templating.js", function() {
                 uploader.addFiles({blob: blob, name: "up.jpg"});
             });
         });
+
+        it("only removes a file element from the DOM if display.removeOnCancel returns true", function(done) {
+            assert.expect(2, done);
+
+            helpme.setupFileTests();
+
+            var canceledIds = [],
+                submittedIds = [],
+                template = $('<script id="qq-template" type="text/template">' + defaultTemplate + '</script>'),
+                uploader;
+
+            $fixture.append(template);
+
+            uploader = new qq.FineUploader({
+                display: {
+                    removeOnCancel: function(id, name, reason) {
+                        return reason !== "duplicate";
+                    }
+                },
+                element: $fixture[0],
+                autoUpload: false,
+                callbacks: {
+                    onCancel: function(id) {
+                        canceledIds.push(id);
+
+                        if (id === 0) {
+                            setTimeout(function() {
+                                assert.throws(function() {
+                                    uploader.getItemByFileId(id);
+                                });
+                            }, 0);
+                        }
+                        else if (id === 1) {
+                            setTimeout(function() {
+                                var fileElement = uploader.getItemByFileId(id);
+
+                                assert.equal(fileElement.querySelector(".qq-upload-status-text-selector").textContent, "duplicate");
+                            }, 0);
+                        }
+                    },
+                    onSubmitted: function(id) {
+                        submittedIds.push(id);
+
+                        if (submittedIds.length === 2) {
+                            uploader.cancel(0);
+                            uploader.cancel(1, "duplicate");
+                        }
+                    }
+                }
+            });
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                uploader.addFiles([
+                    {blob: blob, name: "up1.jpg"},
+                    {blob: blob, name: "up2.jpg"}
+                ]);
+            });
+        });
     }
 });

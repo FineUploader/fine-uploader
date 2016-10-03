@@ -27,6 +27,7 @@ qq.FineUploader = function(o, namespace) {
         },
 
         text: {
+            canceled: "Canceled",
             formatProgress: "{percent}% of {total_size}",
             failUpload: "Upload failed",
             waitingForResponse: "Processing...",
@@ -36,6 +37,7 @@ qq.FineUploader = function(o, namespace) {
         template: "qq-template",
 
         classes: {
+            canceled: "qq-upload-canceled",
             retrying: "qq-upload-retrying",
             retryable: "qq-upload-retryable",
             success: "qq-upload-success",
@@ -71,7 +73,10 @@ qq.FineUploader = function(o, namespace) {
 
         display: {
             fileSizeOnSubmit: false,
-            prependFiles: false
+            prependFiles: false,
+            removeOnCancel: function() {
+                return true;
+            }
         },
 
         paste: {

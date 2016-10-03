@@ -724,7 +724,7 @@
                             onFailure: promise.failure,
                             onSuccess: function() {
                                 cancelFinalizationEffort.then(function() {
-                                    self._onCancel(id, name);
+                                    self._onCancel(id, name, reason);
                                 });
 
                                 promise.success();

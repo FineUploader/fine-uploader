@@ -166,6 +166,7 @@
     display: none;
     width: 108px;
 }
+.qq-gallery .qq-upload-canceled .qq-upload-status-text,
 .qq-gallery .qq-upload-fail .qq-upload-status-text {
     text-overflow: ellipsis;
     white-space: nowrap;

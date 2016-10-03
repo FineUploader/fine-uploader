@@ -63,6 +63,7 @@ can be overridden.
     (
         ("display.fileSizeOnSubmit", "fileSizeOnSubmit", "Enable or disable the display of the file size next to the file after it has been submitted.", "Boolean", "false",),
         ("display.prependFiles", "prependFiles", "When `true` batches of files are added to the top of the UI's file list. The default is to append file(s) to the bottom of the list.", "Boolean", "false",),
+        ("display.removeOnCancel", "removeOnCancel", "Use this to control whether a canceled file element is removed from the DOM. The canceled file's ID, name, and cancel reason will be passed (in that order) to the supplied function. Return true to remove the element from the DOM, or false to leave it on the page.", "Function", "function(id, name, reason) { return true }",),
     )
 )}}
 
@@ -145,6 +146,7 @@ A `resizeInfo` object, which will be passed to the supplied function, contains t
 
 {{ api_parent_option("text", "text", "",
     (
+        ("text.canceled", "canceled", "Text that appears as the status of a canceled item that is not removed from the DOM _and_ when a specific cancel reason was not provided.", "String", "Canceled",),
         ("text.failUpload", "failUpload", "Text that appears next to a failed item", "String", "Upload failed",),
         ("text.formatProgress", "formatProgress", "Appears next to a currently uploading item", "String", "{percent}% of {total_size}",),
         ("text.paused", "paused", "Appears next to a paused item", "String", "Paused",),

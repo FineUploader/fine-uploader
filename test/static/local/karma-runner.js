@@ -47,6 +47,12 @@ var $fixture;
                 super_.deepEqual.apply(this, arguments);
                 hit++;
                 checkIfDone();
+            },
+
+            throws: function() {
+                super_.throws.apply(this, arguments);
+                hit++;
+                checkIfDone();
             }
         };
     });

@@ -434,11 +434,22 @@
         },
 
         _onCancel: function(id, name, reason) {
+            var fileContainer = this._templating.getFileContainer(id),
+                templating = this._templating;
+
             this._parent.prototype._onCancel.apply(this, arguments);
-            this._removeFileItem(id);
+
+            if (this._options.display.removeOnCancel(id, name, reason)) {
+                this._removeFileItem(id);
+            }
+            else {
+                qq(fileContainer).addClass(this._classes.canceled);
+                templating.hideCancel(id);
+                templating.setStatusText(id, reason || this._options.text.canceled);
+            }
 
             if (this._getNotFinished() === 0) {
-                this._templating.resetTotalProgress();
+                templating.resetTotalProgress();
             }
         },
 
