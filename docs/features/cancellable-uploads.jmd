@@ -17,7 +17,7 @@ The ['cancel'](../api/events.html#cancel) event will be fired and handled by a c
 In [UI mode](../modes/ui.html), The cancel button will appear if [included in the template](../features/styling.html)
 In Fine Uploader UI mode, cancelling an upload will remove that element from the DOM as well.
 
-By default, in Fine Uploader UI, a canceled file will be removed from the DOM. But you can override this behavior by specifying a [display.removeOnCancel function](../api/options-ui.html#display.removeOnCancel). If you do elect to leave the file in the DOM, the cancel reason will be displayed as the file's status. If no cancel reason was provided, the value of the [text.cancel](../api/options-ui.html#text.canceled) will be displayed instead.
+By default, in Fine Uploader UI, a canceled file will be removed from the DOM. But you can override this behavior by specifying a [display.removeOnCancel function](../api/options-ui.html#display.removeOnCancel). If you do elect to leave the file in the DOM, the cancel reason will be displayed as the file's status. If no cancel reason was provided, the value of the [text.canceled](../api/options-ui.html#text.canceled) will be displayed instead.
 
 
 {% endmarkdown %}
