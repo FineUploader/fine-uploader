@@ -401,11 +401,13 @@ copy-all-dist:
 	make copy-build-to-dist PUB-SUBDIR=all.fine-uploader
 
 tag-release:
+ifneq ($(tag), false)
 ifeq ($(simulate), true)
 	@echo version is $(version)
 else
 	git tag $(version)
 	git push origin $(version)
+endif
 endif
 
 push-to-npm:
