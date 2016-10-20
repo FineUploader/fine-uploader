@@ -18,7 +18,7 @@ var uploader = new qq.FineUploader({
         enableAuto: true
     },
     callbacks: {
-        onRetry: function(id, name, attemptNumber) {
+        onAutoRetry: function(id, name, attemptNumber) {
             ...
         }
     }
