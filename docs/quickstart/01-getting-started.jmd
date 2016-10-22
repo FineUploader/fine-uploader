@@ -313,7 +313,7 @@ Remember, when using the "core" build, you will need to build your own UI and up
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="fine-uploader/fine-uploader-gallery.min.css" rel="stylesheet">
-    <script src="fine-uploader/fine-uploader.min.js""></script>
+    <script src="fine-uploader/fine-uploader.min.js"></script>
     <script type="text/template" id="qq-template">
         <div class="qq-uploader-selector qq-uploader qq-gallery" qq-drop-area-text="Drop files here">
             <div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">
@@ -398,7 +398,7 @@ Remember, when using the "core" build, you will need to build your own UI and up
     <script>
         // Some options to pass to the uploader are discussed on the next page
         var uploader = new qq.FineUploader({
-            element: getElementById("uploader")
+            element: document.getElementById("uploader")
         })
     </script>
 </body>
