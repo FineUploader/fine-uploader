@@ -13,7 +13,6 @@
 {% block js_footer %}
 <script>
 $(document).ready(function() {
-    console.log('herro')
     renderOptionsSidebarNav(['s3-core', 's3-ui']);
 });
 </script>
