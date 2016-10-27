@@ -87,7 +87,7 @@ other, better options. Please see [modules feature page](modules.html) for more 
 ```html
 <html>
     <head>
-        <script src="fine-uploader.js"</script>
+        <script src="fine-uploader.js"></script>
         <link href="fine-uploader-new.css">
         <script type="text/template" id="qq-template">
             <div class="qq-uploader-selector qq-uploader" qq-drop-area-text="Drop files here">
@@ -147,7 +147,7 @@ other, better options. Please see [modules feature page](modules.html) for more 
                 </dialog>
             </div>
         </script>
-    <head>
+    </head>
 
     <body>
         <form action="server/uploads.php" id="qq-form">
@@ -166,7 +166,7 @@ other, better options. Please see [modules feature page](modules.html) for more 
             });
         </script>
     </body>
-<html>
+</html>
 ```
 
 {% endmarkdown %}
