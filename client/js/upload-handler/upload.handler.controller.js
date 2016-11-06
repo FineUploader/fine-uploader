@@ -86,6 +86,61 @@ qq.UploadHandlerController = function(o, namespace) {
             );
         },
 
+        handleFailure: function(chunkIdx, id, response, xhr) {
+            var name = options.getName(id);
+
+            log("Chunked upload request failed for " + id + ", chunk " + chunkIdx);
+
+            handler.clearCachedChunk(id, chunkIdx);
+
+            var responseToReport = upload.normalizeResponse(response, false),
+                inProgressIdx;
+
+            if (responseToReport.reset) {
+                chunked.reset(id);
+            }
+            else {
+                inProgressIdx = qq.indexOf(handler._getFileState(id).chunking.inProgress, chunkIdx);
+                if (inProgressIdx >= 0) {
+                    handler._getFileState(id).chunking.inProgress.splice(inProgressIdx, 1);
+                    handler._getFileState(id).chunking.remaining.unshift(chunkIdx);
+                }
+            }
+
+            // We may have aborted all other in-progress chunks for this file due to a failure.
+            // If so, ignore the failures associated with those aborts.
+            if (!handler._getFileState(id).temp.ignoreFailure) {
+                // If this chunk has failed, we want to ignore all other failures of currently in-progress
+                // chunks since they will be explicitly aborted
+                if (concurrentChunkingPossible) {
+                    handler._getFileState(id).temp.ignoreFailure = true;
+
+                    log(qq.format("Going to attempt to abort these chunks: {}. These are currently in-progress: {}.", JSON.stringify(Object.keys(handler._getXhrs(id))), JSON.stringify(handler._getFileState(id).chunking.inProgress)));
+                    qq.each(handler._getXhrs(id), function(ckid, ckXhr) {
+                        log(qq.format("Attempting to abort file {}.{}. XHR readyState {}. ", id, ckid, ckXhr.readyState));
+                        ckXhr.abort();
+                        // Flag the transport, in case we are waiting for some other async operation
+                        // to complete before attempting to upload the chunk
+                        ckXhr._cancelled = true;
+                    });
+
+                    // We must indicate that all aborted chunks are no longer in progress
+                    handler.moveInProgressToRemaining(id);
+
+                    // Free up any connections used by these chunks, but don't allow any
+                    // other files to take up the connections (until we have exhausted all auto-retries)
+                    connectionManager.free(id, true);
+                }
+
+                if (!options.onAutoRetry(id, name, responseToReport, xhr)) {
+                    // If one chunk fails, abort all of the others to avoid odd race conditions that occur
+                    // if a chunk succeeds immediately after one fails before we have determined if the upload
+                    // is a failure or not.
+                    upload.cleanup(id, responseToReport, xhr);
+                }
+            }
+        },
+
         hasMoreParts: function(id) {
             return !!handler._getFileState(id).chunking.remaining.length;
         },
@@ -148,95 +203,52 @@ qq.UploadHandlerController = function(o, namespace) {
                     chunked.sendNext(id);
                 }
 
-                handler.uploadChunk(id, chunkIdx, resuming).then(
-                    // upload chunk success
-                    function success(response, xhr) {
-                        log("Chunked upload request succeeded for " + id + ", chunk " + chunkIdx);
+                if (chunkData.blob.size === 0) {
+                    log(qq.format("Chunk {} for file {} will not be uploaded, zero sized chunk.", chunkIdx, id), "error");
+                    chunked.handleFailure(chunkIdx, id, "File is no longer available", null);
+                }
+                else {
+                    handler.uploadChunk(id, chunkIdx, resuming).then(
+                        // upload chunk success
+                        function success(response, xhr) {
+                            log("Chunked upload request succeeded for " + id + ", chunk " + chunkIdx);
 
-                        handler.clearCachedChunk(id, chunkIdx);
+                            handler.clearCachedChunk(id, chunkIdx);
 
-                        var inProgressChunks = handler._getFileState(id).chunking.inProgress || [],
-                            responseToReport = upload.normalizeResponse(response, true),
-                            inProgressChunkIdx = qq.indexOf(inProgressChunks, chunkIdx);
+                            var inProgressChunks = handler._getFileState(id).chunking.inProgress || [],
+                                responseToReport = upload.normalizeResponse(response, true),
+                                inProgressChunkIdx = qq.indexOf(inProgressChunks, chunkIdx);
 
-                        log(qq.format("Chunk {} for file {} uploaded successfully.", chunkIdx, id));
+                            log(qq.format("Chunk {} for file {} uploaded successfully.", chunkIdx, id));
 
-                        chunked.done(id, chunkIdx, responseToReport, xhr);
+                            chunked.done(id, chunkIdx, responseToReport, xhr);
 
-                        if (inProgressChunkIdx >= 0) {
-                            inProgressChunks.splice(inProgressChunkIdx, 1);
-                        }
-
-                        handler._maybePersistChunkedState(id);
-
-                        if (!chunked.hasMoreParts(id) && inProgressChunks.length === 0) {
-                            chunked.finalize(id);
-                        }
-                        else if (chunked.hasMoreParts(id)) {
-                            chunked.sendNext(id);
-                        }
-                        else {
-                            log(qq.format("File ID {} has no more chunks to send and these chunk indexes are still marked as in-progress: {}", id, JSON.stringify(inProgressChunks)));
-                        }
-                    },
-
-                    // upload chunk failure
-                    function failure(response, xhr) {
-                        log("Chunked upload request failed for " + id + ", chunk " + chunkIdx);
-
-                        handler.clearCachedChunk(id, chunkIdx);
-
-                        var responseToReport = upload.normalizeResponse(response, false),
-                            inProgressIdx;
-
-                        if (responseToReport.reset) {
-                            chunked.reset(id);
-                        }
-                        else {
-                            inProgressIdx = qq.indexOf(handler._getFileState(id).chunking.inProgress, chunkIdx);
-                            if (inProgressIdx >= 0) {
-                                handler._getFileState(id).chunking.inProgress.splice(inProgressIdx, 1);
-                                handler._getFileState(id).chunking.remaining.unshift(chunkIdx);
-                            }
-                        }
-
-                        // We may have aborted all other in-progress chunks for this file due to a failure.
-                        // If so, ignore the failures associated with those aborts.
-                        if (!handler._getFileState(id).temp.ignoreFailure) {
-                            // If this chunk has failed, we want to ignore all other failures of currently in-progress
-                            // chunks since they will be explicitly aborted
-                            if (concurrentChunkingPossible) {
-                                handler._getFileState(id).temp.ignoreFailure = true;
-
-                                log(qq.format("Going to attempt to abort these chunks: {}. These are currently in-progress: {}.", JSON.stringify(Object.keys(handler._getXhrs(id))), JSON.stringify(handler._getFileState(id).chunking.inProgress)));
-                                qq.each(handler._getXhrs(id), function(ckid, ckXhr) {
-                                    log(qq.format("Attempting to abort file {}.{}. XHR readyState {}. ", id, ckid, ckXhr.readyState));
-                                    ckXhr.abort();
-                                    // Flag the transport, in case we are waiting for some other async operation
-                                    // to complete before attempting to upload the chunk
-                                    ckXhr._cancelled = true;
-                                });
-
-                                // We must indicate that all aborted chunks are no longer in progress
-                                handler.moveInProgressToRemaining(id);
-
-                                // Free up any connections used by these chunks, but don't allow any
-                                // other files to take up the connections (until we have exhausted all auto-retries)
-                                connectionManager.free(id, true);
+                            if (inProgressChunkIdx >= 0) {
+                                inProgressChunks.splice(inProgressChunkIdx, 1);
                             }
 
-                            if (!options.onAutoRetry(id, name, responseToReport, xhr)) {
-                                // If one chunk fails, abort all of the others to avoid odd race conditions that occur
-                                // if a chunk succeeds immediately after one fails before we have determined if the upload
-                                // is a failure or not.
-                                upload.cleanup(id, responseToReport, xhr);
+                            handler._maybePersistChunkedState(id);
+
+                            if (!chunked.hasMoreParts(id) && inProgressChunks.length === 0) {
+                                chunked.finalize(id);
                             }
+                            else if (chunked.hasMoreParts(id)) {
+                                chunked.sendNext(id);
+                            }
+                            else {
+                                log(qq.format("File ID {} has no more chunks to send and these chunk indexes are still marked as in-progress: {}", id, JSON.stringify(inProgressChunks)));
+                            }
+                        },
+
+                        // upload chunk failure
+                        function failure(response, xhr) {
+                            chunked.handleFailure(chunkIdx, id, response, xhr);
                         }
-                    }
-                )
-                    .done(function() {
-                        handler.clearXhr(id, chunkIdx);
-                    });
+                        )
+                        .done(function() {
+                            handler.clearXhr(id, chunkIdx);
+                        });
+                }
             }
         }
     },
