@@ -255,7 +255,7 @@
                 }
             }
 
-            if (newStatus === qq.status.UPLOAD_RETRYING) {
+            if (oldStatus === qq.status.UPLOAD_RETRYING && newStatus === qq.status.UPLOADING) {
                 this._templating.hideRetry(id);
                 this._templating.setStatusText(id);
                 qq(this._templating.getFileContainer(id)).removeClass(this._classes.retrying);

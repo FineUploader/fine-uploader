@@ -1313,13 +1313,15 @@
             self._preventRetries[id] = responseJSON[self._options.retry.preventRetryResponseProperty];
 
             if (self._shouldAutoRetry(id, name, responseJSON)) {
+                var retryWaitPeriod = self._options.retry.autoAttemptDelay * 1000;
+
                 self._maybeParseAndSendUploadError.apply(self, arguments);
                 self._options.callbacks.onAutoRetry(id, name, self._autoRetries[id]);
                 self._onBeforeAutoRetry(id, name);
 
+                self._uploadData.setStatus(id, qq.status.UPLOAD_RETRYING);
                 self._retryTimeouts[id] = setTimeout(function() {
-                    self.log("Retrying " + name + "...");
-                    self._uploadData.setStatus(id, qq.status.UPLOAD_RETRYING);
+                    self.log("Starting retry for " + name + "...");
 
                     if (callback) {
                         callback(id);
@@ -1327,7 +1329,7 @@
                     else {
                         self._handler.retry(id);
                     }
-                }, self._options.retry.autoAttemptDelay * 1000);
+                }, retryWaitPeriod);
 
                 return true;
             }
