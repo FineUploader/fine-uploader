@@ -76,7 +76,7 @@ alert("The [`request.customHeaders` option](options.html#request.customHeaders) 
 {{ api_parent_option("signature", "signature", "",
     (
         ("signature.customHeaders", "customHeaders", "Additional headers sent along with each signature request.  If you declare a function as the value, the associated file's ID will be passed to your function when it is invoked.", "Object, Function", "{}",),
-        ("signature.endpoint", "endpoint", "The endpoint that Fine Uploader can use to send GET for a SAS before sending requests off to S3.  The blob URL and underlying method type associated with the underlying REST request will be included in the query string.", "String", "null",),
+        ("signature.endpoint", "endpoint", "The endpoint that Fine Uploader can use to send GET for a SAS before sending requests off to Azure.  The blob URL and underlying method type associated with the underlying REST request will be included in the query string.", "String", "null",),
     )
 )}}
 
