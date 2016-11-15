@@ -122,7 +122,6 @@ A `resizeInfo` object, which will be passed to the supplied function, contains t
 {{ api_parent_option("thumbnails.placeholders", "thumbnails.placeholders", "",
     (
         ("thumbnails.placeholders.notAvailablePath", "notAvailablePath", "Absolute URL or relative path to the image to display if the preview/thumbnail could not be generated/displayed.", "String", "null",),
-        ("thumbnails.placeholders.notAvailablePath", "notAvailablePath", "Absolute URL or relative path to the image to display if the preview/thumbnail could not be generated/displayed.", "String", "null",),
         ("thumbnails.placeholders.waitingPath", "waitingPath", "Absolute URL or relative path to the image to display during preview generation (modern browsers) or until the server response has been parsed (older browsers).", "String", "null",),
         ("thumbnails.placeholders.waitUntilResponse", "waitUntilResponse", "Set this to `true` if you want the 'waiting' placeholder image to remain in place until the server response has been parsed.  This is useful if you expect to return thumbnail URLs in your upload responses for files types that cannot be previewed.  This option is ignored in older browsers where client-side previews cannot be generated.", "Boolean", "false",),
     )
