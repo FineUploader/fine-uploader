@@ -298,7 +298,7 @@ sure to wrap any elements before calling these methods on them.
     {
         "name": "iterable",
         "type": "Array or Object",
-        "description": "The context the function will assume."
+        "description": "The array or object containing items/properties to loop through."
     },
     {
         "name": "callback",
