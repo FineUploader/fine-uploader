@@ -189,7 +189,7 @@ other, better options. Please see [modules feature page](../features/modules.htm
             debug: true,
             element: document.getElementById('fine-uploader'),
             request: {
-                endpoint: '{ YOUR_BUCKET_NAME }.s3.amazonaws.com'
+                endpoint: '{ YOUR_BUCKET_NAME }.s3.amazonaws.com',
                 accessKey: '{ YOUR_ACCESS_KEY }'
             },
             signature: {
