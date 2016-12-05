@@ -5,8 +5,9 @@ dist-out-dir = _dist
 pub-dir = $(dist-out-dir)/$(version)
 
 
-# properly get npm-bin in cygwin
-ifeq ($(OS),Windows_NT)
+# properly get npm-bin in cygwin (Eg. CYGWIN_NT-10.0)
+platform = $(shell uname -s)
+ifeq ($(findstring _NT,$(platform)),_NT)
 	npm-bin = $(shell cygpath -u $(shell npm bin))
 else
 	npm-bin = $(shell npm bin)
