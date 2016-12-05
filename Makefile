@@ -4,7 +4,13 @@ version=$(shell node -pe "require('./package.json').version")
 dist-out-dir = _dist
 pub-dir = $(dist-out-dir)/$(version)
 
-npm-bin = $(shell npm bin)
+
+# properly get npm-bin in cygwin
+ifeq ($(OS),Windows_NT)
+	npm-bin = $(shell cygpath -u $(shell npm bin))
+else
+	npm-bin = $(shell npm bin)
+endif
 
 build-out-dir = _build
 src-dir = client
