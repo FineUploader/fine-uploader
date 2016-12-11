@@ -26,7 +26,8 @@ cryptojs-files = \
 	$(js-3rdparty-src-dir)/crypto-js/lib-typedarrays.js
 
 jquery-files = \
-	$(js-src-dir)/jquery-plugin.js
+	$(js-src-dir)/jquery-plugin.js \
+	$(js-src-dir)/jquery-dnd.js
 
 dnd-files-only = \
 	$(js-src-dir)/dnd.js
@@ -38,10 +39,6 @@ dnd-files = \
 	$(js-src-dir)/features.js \
 	$(js-src-dir)/promise.js \
 	$(js-src-dir)/dnd.js
-
-dnd-jquery-files = \
-	$(jquery-files) \
-	$(dnd-files)
 
 core-files = \
 	$(js-src-dir)/util.js \
