@@ -66,7 +66,6 @@ core-files = \
 	$(js-src-dir)/image-support/image.js \
 	$(js-src-dir)/image-support/exif.js \
 	$(js-src-dir)/identify.js \
-	$(js-src-dir)/identify.js \
 	$(js-src-dir)/image-support/validation.image.js \
 	$(js-src-dir)/session.js \
 	$(js-src-dir)/session.ajax.requester.js \
