@@ -1,4 +1,4 @@
-.PHONY: clean _build publish
+.PHONY: clean _build publish start-test-resources-server test-resources-server.PID start-root-server root-server.PID
 
 version=$(shell node -pe "require('./package.json').version")
 dist-out-dir = _dist
