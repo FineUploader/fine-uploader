@@ -284,6 +284,10 @@
             }
         },
 
+        pauseQueue: function() {
+            this._pausedQueue = true;
+        },
+
         pauseUpload: function(id) {
             var uploadData = this._uploadData.retrieve({id: id});
 
@@ -324,6 +328,7 @@
 
             this._paramsStore.reset();
             this._endpointStore.reset();
+            this._pausedQueue = false;
             this._netUploadedOrQueued = 0;
             this._netUploaded = 0;
             this._uploadData.reset();
@@ -391,6 +396,14 @@
 
         setUuid: function(id, newUuid) {
             return this._uploadData.uuidChanged(id, newUuid);
+        },
+
+        unpauseQueue: function() {
+            this._pausedQueue = false;
+
+            if (this._storedIds.length !== 0) {
+                this.uploadStoredFiles();
+            }
         },
 
         uploadStoredFiles: function() {
@@ -1743,8 +1756,12 @@
         },
 
         _uploadFile: function(id) {
-            if (!this._handler.upload(id)) {
+            if (this._pausedQueue || !this._handler.upload(id)) {
                 this._uploadData.setStatus(id, qq.status.QUEUED);
+
+                if (this._pausedQueue) {
+                    this._storeForLater(id);
+                }
             }
         },
 
