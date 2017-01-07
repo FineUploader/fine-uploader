@@ -64,6 +64,7 @@ var helpme = (function () {
             };
             var default_validation = {
                 allowedExtensions: [],
+                allowEmpty: false,
                 acceptFiles: null,
                 sizeLimit: 0,
                 minSizeLimit: 0,

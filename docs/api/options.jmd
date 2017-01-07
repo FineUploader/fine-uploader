@@ -233,6 +233,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
     (
         ("validation.acceptFiles", "acceptFiles", "Used by the file selection dialog. Restrict the valid file types that appear in the selection dialog by listing valid content-type specifiers here. See docs on the [accept attribute of the `<input>` element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Input)", "Comma-delimited list of valid MIMEtypes", "null",),
         ("validation.allowedExtensions", "allowedExtensions", "Specify file valid file extensions here to restrict uploads to specific types.", "Array", "[]",),
+        ("validation.allowEmpty", "allowEmpty", "Allow file size of 0 bytes", "Boolean", "false"),
         ("validation.itemLimit", "itemLimit", "Maximum number of items that can be potentially uploaded in this session. Will reject all items that are added or retried after this limit is reached.", "Integer", "0",),
         ("validation.minSizeLimit", "minSizeLimit", "The minimum allowable size, in bytes, for an item.", "Integer", "0",),
         ("validation.sizeLimit", "sizeLimit", "The maximum allowable size, in bytes, for an item.", "Integer", "0",),
@@ -241,7 +242,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
         ("validation.image.maxHeight", "image.maxHeight", "Restrict images to a maximum height in pixels (wherever possible).", "Integer", "0",),
         ("validation.image.maxWidth", "image.maxWidth", "Restrict images to a maximum width in pixels (wherever possible).", "Integer", "0",),
         ("validation.image.minHeight", "image.minHeight", "Restrict images to a minimum height in pixels (wherever possible).", "Integer", "0",),
-        ("validation.image.minWidth", "image.minWidth", "Restrict images to a minimum width in pixels (wherever possible).", "Integer", "0",),
+        ("validation.image.minWidth", "image.minWidth", "Restrict images to a minimum width in pixels (wherever possible).", "Integer", "0",)
     )
 )
 }}
