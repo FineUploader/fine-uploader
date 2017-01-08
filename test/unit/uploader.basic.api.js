@@ -479,4 +479,58 @@ describe("uploader.basic.api.js", function () {
             uploader._handleNewFile(fileInput, 0, []);
         });
     });
+
+    describe("_formatSize", function() {
+        beforeEach(function () {
+            fineuploader = new qq.FineUploaderBasic();
+        });
+
+        it("formats 0 bytes properly", function() {
+            var formattedSize = fineuploader._formatSize(0);
+            assert.equal(formattedSize, "0kB");
+        });
+
+        it("formats kB properly", function() {
+            var formattedSize = fineuploader._formatSize(789);
+            assert.equal(formattedSize, "0.8kB");
+        });
+
+        it("formats MB properly", function() {
+            var formattedSize = fineuploader._formatSize(2123456);
+            assert.equal(formattedSize, "2.1MB");
+        });
+
+        it("formats GB properly", function() {
+            var formattedSize = fineuploader._formatSize(9602123456);
+            assert.equal(formattedSize, "9.6GB");
+        });
+    });
+
+    describe("_validateFileOrBlobData", function() {
+        var originalFileOrInput = qq.isFileOrInput;
+        beforeEach(function () {
+            fineuploader = new qq.FineUploaderBasic();
+        });
+        afterEach(function() {
+            qq.isFileOrInput = originalFileOrInput;
+        });
+
+        it("fails if file is empty and allowEmpty is false", function(done) {
+            qq.isFileOrInput = function() { return true; };
+            fineuploader._fileOrBlobRejected = function() {};
+            var validationDescriptor = { size: 0 };
+
+            fineuploader._validateFileOrBlobData({}, validationDescriptor)
+                .then(function() { assert.fail(); }, function() { done(); });
+        });
+
+        it("passes if file is empty and allowEmpty is true", function(done) {
+            fineuploader._options.validation.allowEmpty = true;
+            qq.isFileOrInput = function() { return true; };
+            var validationDescriptor = { size: 0 };
+
+            fineuploader._validateFileOrBlobData({}, validationDescriptor)
+                .then(function() { done(); }, function() { assert.fail(); });
+        });
+    });
 });

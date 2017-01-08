@@ -326,7 +326,7 @@
 
             this._templating.updateProgress(id, loaded, total);
 
-            if (Math.round(loaded / total * 100) === 100) {
+            if (total === 0 || Math.round(loaded / total * 100) === 100) {
                 this._templating.hideCancel(id);
                 this._templating.hidePause(id);
                 this._templating.hideProgress(id);

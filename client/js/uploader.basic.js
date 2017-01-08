@@ -39,7 +39,8 @@
                     maxWidth: 0,
                     minHeight: 0,
                     minWidth: 0
-                }
+                },
+                allowEmpty: false
             },
 
             callbacks: {

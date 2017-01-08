@@ -6,6 +6,7 @@
 [![npm](https://img.shields.io/npm/v/fine-uploader.svg)](https://www.npmjs.com/package/fine-uploader)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![Stackoverflow](https://img.shields.io/badge/ask-on%20stack%20overflow-brightgreen.svg)](http://stackoverflow.com/questions/tagged/fine-uploader)
+[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/fineuploader.svg?style=social&label=Follow%20%40FineUploader)](https://twitter.com/fineuploader)
 
 [**Documentation**](http://docs.fineuploader.com) |
 [**Examples**](http://fineuploader.com/demos) |
