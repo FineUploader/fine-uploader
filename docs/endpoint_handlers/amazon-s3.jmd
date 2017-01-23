@@ -99,6 +99,17 @@ with a status code of 500, a Content-Type of "application/json" and the followin
 The above response will let Fine Uploader know that the policy document may have been tampered with client-side, and it
 will not send the file to S3 until the issue is addressed.
 
+If there is any other error generating the signature, you may return a response with a status code of 500, a
+Content-Type of "application/json", and a payload including an error message that will be displayed to the user:
+
+```javascript
+{
+    "error": "There was an error generating the AWS signature"
+}
+```
+
+If your server returns an error response with no "error" attribute, a default message will be used.
+
 
 #### Signing the policy - version 2 signatures
 If your server determines that the policy document is accurate, it should then base-64 encode the policy document,
