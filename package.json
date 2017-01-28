@@ -46,7 +46,7 @@
     "url": "https://github.com/FineUploader/fine-uploader/issues"
   },
   "devDependencies": {
-    "clean-css": "3.4.24",
+    "clean-css": "4.0.1",
     "jscs": "3.0.7",
     "jshint": "2.9.4",
     "karma": "1.4.0",
