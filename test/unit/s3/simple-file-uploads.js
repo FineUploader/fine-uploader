@@ -153,6 +153,30 @@ if (qqtest.canDownloadFileAsBlob) {
                     done();
                 });
             });
+
+            it("uses the error field on the signature request response if provided", function(done) {
+                assert.expect(2, done);
+
+                var uploader = new qq.s3.FineUploaderBasic({
+                        request: typicalRequestOption,
+                        signature: v4SignatureOption,
+                        callbacks: {
+                            onError: function(id, name, errorReason) {
+                                assert.equal(errorReason, "error message");
+                            }
+                        }
+                    }
+                );
+
+                startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                    var s3RequestSigner = new qq.s3.RequestSigner({
+                        expectingPolicy: true,
+                        signatureSpec: v4SignatureOption,
+                    });
+
+                    signatureRequest.respond(500, null, JSON.stringify({error: "error message"}));
+                });
+            });
         });
 
         it("test most basic upload w/ signature request", function(done) {
@@ -199,6 +223,30 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(uploadRequestParams.policy, "thepolicy");
 
                 done();
+            });
+        });
+
+        it("uses the error field on the signature request response if provided", function(done) {
+            assert.expect(2, done);
+
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request: typicalRequestOption,
+                    signature: v2SignatureOption,
+                    callbacks: {
+                        onError: function(id, name, errorReason) {
+                            assert.equal(errorReason, "error message");
+                        }
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var s3RequestSigner = new qq.s3.RequestSigner({
+                    expectingPolicy: true,
+                    signatureSpec: v2SignatureOption,
+                });
+
+                signatureRequest.respond(500, null, JSON.stringify({error: "error message"}));
             });
         });
 
