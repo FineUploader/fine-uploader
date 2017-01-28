@@ -2,7 +2,7 @@
   "name": "fine-uploader",
   "title": "Fine Uploader",
   "main": "lib/traditional.js",
-  "version": "5.12.0",
+  "version": "5.13.0",
   "description": "Multiple file upload plugin with progress-bar, drag-and-drop, direct-to-S3 & Azure uploading, client-side image scaling, preview generation, form support, chunking, auto-resume, and tons of other features.",
   "keywords": [
     "amazon",
@@ -46,7 +46,7 @@
     "url": "https://github.com/FineUploader/fine-uploader/issues"
   },
   "devDependencies": {
-    "clean-css": "3.4.24",
+    "clean-css-cli": "4.0.0",
     "jscs": "3.0.7",
     "jshint": "2.9.4",
     "karma": "1.4.0",
