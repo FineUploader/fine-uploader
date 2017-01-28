@@ -279,9 +279,14 @@ qq.s3.RequestSigner = function(o) {
             }
         }
 
+        // If the response is parsable and contains an `error` property, use it as the error message
+        if (response && response.error) {
+            isError = true;
+            errorMessage = response.error;
+        }
         // If we have received a parsable response, and it has an `invalid` property,
         // the policy document or request headers may have been tampered with client-side.
-        if (response && response.invalid) {
+        else if (response && response.invalid) {
             isError = true;
             errorMessage = "Invalid policy document or request headers!";
         }
