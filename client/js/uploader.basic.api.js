@@ -308,6 +308,10 @@
             return false;
         },
 
+        removeFileRef: function(id) {
+            this._handler.expunge(id);
+        },
+
         reset: function() {
             this.log("Resetting uploader...");
 
