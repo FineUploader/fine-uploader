@@ -30,6 +30,11 @@ $(document).ready(function() {
 {% markdown %}
 ## Core
 {% endmarkdown %}
+
+{{
+alert("If you pass a large `Blob` that was created using JavaScript in the browser into `addFiles`, you should consider calling the [`removeFileRef` method](#removeFileRef) after the file has been successfully uploaded to free up any memory consumed by the Blob.")
+}}
+
 {{ api_method("addFiles", "addFiles (files[, params[, endpoint]])", "Submit one or more files to the uploader.
 
 A `BlobWrapper` object:
@@ -350,6 +355,15 @@ A `resizeInfo` object, which will be passed to the supplied function, contains t
         "description": "`true` if the attempt was successful. `false` otherwise."
     }
 
+]) }}
+
+{{ api_method("removeFileRef", "removeFileRef (id)", "",
+[
+    {
+        "name": "id",
+        "type": "Integer",
+        "description": "Remove internal reference to the associated Blob/File object. For Blobs that are created via JavaScript in the browser, this will free up all consumed memory."
+    }
 ]) }}
 
 {{ api_method("reset", "reset ()", "Reset Fine Uploader", null, null) }}

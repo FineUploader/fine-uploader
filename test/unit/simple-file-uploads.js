@@ -478,5 +478,30 @@ if (qqtest.canDownloadFileAsBlob) {
                 uploader.addFiles(canvasWrapper);
             });
         });
+        
+        it("removes reference to a Blob via API", function(done) {
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
+                fileTestHelper.mockXhr();
+
+                var request,
+                    uploader = new qq.FineUploaderBasic({
+                        autoUpload: false,
+                        request: { endpoint: testUploadEndpoint },
+                        callbacks: {
+                            onComplete: function(id) {
+                                assert.ok(uploader.getFile(id));
+                                uploader.removeFileRef(id);
+                                assert.ok(!uploader.getFile(id));
+                                done();
+                            }
+                        }
+                    });
+
+                uploader.addFiles({name: "test", blob: blob});
+                uploader.uploadStoredFiles();
+
+                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+            });
+        });
     });
 }
