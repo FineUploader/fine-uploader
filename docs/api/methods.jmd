@@ -25,7 +25,7 @@ $(document).ready(function() {
 # Methods <small>Traditional</small> {: .page-header }
 {% endmarkdown %}
 
-<div class="all-methods data-spy="scroll" data-target="">
+<div class="all-methods" data-spy="scroll" data-target="">
 <div class="methods-core">
 {% markdown %}
 ## Core
@@ -545,6 +545,38 @@ A `resizeInfo` object, which will be passed to your (optional) `customResizer` f
         "name": "uuid",
         "type": "String",
         "description": "The new file UUID."
+    }
+], null) }}
+
+{{ api_method("setStatus", "setStatus (id, newStatus])",
+""" Modify the status of an file.
+
+The status values correspond to those found in the `qq.status` object. For reference:
+
+* `SUBMITTED`
+* `QUEUED`
+* `UPLOADING`
+* `UPLOAD_RETRYING`
+* `UPLOAD_FAILED`
+* `UPLOAD_SUCCESSFUL`
+* `CANCELED`
+* `REJECTED`
+* `DELETED`
+* `DELETING`
+* `DELETE_FAILED`
+* `PAUSED`
+
+""",
+[
+    {
+        "name": "id",
+        "type": "Integer",
+        "description": "The file id."
+    },
+    {
+        "name": "newStatus",
+        "type": "String",
+        "description": "An integer corresponding to a file."
     }
 ], null) }}
 
