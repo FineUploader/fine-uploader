@@ -551,20 +551,10 @@ A `resizeInfo` object, which will be passed to your (optional) `customResizer` f
 {{ api_method("setStatus", "setStatus (id, newStatus])",
 """ Modify the status of an file.
 
-The status values correspond to those found in the `qq.status` object. For reference:
+The status values correspond to those found in the `qq.status` object. Currently, the following status values may be set via this method:
 
-* `SUBMITTED`
-* `QUEUED`
-* `UPLOADING`
-* `UPLOAD_RETRYING`
-* `UPLOAD_FAILED`
-* `UPLOAD_SUCCESSFUL`
-* `CANCELED`
-* `REJECTED`
-* `DELETED`
-* `DELETING`
-* `DELETE_FAILED`
-* `PAUSED`
+* `qq.status.DELETED`
+* `qq.status.DELETE_FAILED`
 
 """,
 [
