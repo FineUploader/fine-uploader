@@ -548,7 +548,7 @@ A `resizeInfo` object, which will be passed to your (optional) `customResizer` f
     }
 ], null) }}
 
-{{ api_method("setStatus", "setStatus (id, newStatus])",
+{{ api_method("setStatus", "setStatus (id, newStatus)",
 """ Modify the status of an file.
 
 The status values correspond to those found in the `qq.status` object. Currently, the following status values may be set via this method:
