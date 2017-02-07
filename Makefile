@@ -25,10 +25,6 @@ cryptojs-files = \
 	$(js-3rdparty-src-dir)/crypto-js/sha256.js \
 	$(js-3rdparty-src-dir)/crypto-js/lib-typedarrays.js
 
-jquery-files = \
-	$(js-src-dir)/jquery-plugin.js \
-	$(js-src-dir)/jquery-dnd.js
-
 dnd-files-only = \
 	$(js-src-dir)/dnd.js
 
@@ -93,18 +89,10 @@ traditional-files = \
 	$(core-files) \
 	$(traditional-files-only)
 
-traditional-jquery-files = \
-	$(jquery-files) \
-	$(traditional-files)
-
 traditional-ui-files = \
 	$(core-files) \
 	$(traditional-files-only) \
 	$(ui-files)
-
-traditional-ui-jquery-files = \
-	$(jquery-files) \
-	$(traditional-ui-files)
 
 s3-files-only = \
 	$(cryptojs-files) \
@@ -132,11 +120,6 @@ s3-ui-files = \
 	$(ui-files) \
 	$(s3-ui-files-only) \
 
-s3-ui-jquery-files = \
-	$(jquery-files) \
-    $(js-src-dir)/s3/jquery-plugin.js \
-	$(s3-ui-files)
-
 azure-files-only = \
 	$(js-src-dir)/azure/util.js \
 	$(js-src-dir)/non-traditional-common/uploader.basic.api.js \
@@ -162,20 +145,11 @@ azure-ui-files = \
 	$(ui-files) \
 	$(azure-ui-files-only)
 
-azure-ui-jquery-files = \
-	$(jquery-files) \
-    $(js-src-dir)/azure/jquery-plugin.js \
-	$(azure-ui-files)
-
 all-core-files = \
 	$(core-files) \
 	$(traditional-files-only) \
 	$(s3-files-only) \
 	$(azure-files-only)
-
-all-core-jquery-files = \
-	$(jquery-files) \
-	$(all-core-files)
 
 all-files = \
 	$(core-files) \
@@ -185,10 +159,6 @@ all-files = \
 	$(s3-ui-files-only) \
 	$(azure-files-only) \
 	$(azure-ui-files-only)
-
-all-jquery-files = \
-	$(jquery-files) \
-	$(all-files)
 
 clean:
 	rm -rf $(build-out-dir)
@@ -230,12 +200,6 @@ build-ui-traditional: _build
 build-ui-traditional-min: _build
 	$(uglify-min) $(traditional-ui-files) -o $(build-out-dir)/fine-uploader.min.js --source-map $(build-out-dir)/fine-uploader.min.js.map
 
-build-ui-traditional-jquery: _build
-	$(uglify) $(traditional-ui-jquery-files) -o $(build-out-dir)/jquery.fine-uploader.js --source-map $(build-out-dir)/jquery.fine-uploader.js.map
-
-build-ui-traditional-jquery-min: _build
-	$(uglify-min) $(traditional-ui-jquery-files) -o $(build-out-dir)/jquery.fine-uploader.min.js --source-map $(build-out-dir)/jquery.fine-uploader.min.js.map
-
 build-core-s3: _build
 	$(uglify) $(s3-files) -o $(build-out-dir)/s3.fine-uploader.core.js --source-map $(build-out-dir)/s3.fine-uploader.core.js.map
 
@@ -246,13 +210,7 @@ build-ui-s3: _build
 	$(uglify) $(s3-ui-files) -o $(build-out-dir)/s3.fine-uploader.js --source-map $(build-out-dir)/s3.fine-uploader.js.map
 
 build-ui-s3-min: _build
-	$(uglify-min) $(s3-ui-jquery-files) -o $(build-out-dir)/s3.jquery.fine-uploader.min.js --source-map $(build-out-dir)/s3.jquery.fine-uploader.min.js.map
-
-build-ui-s3-jquery: _build
-	$(uglify) $(s3-ui-jquery-files) -o $(build-out-dir)/s3.jquery.fine-uploader.js --source-map $(build-out-dir)/s3.jquery.fine-uploader.js.map
-
-build-ui-s3-jquery-min: _build
-	$(uglify-min) $(s3-ui-files) -o $(build-out-dir)/s3.fine-uploader.min.js -e window:global --source-map $(build-out-dir)/s3.fine-uploader.min.js.map
+	$(uglify-min) $(s3-ui-files) -o $(build-out-dir)/s3.fine-uploader.min.js --source-map $(build-out-dir)/s3.fine-uploader.min.js.map
 
 build-core-azure: _build
 	$(uglify) $(azure-files) -o $(build-out-dir)/azure.fine-uploader.core.js --source-map $(build-out-dir)/azure.fine-uploader.core.js.map 
@@ -265,12 +223,6 @@ build-ui-azure: _build
 
 build-ui-azure-min: _build
 	$(uglify-min) $(azure-ui-files) -o $(build-out-dir)/azure.fine-uploader.min.js -e window:global --source-map $(build-out-dir)/azure.fine-uploader.min.js.map
-
-build-ui-azure-jquery: _build
-	$(uglify) $(azure-ui-jquery-files) -o $(build-out-dir)/azure.jquery.fine-uploader.js --source-map $(build-out-dir)/azure.jquery.fine-uploader.js.map 
-
-build-ui-azure-jquery-min: _build
-	$(uglify-min) $(azure-ui-jquery-files) -o $(build-out-dir)/azure.jquery.fine-uploader.min.js -e window:global --source-map $(build-out-dir)/azure.jquery.fine-uploader.min.js.map
 
 build-all-core: _build
 	$(uglify) $(all-core-files) -o $(build-out-dir)/all.fine-uploader.core.js --source-map $(build-out-dir)/all.fine-uploader.core.js.map 
@@ -291,20 +243,14 @@ build: \
 	build-core-traditional-min \
 	build-ui-traditional \
 	build-ui-traditional-min \
-	build-ui-traditional-jquery \
-	build-ui-traditional-jquery-min \
 	build-core-s3 \
 	build-core-s3-min \
 	build-ui-s3 \
 	build-ui-s3-min \
-	build-ui-s3-jquery \
-	build-ui-s3-jquery-min \
 	build-core-azure \
 	build-core-azure-min \
 	build-ui-azure \
 	build-ui-azure-min \
-	build-ui-azure-jquery \
-	build-ui-azure-jquery-min \
 	build-all-core \
 	build-all-core-min \
 	build-all-ui \
@@ -342,7 +288,7 @@ common-zip-files = \
 	fine-uploader*.css*
 
 zip-traditional:
-	(cd $(build-out-dir) ; zip fine-uploader.zip $(common-zip-files) fine-uploader*.* jquery.fine-uploader*.*)
+	(cd $(build-out-dir) ; zip fine-uploader.zip $(common-zip-files) fine-uploader*.*)
 
 zip-s3:
 	(cd $(build-out-dir) ; zip s3.fine-uploader.zip $(common-zip-files) s3*.*)
@@ -362,10 +308,7 @@ copy-build-to-dist:
 	mkdir -p $(pub-dir)/$(PUB-SUBDIR)
 	cp -pR $(build-out-dir)/placeholders $(build-out-dir)/templates $(pub-dir)/$(PUB-SUBDIR)
 	cp $(build-out-dir)/*.gif $(pub-dir)/$(PUB-SUBDIR)
-ifneq (,$(findstring jquery,$(PUB-SUBDIR)))
-else
 	cp $(build-out-dir)/$(PUB-SUBDIR).core.min* $(build-out-dir)/$(PUB-SUBDIR).core.js* $(pub-dir)/$(PUB-SUBDIR)/
-endif
 	cp $(build-out-dir)/$(PUB-SUBDIR).min* $(build-out-dir)/$(PUB-SUBDIR).js* $(pub-dir)/$(PUB-SUBDIR)
 	cp $(build-out-dir)/fine-uploader*.css* $(pub-dir)/$(PUB-SUBDIR)
 
@@ -377,21 +320,11 @@ copy-traditional-dist:
 	make copy-build-to-dist PUB-SUBDIR=fine-uploader
 	cp $(js-src-dir)/iframe.xss.response.js $(pub-dir)/fine-uploader
 
-copy-traditional-jquery-dist:
-	make copy-build-to-dist PUB-SUBDIR=jquery.fine-uploader
-	cp $(js-src-dir)/iframe.xss.response.js $(pub-dir)/jquery.fine-uploader
-
 copy-s3-dist:
 	make copy-build-to-dist PUB-SUBDIR=s3.fine-uploader
 
-copy-s3-jquery-dist:
-	make copy-build-to-dist PUB-SUBDIR=s3.jquery.fine-uploader
-
 copy-azure-dist:
 	make copy-build-to-dist PUB-SUBDIR=azure.fine-uploader
-
-copy-azure-jquery-dist:
-	make copy-build-to-dist PUB-SUBDIR=azure.jquery.fine-uploader
 
 copy-all-dist:
 	make copy-build-to-dist PUB-SUBDIR=all.fine-uploader
@@ -418,11 +351,8 @@ publish: \
 	setup-dist \
 	copy-dnd \
 	copy-traditional-dist \
-	copy-traditional-jquery-dist \
 	copy-s3-dist \
-	copy-s3-jquery-dist \
 	copy-azure-dist \
-	copy-azure-jquery-dist \
 	copy-all-dist \
 	tag-release \
 	push-to-npm

@@ -52,11 +52,6 @@ to the API documentation section.
 * [UI](modes/ui.html) - Inherits from core, provides additional UI-specific options and API methods. Default customizable UI.
 
 
-### Plug-ins
-
-* [jQuery](integrating/jquery.html) - _Not_ required to use _any_ feature of Fine Uploader. Simply wraps the library as a jQuery plug-in.
-
-
 ### Endpoint Handlers (server-side guidelines)
 
 * [Traditional Server](endpoint_handlers/traditional.html) - For upload servers that you control and build.

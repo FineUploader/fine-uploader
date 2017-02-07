@@ -33,12 +33,6 @@ of "text/html" if your JSON response contains HTML.
 **A:** Simply remove the drop zone elements from the template.
 
 <br/>
-**Q:** Using the jQuery plug-in in core mode, I can't seem to get my upload button to appear.
-
-**A:** It is important to understand that the target of your plug-in should be an existing container element for your upload
-component, _not_ the button element.  Your button element must be specified separately via the `button` option.
-
-<br/>
 **Q:** Why am I seeing an "Access Denied" error in IE's javascript console?
 
 **A:** There are two common causes.  One cause is triggering the "select files" dialog via javascript.  IE does not permit this

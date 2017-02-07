@@ -1,7 +1,7 @@
 /* jshint node: true */
 var path = require("path");
 
-module.exports = function(config, options) {
+module.exports = function(config) {
     "use strict";
 
     return config.set({

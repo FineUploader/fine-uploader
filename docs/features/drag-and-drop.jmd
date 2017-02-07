@@ -117,7 +117,7 @@ api_event("dropLog", "dropLog",
 {% endmarkdown %}
 
 {{ api_method("dispose", "dispose", "Tears down all drop zones associated with the dnd instance.") }}
-{{ api_method("setupExtraDropzone", "setupExtraDropzone", "Call this to add an additional drop zone to the DnD instance. Not available if using the jQuery plug-in wrapper.",
+{{ api_method("setupExtraDropzone", "setupExtraDropzone", "Call this to add an additional drop zone to the DnD instance.",
 [
     {
         "name": "element",
@@ -125,7 +125,7 @@ api_event("dropLog", "dropLog",
         "description": "THe HTMLElement where the dropzone will be rendered inside of."
     }
 ])}}
-{{ api_method("removeDropzone", "removeDropzone", "Call this to remove a drop zone from the DnD instance. Not available if using the jQuery plug-in wrapper.",
+{{ api_method("removeDropzone", "removeDropzone", "Call this to remove a drop zone from the DnD instance.",
 [
     {
         "name": "element",
