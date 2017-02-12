@@ -1,3 +1,5 @@
+/// <reference types="fine-uploader" />
+
 /**
  * Prepare/set options for the core + UI FineUploader
  */
