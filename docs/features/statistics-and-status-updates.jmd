@@ -1,7 +1,7 @@
 {% extends "_templates/base.html" %}
 {% set page_title = "Statistics and Status Updates" %}
 {% block sidebar %}
-{{ api_links(methods=['getUploads'], events=['statusChange']) }}
+{{ api_links(methods=['getUploads', 'setStatus'], events=['statusChange']) }}
 {% endblock %}
 {% block content %}
 {% markdown %}
