@@ -2289,7 +2289,7 @@ declare namespace FineUploader {
          * - qq.status.DELETE_FAILED
          *          
          * @param number id : The file id
-         * @param string uuid : The new file UUID
+         * @param string newStatus : The new qq.status value.
          */
         setStatus(id: number, newStatus: string): void;
 
