@@ -566,7 +566,7 @@ The status values correspond to those found in the `qq.status` object. Currently
     {
         "name": "newStatus",
         "type": "String",
-        "description": "An integer corresponding to a file."
+        "description": "The new `qq.status` value."
     }
 ], null) }}
 
