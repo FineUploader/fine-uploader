@@ -2282,6 +2282,18 @@ declare namespace FineUploader {
         setParams(params: any, id?: number): void;
 
         /**
+         * Modify the status of an file.
+         * The status values correspond to those found in the qq.status object. 
+         * Currently, the following status values may be set via this method:
+         * - qq.status.DELETED
+         * - qq.status.DELETE_FAILED
+         *          
+         * @param number id : The file id
+         * @param string uuid : The new file UUID
+         */
+        setStatus(id: number, newStatus: string): void;
+
+        /**
          * Change the UUID of a file
          *          
          * @param number id : The file id
