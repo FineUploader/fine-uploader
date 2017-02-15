@@ -1,14 +1,10 @@
-## Brief description of the changes [REQUIRED]
-{also describe what problem(s) these changes solve}
+## Brief description of the changes
+{also describe what problem(s) these changes solve & reference any related issues/PRs}
 
 
-## What browsers and operating systems have you tested these changes on? [REQUIRED]
+## What browsers and operating systems have you tested these changes on?
 {example: Safari on iOS 9.1.0 and IE11 on Windows 8.1}
 
 
-## Are all automated tests passing? [REQUIRED]
-{Choose one: "yes" or "no". If "no", then why not?}
-
-
-## Is this pull request against develop or some other non-master branch? [REQUIRED]
-{Choose one: "yes" or "no". If "no", then why not?}
+## Have you written unit tests? If not, explain why.
+{unit tests should accompany almost all PRs, unless the change is to documentation}
