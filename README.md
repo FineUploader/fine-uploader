@@ -10,7 +10,7 @@
 
 [**Documentation**](http://docs.fineuploader.com) |
 [**Examples**](http://fineuploader.com/demos) |
-[**Support**](http://fineuploader.com/support.html) |
+[**Support**](../../issues) |
 [**Blog**](http://blog.fineuploader.com/) |
 [**Changelog**](../../releases)
 
