@@ -39,6 +39,7 @@ bin/
 src
 
 npm-debug.log
+Vagrantfile
 
 test/dev/handlers/s3/composer.lock
 test/dev/handlers/traditional/files

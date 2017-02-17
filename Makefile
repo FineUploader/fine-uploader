@@ -4,7 +4,14 @@ version=$(shell node -pe "require('./package.json').version")
 dist-out-dir = _dist
 pub-dir = $(dist-out-dir)/$(version)
 
-npm-bin = $(shell npm bin)
+
+# properly get npm-bin in cygwin (Eg. CYGWIN_NT-10.0)
+platform = $(shell uname -s)
+ifeq ($(findstring _NT,$(platform)),_NT)
+	npm-bin = $(shell cygpath -u $(shell npm bin))
+else
+	npm-bin = $(shell npm bin)
+endif
 
 build-out-dir = _build
 src-dir = client
@@ -357,6 +364,7 @@ setup-dist:
 	mkdir -p $(pub-dir)
 	cp LICENSE README.md package.json $(pub-dir)
 	cp -pR $(src-dir)/commonjs/ $(pub-dir)/lib/
+	cp -pR $(src-dir)/typescript $(pub-dir)/
 
 copy-build-to-dist:
 	mkdir -p $(pub-dir)/$(PUB-SUBDIR)

@@ -25,11 +25,16 @@ $(document).ready(function() {
 # Methods <small>Traditional</small> {: .page-header }
 {% endmarkdown %}
 
-<div class="all-methods data-spy="scroll" data-target="">
+<div class="all-methods" data-spy="scroll" data-target="">
 <div class="methods-core">
 {% markdown %}
 ## Core
 {% endmarkdown %}
+
+{{
+alert("If you pass a large `Blob` that was created using JavaScript in the browser into `addFiles`, you should consider calling the [`removeFileRef` method](#removeFileRef) after the file has been successfully uploaded to free up any memory consumed by the Blob.")
+}}
+
 {{ api_method("addFiles", "addFiles (files[, params[, endpoint]])", "Submit one or more files to the uploader.
 
 A `BlobWrapper` object:
@@ -352,6 +357,15 @@ A `resizeInfo` object, which will be passed to the supplied function, contains t
 
 ]) }}
 
+{{ api_method("removeFileRef", "removeFileRef (id)", "",
+[
+    {
+        "name": "id",
+        "type": "Integer",
+        "description": "Remove internal reference to the associated Blob/File object. For Blobs that are created via JavaScript in the browser, this will free up all consumed memory."
+    }
+]) }}
+
 {{ api_method("reset", "reset ()", "Reset Fine Uploader", null, null) }}
 
 {{ api_method("retry", "retry (id)", "Attempt to upload a specific item again.",
@@ -531,6 +545,28 @@ A `resizeInfo` object, which will be passed to your (optional) `customResizer` f
         "name": "uuid",
         "type": "String",
         "description": "The new file UUID."
+    }
+], null) }}
+
+{{ api_method("setStatus", "setStatus (id, newStatus)",
+""" Modify the status of an file.
+
+The status values correspond to those found in the `qq.status` object. Currently, the following status values may be set via this method:
+
+* `qq.status.DELETED`
+* `qq.status.DELETE_FAILED`
+
+""",
+[
+    {
+        "name": "id",
+        "type": "Integer",
+        "description": "The file id."
+    },
+    {
+        "name": "newStatus",
+        "type": "String",
+        "description": "The new `qq.status` value."
     }
 ], null) }}
 
