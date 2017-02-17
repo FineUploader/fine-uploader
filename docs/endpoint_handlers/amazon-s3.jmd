@@ -177,13 +177,13 @@ If you'd like to see an example of generating a signature for a chunked upload r
 version 4 signing process, have a look at the [Fine Uploader PHP S3 signature server example][s3-php]. The general process is as
 follows:
 
-1. Handle a chunked upload signature request from Fine Uploader. Look at the query string to determine if this is a version 4 request, or not. The presence of a `"header"` property in the JSON-encoded message body indicates that this is indeed related to a chunked upload request.
-2. Follow the signing process outlined in the diagram on [Amazon's version 4 header-based auth documentation page][s3-version4-auth].
-3. The `"headers"` string provided by Fine Uploader corresponds to the "StringToSign" portion of the diagram on the page referenced in the previous step, with one notable difference. Instead of a hashed "canonical request" at the end of the "StringToSign", Fine Uploader S3 will include the raw [newline-delimited canonical request][s3-canonical-request]. This allows you to properly inspect the request before signing it.
-   a. Examine the raw canonical request string at the end of the headers string to verify that the request is valid before signing it.
-   b. Replace the raw canonical request at the end of the "StringToSign" sent by Fine Uploader S3 with a SHA256 hashed version.
-   c. Now generate the signature using this constructed "StringToSign" by following the logic in the third step (titled "Signature") of the above-mentioned AWS document.
-4. Return a JSON response with the generated signature as the value of a `"signature"` property.
+1. Handle a chunked upload signature request from Fine Uploader. Look at the query string to determine if this is a version 4 request, or not. The presence of a `"header"` property in the JSON-encoded message body indicates that this is indeed related to a chunked upload request.  
+2. Follow the signing process outlined in the diagram on [Amazon's version 4 header-based auth documentation page][s3-version4-auth].  
+3. The `"headers"` string provided by Fine Uploader corresponds to the "StringToSign" portion of the diagram on the page referenced in the previous step, with one notable difference. Instead of a hashed "canonical request" at the end of the "StringToSign", Fine Uploader S3 will include the raw [newline-delimited canonical request][s3-canonical-request]. This allows you to properly inspect the request before signing it.  
+    1. Examine the raw canonical request string at the end of the headers string to verify that the request is valid before signing it.  
+    2. Replace the raw canonical request at the end of the "StringToSign" sent by Fine Uploader S3 with a SHA256 hashed version.  
+    3. Now generate the signature using this constructed "StringToSign" by following the logic in the third step (titled "Signature") of the above-mentioned AWS document.  
+4. Return a JSON response with the generated signature as the value of a `"signature"` property.  
 
 
 ## Supporting IE9 (and older) and Android 2.3.x (and older)
