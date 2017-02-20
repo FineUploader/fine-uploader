@@ -86,7 +86,7 @@ feel free to use any compliant promise library of your choice instead.""", "info
         "description": "An instance of a promise."
     }
 ]) }}
-{{ api_method("success", "success (param)", "Call this on a promise to indicate success. The parameter values will depend on the situation.",
+{{ api_method("success", "success (param)", "Call this on a promise to indicate success. The parameter value will depend on the situation.",
 [
         {
             "name": "param",
@@ -100,7 +100,7 @@ feel free to use any compliant promise library of your choice instead.""", "info
         "description": "An instance of a promise."
     }
 ]) }}
-{{ api_method("failure", "failure (param)", "Call this on a promise to indicate success. The parameter values will depend on the situation.",
+{{ api_method("failure", "failure (param)", "Call this on a promise to indicate failure. The parameter value will depend on the situation.",
 [
         {
             "name": "param",
