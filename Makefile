@@ -410,10 +410,22 @@ docs: install-docfu
 	docfu --$(type) "$(type-value)" "FineUploader/fine-uploader" "docfu-temp"
 	git clone --depth 1 https://github.com/FineUploader/docs.fineuploader.com.git
 	cp -pR docfu-temp/$(type) docs.fineuploader.com/
-	@(cd docs.fineuploader.com ; git add . ; git commit -a -m "update docs for $(type) $(type-value)" ; git push https://$(DOCS_PUSH_ACCESS_TOKEN)@$(DOCS_GH_REF))
-	rm -rf docs.fineuploader.com
-	rm -rf docfu-temp
+	@(/
+	   cd docs.fineuploader.com ;/
+	   git add . ;/
+	   git commit -a -m "update docs for $(type) $(type-value)" ;/
+	   git push https://$(DOCS_PUSH_ACCESS_TOKEN)@$(DOCS_GH_REF)/
+	 )
+	 make maybe-update-root-docs
 .PHONY: docs
+
+maybe-update-root-docs:
+ifndef TRAVIS_TAG
+ifeq ($(TRAVIS_BRANCH), master)
+	cp -pR docs.fineuploader.com/branch/master/ docs.fineuploader.com/
+endif
+endif
+.PHONY: maybe-update-root-docs
 
 docs-travis:
 ifneq ($(TRAVIS_PULL_REQUEST), false)
