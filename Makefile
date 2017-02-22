@@ -419,7 +419,7 @@ docs: install-docfu
 maybe-update-root-docs:
 ifndef TRAVIS_TAG
 ifeq ($(TRAVIS_BRANCH), master)
-	cp -pR docs.fineuploader.com/branch/master/ docs.fineuploader.com/
+	cp -pR docs.fineuploader.com/branch/master/. docs.fineuploader.com/
 endif
 endif
 .PHONY: maybe-update-root-docs
