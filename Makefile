@@ -404,6 +404,42 @@ copy-azure-jquery-dist:
 copy-all-dist:
 	make copy-build-to-dist PUB-SUBDIR=all.fine-uploader
 
+docs: install-docfu
+	git config --global user.email "fineuploader-docs-bot@raynicholus.com"
+	git config --global user.name "fineuploader-docs-bot"
+	docfu --$(type) "$(type-value)" "FineUploader/fine-uploader" "docfu-temp"
+	git clone --depth 1 https://github.com/FineUploader/docs.fineuploader.com.git
+	cp -pR docfu-temp/$(type) docs.fineuploader.com/
+	(cd docs.fineuploader.com ; git add .)
+	(cd docs.fineuploader.com ; git diff --cached --quiet || git commit -a -m "update docs for $(type) $(type-value)")
+	@(cd docs.fineuploader.com ; git push https://$(DOCS_PUSH_ACCESS_TOKEN)@$(DOCS_GH_REF))
+	make maybe-update-root-docs
+.PHONY: docs
+
+maybe-update-root-docs:
+ifndef TRAVIS_TAG
+ifeq ($(TRAVIS_BRANCH), master)
+	cp -pR docs.fineuploader.com/branch/master/ docs.fineuploader.com/
+endif
+endif
+.PHONY: maybe-update-root-docs
+
+docs-travis:
+ifneq ($(TRAVIS_PULL_REQUEST), false)
+	@echo skipping docs build - not a non-PR or tag push
+else ifdef TRAVIS_TAG
+	make docs type=tag type-value=$(TRAVIS_TAG)
+else
+	make docs type=branch type-value=$(TRAVIS_BRANCH)
+endif
+.PHONY: docs-travis
+
+install-docfu:
+	git clone --depth 1 -b hotfix/cant-generate-docs-from-old-branches https://github.com/FineUploader/docfu
+	(cd docfu ; python setup.py install)
+	rm -rf docfu
+.PHONY: install-docfu
+
 tag-release:
 ifeq ($(simulate), true)
 	@echo version is $(version)
