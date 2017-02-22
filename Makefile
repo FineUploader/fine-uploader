@@ -411,7 +411,7 @@ docs: install-docfu
 	git clone --depth 1 https://github.com/FineUploader/docs.fineuploader.com.git
 	cp -pR docfu-temp/$(type) docs.fineuploader.com/
 	(cd docs.fineuploader.com ; git add .)
-	(cd docs.fineuploader.com ; git diff --cached --quiet || git commit -a -m "update docs for $(type) $(type-value)")
+	(cd docs.fineuploader.com ; git commit -a -m "update docs for $(type) $(type-value)")
 	@(cd docs.fineuploader.com ; git push https://$(DOCS_PUSH_ACCESS_TOKEN)@$(DOCS_GH_REF))
 	make maybe-update-root-docs
 .PHONY: docs
