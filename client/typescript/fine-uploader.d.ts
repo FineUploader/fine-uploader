@@ -2400,7 +2400,7 @@ declare namespace FineUploader {
         /**
          * Clears all text for this element**
          */
-        clearText();
+        clearText(): void;
 
         /**
          * Inserts the element directly before the passed element in the DOM.
