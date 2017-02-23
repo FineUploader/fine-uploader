@@ -1,24 +1,22 @@
----
 addons:
-  firefox: "latest"
-
+  firefox: latest
 sudo: false
-language: node_js
-
-node_js:
-- '5.0.0'
-
+language: python
+python:
+- 2.7
 env:
   global:
   - DISPLAY=:99.0
-  - secure: |-
-      AZ/GEWzykeSzxh+4r14eKq2dMQnZyEvx99zFnTSp30Ke9QqJP3UQvMdwHzuV
-      7jqjzHQUYMFl8o7VATMm7WeXiSURmzRP2F51W/v0rfhUyTo9BMiCxHmcI3up
-      wRMBtB4rJxzk3q5sUR32ucVs/fNlOCMC9M02fnSEijGw4Y+WOhc=
-  - secure: |-
-      sEQ0OSwK/9SUqLXB+w8n9oEdFEdLxZTBdMhC5fUrsCjgstfUSSgzYOT9cTFp
-      awR42/q/Akos2eA8NWx5yU+hRC5rr+oQG5Eio0tzi9+y3a6VXDvgS1h2SaQz
-      TR/MjA/29gFvV7bnp1LSs2TdZx+NGhLd4zHv01XZ+pQk/nQiW9w=
-
+  - DOCS_GH_REF: github.com/FineUploader/docs.fineuploader.com
+  # fineuploader-docs-bot access token:
+  - secure: nDapj/IyKyPhcD6eHWqd3YnydZ3AHZDeiuAxgBOiYllSZ5AxlTahET0MX58rRp+8RsvNCZ4EBbEQ2u7I4JoqAwGyx8LhwA0q64ZQ7xI7RSHttgN289Xt4V4NEjUv1ObJgRxfXKqMbpHvU+0CVGdXunB4inconN6dOIXfGsq4HaM=
+install:
+  - . $HOME/.nvm/nvm.sh
+  - nvm install 5.0.0
+  - nvm use 5.0.0
+  - npm install
 before_script:
-- "sh -e /etc/init.d/xvfb start"
+- sh -e /etc/init.d/xvfb start
+script:
+- npm test
+- if [ $TRAVIS_TEST_RESULT -eq 0 ]; then make docs-travis; fi
