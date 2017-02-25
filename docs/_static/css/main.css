@@ -247,6 +247,12 @@ h4 a, a:hover, a:focus, :visited {
     padding: 3px 20px;
 }
 
+@media (max-width: 979px) {
+   .tag-chooser {
+      padding: 3px 15px;
+   }
+}
+
 .tag-chooser button {
     margin-top: 0 !important;
     padding: 2px 5px;
