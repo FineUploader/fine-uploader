@@ -248,7 +248,7 @@ h4 a, a:hover, a:focus, :visited {
 }
 
 .tag-chooser button {
-    margin-top: 0;
+    margin-top: 0 !important;
     padding: 2px 5px;
 }
 
