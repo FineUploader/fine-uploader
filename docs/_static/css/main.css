@@ -241,3 +241,26 @@ h4 a, a:hover, a:focus, :visited {
     margin-right: 5px;
     font-size: 18px;
 }
+
+.tag-chooser {
+    margin-bottom: 0;
+    padding: 3px 20px;
+}
+
+@media (max-width: 979px) {
+   .tag-chooser {
+      padding: 3px 15px;
+   }
+}
+
+.tag-chooser button {
+    margin-top: 0 !important;
+    padding: 2px 5px;
+}
+
+.tag-input {
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 3px;
+    padding-left: 5px;
+    width: 75px;
+}

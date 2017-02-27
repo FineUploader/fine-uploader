@@ -368,7 +368,7 @@ endif
 .PHONY: docs-travis
 
 install-docfu:
-	git clone --depth 1 -b hotfix/cant-generate-docs-from-old-branches https://github.com/FineUploader/docfu
+	git clone --depth 1 -b 1.0.2 https://github.com/FineUploader/docfu
 	(cd docfu ; python setup.py install)
 	rm -rf docfu
 .PHONY: install-docfu
