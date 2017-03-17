@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>file-uploader nodejs-demo</title>
+<link href="fileuploader.css" media="screen" rel="stylesheet" type="text/css" />
+<style>
+body {background:black; color:white; margin:40px;}
+</style>
+</head>
+<body>
+
+<h1>file-uploader nodejs-demo</h1>
+
+<div id="file-uploader">       
+    <noscript>          
+        <p>Please enable JavaScript to use file uploader.</p>
+        <!-- or put a simple form for upload here -->
+    </noscript>         
+</div>
+
+<script src="/fileuploader.js" type="text/javascript"></script>
+
+<script>
+var uploader = new qq.FileUploader(
+  { element: document.getElementById('file-uploader')
+  , action: '/upload'
+  })
+</script>
+</body>
+</html>
