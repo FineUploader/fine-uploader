@@ -473,6 +473,76 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             });
 
+            it("ensures set serverSideEncryptionKMS options result in proper headers/params", function(done) {
+                assert.expect(18, done);
+
+                var uploader = new qq.s3.FineUploaderBasic({
+                        request: typicalRequestOption,
+                        signature: typicalSignatureOption,
+                        chunking: typicalChunkingOption,
+                        objectProperties: {
+                            serverSideEncryptionKMS: true
+                        }
+                    }
+                );
+
+                startTypicalTest(uploader, function(initiateSignatureRequest, initiateToSign) {
+                    var uploadPartRequest,
+                        initiateRequest,
+                        uploadPartSignatureRequest1,
+                        uploadPartSignatureRequest2,
+                        uploadPartToSign1,
+                        uploadPartToSign2,
+                        uploadCompleteSignatureRequest,
+                        uploadCompleteToSign,
+                        multipartCompleteRequest;
+
+                    // signature request for initiate multipart upload
+                    assert.ok(initiateToSign.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_PARAM_VALUE) > 0);
+                    initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+
+                    // initiate multipart upload request
+                    initiateRequest = fileTestHelper.getRequests()[1];
+                    assert.equal(initiateRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_PARAM_VALUE);
+                    initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
+
+                    // signature request for upload part 1
+                    uploadPartSignatureRequest1 = fileTestHelper.getRequests()[3];
+                    uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
+                    assert.ok(uploadPartToSign1.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_PARAM_VALUE) < 0);
+                    uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
+
+                    // upload part 1 request
+                    uploadPartRequest = fileTestHelper.getRequests()[2];
+                    assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME]);
+                    uploadPartRequest.respond(200, {ETag: "etag1"}, null);
+
+                    // signature request for upload part 2
+                    uploadPartSignatureRequest2 = fileTestHelper.getRequests()[5];
+                    uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest1.requestBody);
+                    assert.ok(uploadPartToSign2.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_PARAM_VALUE) < 0);
+                    uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
+
+                    // upload part 2 request
+                    uploadPartRequest = fileTestHelper.getRequests()[4];
+                    assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME]);
+                    uploadPartRequest.respond(200, {ETag: "etag1"}, null);
+
+                    // signature request for multipart complete
+                    uploadCompleteSignatureRequest = fileTestHelper.getRequests()[6];
+                    uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
+                    assert.ok(uploadCompleteToSign.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_PARAM_VALUE) < 0);
+                    uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+
+                    // multipart complete request
+                    multipartCompleteRequest = fileTestHelper.getRequests()[7];
+                    assert.ok(!multipartCompleteRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME]);
+                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
+
+                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                });
+            });
+
             it("handles failures at every step of a chunked upload", function(done) {
                 assert.expect(99, done);
 

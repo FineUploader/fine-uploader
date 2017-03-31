@@ -619,6 +619,29 @@ if (qqtest.canDownloadFileAsBlob) {
                     request: typicalRequestOption,
                     signature: v2SignatureOption,
                     objectProperties: {
+                      serverSideEncryptionKMS: true
+                    }
+                }
+            );
+
+            startTypicalTest(uploader, function(signatureRequest, policyDoc, uploadRequest, conditions) {
+                var uploadRequestParams;
+
+                assert.equal(conditions[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_PARAM_VALUE);
+                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+
+                uploadRequestParams = uploadRequest.requestBody.fields;
+                assert.equal(uploadRequestParams[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_PARAM_VALUE);
+
+                done();
+            });
+        });
+
+        it("respects the objectProperties.serverSideEncryptionKMS option w/ a value of true", function(done) {
+            var uploader = new qq.s3.FineUploaderBasic({
+                    request: typicalRequestOption,
+                    signature: v2SignatureOption,
+                    objectProperties: {
                         serverSideEncryptionKMS: true
                     }
                 }
