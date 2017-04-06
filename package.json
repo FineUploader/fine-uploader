@@ -57,7 +57,7 @@
     "mocha": "3.2.0",
     "node-static": "0.7.9",
     "pica": "latest",
-    "uglify-js": "2.8.3"
+    "uglify-js": "2.8.5"
   },
   "scripts": {
     "build": "make clean; make build-all-ui",
