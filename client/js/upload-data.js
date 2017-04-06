@@ -65,6 +65,7 @@ qq.UploadData = function(uploaderProxy) {
          * - status: Initial `qq.status` for this file.  Omit for `qq.status.SUBMITTING`.
          * - batchId: ID of the batch this file belongs to
          * - proxyGroupId: ID of the proxy group associated with this file
+         * - onBeforeStatusChange(fileId): callback that is executed before the status change is broadcast
          *
          * @returns {number} Internal ID for this file.
          */
@@ -104,6 +105,7 @@ qq.UploadData = function(uploaderProxy) {
             }
             byStatus[status].push(id);
 
+            spec.onBeforeStatusChange && spec.onBeforeStatusChange(id);
             uploaderProxy.onStatusChange(id, null, status);
 
             return id;
