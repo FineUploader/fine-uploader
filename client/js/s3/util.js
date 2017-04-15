@@ -481,7 +481,7 @@ qq.s3.util = qq.s3.util || (function() {
         // So, we must ensure all reserved characters listed in the spec are percent-encoded,
         // and spaces are replaced with "+".
         encodeQueryStringParam: function(param) {
-            var percentEncoded = encodeURIComponent(param);
+            var percentEncoded = encodeURIComponent(param).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
 
             // %-encode characters not handled by `encodeURIComponent` (to follow RFC 3986)
             percentEncoded = percentEncoded.replace(/[!'()]/g, escape);
