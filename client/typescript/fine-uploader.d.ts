@@ -2650,7 +2650,7 @@ declare namespace FineUploader {
          * 
          * @default `5242880`
          */
-        partSize: number;
+        partSize?: number;
     }
 
     /**
@@ -2662,7 +2662,7 @@ declare namespace FineUploader {
          * 
          * @default `true`
          */
-        allowXdr: boolean;
+        allowXdr?: boolean;
     }
 
     /**
@@ -2708,7 +2708,7 @@ declare namespace FineUploader {
          * 
          * @default `'private'`
          */
-        acl: string;
+        acl?: string;
         /**
          * Describes the name of the bucket used to house the file in S3. 
          * 
@@ -2720,7 +2720,7 @@ declare namespace FineUploader {
          * 
          * @default `(assumes the bucket can be determined by parsing the endpoint string)`
          */
-        bucket: string | BucketFunction;
+        bucket?: string | BucketFunction;
         /**
          * The hostname of your S3 bucket. 
          * 
@@ -2732,7 +2732,7 @@ declare namespace FineUploader {
          * 
          * @default `(uses the request endpoint to determine the hostname)`
          */
-        host: string | HostFunction;
+        host?: string | HostFunction;
         /**
          * Describes the object key used to identify the file in your S3 bucket. 
          * 
@@ -2743,25 +2743,25 @@ declare namespace FineUploader {
          * 
          * @default `'uuid'`
          */
-        key: string | KeyFunction;
+        key?: string | KeyFunction;
         /**
          * Set this to true if you would like to use the reduced redundancy storage class for all objects uploaded to S3
          * 
          * @default `false`
          */
-        reducedRedundancy: boolean;
+        reducedRedundancy?: boolean;
         /**
          * Version 4 signatures only: The S3 region identifier for the target bucket
          * 
          * @default `'us-east-1'`
          */
-        region: string;
+        region?: string;
         /**
          * Set this to true if you would like all uploaded files to be encrypted by AWS
          * 
          * @default `false`
          */
-        serverSideEncryption: boolean;
+        serverSideEncryption?: boolean;
     }
 
     /**
@@ -3101,7 +3101,7 @@ declare namespace FineUploader {
          * 
          * @default `true`
          */
-        allowXdr: boolean;
+        allowXdr?: boolean;
     }
 
     /**
