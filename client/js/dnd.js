@@ -401,16 +401,10 @@ qq.UploadDropZone = function(o) {
             hideZonesEvent = document.createEvent("Event");
             hideZonesEvent.initEvent(options.HIDE_ZONES_EVENT_NAME, true, true);
         }
-
-        if (window.CustomEvent) {
-            try {
-                hideZonesEvent = new CustomEvent(options.HIDE_ZONES_EVENT_NAME);
-            }
-            catch (err) {
-                triggerUsingOldApi();
-            }
+        try {
+            hideZonesEvent = new CustomEvent(options.HIDE_ZONES_EVENT_NAME);
         }
-        else {
+        catch (err) {
             triggerUsingOldApi();
         }
 
