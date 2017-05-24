@@ -8,8 +8,7 @@ env:
   global:
   - DISPLAY=:99.0
   - DOCS_GH_REF: github.com/FineUploader/docs.fineuploader.com
-  # fineuploader-docs-bot access token:
-  - secure: nDapj/IyKyPhcD6eHWqd3YnydZ3AHZDeiuAxgBOiYllSZ5AxlTahET0MX58rRp+8RsvNCZ4EBbEQ2u7I4JoqAwGyx8LhwA0q64ZQ7xI7RSHttgN289Xt4V4NEjUv1ObJgRxfXKqMbpHvU+0CVGdXunB4inconN6dOIXfGsq4HaM=
+  # fineuploader-docs-bot access token has been moved to Travis-CI settings in the UI due to https://github.com/travis-ci/travis-ci/issues/7806
 install:
   - . $HOME/.nvm/nvm.sh
   - nvm install 5.0.0
