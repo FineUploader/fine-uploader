@@ -9,7 +9,7 @@ env:
   - DISPLAY=:99.0
   - DOCS_GH_REF: github.com/FineUploader/docs.fineuploader.com
   # fineuploader-docs-bot access token:
-  - secure: nDapj/IyKyPhcD6eHWqd3YnydZ3AHZDeiuAxgBOiYllSZ5AxlTahET0MX58rRp+8RsvNCZ4EBbEQ2u7I4JoqAwGyx8LhwA0q64ZQ7xI7RSHttgN289Xt4V4NEjUv1ObJgRxfXKqMbpHvU+0CVGdXunB4inconN6dOIXfGsq4HaM=
+  secure: "bXdFni9h1jVR5gpS56dtm3TSj//LupBJ5d9esU3KCldCsnUP5pnN/E5OXTcjjIU7qu+aFrC51bdGOcUAnJlB2Ct2nWrVrRwtwmT8+zzUg82zJYp2pnSE1wIfHW+LxUz22bfP7Zl0xBuAh6VgFxLR4aCLWZAyLxUqbq4HGSdU/2IV/pv6gecpaG3XKB5d0jkd7QCmY8pDQntkC9XCQAkh8yuP2jHLa0Tr+UoyM0Lshz/S0ln2e+g+Sx7rAZcvpJlAW7l3vRl1AGjo5gM9m7kvBLD1xNo5kPdCPS7y0BnOtJszaoRgxlqOKQyT0ylVUcNNHLk6auwM8TNfEUHEs79nZn/RY3l6SbMvAWkVS20lpcSCipA6SJTHM0mBUxIoEoVktOZ2dCpFD6PwksmeW6AWCHEV5gN2UoLrZ2uYvMjnozAiVvCynKgsqocR2fkuKpHorlB1aYktk3PGvTKe6xyg5aDhkuRo5E534UOHQCV4MeD3QK7SqlsVwoWrS26VR3edz9S7gS0mN+BvlkUM5fGwIeHXnBG/RFogbzxYCFuZIfyRwrpzjZsR4iBqzYul6IJMBYEjH3k8yj36brRPVL8oNBdEGk3apM4EPQ9W7tIZPGDAD8BsneHivf08uaO0L56bX5R548bLrmOv3wqUnFP9jZdmqo1qiGiWBUvI8bRselE="
 install:
   - . $HOME/.nvm/nvm.sh
   - nvm install 5.0.0
