@@ -650,16 +650,6 @@ describe("util.js", function () {
         });
     }); // obj2FormData
 
-    describe("parseJson", function () {
-        it("parses JSON", function () {
-            var object = { a: "a", b: "b"},
-                json = JSON.stringify(object),
-                parsedJson = JSON.parse(json);
-
-            assert.deepEqual(qq.parseJson(json), parsedJson);
-        });
-    }); // parseJson
-
     describe("isFileOrInput", function () {
         it("detects and identifies an input of type file", function () {
             var input;

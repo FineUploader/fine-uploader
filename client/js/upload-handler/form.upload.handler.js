@@ -290,7 +290,7 @@ qq.FormUploadHandler = function(spec) {
             var response = {};
 
             try {
-                response = qq.parseJson(innerHtmlOrMessage);
+                response = JSON.parse(innerHtmlOrMessage);
             }
             catch (error) {
                 log("Error when attempting to parse iframe upload response (" + error.message + ")", "error");
