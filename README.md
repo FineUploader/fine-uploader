@@ -2,8 +2,6 @@
    <img src="http://fineuploader.smartimage.com/pimg/a8680d51" width="300">
 </a>
 
-[![OpenCollective Backers](https://opencollective.com/fine-uploader/backers/badge.svg)](#backers)
-[![OpenCollective Sponsors](https://opencollective.com/fine-uploader/sponsors/badge.svg)](#sponsors)
 [![Build Status](https://travis-ci.org/FineUploader/fine-uploader.svg?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
 [![npm](https://img.shields.io/npm/v/fine-uploader.svg)](https://www.npmjs.com/package/fine-uploader)
 [![CDNJS](https://img.shields.io/cdnjs/v/file-uploader.svg)](https://cdnjs.com/libraries/file-uploader)
@@ -87,79 +85,3 @@ To build, run the tests & linter: `npm test` (you'll need Firefox installed loca
 [angular-commit]: https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit
 [git-flow]: http://nvie.com/posts/a-successful-git-branching-model/
 [issues]: https://github.com/FineUploader/fine-uploader/issues
-
-
-# Backers
-
-Support us with a monthly donation and help us continue our activities. [[Become a backer](https://opencollective.com/fine-uploader#backer)]
-
-<a href="https://opencollective.com/fine-uploader/backer/0/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/0/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/1/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/1/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/2/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/2/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/3/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/3/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/4/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/4/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/5/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/5/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/6/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/6/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/7/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/7/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/8/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/8/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/9/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/9/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/10/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/10/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/11/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/11/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/12/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/12/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/13/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/13/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/14/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/14/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/15/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/15/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/16/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/16/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/17/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/17/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/18/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/18/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/19/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/19/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/20/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/20/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/21/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/21/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/22/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/22/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/23/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/23/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/24/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/24/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/25/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/25/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/26/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/26/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/27/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/27/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/28/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/28/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/backer/29/website" target="_blank"><img src="https://opencollective.com/fine-uploader/backer/29/avatar.svg"></a>
-
-
-# Sponsors
-
-*Fine Uploader is a code library sponsored by [Widen Enterprises, Inc.](http://www.widen.com/)*
-
-Become a sponsor and get your logo on our README on Github with a link to your site. [[Become a sponsor](https://opencollective.com/fine-uploader#sponsor)]
-
-<a href="https://opencollective.com/fine-uploader/sponsor/0/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/0/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/1/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/1/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/2/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/2/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/3/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/3/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/4/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/4/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/5/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/5/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/6/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/6/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/7/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/7/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/8/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/8/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/9/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/9/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/10/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/10/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/11/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/11/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/12/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/12/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/13/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/13/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/14/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/14/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/15/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/15/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/16/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/16/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/17/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/17/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/18/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/18/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/19/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/19/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/20/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/20/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/21/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/21/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/22/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/22/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/23/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/23/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/24/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/24/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/25/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/25/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/26/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/26/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/27/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/27/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/28/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/28/avatar.svg"></a>
-<a href="https://opencollective.com/fine-uploader/sponsor/29/website" target="_blank"><img src="https://opencollective.com/fine-uploader/sponsor/29/avatar.svg"></a>
-
-
