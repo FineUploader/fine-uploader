@@ -3,7 +3,7 @@
   "title": "Fine Uploader",
   "main": "lib/traditional.js",
   "types" : "typescript/fine-uploader.d.ts",
-  "version": "5.14.3",
+  "version": "5.14.4",
   "description": "Multiple file upload plugin with progress-bar, drag-and-drop, direct-to-S3 & Azure uploading, client-side image scaling, preview generation, form support, chunking, auto-resume, and tons of other features.",
   "keywords": [
     "amazon",
@@ -56,7 +56,6 @@
     "karma-spec-reporter": "0.0.30",
     "mocha": "3.2.0",
     "node-static": "0.7.9",
-    "opencollective-postinstall": "^1.0.12",
     "pica": "2.0.8",
     "uglify-js": "2.8.3"
   },
@@ -64,12 +63,6 @@
     "build": "make clean; make build-all-ui",
     "lint": "make lint",
     "start": "make start-local-dev",
-    "test": "make lint && make test",
-    "postinstall": "./node_modules/.bin/opencollective-postinstall || exit 0"
-  },
-  "collective": {
-    "type": "opencollective",
-    "url": "https://opencollective.com/fine-uploader",
-    "logo": "https://opencollective.com/opencollective/logo.txt"
+    "test": "make lint && make test"
   }
 }
