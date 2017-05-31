@@ -40,6 +40,7 @@ qq.s3.util = qq.s3.util || (function() {
         ],
 
         UNPREFIXED_PARAM_NAMES: [
+            "content-length-range",
             "Cache-Control",
             "Content-Disposition",
             "Content-Encoding",
