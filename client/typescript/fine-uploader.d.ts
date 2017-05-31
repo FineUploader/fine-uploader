@@ -1547,7 +1547,7 @@ declare namespace FineUploader {
         /**
          * ExtraButtonsOptions
          */
-        extraButtons?: ExtraButtonsOptions;
+        extraButtons?: ExtraButtonsOptions[];
         /**
          * FormOptions
          */
