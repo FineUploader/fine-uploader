@@ -100,7 +100,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
 
             try {
                 log(qq.format("Received response status {} with body: {}", xhr.status, xhr.responseText));
-                response = qq.parseJson(xhr.responseText);
+                response = qq.parseJson(xhr.responseText || "{ \"success\": \"true\" }");
             }
             catch (error) {
                 upload && log("Error when attempting to parse xhr response text (" + error.message + ")", "error");
