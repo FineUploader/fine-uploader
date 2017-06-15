@@ -117,7 +117,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
                         var hasContentType = false;
                         qq.each(headers, function(name, val) {
-                            if (name == "Content-Type") {
+                            if (name === "Content-Type") {
                                 hasContentType = true;
                             }
 
