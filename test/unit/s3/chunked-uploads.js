@@ -10,6 +10,7 @@ if (qqtest.canDownloadFileAsBlob) {
             testAccessKey = "testAccessKey",
             expectedFileSize = 3266,
             expectedChunks = 2,
+            isEdge = navigator.userAgent.indexOf("Edge") !== -1,
             chunkSize = Math.round(expectedFileSize / expectedChunks),
             typicalChunkingOption = {
                 enabled: true,
@@ -161,6 +162,10 @@ if (qqtest.canDownloadFileAsBlob) {
                             assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
                             assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
 
+                            if (isEdge) {
+                                assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
+                            }
+
                             var authParts = uploadPartRequest.requestHeaders.Authorization.split(";");
                             assert.equal(authParts.length, 3);
                             assert.equal(authParts[0].split(",")[1], "SignedHeaders=host");
@@ -188,6 +193,10 @@ if (qqtest.canDownloadFileAsBlob) {
                                 assert.equal(uploadPartRequest.method, "PUT");
                                 assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
                                 assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
+
+                                if (isEdge) {
+                                    assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
+                                }
 
                                 var authParts = uploadPartRequest.requestHeaders.Authorization.split(";");
                                 assert.equal(authParts.length, 3);
@@ -343,6 +352,11 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.equal(uploadPartRequest.method, "PUT");
                     assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
                     assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
+
+                    if (isEdge) {
+                        assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
+                    }
+
                     assert.equal(uploadPartRequest.requestHeaders.Authorization, "AWS " + testAccessKey + ":thesignature");
                     uploadPartRequest.respond(200, {ETag: "etag1"}, null);
 
@@ -364,6 +378,11 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.equal(uploadPartRequest.method, "PUT");
                     assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
                     assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
+
+                    if (isEdge) {
+                        assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
+                    }
+
                     assert.equal(uploadPartRequest.requestHeaders.Authorization, "AWS " + testAccessKey + ":thesignature");
                     uploadPartRequest.respond(200, {ETag: "etag2"}, null);
 
@@ -800,6 +819,11 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.equal(uploadPartRequest.method, "PUT");
                     assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
                     assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
+
+                    if (isEdge) {
+                        assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
+                    }
+
                     assert.equal(uploadPartRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "Upload part 1 request Authorization header is invalid");
                     uploadPartRequest.respond(200, {ETag: "etag1"}, null);
 
@@ -809,6 +833,11 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.equal(uploadPartRequest.method, "PUT");
                     assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
                     assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
+
+                    if (isEdge) {
+                        assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
+                    }
+
                     assert.equal(uploadPartRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "Upload part 2 request Authorization header is invalid");
                     uploadPartRequest.respond(200, {ETag: "etag2"}, null);
 
