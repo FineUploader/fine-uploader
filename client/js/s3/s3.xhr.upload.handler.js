@@ -117,7 +117,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
                         var hasContentType = false;
                         qq.each(headers, function(name, val) {
-                            if (name == 'Content-Type') {
+                            if (name == "Content-Type") {
                                 hasContentType = true;
                             }
 
@@ -126,7 +126,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
                         // Workaround for IE Edge
                         if (qq.edge() && !hasContentType) {
-                            xhr.setRequestHeader('Content-Type', '');
+                            xhr.setRequestHeader("Content-Type", "");
                         }
 
                         xhr.send(chunkData.blob);
