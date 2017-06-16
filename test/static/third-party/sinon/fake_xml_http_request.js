@@ -308,7 +308,7 @@
         send: function send(data) {
             verifyState(this);
 
-            if (!/^(get|head)$/i.test(this.method)) {
+            if (!/^(get|head|put)$/i.test(this.method)) {
                 if (this.requestHeaders["Content-Type"]) {
                     var value = this.requestHeaders["Content-Type"].split(";");
                     this.requestHeaders["Content-Type"] = value[0] + ";charset=utf-8";

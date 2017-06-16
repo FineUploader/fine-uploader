@@ -125,7 +125,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                         });
 
                         // Workaround for IE Edge
-                        if (qq.edge() && !hasContentType) {
+                        if (!hasContentType) {
                             xhr.setRequestHeader("Content-Type", "");
                         }
 
