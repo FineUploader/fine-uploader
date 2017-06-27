@@ -3,7 +3,7 @@
   "title": "Fine Uploader",
   "main": "lib/traditional.js",
   "types" : "typescript/fine-uploader.d.ts",
-  "version": "5.14.4",
+  "version": "5.14.5",
   "description": "Multiple file upload plugin with progress-bar, drag-and-drop, direct-to-S3 & Azure uploading, client-side image scaling, preview generation, form support, chunking, auto-resume, and tons of other features.",
   "keywords": [
     "amazon",
