@@ -12,12 +12,10 @@ qq.FormUploadHandler = function(spec) {
         handler = this,
         proxy = spec.proxy,
         formHandlerInstanceId = qq.getUniqueId(),
-        onloadCallbacks = {},
         detachLoadEvents = {},
         postMessageCallbackTimers = {},
         isCors = options.isCors,
         inputName = options.inputName,
-        getUuid = proxy.getUuid,
         log = proxy.log,
         corsMessageReceiver = new qq.WindowReceiveMessage({log: log});
 
@@ -84,10 +82,7 @@ qq.FormUploadHandler = function(spec) {
      */
     function registerPostMessageCallback(iframe, callback) {
         var iframeName = iframe.id,
-            fileId = getFileIdForIframeName(iframeName),
-            uuid = getUuid(fileId);
-
-        onloadCallbacks[uuid] = callback;
+            fileId = getFileIdForIframeName(iframeName);
 
         // When the iframe has loaded (after the server responds to an upload request)
         // declare the attempt a failure if we don't receive a valid message shortly after the response comes in.
@@ -109,27 +104,16 @@ qq.FormUploadHandler = function(spec) {
         // that declares the upload a failure if a message is not received within a reasonable amount of time.
         corsMessageReceiver.receiveMessage(iframeName, function(message) {
             log("Received the following window message: '" + message + "'");
-            var fileId = getFileIdForIframeName(iframeName),
-                response = handler._parseJsonResponse(message),
-                uuid = response.uuid,
-                onloadCallback;
+            var response = handler._parseJsonResponse(message);
 
-            if (uuid && onloadCallbacks[uuid]) {
-                log("Handling response for iframe name " + iframeName);
-                clearTimeout(postMessageCallbackTimers[iframeName]);
-                delete postMessageCallbackTimers[iframeName];
+            log("Handling response for iframe name " + iframeName);
+            clearTimeout(postMessageCallbackTimers[iframeName]);
+            delete postMessageCallbackTimers[iframeName];
 
-                handler._detachLoadEvent(iframeName);
+            handler._detachLoadEvent(iframeName);
 
-                onloadCallback = onloadCallbacks[uuid];
-
-                delete onloadCallbacks[uuid];
-                corsMessageReceiver.stopReceivingMessages(iframeName);
-                onloadCallback(response);
-            }
-            else if (!uuid) {
-                log("'" + message + "' does not contain a UUID - ignoring.");
-            }
+            corsMessageReceiver.stopReceivingMessages(iframeName);
+            callback(response);
         });
     }
 
