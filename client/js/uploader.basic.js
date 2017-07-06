@@ -240,6 +240,8 @@
         this._preventRetries = [];
         this._thumbnailUrls = [];
 
+        this._isPausedQueue = false;
+        this._pausedId = -1;
         this._netUploadedOrQueued = 0;
         this._netUploaded = 0;
         this._uploadData = this._createUploadDataTracker();
