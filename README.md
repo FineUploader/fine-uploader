@@ -2,6 +2,8 @@
    <img src="http://fineuploader.smartimage.com/pimg/a8680d51" width="300">
 </a>
 
+# Looking for a new maintainer - please [inquire within](https://github.com/FineUploader/fine-uploader/issues/1881).
+
 [![Build Status](https://travis-ci.org/FineUploader/fine-uploader.svg?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
 [![npm](https://img.shields.io/npm/v/fine-uploader.svg)](https://www.npmjs.com/package/fine-uploader)
 [![CDNJS](https://img.shields.io/cdnjs/v/file-uploader.svg)](https://cdnjs.com/libraries/file-uploader)
