@@ -109,8 +109,7 @@ qq.FormUploadHandler = function(spec) {
         // that declares the upload a failure if a message is not received within a reasonable amount of time.
         corsMessageReceiver.receiveMessage(iframeName, function(message) {
             log("Received the following window message: '" + message + "'");
-            var fileId = getFileIdForIframeName(iframeName),
-                response = handler._parseJsonResponse(message),
+            var response = handler._parseJsonResponse(message),
                 uuid = response.uuid,
                 onloadCallback;
 
