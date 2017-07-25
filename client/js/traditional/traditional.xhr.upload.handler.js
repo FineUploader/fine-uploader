@@ -15,7 +15,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         getSize = proxy.getSize,
         getUuid = proxy.getUuid,
         log = proxy.log,
-        multipart = spec.forceMultipart || spec.paramsInBody,
+        multipart = spec.forceMultipart || spec.paramsMode === qq.paramsMode.paramsInBody,
 
         addChunkingSpecificParams = function(id, params, chunkData) {
             var size = getSize(id),
@@ -142,7 +142,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             }
 
             //build query string
-            if (!spec.paramsInBody) {
+            if (spec.paramsMode === qq.paramsMode.paramsInUrl) {
                 if (!multipart) {
                     params[spec.inputName] = name;
                 }
@@ -150,13 +150,20 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             }
 
             xhr.open(method, endpoint, true);
+            if (spec.paramsMode === qq.paramsMode.paramsInHeader) {
+                var headerParamPrefix = spec.headerParamPrefix || qq.headerParamPrefix;
+
+                qq.each(params, function (key, val) {
+                    xhr.setRequestHeader(headerParamPrefix   + key, "" + val);
+                });
+            }
 
             if (spec.cors.expected && spec.cors.sendCredentials) {
                 xhr.withCredentials = true;
             }
 
             if (multipart) {
-                if (spec.paramsInBody) {
+                if (spec.paramsMode === qq.paramsMode.paramsInBody) {
                     qq.obj2FormData(params, formData);
                 }
 

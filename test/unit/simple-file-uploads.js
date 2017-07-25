@@ -11,7 +11,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 autoUpload: autoUpload,
                 request: {
                     endpoint: testUploadEndpoint,
-                    paramsInBody: mpe,
+                    paramsMode: mpe ? qq.paramsMode.paramsInBody : qq.paramsMode.paramsInUrl,
                     forceMultipart: mpe
                 },
                 callbacks: {
@@ -478,7 +478,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 uploader.addFiles(canvasWrapper);
             });
         });
-        
+
         it("removes reference to a Blob via API", function(done) {
             qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function(blob) {
                 fileTestHelper.mockXhr();

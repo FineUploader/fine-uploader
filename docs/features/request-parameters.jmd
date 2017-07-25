@@ -95,8 +95,9 @@ To change parameters again, call `setParams` again with the associated `id`.""",
 
 Sometimes it may prove useful to send request parameters in the URL
 query string, and fortunately Fine Uploader supports this right out of the
-box. By disabling the `request.paramsInBody` option, you can pass parameters
-through the query string rather than the request body.
+box. By setting the `request.paramsInUrl` option, you can pass parameters
+through the query string rather than the request body. Alternatively `request.paramsInHeader`
+adds parameters in the request header, concatenated with the optional `request.paramHeaderPrefix`.
 
 {{ alert(
 """All parameters in the query string are [URI Component Encoded](https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/encodeURIComponent).

@@ -255,22 +255,22 @@ qq.FormUploadHandler = function(spec) {
          * that the form is hidden from view.
          *
          * @param spec An object containing various properties to be used when constructing the form.  Required properties are
-         * currently: `method`, `endpoint`, `params`, `paramsInBody`, and `targetName`.
+         * currently: `method`, `endpoint`, `params`, `paramsMode` and `targetName`.
          * @returns {HTMLFormElement} The created form
          */
         _initFormForUpload: function(spec) {
             var method = spec.method,
                 endpoint = spec.endpoint,
                 params = spec.params,
-                paramsInBody = spec.paramsInBody,
+                paramsMode = spec.paramsMode,
                 targetName = spec.targetName,
                 form = qq.toElement("<form method='" + method + "' enctype='multipart/form-data'></form>"),
                 url = endpoint;
 
-            if (paramsInBody) {
+            if (paramsMode === qq.paramsMode.paramsInBody) {
                 qq.obj2Inputs(params, form);
             }
-            else {
+            else if (paramsMode === qq.paramsMode.paramsInUrl){
                 url = qq.obj2url(params, endpoint);
             }
 

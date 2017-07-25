@@ -120,7 +120,7 @@ qq.s3.FormUploadHandler = function(options, proxy) {
                 method: method,
                 endpoint: endpoint,
                 params: params,
-                paramsInBody: true,
+                paramsMode: qq.paramsMode.paramsInBody,
                 targetName: iframe.name
             });
 

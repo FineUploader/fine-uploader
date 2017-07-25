@@ -184,6 +184,14 @@ var qq = function(element) {
 (function() {
     "use strict";
 
+    qq.paramsMode = {
+        paramsInBody: "paramsInBody",
+        paramsInHeader: "paramsInHeader",
+        paramsInUrl: "paramsInUrl"
+    };
+
+    qq.headerParamPrefix = "";
+
     qq.canvasToBlob = function(canvas, mime, quality) {
         return qq.dataUriToBlob(canvas.toDataURL(mime, quality));
     };

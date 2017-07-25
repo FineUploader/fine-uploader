@@ -363,7 +363,7 @@ zip-all:
 setup-dist:
 	mkdir -p $(pub-dir)
 	cp LICENSE README.md package.json $(pub-dir)
-	cp -pR $(src-dir)/commonjs/ $(pub-dir)/lib/
+	cp -pR $(src-dir)/commonJs/ $(pub-dir)/lib/
 	cp -pR $(src-dir)/typescript $(pub-dir)/
 
 copy-build-to-dist:

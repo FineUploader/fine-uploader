@@ -672,14 +672,19 @@ declare namespace FineUploader {
          */
         params?: any;
         /**
-         * Enable or disable sending parameters in the request body. 
+         * Configure the mode parameters are added to the request.
          * 
-         * If `false`, parameters are sent in the URL. 
-         * Otherwise, parameters are sent in the request body
+         * `qq.paramsMode.paramsInBody` sends params in the request body.
+         * `qq.paramsMode.paramsInUrl` sends params in the request url.
+         * `qq.paramsMode.paramsInHeader` sends params in the request header.
          * 
-         * @default `true`
+         * @default `qq.paramsMode.paramsInBody`
          */
-        paramsInBody?: boolean;
+        paramsMode?: string;
+        /**
+         * The prefix for parameters sent in the request's header. Only matters if `paramsMode` is set to `qq.paramsMode.paramsInHeader`
+         */
+        headerParamPrefix?: string;
         /**
          * The name of the parameter the uniquely identifies each associated item. The value is a Level 4 UUID
          * 

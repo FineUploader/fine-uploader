@@ -63,7 +63,8 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
             method: method,
             endpoint: endpoint,
             params: params,
-            paramsInBody: options.paramsInBody,
+            paramsMode: options.paramsMode,
+            headerParamPrefix: options.headerParamPrefix,
             targetName: iframe.name
         });
     }

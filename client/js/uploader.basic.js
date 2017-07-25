@@ -22,7 +22,7 @@
                 inputName: "qqfile",
                 method: "POST",
                 params: {},
-                paramsInBody: true,
+                paramsMode: qq.paramsMode.paramsInBody,
                 totalFileSizeName: "qqtotalfilesize",
                 uuidName: "qquuid"
             },

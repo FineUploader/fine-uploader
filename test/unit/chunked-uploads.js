@@ -21,14 +21,15 @@ if (qqtest.canDownloadFileAsBlob) {
 
         function testChunkedUpload(spec) {
             var customParams = spec.customParams || {},
-                chunkingParamNames = spec.chunkingParamNames || new qq.FineUploaderBasic({})._options.chunking.paramNames;
+                chunkingParamNames = spec.chunkingParamNames || new qq.FineUploaderBasic({})._options.chunking.paramNames,
+                paramsMode = !!spec.mpe ? qq.paramsMode.paramsInBody : qq.paramsMode.paramsInUrl;
 
             assert.expect(3 + (expectedChunks * (20 + (Object.keys(customParams).length))), spec.done);
 
             var uploader = new qq.FineUploaderBasic({
                     request: {
                         endpoint: testUploadEndpoint,
-                        paramsInBody: !!spec.mpe,
+                        paramsMode: paramsMode,
                         forceMultipart: !!spec.mpe,
                         params: customParams
                     },
