@@ -775,7 +775,13 @@
                     },
                     onUploadChunk: function(id, name, chunkData) {
                         self._onUploadChunk(id, chunkData);
-                        self._options.callbacks.onUploadChunk(id, name, chunkData);
+                        var onUploadChunkResult = self._options.callbacks.onUploadChunk(id, name, chunkData);
+
+                        if (qq.isGenericPromise(onUploadChunkResult)) {
+                            self.log(qq.format("onUploadChunk for {}.{} returned a Promise - waiting for resolution.", id, chunkData.partIndex));
+                            return onUploadChunkResult;
+                        }
+                        return new qq.Promise().success();
                     },
                     onUploadChunkSuccess: function(id, chunkData, result, xhr) {
                         self._options.callbacks.onUploadChunkSuccess.apply(self, arguments);
@@ -805,7 +811,10 @@
                             status === qq.status.PAUSED;
                     },
                     getIdsInProxyGroup: self._uploadData.getIdsInProxyGroup,
-                    getIdsInBatch: self._uploadData.getIdsInBatch
+                    getIdsInBatch: self._uploadData.getIdsInBatch,
+                    isInProgress: function(id) {
+                        return self.getUploads({id: id}).status === qq.status.UPLOADING;
+                    }
                 };
 
             qq.each(this._options.request, function(prop, val) {
