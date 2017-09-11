@@ -322,10 +322,10 @@ start-test-resources-server: test-resources-server.PID
 start-root-server: root-server.PID
 
 test-resources-server.PID:
-	$(npm-bin)/static test/unit/resources -H '{"Access-Control-Allow-Origin": "*"}' -p 3000 & echo $$! > $@
+	$(npm-bin)/static test/unit/resources -H '{"Access-Control-Allow-Origin": "*"}' -p 4000 & echo $$! > $@
 
 root-server.PID:
-	$(npm-bin)/static . -p 3001 & echo $$! > $@
+	$(npm-bin)/static . -p 4001 & echo $$! > $@
 
 stop-test-resources-server: test-resources-server.PID
 	kill `cat $<` && rm $<

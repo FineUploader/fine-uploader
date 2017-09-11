@@ -19,7 +19,7 @@ $.extend(qqtest, {
             downloadAsync.success(self._downloadedFiles[key]);
         }
         else {
-            xhr.open("GET", "http://" + window.location.hostname + ":3000/" + key, true);
+            xhr.open("GET", "http://" + window.location.hostname + ":4000/" + key, true);
             xhr.responseType = "arraybuffer";
 
             xhr.onerror = function() {
