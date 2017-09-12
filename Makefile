@@ -333,7 +333,7 @@ stop-test-resources-server: test-resources-server.PID
 stop-root-server: root-server.PID
 	kill `cat $<` && rm $<
 
-test: start-test-resources-server start-root-server build-all-ui
+test: stop-test-resources-server stop-root-server start-test-resources-server start-root-server build-all-ui
 	$(npm-bin)/karma start config/karma.conf.js
 	make stop-test-resources-server
 	make stop-root-server

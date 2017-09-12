@@ -63,6 +63,6 @@
     "build": "make clean; make build-all-ui",
     "lint": "make lint",
     "start": "make start-local-dev",
-    "test": "make lint && make test"
+    "test": "make -i lint && make test"
   }
 }
