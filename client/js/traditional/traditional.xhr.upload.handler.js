@@ -127,10 +127,17 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             return promise;
         },
 
-        setParamsAndGetEntityToSend = function(params, xhr, fileOrBlob, id) {
-            var formData = new FormData(),
-                method = spec.method,
-                endpoint = spec.endpointStore.get(id),
+        setParamsAndGetEntityToSend = function(entityToSendParams) {
+            var fileOrBlob = entityToSendParams.fileOrBlob;
+            var id = entityToSendParams.id;
+            var xhr = entityToSendParams.xhr;
+            var xhrOverrides = entityToSendParams.xhrOverrides || {};
+
+            var params = xhrOverrides.params || entityToSendParams.params;
+
+            var formData = multipart ? new FormData() : null,
+                method = xhrOverrides.method || spec.method,
+                endpoint = xhrOverrides.endpoint || spec.endpointStore.get(id),
                 name = getName(id),
                 size = getSize(id);
 
@@ -167,30 +174,45 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             return fileOrBlob;
         },
 
-        setUploadHeaders = function(id, xhr) {
-            var extraHeaders = spec.customHeaders.get(id),
-                fileOrBlob = handler.getFile(id);
+        setUploadHeaders = function(headersOptions) {
+            var headerOverrides = headersOptions.headerOverrides;
+            var id = headersOptions.id;
+            var xhr = headersOptions.xhr;
 
-            xhr.setRequestHeader("Accept", "application/json");
-            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            xhr.setRequestHeader("Cache-Control", "no-cache");
-
-            if (!multipart) {
-                xhr.setRequestHeader("Content-Type", "application/octet-stream");
-                //NOTE: return mime type in xhr works on chrome 16.0.9 firefox 11.0a2
-                xhr.setRequestHeader("X-Mime-Type", fileOrBlob.type);
+            if (headerOverrides) {
+                qq.each(headerOverrides, function(headerName, headerValue) {
+                    xhr.setRequestHeader(headerName, headerValue);
+                });
             }
+            else {
+                var extraHeaders = spec.customHeaders.get(id),
+                    fileOrBlob = handler.getFile(id);
 
-            qq.each(extraHeaders, function(name, val) {
-                xhr.setRequestHeader(name, val);
-            });
+                xhr.setRequestHeader("Accept", "application/json");
+                xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                xhr.setRequestHeader("Cache-Control", "no-cache");
+
+                if (!multipart) {
+                    xhr.setRequestHeader("Content-Type", "application/octet-stream");
+                    //NOTE: return mime type in xhr works on chrome 16.0.9 firefox 11.0a2
+                    xhr.setRequestHeader("X-Mime-Type", fileOrBlob.type);
+                }
+
+                qq.each(extraHeaders, function(name, val) {
+                    xhr.setRequestHeader(name, val);
+                });
+            }
         };
 
     qq.extend(this, {
-        uploadChunk: function(id, chunkIdx, resuming) {
+        uploadChunk: function(uploadChunkParams) {
+            var id = uploadChunkParams.id;
+            var chunkIdx = uploadChunkParams.chunkIdx;
+            var overrides = uploadChunkParams.overrides || {};
+            var resuming = uploadChunkParams.resuming;
+
             var chunkData = handler._getChunkData(id, chunkIdx),
                 xhr = handler._createXhr(id, chunkIdx),
-                size = getSize(id),
                 promise, toSend, params;
 
             promise = createReadyStateChangedHandler(id, xhr);
@@ -202,8 +224,20 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
                 params[spec.resume.paramNames.resuming] = true;
             }
 
-            toSend = setParamsAndGetEntityToSend(params, xhr, chunkData.blob, id);
-            setUploadHeaders(id, xhr);
+            toSend = setParamsAndGetEntityToSend({
+                fileOrBlob: chunkData.blob,
+                id: id,
+                params: params,
+                xhr: xhr,
+                xhrOverrides: overrides
+            });
+
+            setUploadHeaders({
+                headerOverrides: overrides.headers,
+                id: id,
+                xhr: xhr
+            });
+
             xhr.send(toSend);
 
             return promise;
@@ -217,8 +251,19 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             handler._registerProgressHandler(id);
             promise = createReadyStateChangedHandler(id, xhr);
             params = spec.paramsStore.get(id);
-            toSend = setParamsAndGetEntityToSend(params, xhr, fileOrBlob, id);
-            setUploadHeaders(id, xhr);
+
+            toSend = setParamsAndGetEntityToSend({
+                fileOrBlob: fileOrBlob,
+                id: id,
+                params: params,
+                xhr: xhr
+            });
+
+            setUploadHeaders({
+                id: id,
+                xhr: xhr
+            });
+
             xhr.send(toSend);
 
             return promise;

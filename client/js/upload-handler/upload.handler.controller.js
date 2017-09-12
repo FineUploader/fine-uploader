@@ -209,14 +209,21 @@ qq.UploadHandlerController = function(o, namespace) {
 
                 var onUploadChunkPromise = options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
 
-                onUploadChunkPromise.then(function(result) {
+                onUploadChunkPromise.then(function(requestOverrides) {
                     if (!options.isInProgress(id)) {
                         log(qq.format("Not sending chunked upload request for item {}.{} - no longer in progress.", id, chunkIdx));
                     }
                     else {
                         log(qq.format("Sending chunked upload request for item {}.{}, bytes {}-{} of {}.", id, chunkIdx, chunkData.start + 1, chunkData.end, size));
 
-                        handler.uploadChunk(id, chunkIdx, resuming).then(
+                        var uploadChunkData = {
+                            chunkIdx: chunkIdx,
+                            id: id,
+                            overrides: requestOverrides,
+                            resuming: resuming
+                        };
+
+                        handler.uploadChunk(uploadChunkData).then(
                             // upload chunk success
                             function success(response, xhr) {
                                 log("Chunked upload request succeeded for " + id + ", chunk " + chunkIdx);
