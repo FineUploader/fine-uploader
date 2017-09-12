@@ -334,7 +334,7 @@ stop-root-server: root-server.PID
 	kill `cat $<` && rm $<
 
 ifeq ($(CI), true)
-test: start-root-server build-all-ui
+test: start-test-resources-server start-root-server build-all-ui
 else
 test: stop-test-resources-server stop-root-server start-test-resources-server start-root-server build-all-ui
 endif
