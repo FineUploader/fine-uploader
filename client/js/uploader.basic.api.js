@@ -771,7 +771,14 @@
                     onUploadPrep: qq.bind(this._onUploadPrep, this),
                     onUpload: function(id, name) {
                         self._onUpload(id, name);
-                        self._options.callbacks.onUpload(id, name);
+                        var onUploadResult = self._options.callbacks.onUpload(id, name);
+
+                        if (qq.isGenericPromise(onUploadResult)) {
+                            self.log(qq.format("onUpload for {} returned a Promise - waiting for resolution.", id));
+                            return onUploadResult;
+                        }
+
+                        return new qq.Promise().success();
                     },
                     onUploadChunk: function(id, name, chunkData) {
                         self._onUploadChunk(id, chunkData);
@@ -781,6 +788,7 @@
                             self.log(qq.format("onUploadChunk for {}.{} returned a Promise - waiting for resolution.", id, chunkData.partIndex));
                             return onUploadChunkResult;
                         }
+
                         return new qq.Promise().success();
                     },
                     onUploadChunkSuccess: function(id, chunkData, result, xhr) {
