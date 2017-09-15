@@ -114,7 +114,19 @@
                 partSize: 2000000,
                 // only relevant for traditional endpoints, only required when concurrent.enabled === true
                 success: {
-                    endpoint: null
+                    endpoint: null,
+
+                    headers: function(id) {
+                        return null;
+                    },
+
+                    jsonPayload: false,
+
+                    method: "POST",
+
+                    params: function(id) {
+                        return null;
+                    }
                 }
             },
 

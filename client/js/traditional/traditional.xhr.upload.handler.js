@@ -41,7 +41,11 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         allChunksDoneRequester = new qq.traditional.AllChunksDoneAjaxRequester({
             cors: spec.cors,
             endpoint: spec.chunking.success.endpoint,
-            log: log
+            headers: spec.chunking.success.headers,
+            jsonPayload: spec.chunking.success.jsonPayload,
+            log: log,
+            method: spec.chunking.success.method,
+            params: spec.chunking.success.params
         }),
 
         createReadyStateChangedHandler = function(id, xhr) {
