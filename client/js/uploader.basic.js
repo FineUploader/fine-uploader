@@ -21,6 +21,7 @@
                 forceMultipart: true,
                 inputName: "qqfile",
                 method: "POST",
+                omitDefaultParams: false,
                 params: {},
                 paramsInBody: true,
                 requireSuccessJson: true,

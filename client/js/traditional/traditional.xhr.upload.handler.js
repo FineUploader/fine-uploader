@@ -21,17 +21,19 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             var size = getSize(id),
                 name = getName(id);
 
-            params[spec.chunking.paramNames.partIndex] = chunkData.part;
-            params[spec.chunking.paramNames.partByteOffset] = chunkData.start;
-            params[spec.chunking.paramNames.chunkSize] = chunkData.size;
-            params[spec.chunking.paramNames.totalParts] = chunkData.count;
-            params[spec.totalFileSizeName] = size;
+            if (!spec.omitDefaultParams) {
+                params[spec.chunking.paramNames.partIndex] = chunkData.part;
+                params[spec.chunking.paramNames.partByteOffset] = chunkData.start;
+                params[spec.chunking.paramNames.chunkSize] = chunkData.size;
+                params[spec.chunking.paramNames.totalParts] = chunkData.count;
+                params[spec.totalFileSizeName] = size;
+            }
 
             /**
              * When a Blob is sent in a multipart request, the filename value in the content-disposition header is either "blob"
              * or an empty string.  So, we will need to include the actual file name as a param in this case.
              */
-            if (multipart) {
+            if (multipart && !spec.omitDefaultParams) {
                 params[spec.filenameParam] = name;
             }
         },
@@ -141,16 +143,18 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
                 name = getName(id),
                 size = getSize(id);
 
-            params[spec.uuidName] = getUuid(id);
-            params[spec.filenameParam] = name;
+            if (!spec.omitDefaultParams) {
+                params[spec.uuidName] = getUuid(id);
+                params[spec.filenameParam] = name;
+            }
 
-            if (multipart) {
+            if (multipart && !spec.omitDefaultParams) {
                 params[spec.totalFileSizeName] = size;
             }
 
             //build query string
             if (!spec.paramsInBody) {
-                if (!multipart) {
+                if (!multipart && !spec.omitDefaultParams) {
                     params[spec.inputName] = name;
                 }
                 endpoint = qq.obj2url(params, endpoint);
@@ -220,7 +224,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             params = spec.paramsStore.get(id);
             addChunkingSpecificParams(id, params, chunkData);
 
-            if (resuming) {
+            if (resuming && !spec.omitDefaultParams) {
                 params[spec.resume.paramNames.resuming] = true;
             }
 
