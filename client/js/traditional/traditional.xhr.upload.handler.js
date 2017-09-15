@@ -105,7 +105,7 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
                 response = qq.parseJson(xhr.responseText);
             }
             catch (error) {
-                upload && log("Error when attempting to parse xhr response text (" + error.message + ")", "error");
+                upload && spec.requireSuccessJson && log("Error when attempting to parse xhr response text (" + error.message + ")", "error");
             }
 
             return response;
