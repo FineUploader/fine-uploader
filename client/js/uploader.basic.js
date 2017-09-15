@@ -23,6 +23,7 @@
                 method: "POST",
                 params: {},
                 paramsInBody: true,
+                requireSuccessJson: true,
                 totalFileSizeName: "qqtotalfilesize",
                 uuidName: "qquuid"
             },
