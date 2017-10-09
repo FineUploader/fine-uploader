@@ -333,14 +333,16 @@ stop-test-resources-server: test-resources-server.PID
 stop-root-server: root-server.PID
 	kill `cat $<` && rm $<
 
-ifeq ($(CI), true)
-test: start-test-resources-server start-root-server build-all-ui
-else
-test: stop-test-resources-server stop-root-server start-test-resources-server start-root-server build-all-ui
-endif
+test:
+	$(MAKE) stop-test-resources-server
+	$(MAKE) stop-root-server
+	$(MAKE) start-test-resources-server
+	$(MAKE) start-root-server
+	$(MAKE) build-all-ui
 	$(npm-bin)/karma start config/karma.conf.js
-	make stop-test-resources-server
-	make stop-root-server
+	$(MAKE) stop-test-resources-server
+	$(MAKE) stop-root-server
+.PHONY: test
 
 zip: zip-traditional zip-s3 zip-azure zip-all
 
