@@ -1,4 +1,5 @@
 .*
+!.editorconfig
 *.ipr
 *~
 .*.sw[a-z]
