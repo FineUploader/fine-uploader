@@ -22,7 +22,8 @@ qq.XhrUploadHandler = function(spec) {
         getDataByUuid = proxy.getDataByUuid,
         onUuidChanged = proxy.onUuidChanged,
         onProgress = proxy.onProgress,
-        log = proxy.log;
+        log = proxy.log,
+        getCustomResumeData = proxy.getCustomResumeData;
 
     function abort(id) {
         qq.each(handler._getXhrs(id), function(xhrId, xhr) {
@@ -262,9 +263,15 @@ qq.XhrUploadHandler = function(spec) {
                 name = getName(id),
                 size = getSize(id),
                 chunkSize = chunking.partSize,
-                endpoint = getEndpoint(id);
+                endpoint = getEndpoint(id),
+                customKeys = resume.customKeys(id),
+                localStorageId = qq.format("qq{}resume{}-{}-{}-{}-{}", namespace, formatVersion, name, size, chunkSize, endpoint);
 
-            return qq.format("qq{}resume{}-{}-{}-{}-{}", namespace, formatVersion, name, size, chunkSize, endpoint);
+            customKeys.forEach(function(key) {
+                localStorageId += "-" + key;
+            });
+
+            return localStorageId;
         },
 
         _getMimeType: function(id) {
@@ -369,6 +376,7 @@ qq.XhrUploadHandler = function(spec) {
                         state.key = persistedData.key;
                         state.chunking = persistedData.chunking;
                         state.loaded = persistedData.loaded;
+                        state.customResumeData = persistedData.customResumeData;
                         state.attemptingResume = true;
 
                         handler.moveInProgressToRemaining(id);
@@ -384,6 +392,8 @@ qq.XhrUploadHandler = function(spec) {
 
             // If local storage isn't supported by the browser, or if resume isn't enabled or possible, give up
             if (resumeEnabled && handler.isResumable(id)) {
+                var customResumeData = getCustomResumeData(id);
+
                 localStorageId = handler._getLocalStorageId(id);
 
                 persistedData = {
@@ -393,8 +403,12 @@ qq.XhrUploadHandler = function(spec) {
                     key: state.key,
                     chunking: state.chunking,
                     loaded: state.loaded,
-                    lastUpdated: Date.now()
+                    lastUpdated: Date.now(),
                 };
+
+                if (customResumeData) {
+                    persistedData.customResumeData = customResumeData;
+                }
 
                 try {
                     localStorage.setItem(localStorageId, JSON.stringify(persistedData));

@@ -31,7 +31,7 @@ qq.UploadHandlerController = function(o, namespace) {
         onUploadChunk: function(id, fileName, chunkData) {},
         onUploadChunkSuccess: function(id, chunkData, response, xhr) {},
         onAutoRetry: function(id, fileName, response, xhr) {},
-        onResume: function(id, fileName, chunkData) {},
+        onResume: function(id, fileName, chunkData, customResumeData) {},
         onUuidChanged: function(id, newUuid) {},
         getName: function(id) {},
         setSize: function(id, newSize) {},
@@ -169,15 +169,16 @@ qq.UploadHandlerController = function(o, namespace) {
                 name = options.getName(id),
                 chunkIdx = chunked.nextPart(id),
                 chunkData = handler._getChunkData(id, chunkIdx),
-                resuming = handler._getFileState(id).attemptingResume,
-                inProgressChunks = handler._getFileState(id).chunking.inProgress || [];
+                fileState = handler._getFileState(id),
+                resuming = fileState.attemptingResume,
+                inProgressChunks = fileState.chunking.inProgress || [];
 
-            if (handler._getFileState(id).loaded == null) {
-                handler._getFileState(id).loaded = 0;
+            if (fileState.loaded == null) {
+                fileState.loaded = 0;
             }
 
             // Don't follow-through with the resume attempt if the integrator returns false from onResume
-            if (resuming && options.onResume(id, name, chunkData) === false) {
+            if (resuming && options.onResume(id, name, chunkData, fileState.customResumeData) === false) {
                 chunked.reset(id);
                 chunkIdx = chunked.nextPart(id);
                 chunkData = handler._getChunkData(id, chunkIdx);
@@ -447,6 +448,7 @@ qq.UploadHandlerController = function(o, namespace) {
             handler = new handlerType[handlerModuleSubtype + "UploadHandler"](
                 options,
                 {
+                    getCustomResumeData: options.getCustomResumeData,
                     getDataByUuid: options.getDataByUuid,
                     getName: options.getName,
                     getSize: options.getSize,

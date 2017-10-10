@@ -54,7 +54,7 @@
                 onUpload: function(id, name) {},
                 onUploadChunk: function(id, name, chunkData) {},
                 onUploadChunkSuccess: function(id, chunkData, responseJSON, xhr) {},
-                onResume: function(id, fileName, chunkData) {},
+                onResume: function(id, fileName, chunkData, customResumeData) {},
                 onProgress: function(id, name, loaded, total) {},
                 onTotalProgress: function(loaded, total) {},
                 onError: function(id, name, reason, maybeXhrOrXdr) {},
@@ -135,6 +135,9 @@
                 recordsExpireIn: 7, //days
                 paramNames: {
                     resuming: "qqresume"
+                },
+                customKeys: function(fileId) {
+                    return [];
                 }
             },
 
@@ -317,6 +320,8 @@
         }
 
         this._currentItemLimit = this._options.validation.itemLimit;
+
+        this._customResumeDataStore = this._createStore();
     };
 
     // Define the private & public API methods.

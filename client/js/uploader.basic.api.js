@@ -340,6 +340,8 @@
             this._failedSinceLastAllComplete = [];
 
             this._totalProgress && this._totalProgress.reset();
+
+            this._customResumeDataStore.reset();
         },
 
         retry: function(id) {
@@ -358,6 +360,10 @@
 
         setCustomHeaders: function(headers, id) {
             this._customHeadersStore.set(headers, id);
+        },
+
+        setCustomResumeData: function(id, data) {
+            this._customResumeDataStore.set(data, id);
         },
 
         setDeleteFileCustomHeaders: function(headers, id) {
@@ -794,8 +800,8 @@
                     onUploadChunkSuccess: function(id, chunkData, result, xhr) {
                         self._options.callbacks.onUploadChunkSuccess.apply(self, arguments);
                     },
-                    onResume: function(id, name, chunkData) {
-                        return self._options.callbacks.onResume(id, name, chunkData);
+                    onResume: function(id, name, chunkData, customResumeData) {
+                        return self._options.callbacks.onResume(id, name, chunkData, customResumeData);
                     },
                     onAutoRetry: function(id, name, responseJSON, xhr) {
                         return self._onAutoRetry.apply(self, arguments);
@@ -822,7 +828,8 @@
                     getIdsInBatch: self._uploadData.getIdsInBatch,
                     isInProgress: function(id) {
                         return self.getUploads({id: id}).status === qq.status.UPLOADING;
-                    }
+                    },
+                    getCustomResumeData: qq.bind(self._getCustomResumeData, self)
                 };
 
             qq.each(this._options.request, function(prop, val) {
@@ -938,6 +945,10 @@
                     return fileInput.getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME);
                 }
             }
+        },
+
+        _getCustomResumeData: function(fileId) {
+            return this._customResumeDataStore.get(fileId);
         },
 
         _getNotFinished: function() {
