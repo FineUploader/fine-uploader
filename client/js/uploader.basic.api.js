@@ -275,7 +275,7 @@
         },
 
         isResumable: function(id) {
-            return this._handler.isResumable(id) && this._handler.isAttemptingResume(id)
+            return this._handler.isResumable(id) && this._handler.isAttemptingResume(id);
         },
 
         log: function(str, level) {
