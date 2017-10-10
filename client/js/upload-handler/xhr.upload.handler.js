@@ -136,6 +136,10 @@ qq.XhrUploadHandler = function(spec) {
             return resumableFilesData;
         },
 
+        isAttemptingResume: function(id) {
+            return handler._getFileState(id).attemptingResume;
+        },
+
         isResumable: function(id) {
             return !!chunking && handler.isValid(id) && !handler._getFileState(id).notResumable;
         },

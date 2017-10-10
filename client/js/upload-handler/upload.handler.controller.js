@@ -763,6 +763,10 @@ qq.UploadHandlerController = function(o, namespace) {
             return false;
         },
 
+        isAttemptingResume: function(id) {
+            return !!handler.isAttemptingResume && handler.isAttemptingResume(id);
+        },
+
         // True if the file is eligible for pause/resume.
         isResumable: function(id) {
             return !!handler.isResumable && handler.isResumable(id);
