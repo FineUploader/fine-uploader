@@ -126,6 +126,10 @@ qq.XhrUploadHandler = function(spec) {
                     data.key = uploadData.key;
                 }
 
+                if (uploadData.customResumeData) {
+                    data.customResumeData = uploadData.customResumeData;
+                }
+
                 resumableFilesData.push(data);
             });
 
