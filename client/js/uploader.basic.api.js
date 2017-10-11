@@ -1410,7 +1410,7 @@
 
             self._preventRetries[id] = responseJSON[self._options.retry.preventRetryResponseProperty];
 
-            if (self._shouldAutoRetry(id, name, responseJSON)) {
+            if (self._shouldAutoRetry(id)) {
                 var retryWaitPeriod = self._options.retry.autoAttemptDelay * 1000;
 
                 self._maybeParseAndSendUploadError.apply(self, arguments);
@@ -1745,7 +1745,7 @@
             this._totalProgress && this._totalProgress.onNewSize(id);
         },
 
-        _shouldAutoRetry: function(id, name, responseJSON) {
+        _shouldAutoRetry: function(id) {
             var uploadData = this._uploadData.retrieve({id: id});
 
             /*jshint laxbreak: true */
