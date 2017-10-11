@@ -597,8 +597,11 @@ qq.UploadHandlerController = function(o, namespace) {
                     error = error || {};
 
                     log(id + " upload start aborted due to rejected onUpload Promise - details: " + error, "error");
-                    options.onAutoRetry(id, name, error.responseJSON || {});
 
+                    if (!options.onAutoRetry(id, name, error.responseJSON || {})) {
+                        var response = upload.normalizeResponse(error.responseJSON, false);
+                        upload.cleanup(id, response);
+                    }
                 }
             );
         },
