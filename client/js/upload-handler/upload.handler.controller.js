@@ -72,16 +72,19 @@ qq.UploadHandlerController = function(o, namespace) {
                     upload.cleanup(id, normaizedResponse, xhr);
                 },
                 function(response, xhr) {
-                    var normaizedResponse = upload.normalizeResponse(response, false);
+                    var normalizedResponse = upload.normalizeResponse(response, false);
 
-                    log("Problem finalizing chunks for file ID " + id + " - " + normaizedResponse.error, "error");
+                    log("Problem finalizing chunks for file ID " + id + " - " + normalizedResponse.error, "error");
 
-                    if (normaizedResponse.reset) {
+                    if (
+                        normalizedResponse.reset
+                        || (xhr && options.chunking.success.resetOnStatus.indexOf(xhr.status) >= 0)
+                    ) {
                         chunked.reset(id);
                     }
 
-                    if (!options.onAutoRetry(id, name, normaizedResponse, xhr)) {
-                        upload.cleanup(id, normaizedResponse, xhr);
+                    if (!options.onAutoRetry(id, name, normalizedResponse, xhr)) {
+                        upload.cleanup(id, normalizedResponse, xhr);
                     }
                 }
             );
@@ -162,6 +165,7 @@ qq.UploadHandlerController = function(o, namespace) {
             handler._maybeDeletePersistedChunkData(id);
             handler.reevaluateChunking(id);
             handler._getFileState(id).loaded = 0;
+            handler._getFileState(id).attemptingResume = false;
         },
 
         sendNext: function(id) {

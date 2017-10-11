@@ -141,7 +141,9 @@ qq.XhrUploadHandler = function(spec) {
         },
 
         isResumable: function(id) {
-            return !!chunking && handler.isValid(id) && !handler._getFileState(id).notResumable;
+            return !!chunking && handler.isValid(id)
+                && !handler._getFileState(id).notResumable
+                && handler._getFileState(id).loaded > 0;
         },
 
         moveInProgressToRemaining: function(id, optInProgress, optRemaining) {
