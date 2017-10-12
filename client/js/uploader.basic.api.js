@@ -274,6 +274,10 @@
             return this._uploadData.retrieve({id: id}).uuid;
         },
 
+        isResumable: function(id) {
+            return this._handler.hasResumeRecord(id);
+        },
+
         log: function(str, level) {
             if (this._options.debug && (!level || level === "info")) {
                 qq.log("[Fine Uploader " + qq.version + "] " + str);

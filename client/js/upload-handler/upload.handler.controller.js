@@ -739,6 +739,18 @@ qq.UploadHandlerController = function(o, namespace) {
             return handler.isValid(id);
         },
 
+        hasResumeRecord: function(id) {
+            var key = handler.isValid(id) &&
+                handler._getLocalStorageId &&
+                handler._getLocalStorageId(id);
+
+            if (key) {
+                return !!localStorage.getItem(key);
+            }
+
+            return false;
+        },
+
         getResumableFilesData: function() {
             if (handler.getResumableFilesData) {
                 return handler.getResumableFilesData();
