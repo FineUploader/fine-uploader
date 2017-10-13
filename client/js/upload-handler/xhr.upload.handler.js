@@ -142,13 +142,14 @@ qq.XhrUploadHandler = function(spec) {
 
         isResumable: function(id) {
             return !!chunking && handler.isValid(id)
-                && !handler._getFileState(id).notResumable
-                && handler._getFileState(id).loaded > 0;
+                && !handler._getFileState(id).notResumable;
         },
 
         moveInProgressToRemaining: function(id, optInProgress, optRemaining) {
-            var inProgress = optInProgress || handler._getFileState(id).chunking.inProgress,
-                remaining = optRemaining || handler._getFileState(id).chunking.remaining;
+            var fileState = handler._getFileState(id) || {},
+                chunkingState =  fileState.chunking || {},
+                inProgress = optInProgress || chunkingState.inProgress,
+                remaining = optRemaining || chunkingState.remaining;
 
             if (inProgress) {
                 log(qq.format("Moving these chunks from in-progress {}, to remaining.", JSON.stringify(inProgress)));

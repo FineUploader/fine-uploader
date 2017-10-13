@@ -585,15 +585,20 @@ qq.UploadHandlerController = function(o, namespace) {
                 throw new qq.Error(id + " is not a valid file ID to upload!");
             }
 
-            var onUploadPromise = options.onUpload(id, name);
-
-            onUploadPromise.then(
-                function() {
-                    if (chunkingPossible && handler._shouldChunkThisFile(id)) {
-                        chunked.sendNext(id);
+            options.onUpload(id, name).then(
+                function(response) {
+                    if (response && response.pause) {
+                        options.setStatus(id, qq.status.PAUSED);
+                        handler.pause(id);
+                        connectionManager.free(id);
                     }
                     else {
-                        simple.send(id, name);
+                        if (chunkingPossible && handler._shouldChunkThisFile(id)) {
+                            chunked.sendNext(id);
+                        }
+                        else {
+                            simple.send(id, name);
+                        }
                     }
                 },
 

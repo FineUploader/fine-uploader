@@ -833,7 +833,10 @@
                     isInProgress: function(id) {
                         return self.getUploads({id: id}).status === qq.status.UPLOADING;
                     },
-                    getCustomResumeData: qq.bind(self._getCustomResumeData, self)
+                    getCustomResumeData: qq.bind(self._getCustomResumeData, self),
+                    setStatus: function(id, status) {
+                        self._uploadData.setStatus(id, status);
+                    }
                 };
 
             qq.each(this._options.request, function(prop, val) {
