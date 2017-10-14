@@ -111,7 +111,9 @@
                     totalFileSize: "qqtotalfilesize",
                     totalParts: "qqtotalparts"
                 },
-                partSize: 2000000,
+                partSize: function(id) {
+                    return 2000000;
+                },
                 // only relevant for traditional endpoints, only required when concurrent.enabled === true
                 success: {
                     endpoint: null,

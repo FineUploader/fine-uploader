@@ -77,8 +77,8 @@ qq.UploadHandlerController = function(o, namespace) {
                     log("Problem finalizing chunks for file ID " + id + " - " + normalizedResponse.error, "error");
 
                     if (
-                        normalizedResponse.reset
-                        || (xhr && options.chunking.success.resetOnStatus.indexOf(xhr.status) >= 0)
+                        normalizedResponse.reset ||
+                        (xhr && options.chunking.success.resetOnStatus.indexOf(xhr.status) >= 0)
                     ) {
                         chunked.reset(id);
                     }

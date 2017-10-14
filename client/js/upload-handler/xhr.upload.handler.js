@@ -12,6 +12,24 @@ qq.XhrUploadHandler = function(spec) {
         namespace = spec.options.namespace,
         proxy = spec.proxy,
         chunking = spec.options.chunking,
+        getChunkSize = function(id) {
+            var fileState = handler._getFileState(id);
+
+            if (fileState.chunkSize) {
+                return fileState.chunkSize;
+            }
+
+            else {
+                var chunkSize = chunking.partSize;
+
+                if (qq.isFunction(chunkSize)) {
+                    chunkSize = chunkSize(id, getSize(id));
+                }
+
+                fileState.chunkSize = chunkSize;
+                return chunkSize;
+            }
+        },
         resume = spec.options.resume,
         chunkFiles = chunking && spec.options.chunking.enabled && qq.supportedFeatures.chunking,
         resumeEnabled = resume && spec.options.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
@@ -141,8 +159,8 @@ qq.XhrUploadHandler = function(spec) {
         },
 
         isResumable: function(id) {
-            return !!chunking && handler.isValid(id)
-                && !handler._getFileState(id).notResumable;
+            return !!chunking && handler.isValid(id) &&
+                !handler._getFileState(id).notResumable;
         },
 
         moveInProgressToRemaining: function(id, optInProgress, optRemaining) {
@@ -232,7 +250,7 @@ qq.XhrUploadHandler = function(spec) {
         },
 
         _getChunkData: function(id, chunkIndex) {
-            var chunkSize = chunking.partSize,
+            var chunkSize = getChunkSize(id),
                 fileSize = getSize(id),
                 fileOrBlob = handler.getFile(id),
                 startBytes = chunkSize * chunkIndex,
@@ -273,7 +291,7 @@ qq.XhrUploadHandler = function(spec) {
             var formatVersion = "5.0",
                 name = getName(id),
                 size = getSize(id),
-                chunkSize = chunking.partSize,
+                chunkSize = getChunkSize(id),
                 endpoint = getEndpoint(id),
                 customKeys = resume.customKeys(id),
                 localStorageId = qq.format("qq{}resume{}-{}-{}-{}-{}", namespace, formatVersion, name, size, chunkSize, endpoint);
@@ -300,7 +318,7 @@ qq.XhrUploadHandler = function(spec) {
         _getTotalChunks: function(id) {
             if (chunking) {
                 var fileSize = getSize(id),
-                    chunkSize = chunking.partSize;
+                    chunkSize = getChunkSize(id);
 
                 return Math.ceil(fileSize / chunkSize);
             }
