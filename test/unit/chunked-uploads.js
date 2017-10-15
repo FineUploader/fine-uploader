@@ -347,5 +347,136 @@ if (qqtest.canDownloadFileAsBlob) {
                 testChunkingLogic(true, done);
             });
         });
+
+        describe("chunking.success option", function() {
+            function testChunkingLogic(chunkingSuccess, onComplete) {
+                var uploader = new qq.FineUploaderBasic({
+                    request: {
+                        endpoint: testUploadEndpoint
+                    },
+                    chunking: {
+                        enabled: true,
+                        mandatory: true,
+                        partSize: expectedFileSize + 1,
+                        success: chunkingSuccess
+                    },
+                    callbacks: { onComplete: onComplete }
+                });
+
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                    fileTestHelper.mockXhr();
+                    uploader.addFiles({name: "test", blob: blob});
+                    fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                    fileTestHelper.getRequests()[1].respond(200);
+                });
+            }
+
+            describe("endpoint", function() {
+                it("string value - calls the endpoint after all chunks have been uploaded", function(done) {
+                    testChunkingLogic(
+                        { endpoint: "/test/chunkingsuccess" },
+                        function() {
+                            assert.equal(fileTestHelper.getRequests().length, 2);
+                            assert.equal(fileTestHelper.getRequests()[1].url, "/test/chunkingsuccess");
+                            done();
+                        }
+                    );
+                });
+
+                it("function value - calls the endpoint after all chunks have been uploaded", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: function(id) {
+                                return "/test/" + id;
+                            }
+                        },
+                        function() {
+                            assert.equal(fileTestHelper.getRequests().length, 2);
+                            assert.equal(fileTestHelper.getRequests()[1].url, "/test/0");
+                            done();
+                        }
+                    );
+                });
+            });
+
+            describe("headers", function() {
+                it("calls the endpoint with the provided headers", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: "/test/chunkingsuccess",
+                            headers: function(id) {
+                                return { Foo: "bar" + id };
+                            }
+                        },
+                        function() {
+                            assert.equal(fileTestHelper.getRequests()[1].requestHeaders.Foo, "bar0");
+                            done();
+                        }
+                    );
+                });
+            });
+
+            describe("jsonPayload + custom params", function() {
+                it("true - calls the endpoint with params in the payload as application/json", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: "/test/chunkingsuccess",
+                            jsonPayload: true,
+                            params: function(id) {
+                                return { Foo: "bar" + id };
+                            }
+                        },
+                        function() {
+                            assert.equal(fileTestHelper.getRequests()[1].requestHeaders["Content-Type"], "application/json;charset=utf-8");
+                            assert.equal(fileTestHelper.getRequests()[1].requestBody, JSON.stringify({ Foo: "bar0" }));
+                            done();
+                        }
+                    );
+                });
+
+                it("false (default) - calls the endpoint with params in the payload as url-encoded", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: "/test/chunkingsuccess",
+                            params: function(id) {
+                                return { Foo: "bar@_" + id };
+                            }
+                        },
+                        function() {
+                            assert.equal(fileTestHelper.getRequests()[1].requestHeaders["Content-Type"], "application/x-www-form-urlencoded;charset=utf-8");
+                            assert.equal(fileTestHelper.getRequests()[1].requestBody, "Foo=bar%40_0");
+                            done();
+                        }
+                    );
+                });
+            });
+
+            describe("method", function() {
+                it("(default) calls the endpoint using POST method", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: "/test/chunkingsuccess"
+                        },
+                        function() {
+                            assert.equal(fileTestHelper.getRequests()[1].method, "POST");
+                            done();
+                        }
+                    );
+                });
+
+                it("calls the endpoint using custom method", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: "/test/chunkingsuccess",
+                            method: "PUT"
+                        },
+                        function() {
+                            assert.equal(fileTestHelper.getRequests()[1].method, "PUT");
+                            done();
+                        }
+                    );
+                });
+            });
+        });
     });
 }
