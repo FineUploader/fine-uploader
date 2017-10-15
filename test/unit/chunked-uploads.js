@@ -478,5 +478,140 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             });
         });
+
+        describe("request options", function() {
+            var uploader;
+
+            function testChunkingLogic(request, onComplete, sinonResponse) {
+                uploader = new qq.FineUploaderBasic({
+                    request: request,
+                    chunking: {
+                        enabled: true,
+                        mandatory: true,
+                        partSize: expectedFileSize + 1
+                    },
+                    callbacks: { onComplete: onComplete }
+                });
+
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                    fileTestHelper.mockXhr();
+                    uploader.addFiles({name: "test", blob: blob});
+
+                    if (sinonResponse) {
+                        var request = fileTestHelper.getRequests()[0];
+
+                        request.respond.apply(request, sinonResponse);
+                    }
+                    else {
+                        fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                    }
+                });
+            }
+
+            describe("request.omitDefaultParams", function() {
+                it("(true) omits default params in upload requests", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: testUploadEndpoint,
+                            omitDefaultParams: true,
+                            paramsInBody: false
+                        },
+                        function() {
+                            var chunkUploadRequest = fileTestHelper.getRequests()[0];
+                            assert.equal(chunkUploadRequest.url, "/test/upload?");
+                            done();
+                        }
+                    );
+                });
+
+                it("(default) includes default params in upload requests", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: testUploadEndpoint,
+                            paramsInBody: false
+                        },
+                        function() {
+                            var chunkUploadRequest = fileTestHelper.getRequests()[0];
+                            var uuid = uploader.getUuid(0);
+
+                            assert.equal(chunkUploadRequest.url, "/test/upload?qqpartindex=0&qqpartbyteoffset=0&qqchunksize=3266&qqtotalparts=1&qqtotalfilesize=3266&qqfilename=test&qquuid=" + uuid);
+                            done();
+                        }
+                    );
+                });
+            });
+
+            describe("request.requireSuccessJson", function() {
+                it("(false) fails if response status indicates failure but payload contains { 'success': true } in payload", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: testUploadEndpoint,
+                            requireSuccessJson: false
+                        },
+                        function(id, name, response) {
+                            assert.ok(!response.success);
+                            done();
+                        },
+                        [
+                            500,
+                            null,
+                            JSON.stringify({ success: true })
+                        ]
+                    );
+                });
+
+                it("(false) succeeds if response status indicates success, even without JSON payload containing { 'success' true }", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: testUploadEndpoint,
+                            requireSuccessJson: false
+                        },
+                        function(id, name, response) {
+                            assert.ok(response.success);
+                            done();
+                        },
+                        [
+                            200,
+                            null,
+                            null
+                        ]
+                    );
+                });
+
+                it("(default) fails if response status is 200 and does not contain { 'success': true } in payload", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: testUploadEndpoint
+                        },
+                        function(id, name, response) {
+                            assert.ok(!response.success);
+                            done();
+                        },
+                        [
+                            200,
+                            null,
+                            null
+                        ]
+                    );
+                });
+
+                it("(false) succeeds if response payload contains { 'success': true }", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: testUploadEndpoint
+                        },
+                        function(id, name, response) {
+                            assert.ok(response.success);
+                            done();
+                        },
+                        [
+                            200,
+                            null,
+                            JSON.stringify({ success: true })
+                        ]
+                    );
+                });
+            });
+        });
     });
 }
