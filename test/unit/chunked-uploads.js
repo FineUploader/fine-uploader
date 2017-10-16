@@ -935,5 +935,59 @@ if (qqtest.canDownloadFileAsBlob) {
                 }, { omitDefaultParams: true });
             });
         });
+
+        describe("variable chunk size", function() {
+            it("allows an alternate chunk size to be specified for each file", function(done) {
+                var uploader = new qq.FineUploaderBasic({
+                    maxConnections: 1,
+                    request: {
+                        endpoint: testUploadEndpoint
+                    },
+                    chunking: {
+                        enabled: true,
+                        partSize: function(id) {
+                            if (id === 0) {
+                                return expectedFileSize / 2;
+                            }
+
+                            return expectedFileSize / 3;
+                        }
+                    },
+                    callbacks: {
+                        onUploadChunk: function(id, name, chunkData) {
+                            setTimeout(function() {
+                                var uploadChunkRequest;
+
+                                if (id === 0) {
+                                    uploadChunkRequest = fileTestHelper.getRequests()[chunkData.partIndex];
+                                }
+                                else if (id === 1) {
+                                    uploadChunkRequest = fileTestHelper.getRequests()[2 + chunkData.partIndex];
+                                }
+
+                                uploadChunkRequest.respond(200, null, JSON.stringify({success: true}));
+                            }, 10);
+
+                            if (id === 0) {
+                                assert.equal(chunkData.totalParts, 2);
+                            }
+                            else if (id === 1) {
+                                assert.equal(chunkData.totalParts, 3);
+
+                                if (chunkData.partIndex === 2) {
+                                    done();
+                                }
+                            }
+                        }
+                    }
+                });
+
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                    fileTestHelper.mockXhr();
+                    uploader.addFiles({name: "test0", blob: blob});
+                    uploader.addFiles({name: "test1", blob: blob});
+                });
+            });
+        });
     });
 }
