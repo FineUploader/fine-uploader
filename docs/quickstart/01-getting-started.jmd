@@ -523,7 +523,7 @@ Remember, when using the "core" build, you will need to build your own UI and up
     <script>
         // Some options to pass to the uploader are discussed on the next page
         var uploader = new qq.s3.FineUploader({
-            element: getElementById("uploader")
+            element: document.getElementById("uploader")
         })
     </script>
 </body>
@@ -648,7 +648,7 @@ Remember, when using the "core" build, you will need to build your own UI and up
     <script>
         // Some options to pass to the uploader are discussed on the next page
         var uploader = new qq.azure.FineUploader({
-            element: getElementById("uploader")
+            element: document.getElementById("uploader")
         })
     </script>
 </body>
@@ -786,19 +786,19 @@ Remember, when using the "core" build, you will need to build your own UI and up
         // For a traditional endpoint instance:
         // Some options to pass to the uploader are discussed on the next page
         var traditionalUploader = new qq.FineUploader({
-            element: getElementById("traditional-uploader")
+            element: document.getElementById("traditional-uploader")
         })
 
         // For an S3 endpoint instance:
         // Some options to pass to the uploader are discussed on the next page
         var s3Uploader = new qq.s3.FineUploader({
-            element: getElementById("s3-uploader")
+            element: document.getElementById("s3-uploader")
         })
 
         // For an Azure endpoint instance:
         // Some options to pass to the uploader are discussed on the next page
         var azureUploader = new qq.azure.FineUploader({
-            element: getElementById("azure-uploader")
+            element: document.getElementById("azure-uploader")
         })
     </script>
 </body>
