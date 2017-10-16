@@ -138,8 +138,10 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
             var id = entityToSendParams.id;
             var xhr = entityToSendParams.xhr;
             var xhrOverrides = entityToSendParams.xhrOverrides || {};
-
-            var params = xhrOverrides.params || entityToSendParams.params;
+            var customParams = entityToSendParams.customParams || {};
+            var defaultParams = entityToSendParams.params || {};
+            var xhrOverrideParams = xhrOverrides.params || {};
+            var params;
 
             var formData = multipart ? new FormData() : null,
                 method = xhrOverrides.method || spec.method,
@@ -147,20 +149,28 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
                 name = getName(id),
                 size = getSize(id);
 
-            if (!spec.omitDefaultParams) {
+            if (spec.omitDefaultParams) {
+                params = qq.extend({}, customParams);
+                qq.extend(params, xhrOverrideParams);
+            }
+            else {
+                params = qq.extend({}, customParams);
+                qq.extend(params, xhrOverrideParams);
+                qq.extend(params, defaultParams);
+
                 params[spec.uuidName] = getUuid(id);
                 params[spec.filenameParam] = name;
-            }
 
-            if (multipart && !spec.omitDefaultParams) {
-                params[spec.totalFileSizeName] = size;
+                if (multipart) {
+                    params[spec.totalFileSizeName] = size;
+                }
+                else if (!spec.paramsInBody) {
+                    params[spec.inputName] = name;
+                }
             }
 
             //build query string
             if (!spec.paramsInBody) {
-                if (!multipart && !spec.omitDefaultParams) {
-                    params[spec.inputName] = name;
-                }
                 endpoint = qq.obj2url(params, endpoint);
             }
 
@@ -221,20 +231,21 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
 
             var chunkData = handler._getChunkData(id, chunkIdx),
                 xhr = handler._createXhr(id, chunkIdx),
-                promise, toSend, params;
+                promise, toSend, customParams, params = {};
 
             promise = createReadyStateChangedHandler(id, xhr);
             handler._registerProgressHandler(id, chunkIdx, chunkData.size);
-            params = spec.paramsStore.get(id);
+            customParams = spec.paramsStore.get(id);
             addChunkingSpecificParams(id, params, chunkData);
 
-            if (resuming && !spec.omitDefaultParams) {
+            if (resuming) {
                 params[spec.resume.paramNames.resuming] = true;
             }
 
             toSend = setParamsAndGetEntityToSend({
                 fileOrBlob: chunkData.blob,
                 id: id,
+                customParams: customParams,
                 params: params,
                 xhr: xhr,
                 xhrOverrides: overrides
@@ -253,17 +264,17 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
 
         uploadFile: function(id) {
             var fileOrBlob = handler.getFile(id),
-                promise, xhr, params, toSend;
+                promise, xhr, customParams, toSend;
 
             xhr = handler._createXhr(id);
             handler._registerProgressHandler(id);
             promise = createReadyStateChangedHandler(id, xhr);
-            params = spec.paramsStore.get(id);
+            customParams = spec.paramsStore.get(id);
 
             toSend = setParamsAndGetEntityToSend({
                 fileOrBlob: fileOrBlob,
                 id: id,
-                params: params,
+                customParams: customParams,
                 xhr: xhr
             });
 

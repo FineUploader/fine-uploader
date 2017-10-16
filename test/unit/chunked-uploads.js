@@ -739,5 +739,201 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             });
         });
+
+        describe("onUploadChunk w/ Promise return value", function() {
+            var uploader;
+
+            function testOnUploadChunkLogic(callbacks, options) {
+                var omitDefaultParams = !!(options && options.omitDefaultParams);
+
+                uploader = new qq.FineUploaderBasic({
+                    request: {
+                        endpoint: testUploadEndpoint,
+                        omitDefaultParams: omitDefaultParams,
+                        paramsInBody: false
+                    },
+                    chunking: {
+                        enabled: true,
+                        mandatory: true,
+                        partSize: expectedFileSize + 1
+                    },
+                    callbacks: callbacks
+                });
+
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                    fileTestHelper.mockXhr();
+                    uploader.addFiles({name: "test", blob: blob});
+                });
+            }
+
+            it("fails the upload if the Promise is rejected", function(done) {
+                testOnUploadChunkLogic({
+                    onComplete: function(id, name, result) {
+                        if (id === 0 && !result.success) {
+                            done();
+                        }
+                    },
+
+                    onUploadChunk: function() {
+                        return window.Promise.reject();
+                    }
+                });
+            });
+
+            it("uploads the next chunk if the Promise is resolved", function(done) {
+                testOnUploadChunkLogic({
+                    onComplete: function(id, name, result) {
+                        if (id === 0 && result.success) {
+                            done();
+                        }
+                    },
+
+                    onUploadChunk: function() {
+                        setTimeout(function() {
+                            fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                        }, 10);
+
+                        return window.Promise.resolve();
+                    }
+                });
+            });
+
+            it("sends all headers passed to the resolved Promise for the upload chunk request", function(done) {
+                var headersToSend = {
+                    "X-Foo": "bar"
+                };
+
+                testOnUploadChunkLogic({
+                    onComplete: function(id, name, result) {
+                        if (id === 0 && result.success) {
+                            done();
+                        }
+                    },
+
+                    onUploadChunk: function() {
+                        setTimeout(function() {
+                            var uploadChunkRequest = fileTestHelper.getRequests()[0];
+
+                            delete uploadChunkRequest.requestHeaders["Content-Type"];
+                            assert.deepEqual(uploadChunkRequest.requestHeaders, headersToSend);
+
+                            uploadChunkRequest.respond(200, null, JSON.stringify({success: true}));
+                        }, 10);
+
+                        return window.Promise.resolve({ headers: headersToSend });
+                    }
+                });
+            });
+
+            it("sends only params passed to the resolved Promise for the upload chunk request", function(done) {
+                var expectedUrlEncodedParams = "Foo-Param=bar",
+                    paramsToSend = {
+                        "Foo-Param": "bar"
+                    };
+
+                testOnUploadChunkLogic({
+                    onComplete: function(id, name, result) {
+                        if (id === 0 && result.success) {
+                            done();
+                        }
+                    },
+
+                    onUploadChunk: function() {
+                        setTimeout(function() {
+                            var uploadChunkRequest = fileTestHelper.getRequests()[0];
+
+                            assert.deepEqual(uploadChunkRequest.url, testUploadEndpoint + "?" + expectedUrlEncodedParams);
+
+                            uploadChunkRequest.respond(200, null, JSON.stringify({success: true}));
+                        }, 10);
+
+                        return window.Promise.resolve({ params: paramsToSend });
+                    }
+                }, { omitDefaultParams: true });
+            });
+
+            it("sends default params and params passed to the resolved Promise for the upload chunk request", function(done) {
+                var expectedCustomUrlEncodedParams = "Foo-Param=bar",
+                    paramsToSend = {
+                        "Foo-Param": "bar"
+                    };
+
+                testOnUploadChunkLogic({
+                    onComplete: function(id, name, result) {
+                        if (id === 0 && result.success) {
+                            done();
+                        }
+                    },
+
+                    onUploadChunk: function(id, name, chunkData) {
+                        setTimeout(function() {
+                            var uploadChunkRequest = fileTestHelper.getRequests()[0],
+                                expectedUrlParams = expectedCustomUrlEncodedParams +
+                                    "&qqpartindex=" + chunkData.partIndex +
+                                    "&qqpartbyteoffset=" + (chunkData.startByte - 1) +
+                                    "&qqchunksize=" + (chunkData.endByte - chunkData.startByte + 1) +
+                                    "&qqtotalparts=" + chunkData.totalParts +
+                                    "&qqtotalfilesize=" + expectedFileSize +
+                                    "&qqfilename=" + name +
+                                    "&qquuid=" + uploader.getUuid(id);
+
+                            assert.deepEqual(uploadChunkRequest.url, testUploadEndpoint + "?" + expectedUrlParams);
+
+                            uploadChunkRequest.respond(200, null, JSON.stringify({success: true}));
+                        }, 10);
+
+                        return window.Promise.resolve({ params: paramsToSend });
+                    }
+                });
+            });
+
+            it("uses the method passed to the resolved Promise for the upload chunk request", function(done) {
+                var requestMethod = "PATCH";
+
+                testOnUploadChunkLogic({
+                    onComplete: function(id, name, result) {
+                        if (id === 0 && result.success) {
+                            done();
+                        }
+                    },
+
+                    onUploadChunk: function() {
+                        setTimeout(function() {
+                            var uploadChunkRequest = fileTestHelper.getRequests()[0];
+
+                            assert.deepEqual(uploadChunkRequest.method, requestMethod);
+
+                            uploadChunkRequest.respond(200, null, JSON.stringify({success: true}));
+                        }, 10);
+
+                        return window.Promise.resolve({ method: requestMethod });
+                    }
+                });
+            });
+
+            it("uses the endpoint passed to the resolved Promise for the upload chunk request", function(done) {
+                var requestUrl = "/test/overriden/onuploadchunkendpoint";
+
+                testOnUploadChunkLogic({
+                    onComplete: function(id, name, result) {
+                        if (id === 0 && result.success) {
+                            done();
+                        }
+                    },
+
+                    onUploadChunk: function() {
+                        setTimeout(function() {
+                            var uploadChunkRequest = fileTestHelper.getRequests()[0];
+
+                            assert.deepEqual(uploadChunkRequest.url, requestUrl + "?");
+
+                            uploadChunkRequest.respond(200, null, JSON.stringify({success: true}));
+                        }, 10);
+
+                        return window.Promise.resolve({ endpoint: requestUrl });
+                    }
+                }, { omitDefaultParams: true });
+            });
+        });
     });
 }

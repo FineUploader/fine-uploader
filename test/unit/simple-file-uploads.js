@@ -505,10 +505,8 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         describe("onUpload w/ Promise return value", function() {
-            var uploader;
-
             function testOnUploadLogic(callbacks) {
-                uploader = new qq.FineUploaderBasic({
+                var uploader = new qq.FineUploaderBasic({
                     request: {
                         endpoint: testUploadEndpoint
                     },
