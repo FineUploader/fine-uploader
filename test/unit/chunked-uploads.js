@@ -246,7 +246,7 @@ if (qqtest.canDownloadFileAsBlob) {
             testChunkedFailureAndRecovery(true, done);
         });
 
-        describe("resume feature tests", function() {
+        qq.supportedFeatures.resume && describe("resume feature tests", function() {
             var nativeLocalStorageSetItem = window.localStorage.setItem,
                 acknowledgeRequests = function(endpoint) {
                     ackTimer = setTimeout(function() {
@@ -275,7 +275,7 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             });
 
-            qq.supportedFeatures.resume && it("getResumableFilesData", function(done) {
+            it("getResumableFilesData", function(done) {
                 var chunksUploaded = 0,
                     uploader = new qq.FineUploaderBasic({
                         request: {
@@ -304,6 +304,73 @@ if (qqtest.canDownloadFileAsBlob) {
                 qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
                     fileTestHelper.mockXhr();
                     uploader.addFiles({name: "test", blob: blob});
+                });
+            });
+
+            describe("resume records", function() {
+                var uploader;
+
+                function testResumeRecordsLogic(onUploadChunkSuccess, customKeys) {
+                    uploader = new qq.FineUploaderBasic({
+                        request: {
+                            endpoint: testUploadEndpoint
+                        },
+                        resume: {
+                            customKeys: customKeys || function() { return []; },
+                            enabled: true
+                        },
+                        chunking: {
+                            enabled: true,
+                            mandatory: true,
+                            partSize: expectedFileSize / 3
+                        },
+                        callbacks: {
+                            onUploadChunk: function() {
+                                acknowledgeRequests(testUploadEndpoint);
+                            },
+
+                            onUploadChunkSuccess: onUploadChunkSuccess
+                        }
+                    });
+
+                    qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                        fileTestHelper.mockXhr();
+                        uploader.addFiles({name: "test", blob: blob});
+                    });
+                }
+
+                it("stores custom resume data with resume record", function(done){
+                    testResumeRecordsLogic(
+                        function(id, chunkData) {
+                            if (chunkData.partIndex === 1) {
+                                assert.deepEqual(uploader.getResumableFilesData()[0].customResumeData, { custom: "resumedata" });
+                                done();
+                            }
+                            else {
+                                uploader.setCustomResumeData(0, { custom: "resumedata" });
+                            }
+                        }
+                    );
+                });
+
+                it("uses custom keys (if supplied) to create resume record key", function(done) {
+                    testResumeRecordsLogic(
+                        function(id, chunkData) {
+                            if (chunkData.partIndex === 1) {
+                                assert.ok(localStorage.key(0).indexOf("foo_customkey0") >= 0);
+                                done();
+                            }
+                            else {
+                                uploader.setCustomResumeData(0, { custom: "resumedata" });
+                            }
+                        },
+                        function(id) {
+                            return [
+                                "foo_customkey" + id,
+                                "bar_customkey" + id
+                            ];
+                        }
+                    );
                 });
             });
         });
@@ -474,6 +541,65 @@ if (qqtest.canDownloadFileAsBlob) {
                             assert.equal(fileTestHelper.getRequests()[1].method, "PUT");
                             done();
                         }
+                    );
+                });
+            });
+
+            describe("resetOnStatus", function() {
+                var uploader;
+
+                function testChunkingLogic(chunkingSuccess, onComplete, chunkingSuccessStatus) {
+                    uploader = new qq.FineUploaderBasic({
+                        request: {
+                            endpoint: testUploadEndpoint
+                        },
+                        resume: {
+                            enabled: true
+                        },
+                        chunking: {
+                            enabled: true,
+                            mandatory: true,
+                            partSize: expectedFileSize + 1,
+                            success: chunkingSuccess
+                        },
+                        callbacks: { onComplete: onComplete }
+                    });
+
+                    qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                        fileTestHelper.mockXhr();
+                        uploader.addFiles({name: "test", blob: blob});
+                        fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                        fileTestHelper.getRequests()[1].respond(chunkingSuccessStatus);
+                    });
+                }
+
+                it("resets the file to upload starting with the first chunk if the success endpoint responds with the provided status code", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: "/test/chunkingsuccess",
+                            resetOnStatus: [404]
+                        },
+                        function(id, name, response) {
+                            assert.ok(!response.success);
+                            assert.ok(!uploader.isResumable(0));
+                            done();
+                        },
+                        404
+                    );
+                });
+
+                it("does not reset the file to upload starting with the first chunk if the success endpoint does not responds with the provided status code", function(done) {
+                    testChunkingLogic(
+                        {
+                            endpoint: "/test/chunkingsuccess",
+                            resetOnStatus: [404]
+                        },
+                        function(id, name, response) {
+                            assert.ok(!response.success);
+                            assert.ok(uploader.isResumable(0));
+                            done();
+                        },
+                        500
                     );
                 });
             });
