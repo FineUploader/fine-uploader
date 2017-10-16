@@ -25,6 +25,8 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
         reducedRedundancy = spec.objectProperties.reducedRedundancy,
         region = spec.objectProperties.region,
         serverSideEncryption = spec.objectProperties.serverSideEncryption,
+        serverSideEncryptionKMS = spec.objectProperties.serverSideEncryptionKMS,
+        kmsKeyId = spec.objectProperties.kmsKeyId,
         validation = spec.validation,
         signature = qq.extend({region: region, drift: clockDrift}, spec.signature),
         handler = this,
@@ -237,6 +239,8 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 aclStore: aclStore,
                 reducedRedundancy: reducedRedundancy,
                 serverSideEncryption: serverSideEncryption,
+                serverSideEncryptionKMS: serverSideEncryptionKMS,
+                kmsKeyId: kmsKeyId,
                 cors: spec.cors,
                 log: log,
                 getContentType: function(id) {
@@ -302,6 +306,8 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                     reducedRedundancy: reducedRedundancy,
                     region: region,
                     serverSideEncryption: serverSideEncryption,
+                    serverSideEncryptionKMS: serverSideEncryptionKMS,
+                    kmsKeyId: kmsKeyId,
                     signatureVersion: signature.version,
                     log: log
                 },

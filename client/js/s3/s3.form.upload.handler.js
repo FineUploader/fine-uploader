@@ -25,6 +25,8 @@ qq.s3.FormUploadHandler = function(options, proxy) {
         reducedRedundancy = options.objectProperties.reducedRedundancy,
         region = options.objectProperties.region,
         serverSideEncryption = options.objectProperties.serverSideEncryption,
+        serverSideEncryptionKMS = options.objectProperties.serverSideEncryptionKMS,
+        kmsKeyId = options.objectProperties.kmsKeyId,
         validation = options.validation,
         signature = options.signature,
         successRedirectUrl = options.iframeSupport.localBlankPagePath,
@@ -100,6 +102,8 @@ qq.s3.FormUploadHandler = function(options, proxy) {
             reducedRedundancy: reducedRedundancy,
             region: region,
             serverSideEncryption: serverSideEncryption,
+            serverSideEncryptionKMS: serverSideEncryptionKMS,
+            kmsKeyId: kmsKeyId,
             signatureVersion: signature.version,
             log: log
         },

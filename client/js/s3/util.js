@@ -18,6 +18,8 @@ qq.s3.util = qq.s3.util || (function() {
 
         SERVER_SIDE_ENCRYPTION_PARAM_NAME: "x-amz-server-side-encryption",
         SERVER_SIDE_ENCRYPTION_PARAM_VALUE: "AES256",
+        SERVER_SIDE_ENCRYPTION_KMS_PARAM_VALUE: "aws:kms",
+        SERVER_SIDE_ENCRYPTION_KMS_KEY_ID_PARAM_NAME: "x-amz-server-side-encryption-aws-kms-key-id",
 
         SESSION_TOKEN_PARAM_NAME: "x-amz-security-token",
 
@@ -126,6 +128,8 @@ qq.s3.util = qq.s3.util || (function() {
                 reducedRedundancy = spec.reducedRedundancy,
                 region = spec.region,
                 serverSideEncryption = spec.serverSideEncryption,
+                serverSideEncryptionKMS = spec.serverSideEncryptionKMS,
+                kmsKeyId = spec.kmsKeyId,
                 signatureVersion = spec.signatureVersion;
 
             policy.expiration = qq.s3.util.getPolicyExpirationDate(date, drift);
@@ -159,6 +163,13 @@ qq.s3.util = qq.s3.util || (function() {
             if (serverSideEncryption) {
                 conditions.push({});
                 conditions[conditions.length - 1][qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME] = qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE;
+            }
+
+            if (serverSideEncryptionKMS) {
+                conditions.push({});
+                conditions[conditions.length - 1][qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME] = qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_PARAM_VALUE;
+                conditions.push({});
+                conditions[conditions.length - 1][qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_KEY_ID_PARAM_NAME] = kmsKeyId;
             }
 
             if (signatureVersion === 2) {
@@ -235,7 +246,7 @@ qq.s3.util = qq.s3.util || (function() {
          * before it is sent to the server for signing.
          *
          * @param spec Object with properties: `params`, `type`, `key`, `accessKey`, `acl`, `expectedStatus`, `successRedirectUrl`,
-         * `reducedRedundancy`, `region`, `serverSideEncryption`, `version`, and `log()`, along with any options associated with `qq.s3.util.getPolicy()`.
+         * `reducedRedundancy`, `region`, `serverSideEncryption`, `serverSideEncryptionKMS`, `kmsKeyId`, `version`, and `log()`, along with any options associated with `qq.s3.util.getPolicy()`.
          * @returns {qq.Promise} Promise that will be fulfilled once all parameters have been determined.
          */
         generateAwsParams: function(spec, signPolicyCallback) {
@@ -253,6 +264,8 @@ qq.s3.util = qq.s3.util || (function() {
                 reducedRedundancy = spec.reducedRedundancy,
                 region = spec.region,
                 serverSideEncryption = spec.serverSideEncryption,
+                serverSideEncryptionKMS = spec.serverSideEncryptionKMS,
+                kmsKeyId = spec.kmsKeyId,
                 signatureVersion = spec.signatureVersion,
                 now = new Date(),
                 log = spec.log,
@@ -281,6 +294,11 @@ qq.s3.util = qq.s3.util || (function() {
 
             if (serverSideEncryption) {
                 awsParams[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME] = qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE;
+            }
+
+            if (serverSideEncryptionKMS) {
+                awsParams[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME] = qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_PARAM_VALUE;
+                awsParams[qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_KEY_ID_PARAM_NAME] = kmsKeyId;
             }
 
             if (sessionToken) {

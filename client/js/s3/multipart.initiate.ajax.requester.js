@@ -20,6 +20,8 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
             aclStore: null,
             reducedRedundancy: false,
             serverSideEncryption: false,
+            serverSideEncryptionKMS: false,
+            kmsKeyId: null,
             maxConnections: 3,
             getContentType: function(id) {},
             getBucket: function(id) {},
@@ -64,6 +66,11 @@ qq.s3.InitiateMultipartAjaxRequester = function(o) {
 
         if (options.serverSideEncryption) {
             headers[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME] = qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE;
+        }
+
+        if (options.serverSideEncryptionKMS) {
+            headers[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME] = qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_PARAM_VALUE;
+            headers[qq.s3.util.SERVER_SIDE_ENCRYPTION_KMS_KEY_ID_PARAM_NAME] = options.kmsKeyId;
         }
 
         headers[qq.s3.util.AWS_PARAM_PREFIX + options.filenameParam] = encodeURIComponent(options.getName(id));

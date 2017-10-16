@@ -38,7 +38,11 @@
                 // Defined at http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region
                 region: "us-east-1",
 
-                serverSideEncryption: false
+                serverSideEncryption: false,
+
+                serverSideEncryptionKMS: false,
+
+                kmsKeyId: null
             },
 
             credentials: {
