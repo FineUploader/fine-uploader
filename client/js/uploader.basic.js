@@ -13,6 +13,7 @@
             maxConnections: 3,
             disableCancelForFormUploads: false,
             autoUpload: true,
+            warnBeforeUnload: true,
 
             request: {
                 customHeaders: {},
@@ -299,7 +300,7 @@
             }
         }
 
-        this._preventLeaveInProgress();
+        this._options.warnBeforeUnload && this._preventLeaveInProgress();
 
         this._imageGenerator = qq.ImageGenerator && new qq.ImageGenerator(qq.bind(this.log, this));
         this._refreshSessionData();
