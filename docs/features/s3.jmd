@@ -89,6 +89,8 @@ following "special" headers:
 * x-amz-server-side-encryption-customer-algorithm
 * x-amz-server-side-encryption-customer-key
 * x-amz-server-side-encryption-customer-key-MD5
+* x-amz-server-side-encryption
+* x-amz-server-side-encryption-aws-kms-key-id
 
 The above header names and values will be untouched. If any of these values needs to be encoded in some way,
 you are responsible for doing so _before_ passing the header to Fine Uploader S3.
