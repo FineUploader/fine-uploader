@@ -1105,9 +1105,18 @@
         },
 
         _handleNewFileGeneric: function(file, name, uuid, size, fileList, batchId) {
-            var id = this._uploadData.addFile({uuid: uuid, name: name, size: size, batchId: batchId});
+            var self = this;
+            var id = this._uploadData.addFile({
+                uuid: uuid,
+                name: name,
+                size: size,
+                batchId: batchId,
 
-            this._handler.add(id, file);
+                onBeforeStatusChange: function(id) {
+                    self._handler.add(id, file);
+                }
+            });
+
             this._trackButton(id);
 
             this._netUploadedOrQueued++;
