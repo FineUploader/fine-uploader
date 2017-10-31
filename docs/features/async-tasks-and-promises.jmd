@@ -35,6 +35,8 @@ promise instance (see individual event docs for more details):
 * `onPasteReceived`
 * `onSubmit`
 * `onSubmitDelete`
+* `onUpload`
+* `onUploadChunk`
 * `onValidate`
 * `onValidateBatch`
 

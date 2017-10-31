@@ -19,9 +19,6 @@ about the integrated support, see the options and methods in the side nav bar of
 {{ alert("If using the integrated drag & drop feature of Fine Uploader UI, a `qqDropTarget` property is added to all `File`
 objects dropped into any drop zone. The value of this property points to the actual drop zone element.", "default", "Note") }}
 
-{{ alert("While dragging and dropping of _files_ is supported in many browsers,
-Dragging and dropping of _folders_ is currently only supported in Chrome 21+ & Opera 15+", "default", "Note") }}
-
 # Drag and Drop Standalone Module
 
 If you are integrating Fine Uploader and utilizing core mode,

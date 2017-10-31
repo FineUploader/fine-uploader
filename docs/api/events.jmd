@@ -283,6 +283,11 @@ Useful for implementing a progress bar.
             "type": "Object",
             "description": "The chunk that will be sent next when file upload resumes."
         },
+        {
+            "name": "customResumeData",
+            "type": "Object",
+            "description": "Any custom resume data provided for this resumable file."
+        },
     ])
 }}
 
@@ -439,7 +444,13 @@ Useful for implementing an aggregate progress bar.
     ])
 }}
 
-{{ api_event("upload", "onUpload", "Called just before an item begins uploading to the server.",
+{{ api_event("upload", "onUpload",
+"""
+Called just before an item begins uploading to the server. In asynchronous work must be performed,
+you may return a Promise. To fail the upload, reject the Promise. Otherwise, resolve it.
+Additionally, you can pause the upload when resolving the Promise by passing an object
+with `{ pause: true }` to the resolve function.
+""",
     [
         {
             "name": "id",
@@ -464,6 +475,16 @@ The `chunkData` object, which is passed into the 'uploadChunk' event handler, ha
 * `endByte` - the last byte of the current chunk.
 * `totalParts` - the total number of partitions associated with the `File` or `Blob`.
 
+Note that you can also return a Promise from this handler. To fail the upload, simply reject the Promise.
+Otherwise, resolve the Promise. Additionally, you can order Fine Uploader to use a specific
+endpoint, parameters, method, and headers for this specific chunk upload request simply
+by passing an object to the resolve function that contains values for those four request attributes.
+The following object properties may be passed to your resolve function to influence the chunk upload request:
+
+* `endpoint` - The endpoint to send the upload chunk request.
+* `headers` - Any headers to be included with the upload chunk request.
+* `method` - The HTTP method to use for the upload chunk request.
+* `params` - Any parameters to send in either the body or the URL of the upload chunk request (depending on if this is a multipart encoded request).
 """,
     [
         {
