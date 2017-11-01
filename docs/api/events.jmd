@@ -446,7 +446,7 @@ Useful for implementing an aggregate progress bar.
 
 {{ api_event("upload", "onUpload",
 """
-Called just before an item begins uploading to the server. In asynchronous work must be performed,
+Called just before an item begins uploading to the server. If asynchronous work must be performed,
 you may return a Promise. To fail the upload, reject the Promise. Otherwise, resolve it.
 Additionally, you can pause the upload when resolving the Promise by passing an object
 with `{ pause: true }` to the resolve function.
