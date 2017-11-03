@@ -120,7 +120,7 @@ to this thumbnail in your response to the `uploadSuccess` request via a `thumbna
 The URL may be cross-origin as well.  See the [previews/thumbnails feature page][thumbnails]
 for more information on this feature.
 
-[csharp]: https://github.com/Widen/fine-uploader-server/tree/master/C%23/azure
+[csharp]: https://github.com/FineUploader/fine-uploader-server/tree/master/C%23/azure
 [azurecors]: http://msdn.microsoft.com/en-us/library/windowsazure/dn535601.aspx
 [403]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
 [completeevent]: ../api/events.html#complete

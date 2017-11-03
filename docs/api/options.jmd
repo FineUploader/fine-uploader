@@ -35,7 +35,7 @@ mode you are in and keep that in mind when determining the meaning of a particul
 
 {{ api_option("autoUpload", "autoUpload", "Set to `false` if you want to be able to upload queued items later by calling the [`uploadStoredFiles()` method](methods.html#uploadStoredFiles).", "Boolean", "true") }}
 
-{{ api_option("button", "button", "Specify an element to use as the 'select files' button. [Cannot be a `<button>`](https://github.com/Widen/fine-uploader/issues/33).", "HTMLElement", "null") }}
+{{ api_option("button", "button", "Specify an element to use as the 'select files' button. [Cannot be a `<button>`](https://github.com/FineUploader/fine-uploader/issues/33).", "HTMLElement", "null") }}
 
 {{ api_option("debug", "debug", "This will result in log messages being written to the [`window.console`](https://developer.mozilla.org/en-USDOM/console.log) object", "Boolean", "false") }}
 

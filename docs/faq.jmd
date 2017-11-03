@@ -12,7 +12,7 @@
 
 **A**: Android doesn't officially support the multiple attribute on file input elements.  I believe
 some builds of Android unofficially supported this, but I can't recall which specific versions.
-See case [#840](https://github.com/Widen/fine-uploader/issues/840) for more details.
+See case [#840](https://github.com/FineUploader/fine-uploader/issues/840) for more details.
 
 <br/>
 **Q**: I'm using core mode, but I don't want to write my own code to handle dropped files and folders.  Can
@@ -76,7 +76,7 @@ in Chrome, Safari, & Opera after the last byte has been sent but the server has 
 
 **A:** The implementation of the onProgress notification that tells us the status of the bytes sent to the server varies from browser to browser, unfortunately.
 Webkit browsers have elected to follow the "spirit" of the W3C spec, while Firefox, and (I believe) IE10, obey the spec in the most strict sense.  I have discussed
-this in some detail [in the "processing" status message feature case](https://github.com/Widen/fine-uploader/issues/404#issuecomment-10124160).
+this in some detail [in the "processing" status message feature case](https://github.com/FineUploader/fine-uploader/issues/404#issuecomment-10124160).
 
 <br/>
 **Q:** When chunking and multipart encoded are both enabled, why must I determine the original file's name by parsing the qqfilename parameter?

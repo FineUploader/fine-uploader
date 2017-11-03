@@ -31,8 +31,14 @@ There are absolutely no other required external dependencies. For more informati
 
 ## Contributing
 
-Fine Uploader and all other projects in this organization thrive thanks to donations by Widen (the project's sponsor)
-and support by developers in the community. If you'd like to help and keep this project strong and relevant, you have several options.
+If you'd like to help and keep this project strong and relevant, you have several options.
+
+
+### Help us pay the bills
+
+Fine Uploader is currently looking for a sponsor to pay the AWS bills (which have recently lapsed).
+These add up to about $40/month. Please open an issue if you are interesting in becoming a sponsor.
+We will happily list you as sponsor on the site and README.
 
 
 ### File a bug report
