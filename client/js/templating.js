@@ -993,6 +993,7 @@ qq.Templating = function(spec) {
 
         updateThumbnail: function(id, thumbnailUrl, showWaitingImg, customResizeFunction) {
             if (!this.isHiddenForever(id)) {
+                if(showWaitingImg !== true) { return; }
                 thumbGenerationQueue.push({customResizeFunction: customResizeFunction, update: true, id: id, thumbnailUrl: thumbnailUrl, showWaitingImg: showWaitingImg});
                 !thumbnailQueueMonitorRunning && generateNextQueuedPreview();
             }
