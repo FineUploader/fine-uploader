@@ -24,7 +24,8 @@
                 params: {},
                 paramsInBody: true,
                 totalFileSizeName: "qqtotalfilesize",
-                uuidName: "qquuid"
+                uuidName: "qquuid",
+                chunkInfoParamName: "qqchunkinfo"
             },
 
             validation: {

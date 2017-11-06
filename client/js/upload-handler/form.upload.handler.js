@@ -17,6 +17,7 @@ qq.FormUploadHandler = function(spec) {
         postMessageCallbackTimers = {},
         isCors = options.isCors,
         inputName = options.inputName,
+        chunkInfoParamName = options.chunkInfoParamName,
         getUuid = proxy.getUuid,
         log = proxy.log,
         corsMessageReceiver = new qq.WindowReceiveMessage({log: log});

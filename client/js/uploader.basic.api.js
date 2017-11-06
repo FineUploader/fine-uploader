@@ -327,6 +327,7 @@
             });
 
             this._paramsStore.reset();
+            this._chunkParamsStore.reset();
             this._endpointStore.reset();
             this._netUploadedOrQueued = 0;
             this._netUploaded = 0;
@@ -391,6 +392,10 @@
 
         setParams: function(params, id) {
             this._paramsStore.set(params, id);
+        },
+
+        setChunkParams: function(params, id, chunkId) {
+            this._chunkParamsStore.setChunkParams(params, id, chunkId);
         },
 
         setUuid: function(id, newUuid) {
@@ -518,6 +523,7 @@
 
         _createStore: function(initialValue, _readOnlyValues_) {
             var store = {},
+                chunkParamStore = {},
                 catchall = initialValue,
                 perIdReadOnlyValues = {},
                 readOnlyValues = _readOnlyValues_,
@@ -553,6 +559,22 @@
                     else {
                         store[id] = copy(val);
                     }
+                },
+
+                setChunkParams: function(val, id, chunkId) {
+                    if (id == null) {
+                        chunkParamStore = {};
+                    }
+                    chunkParamStore = chunkParamStore || {};
+                    chunkParamStore[id] = chunkParamStore[id] || {};
+                    chunkParamStore[id][chunkId] = copy(val);
+                },
+
+                getChunkParams: function(id, chunkId) {
+                    if (chunkId && chunkParamStore && chunkParamStore[id]) {
+                        return copy(chunkParamStore[id][chunkId]);
+                    }
+                    return null;
                 },
 
                 get: function(id) {
@@ -697,6 +719,7 @@
                     maxConnections: this._options.maxConnections,
                     cors: this._options.cors,
                     paramsStore: this._paramsStore,
+                    chunkParamsStore: this._chunkParamsStore,
                     endpointStore: this._endpointStore,
                     chunking: this._options.chunking,
                     resume: this._options.resume,
@@ -1061,6 +1084,7 @@
             handler(actualFile, name, uuid, size, newFileWrapperList, batchId, this._options.request.uuidName, {
                 uploadData: self._uploadData,
                 paramsStore: self._paramsStore,
+                chunkParamsStore: self._chunkParamsStore,
                 addFileToHandler: function(id, file) {
                     self._handler.add(id, file);
                     self._netUploadedOrQueued++;
@@ -1157,6 +1181,7 @@
             }
             else {
                 this._paramsStore = this._createStore(this._options.request.params);
+                this._chunkParamsStore = this._createStore({});
             }
         },
 
