@@ -115,9 +115,19 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                         upload.track(id, xhr, chunkIdx).then(promise.success, promise.failure);
                         xhr.open("PUT", url, true);
 
+                        var hasContentType = false;
                         qq.each(headers, function(name, val) {
+                            if (name === "Content-Type") {
+                                hasContentType = true;
+                            }
+
                             xhr.setRequestHeader(name, val);
                         });
+
+                        // Workaround for IE Edge
+                        if (!hasContentType) {
+                            xhr.setRequestHeader("Content-Type", "");
+                        }
 
                         xhr.send(chunkData.blob);
                     }

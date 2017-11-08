@@ -36,7 +36,6 @@ parsable by all browsers. There are many such tools, but the more popular option
 - [Babel][babel] + [Webpack][webpack] v1
 - [Webpack][webpack] v2+
 - [Rollup][rollup]
-- [TypeScript][typescript]
 
 Importing your desired Fine Uploader resources is as simple as using `import` statements. For example:
 
@@ -96,6 +95,57 @@ const traditionalUploader = new qq.FineUploader({...})
 const s3Uploader = new qq.s3.FineUploader({...})
 const azureUploader = new qq.azure.FineUploader({...})
 ```
+
+## TypeScript + Angular version 2 and higher
+
+Importing Fine Uploader in TypeScript is very similar to ES6 import. The only difference being the global namespace `qq` is not available for TypeScript users.
+So the ES6 import syntax changes for TypeScript users as following:
+
+```javascript
+// use Fine Uploader core (non-ui) for traditional endpoints
+import { FineUploaderBasic } from 'fine-uploader/lib/core';
+
+let uploader = new FineUploaderBasic({...})
+```
+
+```javascript
+// use Fine Uploader UI for traditional endpoints
+import { FineUploader } from 'fine-uploader';
+
+let uploader = new FineUploader({...});
+```
+
+```javascript
+// use Fine Uploader S3
+import { s3 } from 'fine-uploader/lib/s3';
+
+let uploader = new s3.FineUploader({...});
+```
+
+```javascript
+// use Fine Uploader Azure
+import { azure } from 'fine-uploader/lib/azure';
+
+let uploader = new azure.FineUploader({...});
+```
+
+Generating production bundles using Rollup?
+In your `rollup-config.js` (or whatever name your are using for rollup's config file) file, add the following under plugins property
+
+```javascript
+commonjs({
+    include: [
+        'node_modules/rxjs/**',
+        'node_modules/fine-uploader/**'
+    ],
+    namedExports: {
+        'node_modules/fine-uploader/lib/traditional.js': ['FineUploader']
+    }
+})
+```
+
+If you are not using traditional Fine Uploader flavour, remember to change `node_modules/fine-uploader/lib/traditional.js` accordingly. 
+For example: for s3 Fine Uploader this should be `node_modules/fine-uploader/lib/s3.js`
 
 
 ## CommonJS

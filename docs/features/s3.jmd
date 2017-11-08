@@ -86,6 +86,8 @@ following "special" headers:
 * Content-Disposition
 * Content-Encoding
 * Content-MD5
+* x-amz-server-side-encryption-aws-kms-key-id
+* x-amz-server-side-encryption
 * x-amz-server-side-encryption-customer-algorithm
 * x-amz-server-side-encryption-customer-key
 * x-amz-server-side-encryption-customer-key-MD5
