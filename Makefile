@@ -22,7 +22,7 @@ unit-test-dir = $(test-dir)/unit
 
 export-file = $(js-src-dir)/export.js
 
-preamble = "// Fine Uploader $(version) - (c) 2013-present Widen Enterprises, Inc. MIT licensed. http://fineuploader.com"
+preamble = "// Fine Uploader $(version) - MIT licensed. http://fineuploader.com"
 
 cryptojs-files = \
 	$(js-3rdparty-src-dir)/crypto-js/core.js \

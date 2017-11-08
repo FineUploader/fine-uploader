@@ -259,7 +259,7 @@ qq.XhrUploadHandler = function(spec) {
                 cachedChunks = this._getFileState(id).temp.cachedChunks,
 
             // To work around a Webkit GC bug, we must keep each chunk `Blob` in scope until we are done with it.
-            // See https://github.com/Widen/fine-uploader/issues/937#issuecomment-41418760
+            // See https://github.com/FineUploader/fine-uploader/issues/937#issuecomment-41418760
                 blob = cachedChunks[chunkIndex] || qq.sliceBlob(fileOrBlob, startBytes, endBytes);
 
             cachedChunks[chunkIndex] = blob;
