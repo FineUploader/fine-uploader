@@ -1,14 +1,13 @@
 ## Type of issue
 - [ ] Bug report
 - [ ] Feature request
-- [ ] Support request
 
 ## Uploader type
 - [ ] Traditional
 - [ ] S3
 - [ ] Azure
 
-
+### Note: Support requests cannot be accepted due to lack of time.
 
 
 <details>
@@ -48,20 +47,4 @@ For example:
 
 #### Feature request details 
 {why is this feature important, not just for you, but for many others?}
-</details>
-
-
-
-
-<details>
-<summary>Support Request</summary>
-
-#### Fine Uploader version
-{example: 5.5.1}
-
-#### Question
-{ask your support question here & be as detailed and clear as possible}
-
-#### Related code
-{post any code related to your question here}
 </details>

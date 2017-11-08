@@ -90,7 +90,7 @@ qq.Templating = function(spec) {
         log,
         isEditElementsExist,
         isRetryElementExist,
-        templateHtml,
+        templateDom,
         container,
         fileList,
         showThumbnails,
@@ -341,7 +341,7 @@ qq.Templating = function(spec) {
                 scriptHtml,
                 fileListNode,
                 tempTemplateEl,
-                fileListHtml,
+                fileListEl,
                 defaultButton,
                 dropArea,
                 thumbnail,
@@ -452,7 +452,7 @@ qq.Templating = function(spec) {
                 throw new Error("Could not find the file list container in the template!");
             }
 
-            fileListHtml = fileListNode.innerHTML;
+            fileListEl = fileListNode.children[0].cloneNode(true);
             fileListNode.innerHTML = "";
 
             // We must call `createElement` in IE8 in order to target and hide any <dialog> via CSS
@@ -463,8 +463,8 @@ qq.Templating = function(spec) {
             log("Template parsing complete");
 
             return {
-                template: qq.trimStr(tempTemplateEl.innerHTML),
-                fileTemplate: qq.trimStr(fileListHtml)
+                template: tempTemplateEl,
+                fileTemplate: fileListEl
             };
         },
 
@@ -625,7 +625,7 @@ qq.Templating = function(spec) {
 
     container = options.containerEl;
     showThumbnails = options.imageGenerator !== undefined;
-    templateHtml = parseAndGetTemplate();
+    templateDom = parseAndGetTemplate();
 
     cacheThumbnailPlaceholders();
 
@@ -635,7 +635,7 @@ qq.Templating = function(spec) {
 
             generatedThumbnails = 0;
 
-            container.innerHTML = templateHtml.template;
+            container.appendChild(templateDom.template.cloneNode(true));
             hide(getDropProcessing());
             this.hideTotalProgress();
             fileList = options.fileContainerEl || getTemplateEl(container, selectorClasses.list);
@@ -662,7 +662,7 @@ qq.Templating = function(spec) {
         },
 
         addFile: function(id, name, prependInfo, hideForever, batch) {
-            var fileEl = qq.toElement(templateHtml.fileTemplate),
+            var fileEl = templateDom.fileTemplate.cloneNode(true),
                 fileNameEl = getTemplateEl(fileEl, selectorClasses.file),
                 uploaderEl = getTemplateEl(container, selectorClasses.uploader),
                 fileContainer = batch ? fileBatch.content : fileList,
