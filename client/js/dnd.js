@@ -385,12 +385,12 @@ qq.UploadDropZone = function(o) {
         // dt.effectAllowed crashes IE 11 & 10 when files have been dragged from
         // the filesystem
         effectTest = qq.ie() && qq.supportedFeatures.fileDrop ? true : dt.effectAllowed !== "none";
-        return dt && effectTest && 
+        return dt && effectTest &&
                 (
-                    (dt.files && dt.files.length)                                      // Valid for drop events with files
-                    || (!isSafari && dt.types.contains && dt.types.contains("Files"))  // Valid in Chrome/Firefox
-                    || (dt.types.includes && dt.types.includes("Files"))               // Valid in IE
-                )
+                    (dt.files && dt.files.length) ||                                     // Valid for drop events with files
+                    (!isSafari && dt.types.contains && dt.types.contains("Files")) ||  // Valid in Chrome/Firefox
+                    (dt.types.includes && dt.types.includes("Files"))               // Valid in IE
+                );
     }
 
     function isOrSetDropDisabled(isDisabled) {
