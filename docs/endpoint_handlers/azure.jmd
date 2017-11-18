@@ -58,12 +58,12 @@ query string of this request URI:
 
 * `_method`: The verb that will be used by Fine Uploader when it sends the associated request to Azure.
 Possible values are "DELETE" and "PUT" at this time.
-* `_bloburi`: The fully-qualified URI for the blob associated with the request that Fine Uploader will send to Azure.
+* `bloburi`: The fully-qualified URI for the blob associated with the request that Fine Uploader will send to Azure.
 * `qqtimestamp`: You can ignore this parameter.  It is simply used to ensure that the browser requests a fresh
 SAS URI from your server every time.
 
 #### Verification before returning a SAS URI
-Before you return a SAS URI, you might want to verify the `_bloburi` and `_method` to ensure that the associated
+Before you return a SAS URI, you might want to verify the `bloburi` and `_method` to ensure that the associated
 user is allowed to perform the requested action on the associated blob.  If there is an issue, and your server
 does not want the requested operation to occur, your server should respond with a [403 status code][403].  If your
 server returns a 403, Fine Uploader Azure will not send the underlying request, and will not attempt an auto-retry
