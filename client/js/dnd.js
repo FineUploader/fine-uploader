@@ -215,10 +215,6 @@ qq.DragAndDrop = function(o) {
     // * IE10+: If the file is dragged out of the window too quickly, IE does not set the expected values of the
     //          event's X & Y properties.
     function leavingDocumentOut(e) {
-        if (qq.firefox()) {
-            return !e.relatedTarget;
-        }
-
         if (qq.safari()) {
             return e.x < 0 || e.y < 0;
         }
