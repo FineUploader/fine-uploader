@@ -201,8 +201,6 @@ if (qqtest.canDownloadFileAsBlob) {
         }
 
         function testChunkedEveryFailureAndRecovery(done) {
-            assert.expect(6 + (expectedChunks * 17) + (expectedChunks * 6), done);
-
             var alreadyFailed = false,
                 uploader = new qq.FineUploaderBasic({
                     request: {
@@ -268,6 +266,9 @@ if (qqtest.canDownloadFileAsBlob) {
                             assert.equal(expectedChunks, chunksSent, "Wrong # of chunks sent.");
                             assert.equal(expectedChunks, chunksSucceeded, "Wrong # of chunks succeeded");
                             assert.equal(response.testParam, "testVal");
+                            assert.equal(response.success, true);
+
+                            done();
                         }
                     }
                 }),

@@ -1576,9 +1576,7 @@
         },
 
         _onUploadChunkSuccess: function(id, chunkData) {
-            var uploadData = this._uploadData.retrieve({id: id});
-
-            if (!this._preventRetries[id] && this._options.retry.enableAuto && uploadData.status !== qq.status.PAUSED) {
+            if (!this._preventRetries[id] && this._options.retry.enableAuto) {
                 this._autoRetries[id] = 0;
             }
         },
