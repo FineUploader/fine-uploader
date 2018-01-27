@@ -778,6 +778,7 @@
                         self._options.callbacks.onUploadChunk(id, name, chunkData);
                     },
                     onUploadChunkSuccess: function(id, chunkData, result, xhr) {
+                        self._onUploadChunkSuccess(id, chunkData);
                         self._options.callbacks.onUploadChunkSuccess.apply(self, arguments);
                     },
                     onResume: function(id, name, chunkData) {
@@ -1572,6 +1573,12 @@
 
         _onUploadChunk: function(id, chunkData) {
             //nothing to do in the base uploader
+        },
+
+        _onUploadChunkSuccess: function(id, chunkData) {
+            if (!this._preventRetries[id] && this._options.retry.enableAuto) {
+                this._autoRetries[id] = 0;
+            }
         },
 
         _onUploadStatusChange: function(id, oldStatus, newStatus) {
