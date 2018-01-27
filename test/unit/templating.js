@@ -328,6 +328,11 @@ describe("templating.js", function() {
             assert.ok(!$fixture.find(".qq-upload-pause-selector").hasClass(HIDE_CSS));
             assert.ok(!$fixture.find(".qq-upload-spinner-selector").hasClass(HIDE_CSS));
         });
+
+        it("reset clears contents before appending new render", function() {
+            templating.reset();
+            assert.equal($fixture.find(".qq-uploader").length, 1);
+        });
     });
 
     describe("permanently hidden files tests", function() {

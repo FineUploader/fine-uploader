@@ -650,6 +650,7 @@ qq.Templating = function(spec) {
         },
 
         reset: function() {
+            container.innerHTML = "";
             this.render();
         },
 

@@ -56,6 +56,9 @@ if (qqtest.canDownloadFileAsBlob) {
                                 request.respond(200, null, JSON.stringify({success: true, testParam: "testVal"}));
                             }, 10);
                         },
+                        onAutoRetry: function(id, name, attemptNumber) {
+                            assert.fail("This should not be called");
+                        },
                         onUploadChunkSuccess: function (id, chunkData, response, xhr) {
                             var request = fileTestHelper.getRequests()[fileTestHelper.getRequests().length - 1],
                                 requestParams;
@@ -197,6 +200,87 @@ if (qqtest.canDownloadFileAsBlob) {
             });
         }
 
+        function testChunkedEveryFailureAndRecovery(done) {
+            var alreadyFailed = false,
+                uploader = new qq.FineUploaderBasic({
+                    request: {
+                        endpoint: testUploadEndpoint
+                    },
+                    chunking: {
+                        enabled: true,
+                        partSize: chunkSize
+                    },
+                    retry: {
+                        autoAttemptDelay: 0,
+                        enableAuto: true
+                    },
+                    callbacks: {
+                        onUploadChunk: function (id, name, chunkData) {
+                            chunksSent++;
+
+                            assert.equal(id, 0, "Wrong ID passed to onUpoadChunk");
+                            assert.equal(name, uploader.getName(id), "Wrong name passed to onUploadChunk");
+                            assert.equal(chunkData.partIndex, chunksSent - 1, "Wrong partIndex passed to onUploadChunk");
+                            assert.equal(chunkData.startByte, (chunksSent - 1) * chunkSize + 1, "Wrong startByte passed to onUploadChunk");
+                            assert.equal(chunkData.endByte, chunksSent === expectedChunks ? expectedFileSize : chunkData.startByte + chunkSize - 1, "Wrong startByte passed to onUploadChunk");
+                            assert.equal(chunkData.totalParts, expectedChunks, "Wrong totalParts passed to onUploadChunk");
+
+                            setTimeout(function () {
+                                var request = fileTestHelper.getRequests()[fileTestHelper.getRequests().length - 1];
+
+                                if (!alreadyFailed) {
+                                    alreadyFailed = true;
+
+                                    chunksSent--;
+                                    request.respond(500, null, JSON.stringify({testParam: "testVal"}));
+                                }
+                                else {
+                                    alreadyFailed = false;
+                                    request.respond(200, null, JSON.stringify({success: true, testParam: "testVal"}));
+                                }
+                            }, 10);
+                        },
+                        onAutoRetry: function(id, name, attemptNumber) {
+                            assert.equal(id, 0, "Wrong ID passed to onAutoRetry");
+                            assert.equal(name, uploader.getName(id), "Wrong name passed to onAutoRetry");
+                            assert.equal(attemptNumber, 1, "Wrong auto retry attempt #");
+                        },
+                        onUploadChunkSuccess: function (id, chunkData, response, xhr) {
+                            var request = fileTestHelper.getRequests()[fileTestHelper.getRequests().length - 1],
+                                requestParams = request.requestBody.fields;
+
+                            chunksSucceeded++;
+
+                            assert.equal(requestParams.qquuid, uploader.getUuid(id), "Wrong uuid param");
+                            assert.equal(requestParams.qqpartindex, chunksSent - 1, "Wrong part index param");
+                            assert.equal(requestParams.qqpartbyteoffset, (chunksSent - 1) * chunkSize, "Wrong part byte offset param");
+                            assert.equal(requestParams.qqtotalfilesize, expectedFileSize, "Wrong total file size param");
+                            assert.equal(requestParams.qqtotalparts, expectedChunks, "Wrong total parts param");
+                            assert.equal(requestParams.qqfilename, uploader.getName(id), "Wrong filename param");
+                            assert.equal(requestParams.qqchunksize, requestParams.qqfile.size, "Wrong chunk size param");
+                            assert.equal(id, 0, "Wrong ID passed to onUpoadChunkSuccess");
+
+                            assert.equal(response.testParam, "testVal");
+                        },
+                        onComplete: function (id, name, response) {
+                            assert.equal(expectedChunks, chunksSent, "Wrong # of chunks sent.");
+                            assert.equal(expectedChunks, chunksSucceeded, "Wrong # of chunks succeeded");
+                            assert.equal(response.testParam, "testVal");
+                            assert.equal(response.success, true);
+
+                            done();
+                        }
+                    }
+                }),
+                chunksSent = 0,
+                chunksSucceeded = 0;
+
+            qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                fileTestHelper.mockXhr();
+                uploader.addFiles({name: "test", blob: blob});
+            });
+        }
+
         it("sends proper number of chunks when chunking is enabled, MPE", function(done) {
             testChunkedUpload({
                 mpe: true,
@@ -244,6 +328,10 @@ if (qqtest.canDownloadFileAsBlob) {
 
         it("fails the last chunk once, then restarts with the first chunk", function(done) {
             testChunkedFailureAndRecovery(true, done);
+        });
+
+        it("fails every chunk once, then recovers and ensure attemptNumber is 1", function(done) {
+            testChunkedEveryFailureAndRecovery(done);
         });
 
         qq.supportedFeatures.resume && describe("resume feature tests", function() {
