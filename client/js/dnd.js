@@ -34,19 +34,7 @@ qq.DragAndDrop = function(o) {
 
         if (entry.isFile) {
             entry.file(function(file) {
-                var name = entry.name,
-                    fullPath = entry.fullPath,
-                    indexOfNameInFullPath = fullPath.indexOf(name);
-
-                // remove file name from full path string
-                fullPath = fullPath.substr(0, indexOfNameInFullPath);
-
-                // remove leading slash in full path string
-                if (fullPath.charAt(0) === "/") {
-                    fullPath = fullPath.substr(1);
-                }
-
-                file.qqPath = fullPath;
+                file.qqPath = extractDirectoryPath(entry);
                 droppedFiles.push(file);
                 parseEntryPromise.success();
             },
@@ -83,6 +71,22 @@ qq.DragAndDrop = function(o) {
         }
 
         return parseEntryPromise;
+    }
+
+    function extractDirectoryPath(entry) {
+        var name = entry.name,
+            fullPath = entry.fullPath,
+            indexOfNameInFullPath = fullPath.lastIndexOf(name);
+
+        // remove file name from full path string
+        fullPath = fullPath.substr(0, indexOfNameInFullPath);
+
+        // remove leading slash in full path string
+        if (fullPath.charAt(0) === "/") {
+            fullPath = fullPath.substr(1);
+        }
+
+        return fullPath;
     }
 
     // Promissory.  Guaranteed to read all files in the root of the passed directory.
@@ -304,6 +308,9 @@ qq.DragAndDrop = function(o) {
             });
         }
     });
+
+    this._testing = {};
+    this._testing.extractDirectoryPath = extractDirectoryPath;
 };
 
 qq.DragAndDrop.callbacks = function() {
