@@ -184,6 +184,14 @@ declare module "fine-uploader/lib/core" {
         getUuid(id: number): string;
 
         /**
+         * Returns true if the file can be auto-resumed, false otherwise.
+         *
+         * @param number id : The file id
+         * @returns boolean : True if the file can be resumed and has a resume record, false otherwise
+         */
+        isResumable(id: number): boolean;
+
+        /**
          * Output a message to the console, if possible
          *
          * @param string message : The message to print
@@ -235,6 +243,15 @@ declare module "fine-uploader/lib/core" {
          * @param number id : The file id
          */
         setCustomHeaders(customHeaders: any, id?: number): void;
+
+        /**
+         * Set custom resume data for a potentially resumable file.
+         * This data will be stored with the file's resume record and will be accessible in the `onResume` event handler and via the `getResumableFilesData` API method.
+         *
+         * @param number id : The file id
+         * @param Object customResumeData : The custom resume data to store with the file's resume record
+         */
+        setCustomResumeData(id: number, customResumeData: Object): void;
 
         /**
          * Modify the location where upload requests should be directed. Pass in a file id to change the endpoint for that specific item
@@ -769,17 +786,25 @@ declare module "fine-uploader/lib/core" {
      */
     export interface ResumableFileObject {
         /**
+         * an object containing any custom resume data for the file
+         */
+        customResumeData?: any;
+        /**
          * filename
          */
         name?: string;
+        /**
+         * number of bytes to be uploaded
+         */
+        remaining?: number;
         /**
          * the unique id
          */
         uuid?: number;
         /**
-         * the index of the part where the resume will start from
+         * total file size in bytes
          */
-        partIdx?: number;
+        size?: number;
     }
 
 
@@ -833,6 +858,12 @@ declare module "fine-uploader/lib/core" {
          * @default `true`
          */
         multiple?: boolean;
+        /**
+         * When true Fine Uploader will ensure a modal confirmation dialog appears whenever a user tries to navigate away from the page with uploads in progress
+         *
+         * @default `true`
+         */
+        warnBeforeUnload?: boolean;
 
         /**
          * blobs options
@@ -984,10 +1015,11 @@ declare module "fine-uploader/lib/core" {
         mandatory?: boolean;
         /**
          * The maximum size of each chunk, in bytes
+         * If a function value is provided, the file's ID will be passed when invoking the function (which should only be called once per file)
          *
          * @default `2000000`
          */
-        partSize?: number;
+        partSize?: number | Function;
         /**
          * ParamNamesOptions
          */
@@ -1048,11 +1080,43 @@ declare module "fine-uploader/lib/core" {
         /**
          * Endpoint to send a POST after all chunks have been successfully uploaded for each file.
          *
-         * Required if the `concurrent.enabled` option is set
+         * Required if the `concurrent.enabled` option is set.
+         * 
+         * If a function value is provided, the file's ID will be passed when invoking the function
          *
          * @default `null`
          */
-        endpoint?: string;
+        endpoint?: string | Function;
+        /**
+         * Headers to send to with chunking success request. The file's ID will be passed to your provided function
+         * 
+         * @default `function(fileId) { return null }`
+         */
+        headers?: Function;
+        /**
+         * Send all parameters in the request body JSON-encoded. Otherwise params will be sent application/x-www-form-urlencoded
+         * 
+         * @default `false`
+         */
+        jsonPayload?: boolean;
+        /**
+         * HTTP method used when sending the success request
+         * 
+         * @default `POST`
+         */
+        method?: string;
+        /**
+         * Parameters to send in the message body of the success request.  The file's ID will be passed to your provided function
+         * 
+         * @default `function(fileId) { return null }`
+         */
+        params?: Function;
+        /**
+         * Fine Uploader will reset the file such that a retry will start at chunk 0 if the success response status matches any of the provided status codes
+         * 
+         * @default `[]`
+         */
+        resetOnStatus?: Array<any>;
     }
 
     /**
@@ -1290,6 +1354,14 @@ declare module "fine-uploader/lib/core" {
      */
     export interface ResumeOptions {
         /**
+         * Define custom keys used to identify this file among other resume records.
+         * 
+         * The file's ID will be passed to your provided function
+         * 
+         * @default `function(fileId) { return [] }`
+         */
+        customKeys?: Function;
+        /**
          * The number of days before a persistent resume record will expire
          *
          * @default `7`
@@ -1380,6 +1452,12 @@ declare module "fine-uploader/lib/core" {
          */
         method?: string;
         /**
+         * If set to true, any Fine Uploader created parameters (qq*) will not be sent with the upload request
+         * 
+         * @default `false`
+         */
+        omitDefaultParams?: boolean;
+        /**
          * The parameters that shall be sent with each upload request
          */
         params?: any;
@@ -1392,6 +1470,14 @@ declare module "fine-uploader/lib/core" {
          * @default `true`
          */
         paramsInBody?: boolean;
+        /**
+         * If set to true, each upload response MUST contain a JSON message-body with `{success: true}` in order to be considered a success.
+         * 
+         * If set to false, the success of the request is determined by examining the response status code
+         * 
+         * @default `true`
+         */
+        requireSuccessJson?: boolean;
         /**
          * The name of the parameter the uniquely identifies each associated item. The value is a Level 4 UUID
          *
@@ -1976,8 +2062,9 @@ declare module "fine-uploader/lib/core" {
          * @param number id : The current file's id
          * @param string name : The current file's name
          * @param Object chunkData : The chunk that will be sent next when file upload resumes
+         * @param Object customResumeData : Any custom resume data provided for this resumable file
          */
-        (id: number, name: string, chunkData: any): void;
+        (id: number, name: string, chunkData: any, customResumeData: any): void | Promise<any>;
     }
 
     /**
@@ -2087,7 +2174,7 @@ declare module "fine-uploader/lib/core" {
          * @param string name : The current file's name
          * @param ChunkData chunkData : An object encapsulating the current chunk of data about to be uploaded
          */
-        (id: number, name: string, chunkData: ChunkData): void;
+        (id: number, name: string, chunkData: ChunkData): void | Promise<any>;
     }
 
     /**

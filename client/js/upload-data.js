@@ -76,7 +76,8 @@ qq.UploadData = function(uploaderProxy) {
                     originalName: spec.name,
                     uuid: spec.uuid,
                     size: spec.size == null ? -1 : spec.size,
-                    status: status
+                    status: status,
+                    file: spec.file
                 }) - 1;
 
             if (spec.batchId) {
@@ -127,6 +128,14 @@ qq.UploadData = function(uploaderProxy) {
             }
             else {
                 return qq.extend([], data, true);
+            }
+        },
+
+        removeFileRef: function(id) {
+            var record = getDataByIds(id);
+
+            if (record) {
+                delete record.file;
             }
         },
 
@@ -199,6 +208,7 @@ qq.status = {
     CANCELED: "canceled",
     PAUSED: "paused",
     UPLOADING: "uploading",
+    UPLOAD_FINALIZING: "upload finalizing",
     UPLOAD_RETRYING: "retrying upload",
     UPLOAD_SUCCESSFUL: "upload successful",
     UPLOAD_FAILED: "upload failed",

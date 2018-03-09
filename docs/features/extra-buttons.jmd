@@ -95,7 +95,7 @@ var uploader = new qq.FineUploader({
 
 ## Allow an extra upload button to be used to select folders
 
-Fine Uploader already allows you to drop folders that you would like to upload (Chrome & Opera 15+ only).
+Fine Uploader already allows you to drop folders that you would like to upload.
 What if you want to allow users to select folders via the file chooser dialog?  Unfortunately, due
 to the restrictions imposed by this browser feature, you can either select files OR folders, not both.
 If you'd like to allow users to select files and folders, you can use the default upload button for file

@@ -129,7 +129,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -145,11 +145,11 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
-            <td>Edge 13.10586+</td>
+            <td>Edge</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>

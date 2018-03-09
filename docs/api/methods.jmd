@@ -263,11 +263,13 @@ A `resizeInfo` object, which will be passed to the supplied function, contains t
 
 {{ api_method("getResumableFilesData", "getResumableFilesData ()", "Returns an array of potentially resumable items. Each resumable is represented by an object with the following properties:
 
-| Property | Description |
-| -------- | :---------- |
-| `name`   | filename |
-| `uuid`   | the unique id |
-| `partIdx` | the index of the part where the resume will start from |
+| Property             | Description |
+| -------------------- | :---------- |
+| `customResumeData`   | (optional) an object containing any custom resume data for the file |
+| `name`               | filename |
+| `remaining`          | number of bytes to be uploaded |
+| `size`               | total file size in bytes |
+| `uuid`               | the unique id |
 ", null,
 [
     {
@@ -323,6 +325,22 @@ A `resizeInfo` object, which will be passed to the supplied function, contains t
     {
         "type": "String",
         "description": "A level 4 UUID which identifies the corresponding file."
+    }
+
+]) }}
+
+{{ api_method("isResumable", "isResumable (id)", "Returns true if the file can be auto-resumed, false otherwise.",
+[
+    {
+        "name": "id",
+        "type": "Integer",
+        "description": "The file id."
+    }
+],
+[
+    {
+        "type": "Boolean",
+        "description": "True if the file can be resumed and has a resume record, false otherwise"
     }
 
 ]) }}
@@ -426,6 +444,20 @@ A `resizeInfo` object, which will be passed to your (optional) `customResizer` f
         "name": "id",
         "type": "Integer",
         "description": "The file id."
+    }
+], null) }}
+
+{{ api_method("setCustomResumeData", "setCustomResumeData (id, customResumeData)", "Set custom resume data for a potentially resumable file. This data will be stored with the file's resume record and will be accessible in the onResume event handler and via the getResumableFilesData API method.",
+[
+    {
+        "name": "id",
+        "type": "Integer",
+        "description": "The file id."
+    }
+    {,
+        "name": "customResumeData",
+        "type": "Object",
+        "description": "The custom resume data to store with the file's resume record."
     }
 ], null) }}
 

@@ -12,6 +12,24 @@ qq.XhrUploadHandler = function(spec) {
         namespace = spec.options.namespace,
         proxy = spec.proxy,
         chunking = spec.options.chunking,
+        getChunkSize = function(id) {
+            var fileState = handler._getFileState(id);
+
+            if (fileState.chunkSize) {
+                return fileState.chunkSize;
+            }
+
+            else {
+                var chunkSize = chunking.partSize;
+
+                if (qq.isFunction(chunkSize)) {
+                    chunkSize = chunkSize(id, getSize(id));
+                }
+
+                fileState.chunkSize = chunkSize;
+                return chunkSize;
+            }
+        },
         resume = spec.options.resume,
         chunkFiles = chunking && spec.options.chunking.enabled && qq.supportedFeatures.chunking,
         resumeEnabled = resume && spec.options.resume.enabled && chunkFiles && qq.supportedFeatures.resume,
@@ -22,7 +40,8 @@ qq.XhrUploadHandler = function(spec) {
         getDataByUuid = proxy.getDataByUuid,
         onUuidChanged = proxy.onUuidChanged,
         onProgress = proxy.onProgress,
-        log = proxy.log;
+        log = proxy.log,
+        getCustomResumeData = proxy.getCustomResumeData;
 
     function abort(id) {
         qq.each(handler._getXhrs(id), function(xhrId, xhr) {
@@ -125,19 +144,30 @@ qq.XhrUploadHandler = function(spec) {
                     data.key = uploadData.key;
                 }
 
+                if (uploadData.customResumeData) {
+                    data.customResumeData = uploadData.customResumeData;
+                }
+
                 resumableFilesData.push(data);
             });
 
             return resumableFilesData;
         },
 
+        isAttemptingResume: function(id) {
+            return handler._getFileState(id).attemptingResume;
+        },
+
         isResumable: function(id) {
-            return !!chunking && handler.isValid(id) && !handler._getFileState(id).notResumable;
+            return !!chunking && handler.isValid(id) &&
+                !handler._getFileState(id).notResumable;
         },
 
         moveInProgressToRemaining: function(id, optInProgress, optRemaining) {
-            var inProgress = optInProgress || handler._getFileState(id).chunking.inProgress,
-                remaining = optRemaining || handler._getFileState(id).chunking.remaining;
+            var fileState = handler._getFileState(id) || {},
+                chunkingState =  fileState.chunking || {},
+                inProgress = optInProgress || chunkingState.inProgress,
+                remaining = optRemaining || chunkingState.remaining;
 
             if (inProgress) {
                 log(qq.format("Moving these chunks from in-progress {}, to remaining.", JSON.stringify(inProgress)));
@@ -220,7 +250,7 @@ qq.XhrUploadHandler = function(spec) {
         },
 
         _getChunkData: function(id, chunkIndex) {
-            var chunkSize = chunking.partSize,
+            var chunkSize = getChunkSize(id),
                 fileSize = getSize(id),
                 fileOrBlob = handler.getFile(id),
                 startBytes = chunkSize * chunkIndex,
@@ -261,10 +291,16 @@ qq.XhrUploadHandler = function(spec) {
             var formatVersion = "5.0",
                 name = getName(id),
                 size = getSize(id),
-                chunkSize = chunking.partSize,
-                endpoint = getEndpoint(id);
+                chunkSize = getChunkSize(id),
+                endpoint = getEndpoint(id),
+                customKeys = resume.customKeys(id),
+                localStorageId = qq.format("qq{}resume{}-{}-{}-{}-{}", namespace, formatVersion, name, size, chunkSize, endpoint);
 
-            return qq.format("qq{}resume{}-{}-{}-{}-{}", namespace, formatVersion, name, size, chunkSize, endpoint);
+            customKeys.forEach(function(key) {
+                localStorageId += "-" + key;
+            });
+
+            return localStorageId;
         },
 
         _getMimeType: function(id) {
@@ -282,7 +318,7 @@ qq.XhrUploadHandler = function(spec) {
         _getTotalChunks: function(id) {
             if (chunking) {
                 var fileSize = getSize(id),
-                    chunkSize = chunking.partSize;
+                    chunkSize = getChunkSize(id);
 
                 return Math.ceil(fileSize / chunkSize);
             }
@@ -369,6 +405,7 @@ qq.XhrUploadHandler = function(spec) {
                         state.key = persistedData.key;
                         state.chunking = persistedData.chunking;
                         state.loaded = persistedData.loaded;
+                        state.customResumeData = persistedData.customResumeData;
                         state.attemptingResume = true;
 
                         handler.moveInProgressToRemaining(id);
@@ -384,6 +421,8 @@ qq.XhrUploadHandler = function(spec) {
 
             // If local storage isn't supported by the browser, or if resume isn't enabled or possible, give up
             if (resumeEnabled && handler.isResumable(id)) {
+                var customResumeData = getCustomResumeData(id);
+
                 localStorageId = handler._getLocalStorageId(id);
 
                 persistedData = {
@@ -393,8 +432,12 @@ qq.XhrUploadHandler = function(spec) {
                     key: state.key,
                     chunking: state.chunking,
                     loaded: state.loaded,
-                    lastUpdated: Date.now()
+                    lastUpdated: Date.now(),
                 };
+
+                if (customResumeData) {
+                    persistedData.customResumeData = customResumeData;
+                }
 
                 try {
                     localStorage.setItem(localStorageId, JSON.stringify(persistedData));
