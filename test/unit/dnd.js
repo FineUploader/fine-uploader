@@ -230,4 +230,29 @@ describe("drag and drop", function () {
     assert(uploadDropZone._testing.isValidFileDrag(ieFileDragEvent), "IE file drag events are valid file drags");
   });
 
+  it("extracts directory path from entries", function() {
+    var dnd = new qq.DragAndDrop();
+
+    var entry = {
+      name: "a.txt",
+      fullPath: "/data/a.txt"
+    };
+
+    var directoryPath = dnd._testing.extractDirectoryPath(entry);
+
+    assert.equal(directoryPath, "data/");
+  });
+
+  it("properly extracts directory path when file name occurs in parent directory names", function() {
+    var dnd = new qq.DragAndDrop();
+
+    var entry = {
+      name: "data",
+      fullPath: "/data/data"
+    };
+
+    var directoryPath = dnd._testing.extractDirectoryPath(entry);
+
+    assert.equal(directoryPath, "data/");
+  });
 });
