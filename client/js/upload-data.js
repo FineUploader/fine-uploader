@@ -65,6 +65,7 @@ qq.UploadData = function(uploaderProxy) {
          * - status: Initial `qq.status` for this file.  Omit for `qq.status.SUBMITTING`.
          * - batchId: ID of the batch this file belongs to
          * - proxyGroupId: ID of the proxy group associated with this file
+         * - onBeforeStatusChange(fileId): callback that is executed before the status change is broadcast
          *
          * @returns {number} Internal ID for this file.
          */
@@ -75,7 +76,8 @@ qq.UploadData = function(uploaderProxy) {
                     originalName: spec.name,
                     uuid: spec.uuid,
                     size: spec.size == null ? -1 : spec.size,
-                    status: status
+                    status: status,
+                    file: spec.file
                 }) - 1;
 
             if (spec.batchId) {
@@ -104,6 +106,7 @@ qq.UploadData = function(uploaderProxy) {
             }
             byStatus[status].push(id);
 
+            spec.onBeforeStatusChange && spec.onBeforeStatusChange(id);
             uploaderProxy.onStatusChange(id, null, status);
 
             return id;
@@ -125,6 +128,14 @@ qq.UploadData = function(uploaderProxy) {
             }
             else {
                 return qq.extend([], data, true);
+            }
+        },
+
+        removeFileRef: function(id) {
+            var record = getDataByIds(id);
+
+            if (record) {
+                delete record.file;
             }
         },
 
@@ -197,6 +208,7 @@ qq.status = {
     CANCELED: "canceled",
     PAUSED: "paused",
     UPLOADING: "uploading",
+    UPLOAD_FINALIZING: "upload finalizing",
     UPLOAD_RETRYING: "retrying upload",
     UPLOAD_SUCCESSFUL: "upload successful",
     UPLOAD_FAILED: "upload failed",

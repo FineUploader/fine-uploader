@@ -53,7 +53,7 @@ var helpme = (function () {
                 autoUpload: true
             };
             var default_request = {
-                endpoint: "http://localhost:3000/upload",
+                endpoint: "http://localhost:4000/upload",
                 params: {},
                 paramsInBody: true,
                 customHeaders: {},

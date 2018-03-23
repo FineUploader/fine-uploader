@@ -35,7 +35,7 @@ mode you are in and keep that in mind when determining the meaning of a particul
 
 {{ api_option("autoUpload", "autoUpload", "Set to `false` if you want to be able to upload queued items later by calling the [`uploadStoredFiles()` method](methods.html#uploadStoredFiles).", "Boolean", "true") }}
 
-{{ api_option("button", "button", "Specify an element to use as the 'select files' button. [Cannot be a `<button>`](https://github.com/Widen/fine-uploader/issues/33).", "HTMLElement", "null") }}
+{{ api_option("button", "button", "Specify an element to use as the 'select files' button. [Cannot be a `<button>`](https://github.com/FineUploader/fine-uploader/issues/33).", "HTMLElement", "null") }}
 
 {{ api_option("debug", "debug", "This will result in log messages being written to the [`window.console`](https://developer.mozilla.org/en-USDOM/console.log) object", "Boolean", "false") }}
 
@@ -46,6 +46,8 @@ mode you are in and keep that in mind when determining the meaning of a particul
 {{ api_option("maxConnections", "maxConnections", "Maximum allowable concurrent requests", "Integer", "3") }}
 
 {{ api_option("multiple", "multiple", "When false this will prevent the user from simultaneously selecting or dropping more than one item.", "Boolean", "true") }}
+
+{{ api_option("warnBeforeUnload", "warnBeforeUnload", "When true Fine Uploader will ensure a modal confirmation dialog appears whenever a user tries to navigate away from the page with uploads in progress.", "Boolean", "true") }}
 
 {{ api_parent_option("blobs", "blobs", "",
     (
@@ -71,14 +73,19 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
 
         ("chunking.enabled", "enabled", "Enable or disable splitting the file separate chunks. Each chunks is sent in a separate request.", "Boolean", "false",),
         ("chunking.mandatory", "mandatory", "Ensure _every_ file is uploaded in chunks, even if the file can only be split up into 1 chunk.  Does not apply if chunking is not possible in the current browser.", "Boolean", "false",),
-        ("chunking.partSize", "partSize", "The maximum size of each chunk, in bytes.", "Integer", "2000000",),
+        ("chunking.partSize", "partSize", "The maximum size of each chunk, in bytes. If a function value is provided, the file's ID will be passed when invoking the function (which should only be called once per file).", "Integer or Function", "2000000",),
 
         ("chunking.paramNames.chunkSize", "paramNames.chunkSize", "Name of the parameter passed with a chunked request that specifies the size in bytes of the associated chunk.", "String", "qqchunksize",),
         ("chunking.paramNames.partByteOffset", "paramNames.partByteOffset", "Name of the parameter passed with a chunked request that specifies the starting byte of the associated chunk.", "String", "qqpartbyteoffset",),
         ("chunking.paramNames.partIndex", "paramNames.partIndex", "Name of the parameter passed with a chunked request that specifies the index of the associated partition.", "String", "qqpartindex",),
         ("chunking.paramNames.totalParts", "paramNames.totalParts", "Name of the parameter passed with a chunked request that specifies the total number of chunks associated with the `File` or `Blob`.", "String", "qqtotalparts",),
 
-        ("chunking.success.endpoint", "success.endpoint", "Endpoint to send a POST after all chunks have been successfully uploaded for each file.  Required if the [`concurrent.enabled` option](#chunking.concurrent.enabled) is set.", "String", "null",),
+        ("chunking.success.endpoint", "success.endpoint", "Endpoint to send a POST after all chunks have been successfully uploaded for each file.  Required if the [`concurrent.enabled` option](#chunking.concurrent.enabled) is set. If a function value is provided, the file's ID will be passed when invoking the function.", "String or Function", "null",),
+        ("chunking.success.headers", "success.headers", "Headers to send to with chunking success request. The file's ID will be passed to your provided function.", "Function", "function(fileId) { return null }",),
+        ("chunking.success.jsonPayload", "success.jsonPayload", "Send all parameters in the request body JSON-encoded. Otherwise params will be sent application/x-www-form-urlencoded.", "Boolean", "false",),
+        ("chunking.success.method", "success.method", "HTTP method used when sending the success request.", "String", "POST",),
+        ("chunking.success.params", "success.params", "Parameters to send in the message body of the success request.  The file's ID will be passed to your provided function.", "Function", "function(fileId) { return null }",),
+        ("chunking.success.resetOnStatus", "success.resetOnStatus", "Fine Uploader will reset the file such that a retry will start at chunk 0 if the success response status matches any of the provided status codes.", "Array", "[]",),
     )
 )
 }}
@@ -152,9 +159,10 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
 
 {{ api_parent_option("resume", "resume", "",
     (
-        ("resume.recordsExpireIn", "recordsExpireIn", "The number of days before a persistent resume record will expire.", "Integer", "7",),
+        ("resume.customKeys", "customKeys", "Define custom keys used to identify this file among other resume records. The file's ID will be passed to your provided function.", "Function", "function(fileId) { return [] }",),
         ("resume.enabled", "enabled", "Enable or disable the ability to resume failed or stopped chunked uploads.", "Boolean", "false",),
         ("resume.paramNames.resuming", "paramNames.resuming", "Sent with the first request of the resume with a value of `true`.", "String", "qqresume",),
+        ("resume.recordsExpireIn", "recordsExpireIn", "The number of days before a persistent resume record will expire.", "Integer", "7",),
     )
 )
 }}
@@ -177,8 +185,10 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
         ("request.forceMultipart", "forceMultipart", "Force all uploads to use multipart encoding", "Boolean", "true",),
         ("request.inputName", "inputName", "The attribute of the input element which will contain the file name. For non-multipart-encoded upload requests, this will be included as a parameter in the query string of the URI with a value equal to the file name.", "String", "qqfile",),
         ("request.method", "method", "Specify a method to use when sending files to a traditional endpoint.  This option is ignored in older browsers (such as IE 9 and older).", "String", "POST",),
+        ("request.omitDefaultParams", "omitDefaultParams", "If set to true, any Fine Uploader created parameters (qq*) will not be sent with the upload request.", "Boolean", "false",),
         ("request.params", "params", "The parameters that shall be sent with each upload request.", "Object", "{}",),
         ("request.paramsInBody", "paramsInBody", "Enable or disable sending parameters in the request body. If `false`, parameters are sent in the URL. Otherwise, parameters are sent in the request body.", "Boolean", "true",),
+        ("request.requireSuccessJson", "requireSuccessJson", "If set to true, each upload response MUST contain a JSON message-body with {success: true} in order to be considered a success. If set to false, the success of the request is determined by examining the response status code.", "Boolean", "true",),
         ("request.uuidName", "uuidName", "The name of the parameter the uniquely identifies each associated item. The value is a [Level 4 UUID](http://en.wikipedia.org/wiki/Universally_unique_identifier#Version_4_.28random.29).", "String", "qquuid",),
         ("request.totalFileSizeName", "totalFileSizeName", "The name of the parameter passed that specifies the total file size in bytes.", "String", "qqtotalfilesize",),
     )

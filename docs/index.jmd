@@ -57,7 +57,7 @@ to the API documentation section.
 * [Traditional Server](endpoint_handlers/traditional.html) - For upload servers that you control and build.
 * [Amazon S3](endpoint_handlers/amazon-s3.html) - For uploads directly to S3 from the browser.
 * [Azure Blob Storage](endpoint_handlers/azure.html) - For uploads directly to Azure from the browser.
-* [Examples](https://github.com/Widen/fine-uploader-server) - GitHub repo of server-side examples to handle all types of Fine Uploader requests.
+* [Examples](https://github.com/FineUploader/fine-uploader-server) - GitHub repo of server-side examples to handle all types of Fine Uploader requests.
 
 
 ### Additional Information
@@ -73,7 +73,7 @@ to the API documentation section.
 * [Official Site](http://fineuploader.com)
 * [Blog](http://blog.fineuploader.com/)
 * [Support](http://fineuploader.com/support)
-* [GitHub repository](https://github.com/Widen/fine-uploader)
+* [GitHub repository](https://github.com/FineUploader/fine-uploader)
 
 {% endmarkdown %}
 {% endblock %}

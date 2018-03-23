@@ -10,7 +10,6 @@ qq.traditional.AllChunksDoneAjaxRequester = function(o) {
     "use strict";
 
     var requester,
-        method = "POST",
         options = {
             cors: {
                 allowXdr: false,
@@ -18,11 +17,16 @@ qq.traditional.AllChunksDoneAjaxRequester = function(o) {
                 sendCredentials: false
             },
             endpoint: null,
-            log: function(str, level) {}
+            log: function(str, level) {},
+            method: "POST"
         },
         promises = {},
         endpointHandler = {
             get: function(id) {
+                if (qq.isFunction(options.endpoint)) {
+                    return options.endpoint(id);
+                }
+
                 return options.endpoint;
             }
         };
@@ -31,8 +35,9 @@ qq.traditional.AllChunksDoneAjaxRequester = function(o) {
 
     requester = qq.extend(this, new qq.AjaxRequester({
         acceptHeader: "application/json",
-        validMethods: [method],
-        method: method,
+        contentType: options.jsonPayload ? "application/json" : "application/x-www-form-urlencoded",
+        validMethods: [options.method],
+        method: options.method,
         endpointStore: endpointHandler,
         allowXRequestedWithAndCacheControl: false,
         cors: options.cors,
@@ -60,8 +65,8 @@ qq.traditional.AllChunksDoneAjaxRequester = function(o) {
             promises[id] = promise;
 
             requester.initTransport(id)
-                .withParams(params)
-                .withHeaders(headers)
+                .withParams(options.params(id) || params)
+                .withHeaders(options.headers(id) || headers)
                 .send(xhr);
 
             return promise;

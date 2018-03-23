@@ -13,6 +13,7 @@
             maxConnections: 3,
             disableCancelForFormUploads: false,
             autoUpload: true,
+            warnBeforeUnload: true,
 
             request: {
                 customHeaders: {},
@@ -21,8 +22,10 @@
                 forceMultipart: true,
                 inputName: "qqfile",
                 method: "POST",
+                omitDefaultParams: false,
                 params: {},
                 paramsInBody: true,
+                requireSuccessJson: true,
                 totalFileSizeName: "qqtotalfilesize",
                 uuidName: "qquuid"
             },
@@ -52,7 +55,7 @@
                 onUpload: function(id, name) {},
                 onUploadChunk: function(id, name, chunkData) {},
                 onUploadChunkSuccess: function(id, chunkData, responseJSON, xhr) {},
-                onResume: function(id, fileName, chunkData) {},
+                onResume: function(id, fileName, chunkData, customResumeData) {},
                 onProgress: function(id, name, loaded, total) {},
                 onTotalProgress: function(loaded, total) {},
                 onError: function(id, name, reason, maybeXhrOrXdr) {},
@@ -109,10 +112,26 @@
                     totalFileSize: "qqtotalfilesize",
                     totalParts: "qqtotalparts"
                 },
-                partSize: 2000000,
+                partSize: function(id) {
+                    return 2000000;
+                },
                 // only relevant for traditional endpoints, only required when concurrent.enabled === true
                 success: {
-                    endpoint: null
+                    endpoint: null,
+
+                    headers: function(id) {
+                        return null;
+                    },
+
+                    jsonPayload: false,
+
+                    method: "POST",
+
+                    params: function(id) {
+                        return null;
+                    },
+
+                    resetOnStatus: []
                 }
             },
 
@@ -121,6 +140,9 @@
                 recordsExpireIn: 7, //days
                 paramNames: {
                     resuming: "qqresume"
+                },
+                customKeys: function(fileId) {
+                    return [];
                 }
             },
 
@@ -278,7 +300,7 @@
             }
         }
 
-        this._preventLeaveInProgress();
+        this._options.warnBeforeUnload && this._preventLeaveInProgress();
 
         this._imageGenerator = qq.ImageGenerator && new qq.ImageGenerator(qq.bind(this.log, this));
         this._refreshSessionData();
@@ -303,6 +325,8 @@
         }
 
         this._currentItemLimit = this._options.validation.itemLimit;
+
+        this._customResumeDataStore = this._createStore();
     };
 
     // Define the private & public API methods.

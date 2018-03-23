@@ -31,13 +31,14 @@ qq.UploadHandlerController = function(o, namespace) {
         onUploadChunk: function(id, fileName, chunkData) {},
         onUploadChunkSuccess: function(id, chunkData, response, xhr) {},
         onAutoRetry: function(id, fileName, response, xhr) {},
-        onResume: function(id, fileName, chunkData) {},
+        onResume: function(id, fileName, chunkData, customResumeData) {},
         onUuidChanged: function(id, newUuid) {},
         getName: function(id) {},
         setSize: function(id, newSize) {},
         isQueued: function(id) {},
         getIdsInProxyGroup: function(id) {},
-        getIdsInBatch: function(id) {}
+        getIdsInBatch: function(id) {},
+        isInProgress: function(id) {}
     },
 
     chunked = {
@@ -71,16 +72,19 @@ qq.UploadHandlerController = function(o, namespace) {
                     upload.cleanup(id, normaizedResponse, xhr);
                 },
                 function(response, xhr) {
-                    var normaizedResponse = upload.normalizeResponse(response, false);
+                    var normalizedResponse = upload.normalizeResponse(response, false);
 
-                    log("Problem finalizing chunks for file ID " + id + " - " + normaizedResponse.error, "error");
+                    log("Problem finalizing chunks for file ID " + id + " - " + normalizedResponse.error, "error");
 
-                    if (normaizedResponse.reset) {
+                    if (
+                        normalizedResponse.reset ||
+                        (xhr && options.chunking.success.resetOnStatus.indexOf(xhr.status) >= 0)
+                    ) {
                         chunked.reset(id);
                     }
 
-                    if (!options.onAutoRetry(id, name, normaizedResponse, xhr)) {
-                        upload.cleanup(id, normaizedResponse, xhr);
+                    if (!options.onAutoRetry(id, name, normalizedResponse, xhr)) {
+                        upload.cleanup(id, normalizedResponse, xhr);
                     }
                 }
             );
@@ -161,6 +165,7 @@ qq.UploadHandlerController = function(o, namespace) {
             handler._maybeDeletePersistedChunkData(id);
             handler.reevaluateChunking(id);
             handler._getFileState(id).loaded = 0;
+            handler._getFileState(id).attemptingResume = false;
         },
 
         sendNext: function(id) {
@@ -168,15 +173,16 @@ qq.UploadHandlerController = function(o, namespace) {
                 name = options.getName(id),
                 chunkIdx = chunked.nextPart(id),
                 chunkData = handler._getChunkData(id, chunkIdx),
-                resuming = handler._getFileState(id).attemptingResume,
-                inProgressChunks = handler._getFileState(id).chunking.inProgress || [];
+                fileState = handler._getFileState(id),
+                resuming = fileState.attemptingResume,
+                inProgressChunks = fileState.chunking.inProgress || [];
 
-            if (handler._getFileState(id).loaded == null) {
-                handler._getFileState(id).loaded = 0;
+            if (fileState.loaded == null) {
+                fileState.loaded = 0;
             }
 
             // Don't follow-through with the resume attempt if the integrator returns false from onResume
-            if (resuming && options.onResume(id, name, chunkData) === false) {
+            if (resuming && options.onResume(id, name, chunkData, fileState.customResumeData) === false) {
                 chunked.reset(id);
                 chunkIdx = chunked.nextPart(id);
                 chunkData = handler._getChunkData(id, chunkIdx);
@@ -190,8 +196,6 @@ qq.UploadHandlerController = function(o, namespace) {
 
             // Send the next chunk
             else {
-                log(qq.format("Sending chunked upload request for item {}.{}, bytes {}-{} of {}.", id, chunkIdx, chunkData.start + 1, chunkData.end, size));
-                options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
                 inProgressChunks.push(chunkIdx);
                 handler._getFileState(id).chunking.inProgress = inProgressChunks;
 
@@ -207,48 +211,71 @@ qq.UploadHandlerController = function(o, namespace) {
                     log(qq.format("Chunk {} for file {} will not be uploaded, zero sized chunk.", chunkIdx, id), "error");
                     chunked.handleFailure(chunkIdx, id, "File is no longer available", null);
                 }
-                else {
-                    handler.uploadChunk(id, chunkIdx, resuming).then(
-                        // upload chunk success
-                        function success(response, xhr) {
-                            log("Chunked upload request succeeded for " + id + ", chunk " + chunkIdx);
 
-                            handler.clearCachedChunk(id, chunkIdx);
+                var onUploadChunkPromise = options.onUploadChunk(id, name, handler._getChunkDataForCallback(chunkData));
 
-                            var inProgressChunks = handler._getFileState(id).chunking.inProgress || [],
-                                responseToReport = upload.normalizeResponse(response, true),
-                                inProgressChunkIdx = qq.indexOf(inProgressChunks, chunkIdx);
-
-                            log(qq.format("Chunk {} for file {} uploaded successfully.", chunkIdx, id));
-
-                            chunked.done(id, chunkIdx, responseToReport, xhr);
-
-                            if (inProgressChunkIdx >= 0) {
-                                inProgressChunks.splice(inProgressChunkIdx, 1);
-                            }
-
-                            handler._maybePersistChunkedState(id);
-
-                            if (!chunked.hasMoreParts(id) && inProgressChunks.length === 0) {
-                                chunked.finalize(id);
-                            }
-                            else if (chunked.hasMoreParts(id)) {
-                                chunked.sendNext(id);
-                            }
-                            else {
-                                log(qq.format("File ID {} has no more chunks to send and these chunk indexes are still marked as in-progress: {}", id, JSON.stringify(inProgressChunks)));
-                            }
-                        },
-
-                        // upload chunk failure
-                        function failure(response, xhr) {
-                            chunked.handleFailure(chunkIdx, id, response, xhr);
+                onUploadChunkPromise.then(
+                    function(requestOverrides) {
+                        if (!options.isInProgress(id)) {
+                            log(qq.format("Not sending chunked upload request for item {}.{} - no longer in progress.", id, chunkIdx));
                         }
-                        )
-                        .done(function() {
-                            handler.clearXhr(id, chunkIdx);
-                        });
-                }
+                        else {
+                            log(qq.format("Sending chunked upload request for item {}.{}, bytes {}-{} of {}.", id, chunkIdx, chunkData.start + 1, chunkData.end, size));
+
+                            var uploadChunkData = {
+                                chunkIdx: chunkIdx,
+                                id: id,
+                                overrides: requestOverrides,
+                                resuming: resuming
+                            };
+
+                            handler.uploadChunk(uploadChunkData).then(
+                                // upload chunk success
+                                function success(response, xhr) {
+                                    log("Chunked upload request succeeded for " + id + ", chunk " + chunkIdx);
+
+                                    handler.clearCachedChunk(id, chunkIdx);
+
+                                    var inProgressChunks = handler._getFileState(id).chunking.inProgress || [],
+                                        responseToReport = upload.normalizeResponse(response, true),
+                                        inProgressChunkIdx = qq.indexOf(inProgressChunks, chunkIdx);
+
+                                    log(qq.format("Chunk {} for file {} uploaded successfully.", chunkIdx, id));
+
+                                    chunked.done(id, chunkIdx, responseToReport, xhr);
+
+                                    if (inProgressChunkIdx >= 0) {
+                                        inProgressChunks.splice(inProgressChunkIdx, 1);
+                                    }
+
+                                    handler._maybePersistChunkedState(id);
+
+                                    if (!chunked.hasMoreParts(id) && inProgressChunks.length === 0) {
+                                        chunked.finalize(id);
+                                    }
+                                    else if (chunked.hasMoreParts(id)) {
+                                        chunked.sendNext(id);
+                                    }
+                                    else {
+                                        log(qq.format("File ID {} has no more chunks to send and these chunk indexes are still marked as in-progress: {}", id, JSON.stringify(inProgressChunks)));
+                                    }
+                                },
+
+                                // upload chunk failure
+                                function failure(response, xhr) {
+                                    chunked.handleFailure(chunkIdx, id, response, xhr);
+                                }
+                            )
+                                .done(function () {
+                                    handler.clearXhr(id, chunkIdx);
+                                });
+                        }
+                    },
+
+                    function(error) {
+                        chunked.handleFailure(chunkIdx, id, error, null);
+                    }
+                );
             }
         }
     },
@@ -425,6 +452,7 @@ qq.UploadHandlerController = function(o, namespace) {
             handler = new handlerType[handlerModuleSubtype + "UploadHandler"](
                 options,
                 {
+                    getCustomResumeData: options.getCustomResumeData,
                     getDataByUuid: options.getDataByUuid,
                     getName: options.getName,
                     getSize: options.getSize,
@@ -432,7 +460,10 @@ qq.UploadHandlerController = function(o, namespace) {
                     log: log,
                     onCancel: options.onCancel,
                     onProgress: options.onProgress,
-                    onUuidChanged: options.onUuidChanged
+                    onUuidChanged: options.onUuidChanged,
+                    onFinalizing: function(id) {
+                        options.setStatus(id, qq.status.UPLOAD_FINALIZING);
+                    }
                 }
             );
 
@@ -557,14 +588,34 @@ qq.UploadHandlerController = function(o, namespace) {
                 throw new qq.Error(id + " is not a valid file ID to upload!");
             }
 
-            options.onUpload(id, name);
+            options.onUpload(id, name).then(
+                function(response) {
+                    if (response && response.pause) {
+                        options.setStatus(id, qq.status.PAUSED);
+                        handler.pause(id);
+                        connectionManager.free(id);
+                    }
+                    else {
+                        if (chunkingPossible && handler._shouldChunkThisFile(id)) {
+                            chunked.sendNext(id);
+                        }
+                        else {
+                            simple.send(id, name);
+                        }
+                    }
+                },
 
-            if (chunkingPossible && handler._shouldChunkThisFile(id)) {
-                chunked.sendNext(id);
-            }
-            else {
-                simple.send(id, name);
-            }
+                function(error) {
+                    error = error || {};
+
+                    log(id + " upload start aborted due to rejected onUpload Promise - details: " + error, "error");
+
+                    if (!options.onAutoRetry(id, name, error.responseJSON || {})) {
+                        var response = upload.normalizeResponse(error.responseJSON, false);
+                        upload.cleanup(id, response);
+                    }
+                }
+            );
         },
 
         start: function(id) {
@@ -696,6 +747,18 @@ qq.UploadHandlerController = function(o, namespace) {
             return handler.isValid(id);
         },
 
+        hasResumeRecord: function(id) {
+            var key = handler.isValid(id) &&
+                handler._getLocalStorageId &&
+                handler._getLocalStorageId(id);
+
+            if (key) {
+                return !!localStorage.getItem(key);
+            }
+
+            return false;
+        },
+
         getResumableFilesData: function() {
             if (handler.getResumableFilesData) {
                 return handler.getResumableFilesData();
@@ -729,6 +792,10 @@ qq.UploadHandlerController = function(o, namespace) {
                 return true;
             }
             return false;
+        },
+
+        isAttemptingResume: function(id) {
+            return !!handler.isAttemptingResume && handler.isAttemptingResume(id);
         },
 
         // True if the file is eligible for pause/resume.

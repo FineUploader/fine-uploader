@@ -112,7 +112,14 @@
         },
 
         cancel: function(id) {
-            this._handler.cancel(id);
+            var uploadData = this._uploadData.retrieve({id: id});
+
+            if (uploadData && uploadData.status === qq.status.UPLOAD_FINALIZING) {
+              this.log(qq.format("Ignoring cancel for file ID {} ({}).  Finalizing upload.", id, this.getName(id)), "error");
+            }
+            else {
+                this._handler.cancel(id);
+            }
         },
 
         cancelAll: function() {
@@ -213,7 +220,18 @@
         },
 
         getFile: function(fileOrBlobId) {
-            return this._handler.getFile(fileOrBlobId) || null;
+            var file = this._handler.getFile(fileOrBlobId);
+            var uploadDataRecord;
+
+            if (!file) {
+                uploadDataRecord = this._uploadData.retrieve({id: fileOrBlobId});
+
+                if (uploadDataRecord) {
+                    file = uploadDataRecord.file;
+                }
+            }
+
+            return file || null;
         },
 
         getInProgress: function() {
@@ -274,6 +292,10 @@
             return this._uploadData.retrieve({id: id}).uuid;
         },
 
+        isResumable: function(id) {
+            return this._handler.hasResumeRecord(id);
+        },
+
         log: function(str, level) {
             if (this._options.debug && (!level || level === "info")) {
                 qq.log("[Fine Uploader " + qq.version + "] " + str);
@@ -310,6 +332,7 @@
 
         removeFileRef: function(id) {
             this._handler.expunge(id);
+            this._uploadData.removeFileRef(id);
         },
 
         reset: function() {
@@ -340,6 +363,8 @@
             this._failedSinceLastAllComplete = [];
 
             this._totalProgress && this._totalProgress.reset();
+
+            this._customResumeDataStore.reset();
         },
 
         retry: function(id) {
@@ -358,6 +383,10 @@
 
         setCustomHeaders: function(headers, id) {
             this._customHeadersStore.set(headers, id);
+        },
+
+        setCustomResumeData: function(id, data) {
+            this._customResumeDataStore.set(data, id);
         },
 
         setDeleteFileCustomHeaders: function(headers, id) {
@@ -442,24 +471,25 @@
     qq.basePrivateApi = {
         // Updates internal state with a file record (not backed by a live file).  Returns the assigned ID.
         _addCannedFile: function(sessionData) {
-            var id = this._uploadData.addFile({
+            var self = this;
+
+            return this._uploadData.addFile({
                 uuid: sessionData.uuid,
                 name: sessionData.name,
                 size: sessionData.size,
-                status: qq.status.UPLOAD_SUCCESSFUL
+                status: qq.status.UPLOAD_SUCCESSFUL,
+                onBeforeStatusChange: function(id) {
+                    sessionData.deleteFileEndpoint && self.setDeleteFileEndpoint(sessionData.deleteFileEndpoint, id);
+                    sessionData.deleteFileParams && self.setDeleteFileParams(sessionData.deleteFileParams, id);
+
+                    if (sessionData.thumbnailUrl) {
+                        self._thumbnailUrls[id] = sessionData.thumbnailUrl;
+                    }
+
+                    self._netUploaded++;
+                    self._netUploadedOrQueued++;
+                }
             });
-
-            sessionData.deleteFileEndpoint && this.setDeleteFileEndpoint(sessionData.deleteFileEndpoint, id);
-            sessionData.deleteFileParams && this.setDeleteFileParams(sessionData.deleteFileParams, id);
-
-            if (sessionData.thumbnailUrl) {
-                this._thumbnailUrls[id] = sessionData.thumbnailUrl;
-            }
-
-            this._netUploaded++;
-            this._netUploadedOrQueued++;
-
-            return id;
         },
 
         _annotateWithButtonId: function(file, associatedInput) {
@@ -770,17 +800,32 @@
                     onUploadPrep: qq.bind(this._onUploadPrep, this),
                     onUpload: function(id, name) {
                         self._onUpload(id, name);
-                        self._options.callbacks.onUpload(id, name);
+                        var onUploadResult = self._options.callbacks.onUpload(id, name);
+
+                        if (qq.isGenericPromise(onUploadResult)) {
+                            self.log(qq.format("onUpload for {} returned a Promise - waiting for resolution.", id));
+                            return onUploadResult;
+                        }
+
+                        return new qq.Promise().success();
                     },
                     onUploadChunk: function(id, name, chunkData) {
                         self._onUploadChunk(id, chunkData);
-                        self._options.callbacks.onUploadChunk(id, name, chunkData);
+                        var onUploadChunkResult = self._options.callbacks.onUploadChunk(id, name, chunkData);
+
+                        if (qq.isGenericPromise(onUploadChunkResult)) {
+                            self.log(qq.format("onUploadChunk for {}.{} returned a Promise - waiting for resolution.", id, chunkData.partIndex));
+                            return onUploadChunkResult;
+                        }
+
+                        return new qq.Promise().success();
                     },
                     onUploadChunkSuccess: function(id, chunkData, result, xhr) {
+                        self._onUploadChunkSuccess(id, chunkData);
                         self._options.callbacks.onUploadChunkSuccess.apply(self, arguments);
                     },
-                    onResume: function(id, name, chunkData) {
-                        return self._options.callbacks.onResume(id, name, chunkData);
+                    onResume: function(id, name, chunkData, customResumeData) {
+                        return self._options.callbacks.onResume(id, name, chunkData, customResumeData);
                     },
                     onAutoRetry: function(id, name, responseJSON, xhr) {
                         return self._onAutoRetry.apply(self, arguments);
@@ -804,7 +849,14 @@
                             status === qq.status.PAUSED;
                     },
                     getIdsInProxyGroup: self._uploadData.getIdsInProxyGroup,
-                    getIdsInBatch: self._uploadData.getIdsInBatch
+                    getIdsInBatch: self._uploadData.getIdsInBatch,
+                    isInProgress: function(id) {
+                        return self.getUploads({id: id}).status === qq.status.UPLOADING;
+                    },
+                    getCustomResumeData: qq.bind(self._getCustomResumeData, self),
+                    setStatus: function(id, status) {
+                        self._uploadData.setStatus(id, status);
+                    }
                 };
 
             qq.each(this._options.request, function(prop, val) {
@@ -920,6 +972,10 @@
                     return fileInput.getAttribute(qq.UploadButton.BUTTON_ID_ATTR_NAME);
                 }
             }
+        },
+
+        _getCustomResumeData: function(fileId) {
+            return this._customResumeDataStore.get(fileId);
         },
 
         _getNotFinished: function() {
@@ -1069,9 +1125,16 @@
         },
 
         _handleNewFileGeneric: function(file, name, uuid, size, fileList, batchId) {
-            var id = this._uploadData.addFile({uuid: uuid, name: name, size: size, batchId: batchId});
+            var id = this._uploadData.addFile({
+                uuid: uuid,
+                name: name,
+                size: size,
+                batchId: batchId,
+                file: file
+            });
 
             this._handler.add(id, file);
+
             this._trackButton(id);
 
             this._netUploadedOrQueued++;
@@ -1377,7 +1440,7 @@
 
             self._preventRetries[id] = responseJSON[self._options.retry.preventRetryResponseProperty];
 
-            if (self._shouldAutoRetry(id, name, responseJSON)) {
+            if (self._shouldAutoRetry(id)) {
                 var retryWaitPeriod = self._options.retry.autoAttemptDelay * 1000;
 
                 self._maybeParseAndSendUploadError.apply(self, arguments);
@@ -1573,6 +1636,12 @@
             //nothing to do in the base uploader
         },
 
+        _onUploadChunkSuccess: function(id, chunkData) {
+            if (!this._preventRetries[id] && this._options.retry.enableAuto) {
+                this._autoRetries[id] = 0;
+            }
+        },
+
         _onUploadStatusChange: function(id, oldStatus, newStatus) {
             // Make sure a "queued" retry attempt is canceled if the upload has been paused
             if (newStatus === qq.status.PAUSED) {
@@ -1712,7 +1781,7 @@
             this._totalProgress && this._totalProgress.onNewSize(id);
         },
 
-        _shouldAutoRetry: function(id, name, responseJSON) {
+        _shouldAutoRetry: function(id) {
             var uploadData = this._uploadData.retrieve({id: id});
 
             /*jshint laxbreak: true */

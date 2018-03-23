@@ -503,5 +503,70 @@ if (qqtest.canDownloadFileAsBlob) {
                 fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
             });
         });
+
+        describe("onUpload w/ Promise return value", function() {
+            function testOnUploadLogic(callbacks) {
+                var uploader = new qq.FineUploaderBasic({
+                    request: {
+                        endpoint: testUploadEndpoint
+                    },
+                    callbacks: callbacks
+                });
+
+                qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
+                    fileTestHelper.mockXhr();
+                    uploader.addFiles({name: "test", blob: blob});
+                });
+            }
+
+            it("pauses upload if Promise resolves with { pause: true }", function(done) {
+                testOnUploadLogic({
+                    onUpload: function () {
+                        return window.Promise.resolve({ pause: true });
+                    },
+
+                    onStatusChange: function (id, oldStatus, newStatus) {
+                        if (id === 0 &&
+                            oldStatus === qq.status.UPLOADING &&
+                            newStatus === qq.status.PAUSED
+                        ) {
+                            done();
+                        }
+                    }
+                });
+            });
+
+            it("fails upload if Promise is rejected", function(done) {
+                testOnUploadLogic({
+                    onUpload: function () {
+                        return window.Promise.reject();
+                    },
+
+                    onComplete: function (id, name, response) {
+                        if (id === 0 && !response.success) {
+                            done();
+                        }
+                    }
+                });
+            });
+
+            it("sends upload request when Promise is resolved", function(done) {
+                testOnUploadLogic({
+                    onUpload: function () {
+                        setTimeout(function() {
+                            fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                        }, 10);
+
+                        return window.Promise.resolve();
+                    },
+
+                    onComplete: function (id, name, response) {
+                        if (id === 0 && response.success) {
+                            done();
+                        }
+                    }
+                });
+            });
+        });
     });
 }
