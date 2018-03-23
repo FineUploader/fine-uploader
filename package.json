@@ -33,7 +33,7 @@
     "type": "git",
     "url": "git://github.com/FineUploader/fine-uploader.git"
   },
-  "author": "Widen Enterprises, Inc.",
+  "author": "Ray Nicholus",
   "contributors": [
     {
       "name": "Ray Nicholus",
@@ -54,13 +54,13 @@
     "karma-spec-reporter": "0.0.30",
     "mocha": "3.2.0",
     "node-static": "0.7.9",
-    "pica": "latest",
-    "uglify-js": "2.7.5"
+    "pica": "2.0.8",
+    "uglify-js": "2.8.3"
   },
   "scripts": {
     "build": "make clean; make build-all-ui",
     "lint": "make lint",
     "start": "make start-local-dev",
-    "test": "make lint && make test"
+    "test": "make -i lint && make test"
   }
 }

@@ -4,7 +4,7 @@ if (window.postMessage) {
         "use strict";
 
         var iframe, doc,
-            script = "<scr" + "ipt type='text/javascript' src='http://localhost:3001/client/js/iframe.xss.response.js'></scr" + "ipt>";
+            script = "<scr" + "ipt type='text/javascript' src='http://localhost:4001/client/js/iframe.xss.response.js'></scr" + "ipt>";
 
         beforeEach(function () {
             iframe = document.createElement("iframe");

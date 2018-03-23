@@ -38,12 +38,6 @@ qq.supportedFeatures = (function() {
         return supported;
     }
 
-    //only way to test for Filesystem API support since webkit does not expose the DataTransfer interface
-    function isChrome21OrHigher() {
-        return (qq.chrome() || qq.opera()) &&
-            navigator.userAgent.match(/Chrome\/[2][1-9]|Chrome\/[3-9][0-9]/) !== undefined;
-    }
-
     //only way to test for complete Clipboard API support at this time
     function isChrome14OrHigher() {
         return (qq.chrome() || qq.opera()) &&
@@ -109,7 +103,13 @@ qq.supportedFeatures = (function() {
 
     supportsFileDrop = supportsAjaxFileUploading && isDragAndDropSupported();
 
-    supportsFolderDrop = supportsFileDrop && isChrome21OrHigher();
+    // adapted from https://stackoverflow.com/a/23278460/486979
+    supportsFolderDrop = supportsFileDrop && (function() {
+        var input = document.createElement("input");
+
+        input.type = "file";
+        return !!("webkitdirectory" in (input || document.querySelectorAll("input[type=file]")[0]));
+    }());
 
     supportsChunking = supportsAjaxFileUploading && qq.isFileChunkingSupported();
 

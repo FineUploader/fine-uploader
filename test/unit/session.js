@@ -4,7 +4,7 @@ describe("file list initialization tests", function() {
 
     var fileHelper = helpme.setupFileTests(),
         sessionEndpoint = "/uploads/initial",
-        thumbnailSrc = "http://" + window.location.hostname + ":3000/up.jpg";
+        thumbnailSrc = "http://" + window.location.hostname + ":4000/up.jpg";
 
 
     beforeEach(function() {

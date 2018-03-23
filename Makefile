@@ -22,7 +22,7 @@ unit-test-dir = $(test-dir)/unit
 
 export-file = $(js-src-dir)/export.js
 
-preamble = "// Fine Uploader $(version) - (c) 2013-present Widen Enterprises, Inc. MIT licensed. http://fineuploader.com"
+preamble = "// Fine Uploader $(version) - MIT licensed. http://fineuploader.com"
 
 cryptojs-files = \
 	$(js-3rdparty-src-dir)/crypto-js/core.js \
@@ -268,10 +268,10 @@ start-test-resources-server: test-resources-server.PID
 start-root-server: root-server.PID
 
 test-resources-server.PID:
-	$(npm-bin)/static test/unit/resources -H '{"Access-Control-Allow-Origin": "*"}' -p 3000 & echo $$! > $@
+	$(npm-bin)/static test/unit/resources -H '{"Access-Control-Allow-Origin": "*"}' -p 4000 & echo $$! > $@
 
 root-server.PID:
-	$(npm-bin)/static . -p 3001 & echo $$! > $@
+	$(npm-bin)/static . -p 4001 & echo $$! > $@
 
 stop-test-resources-server: test-resources-server.PID
 	kill `cat $<` && rm $<
@@ -279,10 +279,16 @@ stop-test-resources-server: test-resources-server.PID
 stop-root-server: root-server.PID
 	kill `cat $<` && rm $<
 
-test: start-test-resources-server start-root-server build-all-ui
+test:
+	$(MAKE) stop-test-resources-server
+	$(MAKE) stop-root-server
+	$(MAKE) start-test-resources-server
+	$(MAKE) start-root-server
+	$(MAKE) build-all-ui
 	$(npm-bin)/karma start config/karma.conf.js
-	make stop-test-resources-server
-	make stop-root-server
+	$(MAKE) stop-test-resources-server
+	$(MAKE) stop-root-server
+.PHONY: test
 
 zip: zip-traditional zip-s3 zip-azure zip-all
 
@@ -309,7 +315,7 @@ zip-all:
 setup-dist:
 	mkdir -p $(pub-dir)
 	cp LICENSE README.md package.json $(pub-dir)
-	cp -pR $(src-dir)/commonjs/ $(pub-dir)/lib/
+	cp -pR $(src-dir)/commonJs/ $(pub-dir)/lib/
 	cp -pR $(src-dir)/typescript $(pub-dir)/
 
 copy-build-to-dist:

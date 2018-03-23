@@ -129,7 +129,7 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -145,11 +145,11 @@ Note: Any features not listed here are supported in all browsers.
             <td>{{ label('√', "success") }}</td>
         </tr>
         <tr>
-            <td>Edge 13.10586+</td>
+            <td>Edge</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
-            <td>{{ label('x', "important") }}</td>
+            <td>{{ label('√', "important") }}</td>
             <td>{{ label('x', "important") }}</td>
             <td>{{ label('√', "success") }}</td>
             <td>{{ label('√', "success") }}</td>
@@ -352,7 +352,7 @@ Note: Any features not listed here are supported in all browsers.
     </tbody>
 </table>
 
-<small><a style="font-size: 24px" name="ios-multiple">*</a> - Some iOS browsers are unable to upload multiple files when video files are allowed to be uploaded due to a long-standing iOS bug. See case <a href="https://github.com/Widen/fine-uploader/issues/990">#990</a> on our bug tracker for more details.</small>
+<small><a style="font-size: 24px" name="ios-multiple">*</a> - Some iOS browsers are unable to upload multiple files when video files are allowed to be uploaded due to a long-standing iOS bug. See case <a href="https://github.com/FineUploader/fine-uploader/issues/990">#990</a> on our bug tracker for more details.</small>
 
 
 ### Upload size Limitations

@@ -2,8 +2,11 @@
    <img src="http://fineuploader.smartimage.com/pimg/a8680d51" width="300">
 </a>
 
+# Looking for additional maintainers - please [inquire within](https://github.com/FineUploader/fine-uploader/issues/1881).
+
 [![Build Status](https://travis-ci.org/FineUploader/fine-uploader.svg?branch=master)](https://travis-ci.org/FineUploader/fine-uploader)
 [![npm](https://img.shields.io/npm/v/fine-uploader.svg)](https://www.npmjs.com/package/fine-uploader)
+[![CDNJS](https://img.shields.io/cdnjs/v/file-uploader.svg)](https://cdnjs.com/libraries/file-uploader)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE)
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/fineuploader.svg?style=social&label=Follow%20%40FineUploader)](https://twitter.com/fineuploader)
 
@@ -28,8 +31,14 @@ There are absolutely no other required external dependencies. For more informati
 
 ## Contributing
 
-Fine Uploader and all other projects in this organization thrive thanks to donations by Widen (the project's sponsor)
-and support by developers in the community. If you'd like to help and keep this project strong and relevant, you have several options.
+If you'd like to help and keep this project strong and relevant, you have several options.
+
+
+### Help us pay the bills
+
+Fine Uploader is currently looking for a sponsor to pay the AWS bills (which have recently lapsed).
+These add up to about $40/month. Please open an issue if you are interesting in becoming a sponsor.
+We will happily list you as sponsor on the site and README.
 
 
 ### File a bug report
@@ -80,8 +89,6 @@ To build, run the tests & linter: `npm test` (you'll need Firefox installed loca
 - Follow the [Angular.js commit guidelines][angular-commit].
 - Follow the [Git Flow][git-flow] branching strategy.
 
-
-*Fine Uploader is a code library sponsored by [Widen Enterprises, Inc.](http://www.widen.com/)*
 
 [angular-commit]: https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit
 [git-flow]: http://nvie.com/posts/a-successful-git-branching-model/

@@ -15,7 +15,7 @@
 Using the direct-to-S3 uploader module means that most of the server-side work required to parse upload requests is
 handled by Amazon for you.  However, there is some minimal communication required between Fine Uploader and your local
 server.  This document will outline both required and optional server-side tasks.  Note that, at the writing of this
-document, Fine Uploader developers have provided fully functional [server-side examples](https://github.com/Widen/fine-uploader-server)
+document, Fine Uploader developers have provided fully functional [server-side examples](https://github.com/FineUploader/fine-uploader-server)
 in PHP, node.js, Python, and Java.  Other examples will be created in the future.
 
 {{ alert(

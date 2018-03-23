@@ -23,6 +23,7 @@ For reference, here are valid status values:
 * `SUBMITTED` - Selected file has been successfully submitted to the uploader.  In UI mode, it is also now represented in the DOM.
 * `QUEUED` - Uploads are in progress, but this one has not yet started due to lack of available connections.   It is waiting in line for an available connection before an attempt is made to upload it.
 * `UPLOADING` - File is currently uploading (in progress).
+* `UPLOAD_FINALIZING` - All bytes have been sent for all chunks and we are waiting for a final response from the server (such as a response to the chunking.success request).
 * `UPLOAD_RETRYING` - The state when an upload retry is about to occur, just before the auto retry waiting period starts.
 * `UPLOAD_FAILED` - The upload has officially failed to upload, after all auto-retry attempts have been exhausted.
 * `UPLOAD_SUCCESSFUL` - The upload has officially succeeded.

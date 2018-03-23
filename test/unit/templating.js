@@ -62,7 +62,53 @@ describe("templating.js", function() {
                                     '</div>' +
                                 '</li>' +
                             '</ul>' +
+                        '</div>',
+        tableTemplate = '<div class="qq-uploader-selector qq-uploader">' +
+                            '<div class="qq-total-progress-bar-container-selector qq-total-progress-bar-container">' +
+                                '<div class="qq-total-progress-bar-selector qq-progress-bar qq-total-progress-bar"></div>' +
+                            '</div>' +
+                            '<div class="qq-upload-drop-area-selector qq-upload-drop-area" qq-hide-dropzone>' +
+                                '<span>Drop files here to upload</span>' +
+                            '</div>' +
+                            '<div class="qq-upload-button-selector qq-upload-button">' +
+                                '<div>Upload a file</div>' +
+                            '</div>' +
+                            '<span class="qq-drop-processing-selector qq-drop-processing">' +
+                                '<span>Processing dropped files...</span>' +
+                                '<span class="qq-drop-processing-spinner-selector qq-drop-processing-spinner"></span>' +
+                            '</span>' +
+                            '<table>' +
+                                '<thead>' +
+                                    '<tr>' +
+                                        '<th>File</th>' +
+                                        '<th>Actions</th>' +
+                                    '</tr>' +
+                                '</thead>' +
+                                '<tbody class="qq-upload-list-selector">' +
+                                    '<tr>' +
+                                        '<td>' +
+                                            '<div class="qq-progress-bar-container-selector">' +
+                                                '<div class="qq-progress-bar-selector qq-progress-bar"></div>' +
+                                            '</div>' +
+                                            '<span class="qq-upload-spinner-selector qq-upload-spinner"></span>' +
+                                            '<span class="qq-edit-filename-icon-selector qq-edit-filename-icon"></span>' +
+                                            '<span class="qq-upload-file-selector qq-upload-file"></span>' +
+                                            '<input class="qq-edit-filename-selector qq-edit-filename" tabindex="0" type="text">' +
+                                            '<span class="qq-upload-size-selector qq-upload-size"></span>' +
+                                        '</td>' +
+                                        '<td>' +
+                                            '<a class="qq-upload-cancel-selector qq-upload-cancel" href="#">Cancel</a>' +
+                                            '<a class="qq-upload-retry-selector qq-upload-retry" href="#">Retry</a>' +
+                                            '<a class="qq-upload-delete-selector qq-upload-delete" href="#">Delete</a>' +
+                                            '<a class="qq-upload-pause-selector" href="#">Pause</a>' +
+                                            '<a class="qq-upload-continue-selector" href="#">Continue</a>' +
+                                            '<span class="qq-upload-status-text-selector qq-upload-status-text"></span>' +
+                                        '</td>' +
+                                    '</tr>' +
+                                '</tbody>' +
+                            '</table>' +
                         '</div>';
+
 
     function renderTemplate(content) {
         $template = $('<script id="qq-template" type="text/template"></script>');
@@ -282,6 +328,11 @@ describe("templating.js", function() {
             assert.ok(!$fixture.find(".qq-upload-pause-selector").hasClass(HIDE_CSS));
             assert.ok(!$fixture.find(".qq-upload-spinner-selector").hasClass(HIDE_CSS));
         });
+
+        it("reset clears contents before appending new render", function() {
+            templating.reset();
+            assert.equal($fixture.find(".qq-uploader").length, 1);
+        });
     });
 
     describe("permanently hidden files tests", function() {
@@ -353,4 +404,94 @@ describe("templating.js", function() {
             });
         });
     }
+
+    describe("test with table template", function() {
+        var fileContainer0;
+
+        beforeEach(function() {
+            renderTemplate(tableTemplate);
+            templating.addFile(0, "foobar");
+            fileContainer0 = templating.getFileContainer(0);
+        });
+
+        afterEach(function() {
+            templating.clearFiles();
+        });
+
+
+        it("adds & removes file entries", function() {
+            /* jshint eqnull:true */
+            assert.ok(templating.getFileContainer(0) != null);
+            templating.removeFile(0);
+            assert.ok(templating.getFileContainer(0) == null);
+            templating.addFile(0, "test");
+            templating.clearFiles();
+            assert.ok(templating.getFileContainer(0) == null);
+        });
+
+        it("embeds the file ID correctly", function() {
+            assert.ok(templating.getFileId(fileContainer0) === 0);
+        });
+
+        it("hides and shows spinner", function() {
+            templating.hideSpinner(0);
+            assert.ok($(fileContainer0).find(".qq-upload-spinner-selector").hasClass(HIDE_CSS));
+            assert.ok(!$(fileContainer0).hasClass("qq-in-progress"));
+
+            templating.showSpinner(0);
+            assert.ok(!$(fileContainer0).find(".qq-upload-spinner-selector").hasClass(HIDE_CSS));
+            assert.ok($(fileContainer0).hasClass("qq-in-progress"));
+        });
+
+        it("updates status text", function() {
+            templating.setStatusText(0, "foobar");
+            assert.equal($(fileContainer0).find(".qq-upload-status-text-selector").text(), "foobar");
+        });
+
+        it("updates file name", function() {
+            templating.updateFilename(0, "123abc");
+            assert.equal($(fileContainer0).find(".qq-upload-file-selector").text(), "123abc");
+        });
+
+        it("updates size text", function() {
+            templating.updateSize(0, "123MB");
+            assert.equal($(fileContainer0).find(".qq-upload-size-selector").text(), "123MB");
+        });
+
+        it("hides and shows delete link", function() {
+            templating.hideDeleteButton(0);
+            assert.ok($(fileContainer0).find(".qq-upload-delete-selector").hasClass(HIDE_CSS));
+
+            templating.showDeleteButton(0);
+            assert.ok(!$(fileContainer0).find(".qq-upload-delete-selector").hasClass(HIDE_CSS));
+        });
+
+        it("hides and shows cancel link", function() {
+            templating.hideCancel(0);
+            assert.ok($(fileContainer0).find(".qq-upload-cancel-selector").hasClass(HIDE_CSS));
+
+            templating.showCancel(0);
+            assert.ok(!$(fileContainer0).find(".qq-upload-cancel-selector").hasClass(HIDE_CSS));
+        });
+
+        it("hides and shows edit icon", function() {
+            templating.hideEditIcon(0);
+            assert.ok(!$(fileContainer0).find(".qq-edit-filename-icon-selector").hasClass(EDITABLE_CSS));
+
+            templating.showEditIcon(0);
+            assert.ok($(fileContainer0).find(".qq-edit-filename-icon-selector").hasClass(EDITABLE_CSS));
+        });
+
+        it("is able to find the file ID given a button element", function() {
+            var deleteButtonEl, cancelButtonEl, retryButtonEl;
+            deleteButtonEl = $(fileContainer0).find(".qq-upload-delete-selector")[0];
+            cancelButtonEl = $(fileContainer0).find(".qq-upload-cancel-selector")[0];
+            retryButtonEl = $(fileContainer0).find(".qq-upload-retry-selector")[0];
+
+            assert.equal(templating.getFileId(deleteButtonEl), 0, "Button 1 level deep");
+            assert.equal(templating.getFileId(cancelButtonEl), 0, "Button 2 levels deep");
+            assert.equal(templating.getFileId(retryButtonEl), 0, "Button 3 levels deep");
+        });
+
+    });
 });

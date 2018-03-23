@@ -17,7 +17,7 @@ optionally delete these files.  All relevant API methods can be used on these pr
 Fine Uploader UI, they will be displayed as successfully uploaded files as well.
 
 The API includes a [`session` option](../api/options.html#session)
-and a [`sessionRequestComplete` event](../api/events.html#sessionRequestComplete), and an [`adInitialFiles` method](../api/methods.html#addInitialFiles).
+and a [`sessionRequestComplete` event](../api/events.html#sessionRequestComplete), and an [`addInitialFiles` method](../api/methods.html#addInitialFiles).
 
 
 ### Fine Uploader Core Support

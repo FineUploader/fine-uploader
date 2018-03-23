@@ -139,7 +139,10 @@ qq.azure.XhrUploadHandler = function(spec, proxy) {
     }
 
     qq.extend(this, {
-        uploadChunk: function(id, chunkIdx) {
+        uploadChunk: function(params) {
+            var chunkIdx = params.chunkIdx;
+            var id = params.id;
+
             var promise = new qq.Promise();
 
             getSignedUrl(id, chunkIdx).then(

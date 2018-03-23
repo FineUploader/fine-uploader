@@ -34,19 +34,7 @@ qq.DragAndDrop = function(o) {
 
         if (entry.isFile) {
             entry.file(function(file) {
-                var name = entry.name,
-                    fullPath = entry.fullPath,
-                    indexOfNameInFullPath = fullPath.indexOf(name);
-
-                // remove file name from full path string
-                fullPath = fullPath.substr(0, indexOfNameInFullPath);
-
-                // remove leading slash in full path string
-                if (fullPath.charAt(0) === "/") {
-                    fullPath = fullPath.substr(1);
-                }
-
-                file.qqPath = fullPath;
+                file.qqPath = extractDirectoryPath(entry);
                 droppedFiles.push(file);
                 parseEntryPromise.success();
             },
@@ -83,6 +71,22 @@ qq.DragAndDrop = function(o) {
         }
 
         return parseEntryPromise;
+    }
+
+    function extractDirectoryPath(entry) {
+        var name = entry.name,
+            fullPath = entry.fullPath,
+            indexOfNameInFullPath = fullPath.lastIndexOf(name);
+
+        // remove file name from full path string
+        fullPath = fullPath.substr(0, indexOfNameInFullPath);
+
+        // remove leading slash in full path string
+        if (fullPath.charAt(0) === "/") {
+            fullPath = fullPath.substr(1);
+        }
+
+        return fullPath;
     }
 
     // Promissory.  Guaranteed to read all files in the root of the passed directory.
@@ -215,10 +219,6 @@ qq.DragAndDrop = function(o) {
     // * IE10+: If the file is dragged out of the window too quickly, IE does not set the expected values of the
     //          event's X & Y properties.
     function leavingDocumentOut(e) {
-        if (qq.firefox()) {
-            return !e.relatedTarget;
-        }
-
         if (qq.safari()) {
             return e.x < 0 || e.y < 0;
         }
@@ -273,8 +273,10 @@ qq.DragAndDrop = function(o) {
         });
 
         disposeSupport.attach(document, "drop", function(e) {
-            e.preventDefault();
-            maybeHideDropZones();
+            if (isFileDrag(e)) {
+                e.preventDefault();
+                maybeHideDropZones();
+            }
         });
 
         disposeSupport.attach(document, HIDE_ZONES_EVENT_NAME, maybeHideDropZones);
@@ -306,6 +308,9 @@ qq.DragAndDrop = function(o) {
             });
         }
     });
+
+    this._testing = {};
+    this._testing.extractDirectoryPath = extractDirectoryPath;
 };
 
 qq.DragAndDrop.callbacks = function() {
@@ -379,12 +384,16 @@ qq.UploadDropZone = function(o) {
         isSafari = qq.safari();
 
         // dt.effectAllowed is none in Safari 5
-        // dt.types.contains check is for firefox
 
         // dt.effectAllowed crashes IE 11 & 10 when files have been dragged from
         // the filesystem
         effectTest = qq.ie() && qq.supportedFeatures.fileDrop ? true : dt.effectAllowed !== "none";
-        return dt && effectTest && (dt.files || (!isSafari && dt.types.contains && dt.types.contains("Files")));
+        return dt && effectTest &&
+                (
+                    (dt.files && dt.files.length) ||                                     // Valid for drop events with files
+                    (!isSafari && dt.types.contains && dt.types.contains("Files")) ||  // Valid in Chrome/Firefox
+                    (dt.types.includes && dt.types.includes("Files"))               // Valid in IE
+                );
     }
 
     function isOrSetDropDisabled(isDisabled) {
@@ -492,4 +501,7 @@ qq.UploadDropZone = function(o) {
             return element;
         }
     });
+
+    this._testing = {};
+    this._testing.isValidFileDrag = isValidFileDrag;
 };
