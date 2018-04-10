@@ -104,7 +104,9 @@ qq.UploadHandlerController = function(o, namespace) {
                 chunked.reset(id);
             }
             else {
-                inProgressIdx = qq.indexOf(handler._getFileState(id).chunking.inProgress, chunkIdx);
+                var inProgressChunksArray = handler._getFileState(id).chunking.inProgress;
+
+                inProgressIdx = inProgressChunksArray ? qq.indexOf(inProgressChunksArray, chunkIdx) : -1;
                 if (inProgressIdx >= 0) {
                     handler._getFileState(id).chunking.inProgress.splice(inProgressIdx, 1);
                     handler._getFileState(id).chunking.remaining.unshift(chunkIdx);
