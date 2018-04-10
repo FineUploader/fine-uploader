@@ -393,7 +393,14 @@ qq.UploadHandlerController = function(o, namespace) {
 
     simple = {
         send: function(id, name) {
-            handler._getFileState(id).loaded = 0;
+            var fileState = handler._getFileState(id);
+
+            if (!fileState) {
+                log("Ignoring send request as this upload may have been cancelled, File ID " + id, "warn");
+                return;
+            }
+
+            fileState.loaded = 0;
 
             log("Sending simple upload request for " + id);
             handler.uploadFile(id).then(
