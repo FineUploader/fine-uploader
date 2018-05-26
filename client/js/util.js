@@ -543,7 +543,8 @@ var qq = function(element) {
     };
 
     qq.edge15 = function() {
-        var edge = navigator.userAgent.indexOf("Edge/");
+        var ua = navigator.userAgent;
+        var edge = ua.indexOf("Edge/");
         var edgeVersion = 0;
 
         if (edge > 0) {
