@@ -543,14 +543,14 @@ var qq = function(element) {
     };
 
     qq.edge15 = function() {
-        var edge = navigator.userAgent.indexOf('Edge/');
-        var edge_version = 0;
+        var edge = navigator.userAgent.indexOf("Edge/");
+        var edgeVersion = 0;
 
         if (edge > 0) {
-            edge_version = parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+            edgeVersion = parseInt(ua.substring(edge + 5, ua.indexOf(".", edge)), 10);
         }
 
-        return edge && edge_version >= 15;
+        return edge && edgeVersion >= 15;
     };
 
     qq.safari = function() {

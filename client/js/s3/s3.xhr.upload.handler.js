@@ -124,7 +124,7 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                             xhr.setRequestHeader(name, val);
                         });
 
-                        // Do not set this for safari 9
+                        // Set this only for edge 15 or higher
                         if (qq.edge15() && !hasContentType) {
                             xhr.setRequestHeader("Content-Type", "");
                         }
