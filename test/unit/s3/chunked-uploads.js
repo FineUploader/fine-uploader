@@ -194,7 +194,7 @@ if (qqtest.canDownloadFileAsBlob) {
                                 assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
                                 assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
 
-                                if (isEdge15()) {
+                                if (isEdge15) {
                                     assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
                                 }
 
