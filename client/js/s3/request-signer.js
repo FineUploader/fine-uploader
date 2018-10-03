@@ -272,7 +272,7 @@ qq.s3.RequestSigner = function(o) {
         // Attempt to parse what we would expect to be a JSON response
         if (responseJson) {
             try {
-                response = qq.parseJson(responseJson);
+                response = JSON.parse(responseJson);
             }
             catch (error) {
                 options.log("Error attempting to parse signature response: " + error, "error");
