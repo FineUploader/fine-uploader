@@ -91,7 +91,7 @@ qq.AjaxRequester = function(o) {
 
     // Returns either a new XHR/XDR instance, or an existing one for the associated `File` or `Blob`.
     function getXhrOrXdr(id, suppliedXhr) {
-        var xhrOrXdr = requestData[id].xhr;
+        var xhrOrXdr = requestData[id] && requestData[id].xhr;
 
         if (!xhrOrXdr) {
             if (suppliedXhr) {

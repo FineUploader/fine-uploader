@@ -56,6 +56,11 @@ mode you are in and keep that in mind when determining the meaning of a particul
 )
 }}
 
+{{ api_parent_option("callbacks", "callbacks", "Provide event handlers for almost any point in the upload process in order to unlock the full potential of Fine Uploader. See the [Events page](./events.html) for more details.",
+    ()
+)
+}}
+
 {{ api_parent_option("camera", "camera", "",
     (
         ("camera.button", "button", "`null` allows camera access on the default button in iOS. Otherwise provide an extra button container element to target.", "HTMLElement", "null",),
@@ -265,6 +270,7 @@ alert("The `chunking.success.endpoint` option **only** applies to traditional up
     )
 )
 }}
+
 </div>
 </div>
 

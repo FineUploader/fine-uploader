@@ -135,9 +135,9 @@ an example of signing a policy document supplied by Fine Uploader S3 using the v
 
 1. Handle the policy signature request from Fine Uploader S3. Look at the query string to determine if this is a version 4 signature, or not.
 2. Locate the policy document in the request body. Note that the entire contents of the request body represent this JSON policy.
-3. Locate the "conditions" array in the policy.
-4. Locate the "x-amz-condition" item in the conditions array.
-5. Generate the signature as outlined in the [AWS version 4 signature calculate guide][v4-post]. The relevant section is at the bottom of the linked page. All of the values you need for the "Signing Key" section are included in the value of the "x-amz-condition" element in the policy document.
+3. Locate the `conditions` array in the policy.
+4. Locate the `x-amz-credential` item in the conditions array.
+5. Generate the signature as outlined in the [AWS version 4 signature calculate guide][v4-post]. The relevant section is at the bottom of the linked page. All of the values you need for the "Signing Key" section are included in the value of the `x-amz-credential` element in the policy document.
 6. Return a JSON response with two properties: `"policy"` which includes the base-64-encoded policy document, and `"signature"` which includes the generated signature.
 
 Note that you will have to base64-encode the policy document to generate the "SigningKey", which is needed for the last step
@@ -177,7 +177,7 @@ If you'd like to see an example of generating a signature for a chunked upload r
 version 4 signing process, have a look at the [Fine Uploader PHP S3 signature server example][s3-php]. The general process is as
 follows:
 
-1. Handle a chunked upload signature request from Fine Uploader. Look at the query string to determine if this is a version 4 request, or not. The presence of a `"header"` property in the JSON-encoded message body indicates that this is indeed related to a chunked upload request.  
+1. Handle a chunked upload signature request from Fine Uploader. Look at the query string to determine if this is a version 4 request, or not. The presence of a `"headers"` property in the JSON-encoded message body indicates that this is indeed related to a chunked upload request.  
 2. Follow the signing process outlined in the diagram on [Amazon's version 4 header-based auth documentation page][s3-version4-auth].  
 3. The `"headers"` string provided by Fine Uploader corresponds to the "StringToSign" portion of the diagram on the page referenced in the previous step, with one notable difference. Instead of a hashed "canonical request" at the end of the "StringToSign", Fine Uploader S3 will include the raw [newline-delimited canonical request][s3-canonical-request]. This allows you to properly inspect the request before signing it.  
     1. Examine the raw canonical request string at the end of the headers string to verify that the request is valid before signing it.  

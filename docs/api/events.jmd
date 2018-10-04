@@ -45,6 +45,8 @@ callbacks: {
 }
 ```
 
+where `callbacks` is specified as a FineUploader option.
+
 {% endmarkdown %}
 <div class="events-all">
 
