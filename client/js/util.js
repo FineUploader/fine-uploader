@@ -569,7 +569,7 @@ var qq = function(element) {
     // We need to identify the Android stock browser via the UA string to work around various bugs in this browser,
     // such as the one that prevents a `Blob` from being uploaded.
     qq.androidStock = function() {
-        return qq.android() && navigator.userAgent.toLowerCase().indexOf("chrome") < 0;
+        return qq.android() && navigator.userAgent.toLowerCase().indexOf("chrome") < 0 && navigator.userAgent.toLowerCase().indexOf("firefox") < 0;
     };
 
     qq.ios6 = function() {
