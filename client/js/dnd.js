@@ -169,10 +169,12 @@ qq.DragAndDrop = function(o) {
             element: dropArea,
             onEnter: function(e) {
                 qq(dropArea).addClass(options.classes.dropActive);
+                options.callbacks.dragEnter();
                 e.stopPropagation();
             },
             onLeaveNotDescendants: function(e) {
                 qq(dropArea).removeClass(options.classes.dropActive);
+                options.callbacks.dragLeave();
             },
             onDrop: function(e) {
                 handleDataTransfer(e.dataTransfer, dropZone).then(
@@ -317,6 +319,8 @@ qq.DragAndDrop.callbacks = function() {
     "use strict";
 
     return {
+        dragEnter: function () {},
+        dragLeave: function () {},
         processingDroppedFiles: function() {},
         processingDroppedFilesComplete: function(files, targetEl) {},
         dropError: function(code, errorSpecifics) {

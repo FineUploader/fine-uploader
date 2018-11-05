@@ -383,7 +383,7 @@
                 renderImageToDataURL(self.srcImage, self.blob, opt, doSquash)
                     .then(function(dataUri) {
                         target.src = dataUri;
-                        oldTargetSrc === target.src && target.onload();
+                        oldTargetSrc === target.src && target.onload && target.onload();
                     });
             }());
         } else if (tagName === "canvas") {
