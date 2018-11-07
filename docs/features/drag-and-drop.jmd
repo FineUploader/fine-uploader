@@ -109,6 +109,15 @@ api_event("dropLog", "dropLog",
 ])
 }}
 
+{{
+api_event("dragEnter", "dragEnter",
+"Invoked when dragged element enters drop zone.", [], [])
+}}
+{{
+api_event("dragLeave", "dragLeave",
+"Invoked when dragged element leaves drop zone.", [], [])
+}}
+
 {% markdown %}
 ### Methods
 {% endmarkdown %}
