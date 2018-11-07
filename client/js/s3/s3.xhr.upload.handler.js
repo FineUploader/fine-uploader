@@ -35,18 +35,20 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
             // when the response to this request has been parsed.
             combine: function(id) {
                 var uploadId = handler._getPersistableData(id).uploadId,
-                    etagMap = handler._getPersistableData(id).etags,
-                    result = new qq.Promise();
+                    etagMap = handler._getPersistableData(id).etags;
 
-                requesters.completeMultipart.send(id, uploadId, etagMap).then(
-                    result.success,
+                return new Promise(function(resolve, reject) {
+                    requesters.completeMultipart.send(id, uploadId, etagMap).then(
+                        resolve,
 
-                    function failure(reason, xhr) {
-                        result.failure(upload.done(id, xhr).response, xhr);
-                    }
-                );
-
-                return result;
+                        function failure(err) {
+                            var error = new Error(err.message);
+                            error.xhr = err.xhr;
+                            error.response = upload.done(id, err.xhr).response;
+                            reject(error);
+                        }
+                    );
+                });
             },
 
             // The last step in handling a chunked upload.  This is called after each chunk has been sent.
@@ -70,90 +72,86 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
             /**
              * Determines headers that must be attached to the chunked (Multipart Upload) request.  One of these headers is an
              * Authorization value, which must be determined by asking the local server to sign the request first.  So, this
-             * function returns a promise.  Once all headers are determined, the `success` method of the promise is called with
-             * the headers object.  If there was some problem determining the headers, we delegate to the caller's `failure`
-             * callback.
+             * function returns a promise.  Once all headers are determined, the promise is resolved with
+             * the headers object.  If there was some problem determining the headers, we reject the promise.
              *
              * @param id File ID
              * @param chunkIdx Index of the chunk to PUT
-             * @returns {qq.Promise}
+             * @returns {Promise}
              */
             initHeaders: function(id, chunkIdx, blob) {
-                var headers = {},
-                    bucket = upload.bucket.getName(id),
-                    host = upload.host.getName(id),
-                    key = upload.key.urlSafe(id),
-                    promise = new qq.Promise(),
-                    signatureConstructor = requesters.restSignature.constructStringToSign
-                        (requesters.restSignature.REQUEST_TYPE.MULTIPART_UPLOAD, bucket, host, key)
-                        .withPartNum(chunkIdx + 1)
-                        .withContent(blob)
-                        .withUploadId(handler._getPersistableData(id).uploadId);
+                return upload.key.urlSafe(id).then(function(key) {
+                    var headers = {},
+                        bucket = upload.bucket.getName(id),
+                        host = upload.host.getName(id),
+                        signatureConstructor = requesters.restSignature.constructStringToSign
+                            (requesters.restSignature.REQUEST_TYPE.MULTIPART_UPLOAD, bucket, host, key)
+                            .withPartNum(chunkIdx + 1)
+                            .withContent(blob)
+                            .withUploadId(handler._getPersistableData(id).uploadId);
 
-                // Ask the local server to sign the request.  Use this signature to form the Authorization header.
-                requesters.restSignature.getSignature(id + "." + chunkIdx, {signatureConstructor: signatureConstructor}).then(promise.success, promise.failure);
-
-                return promise;
+                    // Ask the local server to sign the request.  Use this signature to form the Authorization header.
+                    return requesters.restSignature.getSignature(id + "." + chunkIdx, {signatureConstructor: signatureConstructor});
+                });
             },
 
             put: function(id, chunkIdx) {
                 var xhr = handler._createXhr(id, chunkIdx),
                     chunkData = handler._getChunkData(id, chunkIdx),
-                    domain = spec.endpointStore.get(id),
-                    promise = new qq.Promise();
+                    domain = spec.endpointStore.get(id);
 
-                // Add appropriate headers to the multipart upload request.
-                // Once these have been determined (asynchronously) attach the headers and send the chunk.
-                chunked.initHeaders(id, chunkIdx, chunkData.blob).then(function(headers, endOfUrl) {
-                    if (xhr._cancelled) {
-                        log(qq.format("Upload of item {}.{} cancelled. Upload will not start after successful signature request.", id, chunkIdx));
-                        promise.failure({error: "Chunk upload cancelled"});
-                    }
-                    else {
-                        var url = domain + "/" + endOfUrl;
-                        handler._registerProgressHandler(id, chunkIdx, chunkData.size);
-                        upload.track(id, xhr, chunkIdx).then(promise.success, promise.failure);
-                        xhr.open("PUT", url, true);
+                return new Promise(function(resolve, reject) {
+                    // Add appropriate headers to the multipart upload request.
+                    // Once these have been determined (asynchronously) attach the headers and send the chunk.
+                    chunked.initHeaders(id, chunkIdx, chunkData.blob).then(function(info) {
+                        var headers = info.headers,
+                            endOfUrl = info.endOfUrl,
+                            error;
+                        if (xhr._cancelled) {
+                            error = new Error(qq.format("Upload of item {}.{} cancelled. Upload will not start after successful signature request.", id, chunkIdx));
+                            log(error.message);
+                            reject(error);
+                        }
+                        else {
+                            var url = domain + "/" + endOfUrl;
+                            handler._registerProgressHandler(id, chunkIdx, chunkData.size);
+                            upload.track(id, xhr, chunkIdx).then(resolve, reject);
+                            xhr.open("PUT", url, true);
 
-                        var hasContentType = false;
-                        qq.each(headers, function(name, val) {
-                            if (name === "Content-Type") {
-                                hasContentType = true;
+                            var hasContentType = false;
+                            qq.each(headers, function(name, val) {
+                                if (name === "Content-Type") {
+                                    hasContentType = true;
+                                }
+
+                                xhr.setRequestHeader(name, val);
+                            });
+
+                            // Workaround for IE Edge
+                            if (!hasContentType) {
+                                xhr.setRequestHeader("Content-Type", "");
                             }
 
-                            xhr.setRequestHeader(name, val);
-                        });
-
-                        // Workaround for IE Edge
-                        if (!hasContentType) {
-                            xhr.setRequestHeader("Content-Type", "");
+                            xhr.send(chunkData.blob);
                         }
-
-                        xhr.send(chunkData.blob);
-                    }
-                }, function() {
-                    promise.failure({error: "Problem signing the chunk!"}, xhr);
+                    }, function() {
+                        var error = new Error("Problem signing the chunk!");
+                        error.xhr = xhr;
+                        reject(xhr);
+                    });
                 });
-
-                return promise;
             },
 
             send: function(id, chunkIdx) {
-                var promise = new qq.Promise();
-
-                chunked.setup(id).then(
-                    // The "Initiate" request succeeded.  We are ready to send the first chunk.
-                    function() {
-                        chunked.put(id, chunkIdx).then(promise.success, promise.failure);
-                    },
-
-                    // We were unable to initiate the chunked upload process.
-                    function(errorMessage, xhr) {
-                        promise.failure({error: errorMessage}, xhr);
-                    }
-                );
-
-                return promise;
+                return new Promise(function(resolve, reject) {
+                    chunked.setup(id).then(
+                        // The "Initiate" request succeeded.  We are ready to send the first chunk.
+                        function() {
+                            chunked.put(id, chunkIdx).then(resolve, reject);
+                        },
+                        reject
+                    );
+                });
             },
 
             /**
@@ -161,38 +159,37 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
              * initiated.
              *
              * @param id Associated file ID
-             * @returns {qq.Promise} A promise that is fulfilled when the initiate request has been sent and the response has been parsed.
+             * @returns {Promise} A promise that is resolved when the initiate request has been sent and the response has been parsed.
              */
             setup: function(id) {
-                var promise = new qq.Promise(),
-                    uploadId = handler._getPersistableData(id).uploadId,
-                    uploadIdPromise = new qq.Promise();
+                return new Promise(function(setupResolve, setupReject) {
+                    var uploadId = handler._getPersistableData(id).uploadId;
 
-                if (!uploadId) {
-                    handler._getPersistableData(id).uploadId = uploadIdPromise;
-                    requesters.initiateMultipart.send(id).then(
-                        function(uploadId) {
-                            handler._getPersistableData(id).uploadId = uploadId;
-                            uploadIdPromise.success(uploadId);
-                            promise.success(uploadId);
-                        },
-                        function(errorMsg, xhr) {
-                            handler._getPersistableData(id).uploadId = null;
-                            promise.failure(errorMsg, xhr);
-                            uploadIdPromise.failure(errorMsg, xhr);
-                        }
-                    );
-                }
-                else if (uploadId instanceof qq.Promise) {
-                    uploadId.then(function(uploadId) {
-                        promise.success(uploadId);
-                    });
-                }
-                else {
-                    promise.success(uploadId);
-                }
-
-                return promise;
+                    if (!uploadId) {
+                        handler._getPersistableData(id).uploadId = new Promise(function(resolve, reject) {
+                            requesters.initiateMultipart.send(id).then(
+                                function(info) {
+                                    handler._getPersistableData(id).uploadId = info.uploadId;
+                                    resolve(info.uploadId);
+                                    setupResolve(info.uploadId);
+                                },
+                                function(error) {
+                                    handler._getPersistableData(id).uploadId = null;
+                                    setupReject(error);
+                                    reject(error);
+                                }
+                            );
+                        });
+                    }
+                    else if (uploadId instanceof Promise) {
+                        uploadId.then(function(info) {
+                            setupResolve(info.uploadId);
+                        });
+                    }
+                    else {
+                        setupResolve(uploadId);
+                    }
+                });
             }
         },
 
@@ -279,50 +276,52 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
              * due to some error.
              *
              * @param id File ID
-             * @returns {qq.Promise}
+             * @returns {Promise}
              */
             initParams: function(id) {
                 /*jshint -W040 */
                 var customParams = paramsStore.get(id);
                 customParams[filenameParam] = getName(id);
 
-                return qq.s3.util.generateAwsParams({
-                    endpoint: endpointStore.get(id),
-                    clockDrift: clockDrift,
-                    params: customParams,
-                    type: handler._getMimeType(id),
-                    bucket: upload.bucket.getName(id),
-                    key: handler.getThirdPartyFileId(id),
-                    accessKey: credentialsProvider.get().accessKey,
-                    sessionToken: credentialsProvider.get().sessionToken,
-                    acl: aclStore.get(id),
-                    expectedStatus: expectedStatus,
-                    minFileSize: validation.minSizeLimit,
-                    maxFileSize: validation.maxSizeLimit,
-                    reducedRedundancy: reducedRedundancy,
-                    region: region,
-                    serverSideEncryption: serverSideEncryption,
-                    signatureVersion: signature.version,
-                    log: log
-                },
-                qq.bind(requesters.policySignature.getSignature, this, id));
+                return (handler.getThirdPartyFileId(id) || Promise.resolve(undefined)).then(function(thirdPartyFileId) {
+                    return qq.s3.util.generateAwsParams({
+                        endpoint: endpointStore.get(id),
+                        clockDrift: clockDrift,
+                        params: customParams,
+                        type: handler._getMimeType(id),
+                        bucket: upload.bucket.getName(id),
+                        key: thirdPartyFileId,
+                        accessKey: credentialsProvider.get().accessKey,
+                        sessionToken: credentialsProvider.get().sessionToken,
+                        acl: aclStore.get(id),
+                        expectedStatus: expectedStatus,
+                        minFileSize: validation.minSizeLimit,
+                        maxFileSize: validation.maxSizeLimit,
+                        reducedRedundancy: reducedRedundancy,
+                        region: region,
+                        serverSideEncryption: serverSideEncryption,
+                        signatureVersion: signature.version,
+                        log: log
+                    },
+                    qq.bind(requesters.policySignature.getSignature, this, id));
+                });
             },
 
             send: function(id) {
-                var promise = new qq.Promise(),
-                    xhr = handler._createXhr(id),
+                var xhr = handler._createXhr(id),
                     fileOrBlob = handler.getFile(id);
 
                 handler._registerProgressHandler(id);
-                upload.track(id, xhr).then(promise.success, promise.failure);
 
-                // Delegate to a function the sets up the XHR request and notifies us when it is ready to be sent, along w/ the payload.
-                simple.setup(id, xhr, fileOrBlob).then(function(toSend) {
-                    log("Sending upload request for " + id);
-                    xhr.send(toSend);
-                }, promise.failure);
+                return new Promise(function(resolve, reject) {
+                    upload.track(id, xhr).then(resolve, reject);
 
-                return promise;
+                    // Delegate to a function the sets up the XHR request and notifies us when it is ready to be sent, along w/ the payload.
+                    simple.setup(id, xhr, fileOrBlob).then(function(toSend) {
+                        log("Sending upload request for " + id);
+                        xhr.send(toSend);
+                    }, reject);
+                });
             },
 
             /**
@@ -336,15 +335,14 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
              * @param id File ID
              * @param xhr XMLHttpRequest to use for the upload
              * @param fileOrBlob `File` or `Blob` to send
-             * @returns {qq.Promise}
+             * @returns {Promise}
              */
             setup: function(id, xhr, fileOrBlob) {
                 var formData = new FormData(),
                     endpoint = endpointStore.get(id),
-                    url = endpoint,
-                    promise = new qq.Promise();
+                    url = endpoint;
 
-                simple.initParams(id).then(
+                return simple.initParams(id).then(
                     // Success - all params determined
                     function(awsParams) {
                         xhr.open("POST", url, true);
@@ -354,16 +352,8 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                         // AWS requires the file field be named "file".
                         formData.append("file", fileOrBlob);
 
-                        promise.success(formData);
-                    },
-
-                    // Failure - we couldn't determine some params (likely the signature)
-                    function(errorMessage) {
-                        promise.failure({error: errorMessage});
-                    }
-                );
-
-                return promise;
+                        return formData;
+                    });
             }
         },
 
@@ -377,20 +367,23 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
              */
             bucket: {
                 promise: function(id) {
-                    var promise = new qq.Promise(),
-                        cachedBucket = handler._getFileState(id).bucket;
+                    var cachedBucket = handler._getFileState(id).bucket;
 
-                    if (cachedBucket) {
-                        promise.success(cachedBucket);
-                    }
-                    else {
-                        onGetBucket(id).then(function(bucket) {
-                            handler._getFileState(id).bucket = bucket;
-                            promise.success(bucket);
-                        }, promise.failure);
-                    }
-
-                    return promise;
+                    return new Promise(function(resolve, reject) {
+                        if (cachedBucket) {
+                            resolve(cachedBucket);
+                        }
+                        else {
+                            onGetBucket(id).then(function(bucket) {
+                                handler._getFileState(id).bucket = bucket;
+                                resolve(bucket);
+                            }, function(errorReason) {
+                                var error = new Error("Failed to get bucket");
+                                error.error = errorReason;
+                                reject(error);
+                            });
+                        }
+                    });
                 },
 
                 getName: function(id) {
@@ -400,20 +393,23 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
             host: {
                 promise: function(id) {
-                    var promise = new qq.Promise(),
-                        cachedHost = handler._getFileState(id).host;
+                    var cachedHost = handler._getFileState(id).host;
 
-                    if (cachedHost) {
-                        promise.success(cachedHost);
-                    }
-                    else {
-                        onGetHost(id).then(function(host) {
-                            handler._getFileState(id).host = host;
-                            promise.success(host);
-                        }, promise.failure);
-                    }
-
-                    return promise;
+                    return new Promise(function(resolve, reject) {
+                        if (cachedHost) {
+                            resolve(cachedHost);
+                        }
+                        else {
+                            onGetHost(id).then(function(host) {
+                                handler._getFileState(id).host = host;
+                                resolve(host);
+                            }, function(errorReason) {
+                                var error = new Error("Failed to get host");
+                                error.error = errorReason;
+                                reject(error);
+                            });
+                        }
+                    });
                 },
 
                 getName: function(id) {
@@ -438,36 +434,31 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
 
             key: {
                 promise: function(id) {
-                    var promise = new qq.Promise(),
-                        key = handler.getThirdPartyFileId(id);
+                    var key = handler.getThirdPartyFileId(id);
 
                     /* jshint eqnull:true */
                     if (key == null) {
-                        handler._setThirdPartyFileId(id, promise);
-                        onGetKeyName(id, getName(id)).then(
-                            function(keyName) {
-                                handler._setThirdPartyFileId(id, keyName);
-                                promise.success(keyName);
-                            },
-                            function(errorReason) {
-                                handler._setThirdPartyFileId(id, null);
-                                promise.failure(errorReason);
-                            }
-                        );
-                    }
-                    else if (qq.isGenericPromise(key)) {
-                        key.then(promise.success, promise.failure);
-                    }
-                    else {
-                        promise.success(key);
+                        key = new Promise(function(resolve, reject) {
+                            onGetKeyName(id, getName(id)).then(
+                                resolve,
+                                function(err) {
+                                    handler._setThirdPartyFileId(id, null);
+                                    var error = new Error(err.message);
+                                    error.error = err.message;
+                                    reject(error);
+                                }
+                            );
+                        });
+                        handler._setThirdPartyFileId(id, key);
                     }
 
-                    return promise;
+                    return key;
                 },
 
                 urlSafe: function(id) {
-                    var encodedKey = handler.getThirdPartyFileId(id);
-                    return qq.s3.util.uriEscapePath(encodedKey);
+                    return handler.getThirdPartyFileId(id).then(function(encodedKey) {
+                        return qq.s3.util.uriEscapePath(encodedKey);
+                    });
                 }
             },
 
@@ -542,49 +533,57 @@ qq.s3.XhrUploadHandler = function(spec, proxy) {
                 var id = params.id;
                 var optChunkIdx = params.chunkIdx;
 
-                var promise = new qq.Promise();
-
-                upload.key.promise(id).then(function() {
-                    upload.bucket.promise(id).then(function() {
-                        upload.host.promise(id).then(function() {
-                            /* jshint eqnull:true */
-                            if (optChunkIdx == null) {
-                                simple.send(id).then(promise.success, promise.failure);
-                            }
-                            else {
-                                chunked.send(id, optChunkIdx).then(promise.success, promise.failure);
-                            }
-                        });
-                    });
-                },
-                function(errorReason) {
-                    promise.failure({error: errorReason});
+                return new Promise(function(resolve, reject) {
+                    upload.key.promise(id).then(function() {
+                        upload.bucket.promise(id).then(function() {
+                            upload.host.promise(id).then(function() {
+                                /* jshint eqnull:true */
+                                if (optChunkIdx == null) {
+                                    simple.send(id).then(resolve, reject);
+                                }
+                                else {
+                                    chunked.send(id, optChunkIdx).then(resolve, reject);
+                                }
+                            });
+                        }, reject);
+                    }, reject);
                 });
-
-                return promise;
             },
 
             track: function(id, xhr, optChunkIdx) {
-                var promise = new qq.Promise();
+                return new Promise(function(resolve, reject) {
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === 4) {
+                            var result,
+                                error;
 
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4) {
-                        var result;
-
-                        /* jshint eqnull:true */
-                        if (optChunkIdx == null) {
-                            result = upload.done(id, xhr);
-                            promise[result.success ? "success" : "failure"](result.response, xhr);
+                            /* jshint eqnull:true */
+                            if (optChunkIdx == null) {
+                                result = upload.done(id, xhr);
+                                if (result.success) {
+                                    resolve({response: result.response, xhr: xhr});
+                                } else {
+                                    error = new Error();
+                                    error.response = result.response;
+                                    error.xhr = xhr;
+                                    reject(error);
+                                }
+                            }
+                            else {
+                                chunked.done(id, xhr, optChunkIdx);
+                                result = upload.done(id, xhr);
+                                if (result.success) {
+                                    resolve({response: result.response, xhr: xhr});
+                                } else {
+                                    error = new Error();
+                                    error.response = result.response;
+                                    error.xhr = xhr;
+                                    reject(error);
+                                }
+                            }
                         }
-                        else {
-                            chunked.done(id, xhr, optChunkIdx);
-                            result = upload.done(id, xhr);
-                            promise[result.success ? "success" : "failure"](result.response, xhr);
-                        }
-                    }
-                };
-
-                return promise;
+                    };
+                });
             }
         };
 

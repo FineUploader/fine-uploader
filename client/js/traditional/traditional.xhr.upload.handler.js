@@ -49,22 +49,24 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         }),
 
         createReadyStateChangedHandler = function(id, xhr) {
-            var promise = new qq.Promise();
+            return new Promise(function(resolve, reject) {
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4) {
+                        var result = onUploadOrChunkComplete(id, xhr),
+                            error;
 
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    var result = onUploadOrChunkComplete(id, xhr);
-
-                    if (result.success) {
-                        promise.success(result.response, xhr);
+                        if (result.success) {
+                            resolve({response: result.response, xhr: xhr});
+                        }
+                        else {
+                            error = new Error();
+                            error.response = result.response;
+                            error.xhr = xhr;
+                            reject(error);
+                        }
                     }
-                    else {
-                        promise.failure(result.response, xhr);
-                    }
-                }
-            };
-
-            return promise;
+                };
+            });
         },
 
         getChunksCompleteParams = function(id) {
@@ -116,21 +118,22 @@ qq.traditional.XhrUploadHandler = function(spec, proxy) {
         },
 
         sendChunksCompleteRequest = function(id) {
-            var promise = new qq.Promise();
-
-            allChunksDoneRequester.complete(
-                    id,
-                    handler._createXhr(id),
-                    getChunksCompleteParams(id),
-                    spec.customHeaders.get(id)
-                )
-                .then(function(xhr) {
-                    promise.success(parseResponse(false, xhr), xhr);
-                }, function(xhr) {
-                    promise.failure(parseResponse(false, xhr), xhr);
-                });
-
-            return promise;
+            return new Promise(function(resolve, reject) {
+                allChunksDoneRequester.complete(
+                        id,
+                        handler._createXhr(id),
+                        getChunksCompleteParams(id),
+                        spec.customHeaders.get(id)
+                    )
+                    .then(function(xhr) {
+                        resolve({response: parseResponse(false, xhr), xhr: xhr});
+                    }, function(err) {
+                        var error = new Error("All chunks done requester failed");
+                        error.response = parseResponse(false, err.xhr);
+                        error.xhr = err.xhr;
+                        reject(error);
+                    });
+            });
         },
 
         setParamsAndGetEntityToSend = function(entityToSendParams) {

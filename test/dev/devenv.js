@@ -42,13 +42,11 @@ qq(window).attach("load", function() {
         },
         thumbnails: {
             customResizer: !qq.ios() && function(resizeInfo) {
-                var promise = new qq.Promise();
-
-                pica.resizeCanvas(resizeInfo.sourceCanvas, resizeInfo.targetCanvas, {}, function() {
-                    promise.success();
-                })
-
-                return promise;
+                return new Promise(function(resolve) {
+                    pica.resizeCanvas(resizeInfo.sourceCanvas, resizeInfo.targetCanvas, {}, function() {
+                        resolve();
+                    });
+                });
             },
             placeholders: {
                 waitingPath: "/client/placeholders/waiting-generic.png",
@@ -57,13 +55,11 @@ qq(window).attach("load", function() {
         },
         scaling: {
             customResizer: !qq.ios() && function(resizeInfo) {
-                var promise = new qq.Promise();
-
-                pica.resizeCanvas(resizeInfo.sourceCanvas, resizeInfo.targetCanvas, {}, function() {
-                    promise.success();
-                })
-
-                return promise;
+                return new Promise(function(resolve) {
+                    pica.resizeCanvas(resizeInfo.sourceCanvas, resizeInfo.targetCanvas, {}, function() {
+                        resolve();
+                    });
+                });
             },
             sizes: [{name: "small", maxSize: 800}]
         },

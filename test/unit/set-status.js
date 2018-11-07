@@ -62,20 +62,26 @@ describe("set-status.js", function() {
             fileTestHelper.mockXhr();
 
             uploader.addFiles({name: "test", blob: blob});
-            uploader.uploadStoredFiles();
-            fileTestHelper.getRequests()[0].respond(201, null, JSON.stringify({success: true}));
+            setTimeout(function() {
+                uploader.uploadStoredFiles();
+                setTimeout(function() {
+                    fileTestHelper.getRequests()[0].respond(201, null, JSON.stringify({success: true}));
 
-            var uploaderFiles = uploader.getUploads();
-            var file = uploaderFiles[0];
+                    setTimeout(function() {
+                        var uploaderFiles = uploader.getUploads();
+                        var file = uploaderFiles[0];
 
-            uploader.setStatus(file.id, qq.status.DELETED);
+                        uploader.setStatus(file.id, qq.status.DELETED);
 
-            uploaderFiles = uploader.getUploads();
-            file = uploaderFiles[0];
+                        uploaderFiles = uploader.getUploads();
+                        file = uploaderFiles[0];
 
-            assert.equal(0, uploader.getNetUploads());
-            assert.equal(qq.status.DELETED, file.status);
-            done();
+                        assert.equal(0, uploader.getNetUploads());
+                        assert.equal(qq.status.DELETED, file.status);
+                        done();
+                    }, 0);
+                }, 0);
+            }, 0);
         });
 
     });
@@ -92,20 +98,26 @@ describe("set-status.js", function() {
             fileTestHelper.mockXhr();
 
             uploader.addFiles({name: "test", blob: blob});
-            uploader.uploadStoredFiles();
-            fileTestHelper.getRequests()[0].respond(201, null, JSON.stringify({success: true}));
+            setTimeout(function() {
+                uploader.uploadStoredFiles();
+                setTimeout(function() {
+                    fileTestHelper.getRequests()[0].respond(201, null, JSON.stringify({success: true}));
 
-            var uploaderFiles = uploader.getUploads();
-            var file = uploaderFiles[0];
+                    setTimeout(function() {
+                        var uploaderFiles = uploader.getUploads();
+                        var file = uploaderFiles[0];
 
-            uploader.setStatus(file.id, qq.status.DELETE_FAILED);
+                        uploader.setStatus(file.id, qq.status.DELETE_FAILED);
 
-            uploaderFiles = uploader.getUploads();
-            file = uploaderFiles[0];
+                        uploaderFiles = uploader.getUploads();
+                        file = uploaderFiles[0];
 
-            assert.equal(1, uploader.getNetUploads());
-            assert.equal(qq.status.DELETE_FAILED, file.status);
-            done();
+                        assert.equal(1, uploader.getNetUploads());
+                        assert.equal(qq.status.DELETE_FAILED, file.status);
+                        done();
+                    }, 0);
+                }, 0);
+            }, 0);
         });
 
     });

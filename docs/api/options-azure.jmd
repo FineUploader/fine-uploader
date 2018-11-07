@@ -53,7 +53,7 @@ alert("The [`chunking.paramNames` option](options.html#chunking) does **not** ap
 
 {{ api_parent_option("blobProperties", "blobProperties", "",
     (
-        ("blobProperties.name", "name", "Describes the blob name used to identify the file in your Azure Blob Storage container. Possible values are 'uuid', 'filename' or a function.  If the value is a function, Fine Uploader Azure will pass the associated file ID as a parameter when invoking your function. If the value is a function it may return one of a [`qq.Promise`](../features/async-tasks-and-promises.html) or a `String`.", "String or Function", "uuid",),
+        ("blobProperties.name", "name", "Describes the blob name used to identify the file in your Azure Blob Storage container. Possible values are 'uuid', 'filename' or a function.  If the value is a function, Fine Uploader Azure will pass the associated file ID as a parameter when invoking your function. If the value is a function it may return one of a `Promise` or a `String`.", "String or Function", "uuid",),
     )
 )}}
 

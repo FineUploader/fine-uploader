@@ -69,35 +69,39 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.equal(conditions["Content-Type"], "image/jpeg");
                     assert.equal(conditions.success_action_status, 200);
                     assert.equal(conditions["x-amz-algorithm"], "AWS4-HMAC-SHA256");
-                    assert.equal(conditions.key, uploader.getKey(0));
-                    assert.equal(conditions.key, uploader.getUuid(0) + ".jpg");
-                    assert.equal(conditions["x-amz-credential"], testAccessKey + "/" + now.getUTCFullYear() + ("0" + (now.getUTCMonth() + 1)).slice(-2) + ("0" + now.getUTCDate()).slice(-2) + "/us-east-1/s3/aws4_request");
-                    policyDate = conditions["x-amz-date"];
-                    assert.ok(policyDate);
-                    assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
+                    uploader.getKey(0).then(function(key0) {
+                        assert.equal(conditions.key, key0);
+                        assert.equal(conditions.key, uploader.getUuid(0) + ".jpg");
+                        assert.equal(conditions["x-amz-credential"], testAccessKey + "/" + now.getUTCFullYear() + ("0" + (now.getUTCMonth() + 1)).slice(-2) + ("0" + now.getUTCDate()).slice(-2) + "/us-east-1/s3/aws4_request");
+                        policyDate = conditions["x-amz-date"];
+                        assert.ok(policyDate);
+                        assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
 
-                    signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+                        signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                    uploadRequestParams = uploadRequest.requestBody.fields;
+                        setTimeout(function () {
+                            uploadRequestParams = uploadRequest.requestBody.fields;
 
-                    assert.equal(uploadRequest.url, testS3Endpoint);
-                    assert.equal(uploadRequest.method, "POST");
+                            assert.equal(uploadRequest.url, testS3Endpoint);
+                            assert.equal(uploadRequest.method, "POST");
 
-                    assert.equal(uploadRequestParams.key, uploader.getUuid(0) + ".jpg");
-                    assert.equal(uploadRequestParams["Content-Type"], "image/jpeg");
-                    assert.equal(uploadRequestParams.success_action_status, 200);
-                    assert.equal(uploadRequestParams.acl, "private");
-                    assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
-                    assert.equal(uploadRequestParams["x-amz-algorithm"], "AWS4-HMAC-SHA256");
-                    assert.equal(uploadRequestParams["x-amz-credential"], testAccessKey + "/" + now.getUTCFullYear() + ("0" + (now.getUTCMonth() + 1)).slice(-2) + ("0" + now.getUTCDate()).slice(-2) + "/us-east-1/s3/aws4_request");
-                    assert.equal(uploadRequestParams["x-amz-date"], policyDate);
+                            assert.equal(uploadRequestParams.key, uploader.getUuid(0) + ".jpg");
+                            assert.equal(uploadRequestParams["Content-Type"], "image/jpeg");
+                            assert.equal(uploadRequestParams.success_action_status, 200);
+                            assert.equal(uploadRequestParams.acl, "private");
+                            assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
+                            assert.equal(uploadRequestParams["x-amz-algorithm"], "AWS4-HMAC-SHA256");
+                            assert.equal(uploadRequestParams["x-amz-credential"], testAccessKey + "/" + now.getUTCFullYear() + ("0" + (now.getUTCMonth() + 1)).slice(-2) + ("0" + now.getUTCDate()).slice(-2) + "/us-east-1/s3/aws4_request");
+                            assert.equal(uploadRequestParams["x-amz-date"], policyDate);
 
-                    assert.ok(uploadRequestParams.file);
+                            assert.ok(uploadRequestParams.file);
 
-                    assert.equal(uploadRequestParams["x-amz-signature"], "thesignature");
-                    assert.equal(uploadRequestParams.policy, "thepolicy");
+                            assert.equal(uploadRequestParams["x-amz-signature"], "thesignature");
+                            assert.equal(uploadRequestParams.policy, "thepolicy");
 
-                    done();
+                            done();
+                        }, 0);
+                    });
                 });
             });
 
@@ -121,9 +125,11 @@ if (qqtest.canDownloadFileAsBlob) {
                     policyDate = conditions["x-amz-date"];
                     signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                    uploadRequestParams = uploadRequest.requestBody.fields;
-                    assert.equal(uploadRequestParams["x-amz-date"], policyDate);
-                    done();
+                    setTimeout(function () {
+                        uploadRequestParams = uploadRequest.requestBody.fields;
+                        assert.equal(uploadRequestParams["x-amz-date"], policyDate);
+                        done();
+                    }, 0);
                 });
             });
 
@@ -148,9 +154,11 @@ if (qqtest.canDownloadFileAsBlob) {
                     policyDate = conditions["x-amz-date"];
                     signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                    uploadRequestParams = uploadRequest.requestBody.fields;
-                    assert.equal(uploadRequestParams["x-amz-date"], policyDate);
-                    done();
+                    setTimeout(function () {
+                        uploadRequestParams = uploadRequest.requestBody.fields;
+                        assert.equal(uploadRequestParams["x-amz-date"], policyDate);
+                        done();
+                    }, 0);
                 });
             });
 
@@ -199,30 +207,34 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(conditions.acl, "private");
                 assert.equal(conditions.bucket, testBucketName);
                 assert.equal(conditions.success_action_status, 200);
-                assert.equal(conditions.key, uploader.getKey(0));
-                assert.equal(conditions.key, uploader.getUuid(0) + ".jpg");
-                assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
+                uploader.getKey(0).then(function(key0) {
+                    assert.equal(conditions.key, key0);
+                    assert.equal(conditions.key, uploader.getUuid(0) + ".jpg");
+                    assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
 
-                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+                    signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                uploadRequestParams = uploadRequest.requestBody.fields;
+                    setTimeout(function () {
+                        uploadRequestParams = uploadRequest.requestBody.fields;
 
-                assert.equal(uploadRequest.url, testS3Endpoint);
-                assert.equal(uploadRequest.method, "POST");
+                        assert.equal(uploadRequest.url, testS3Endpoint);
+                        assert.equal(uploadRequest.method, "POST");
 
-                assert.equal(uploadRequestParams["Content-Type"], "image/jpeg");
-                assert.equal(uploadRequestParams.success_action_status, 200);
-                assert.equal(uploadRequestParams["x-amz-storage-class"], null);
-                assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
-                assert.equal(uploadRequestParams.key, uploader.getUuid(0) + ".jpg");
-                assert.equal(uploadRequestParams.AWSAccessKeyId, testAccessKey);
-                assert.equal(uploadRequestParams.acl, "private");
-                assert.ok(uploadRequestParams.file);
+                        assert.equal(uploadRequestParams["Content-Type"], "image/jpeg");
+                        assert.equal(uploadRequestParams.success_action_status, 200);
+                        assert.equal(uploadRequestParams["x-amz-storage-class"], null);
+                        assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
+                        assert.equal(uploadRequestParams.key, uploader.getUuid(0) + ".jpg");
+                        assert.equal(uploadRequestParams.AWSAccessKeyId, testAccessKey);
+                        assert.equal(uploadRequestParams.acl, "private");
+                        assert.ok(uploadRequestParams.file);
 
-                assert.equal(uploadRequestParams.signature, "thesignature");
-                assert.equal(uploadRequestParams.policy, "thepolicy");
+                        assert.equal(uploadRequestParams.signature, "thesignature");
+                        assert.equal(uploadRequestParams.policy, "thepolicy");
 
-                done();
+                        done();
+                    }, 0);
+                });
             });
         });
 
@@ -270,9 +282,11 @@ if (qqtest.canDownloadFileAsBlob) {
                 policyDate = conditions["x-amz-date"];
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                uploadRequestParams = uploadRequest.requestBody.fields;
-                assert.equal(uploadRequestParams["x-amz-date"], policyDate);
-                done();
+                setTimeout(function () {
+                    uploadRequestParams = uploadRequest.requestBody.fields;
+                    assert.equal(uploadRequestParams["x-amz-date"], policyDate);
+                    done();
+                }, 0);
             });
         });
 
@@ -296,9 +310,11 @@ if (qqtest.canDownloadFileAsBlob) {
                 policyDate = conditions["x-amz-date"];
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                uploadRequestParams = uploadRequest.requestBody.fields;
-                assert.equal(uploadRequestParams["x-amz-date"], policyDate);
-                done();
+                setTimeout(function () {
+                    uploadRequestParams = uploadRequest.requestBody.fields;
+                    assert.equal(uploadRequestParams["x-amz-date"], policyDate);
+                    done();
+                }, 0);
             });
         });
 
@@ -329,15 +345,17 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(conditions["Content-Encoding"], "bar");
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                uploadRequestParams = uploadRequest.requestBody.fields;
+                setTimeout(function () {
+                    uploadRequestParams = uploadRequest.requestBody.fields;
 
-                assert.equal(uploadRequestParams["x-amz-meta-mixedcase"], "value");
-                assert.equal(uploadRequestParams["x-amz-meta-mixedcasefunc"], "value2");
-                assert.equal(uploadRequestParams["Content-Disposition"], "attachment; filename=foo.bar;");
-                assert.equal(uploadRequestParams["Cache-Control"], "foo");
-                assert.equal(uploadRequestParams["Content-Encoding"], "bar");
+                    assert.equal(uploadRequestParams["x-amz-meta-mixedcase"], "value");
+                    assert.equal(uploadRequestParams["x-amz-meta-mixedcasefunc"], "value2");
+                    assert.equal(uploadRequestParams["Content-Disposition"], "attachment; filename=foo.bar;");
+                    assert.equal(uploadRequestParams["Cache-Control"], "foo");
+                    assert.equal(uploadRequestParams["Content-Encoding"], "bar");
 
-                done();
+                    done();
+                }, 0);
             });
         });
 
@@ -354,16 +372,20 @@ if (qqtest.canDownloadFileAsBlob) {
                 var uploadRequestParams;
 
                 assert.equal(conditions.key, "test.jpg");
-                assert.equal(uploader.getKey(0), "test.jpg");
-                assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
+                uploader.getKey(0).then(function(key0) {
+                    assert.equal(key0, "test.jpg");
+                    assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
 
-                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+                    signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                uploadRequestParams = uploadRequest.requestBody.fields;
+                    setTimeout(function () {
+                        uploadRequestParams = uploadRequest.requestBody.fields;
 
-                assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
+                        assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
 
-                done();
+                        done();
+                    }, 0);
+                });
             });
         });
 
@@ -384,14 +406,18 @@ if (qqtest.canDownloadFileAsBlob) {
                 var uploadRequestParams;
 
                 assert.equal(conditions.key, customKeyPrefix + "test.jpg");
-                assert.equal(uploader.getKey(0), customKeyPrefix + "test.jpg");
-                assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
-                signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+                uploader.getKey(0).then(function(key0) {
+                    assert.equal(key0, customKeyPrefix + "test.jpg");
+                    assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
+                    signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                uploadRequestParams = uploadRequest.requestBody.fields;
-                assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
+                    setTimeout(function () {
+                        uploadRequestParams = uploadRequest.requestBody.fields;
+                        assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
 
-                done();
+                        done();
+                    }, 0);
+                });
             });
         });
 
@@ -412,29 +438,24 @@ if (qqtest.canDownloadFileAsBlob) {
                     var uploadRequestParams;
 
                     assert.equal(conditions.key, customKeyPrefix + "test.jpg");
-                    assert.equal(uploader.getKey(0), customKeyPrefix + "test.jpg");
-                    assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
-                    signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
+                    uploader.getKey(0).then(function(key0) {
+                        assert.equal(key0, customKeyPrefix + "test.jpg");
+                        assert.equal(conditions["x-amz-meta-qqfilename"], "test.jpg");
+                        signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                    uploadRequestParams = uploadRequest.requestBody.fields;
-                    assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
+                        setTimeout(function () {
+                            uploadRequestParams = uploadRequest.requestBody.fields;
+                            assert.equal(uploadRequestParams["x-amz-meta-qqfilename"], "test.jpg");
 
-                    done();
+                            done();
+                        }, 0);
+                    });
                 });
             }
 
-            it("qq.Promise", function(done) {
+            it("Promise", function(done) {
                 var keyFunc = function(id) {
-                    return new qq.Promise().success(customKeyPrefix + this.getName(id));
-                };
-
-                runTest(keyFunc, done);
-            });
-
-            it("Q.js", function(done) {
-                var keyFunc = function(id) {
-                    /* jshint newcap:false */
-                    return Q(customKeyPrefix + this.getName(id));
+                    return Promise.resolve(customKeyPrefix + this.getName(id));
                 };
 
                 runTest(keyFunc, done);
@@ -461,17 +482,9 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             }
 
-            it("qq.Promise", function(done) {
+            it("Promise", function(done) {
                 var keyFunc = function() {
-                    return new qq.Promise().failure();
-                };
-
-                runTest(keyFunc, done);
-            });
-
-            it("Q.js", function(done) {
-                var keyFunc = function() {
-                    return Q.reject();
+                    return Promise.reject();
                 };
 
                 runTest(keyFunc, done);
@@ -503,17 +516,9 @@ if (qqtest.canDownloadFileAsBlob) {
                 });
             }
 
-            it("qq.Promise", function(done) {
+            it("Promise", function(done) {
                 var keyFunc = function() {
-                    return new qq.Promise().failure("oops");
-                };
-
-                runTest(keyFunc, done);
-            });
-
-            it("qq.Promise", function(done) {
-                var keyFunc = function() {
-                    return Q.reject("oops");
+                    return Promise.reject("oops");
                 };
 
                 runTest(keyFunc, done);
@@ -536,10 +541,12 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(conditions.acl, "public-read");
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                uploadRequestParams = uploadRequest.requestBody.fields;
-                assert.equal(uploadRequestParams.acl, "public-read");
+                setTimeout(function () {
+                    uploadRequestParams = uploadRequest.requestBody.fields;
+                    assert.equal(uploadRequestParams.acl, "public-read");
 
-                done();
+                    done();
+                }, 0);
             });
         });
 
@@ -561,10 +568,12 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(conditions.acl, "test-acl");
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                uploadRequestParams = uploadRequest.requestBody.fields;
-                assert.equal(uploadRequestParams.acl, "test-acl");
+                setTimeout(function () {
+                    uploadRequestParams = uploadRequest.requestBody.fields;
+                    assert.equal(uploadRequestParams.acl, "test-acl");
 
-                done();
+                    done();
+                }, 0);
             });
         });
 
@@ -584,10 +593,12 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(conditions[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME], qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE);
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                uploadRequestParams = uploadRequest.requestBody.fields;
-                assert.equal(uploadRequestParams[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME], qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE);
+                setTimeout(function () {
+                    uploadRequestParams = uploadRequest.requestBody.fields;
+                    assert.equal(uploadRequestParams[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME], qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE);
 
-                done();
+                    done();
+                }, 0);
             });
         });
 
@@ -607,10 +618,12 @@ if (qqtest.canDownloadFileAsBlob) {
                 assert.equal(conditions[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE);
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
 
-                uploadRequestParams = uploadRequest.requestBody.fields;
-                assert.equal(uploadRequestParams[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE);
+                setTimeout(function () {
+                    uploadRequestParams = uploadRequest.requestBody.fields;
+                    assert.equal(uploadRequestParams[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE);
 
-                done();
+                    done();
+                }, 0);
             });
         });
 
@@ -652,27 +665,35 @@ if (qqtest.canDownloadFileAsBlob) {
                 var uploadSuccessRequest, uploadSuccessRequestParsedBody;
 
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
-                uploadRequest.respond(200, {ETag: "123"}, null);
+                setTimeout(function () {
+                    uploadRequest.respond(200, {ETag: "123"}, null);
 
-                assert.equal(fileTestHelper.getRequests().length, 3, "Wrong # of requests");
-                uploadSuccessRequest = fileTestHelper.getRequests()[2];
-                uploadSuccessRequestParsedBody = purl("http://test.com?" + uploadSuccessRequest.requestBody).param();
-                assert.equal(uploadSuccessRequest.url, uploadSuccessUrl);
-                assert.equal(uploadSuccessRequest.method, "POST");
-                assert.equal(uploadSuccessRequest.requestHeaders["Content-Type"].indexOf("application/x-www-form-urlencoded"), 0);
-                assert.equal(uploadSuccessRequest.requestHeaders["test-header-name"], uploadSuccessHeaders["test-header-name"]);
-                assert.equal(uploadSuccessRequestParsedBody["test-param-name"], uploadSuccessParams["test-param-name"]);
-                assert.equal(uploadSuccessRequestParsedBody.foo, "bar");
-                assert.equal(uploadSuccessRequestParsedBody.key, uploader.getKey(0));
-                assert.equal(uploadSuccessRequestParsedBody.uuid, uploader.getUuid(0));
-                assert.equal(uploadSuccessRequestParsedBody.name, uploader.getName(0));
-                assert.equal(uploadSuccessRequestParsedBody.bucket, testBucketName);
-                assert.equal(uploadSuccessRequestParsedBody.etag, "123");
+                    setTimeout(function () {
+                        assert.equal(fileTestHelper.getRequests().length, 3, "Wrong # of requests");
+                        uploadSuccessRequest = fileTestHelper.getRequests()[2];
+                        uploadSuccessRequestParsedBody = purl("http://test.com?" + uploadSuccessRequest.requestBody).param();
+                        assert.equal(uploadSuccessRequest.url, uploadSuccessUrl);
+                        assert.equal(uploadSuccessRequest.method, "POST");
+                        assert.equal(uploadSuccessRequest.requestHeaders["Content-Type"].indexOf("application/x-www-form-urlencoded"), 0);
+                        assert.equal(uploadSuccessRequest.requestHeaders["test-header-name"], uploadSuccessHeaders["test-header-name"]);
+                        assert.equal(uploadSuccessRequestParsedBody["test-param-name"], uploadSuccessParams["test-param-name"]);
+                        assert.equal(uploadSuccessRequestParsedBody.foo, "bar");
+                        uploader.getKey(0).then(function(key0) {
+                            assert.equal(uploadSuccessRequestParsedBody.key, key0);
+                            assert.equal(uploadSuccessRequestParsedBody.uuid, uploader.getUuid(0));
+                            assert.equal(uploadSuccessRequestParsedBody.name, uploader.getName(0));
+                            assert.equal(uploadSuccessRequestParsedBody.bucket, testBucketName);
+                            assert.equal(uploadSuccessRequestParsedBody.etag, "123");
 
-                uploadSuccessRequest.respond(200, null, null);
-                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                            uploadSuccessRequest.respond(200, null, null);
+                            setTimeout(function () {
+                                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
 
-                done();
+                                done();
+                            }, 0);
+                        });
+                    }, 0);
+                }, 0);
             });
         });
 
@@ -693,12 +714,16 @@ if (qqtest.canDownloadFileAsBlob) {
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
                 uploadRequest.respond(200, null, null);
 
-                uploadSuccessRequest = fileTestHelper.getRequests()[2];
-                assert.equal(uploadSuccessRequest.url, uploadSuccessUrl);
-                uploadSuccessRequest.respond(200, null, JSON.stringify({success: false}));
-                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                setTimeout(function() {
+                    uploadSuccessRequest = fileTestHelper.getRequests()[2];
+                    assert.equal(uploadSuccessRequest.url, uploadSuccessUrl);
+                    uploadSuccessRequest.respond(200, null, JSON.stringify({success: false}));
+                    setTimeout(function() {
+                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
 
-                done();
+                        done();
+                    }, 0);
+                }, 0);
             });
         });
 
@@ -720,12 +745,16 @@ if (qqtest.canDownloadFileAsBlob) {
                 signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
                 uploadRequest.respond(200, null, null);
 
-                uploadSuccessRequest = fileTestHelper.getRequests()[2];
-                assert.equal(uploadSuccessRequest.method, "PUT");
-                uploadSuccessRequest.respond(200, null, null);
-                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                setTimeout(function() {
+                    uploadSuccessRequest = fileTestHelper.getRequests()[2];
+                    assert.equal(uploadSuccessRequest.method, "PUT");
+                    uploadSuccessRequest.respond(200, null, null);
+                    setTimeout(function() {
+                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
 
-                done();
+                        done();
+                    }, 0);
+                }, 0);
             });
         });
     });

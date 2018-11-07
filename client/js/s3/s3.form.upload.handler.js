@@ -110,74 +110,73 @@ qq.s3.FormUploadHandler = function(options, proxy) {
      * Creates form, that will be submitted to iframe
      */
     function createForm(id, iframe) {
-        var promise = new qq.Promise(),
-            method = "POST",
+        var method = "POST",
             endpoint = options.endpointStore.get(id),
             fileName = getName(id);
 
-        generateAwsParams(id).then(function(params) {
-            var form = handler._initFormForUpload({
+        return generateAwsParams(id).then(function(params) {
+            return handler._initFormForUpload({
                 method: method,
                 endpoint: endpoint,
                 params: params,
                 paramsInBody: true,
                 targetName: iframe.name
             });
-
-            promise.success(form);
-        }, function(errorMessage) {
-            promise.failure(errorMessage);
-            handleFinishedUpload(id, iframe, fileName, {error: errorMessage});
+        }, function(error) {
+            handleFinishedUpload(id, iframe);
+            throw error;
         });
-
-        return promise;
     }
 
     function handleUpload(id) {
         var iframe = handler._createIframe(id),
             input = handler.getInput(id),
-            promise = new qq.Promise();
+            error;
 
-        createForm(id, iframe).then(function(form) {
-            form.appendChild(input);
+        return new Promise(function(resolve, reject) {
+            createForm(id, iframe).then(function(form) {
+                form.appendChild(input);
 
-            // Register a callback when the response comes in from S3
-            handler._attachLoadEvent(iframe, function(response) {
-                log("iframe loaded");
+                // Register a callback when the response comes in from S3
+                handler._attachLoadEvent(iframe, function(response) {
+                    log("iframe loaded");
 
-                // If the common response handler has determined success or failure immediately
-                if (response) {
-                    // If there is something fundamentally wrong with the response (such as iframe content is not accessible)
-                    if (response.success === false) {
-                        log("Amazon likely rejected the upload request", "error");
-                        promise.failure(response);
+                    // If the common response handler has determined success or failure immediately
+                    if (response) {
+                        // If there is something fundamentally wrong with the response (such as iframe content is not accessible)
+                        if (response.success === false) {
+                            error = new Error("Amazon likely rejected the upload request");
+                            error.response = response;
+                            log(error.message, "error");
+                            reject(error);
+                        }
                     }
-                }
-                // The generic response (iframe onload) handler was not able to make a determination regarding the success of the request
-                else {
-                    response = {};
-                    response.success = isValidResponse(id, iframe);
-
-                    // If the more specific response handle detected a problem with the response from S3
-                    if (response.success === false) {
-                        log("A success response was received by Amazon, but it was invalid in some way.", "error");
-                        promise.failure(response);
-                    }
+                    // The generic response (iframe onload) handler was not able to make a determination regarding the success of the request
                     else {
-                        qq.extend(response, qq.s3.util.parseIframeResponse(iframe));
-                        promise.success(response);
+                        response = {};
+                        response.success = isValidResponse(id, iframe);
+
+                        // If the more specific response handle detected a problem with the response from S3
+                        if (response.success === false) {
+                            error = new Error("A success response was received by Amazon, but it was invalid in some way.");
+                            error.response = response;
+                            log(error.message, "error");
+                            reject(error);
+                        }
+                        else {
+                            qq.extend(response, qq.s3.util.parseIframeResponse(iframe));
+                            resolve(response);
+                        }
                     }
-                }
 
-                handleFinishedUpload(id, iframe);
-            });
+                    handleFinishedUpload(id, iframe);
+                });
 
-            log("Sending upload request for " + id);
-            form.submit();
-            qq(form).remove();
-        }, promise.failure);
-
-        return promise;
+                log("Sending upload request for " + id);
+                form.submit();
+                qq(form).remove();
+            }, reject);
+        });
     }
 
     function handleFinishedUpload(id, iframe) {
@@ -202,37 +201,40 @@ qq.s3.FormUploadHandler = function(options, proxy) {
 
     qq.extend(this, {
         uploadFile: function(id) {
-            var name = getName(id),
-                promise = new qq.Promise();
+            var name = getName(id);
 
-            if (handler.getThirdPartyFileId(id)) {
-                if (handler._getFileState(id).bucket) {
-                    handleUpload(id).then(promise.success, promise.failure);
+            return new Promise(function(resolve, reject) {
+                if (handler.getThirdPartyFileId(id)) {
+                    if (handler._getFileState(id).bucket) {
+                        handleUpload(id).then(resolve, reject);
+                    }
+                    else {
+                        onGetBucket(id).then(function(bucket) {
+                            handler._getFileState(id).bucket = bucket;
+                            handleUpload(id).then(resolve, reject);
+                        });
+                    }
                 }
                 else {
-                    onGetBucket(id).then(function(bucket) {
-                        handler._getFileState(id).bucket = bucket;
-                        handleUpload(id).then(promise.success, promise.failure);
+                    // The S3 uploader module will either calculate the key or ask the server for it
+                    // and will call us back once it is known.
+                    onGetKeyName(id, name).then(function(key) {
+                        onGetBucket(id).then(function(bucket) {
+                            handler._getFileState(id).bucket = bucket;
+                            handler._setThirdPartyFileId(id, key);
+                            handleUpload(id).then(resolve, reject);
+                        }, function(errorReason) {
+                            var error = new Error("Failed to get bucket");
+                            error.error = errorReason;
+                            reject(error);
+                        });
+                    }, function(err) {
+                        var error = new Error("Failed to get key name");
+                        error.error = err.message;
+                        reject(error);
                     });
                 }
-            }
-            else {
-                // The S3 uploader module will either calculate the key or ask the server for it
-                // and will call us back once it is known.
-                onGetKeyName(id, name).then(function(key) {
-                    onGetBucket(id).then(function(bucket) {
-                        handler._getFileState(id).bucket = bucket;
-                        handler._setThirdPartyFileId(id, key);
-                        handleUpload(id).then(promise.success, promise.failure);
-                    }, function(errorReason) {
-                        promise.failure({error: errorReason});
-                    });
-                }, function(errorReason) {
-                    promise.failure({error: errorReason});
-                });
-            }
-
-            return promise;
+            });
         }
     });
 };

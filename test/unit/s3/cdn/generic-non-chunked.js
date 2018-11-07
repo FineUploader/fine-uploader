@@ -37,15 +37,20 @@ if (qqtest.canDownloadFileAsBlob) {
 
                         assert.equal(conditions.bucket, "mybucket");
                         signatureRequest.respond(200, null, JSON.stringify({policy: "thepolicy", signature: "thesignature"}));
-                        assert.equal(uploadRequest.url, testS3Endpoint);
 
-                        uploadRequest.respond(200, {ETag: "123"}, null);
+                        setTimeout(function () {
+                            assert.equal(uploadRequest.url, testS3Endpoint);
 
-                        uploadSuccessRequest = fileTestHelper.getRequests()[2];
-                        uploadSuccessRequestParsedBody = purl("http://test.com?" + uploadSuccessRequest.requestBody).param();
-                        assert.equal(uploadSuccessRequestParsedBody.bucket, "mybucket");
+                            uploadRequest.respond(200, {ETag: "123"}, null);
 
-                        done();
+                            setTimeout(function () {
+                                uploadSuccessRequest = fileTestHelper.getRequests()[2];
+                                uploadSuccessRequestParsedBody = purl("http://test.com?" + uploadSuccessRequest.requestBody).param();
+                                assert.equal(uploadSuccessRequestParsedBody.bucket, "mybucket");
+
+                                done();
+                            }, 0);
+                        }, 10);
                     }, 10);
                 });
             };
@@ -92,9 +97,7 @@ if (qqtest.canDownloadFileAsBlob) {
                     objectProperties: {
                         bucket: function(id) {
                             assert.equal(id, 0, "unexpected ID passed to bucket function");
-                            var promise = new qq.Promise();
-                            promise.success("mybucket");
-                            return promise;
+                            return Promise.resolve("mybucket");
                         }
                     },
                     uploadSuccess: {

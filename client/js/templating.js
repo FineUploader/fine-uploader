@@ -85,8 +85,8 @@ qq.Templating = function(spec) {
             thumbnail: "qq-thumbnail-selector"
         },
         previewGeneration = {},
-        cachedThumbnailNotAvailableImg = new qq.Promise(),
-        cachedWaitingForThumbnailImg = new qq.Promise(),
+        cachedThumbnailNotAvailableImg,
+        cachedWaitingForThumbnailImg,
         log,
         isEditElementsExist,
         isRetryElementExist,
@@ -108,66 +108,68 @@ qq.Templating = function(spec) {
                 };
 
             if (showThumbnails) {
-                if (notAvailableUrl) {
-                    options.imageGenerator.generate(notAvailableUrl, new Image(), spec).then(
-                        function(updatedImg) {
-                            cachedThumbnailNotAvailableImg.success(updatedImg);
-                        },
-                        function() {
-                            cachedThumbnailNotAvailableImg.failure();
-                            log("Problem loading 'not available' placeholder image at " + notAvailableUrl, "error");
-                        }
-                    );
-                }
-                else {
-                    cachedThumbnailNotAvailableImg.failure();
-                }
+                cachedThumbnailNotAvailableImg = new Promise(function(resolve, reject) {
+                    if (notAvailableUrl) {
+                        options.imageGenerator.generate(notAvailableUrl, new Image(), spec).then(
+                            function(updatedImg) {
+                                resolve(updatedImg);
+                            },
+                            function() {
+                                reject();
+                                log("Problem loading 'not available' placeholder image at " + notAvailableUrl, "error");
+                            }
+                        );
+                    }
+                    else {
+                        reject();
+                    }
+                });
 
-                if (waitingUrl) {
-                    options.imageGenerator.generate(waitingUrl, new Image(), spec).then(
-                        function(updatedImg) {
-                            cachedWaitingForThumbnailImg.success(updatedImg);
-                        },
-                        function() {
-                            cachedWaitingForThumbnailImg.failure();
-                            log("Problem loading 'waiting for thumbnail' placeholder image at " + waitingUrl, "error");
-                        }
-                    );
-                }
-                else {
-                    cachedWaitingForThumbnailImg.failure();
-                }
+                cachedWaitingForThumbnailImg = new Promise(function(resolve, reject) {
+                    if (waitingUrl) {
+                        options.imageGenerator.generate(waitingUrl, new Image(), spec).then(
+                            function(updatedImg) {
+                                resolve(updatedImg);
+                            },
+                            function() {
+                                reject();
+                                log("Problem loading 'waiting for thumbnail' placeholder image at " + waitingUrl, "error");
+                            }
+                        );
+                    }
+                    else {
+                        reject();
+                    }
+                });
             }
         },
 
         // Displays a "waiting for thumbnail" type placeholder image
         // iff we were able to load it during initialization of the templating module.
         displayWaitingImg = function(thumbnail) {
-            var waitingImgPlacement = new qq.Promise();
-
-            cachedWaitingForThumbnailImg.then(function(img) {
-                maybeScalePlaceholderViaCss(img, thumbnail);
-                /* jshint eqnull:true */
-                if (!thumbnail.src) {
-                    thumbnail.src = img.src;
-                    thumbnail.onload = function() {
-                        thumbnail.onload = null;
-                        show(thumbnail);
-                        waitingImgPlacement.success();
-                    };
-                }
-                else {
-                    waitingImgPlacement.success();
-                }
-            }, function() {
-                // In some browsers (such as IE9 and older) an img w/out a src attribute
-                // are displayed as "broken" images, so we should just hide the img tag
-                // if we aren't going to display the "waiting" placeholder.
-                hide(thumbnail);
-                waitingImgPlacement.success();
+            return new Promise(function(resolve) {
+                cachedWaitingForThumbnailImg.then(function(img) {
+                    maybeScalePlaceholderViaCss(img, thumbnail);
+                    /* jshint eqnull:true */
+                    if (!thumbnail.src) {
+                        thumbnail.src = img.src;
+                        thumbnail.onload = function() {
+                            thumbnail.onload = null;
+                            show(thumbnail);
+                            resolve();
+                        };
+                    }
+                    else {
+                        resolve();
+                    }
+                }, function() {
+                    // In some browsers (such as IE9 and older) an img w/out a src attribute
+                    // are displayed as "broken" images, so we should just hide the img tag
+                    // if we aren't going to display the "waiting" placeholder.
+                    hide(thumbnail);
+                    resolve();
+                });
             });
-
-            return waitingImgPlacement;
         },
 
         generateNewPreview = function(id, blob, spec) {
@@ -180,10 +182,10 @@ qq.Templating = function(spec) {
                 function() {
                     generatedThumbnails++;
                     show(thumbnail);
-                    previewGeneration[id].success();
+                    previewGeneration[id].resolve();
                 },
                 function() {
-                    previewGeneration[id].failure();
+                    previewGeneration[id].reject();
 
                     // Display the "not available" placeholder img only if we are
                     // not expecting a thumbnail at a later point, such as in a server response.
@@ -303,29 +305,28 @@ qq.Templating = function(spec) {
         // iff we were able to load this placeholder during initialization
         // of the templating module or after preview generation has failed.
         maybeSetDisplayNotAvailableImg = function(id, thumbnail) {
-            var previewing = previewGeneration[id] || new qq.Promise().failure(),
-                notAvailableImgPlacement = new qq.Promise();
+            var previewing = previewGeneration[id] || Promise.reject();
 
-            cachedThumbnailNotAvailableImg.then(function(img) {
-                previewing.then(
-                    function() {
-                        notAvailableImgPlacement.success();
-                    },
-                    function() {
-                        maybeScalePlaceholderViaCss(img, thumbnail);
+            return new Promise(function(resolve) {
+                cachedThumbnailNotAvailableImg.then(function(img) {
+                    previewing.then(
+                        function() {
+                            resolve();
+                        },
+                        function() {
+                            maybeScalePlaceholderViaCss(img, thumbnail);
 
-                        thumbnail.onload = function() {
-                            thumbnail.onload = null;
-                            notAvailableImgPlacement.success();
-                        };
+                            thumbnail.onload = function() {
+                                thumbnail.onload = null;
+                                resolve();
+                            };
 
-                        thumbnail.src = img.src;
-                        show(thumbnail);
-                    }
-                );
+                            thumbnail.src = img.src;
+                            show(thumbnail);
+                        }
+                    );
+                });
             });
-
-            return notAvailableImgPlacement;
         },
 
         /**
@@ -499,12 +500,19 @@ qq.Templating = function(spec) {
                         generateNextQueuedPreview();
                     }
                     else {
-                        displayWaitingImg(thumbnail).done(function() {
-                            previewGeneration[id] = new qq.Promise();
-
-                            previewGeneration[id].done(function() {
-                                setTimeout(generateNextQueuedPreview, options.limits.timeBetweenThumbs);
+                        displayWaitingImg(thumbnail).then(function() {
+                            var promise = new Promise(function(resolve, reject) {
+                                promise.resolve = resolve;
+                                promise.reject = reject;
                             });
+
+                            previewGeneration[id] = promise;
+
+                            function onFinally() {
+                                setTimeout(generateNextQueuedPreview, options.limits.timeBetweenThumbs);
+                            }
+
+                            previewGeneration[id].then(onFinally, onFinally);
 
                             /* jshint eqnull: true */
                             // If we've already generated an <img> for this file, use the one that exists,
@@ -600,13 +608,13 @@ qq.Templating = function(spec) {
             // Generation of the related thumbnail may still be in progress, so, wait until it is done.
             previewGeneration[cachedThumbnailId].then(function() {
                 generatedThumbnails++;
-                previewGeneration[targetThumbnailId].success();
+                previewGeneration[targetThumbnailId].resolve();
                 log(qq.format("Now using previously generated thumbnail created for ID {} on ID {}.", cachedThumbnailId, targetThumbnailId));
                 targetThumbnail.src = cachedThumbnail.src;
                 show(targetThumbnail);
             },
             function() {
-                previewGeneration[targetThumbnailId].failure();
+                previewGeneration[targetThumbnailId].reject();
                 if (!options.placeholders.waitUntilUpdate) {
                     maybeSetDisplayNotAvailableImg(targetThumbnailId, targetThumbnail);
                 }
@@ -1004,44 +1012,43 @@ qq.Templating = function(spec) {
         },
 
         showDialog: function(type, message, defaultValue) {
-            var dialog = getDialog(type),
-                messageEl = getTemplateEl(dialog, selectorClasses.dialogMessage),
-                inputEl = dialog.getElementsByTagName("INPUT")[0],
-                cancelBtn = getTemplateEl(dialog, selectorClasses.dialogCancelButton),
-                okBtn = getTemplateEl(dialog, selectorClasses.dialogOkButton),
-                promise = new qq.Promise(),
+            return new Promise(function(resolve, reject) {
+                var dialog = getDialog(type),
+                    messageEl = getTemplateEl(dialog, selectorClasses.dialogMessage),
+                    inputEl = dialog.getElementsByTagName("INPUT")[0],
+                    cancelBtn = getTemplateEl(dialog, selectorClasses.dialogCancelButton),
+                    okBtn = getTemplateEl(dialog, selectorClasses.dialogOkButton),
 
-                closeHandler = function() {
-                    cancelBtn.removeEventListener("click", cancelClickHandler);
-                    okBtn && okBtn.removeEventListener("click", okClickHandler);
-                    promise.failure();
-                },
+                    closeHandler = function() {
+                        cancelBtn.removeEventListener("click", cancelClickHandler);
+                        okBtn && okBtn.removeEventListener("click", okClickHandler);
+                        reject();
+                    },
 
-                cancelClickHandler = function() {
-                    cancelBtn.removeEventListener("click", cancelClickHandler);
-                    dialog.close();
-                },
+                    cancelClickHandler = function() {
+                        cancelBtn.removeEventListener("click", cancelClickHandler);
+                        dialog.close();
+                    },
 
-                okClickHandler = function() {
-                    dialog.removeEventListener("close", closeHandler);
-                    okBtn.removeEventListener("click", okClickHandler);
-                    dialog.close();
+                    okClickHandler = function() {
+                        dialog.removeEventListener("close", closeHandler);
+                        okBtn.removeEventListener("click", okClickHandler);
+                        dialog.close();
 
-                    promise.success(inputEl && inputEl.value);
-                };
+                        resolve(inputEl && inputEl.value);
+                    };
 
-            dialog.addEventListener("close", closeHandler);
-            cancelBtn.addEventListener("click", cancelClickHandler);
-            okBtn && okBtn.addEventListener("click", okClickHandler);
+                dialog.addEventListener("close", closeHandler);
+                cancelBtn.addEventListener("click", cancelClickHandler);
+                okBtn && okBtn.addEventListener("click", okClickHandler);
 
-            if (inputEl) {
-                inputEl.value = defaultValue;
-            }
-            messageEl.textContent = message;
+                if (inputEl) {
+                    inputEl.value = defaultValue;
+                }
+                messageEl.textContent = message;
 
-            dialog.showModal();
-
-            return promise;
+                dialog.showModal();
+            });
         }
     });
 };

@@ -19,31 +19,8 @@ if (qqtest.canDownloadFileAsBlob) {
             };
 
         function testDeleteFile(done, expectedMethod, deleteEnabled, successful, reject, expectedParams, setParamsViaOptions, expectedHeaders, setHeadersViaOptions) {
-            var expectedAssertions = 0;
-
             expectedParams = expectedParams || {};
             expectedHeaders = expectedHeaders || {};
-
-            if (!deleteEnabled) {
-                expectedAssertions = 2;
-            }
-            else if (reject) {
-                expectedAssertions = 3;
-            }
-            else {
-                if (expectedMethod === "POST") {
-                    expectedAssertions = 12 + Object.keys(expectedParams).length;
-                }
-                else {
-                    expectedAssertions = 10 + Object.keys(expectedParams).length;
-                }
-            }
-
-            if (Object.keys(expectedHeaders).length) {
-                expectedAssertions += 2;
-            }
-
-            assert.expect(expectedAssertions, done);
 
             var uploader = new qq.FineUploaderBasic({
                 request: {
@@ -75,47 +52,50 @@ if (qqtest.canDownloadFileAsBlob) {
 
                         uploader.deleteFile(id);
 
-                        deleteRequest = fileTestHelper.getRequests()[1];
+                        setTimeout(function() {
+                            deleteRequest = fileTestHelper.getRequests()[1];
 
-                        if (deleteEnabled && !reject) {
-                            deleteRequestPurl = purl(deleteRequest.url);
+                            if (deleteEnabled && !reject) {
+                                deleteRequestPurl = purl(deleteRequest.url);
 
-                            assert.equal(fileTestHelper.getRequests().length, 2, "Wrong # of requests");
-                            assert.equal(deleteRequest.method, expectedMethod, "Wrong method for delete request");
+                                assert.equal(fileTestHelper.getRequests().length, 2, "Wrong # of requests");
+                                assert.equal(deleteRequest.method, expectedMethod, "Wrong method for delete request");
 
-                            if (expectedMethod === "DELETE") {
-                                assert.equal(deleteRequestPurl.attr("path"), testDeleteEndpoint + "/" + uuid, "Wrong endpoint for delete request");
+                                if (expectedMethod === "DELETE") {
+                                    assert.equal(deleteRequestPurl.attr("path"), testDeleteEndpoint + "/" + uuid, "Wrong endpoint for delete request");
 
-                                if (Object.keys(expectedParams).length) {
-                                    assert.equal(deleteRequestPurl.param("foo"), expectedParams.foo, "Wrong 'foo' parameter");
-                                    assert.equal(deleteRequestPurl.param("one"), expectedParams.one, "Wrong 'one' parameter");
-                                    assert.equal(deleteRequestPurl.param("thefunc"), expectedParams.thefunc(), "Wrong 'thefunc' parameter");
+                                    if (Object.keys(expectedParams).length) {
+                                        assert.equal(deleteRequestPurl.param("foo"), expectedParams.foo, "Wrong 'foo' parameter");
+                                        assert.equal(deleteRequestPurl.param("one"), expectedParams.one, "Wrong 'one' parameter");
+                                        assert.equal(deleteRequestPurl.param("thefunc"), expectedParams.thefunc(), "Wrong 'thefunc' parameter");
+                                    }
                                 }
+                                else {
+                                    deleteRequestBodyPurl = purl("?" + deleteRequest.requestBody);
+                                    assert.equal(deleteRequestPurl.attr("path"), testDeleteEndpoint, "Wrong endpoint for delete request");
+                                    assert.equal(deleteRequestBodyPurl.param("_method"), "DELETE", "Wrong _method param");
+                                    assert.equal(deleteRequestBodyPurl.param("qquuid"), uuid, "Wrong qquuid param");
+
+                                    if (Object.keys(expectedParams).length) {
+                                        assert.equal(deleteRequestBodyPurl.param("foo"), expectedParams.foo, "Wrong 'foo' parameter");
+                                        assert.equal(deleteRequestBodyPurl.param("one"), expectedParams.one, "Wrong 'one' parameter");
+                                        assert.equal(deleteRequestBodyPurl.param("thefunc"), expectedParams.thefunc(), "Wrong 'thefunc' parameter");
+                                    }
+                                }
+
+                                if (Object.keys(expectedHeaders).length) {
+                                    assert.equal(deleteRequest.requestHeaders.one, expectedHeaders.one, "Wrong 'one' header");
+                                    assert.equal(deleteRequest.requestHeaders.two, expectedHeaders.two, "Wrong 'two' header");
+                                }
+
+                                deleteRequest.respond(successful ? 200 : 500, null, null);
                             }
                             else {
-                                deleteRequestBodyPurl = purl("?" + deleteRequest.requestBody);
-                                assert.equal(deleteRequestPurl.attr("path"), testDeleteEndpoint, "Wrong endpoint for delete request");
-                                assert.equal(deleteRequestBodyPurl.param("_method"), "DELETE", "Wrong _method param");
-                                assert.equal(deleteRequestBodyPurl.param("qquuid"), uuid, "Wrong qquuid param");
-
-                                if (Object.keys(expectedParams).length) {
-                                    assert.equal(deleteRequestBodyPurl.param("foo"), expectedParams.foo, "Wrong 'foo' parameter");
-                                    assert.equal(deleteRequestBodyPurl.param("one"), expectedParams.one, "Wrong 'one' parameter");
-                                    assert.equal(deleteRequestBodyPurl.param("thefunc"), expectedParams.thefunc(), "Wrong 'thefunc' parameter");
-                                }
+                                /* jshint eqnull:true */
+                                assert.ok(deleteRequest == null, "delete request may have been sent");
                             }
-
-                            if (Object.keys(expectedHeaders).length) {
-                                assert.equal(deleteRequest.requestHeaders.one, expectedHeaders.one, "Wrong 'one' header");
-                                assert.equal(deleteRequest.requestHeaders.two, expectedHeaders.two, "Wrong 'two' header");
-                            }
-
-                            deleteRequest.respond(successful ? 200 : 500, null, null);
-                        }
-                        else {
-                            /* jshint eqnull:true */
-                            assert.ok(deleteRequest == null, "delete request may have been sent");
-                        }
+                            done();
+                        }, 0);
                     },
                     onSubmitDelete: function(id) {
                         assert.equal(id, 0, "Wrong ID passed to onSubmitDelete");
@@ -165,9 +145,11 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploader.addFiles({name: "test", blob: blob});
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
-                request = fileTestHelper.getRequests()[0];
-                request.respond(200, null, JSON.stringify({success: true}));
+                setTimeout(function () {
+                    assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                    request = fileTestHelper.getRequests()[0];
+                    request.respond(200, null, JSON.stringify({success: true}));
+                }, 0);
             });
         }
 

@@ -55,16 +55,20 @@ if (qqtest.canDownloadFileAsBlob) {
                     requestParams;
 
                 uploader.addFiles({name: "test", blob: blob});
-                uploader.uploadStoredFiles();
+                setTimeout(function() {
+                    uploader.uploadStoredFiles();
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
-                request = fileTestHelper.getRequests()[0];
+                    setTimeout(function() {
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                        request = fileTestHelper.getRequests()[0];
 
-                assert.equal(request.method, "PUT", "Wrong request method");
+                        assert.equal(request.method, "PUT", "Wrong request method");
 
-                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                        fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
 
-                done();
+                        done();
+                    }, 0);
+                }, 0);
             });
         });
 
@@ -79,11 +83,15 @@ if (qqtest.canDownloadFileAsBlob) {
                 var request;
 
                 uploader.addFiles({name: "test", blob: blob});
-                uploader.uploadStoredFiles();
+                setTimeout(function() {
+                    uploader.uploadStoredFiles();
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                    setTimeout(function() {
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 
-                fileTestHelper.getRequests()[0].respond(201, null, JSON.stringify({success: true}));
+                        fileTestHelper.getRequests()[0].respond(201, null, JSON.stringify({success: true}));
+                    }, 0);
+                }, 0);
             });
         });
 
@@ -98,11 +106,15 @@ if (qqtest.canDownloadFileAsBlob) {
                 var request;
 
                 uploader.addFiles({name: "test", blob: blob});
-                uploader.uploadStoredFiles();
+                setTimeout(function() {
+                    uploader.uploadStoredFiles();
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                    setTimeout(function() {
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 
-                fileTestHelper.getRequests()[0].respond(202, null, JSON.stringify({success: true}));
+                        fileTestHelper.getRequests()[0].respond(202, null, JSON.stringify({success: true}));
+                    }, 0);
+                }, 0);
             });
         });
 
@@ -117,11 +129,15 @@ if (qqtest.canDownloadFileAsBlob) {
                 var request;
 
                 uploader.addFiles({name: "test", blob: blob});
-                uploader.uploadStoredFiles();
+                setTimeout(function() {
+                    uploader.uploadStoredFiles();
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                    setTimeout(function() {
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 
-                fileTestHelper.getRequests()[0].respond(203, null, JSON.stringify({success: true}));
+                        fileTestHelper.getRequests()[0].respond(203, null, JSON.stringify({success: true}));
+                    }, 0);
+                }, 0);
             });
         });
 
@@ -136,11 +152,15 @@ if (qqtest.canDownloadFileAsBlob) {
                 var request;
 
                 uploader.addFiles({name: "test", blob: blob});
-                uploader.uploadStoredFiles();
+                setTimeout(function() {
+                    uploader.uploadStoredFiles();
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                    setTimeout(function() {
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 
-                fileTestHelper.getRequests()[0].respond(204, null, JSON.stringify({success: true}));
+                        fileTestHelper.getRequests()[0].respond(204, null, JSON.stringify({success: true}));
+                    }, 0);
+                }, 0);
             });
         });
 
@@ -155,11 +175,15 @@ if (qqtest.canDownloadFileAsBlob) {
                 var request;
 
                 uploader.addFiles({name: "test", blob: blob});
-                uploader.uploadStoredFiles();
+                setTimeout(function() {
+                    uploader.uploadStoredFiles();
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                    setTimeout(function() {
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 
-                fileTestHelper.getRequests()[0].respond(204, null, JSON.stringify({success: true}));
+                        fileTestHelper.getRequests()[0].respond(204, null, JSON.stringify({success: true}));
+                    }, 0);
+                }, 0);
             });
         });
 
@@ -180,20 +204,24 @@ if (qqtest.canDownloadFileAsBlob) {
                     };
 
                 uploader.addFiles(fakeFileInput);
-                uploader.uploadStoredFiles();
+                setTimeout(function() {
+                    uploader.uploadStoredFiles();
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
-                request = fileTestHelper.getRequests()[0];
-                requestParams = request.requestBody.fields;
+                    setTimeout(function() {
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                        request = fileTestHelper.getRequests()[0];
+                        requestParams = request.requestBody.fields;
 
-                assert.equal(requestParams.qquuid, uploader.getUuid(0), "Wrong UUID param sent with request");
-                assert.equal(requestParams.qqfilename, uploader.getName(0), "Wrong filename param sent with request");
-                assert.equal(requestParams.qqtotalfilesize, uploader.getSize(0), "Wrong file size param sent with request");
-                assert.ok(qq.isBlob(requestParams.qqfile), "File is incorrect");
-                assert.equal(request.method, "POST", "Wrong request method");
-                assert.equal(request.url, testUploadEndpoint, "Wrong request url");
+                        assert.equal(requestParams.qquuid, uploader.getUuid(0), "Wrong UUID param sent with request");
+                        assert.equal(requestParams.qqfilename, uploader.getName(0), "Wrong filename param sent with request");
+                        assert.equal(requestParams.qqtotalfilesize, uploader.getSize(0), "Wrong file size param sent with request");
+                        assert.ok(qq.isBlob(requestParams.qqfile), "File is incorrect");
+                        assert.equal(request.method, "POST", "Wrong request method");
+                        assert.equal(request.url, testUploadEndpoint, "Wrong request url");
 
-                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                        fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                    }, 0);
+                }, 0);
             });
         });
 
@@ -209,20 +237,24 @@ if (qqtest.canDownloadFileAsBlob) {
                     requestParams;
 
                 uploader.addFiles({name: "test", blob: blob});
-                uploader.uploadStoredFiles();
+                setTimeout(function() {
+                    uploader.uploadStoredFiles();
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
-                request = fileTestHelper.getRequests()[0];
-                requestParams = request.requestBody.fields;
+                    setTimeout(function() {
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                        request = fileTestHelper.getRequests()[0];
+                        requestParams = request.requestBody.fields;
 
-                assert.equal(requestParams.qquuid, uploader.getUuid(0), "Wrong UUID param sent with request");
-                assert.equal(requestParams.qqfilename, uploader.getName(0), "Wrong filename param sent with request");
-                assert.equal(requestParams.qqtotalfilesize, uploader.getSize(0), "Wrong file size param sent with request");
-                assert.ok(qq.isBlob(requestParams.qqfile), "File is incorrect");
-                assert.equal(request.method, "POST", "Wrong request method");
-                assert.equal(request.url, testUploadEndpoint, "Wrong request url");
+                        assert.equal(requestParams.qquuid, uploader.getUuid(0), "Wrong UUID param sent with request");
+                        assert.equal(requestParams.qqfilename, uploader.getName(0), "Wrong filename param sent with request");
+                        assert.equal(requestParams.qqtotalfilesize, uploader.getSize(0), "Wrong file size param sent with request");
+                        assert.ok(qq.isBlob(requestParams.qqfile), "File is incorrect");
+                        assert.equal(request.method, "POST", "Wrong request method");
+                        assert.equal(request.url, testUploadEndpoint, "Wrong request url");
 
-                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                        fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                    }, 0);
+                }, 0);
             });
         });
 
@@ -238,17 +270,19 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploader.addFiles({name: "test", blob: blob});
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
-                request = fileTestHelper.getRequests()[0];
-                purlUrl = purl(request.url);
+                setTimeout(function() {
+                    assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                    request = fileTestHelper.getRequests()[0];
+                    purlUrl = purl(request.url);
 
-                assert.equal(request.requestHeaders["X-Mime-Type"], "image/jpeg", "Wrong X-Mime-Type");
-                assert.equal(purlUrl.param("qquuid"), uploader.getUuid(0), "Wrong UUID param sent with request");
-                assert.equal(purlUrl.param("qqfilename"), uploader.getName(0), "Wrong filename param sent with request");
-                assert.equal(request.method, "POST", "Wrong request method");
-                assert.equal(purlUrl.attr("path"), testUploadEndpoint, "Wrong request url");
+                    assert.equal(request.requestHeaders["X-Mime-Type"], "image/jpeg", "Wrong X-Mime-Type");
+                    assert.equal(purlUrl.param("qquuid"), uploader.getUuid(0), "Wrong UUID param sent with request");
+                    assert.equal(purlUrl.param("qqfilename"), uploader.getName(0), "Wrong filename param sent with request");
+                    assert.equal(request.method, "POST", "Wrong request method");
+                    assert.equal(purlUrl.attr("path"), testUploadEndpoint, "Wrong request url");
 
-                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                    fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                }, 0);
             });
         });
 
@@ -275,15 +309,17 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploader.addFiles(blob);
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
-                request = fileTestHelper.getRequests()[0];
-                requestParams = request.requestBody.fields;
+                setTimeout(function() {
+                    assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                    request = fileTestHelper.getRequests()[0];
+                    requestParams = request.requestBody.fields;
 
-                assert.equal(requestParams[uuidParamName], uploader.getUuid(0), "Wrong UUID param sent with request");
-                assert.equal(requestParams[filenameParamName], uploader.getName(0), "Wrong filename param sent with request");
-                assert.equal(requestParams[totalFileSizeParamName], uploader.getSize(0), "Wrong file size param sent with request");
-                assert.ok(qq.isBlob(requestParams[inputParamName]), "File is incorrect");
-                done();
+                    assert.equal(requestParams[uuidParamName], uploader.getUuid(0), "Wrong UUID param sent with request");
+                    assert.equal(requestParams[filenameParamName], uploader.getName(0), "Wrong filename param sent with request");
+                    assert.equal(requestParams[totalFileSizeParamName], uploader.getSize(0), "Wrong file size param sent with request");
+                    assert.ok(qq.isBlob(requestParams[inputParamName]), "File is incorrect");
+                    done();
+                }, 0);
             });
         });
 
@@ -322,7 +358,9 @@ if (qqtest.canDownloadFileAsBlob) {
 
                 uploader.addFiles(blob);
 
-                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true, newUuid: newUuid}));
+                setTimeout(function() {
+                    fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true, newUuid: newUuid}));
+                }, 0);
             });
         });
 
@@ -414,7 +452,9 @@ if (qqtest.canDownloadFileAsBlob) {
                 fileTestHelper.mockXhr();
 
                 uploader.addFiles(blob);
-                fileTestHelper.getRequests()[0].respond(500, null, JSON.stringify({success: true}));
+                setTimeout(function() {
+                    fileTestHelper.getRequests()[0].respond(500, null, JSON.stringify({success: true}));
+                }, 0);
             });
         });
 
@@ -498,9 +538,12 @@ if (qqtest.canDownloadFileAsBlob) {
                     });
 
                 uploader.addFiles({name: "test", blob: blob});
-                uploader.uploadStoredFiles();
-
-                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                setTimeout(function() {
+                    uploader.uploadStoredFiles();
+                    setTimeout(function() {
+                        fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                    }, 0);
+                }, 0);
             });
         });
 

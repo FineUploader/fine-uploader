@@ -77,12 +77,12 @@
         },
 
         _getEndpointSpecificParams: function(id) {
-            return {
+            return Promise.resolve({
                 blob: this.getBlobName(id),
                 uuid: this.getUuid(id),
                 name: this.getName(id),
                 container: this._endpointStore.get(id)
-            };
+            });
         },
 
         _createUploadHandler: function() {
@@ -109,11 +109,11 @@
                         if (fileExtension !== undefined) {
                             blobNameToUse += "." + fileExtension;
                         }
-                        return new qq.Promise().success(blobNameToUse);
+                        return Promise.resolve(blobNameToUse);
                     case "filename":
-                        return new qq.Promise().success(filename);
+                        return Promise.resolve(filename);
                     default:
-                        return new qq.Promise.failure("Invalid blobName option value - " + blobNameOptionValue);
+                        return Promise.reject(new Error("Invalid blobName option value - " + blobNameOptionValue));
                 }
             }
             else {
@@ -153,14 +153,14 @@
                     deleteBlobSasUri[id] = sasUri;
                     deleteBlob.send(id);
                 },
-                getSasFailure = function(id, reason, xhr) {
+                getSasFailure = function(id, error) {
                     if (relatedToCancel) {
                         self.log("Will cancel upload, but cannot remove uncommitted parts from Azure due to issue retrieving SAS", "error");
                         qq.FineUploaderBasic.prototype._onCancel.call(self, id, self.getName(id));
                     }
                     else {
-                        self._onDeleteComplete(id, xhr, true);
-                        self._options.callbacks.onDeleteComplete(id, xhr, true);
+                        self._onDeleteComplete(id, error.xhr, true);
+                        self._options.callbacks.onDeleteComplete(id, error.xhr, true);
                     }
                 },
                 deleteBlob = new qq.azure.DeleteBlob({

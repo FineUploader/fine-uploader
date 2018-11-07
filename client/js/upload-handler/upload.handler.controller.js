@@ -62,7 +62,9 @@ qq.UploadHandlerController = function(o, namespace) {
 
             log("All chunks have been uploaded for " + id + " - finalizing....");
             handler.finalizeChunks(id).then(
-                function(response, xhr) {
+                function(info) {
+                    var response = info.response,
+                        xhr = info.xhr;
                     log("Finalize successful for " + id);
 
                     var normaizedResponse = upload.normalizeResponse(response, true);
@@ -71,8 +73,9 @@ qq.UploadHandlerController = function(o, namespace) {
                     handler._maybeDeletePersistedChunkData(id);
                     upload.cleanup(id, normaizedResponse, xhr);
                 },
-                function(response, xhr) {
-                    var normalizedResponse = upload.normalizeResponse(response, false);
+                function(error) {
+                    var xhr = error.xhr;
+                    var normalizedResponse = upload.normalizeResponse(error.response, false);
 
                     log("Problem finalizing chunks for file ID " + id + " - " + normalizedResponse.error, "error");
 
@@ -233,7 +236,9 @@ qq.UploadHandlerController = function(o, namespace) {
 
                             handler.uploadChunk(uploadChunkData).then(
                                 // upload chunk success
-                                function success(response, xhr) {
+                                function success(info) {
+                                    var response = info.response,
+                                        xhr = info.xhr;
                                     log("Chunked upload request succeeded for " + id + ", chunk " + chunkIdx);
 
                                     handler.clearCachedChunk(id, chunkIdx);
@@ -261,16 +266,17 @@ qq.UploadHandlerController = function(o, namespace) {
                                     else {
                                         log(qq.format("File ID {} has no more chunks to send and these chunk indexes are still marked as in-progress: {}", id, JSON.stringify(inProgressChunks)));
                                     }
+                                    handler.clearXhr(id, chunkIdx);
                                 },
 
                                 // upload chunk failure
-                                function failure(response, xhr) {
+                                function failure(error) {
+                                    var response = error.response,
+                                        xhr = error.xhr;
                                     chunked.handleFailure(chunkIdx, id, response, xhr);
-                                }
-                            )
-                                .done(function () {
                                     handler.clearXhr(id, chunkIdx);
-                                });
+                                }
+                            );
                         }
                     },
 
@@ -404,7 +410,9 @@ qq.UploadHandlerController = function(o, namespace) {
 
             log("Sending simple upload request for " + id);
             handler.uploadFile(id).then(
-                function(response, optXhr) {
+                function(info) {
+                    var response = info.response,
+                        optXhr = info.xhr;
                     log("Simple upload request succeeded for " + id);
 
                     var responseToReport = upload.normalizeResponse(response, true),
@@ -415,10 +423,11 @@ qq.UploadHandlerController = function(o, namespace) {
                     upload.cleanup(id, responseToReport, optXhr);
                 },
 
-                function(response, optXhr) {
+                function(error) {
+                    var optXhr = error.xhr;
                     log("Simple upload request failed for " + id);
 
-                    var responseToReport = upload.normalizeResponse(response, false);
+                    var responseToReport = upload.normalizeResponse({error: error.error || error.message, azureError: error.azureError}, false);
 
                     if (!options.onAutoRetry(id, name, responseToReport, optXhr)) {
                         upload.cleanup(id, responseToReport, optXhr);
@@ -687,7 +696,7 @@ qq.UploadHandlerController = function(o, namespace) {
         cancel: function(id) {
             var cancelRetVal = handler.cancel(id);
 
-            if (qq.isGenericPromise(cancelRetVal)) {
+            if (cancelRetVal instanceof Promise) {
                 cancelRetVal.then(function() {
                     upload.cancel(id);
                 });

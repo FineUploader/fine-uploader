@@ -81,12 +81,12 @@ declare module "fine-uploader/lib/core" {
          * @param boolean fromServer : true if the image data will come as a response from the server rather than be generated client-side
          * @param CustomResizerCallBack customResizer : Ignored if the current browser does not support image previews.
          *                                              If you want to use an alternate library to resize the image, you must contribute a function for this option that returns a `Promise`.
-         *                                              Once the resize is complete, your promise must be fulfilled.
+         *                                              Once the resize is complete, resolve the promise.
          *                                              You may, of course, reject your returned `Promise` is the resize fails in some way.
-         * @returns Promise: Fulfilled by passing the container back into the success callback after the thumbnail has been rendered.
-         *                   If the thumbnail cannot be rendered, failure callbacks will be invoked instead, passing an object with `container` and `error` properties.
+         * @returns {Promise} : Resolved with the container after the thumbnail has been rendered.
+         *                      If the thumbnail cannot be rendered, failure callbacks will be invoked instead, passing an object with `container` and `error` properties.
          */
-        drawThumbnail(id: number, targetContainer: HTMLElement, maxSize?: number, fromServer?: boolean, customResizer?: CustomResizerCallBack): PromiseOptions;
+        drawThumbnail(id: number, targetContainer: HTMLElement, maxSize?: number, fromServer?: boolean, customResizer?: CustomResizerCallBack): Promise<void>;
 
         /**
          * Returns the button container element associated with a file
@@ -231,10 +231,10 @@ declare module "fine-uploader/lib/core" {
          *
          * @param number id : The id of the image file
          * @param ScaleImageOptions option : Information about the scaled image to generate
-         * @returns PromiseOptions : Fulfilled by passing the scaled image as a `Blob` back into the success callback after the original image has been scaled.
-         *                         If the scaled image cannot be generated, the failure callback will be invoked instead
+         * @returns {Promise} : Resolved with the scaled image as a `Blob` after the original image has been scaled.
+         *                      If the scaled image cannot be generated, the promise is rejected.
          */
-        scaleImage(id: number, options: ScaleImageOptions): PromiseOptions;
+        scaleImage(id: number, options: ScaleImageOptions): Promise<Blob>;
 
         /**
          * Set custom headers for an upload request. Pass in a file id to make the headers specific to that file
@@ -591,9 +591,9 @@ declare module "fine-uploader/lib/core" {
          * Contribute this function to manually resize images using alternate 3rd party libraries
          *
          * @param ResizeInfo resizeInfo : the ResizeInfo object containing all the resize values/options
-         * @returns Promise : Once the resize is complete, the function must return a promise
+         * @returns {Promise} : Once the resize is complete, the function must return a promise
          */
-        (resizeInfo: ResizeInfo): PromiseOptions;
+        (resizeInfo: ResizeInfo): Promise<void>;
     }
 
     /**
@@ -694,55 +694,10 @@ declare module "fine-uploader/lib/core" {
          *
          * If you want to use an alternate library to resize the image, you must contribute a function for this option that returns a `Promise`.
          *
-         * Once the resize is complete, your promise must be fulfilled.
+         * Once the resize is complete, your promise must be resolved.
          * You may, of course, reject your returned `Promise` is the resize fails in some way.
          */
         customResizer?: CustomResizerCallBack;
-    }
-
-    export interface PromiseOptions {
-        /**
-         * Register callbacks from success and failure.
-         *
-         * The promise instance that then is called on will pass any values into the provided callbacks.
-         * If success or failure have already occurred before these callbacks have been registered, then they will be called immediately after this call has been executed.
-         * Each subsequent call to then registers an additional set of callbacks.
-         *
-         * @param Function successCallback : The function to call when the promise is successfully fulfilled
-         * @param Function failureCallback : The function to call when the promise is unsuccessfully fulfilled
-         * @return PromiseOptions : An instance of a promise
-         */
-        then(successCallback: Function, failureCallback: Function): PromiseOptions;
-
-        /**
-         * Register callbacks for success or failure.
-         *
-         * Invoked when the promise is fulfilled regardless of the result.
-         * The promise instance that done is called on will pass any values into the provided callback.
-         * Each call to done registers an additional set of callbacks
-         *
-         * @param Function callback : The function to call when the promise is fulfilled, successful or not.
-         * @return PromiseOptions : An instance of a promise
-         */
-        done(callback: Function): PromiseOptions;
-
-        /**
-         * Call this on a promise to indicate success.
-         * The parameter values will depend on the situation.
-         *
-         * @param Object param : The value to pass to the promise's success handler.
-         * @return PromiseOptions : An instance of a promise
-         */
-        success(param: any): PromiseOptions;
-
-        /**
-         * Call this on a promise to indicate failure.
-         * The parameter values will depend on the situation.
-         *
-         * @param Object param : The value to pass to the promise's failure handler.
-         * @return PromiseOptions : An instance of a promise
-         */
-        failure(param: any): PromiseOptions;
     }
 
     /**
@@ -1518,7 +1473,7 @@ declare module "fine-uploader/lib/core" {
          * Ignored if the current browser does not support image previews.
          *
          * If you want to use an alternate scaling library, you must contribute a function for this option that returns a Promise.
-         * Once the resize is complete, your promise must be fulfilled. You may, of course, reject your returned Promise is the resize fails in some way
+         * Once the resize is complete, your promise must be resolved. You may, of course, reject your returned Promise is the resize fails in some way
          *
          * @default `undefined`
          */
@@ -1803,9 +1758,9 @@ declare module "fine-uploader/lib/core" {
          *
          * The pasted image is represented as a `Blob`. Also can return a `Promise` if non-blocking work is required here.
          *
-         * If using a `Promise` the value of the success parameter must be the name to associate with the pasted image.
+         * If using a resolved `Promise`, the value must be the name to associate with the pasted image.
          *
-         * If the associated attempt is marked a failure then you should include a string explaining the reason in your failure callback for the `Promise`
+         * If the associated attempt is rejected, provide an error describing the reason.
          *
          * ###NOTE:
          * The `promptForName` option, if `true`, will effectively wipe away any custom implementation of this callback.
@@ -1929,7 +1884,7 @@ declare module "fine-uploader/lib/core" {
          *
          * This event will not be called if you return `false` in your `validateBatch` event handler, or if the `stopOnFirstInvalidFile` validation option is `true` and the `validate` event handler has returned `false` for an item.
          *
-         * A promise can be used if non-blocking work is required. Processing of this item is deferred until the promise is fullfilled. If a promise is returned, a call to `failure` is the same as returning `false`.
+         * A promise can be used if non-blocking work is required. Processing of this item is deferred until the promise is fullfilled. Returning a rejected promise is the treated the same as returning `false`.
          *
          * A buttonContainer element will be passed as the last argument, provided the file was submitted using a Fine Uploader tracked button.
          *
@@ -1958,7 +1913,7 @@ declare module "fine-uploader/lib/core" {
          * @param number id : The current file's id
          * @param string name : The current file's name
          */
-        (id: number, name: string): boolean | PromiseOptions | void;
+        (id: number, name: string): boolean | Promise<{}> | void;
     }
 
     /**
@@ -2038,7 +1993,7 @@ declare module "fine-uploader/lib/core" {
         /**
          * @param Blob blob : An object encapsulating the image pasted from the clipboard
          */
-        (blob: Blob): PromiseOptions | void;
+        (blob: Blob): Promise<void> | void;
     }
 
     /**
@@ -2064,7 +2019,7 @@ declare module "fine-uploader/lib/core" {
          * @param Object chunkData : The chunk that will be sent next when file upload resumes
          * @param Object customResumeData : Any custom resume data provided for this resumable file
          */
-        (id: number, name: string, chunkData: any, customResumeData: any): void | Promise<any>;
+        (id: number, name: string, chunkData: any, customResumeData: any): void | Promise<void>;
     }
 
     /**
@@ -2096,7 +2051,7 @@ declare module "fine-uploader/lib/core" {
          * @param number id : The current file's id
          * @param string name : The current file's name
          */
-        (id: number, name: string): boolean | PromiseOptions | void;
+        (id: number, name: string): boolean | Promise<void> | void;
     }
 
     /**
@@ -2106,7 +2061,7 @@ declare module "fine-uploader/lib/core" {
         /**
          * @param number id : The current file's id
          */
-        (id: number): PromiseOptions | void;
+        (id: number): Promise<void> | void;
     }
 
     /**
@@ -2174,7 +2129,7 @@ declare module "fine-uploader/lib/core" {
          * @param string name : The current file's name
          * @param ChunkData chunkData : An object encapsulating the current chunk of data about to be uploaded
          */
-        (id: number, name: string, chunkData: ChunkData): void | Promise<any>;
+        (id: number, name: string, chunkData: ChunkData): void | Promise<void>;
     }
 
     /**
@@ -2212,7 +2167,7 @@ declare module "fine-uploader/lib/core" {
          * @param BlobDataObject data : An object with a name and size property
          * @param HTMLElement buttonContainer : The button corresponding to the respective file if the file was submitted to Fine Uploader using a tracked button
          */
-        (data: BlobDataObject, buttonContainer?: HTMLElement): PromiseOptions | void;
+        (data: BlobDataObject, buttonContainer?: HTMLElement): Promise<void> | void;
     }
 
     /**
@@ -2223,7 +2178,7 @@ declare module "fine-uploader/lib/core" {
          * @param BlobDataObject[] fileOrBlobDataArray : An array of Objects with name and size properties
          * @param HTMLElement buttonContainer : The button corresponding to the respective file if the file was submitted to Fine Uploader using a tracked button
          */
-        (fileOrBlobDataArray: BlobDataObject[], buttonContainer: HTMLElement): PromiseOptions | void;
+        (fileOrBlobDataArray: BlobDataObject[], buttonContainer: HTMLElement): Promise<void> | void;
     }
 
 }
@@ -2243,7 +2198,6 @@ declare module "fine-uploader" {
         PasteOptions,
         ScalingOptions,
         TextOptions,
-        PromiseOptions,
         CustomResizerCallBack
     } from 'fine-uploader/lib/core';
 
@@ -2401,21 +2355,21 @@ declare module "fine-uploader" {
      * function for `showMessage` option
      */
     export interface ShowMessageFunction {
-        (message: string): PromiseOptions | void;
+        (message: string): Promise<void> | void;
     }
 
     /**
      * function for `showConfirm` option
      */
     export interface ShowConfirmFunction {
-        (message: string): PromiseOptions | void;
+        (message: string): Promise<void> | void;
     }
 
     /**
      * function for `showPrompt` option
      */
     export interface ShowPromptFunction {
-        (message: string, defaultValue: string): PromiseOptions | void;
+        (message: string, defaultValue: string): Promise<void> | void;
     }
 
     /**
@@ -2564,7 +2518,7 @@ declare module "fine-uploader" {
          * Ignored if the current browser does not support image previews.
          *
          * If you want to use an alternate library to resize the image, you must contribute a function for this option that returns a Promise.
-         * Once the resize is complete, your promise must be fulfilled.
+         * Once the resize is complete, your promise must be resolved.
          *
          * You may, of course, reject your returned Promise is the resize fails in some way
          *
@@ -2710,8 +2664,7 @@ declare module "fine-uploader/lib/azure" {
         CorsOptions,
         RequestOptions,
         CoreOptions,
-        ResumableFileObject,
-        PromiseOptions
+        ResumableFileObject
     } from 'fine-uploader/lib/core';
 
 
@@ -2859,7 +2812,7 @@ declare module "fine-uploader/lib/azure" {
          * AzureBlobPropertyNameFunction
          */
         export interface AzureBlobPropertyNameFunction {
-            (id: number): PromiseOptions | string;
+            (id: number): Promise<string> | string;
         }
 
         /**
@@ -2875,7 +2828,7 @@ declare module "fine-uploader/lib/azure" {
              * * `function`
              *
              * If the value is a function, Fine Uploader Azure will pass the associated file ID as a parameter when invoking your function.
-             * If the value is a function it may return one of a `qq.Promise` or a `String`
+             * If the value is a function it may return one of a `Promise` or a `String`
              *
              * @default `'uuid'`
              */
@@ -3090,8 +3043,7 @@ declare module "fine-uploader/lib/s3" {
         RequestOptions,
         CoreOptions,
         ResumableFileObject,
-        CoreEvents,
-        PromiseOptions
+        CoreEvents
     } from 'fine-uploader/lib/core';
 
 
@@ -3324,21 +3276,21 @@ declare module "fine-uploader/lib/s3" {
          * type for S3's bucket object property
          */
         export interface BucketFunction {
-            (id: number): PromiseOptions | string;
+            (id: number): Promise<string> | string;
         }
 
         /**
          * type for S3's host object property
          */
         export interface HostFunction {
-            (id: number): PromiseOptions | string;
+            (id: number): Promise<string> | string;
         }
 
         /**
          * type for S3's key object property
          */
         export interface KeyFunction {
-            (id: number): PromiseOptions | string;
+            (id: number): Promise<string> | string;
         }
 
         /**
@@ -3567,7 +3519,7 @@ declare module "fine-uploader/lib/s3" {
          * onCredentialsExpired function type
          */
         export interface OnCredentialsExpired {
-            (): PromiseOptions;
+            (): Promise<object>;
         }
 
         /**
@@ -3577,8 +3529,8 @@ declare module "fine-uploader/lib/s3" {
             /**
              * Called before a request is sent to S3 if the temporary credentials have expired.
              *
-             * You must return a promise. If your attempt to refresh the temporary credentials is successful, you must fulfill the promise via the success method, passing the new credentials object.
-             * Otherwise, call failure with a descriptive reason.
+             * You must return a promise. If your attempt to refresh the temporary credentials is successful, you must resolve the promise, passing the new credentials object.
+             * Otherwise, the promise should be rejected.
              */
             onCredentialsExpired?: OnCredentialsExpired;
         }

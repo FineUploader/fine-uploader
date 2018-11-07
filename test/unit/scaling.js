@@ -15,13 +15,11 @@ if (qq.supportedFeatures.scaling) {
                 }, 10);
             },
             typicalCustomResizer = function(resizeInfo) {
-                var promise = new qq.Promise();
-
-                pica.resizeCanvas(resizeInfo.sourceCanvas, resizeInfo.targetCanvas, {}, function() {
-                    promise.success();
+                return new Promise(function(resolve) {
+                    pica.resizeCanvas(resizeInfo.sourceCanvas, resizeInfo.targetCanvas, {}, function() {
+                        resolve();
+                    });
                 });
-
-                return promise;
             };
 
         it("is disabled if no sizes are specified", function() {

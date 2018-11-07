@@ -22,17 +22,22 @@ qq.azure.GetSas = function(o) {
     qq.extend(options, o);
 
     function sasResponseReceived(id, xhr, isError) {
-        var promise = requestPromises[id];
+        var promise = requestPromises[id],
+            error;
 
         if (isError) {
-            promise.failure("Received response code " + xhr.status, xhr);
+            error = new Error("Received response code " + xhr.status);
+            error.xhr = xhr;
+            promise.reject(error);
         }
         else {
             if (xhr.responseText.length) {
-                promise.success(xhr.responseText);
+                promise.resolve(xhr.responseText);
             }
             else {
-                promise.failure("Empty response.", xhr);
+                error = new Error("Empty response.");
+                error.xhr = xhr;
+                promise.reject(error);
             }
         }
 
@@ -56,22 +61,21 @@ qq.azure.GetSas = function(o) {
 
     qq.extend(this, {
         request: function(id, blobUri) {
-            var requestPromise = new qq.Promise(),
-                restVerb = options.restRequestVerb;
+            return new Promise(function(resolve, reject) {
+                var restVerb = options.restRequestVerb;
 
-            options.log(qq.format("Submitting GET SAS request for a {} REST request related to file ID {}.", restVerb, id));
+                options.log(qq.format("Submitting GET SAS request for a {} REST request related to file ID {}.", restVerb, id));
 
-            requestPromises[id] = requestPromise;
+                requestPromises[id] = {resolve: resolve, reject: reject};
 
-            requester.initTransport(id)
-                .withParams({
-                    bloburi: blobUri,
-                    _method: restVerb
-                })
-                .withCacheBuster()
-                .send();
-
-            return requestPromise;
+                requester.initTransport(id)
+                    .withParams({
+                        bloburi: blobUri,
+                        _method: restVerb
+                    })
+                    .withCacheBuster()
+                    .send();
+            });
         }
     });
 };

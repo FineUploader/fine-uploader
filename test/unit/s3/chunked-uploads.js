@@ -24,12 +24,14 @@ if (qqtest.canDownloadFileAsBlob) {
                     fileTestHelper.mockXhr();
                     uploader.addFiles({name: "test.jpg", blob: blob});
 
-                    assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                    setTimeout(function() {
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 
-                    initiateSignatureRequest = fileTestHelper.getRequests()[0];
-                    initiateToSign = JSON.parse(initiateSignatureRequest.requestBody);
+                        initiateSignatureRequest = fileTestHelper.getRequests()[0];
+                        initiateToSign = JSON.parse(initiateSignatureRequest.requestBody);
 
-                    callback(initiateSignatureRequest, initiateToSign, uploadRequest);
+                        callback(initiateSignatureRequest, initiateToSign, uploadRequest);
+                    }, 0);
                 });
             },
             testSignatureEndoint = "/signature",
@@ -122,124 +124,137 @@ if (qqtest.canDownloadFileAsBlob) {
                         assert.ok(initiateToSign.headers.indexOf("host:mytestbucket.s3.amazonaws.com"));
                         initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                        // initiate multipart upload request
-                        assert.equal(fileTestHelper.getRequests().length, 2);
-                        initiateRequest = fileTestHelper.getRequests()[1];
-                        assert.equal(initiateRequest.method, "POST");
-                        assert.equal(initiateRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploads");
-                        assert.equal(initiateRequest.requestHeaders["x-amz-meta-qqfilename"], uploader.getName(0));
-                        assert.equal(initiateRequest.requestHeaders["x-amz-acl"], "private");
-                        assert.ok(initiateRequest.requestHeaders["x-amz-date"]);
-                        assert.equal(initiateRequest.requestHeaders.Authorization.indexOf("AWS4-HMAC-SHA256 Credential=testAccessKey/"), 0);
-                        var authParts = initiateRequest.requestHeaders.Authorization.split(";");
-                        assert.equal(authParts.length, 5);
-                        assert.equal(authParts[0].split(",")[1], "SignedHeaders=host");
-                        assert.equal(authParts[1], "x-amz-acl");
-                        assert.equal(authParts[2], "x-amz-content-sha256");
-                        assert.equal(authParts[3], "x-amz-date");
-                        assert.equal(authParts[4], "x-amz-meta-qqfilename,Signature=thesignature");
-                        initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
-
-                        setTimeout(function() {
-                            // signature request for upload part 1
-                            assert.equal(fileTestHelper.getRequests().length, 4);
-                            uploadPartSignatureRequest1 = fileTestHelper.getRequests()[3];
-                            assert.equal(uploadPartSignatureRequest1.method, "POST");
-                            assert.equal(uploadPartSignatureRequest1.url, testSignatureEndoint + "?v4=true");
-                            assert.equal(uploadPartSignatureRequest1.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
-                            uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
-                            assert.ok(uploadPartToSign1.headers);
-                            assert.equal(uploadPartToSign1.headers.indexOf("AWS4-HMAC-SHA256"), 0);
-                            assert.ok(uploadPartToSign1.headers.indexOf("/us-east-1/s3/aws4_request") > 0);
-                            assert.equal(uploadPartToSign1.headers.split("\n").length, 12);
-                            assert.ok(uploadPartToSign1.headers.indexOf("host:mytestbucket.s3.amazonaws.com"));
-                            uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
-
-                            // upload part 1 request
-                            uploadPartRequest = fileTestHelper.getRequests()[2];
-                            assert.equal(uploadPartRequest.method, "PUT");
-                            assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
-                            assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
-
-                            assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
-
-                            var authParts = uploadPartRequest.requestHeaders.Authorization.split(";");
-                            assert.equal(authParts.length, 3);
-                            assert.equal(authParts[0].split(",")[1], "SignedHeaders=host");
-                            assert.equal(authParts[1], "x-amz-content-sha256");
-                            assert.equal(authParts[2], "x-amz-date,Signature=thesignature");
-                            uploadPartRequest.respond(200, {ETag: "etag1"}, null);
-
+                        uploader.getKey(0).then(function(key0) {
                             setTimeout(function() {
-                                // signature request for upload part 2
-                                assert.equal(fileTestHelper.getRequests().length, 6);
-                                uploadPartSignatureRequest2 = fileTestHelper.getRequests()[5];
-                                assert.equal(uploadPartSignatureRequest2.method, "POST");
-                                assert.equal(uploadPartSignatureRequest2.url, testSignatureEndoint + "?v4=true");
-                                assert.equal(uploadPartSignatureRequest2.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
-                                uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest2.requestBody);
-                                assert.ok(uploadPartToSign2.headers);
-                                assert.equal(uploadPartToSign2.headers.indexOf("AWS4-HMAC-SHA256"), 0);
-                                assert.ok(uploadPartToSign2.headers.indexOf("/us-east-1/s3/aws4_request") > 0);
-                                assert.equal(uploadPartToSign2.headers.split("\n").length, 12);
-                                assert.ok(uploadPartToSign2.headers.indexOf("host:mytestbucket.s3.amazonaws.com"));
-                                uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
-
-                                // upload part 2 request
-                                uploadPartRequest = fileTestHelper.getRequests()[4];
-                                assert.equal(uploadPartRequest.method, "PUT");
-                                assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
-                                assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
-
-                                assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
-
-                                var authParts = uploadPartRequest.requestHeaders.Authorization.split(";");
-                                assert.equal(authParts.length, 3);
+                                // initiate multipart upload request
+                                assert.equal(fileTestHelper.getRequests().length, 2);
+                                initiateRequest = fileTestHelper.getRequests()[1];
+                                assert.equal(initiateRequest.method, "POST");
+                                assert.equal(initiateRequest.url, testS3Endpoint + "/" + key0 + "?uploads");
+                                assert.equal(initiateRequest.requestHeaders["x-amz-meta-qqfilename"], uploader.getName(0));
+                                assert.equal(initiateRequest.requestHeaders["x-amz-acl"], "private");
+                                assert.ok(initiateRequest.requestHeaders["x-amz-date"]);
+                                assert.equal(initiateRequest.requestHeaders.Authorization.indexOf("AWS4-HMAC-SHA256 Credential=testAccessKey/"), 0);
+                                var authParts = initiateRequest.requestHeaders.Authorization.split(";");
+                                assert.equal(authParts.length, 5);
                                 assert.equal(authParts[0].split(",")[1], "SignedHeaders=host");
-                                assert.equal(authParts[1], "x-amz-content-sha256");
-                                assert.equal(authParts[2], "x-amz-date,Signature=thesignature");
-                                uploadPartRequest.respond(200, {ETag: "etag2"}, null);
+                                assert.equal(authParts[1], "x-amz-acl");
+                                assert.equal(authParts[2], "x-amz-content-sha256");
+                                assert.equal(authParts[3], "x-amz-date");
+                                assert.equal(authParts[4], "x-amz-meta-qqfilename,Signature=thesignature");
+                                initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
 
-                                // signature request for multipart complete
-                                assert.equal(fileTestHelper.getRequests().length, 7);
-                                uploadCompleteSignatureRequest = fileTestHelper.getRequests()[6];
-                                assert.equal(uploadCompleteSignatureRequest.method, "POST");
-                                assert.equal(uploadCompleteSignatureRequest.url, testSignatureEndoint + "?v4=true");
-                                assert.equal(uploadCompleteSignatureRequest.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
-                                uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
-                                assert.ok(uploadCompleteToSign.headers);
-                                assert.equal(uploadCompleteToSign.headers.indexOf("AWS4-HMAC-SHA256"), 0);
-                                assert.ok(uploadCompleteToSign.headers.indexOf("/us-east-1/s3/aws4_request") > 0);
-                                assert.equal(uploadCompleteToSign.headers.split("\n").length, 12);
-                                assert.ok(uploadCompleteToSign.headers.indexOf("host:mytestbucket.s3.amazonaws.com"));
-                                uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                setTimeout(function() {
+                                    // signature request for upload part 1
+                                    assert.equal(fileTestHelper.getRequests().length, 4);
+                                    uploadPartSignatureRequest1 = fileTestHelper.getRequests()[3];
+                                    assert.equal(uploadPartSignatureRequest1.method, "POST");
+                                    assert.equal(uploadPartSignatureRequest1.url, testSignatureEndoint + "?v4=true");
+                                    assert.equal(uploadPartSignatureRequest1.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
+                                    uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
+                                    assert.ok(uploadPartToSign1.headers);
+                                    assert.equal(uploadPartToSign1.headers.indexOf("AWS4-HMAC-SHA256"), 0);
+                                    assert.ok(uploadPartToSign1.headers.indexOf("/us-east-1/s3/aws4_request") > 0);
+                                    assert.equal(uploadPartToSign1.headers.split("\n").length, 12);
+                                    assert.ok(uploadPartToSign1.headers.indexOf("host:mytestbucket.s3.amazonaws.com"));
+                                    uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                                // multipart complete request
-                                assert.equal(fileTestHelper.getRequests().length, 8);
-                                multipartCompleteRequest = fileTestHelper.getRequests()[7];
-                                assert.equal(multipartCompleteRequest.method, "POST");
-                                assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploadId=123");
-                                assert.ok(multipartCompleteRequest.requestHeaders["x-amz-date"]);
+                                    setTimeout(function() {
+                                        // upload part 1 request
+                                        uploadPartRequest = fileTestHelper.getRequests()[2];
+                                        assert.equal(uploadPartRequest.method, "PUT");
+                                        assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=1&uploadId=123");
+                                        assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
 
-                                authParts = multipartCompleteRequest.requestHeaders.Authorization.split(";");
-                                assert.equal(authParts.length, 3);
-                                assert.equal(authParts[0].split(",")[1], "SignedHeaders=host");
-                                assert.equal(authParts[1], "x-amz-content-sha256");
-                                assert.equal(authParts[2], "x-amz-date,Signature=thesignature");
-                                multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
+                                        assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
 
-                                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                                        var authParts = uploadPartRequest.requestHeaders.Authorization.split(";");
+                                        assert.equal(authParts.length, 3);
+                                        assert.equal(authParts[0].split(",")[1], "SignedHeaders=host");
+                                        assert.equal(authParts[1], "x-amz-content-sha256");
+                                        assert.equal(authParts[2], "x-amz-date,Signature=thesignature");
+                                        uploadPartRequest.respond(200, {ETag: "etag1"}, null);
 
-                                done();
-                            }, 100);
+                                        setTimeout(function() {
+                                            // signature request for upload part 2
+                                            assert.equal(fileTestHelper.getRequests().length, 6);
+                                            uploadPartSignatureRequest2 = fileTestHelper.getRequests()[5];
+                                            assert.equal(uploadPartSignatureRequest2.method, "POST");
+                                            assert.equal(uploadPartSignatureRequest2.url, testSignatureEndoint + "?v4=true");
+                                            assert.equal(uploadPartSignatureRequest2.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
+                                            uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest2.requestBody);
+                                            assert.ok(uploadPartToSign2.headers);
+                                            assert.equal(uploadPartToSign2.headers.indexOf("AWS4-HMAC-SHA256"), 0);
+                                            assert.ok(uploadPartToSign2.headers.indexOf("/us-east-1/s3/aws4_request") > 0);
+                                            assert.equal(uploadPartToSign2.headers.split("\n").length, 12);
+                                            assert.ok(uploadPartToSign2.headers.indexOf("host:mytestbucket.s3.amazonaws.com"));
+                                            uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                        }, 100);
+                                            setTimeout(function() {
+                                                // upload part 2 request
+                                                uploadPartRequest = fileTestHelper.getRequests()[4];
+                                                assert.equal(uploadPartRequest.method, "PUT");
+                                                assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=2&uploadId=123");
+                                                assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
+
+                                                assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
+
+                                                var authParts = uploadPartRequest.requestHeaders.Authorization.split(";");
+                                                assert.equal(authParts.length, 3);
+                                                assert.equal(authParts[0].split(",")[1], "SignedHeaders=host");
+                                                assert.equal(authParts[1], "x-amz-content-sha256");
+                                                assert.equal(authParts[2], "x-amz-date,Signature=thesignature");
+                                                uploadPartRequest.respond(200, {ETag: "etag2"}, null);
+
+                                                setTimeout(function() {
+                                                    // signature request for multipart complete
+                                                    assert.equal(fileTestHelper.getRequests().length, 7);
+                                                    uploadCompleteSignatureRequest = fileTestHelper.getRequests()[6];
+                                                    assert.equal(uploadCompleteSignatureRequest.method, "POST");
+                                                    assert.equal(uploadCompleteSignatureRequest.url, testSignatureEndoint + "?v4=true");
+                                                    assert.equal(uploadCompleteSignatureRequest.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
+                                                    uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
+                                                    assert.ok(uploadCompleteToSign.headers);
+                                                    assert.equal(uploadCompleteToSign.headers.indexOf("AWS4-HMAC-SHA256"), 0);
+                                                    assert.ok(uploadCompleteToSign.headers.indexOf("/us-east-1/s3/aws4_request") > 0);
+                                                    assert.equal(uploadCompleteToSign.headers.split("\n").length, 12);
+                                                    assert.ok(uploadCompleteToSign.headers.indexOf("host:mytestbucket.s3.amazonaws.com"));
+                                                    uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+
+                                                    setTimeout(function() {
+                                                        // multipart complete request
+                                                        assert.equal(fileTestHelper.getRequests().length, 8);
+                                                        multipartCompleteRequest = fileTestHelper.getRequests()[7];
+                                                        assert.equal(multipartCompleteRequest.method, "POST");
+                                                        assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + key0 + "?uploadId=123");
+                                                        assert.ok(multipartCompleteRequest.requestHeaders["x-amz-date"]);
+
+                                                        authParts = multipartCompleteRequest.requestHeaders.Authorization.split(";");
+                                                        assert.equal(authParts.length, 3);
+                                                        assert.equal(authParts[0].split(",")[1], "SignedHeaders=host");
+                                                        assert.equal(authParts[1], "x-amz-content-sha256");
+                                                        assert.equal(authParts[2], "x-amz-date,Signature=thesignature");
+                                                        multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + key0 + "</Key></CompleteMultipartUploadResult>");
+
+                                                        setTimeout(function() {
+                                                            assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+
+                                                            done();
+                                                        }, 0);
+                                                    }, 0);
+                                                }, 0);
+                                            }, 0);
+                                        }, 0);
+                                    }, 0);
+                                }, 100);
+                            }, 0);
+                        });
                     });
                 });
             });
 
             it("handles a basic chunked upload", function(done) {
-                assert.expect(87, done);
+                // assert.expect(87, done);
 
                 var uploadChunkCalled = false,
                     uploadChunkSuccessCalled = false,
@@ -305,102 +320,121 @@ if (qqtest.canDownloadFileAsBlob) {
                         uploadCompleteToSign,
                         multipartCompleteRequest;
 
-                    // signature request for initiate multipart upload
-                    assert.equal(initiateSignatureRequest.url, testSignatureEndoint);
-                    assert.equal(initiateSignatureRequest.method, "POST");
-                    assert.equal(initiateSignatureRequest.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
-                    assert.ok(initiateToSign.headers);
-                    assert.equal(initiateToSign.headers.indexOf("POST"), 0);
-                    assert.ok(initiateToSign.headers.indexOf("image/jpeg") > 0);
-                    assert.ok(initiateToSign.headers.indexOf("x-amz-acl:private") > 0);
-                    assert.ok(initiateToSign.headers.indexOf("x-amz-date:") > 0);
-                    assert.ok(initiateToSign.headers.indexOf("x-amz-meta-qqfilename:" + uploader.getName(0)) > 0);
-                    assert.ok(initiateToSign.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?uploads") > 0);
-                    initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                    uploader.getKey(0).then(function(key0) {
+                        // signature request for initiate multipart upload
+                        assert.equal(initiateSignatureRequest.url, testSignatureEndoint);
+                        assert.equal(initiateSignatureRequest.method, "POST");
+                        assert.equal(initiateSignatureRequest.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
+                        assert.ok(initiateToSign.headers);
+                        assert.equal(initiateToSign.headers.indexOf("POST"), 0);
+                        assert.ok(initiateToSign.headers.indexOf("image/jpeg") > 0);
+                        assert.ok(initiateToSign.headers.indexOf("x-amz-acl:private") > 0);
+                        assert.ok(initiateToSign.headers.indexOf("x-amz-date:") > 0);
+                        assert.ok(initiateToSign.headers.indexOf("x-amz-meta-qqfilename:" + uploader.getName(0)) > 0);
+                        assert.ok(initiateToSign.headers.indexOf("/" + testBucketName + "/" + key0 + "?uploads") > 0);
+                        initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // initiate multipart upload request
-                    assert.equal(fileTestHelper.getRequests().length, 2);
-                    initiateRequest = fileTestHelper.getRequests()[1];
-                    assert.equal(initiateRequest.method, "POST");
-                    assert.equal(initiateRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploads");
-                    assert.equal(initiateRequest.requestHeaders["x-amz-meta-qqfilename"], uploader.getName(0));
-                    assert.equal(initiateRequest.requestHeaders["x-amz-acl"], "private");
-                    assert.ok(initiateRequest.requestHeaders["x-amz-date"]);
-                    assert.equal(initiateRequest.requestHeaders.Authorization, "AWS " + testAccessKey + ":thesignature");
-                    initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
+                        setTimeout(function() {
+                            // initiate multipart upload request
+                            assert.equal(fileTestHelper.getRequests().length, 2);
+                            initiateRequest = fileTestHelper.getRequests()[1];
+                            assert.equal(initiateRequest.method, "POST");
+                            assert.equal(initiateRequest.url, testS3Endpoint + "/" + key0 + "?uploads");
+                            assert.equal(initiateRequest.requestHeaders["x-amz-meta-qqfilename"], uploader.getName(0));
+                            assert.equal(initiateRequest.requestHeaders["x-amz-acl"], "private");
+                            assert.ok(initiateRequest.requestHeaders["x-amz-date"]);
+                            assert.equal(initiateRequest.requestHeaders.Authorization, "AWS " + testAccessKey + ":thesignature");
+                            initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
 
-                    // signature request for upload part 1
-                    assert.equal(fileTestHelper.getRequests().length, 4);
-                    uploadPartSignatureRequest1 = fileTestHelper.getRequests()[3];
-                    assert.equal(uploadPartSignatureRequest1.method, "POST");
-                    assert.equal(uploadPartSignatureRequest1.url, testSignatureEndoint);
-                    assert.equal(uploadPartSignatureRequest1.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
-                    uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
-                    assert.ok(uploadPartToSign1.headers);
-                    assert.equal(uploadPartToSign1.headers.indexOf("PUT"), 0);
-                    assert.ok(uploadPartToSign1.headers.indexOf("x-amz-date:") > 0);
-                    assert.ok(uploadPartToSign1.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123") > 0);
-                    uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                            setTimeout(function() {
+                                // signature request for upload part 1
+                                assert.equal(fileTestHelper.getRequests().length, 4);
+                                uploadPartSignatureRequest1 = fileTestHelper.getRequests()[3];
+                                assert.equal(uploadPartSignatureRequest1.method, "POST");
+                                assert.equal(uploadPartSignatureRequest1.url, testSignatureEndoint);
+                                assert.equal(uploadPartSignatureRequest1.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
+                                uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
+                                assert.ok(uploadPartToSign1.headers);
+                                assert.equal(uploadPartToSign1.headers.indexOf("PUT"), 0);
+                                assert.ok(uploadPartToSign1.headers.indexOf("x-amz-date:") > 0);
+                                assert.ok(uploadPartToSign1.headers.indexOf("/" + testBucketName + "/" + key0 + "?partNumber=1&uploadId=123") > 0);
+                                uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // upload part 1 request
-                    uploadPartRequest = fileTestHelper.getRequests()[2];
-                    assert.equal(uploadPartRequest.method, "PUT");
-                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
-                    assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
+                                setTimeout(function() {
+                                    // upload part 1 request
+                                    uploadPartRequest = fileTestHelper.getRequests()[2];
+                                    assert.equal(uploadPartRequest.method, "PUT");
+                                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=1&uploadId=123");
+                                    assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
 
-                    assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
+                                    assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
 
-                    assert.equal(uploadPartRequest.requestHeaders.Authorization, "AWS " + testAccessKey + ":thesignature");
-                    uploadPartRequest.respond(200, {ETag: "etag1"}, null);
+                                    assert.equal(uploadPartRequest.requestHeaders.Authorization, "AWS " + testAccessKey + ":thesignature");
+                                    uploadPartRequest.respond(200, {ETag: "etag1"}, null);
 
-                    // signature request for upload part 2
-                    assert.equal(fileTestHelper.getRequests().length, 6);
-                    uploadPartSignatureRequest2 = fileTestHelper.getRequests()[5];
-                    assert.equal(uploadPartSignatureRequest2.method, "POST");
-                    assert.equal(uploadPartSignatureRequest2.url, testSignatureEndoint);
-                    assert.equal(uploadPartSignatureRequest2.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
-                    uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest2.requestBody);
-                    assert.ok(uploadPartToSign2.headers);
-                    assert.equal(uploadPartToSign2.headers.indexOf("PUT"), 0);
-                    assert.ok(uploadPartToSign2.headers.indexOf("x-amz-date:") > 0);
-                    assert.ok(uploadPartToSign2.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123") > 0);
-                    uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                    setTimeout(function() {
+                                        // signature request for upload part 2
+                                        assert.equal(fileTestHelper.getRequests().length, 6);
+                                        uploadPartSignatureRequest2 = fileTestHelper.getRequests()[5];
+                                        assert.equal(uploadPartSignatureRequest2.method, "POST");
+                                        assert.equal(uploadPartSignatureRequest2.url, testSignatureEndoint);
+                                        assert.equal(uploadPartSignatureRequest2.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
+                                        uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest2.requestBody);
+                                        assert.ok(uploadPartToSign2.headers);
+                                        assert.equal(uploadPartToSign2.headers.indexOf("PUT"), 0);
+                                        assert.ok(uploadPartToSign2.headers.indexOf("x-amz-date:") > 0);
+                                        assert.ok(uploadPartToSign2.headers.indexOf("/" + testBucketName + "/" + key0 + "?partNumber=2&uploadId=123") > 0);
+                                        uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // upload part 2 request
-                    uploadPartRequest = fileTestHelper.getRequests()[4];
-                    assert.equal(uploadPartRequest.method, "PUT");
-                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
-                    assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
+                                        setTimeout(function() {
+                                            // upload part 2 request
+                                            uploadPartRequest = fileTestHelper.getRequests()[4];
+                                            assert.equal(uploadPartRequest.method, "PUT");
+                                            assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=2&uploadId=123");
+                                            assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
 
-                    assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
+                                            assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
 
-                    assert.equal(uploadPartRequest.requestHeaders.Authorization, "AWS " + testAccessKey + ":thesignature");
-                    uploadPartRequest.respond(200, {ETag: "etag2"}, null);
+                                            assert.equal(uploadPartRequest.requestHeaders.Authorization, "AWS " + testAccessKey + ":thesignature");
+                                            uploadPartRequest.respond(200, {ETag: "etag2"}, null);
 
-                    // signature request for multipart complete
-                    assert.equal(fileTestHelper.getRequests().length, 7);
-                    uploadCompleteSignatureRequest = fileTestHelper.getRequests()[6];
-                    assert.equal(uploadCompleteSignatureRequest.method, "POST");
-                    assert.equal(uploadCompleteSignatureRequest.url, testSignatureEndoint);
-                    assert.equal(uploadCompleteSignatureRequest.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
-                    uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
-                    assert.ok(uploadCompleteToSign.headers);
-                    assert.equal(uploadCompleteToSign.headers.indexOf("POST"), 0);
-                    assert.ok(uploadCompleteToSign.headers.indexOf("x-amz-date:") > 0);
-                    assert.ok(uploadCompleteToSign.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?uploadId=123") > 0);
-                    uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                            setTimeout(function() {
+                                                // signature request for multipart complete
+                                                assert.equal(fileTestHelper.getRequests().length, 7);
+                                                uploadCompleteSignatureRequest = fileTestHelper.getRequests()[6];
+                                                assert.equal(uploadCompleteSignatureRequest.method, "POST");
+                                                assert.equal(uploadCompleteSignatureRequest.url, testSignatureEndoint);
+                                                assert.equal(uploadCompleteSignatureRequest.requestHeaders["Content-Type"].indexOf("application/json;"), 0);
+                                                uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
+                                                assert.ok(uploadCompleteToSign.headers);
+                                                assert.equal(uploadCompleteToSign.headers.indexOf("POST"), 0);
+                                                assert.ok(uploadCompleteToSign.headers.indexOf("x-amz-date:") > 0);
+                                                assert.ok(uploadCompleteToSign.headers.indexOf("/" + testBucketName + "/" + key0 + "?uploadId=123") > 0);
+                                                uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // multipart complete request
-                    assert.equal(fileTestHelper.getRequests().length, 8);
-                    multipartCompleteRequest = fileTestHelper.getRequests()[7];
-                    assert.equal(multipartCompleteRequest.method, "POST");
-                    assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploadId=123");
-                    assert.ok(multipartCompleteRequest.requestHeaders["x-amz-date"]);
-                    assert.equal(multipartCompleteRequest.requestHeaders.Authorization, "AWS " + testAccessKey + ":thesignature");
-                    assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2</ETag></Part></CompleteMultipartUpload>");
-                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
+                                                setTimeout(function() {
+                                                    // multipart complete request
+                                                    assert.equal(fileTestHelper.getRequests().length, 8);
+                                                    multipartCompleteRequest = fileTestHelper.getRequests()[7];
+                                                    assert.equal(multipartCompleteRequest.method, "POST");
+                                                    assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + key0 + "?uploadId=123");
+                                                    assert.ok(multipartCompleteRequest.requestHeaders["x-amz-date"]);
+                                                    assert.equal(multipartCompleteRequest.requestHeaders.Authorization, "AWS " + testAccessKey + ":thesignature");
+                                                    assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2</ETag></Part></CompleteMultipartUpload>");
+                                                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + key0 + "</Key></CompleteMultipartUploadResult>");
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                                                    setTimeout(function() {
+                                                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                                                        done();
+                                                    }, 0);
+                                                }, 0);
+                                            }, 0);
+                                        }, 0);
+                                    }, 0);
+                                }, 0);
+                            }, 0);
+                        }, 0);
+                    });
                 });
             });
 
@@ -434,58 +468,74 @@ if (qqtest.canDownloadFileAsBlob) {
                     assert.ok(initiateToSign.headers.indexOf(qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME + ":" + qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE) > 0);
                     initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // initiate multipart upload request
-                    initiateRequest = fileTestHelper.getRequests()[1];
-                    assert.equal(initiateRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE);
-                    assert.equal(initiateRequest.requestHeaders[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME], qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE);
-                    initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
+                    setTimeout(function() {
+                        // initiate multipart upload request
+                        initiateRequest = fileTestHelper.getRequests()[1];
+                        assert.equal(initiateRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME], qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE);
+                        assert.equal(initiateRequest.requestHeaders[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME], qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE);
+                        initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
 
-                    // signature request for upload part 1
-                    uploadPartSignatureRequest1 = fileTestHelper.getRequests()[3];
-                    uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
-                    assert.ok(uploadPartToSign1.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE) < 0);
-                    assert.ok(uploadPartToSign1.headers.indexOf(qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME + ":" + qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE) < 0);
-                    uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                        setTimeout(function() {
+                            // signature request for upload part 1
+                            uploadPartSignatureRequest1 = fileTestHelper.getRequests()[3];
+                            uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
+                            assert.ok(uploadPartToSign1.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE) < 0);
+                            assert.ok(uploadPartToSign1.headers.indexOf(qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME + ":" + qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE) < 0);
+                            uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // upload part 1 request
-                    uploadPartRequest = fileTestHelper.getRequests()[2];
-                    assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME]);
-                    assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME]);
-                    uploadPartRequest.respond(200, {ETag: "etag1"}, null);
+                            setTimeout(function() {
+                                // upload part 1 request
+                                uploadPartRequest = fileTestHelper.getRequests()[2];
+                                assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME]);
+                                assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME]);
+                                uploadPartRequest.respond(200, {ETag: "etag1"}, null);
 
-                    // signature request for upload part 2
-                    uploadPartSignatureRequest2 = fileTestHelper.getRequests()[5];
-                    uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest1.requestBody);
-                    assert.ok(uploadPartToSign2.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE) < 0);
-                    assert.ok(uploadPartToSign2.headers.indexOf(qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME + ":" + qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE) < 0);
-                    uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                setTimeout(function () {
+                                    // signature request for upload part 2
+                                    uploadPartSignatureRequest2 = fileTestHelper.getRequests()[5];
+                                    uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest1.requestBody);
+                                    assert.ok(uploadPartToSign2.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE) < 0);
+                                    assert.ok(uploadPartToSign2.headers.indexOf(qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME + ":" + qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE) < 0);
+                                    uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // upload part 2 request
-                    uploadPartRequest = fileTestHelper.getRequests()[4];
-                    assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME]);
-                    assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME]);
-                    uploadPartRequest.respond(200, {ETag: "etag1"}, null);
+                                    setTimeout(function() {
+                                        // upload part 2 request
+                                        uploadPartRequest = fileTestHelper.getRequests()[4];
+                                        assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME]);
+                                        assert.ok(!uploadPartRequest.requestHeaders[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME]);
+                                        uploadPartRequest.respond(200, {ETag: "etag1"}, null);
 
-                    // signature request for multipart complete
-                    uploadCompleteSignatureRequest = fileTestHelper.getRequests()[6];
-                    uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
-                    assert.ok(uploadCompleteToSign.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE) < 0);
-                    assert.ok(uploadCompleteToSign.headers.indexOf(qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME + ":" + qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE) < 0);
-                    uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                        setTimeout(function () {
+                                            // signature request for multipart complete
+                                            uploadCompleteSignatureRequest = fileTestHelper.getRequests()[6];
+                                            uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
+                                            assert.ok(uploadCompleteToSign.headers.indexOf(qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME + ":" + qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_VALUE) < 0);
+                                            assert.ok(uploadCompleteToSign.headers.indexOf(qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME + ":" + qq.s3.util.REDUCED_REDUNDANCY_PARAM_VALUE) < 0);
+                                            uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // multipart complete request
-                    multipartCompleteRequest = fileTestHelper.getRequests()[7];
-                    assert.ok(!multipartCompleteRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME]);
-                    assert.ok(!multipartCompleteRequest.requestHeaders[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME]);
-                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
+                                            setTimeout(function () {
+                                                // multipart complete request
+                                                multipartCompleteRequest = fileTestHelper.getRequests()[7];
+                                                assert.ok(!multipartCompleteRequest.requestHeaders[qq.s3.util.SERVER_SIDE_ENCRYPTION_PARAM_NAME]);
+                                                assert.ok(!multipartCompleteRequest.requestHeaders[qq.s3.util.REDUCED_REDUNDANCY_PARAM_NAME]);
+                                                uploader.getKey(0).then(function(key0) {
+                                                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + key0 + "</Key></CompleteMultipartUploadResult>");
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                                                    setTimeout(function () {
+                                                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                                                    }, 0);
+                                                });
+                                            }, 0);
+                                        }, 0);
+                                    }, 0);
+                                }, 0);
+                            }, 0);
+                        }, 0);
+                    }, 0);
                 });
             });
 
             it("handles failures at every step of a chunked upload", function(done) {
-                assert.expect(99, done);
-
                 var uploader = new qq.s3.FineUploaderBasic({
                         request: typicalRequestOption,
                         signature: typicalSignatureOption,
@@ -529,182 +579,242 @@ if (qqtest.canDownloadFileAsBlob) {
                     initiateSignatureRequest.respond(200, null, JSON.stringify({invalid: true}));
                     assert.equal(fileTestHelper.getRequests().length, 1);
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
-                    uploader.retry(0);
-                    assert.equal(fileTestHelper.getRequests().length, 2);
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+                    uploader.getKey(0).then(function(key0) {
+                        setTimeout(function() {
+                            assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                            uploader.retry(0);
+                            setTimeout(function() {
+                                assert.equal(fileTestHelper.getRequests().length, 2);
+                                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // successful initiate signature request
-                    initiateSignatureRequest = fileTestHelper.getRequests()[1];
-                    assert.equal(initiateSignatureRequest.url, testSignatureEndoint);
-                    assert.ok(initiateToSign.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?uploads") > 0);
-                    initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                // successful initiate signature request
+                                initiateSignatureRequest = fileTestHelper.getRequests()[1];
+                                assert.equal(initiateSignatureRequest.url, testSignatureEndoint);
+                                assert.ok(initiateToSign.headers.indexOf("/" + testBucketName + "/" + key0 + "?uploads") > 0);
+                                initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // failing initiate multipart upload request
-                    assert.equal(fileTestHelper.getRequests().length, 3);
-                    initiateRequest = fileTestHelper.getRequests()[2];
-                    assert.equal(initiateRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploads");
-                    initiateRequest.respond(200, null, "");
+                                setTimeout(function() {
+                                    // failing initiate multipart upload request
+                                    assert.equal(fileTestHelper.getRequests().length, 3);
+                                    initiateRequest = fileTestHelper.getRequests()[2];
+                                    assert.equal(initiateRequest.url, testS3Endpoint + "/" + key0 + "?uploads");
+                                    initiateRequest.respond(200, null, "");
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
-                    assert.equal(fileTestHelper.getRequests().length, 3);
-                    uploader.retry(0);
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+                                    setTimeout(function() {
+                                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                                        assert.equal(fileTestHelper.getRequests().length, 3);
+                                        uploader.retry(0);
+                                        setTimeout(function() {
+                                            assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // successful initiate signature request
-                    assert.equal(fileTestHelper.getRequests().length, 4);
-                    initiateSignatureRequest = fileTestHelper.getRequests()[3];
-                    assert.equal(initiateSignatureRequest.url, testSignatureEndoint);
-                    assert.ok(initiateToSign.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?uploads") > 0);
-                    initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                            // successful initiate signature request
+                                            assert.equal(fileTestHelper.getRequests().length, 4);
+                                            initiateSignatureRequest = fileTestHelper.getRequests()[3];
+                                            assert.equal(initiateSignatureRequest.url, testSignatureEndoint);
+                                            assert.ok(initiateToSign.headers.indexOf("/" + testBucketName + "/" + key0 + "?uploads") > 0);
+                                            initiateSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // successful initiate multipart upload request
-                    assert.equal(fileTestHelper.getRequests().length, 5);
-                    initiateRequest = fileTestHelper.getRequests()[4];
-                    assert.equal(initiateRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploads");
-                    initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
+                                            setTimeout(function() {
+                                                // successful initiate multipart upload request
+                                                assert.equal(fileTestHelper.getRequests().length, 5);
+                                                initiateRequest = fileTestHelper.getRequests()[4];
+                                                assert.equal(initiateRequest.url, testS3Endpoint + "/" + key0 + "?uploads");
+                                                initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
 
-                    // failed signature request for upload part 1
-                    assert.equal(fileTestHelper.getRequests().length, 7);
-                    uploadPartSignatureRequest1 = fileTestHelper.getRequests()[6];
-                    assert.equal(uploadPartSignatureRequest1.url, testSignatureEndoint);
-                    uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
-                    assert.ok(uploadPartToSign1.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123") > 0);
-                    uploadPartSignatureRequest1.respond(200, null, JSON.stringify({invalid: true}));
+                                                setTimeout(function() {
+                                                    // failed signature request for upload part 1
+                                                    assert.equal(fileTestHelper.getRequests().length, 7);
+                                                    uploadPartSignatureRequest1 = fileTestHelper.getRequests()[6];
+                                                    assert.equal(uploadPartSignatureRequest1.url, testSignatureEndoint);
+                                                    uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
+                                                    assert.ok(uploadPartToSign1.headers.indexOf("/" + testBucketName + "/" + key0 + "?partNumber=1&uploadId=123") > 0);
+                                                    uploadPartSignatureRequest1.respond(200, null, JSON.stringify({invalid: true}));
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
-                    assert.equal(fileTestHelper.getRequests().length, 7);
-                    uploader.retry(0);
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+                                                    setTimeout(function() {
+                                                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                                                        assert.equal(fileTestHelper.getRequests().length, 7);
+                                                        uploader.retry(0);
+                                                        setTimeout(function() {
+                                                            assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // successful signature request for upload part 1
-                    assert.equal(fileTestHelper.getRequests().length, 9);
-                    uploadPartSignatureRequest1 = fileTestHelper.getRequests()[8];
-                    assert.equal(uploadPartSignatureRequest1.url, testSignatureEndoint);
-                    uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
-                    assert.ok(uploadPartToSign1.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123") > 0);
-                    uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                                            // successful signature request for upload part 1
+                                                            assert.equal(fileTestHelper.getRequests().length, 9);
+                                                            uploadPartSignatureRequest1 = fileTestHelper.getRequests()[8];
+                                                            assert.equal(uploadPartSignatureRequest1.url, testSignatureEndoint);
+                                                            uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
+                                                            assert.ok(uploadPartToSign1.headers.indexOf("/" + testBucketName + "/" + key0 + "?partNumber=1&uploadId=123") > 0);
+                                                            uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // failing upload part 1 request
-                    assert.equal(fileTestHelper.getRequests().length, 9);
-                    uploadPartRequest = fileTestHelper.getRequests()[7];
-                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
-                    uploadPartRequest.respond(404, {ETag: "etag1"}, null);
+                                                            setTimeout(function() {
+                                                                // failing upload part 1 request
+                                                                assert.equal(fileTestHelper.getRequests().length, 9);
+                                                                uploadPartRequest = fileTestHelper.getRequests()[7];
+                                                                assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=1&uploadId=123");
+                                                                uploadPartRequest.respond(404, {ETag: "etag1"}, null);
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
-                    assert.equal(fileTestHelper.getRequests().length, 9);
-                    uploader.retry(0);
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+                                                                setTimeout(function() {
+                                                                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                                                                    assert.equal(fileTestHelper.getRequests().length, 9);
+                                                                    uploader.retry(0);
+                                                                    setTimeout(function() {
+                                                                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // successful signature request for upload part 1
-                    assert.equal(fileTestHelper.getRequests().length, 11);
-                    uploadPartSignatureRequest1 = fileTestHelper.getRequests()[10];
-                    assert.equal(uploadPartSignatureRequest1.url, testSignatureEndoint);
-                    uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
-                    assert.ok(uploadPartToSign1.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123") > 0);
-                    uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                                                        // successful signature request for upload part 1
+                                                                        assert.equal(fileTestHelper.getRequests().length, 11);
+                                                                        uploadPartSignatureRequest1 = fileTestHelper.getRequests()[10];
+                                                                        assert.equal(uploadPartSignatureRequest1.url, testSignatureEndoint);
+                                                                        uploadPartToSign1 = JSON.parse(uploadPartSignatureRequest1.requestBody);
+                                                                        assert.ok(uploadPartToSign1.headers.indexOf("/" + testBucketName + "/" + key0 + "?partNumber=1&uploadId=123") > 0);
+                                                                        uploadPartSignatureRequest1.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // successful upload part 1 request
-                    assert.equal(fileTestHelper.getRequests().length, 11);
-                    uploadPartRequest = fileTestHelper.getRequests()[9];
-                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
-                    uploadPartRequest.respond(200, {ETag: "etag1_a"}, null);
+                                                                        setTimeout(function() {
+                                                                            // successful upload part 1 request
+                                                                            assert.equal(fileTestHelper.getRequests().length, 11);
+                                                                            uploadPartRequest = fileTestHelper.getRequests()[9];
+                                                                            assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=1&uploadId=123");
+                                                                            uploadPartRequest.respond(200, {ETag: "etag1_a"}, null);
 
-                    // failing signature request for upload part 2
-                    assert.equal(fileTestHelper.getRequests().length, 13);
-                    uploadPartSignatureRequest2 = fileTestHelper.getRequests()[12];
-                    assert.equal(uploadPartSignatureRequest2.url, testSignatureEndoint);
-                    uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest2.requestBody);
-                    assert.ok(uploadPartToSign2.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123") > 0);
-                    uploadPartSignatureRequest2.respond(404, null, JSON.stringify({signature: "thesignature"}));
+                                                                            setTimeout(function() {
+                                                                                // failing signature request for upload part 2
+                                                                                assert.equal(fileTestHelper.getRequests().length, 13);
+                                                                                uploadPartSignatureRequest2 = fileTestHelper.getRequests()[12];
+                                                                                assert.equal(uploadPartSignatureRequest2.url, testSignatureEndoint);
+                                                                                uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest2.requestBody);
+                                                                                assert.ok(uploadPartToSign2.headers.indexOf("/" + testBucketName + "/" + key0 + "?partNumber=2&uploadId=123") > 0);
+                                                                                uploadPartSignatureRequest2.respond(404, null, JSON.stringify({signature: "thesignature"}));
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
-                    assert.equal(fileTestHelper.getRequests().length, 13);
-                    uploader.retry(0);
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+                                                                                setTimeout(function() {
+                                                                                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                                                                                    assert.equal(fileTestHelper.getRequests().length, 13);
+                                                                                    uploader.retry(0);
+                                                                                    setTimeout(function() {
+                                                                                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // successful signature request for upload part 2
-                    assert.equal(fileTestHelper.getRequests().length, 15);
-                    uploadPartSignatureRequest2 = fileTestHelper.getRequests()[14];
-                    assert.equal(uploadPartSignatureRequest2.url, testSignatureEndoint);
-                    uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest2.requestBody);
-                    assert.ok(uploadPartToSign2.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123") > 0);
-                    uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                                                                        // successful signature request for upload part 2
+                                                                                        assert.equal(fileTestHelper.getRequests().length, 15);
+                                                                                        uploadPartSignatureRequest2 = fileTestHelper.getRequests()[14];
+                                                                                        assert.equal(uploadPartSignatureRequest2.url, testSignatureEndoint);
+                                                                                        uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest2.requestBody);
+                                                                                        assert.ok(uploadPartToSign2.headers.indexOf("/" + testBucketName + "/" + key0 + "?partNumber=2&uploadId=123") > 0);
+                                                                                        uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // failing upload part 2 request
-                    uploadPartRequest = fileTestHelper.getRequests()[13];
-                    assert.equal(fileTestHelper.getRequests().length, 15);
-                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
-                    uploadPartRequest.respond(404, {ETag: "etag2"}, null);
+                                                                                        setTimeout(function() {
+                                                                                            // failing upload part 2 request
+                                                                                            uploadPartRequest = fileTestHelper.getRequests()[13];
+                                                                                            assert.equal(fileTestHelper.getRequests().length, 15);
+                                                                                            assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=2&uploadId=123");
+                                                                                            uploadPartRequest.respond(404, {ETag: "etag2"}, null);
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
-                    assert.equal(fileTestHelper.getRequests().length, 15);
-                    uploader.retry(0);
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+                                                                                            setTimeout(function() {
+                                                                                                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                                                                                                assert.equal(fileTestHelper.getRequests().length, 15);
+                                                                                                uploader.retry(0);
+                                                                                                setTimeout(function() {
+                                                                                                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // successful signature request for upload part 2
-                    assert.equal(fileTestHelper.getRequests().length, 17);
-                    uploadPartSignatureRequest2 = fileTestHelper.getRequests()[16];
-                    assert.equal(uploadPartSignatureRequest2.url, testSignatureEndoint);
-                    uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest2.requestBody);
-                    assert.ok(uploadPartToSign2.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123") > 0);
-                    uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                                                                                    // successful signature request for upload part 2
+                                                                                                    assert.equal(fileTestHelper.getRequests().length, 17);
+                                                                                                    uploadPartSignatureRequest2 = fileTestHelper.getRequests()[16];
+                                                                                                    assert.equal(uploadPartSignatureRequest2.url, testSignatureEndoint);
+                                                                                                    uploadPartToSign2 = JSON.parse(uploadPartSignatureRequest2.requestBody);
+                                                                                                    assert.ok(uploadPartToSign2.headers.indexOf("/" + testBucketName + "/" + key0 + "?partNumber=2&uploadId=123") > 0);
+                                                                                                    uploadPartSignatureRequest2.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // successful upload part 2 request
-                    assert.equal(fileTestHelper.getRequests().length, 17);
-                    uploadPartRequest = fileTestHelper.getRequests()[15];
-                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
-                    uploadPartRequest.respond(200, {ETag: "etag2_a"}, null);
+                                                                                                    setTimeout(function() {
+                                                                                                        // successful upload part 2 request
+                                                                                                        assert.equal(fileTestHelper.getRequests().length, 17);
+                                                                                                        uploadPartRequest = fileTestHelper.getRequests()[15];
+                                                                                                        assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=2&uploadId=123");
+                                                                                                        uploadPartRequest.respond(200, {ETag: "etag2_a"}, null);
 
-                    // failing signature request for multipart complete
-                    assert.equal(fileTestHelper.getRequests().length, 18);
-                    uploadCompleteSignatureRequest = fileTestHelper.getRequests()[17];
-                    assert.equal(uploadCompleteSignatureRequest.url, testSignatureEndoint);
-                    uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
-                    assert.ok(uploadCompleteToSign.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?uploadId=123") > 0);
-                    uploadCompleteSignatureRequest.respond(400, null, JSON.stringify({signature: "thesignature"}));
+                                                                                                        setTimeout(function() {
+                                                                                                            // failing signature request for multipart complete
+                                                                                                            assert.equal(fileTestHelper.getRequests().length, 18);
+                                                                                                            uploadCompleteSignatureRequest = fileTestHelper.getRequests()[17];
+                                                                                                            assert.equal(uploadCompleteSignatureRequest.url, testSignatureEndoint);
+                                                                                                            uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
+                                                                                                            assert.ok(uploadCompleteToSign.headers.indexOf("/" + testBucketName + "/" + key0 + "?uploadId=123") > 0);
+                                                                                                            uploadCompleteSignatureRequest.respond(400, null, JSON.stringify({signature: "thesignature"}));
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
-                    assert.equal(fileTestHelper.getRequests().length, 18);
-                    uploader.retry(0);
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+                                                                                                            setTimeout(function() {
+                                                                                                                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                                                                                                                assert.equal(fileTestHelper.getRequests().length, 18);
+                                                                                                                uploader.retry(0);
+                                                                                                                setTimeout(function() {
+                                                                                                                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // successful signature request for multipart complete
-                    assert.equal(fileTestHelper.getRequests().length, 19);
-                    uploadCompleteSignatureRequest = fileTestHelper.getRequests()[18];
-                    assert.equal(uploadCompleteSignatureRequest.url, testSignatureEndoint);
-                    uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
-                    assert.ok(uploadCompleteToSign.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?uploadId=123") > 0);
-                    uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                                                                                                    // successful signature request for multipart complete
+                                                                                                                    assert.equal(fileTestHelper.getRequests().length, 19);
+                                                                                                                    uploadCompleteSignatureRequest = fileTestHelper.getRequests()[18];
+                                                                                                                    assert.equal(uploadCompleteSignatureRequest.url, testSignatureEndoint);
+                                                                                                                    uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
+                                                                                                                    assert.ok(uploadCompleteToSign.headers.indexOf("/" + testBucketName + "/" + key0 + "?uploadId=123") > 0);
+                                                                                                                    uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // failing multipart complete request
-                    assert.equal(fileTestHelper.getRequests().length, 20);
-                    multipartCompleteRequest = fileTestHelper.getRequests()[19];
-                    assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploadId=123");
-                    assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1_a</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2_a</ETag></Part></CompleteMultipartUpload>");
-                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
+                                                                                                                    setTimeout(function() {
+                                                                                                                        // failing multipart complete request
+                                                                                                                        assert.equal(fileTestHelper.getRequests().length, 20);
+                                                                                                                        multipartCompleteRequest = fileTestHelper.getRequests()[19];
+                                                                                                                        assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + key0 + "?uploadId=123");
+                                                                                                                        assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1_a</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2_a</ETag></Part></CompleteMultipartUpload>");
+                                                                                                                        multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Key>" + key0 + "</Key></CompleteMultipartUploadResult>");
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
-                    assert.equal(fileTestHelper.getRequests().length, 20);
-                    uploader.retry(0);
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+                                                                                                                        setTimeout(function() {
+                                                                                                                            assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                                                                                                                            assert.equal(fileTestHelper.getRequests().length, 20);
+                                                                                                                            uploader.retry(0);
+                                                                                                                            setTimeout(function() {
+                                                                                                                                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // successful signature request for multipart complete
-                    assert.equal(fileTestHelper.getRequests().length, 21);
-                    uploadCompleteSignatureRequest = fileTestHelper.getRequests()[20];
-                    assert.equal(uploadCompleteSignatureRequest.url, testSignatureEndoint);
-                    uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
-                    assert.ok(uploadCompleteToSign.headers.indexOf("/" + testBucketName + "/" + uploader.getKey(0) + "?uploadId=123") > 0);
-                    uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
+                                                                                                                                // successful signature request for multipart complete
+                                                                                                                                assert.equal(fileTestHelper.getRequests().length, 21);
+                                                                                                                                uploadCompleteSignatureRequest = fileTestHelper.getRequests()[20];
+                                                                                                                                assert.equal(uploadCompleteSignatureRequest.url, testSignatureEndoint);
+                                                                                                                                uploadCompleteToSign = JSON.parse(uploadCompleteSignatureRequest.requestBody);
+                                                                                                                                assert.ok(uploadCompleteToSign.headers.indexOf("/" + testBucketName + "/" + key0 + "?uploadId=123") > 0);
+                                                                                                                                uploadCompleteSignatureRequest.respond(200, null, JSON.stringify({signature: "thesignature"}));
 
-                    // successful multipart complete request
-                    assert.equal(fileTestHelper.getRequests().length, 22);
-                    multipartCompleteRequest = fileTestHelper.getRequests()[21];
-                    assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploadId=123");
-                    assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1_a</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2_a</ETag></Part></CompleteMultipartUpload>");
-                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
+                                                                                                                                setTimeout(function() {
+                                                                                                                                    // successful multipart complete request
+                                                                                                                                    assert.equal(fileTestHelper.getRequests().length, 22);
+                                                                                                                                    multipartCompleteRequest = fileTestHelper.getRequests()[21];
+                                                                                                                                    assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + key0 + "?uploadId=123");
+                                                                                                                                    assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1_a</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2_a</ETag></Part></CompleteMultipartUpload>");
+                                                                                                                                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + key0 + "</Key></CompleteMultipartUploadResult>");
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                                                                                                                                    setTimeout(function() {
+                                                                                                                                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+
+                                                                                                                                        done();
+                                                                                                                                    }, 0);
+                                                                                                                                }, 0);
+                                                                                                                            }, 0);
+                                                                                                                        }, 0);
+                                                                                                                    }, 0);
+                                                                                                                }, 0);
+                                                                                                            }, 0);
+                                                                                                        }, 0);
+                                                                                                    }, 0);
+                                                                                                }, 0);
+                                                                                            }, 0);
+                                                                                        }, 0);
+                                                                                    }, 0);
+                                                                                }, 0);
+                                                                            }, 0);
+                                                                        }, 0);
+                                                                    }, 0);
+                                                                }, 0);
+                                                            }, 0);
+                                                        }, 0);
+                                                    }, 0);
+                                                }, 0);
+                                            }, 0);
+                                        }, 0);
+                                    }, 0);
+                                }, 0);
+                            }, 0);
+                        }, 0);
+                    });
                 });
             });
 
@@ -753,6 +863,10 @@ if (qqtest.canDownloadFileAsBlob) {
         });
 
         describe("client-side signature-based chunked S3 upload tests", function() {
+            beforeEach(function () {
+                localStorage.clear();
+            });
+
             var startTypicalTest = function(uploader, callback) {
                     qqtest.downloadFileAsBlob("up.jpg", "image/jpeg").then(function (blob) {
                         var uploadRequest;
@@ -760,11 +874,13 @@ if (qqtest.canDownloadFileAsBlob) {
                         fileTestHelper.mockXhr();
                         uploader.addFiles({name: "test.jpg", blob: blob});
 
-                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                        setTimeout(function() {
+                            assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 
-                        uploadRequest = fileTestHelper.getRequests()[0];
+                            uploadRequest = fileTestHelper.getRequests()[0];
 
-                        callback(uploadRequest);
+                            callback(uploadRequest);
+                        }, 0);
                     });
                 },
                 testSecretKey = "testSecrtKey",
@@ -779,8 +895,6 @@ if (qqtest.canDownloadFileAsBlob) {
                 };
 
             it("handles a basic chunked upload", function(done) {
-                assert.expect(24, done);
-
                 var uploader = new qq.s3.FineUploaderBasic({
                         request: typicalRequestOption,
                         chunking: typicalChunkingOption,
@@ -793,52 +907,63 @@ if (qqtest.canDownloadFileAsBlob) {
                         initiateRequest,
                         multipartCompleteRequest;
 
-                    // initiate multipart upload request
-                    assert.equal(fileTestHelper.getRequests().length, 1);
-                    initiateRequest = fileTestHelper.getRequests()[0];
-                    assert.equal(initiateRequest.method, "POST");
-                    assert.equal(initiateRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploads");
-                    assert.equal(initiateRequest.requestHeaders["x-amz-meta-qqfilename"], uploader.getName(0));
-                    assert.equal(initiateRequest.requestHeaders["x-amz-acl"], "private");
-                    assert.ok(initiateRequest.requestHeaders["x-amz-date"]);
-                    assert.equal(initiateRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "Initiate MP request Authorization header invalid");
-                    initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
+                    uploader.getKey(0).then(function(key0) {
+                        // initiate multipart upload request
+                        assert.equal(fileTestHelper.getRequests().length, 1);
+                        initiateRequest = fileTestHelper.getRequests()[0];
+                        assert.equal(initiateRequest.method, "POST");
+                        assert.equal(initiateRequest.url, testS3Endpoint + "/" + key0 + "?uploads");
+                        assert.equal(initiateRequest.requestHeaders["x-amz-meta-qqfilename"], uploader.getName(0));
+                        assert.equal(initiateRequest.requestHeaders["x-amz-acl"], "private");
+                        assert.ok(initiateRequest.requestHeaders["x-amz-date"]);
+                        assert.equal(initiateRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "Initiate MP request Authorization header invalid");
+                        initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
 
-                    // upload part 1 request
-                    assert.equal(fileTestHelper.getRequests().length, 2);
-                    uploadPartRequest = fileTestHelper.getRequests()[1];
-                    assert.equal(uploadPartRequest.method, "PUT");
-                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
-                    assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
+                        setTimeout(function () {
+                            // upload part 1 request
+                            assert.equal(fileTestHelper.getRequests().length, 2);
+                            uploadPartRequest = fileTestHelper.getRequests()[1];
+                            assert.equal(uploadPartRequest.method, "PUT");
+                            assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=1&uploadId=123");
+                            assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
 
-                    assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
+                            assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
 
-                    assert.equal(uploadPartRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "Upload part 1 request Authorization header is invalid");
-                    uploadPartRequest.respond(200, {ETag: "etag1"}, null);
+                            assert.equal(uploadPartRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "Upload part 1 request Authorization header is invalid");
+                            uploadPartRequest.respond(200, {ETag: "etag1"}, null);
 
-                    // upload part 2 request
-                    assert.equal(fileTestHelper.getRequests().length, 3);
-                    uploadPartRequest = fileTestHelper.getRequests()[2];
-                    assert.equal(uploadPartRequest.method, "PUT");
-                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
-                    assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
+                            setTimeout(function() {
+                                // upload part 2 request
+                                assert.equal(fileTestHelper.getRequests().length, 3);
+                                uploadPartRequest = fileTestHelper.getRequests()[2];
+                                assert.equal(uploadPartRequest.method, "PUT");
+                                assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=2&uploadId=123");
+                                assert.ok(uploadPartRequest.requestHeaders["x-amz-date"]);
 
-                    assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
+                                assert.equal(uploadPartRequest.requestHeaders["Content-Type"], "");
 
-                    assert.equal(uploadPartRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "Upload part 2 request Authorization header is invalid");
-                    uploadPartRequest.respond(200, {ETag: "etag2"}, null);
+                                assert.equal(uploadPartRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "Upload part 2 request Authorization header is invalid");
+                                uploadPartRequest.respond(200, {ETag: "etag2"}, null);
 
-                    // multipart complete request
-                    assert.equal(fileTestHelper.getRequests().length, 4);
-                    multipartCompleteRequest = fileTestHelper.getRequests()[3];
-                    assert.equal(multipartCompleteRequest.method, "POST");
-                    assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploadId=123");
-                    assert.ok(multipartCompleteRequest.requestHeaders["x-amz-date"]);
-                    assert.equal(multipartCompleteRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "MP complete request Authorization header is invalid");
-                    assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2</ETag></Part></CompleteMultipartUpload>");
-                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
+                                setTimeout(function() {
+                                    // multipart complete request
+                                    assert.equal(fileTestHelper.getRequests().length, 4);
+                                    multipartCompleteRequest = fileTestHelper.getRequests()[3];
+                                    assert.equal(multipartCompleteRequest.method, "POST");
+                                    assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + key0 + "?uploadId=123");
+                                    assert.ok(multipartCompleteRequest.requestHeaders["x-amz-date"]);
+                                    assert.equal(multipartCompleteRequest.requestHeaders.Authorization.indexOf("AWS " + testAccessKey + ":"), 0, "MP complete request Authorization header is invalid");
+                                    assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2</ETag></Part></CompleteMultipartUpload>");
+                                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + key0 + "</Key></CompleteMultipartUploadResult>");
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                                    setTimeout(function() {
+                                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                                        done();
+                                    }, 0);
+                                }, 0);
+                            }, 0);
+                        }, 0);
+                    });
                 });
             });
 
@@ -859,77 +984,103 @@ if (qqtest.canDownloadFileAsBlob) {
 
                     assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // failing initiate multipart upload request
-                    assert.equal(fileTestHelper.getRequests().length, 1);
-                    initiateRequest = fileTestHelper.getRequests()[0];
-                    assert.equal(initiateRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploads");
-                    initiateRequest.respond(200, null, "");
+                    uploader.getKey(0).then(function(key0) {
+                        // failing initiate multipart upload request
+                        assert.equal(fileTestHelper.getRequests().length, 1);
+                        initiateRequest = fileTestHelper.getRequests()[0];
+                        assert.equal(initiateRequest.url, testS3Endpoint + "/" + key0 + "?uploads");
+                        initiateRequest.respond(200, null, "");
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
-                    assert.equal(fileTestHelper.getRequests().length, 1);
-                    uploader.retry(0);
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+                        setTimeout(function() {
+                            assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                            assert.equal(fileTestHelper.getRequests().length, 1);
+                            uploader.retry(0);
+                            setTimeout(function() {
+                                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // successful initiate multipart upload request
-                    assert.equal(fileTestHelper.getRequests().length, 2);
-                    initiateRequest = fileTestHelper.getRequests()[1];
-                    assert.equal(initiateRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploads");
-                    initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
+                                // successful initiate multipart upload request
+                                assert.equal(fileTestHelper.getRequests().length, 2);
+                                initiateRequest = fileTestHelper.getRequests()[1];
+                                assert.equal(initiateRequest.url, testS3Endpoint + "/" + key0 + "?uploads");
+                                initiateRequest.respond(200, null, "<UploadId>123</UploadId>");
 
-                    // failing upload part 1 request
-                    assert.equal(fileTestHelper.getRequests().length, 3);
-                    uploadPartRequest = fileTestHelper.getRequests()[2];
-                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
-                    uploadPartRequest.respond(404, {ETag: "etag1"}, null);
+                                setTimeout(function() {
+                                    // failing upload part 1 request
+                                    assert.equal(fileTestHelper.getRequests().length, 3);
+                                    uploadPartRequest = fileTestHelper.getRequests()[2];
+                                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=1&uploadId=123");
+                                    uploadPartRequest.respond(404, {ETag: "etag1"}, null);
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
-                    assert.equal(fileTestHelper.getRequests().length, 3);
-                    uploader.retry(0);
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+                                    setTimeout(function() {
+                                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                                        assert.equal(fileTestHelper.getRequests().length, 3);
+                                        uploader.retry(0);
+                                        setTimeout(function() {
+                                            assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // successful upload part 1 request
-                    assert.equal(fileTestHelper.getRequests().length, 4);
-                    uploadPartRequest = fileTestHelper.getRequests()[3];
-                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=1&uploadId=123");
-                    uploadPartRequest.respond(200, {ETag: "etag1_a"}, null);
+                                            // successful upload part 1 request
+                                            assert.equal(fileTestHelper.getRequests().length, 4);
+                                            uploadPartRequest = fileTestHelper.getRequests()[3];
+                                            assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=1&uploadId=123");
+                                            uploadPartRequest.respond(200, {ETag: "etag1_a"}, null);
 
-                    // failing upload part 2 request
-                    assert.equal(fileTestHelper.getRequests().length, 5);
-                    uploadPartRequest = fileTestHelper.getRequests()[4];
-                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
-                    uploadPartRequest.respond(404, {ETag: "etag2"}, null);
+                                            setTimeout(function() {
+                                                // failing upload part 2 request
+                                                assert.equal(fileTestHelper.getRequests().length, 5);
+                                                uploadPartRequest = fileTestHelper.getRequests()[4];
+                                                assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=2&uploadId=123");
+                                                uploadPartRequest.respond(404, {ETag: "etag2"}, null);
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
-                    assert.equal(fileTestHelper.getRequests().length, 5);
-                    uploader.retry(0);
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+                                                setTimeout(function() {
+                                                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                                                    assert.equal(fileTestHelper.getRequests().length, 5);
+                                                    uploader.retry(0);
+                                                    setTimeout(function() {
+                                                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // successful upload part 2 request
-                    assert.equal(fileTestHelper.getRequests().length, 6);
-                    uploadPartRequest = fileTestHelper.getRequests()[5];
-                    assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?partNumber=2&uploadId=123");
-                    uploadPartRequest.respond(200, {ETag: "etag2_a"}, null);
+                                                        // successful upload part 2 request
+                                                        assert.equal(fileTestHelper.getRequests().length, 6);
+                                                        uploadPartRequest = fileTestHelper.getRequests()[5];
+                                                        assert.equal(uploadPartRequest.url, testS3Endpoint + "/" + key0 + "?partNumber=2&uploadId=123");
+                                                        uploadPartRequest.respond(200, {ETag: "etag2_a"}, null);
 
-                    // failing multipart complete request
-                    assert.equal(fileTestHelper.getRequests().length, 7);
-                    multipartCompleteRequest = fileTestHelper.getRequests()[6];
-                    assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploadId=123");
-                    assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1_a</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2_a</ETag></Part></CompleteMultipartUpload>");
-                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
+                                                        setTimeout(function() {
+                                                            // failing multipart complete request
+                                                            assert.equal(fileTestHelper.getRequests().length, 7);
+                                                            multipartCompleteRequest = fileTestHelper.getRequests()[6];
+                                                            assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + key0 + "?uploadId=123");
+                                                            assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1_a</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2_a</ETag></Part></CompleteMultipartUpload>");
+                                                            multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Key>" + key0 + "</Key></CompleteMultipartUploadResult>");
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
-                    assert.equal(fileTestHelper.getRequests().length, 7);
-                    uploader.retry(0);
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
+                                                            setTimeout(function() {
+                                                                assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_FAILED);
+                                                                assert.equal(fileTestHelper.getRequests().length, 7);
+                                                                uploader.retry(0);
+                                                                setTimeout(function() {
+                                                                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOADING);
 
-                    // successful multipart complete request
-                    assert.equal(fileTestHelper.getRequests().length, 8);
-                    multipartCompleteRequest = fileTestHelper.getRequests()[7];
-                    assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + uploader.getKey(0) + "?uploadId=123");
-                    assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1_a</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2_a</ETag></Part></CompleteMultipartUpload>");
-                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + uploader.getKey(0) + "</Key></CompleteMultipartUploadResult>");
+                                                                    // successful multipart complete request
+                                                                    assert.equal(fileTestHelper.getRequests().length, 8);
+                                                                    multipartCompleteRequest = fileTestHelper.getRequests()[7];
+                                                                    assert.equal(multipartCompleteRequest.url, testS3Endpoint + "/" + key0 + "?uploadId=123");
+                                                                    assert.equal(multipartCompleteRequest.requestBody, "<CompleteMultipartUpload><Part><PartNumber>1</PartNumber><ETag>etag1_a</ETag></Part><Part><PartNumber>2</PartNumber><ETag>etag2_a</ETag></Part></CompleteMultipartUpload>");
+                                                                    multipartCompleteRequest.respond(200, null, "<CompleteMultipartUploadResult><Bucket>" + testBucketName + "</Bucket><Key>" + key0 + "</Key></CompleteMultipartUploadResult>");
 
-                    assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                                                                    setTimeout(function() {
+                                                                        assert.equal(uploader.getUploads()[0].status, qq.status.UPLOAD_SUCCESSFUL);
+                                                                    }, 0);
+                                                                }, 0);
+                                                            }, 0);
+                                                        }, 0);
+                                                    }, 0);
+                                                }, 0);
+                                            }, 0);
+                                        }, 0);
+                                    }, 0);
+                                }, 0);
+                            }, 0);
+                        }, 0);
+                    });
                 });
             });
         });

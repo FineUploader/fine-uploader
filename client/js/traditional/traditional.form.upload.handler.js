@@ -71,37 +71,40 @@ qq.traditional.FormUploadHandler = function(options, proxy) {
     this.uploadFile = function(id) {
         var input = handler.getInput(id),
             iframe = handler._createIframe(id),
-            promise = new qq.Promise(),
             form;
 
         form = createForm(id, iframe);
         form.appendChild(input);
 
-        handler._attachLoadEvent(iframe, function(responseFromMessage) {
-            log("iframe loaded");
+        return new Promise(function(resolve, reject) {
+            handler._attachLoadEvent(iframe, function(responseFromMessage) {
+                var error;
 
-            var response = responseFromMessage ? responseFromMessage : getIframeContentJson(id, iframe);
+                log("iframe loaded");
 
-            handler._detachLoadEvent(id);
+                var response = responseFromMessage ? responseFromMessage : getIframeContentJson(id, iframe);
 
-            //we can't remove an iframe if the iframe doesn't belong to the same domain
-            if (!options.cors.expected) {
-                qq(iframe).remove();
-            }
+                handler._detachLoadEvent(id);
 
-            if (response.success) {
-                promise.success(response);
-            }
-            else {
-                promise.failure(response);
-            }
+                //we can't remove an iframe if the iframe doesn't belong to the same domain
+                if (!options.cors.expected) {
+                    qq(iframe).remove();
+                }
+
+                if (response.success) {
+                    resolve(response);
+                }
+                else {
+                    error = new Error("Failed to upload file");
+                    error.response = response;
+                    reject(error);
+                }
+            });
+
+            log("Sending upload request for " + id);
+            form.submit();
+            qq(form).remove();
         });
-
-        log("Sending upload request for " + id);
-        form.submit();
-        qq(form).remove();
-
-        return promise;
     };
 
     qq.extend(this, new qq.FormUploadHandler({

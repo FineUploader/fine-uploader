@@ -43,16 +43,19 @@ qq.azure.PutBlockList = function(o) {
         log: options.log,
         onSend: function() {},
         onComplete: function(id, xhr, isError) {
-            var promise = promises[id];
+            var promise = promises[id],
+                error;
 
             delete endpoints[id];
             delete promises[id];
 
             if (isError) {
-                promise.failure(xhr);
+                error = new Error("Failed to put block list");
+                error.xhr = xhr;
+                promise.reject(error);
             }
             else {
-                promise.success(xhr);
+                promise.resolve(xhr);
             }
 
         }
@@ -82,23 +85,22 @@ qq.azure.PutBlockList = function(o) {
     qq.extend(this, {
         method: method,
         send: function(id, sasUri, blockIdEntries, fileMimeType, registerXhrCallback) {
-            var promise = new qq.Promise(),
-                blockIdsXml = createRequestBody(blockIdEntries),
-                xhr;
+            return new Promise(function(resolve, reject) {
+                var blockIdsXml = createRequestBody(blockIdEntries),
+                    xhr;
 
-            promises[id] = promise;
+                promises[id] = {resolve: resolve, reject: reject};
 
-            options.log(qq.format("Submitting Put Block List request for {}", id));
+                options.log(qq.format("Submitting Put Block List request for {}", id));
 
-            endpoints[id] = qq.format("{}&comp=blocklist", sasUri);
+                endpoints[id] = qq.format("{}&comp=blocklist", sasUri);
 
-            xhr = requester.initTransport(id)
-                .withPayload(blockIdsXml)
-                .withHeaders({"x-ms-blob-content-type": fileMimeType})
-                .send();
-            registerXhrCallback(xhr);
-
-            return promise;
+                xhr = requester.initTransport(id)
+                    .withPayload(blockIdsXml)
+                    .withHeaders({"x-ms-blob-content-type": fileMimeType})
+                    .send();
+                registerXhrCallback(xhr);
+            });
         }
     });
 };

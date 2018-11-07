@@ -51,10 +51,10 @@ qq.azure.PutBlob = function(o) {
             delete promises[id];
 
             if (isError) {
-                promise.failure();
+                promise.reject();
             }
             else {
-                promise.success();
+                promise.resolve();
             }
         }
     }));
@@ -62,19 +62,17 @@ qq.azure.PutBlob = function(o) {
     qq.extend(this, {
         method: method,
         upload: function(id, xhr, url, file) {
-            var promise = new qq.Promise();
+            return new Promise(function(resolve, reject) {
+                options.log("Submitting Put Blob request for " + id);
 
-            options.log("Submitting Put Blob request for " + id);
+                promises[id] = {resolve: resolve, reject: reject};
+                endpoints[id] = url;
 
-            promises[id] = promise;
-            endpoints[id] = url;
-
-            requester.initTransport(id)
-                .withPayload(file)
-                .withHeaders({"Content-Type": file.type})
-                .send(xhr);
-
-            return promise;
+                requester.initTransport(id)
+                    .withPayload(file)
+                    .withHeaders({"Content-Type": file.type})
+                    .send(xhr);
+            });
         }
     });
 };

@@ -176,14 +176,18 @@ describe("test form support", function() {
 
                         uploader.addFiles(blob);
 
-                        assert.equal(fileTestHelper.getRequests().length, 0, "Wrong # of requests");
-                        uploader.uploadStoredFiles();
-                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                        setTimeout(function() {
+                            assert.equal(fileTestHelper.getRequests().length, 0, "Wrong # of requests");
+                            uploader.uploadStoredFiles();
+                            setTimeout(function() {
+                                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
 
-                        request = fileTestHelper.getRequests()[0];
-                        assert.equal(request.url, endopint);
-                        requestParams = request.requestBody.fields;
-                        assert.equal(requestParams.text_test, "test");
+                                request = fileTestHelper.getRequests()[0];
+                                assert.equal(request.url, endopint);
+                                requestParams = request.requestBody.fields;
+                                assert.equal(requestParams.text_test, "test");
+                            }, 0);
+                        }, 0);
                     });
                 };
 

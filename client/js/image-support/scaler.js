@@ -165,8 +165,7 @@ qq.extend(qq.Scaler.prototype, {
             throw new qq.Error("Scaling is not supported in this browser!");
         }
 
-        var scalingEffort = new qq.Promise(),
-            log = api.log,
+        var log = api.log,
             file = api.getFile(id),
             uploadData = api.uploadData.retrieve({id: id}),
             name = uploadData && uploadData.name,
@@ -182,28 +181,28 @@ qq.extend(qq.Scaler.prototype, {
             },
             scaler = new qq.Scaler(scalingOptions, log);
 
-        if (!qq.Scaler || !qq.supportedFeatures.imagePreviews || !file) {
-            scalingEffort.failure();
+        return new Promise(function(resolve, reject) {
+            if (!qq.Scaler || !qq.supportedFeatures.imagePreviews || !file) {
+                reject();
 
-            log("Could not generate requested scaled image for " + id + ".  " +
-                "Scaling is either not possible in this browser, or the file could not be located.", "error");
-        }
-        else {
-            (qq.bind(function() {
-                // Assumption: There will never be more than one record
-                var record = scaler.getFileRecords(uuid, name, file)[0];
+                log("Could not generate requested scaled image for " + id + ".  " +
+                    "Scaling is either not possible in this browser, or the file could not be located.", "error");
+            }
+            else {
+                (qq.bind(function() {
+                    // Assumption: There will never be more than one record
+                    var record = scaler.getFileRecords(uuid, name, file)[0];
 
-                if (record && record.blob instanceof qq.BlobProxy) {
-                    record.blob.create().then(scalingEffort.success, scalingEffort.failure);
-                }
-                else {
-                    log(id + " is not a scalable image!", "error");
-                    scalingEffort.failure();
-                }
-            }, this)());
-        }
-
-        return scalingEffort;
+                    if (record && record.blob instanceof qq.BlobProxy) {
+                        record.blob.create().then(resolve, reject);
+                    }
+                    else {
+                        log(id + " is not a scalable image!", "error");
+                        reject();
+                    }
+                }, this)());
+            }
+        });
     },
 
     // NOTE: We cannot reliably determine at this time if the UA supports a specific MIME type for the target format.
@@ -301,39 +300,38 @@ qq.extend(qq.Scaler.prototype, {
             quality = spec.quality,
             failedText = spec.failedText,
             includeExif = spec.includeExif && sourceFile.type === "image/jpeg" && type === "image/jpeg",
-            scalingEffort = new qq.Promise(),
             imageGenerator = new qq.ImageGenerator(log),
             canvas = document.createElement("canvas");
 
         log("Attempting to generate scaled version for " + sourceFile.name);
 
-        imageGenerator.generate(sourceFile, canvas, {maxSize: maxSize, orient: orient, customResizeFunction: customResizeFunction}).then(function() {
-            var scaledImageDataUri = canvas.toDataURL(type, quality),
-                signalSuccess = function() {
-                    log("Success generating scaled version for " + sourceFile.name);
-                    var blob = qq.dataUriToBlob(scaledImageDataUri);
-                    scalingEffort.success(blob);
-                };
+        return new Promise(function(resolve, reject) {
+            imageGenerator.generate(sourceFile, canvas, {maxSize: maxSize, orient: orient, customResizeFunction: customResizeFunction}).then(function() {
+                var scaledImageDataUri = canvas.toDataURL(type, quality),
+                    signalSuccess = function() {
+                        log("Success generating scaled version for " + sourceFile.name);
+                        var blob = qq.dataUriToBlob(scaledImageDataUri);
+                        resolve(blob);
+                    };
 
-            if (includeExif) {
-                self._insertExifHeader(sourceFile, scaledImageDataUri, log).then(function(scaledImageDataUriWithExif) {
-                    scaledImageDataUri = scaledImageDataUriWithExif;
+                if (includeExif) {
+                    self._insertExifHeader(sourceFile, scaledImageDataUri, log).then(function(scaledImageDataUriWithExif) {
+                        scaledImageDataUri = scaledImageDataUriWithExif;
+                        signalSuccess();
+                    },
+                    function() {
+                        log("Problem inserting EXIF header into scaled image.  Using scaled image w/out EXIF data.", "error");
+                        signalSuccess();
+                    });
+                }
+                else {
                     signalSuccess();
-                },
-                function() {
-                    log("Problem inserting EXIF header into scaled image.  Using scaled image w/out EXIF data.", "error");
-                    signalSuccess();
-                });
-            }
-            else {
-                signalSuccess();
-            }
-        }, function() {
-            log("Failed attempt to generate scaled version for " + sourceFile.name, "error");
-            scalingEffort.failure(failedText);
+                }
+            }, function() {
+                log("Failed attempt to generate scaled version for " + sourceFile.name, "error");
+                reject(new Error(failedText));
+            });
         });
-
-        return scalingEffort;
     },
 
     // Attempt to insert the original image's EXIF header into a scaled version.
@@ -341,22 +339,21 @@ qq.extend(qq.Scaler.prototype, {
         "use strict";
 
         var reader = new FileReader(),
-            insertionEffort = new qq.Promise(),
             originalImageDataUri = "";
 
-        reader.onload = function() {
-            originalImageDataUri = reader.result;
-            insertionEffort.success(qq.ExifRestorer.restore(originalImageDataUri, scaledImageDataUri));
-        };
+        return new Promise(function (resolve, reject) {
+            reader.onload = function() {
+                originalImageDataUri = reader.result;
+                resolve(qq.ExifRestorer.restore(originalImageDataUri, scaledImageDataUri));
+            };
 
-        reader.onerror = function() {
-            log("Problem reading " + originalImage.name + " during attempt to transfer EXIF data to scaled version.", "error");
-            insertionEffort.failure();
-        };
+            reader.onerror = function() {
+                log("Problem reading " + originalImage.name + " during attempt to transfer EXIF data to scaled version.", "error");
+                reject();
+            };
 
-        reader.readAsDataURL(originalImage);
-
-        return insertionEffort;
+            reader.readAsDataURL(originalImage);
+        });
     },
 
     _dataUriToBlob: function(dataUri) {

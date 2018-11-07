@@ -20,7 +20,10 @@ qq.UploadHandler = function(spec) {
 
         cancel: function(id) {
             var self = this,
-                cancelFinalizationEffort = new qq.Promise(),
+                resolveCancelFinalizationEffort,
+                cancelFinalizationEffort = new Promise(function(resolve) {
+                    resolveCancelFinalizationEffort = resolve;
+                }),
                 onCancelRetVal = onCancel(id, getName(id), cancelFinalizationEffort);
 
             onCancelRetVal.then(function() {
@@ -28,7 +31,7 @@ qq.UploadHandler = function(spec) {
                     fileState[id].canceled = true;
                     self.expunge(id);
                 }
-                cancelFinalizationEffort.success();
+                resolveCancelFinalizationEffort();
             });
         },
 

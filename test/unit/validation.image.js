@@ -27,7 +27,8 @@ if (qq.supportedFeatures.imageValidation && qqtest.canDownloadFileAsBlob) {
 
                     done();
                 },
-                function(code) {
+                function(error) {
+                    var code = error.failingLimit;
                     assert.equal(code, expectedErrorCode);
                     done();
                 });

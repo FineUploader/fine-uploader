@@ -57,18 +57,22 @@ if (qqtest.canDownloadFileAsBlob) {
                     theparams = overrideParams || params;
 
                 uploader.addFiles({name: "test", blob: blob});
-                uploader.uploadStoredFiles();
+                setTimeout(function() {
+                    uploader.uploadStoredFiles();
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
-                request = fileTestHelper.getRequests()[0];
-                requestParams = request.requestBody.fields;
-                purlUrl = purl(request.url);
+                    setTimeout(function() {
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                        request = fileTestHelper.getRequests()[0];
+                        requestParams = request.requestBody.fields;
+                        purlUrl = purl(request.url);
 
-                assert.equal(mpe ? requestParams.foo : purlUrl.param("foo"), theparams.foo, "'foo' param value incorrect");
-                assert.equal(mpe ? requestParams.one : purlUrl.param("one"), theparams.one, "'one' param value incorrect");
-                assert.equal(mpe ? requestParams.thefunc : purlUrl.param("thefunc"), theparams.thefunc(), "'thefunc' param value incorrect");
+                        assert.equal(mpe ? requestParams.foo : purlUrl.param("foo"), theparams.foo, "'foo' param value incorrect");
+                        assert.equal(mpe ? requestParams.one : purlUrl.param("one"), theparams.one, "'one' param value incorrect");
+                        assert.equal(mpe ? requestParams.thefunc : purlUrl.param("thefunc"), theparams.thefunc(), "'thefunc' param value incorrect");
 
-                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                        fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                    }, 0);
+                }, 0);
             });
         }
 
@@ -82,15 +86,19 @@ if (qqtest.canDownloadFileAsBlob) {
                 var request;
 
                 uploader.addFiles({name: "test", blob: blob});
-                uploader.uploadStoredFiles();
+                setTimeout(function() {
+                    uploader.uploadStoredFiles();
 
-                assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
-                request = fileTestHelper.getRequests()[0];
+                    setTimeout(function() {
+                        assert.equal(fileTestHelper.getRequests().length, 1, "Wrong # of requests");
+                        request = fileTestHelper.getRequests()[0];
 
-                assert.equal(request.requestHeaders.one, headers.one, "Wrong 'one' header");
-                assert.equal(request.requestHeaders.two, headers.two, "Wrong 'two' header");
+                        assert.equal(request.requestHeaders.one, headers.one, "Wrong 'one' header");
+                        assert.equal(request.requestHeaders.two, headers.two, "Wrong 'two' header");
 
-                fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                        fileTestHelper.getRequests()[0].respond(200, null, JSON.stringify({success: true}));
+                    }, 0);
+                }, 0);
             });
         }
 

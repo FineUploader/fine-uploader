@@ -15,10 +15,7 @@ In some cases, Fine Uploader uses "promises", both internally and via the API.
 Promises are a design pattern taken from the functional programming style and
 are extremely helpful when dealing with asynchronous operations.
 
-Fine Uploader's support for promises is encapsulated in the `qq.Promise` module.  Starting with version 5.0, you
-can use any A+ certified promise implementation to communicate with Fine Uploader as well.  That is, you are
-no longer bound to `qq.Promise`.  Instead, you can use [Q][q], or [RSVP][rsvp], for example, to return promises from any
-promissory callback handlers.
+Starting with version 6.0, Fine Uploader supports native promises.
 
 For more information on promises in JavaScript, have a look at
 [Promises -- an alternative way to approach asynchronous JavaScript](http://12devs.co.uk/articles/promises-an-alternative-way-to-approach-asynchronous-javascript/).
@@ -27,8 +24,8 @@ For more information on promises in JavaScript, have a look at
 
 Promises are acceptable return values in the following [event handlers](../api/events.html).
 Many of these callbacks can also prevent an associated action from being executed
-with a false return value (non-promise) or a call to `failure()` on a returned
-promise instance (see individual event docs for more details):
+with a false return value (non-promise) or by returning a rejected promise (see 
+individual event docs for more details):
 
 * `onCancel`
 * `onCredentialsExpired`
@@ -47,77 +44,6 @@ any of the above callbacks if you need to execute  some non-blocking task,
 such as an AJAX request, or asking the user for input via a modal window that
 does not block the UI thread (such as a Bootstrap modal, or a Bootbox.js dialog box).
 
-## qq.Promise API
-
-{{ alert(
-"""Fine Uploader's internal `qq.Promise` object is _not_ compliant with the A+ specification. If this is a problem for you,
-feel free to use any compliant promise library of your choice instead.""", "info", "Note:") }}
-
-{% endmarkdown %}
-{{ api_method("then", "then (successCallback, failureCallback)", "Register callbacks from success *and* failure. The promise instance that `then` is called on will pass any values into the provided callbacks. If success or failure have already occurred before these callbacks have been registered, then they will be called immediately after this call has been executed. Each subsequent call to `then` registers an additional set of callbacks.",
-[
-        {
-            "name": "successCallback",
-            "type": "Function",
-            "description": "The function to call when the promise is successfully fulfilled."
-        },
-        {
-            "name": "failureCallback",
-            "type": "Function",
-            "description": "The function to call when the promise is unsuccessfully fulfilled."
-        }
-],
-[
-    {
-        "type": "qq.Promise",
-        "description": "An instance of a promise."
-    }
-]) }}
-
-{{ api_method("done", "done (callback)", "Register callbacks for success *or* failure. Invoked when the promise is fulfilled regardless of the result. The promise instance that `done` is called on will pass any values into the provided callback. Each call to `done` registers an additional set of callbacks",
-[
-        {
-            "name": "callback",
-            "type": "Function",
-            "description": "The function to call when the promise is fulfilled, successful or not."
-        },
-],
-[
-    {
-        "type": "qq.Promise",
-        "description": "An instance of a promise."
-    }
-]) }}
-{{ api_method("success", "success (param)", "Call this on a promise to indicate success. The parameter value will depend on the situation.",
-[
-        {
-            "name": "param",
-            "type": "Object",
-            "description": "The value to pass to the promise's success handler."
-        },
-],
-[
-    {
-        "type": "qq.Promise",
-        "description": "An instance of a promise."
-    }
-]) }}
-{{ api_method("failure", "failure (param)", "Call this on a promise to indicate failure. The parameter value will depend on the situation.",
-[
-        {
-            "name": "param",
-            "type": "Object",
-            "description": "The value to pass to the promise's failure handler."
-        },
-],
-[
-    {
-        "type": "qq.Promise",
-        "description": "An instance of a promise."
-    }
-]) }}
-{% markdown %}
-
 ## Promissory Options
 
 The [`showConfirm`][showconfirm], [`showMessage`][showmessage], and [`showPrompt`][showprompt] UI options in Fine Uploader accept promissory return values.
@@ -135,18 +61,16 @@ for your prompt dialog, might look something like this:
 
 ```javascript
 showPrompt: function(message, defaultValue) {
-    var promise = new qq.Promise();
-
-    bootbox.prompt("Enter a value", "Cancel", "Confirm", function(result) {
-        if (result === null || qq.trimStr(result).length === 0) {
-            promise.failure("User canceled prompt dialog or entered an empty string.");
-        }
-        else {
-            promise.success(result);
-        }
-    }, defaultValue);
-
-    return promise;
+    return new Promise(function(resolve, reject) {
+        bootbox.prompt("Enter a value", "Cancel", "Confirm", function(result) {
+            if (result === null || qq.trimStr(result).length === 0) {
+                reject(new Error("User canceled prompt dialog or entered an empty string."));
+            }
+            else {
+                resolve(result);
+            }
+        }, defaultValue);
+    });
 }
 ```
 

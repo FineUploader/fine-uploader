@@ -428,18 +428,19 @@ var qq = function(element) {
 
     qq.readBlobToHex = function(blob, startOffset, length) {
         var initialBlob = qq.sliceBlob(blob, startOffset, startOffset + length),
-            fileReader = new FileReader(),
-            promise = new qq.Promise();
+            fileReader = new FileReader();
 
-        fileReader.onload = function() {
-            promise.success(qq.arrayBufferToHex(fileReader.result));
-        };
+        return new Promise(function(resolve, reject) {
+            fileReader.onload = function() {
+                resolve(qq.arrayBufferToHex(fileReader.result));
+            };
 
-        fileReader.onerror = promise.failure;
+            fileReader.onerror = function (e) {
+                reject(new Error(e.message));
+            };
 
-        fileReader.readAsArrayBuffer(initialBlob);
-
-        return promise;
+            fileReader.readAsArrayBuffer(initialBlob);
+        });
     };
 
     qq.extend = function(first, second, extendNested) {

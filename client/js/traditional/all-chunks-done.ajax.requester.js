@@ -43,33 +43,34 @@ qq.traditional.AllChunksDoneAjaxRequester = function(o) {
         cors: options.cors,
         log: options.log,
         onComplete: function(id, xhr, isError) {
-            var promise = promises[id];
+            var promise = promises[id],
+                error;
 
             delete promises[id];
 
             if (isError) {
-                promise.failure(xhr);
+                error = new Error("Failed to request all chunks done.");
+                error.xhr = xhr;
+                promise.reject(error);
             }
             else {
-                promise.success(xhr);
+                promise.resolve(xhr);
             }
         }
     }));
 
     qq.extend(this, {
         complete: function(id, xhr, params, headers) {
-            var promise = new qq.Promise();
+            return new Promise(function(resolve, reject) {
+                options.log("Submitting All Chunks Done request for " + id);
 
-            options.log("Submitting All Chunks Done request for " + id);
+                promises[id] = {resolve: resolve, reject: reject};
 
-            promises[id] = promise;
-
-            requester.initTransport(id)
-                .withParams(options.params(id) || params)
-                .withHeaders(options.headers(id) || headers)
-                .send(xhr);
-
-            return promise;
+                requester.initTransport(id)
+                    .withParams(options.params(id) || params)
+                    .withHeaders(options.headers(id) || headers)
+                    .send(xhr);
+            });
         }
     });
 };

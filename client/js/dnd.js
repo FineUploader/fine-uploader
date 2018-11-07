@@ -30,47 +30,45 @@ qq.DragAndDrop = function(o) {
     }
 
     function traverseFileTree(entry) {
-        var parseEntryPromise = new qq.Promise();
-
-        if (entry.isFile) {
-            entry.file(function(file) {
-                file.qqPath = extractDirectoryPath(entry);
-                droppedFiles.push(file);
-                parseEntryPromise.success();
-            },
-            function(fileError) {
-                options.callbacks.dropLog("Problem parsing '" + entry.fullPath + "'.  FileError code " + fileError.code + ".", "error");
-                parseEntryPromise.failure();
-            });
-        }
-        else if (entry.isDirectory) {
-            getFilesInDirectory(entry).then(
-                function allEntriesRead(entries) {
-                    var entriesLeft = entries.length;
-
-                    qq.each(entries, function(idx, entry) {
-                        traverseFileTree(entry).done(function() {
-                            entriesLeft -= 1;
-
-                            if (entriesLeft === 0) {
-                                parseEntryPromise.success();
-                            }
-                        });
-                    });
-
-                    if (!entries.length) {
-                        parseEntryPromise.success();
-                    }
+        return new Promise(function(resolve, reject) {
+            if (entry.isFile) {
+                entry.file(function(file) {
+                    file.qqPath = extractDirectoryPath(entry);
+                    droppedFiles.push(file);
+                    resolve();
                 },
-
-                function readFailure(fileError) {
+                function(fileError) {
                     options.callbacks.dropLog("Problem parsing '" + entry.fullPath + "'.  FileError code " + fileError.code + ".", "error");
-                    parseEntryPromise.failure();
-                }
-            );
-        }
+                    reject();
+                });
+            }
+            else if (entry.isDirectory) {
+                getFilesInDirectory(entry).then(
+                    function allEntriesRead(entries) {
+                        var entriesLeft = entries.length;
 
-        return parseEntryPromise;
+                        qq.each(entries, function(idx, entry) {
+                            traverseFileTree(entry).done(function() {
+                                entriesLeft -= 1;
+
+                                if (entriesLeft === 0) {
+                                    resolve();
+                                }
+                            });
+                        });
+
+                        if (!entries.length) {
+                            resolve();
+                        }
+                    },
+
+                    function readFailure(fileError) {
+                        options.callbacks.dropLog("Problem parsing '" + entry.fullPath + "'.  FileError code " + fileError.code + ".", "error");
+                        reject();
+                    }
+                );
+            }
+        });
     }
 
     function extractDirectoryPath(entry) {
@@ -90,77 +88,73 @@ qq.DragAndDrop = function(o) {
     }
 
     // Promissory.  Guaranteed to read all files in the root of the passed directory.
-    function getFilesInDirectory(entry, reader, accumEntries, existingPromise) {
-        var promise = existingPromise || new qq.Promise(),
-            dirReader = reader || entry.createReader();
+    function getFilesInDirectory(entry, reader, accumEntries) {
+        var dirReader = reader || entry.createReader();
 
-        dirReader.readEntries(
-            function readSuccess(entries) {
-                var newEntries = accumEntries ? accumEntries.concat(entries) : entries;
+        return new Promise(function(resolve, reject) {
+            dirReader.readEntries(
+                function readSuccess(entries) {
+                    var newEntries = accumEntries ? accumEntries.concat(entries) : entries;
 
-                if (entries.length) {
-                    setTimeout(function() { // prevent stack overflow, however unlikely
-                        getFilesInDirectory(entry, dirReader, newEntries, promise);
-                    }, 0);
-                }
-                else {
-                    promise.success(newEntries);
-                }
-            },
+                    if (entries.length) {
+                        getFilesInDirectory(entry, dirReader, newEntries).then(resolve, reject);
+                    }
+                    else {
+                        resolve(newEntries);
+                    }
+                },
 
-            promise.failure
-        );
-
-        return promise;
+                reject
+            );
+        });
     }
 
     function handleDataTransfer(dataTransfer, uploadDropZone) {
-        var pendingFolderPromises = [],
-            handleDataTransferPromise = new qq.Promise();
+        var pendingFolderPromises = [];
 
         options.callbacks.processingDroppedFiles();
         uploadDropZone.dropDisabled(true);
 
-        if (dataTransfer.files.length > 1 && !options.allowMultipleItems) {
-            options.callbacks.processingDroppedFilesComplete([]);
-            options.callbacks.dropError("tooManyFilesError", "");
-            uploadDropZone.dropDisabled(false);
-            handleDataTransferPromise.failure();
-        }
-        else {
-            droppedFiles = [];
-
-            if (qq.isFolderDropSupported(dataTransfer)) {
-                qq.each(dataTransfer.items, function(idx, item) {
-                    var entry = item.webkitGetAsEntry();
-
-                    if (entry) {
-                        //due to a bug in Chrome's File System API impl - #149735
-                        if (entry.isFile) {
-                            droppedFiles.push(item.getAsFile());
-                        }
-
-                        else {
-                            pendingFolderPromises.push(traverseFileTree(entry).done(function() {
-                                pendingFolderPromises.pop();
-                                if (pendingFolderPromises.length === 0) {
-                                    handleDataTransferPromise.success();
-                                }
-                            }));
-                        }
-                    }
-                });
+        return new Promise(function(resolve, reject) {
+            if (dataTransfer.files.length > 1 && !options.allowMultipleItems) {
+                options.callbacks.processingDroppedFilesComplete([]);
+                options.callbacks.dropError("tooManyFilesError", "");
+                uploadDropZone.dropDisabled(false);
+                reject();
             }
             else {
-                droppedFiles = dataTransfer.files;
-            }
+                droppedFiles = [];
 
-            if (pendingFolderPromises.length === 0) {
-                handleDataTransferPromise.success();
-            }
-        }
+                if (qq.isFolderDropSupported(dataTransfer)) {
+                    qq.each(dataTransfer.items, function(idx, item) {
+                        var entry = item.webkitGetAsEntry();
 
-        return handleDataTransferPromise;
+                        if (entry) {
+                            //due to a bug in Chrome's File System API impl - #149735
+                            if (entry.isFile) {
+                                droppedFiles.push(item.getAsFile());
+                            }
+
+                            else {
+                                pendingFolderPromises.push(traverseFileTree(entry).done(function() {
+                                    pendingFolderPromises.pop();
+                                    if (pendingFolderPromises.length === 0) {
+                                        resolve();
+                                    }
+                                }));
+                            }
+                        }
+                    });
+                }
+                else {
+                    droppedFiles = dataTransfer.files;
+                }
+
+                if (pendingFolderPromises.length === 0) {
+                    resolve();
+                }
+            }
+        });
     }
 
     function setupDropzone(dropArea) {

@@ -113,10 +113,10 @@ qq.XhrUploadHandler = function(spec) {
                 xhr = handler._getXhr(id, lastChunkIdx);
 
             if (responseParser) {
-                return new qq.Promise().success(responseParser(xhr), xhr);
+                return Promise.resolve({response: responseParser(xhr), xhr: xhr});
             }
 
-            return new qq.Promise().success({}, xhr);
+            return Promise.resolve({response: {}, xhr: xhr});
         },
 
         getFile: function(id) {

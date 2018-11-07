@@ -25,7 +25,7 @@ receive pasted images. This target element must have focus before the paste even
 accomplished by clicking on the element before pasting the image from the clipboard, or by programmatically giving it focus.
 
 Once the image has been pasted, the `onPasteReceived` callback will be invoked with the associated `Blob` as a parameter.
-This is a promissory callback, and a `qq.Promise` MUST be returned if you provide your own implementation of this callback.
+This is a promissory callback, and a `Promise` MUST be returned if you provide your own implementation of this callback.
 Via the promise object, you can return a string that determines the name of the associated image. This will be passed along
 with the upload request. Fine Uploader will also append an extension to the name, based on the image type. This callback
 can be used if you need to make an ajax call to determine the name of the pasted image, or if you need to display a

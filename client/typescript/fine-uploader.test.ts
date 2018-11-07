@@ -1,7 +1,6 @@
 import { FineUploader, UIOptions } from 'fine-uploader';
 import { s3 } from 'fine-uploader/lib/s3';
 import { azure } from 'fine-uploader/lib/azure';
-import { PromiseOptions } from 'fine-uploader/lib/core';
 
 /**
  * Prepare/set options for the core + UI FineUploader
@@ -89,17 +88,3 @@ let azureUploader = new azure.FineUploader(azureUIOptions);
 uploader.uploadStoredFiles();
 s3Uploader.uploadStoredFiles();
 azureUploader.uploadStoredFiles();
-
-//FineUploader's Promise Implementation
-let promise: PromiseOptions = new uploader.Promise();
-let result = {};
-promise.failure(result);
-promise.success(result);
-promise.then(() => {
-    //promise is successfully fulfilled, do something here
-}, () => {
-    //promise is un-successfully fulfilled, do something here
-});
-promise.done(() => {
-    //promise is fulfilled whether successful or not, do something here
-});

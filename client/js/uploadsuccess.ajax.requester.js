@@ -32,7 +32,8 @@ qq.UploadSuccessAjaxRequester = function(o) {
             responseJson = xhrOrXdr.responseText,
             successIndicator = {success: true},
             failureIndicator = {success: false},
-            parsedResponse;
+            parsedResponse,
+            error;
 
         delete pendingRequests[id];
 
@@ -46,23 +47,27 @@ qq.UploadSuccessAjaxRequester = function(o) {
             // since XDomainRequest (used in IE9 and IE8) doesn't give you access to the
             // response body for an "error" response.
             if (isError || (parsedResponse && (parsedResponse.error || parsedResponse.success === false))) {
-                options.log("Upload success request was rejected by the server.", "error");
-                promise.failure(qq.extend(parsedResponse, failureIndicator));
+                error = new Error("Upload success request was rejected by the server.");
+                error.response = qq.extend(parsedResponse, failureIndicator);
+                options.log(error.message, "error");
+                promise.reject(error);
             }
             else {
                 options.log("Upload success was acknowledged by the server.");
-                promise.success(qq.extend(parsedResponse, successIndicator));
+                promise.resolve(qq.extend(parsedResponse, successIndicator));
             }
         }
-        catch (error) {
+        catch (e) {
             // This will be executed if a JSON response is not present.  This is not mandatory, so account for this properly.
             if (isError) {
-                options.log(qq.format("Your server indicated failure in its upload success request response for id {}!", id), "error");
-                promise.failure(failureIndicator);
+                error = new Error(qq.format("Your server indicated failure in its upload success request response for id {}!", id));
+                error.response = failureIndicator;
+                options.log(error.message, "error");
+                promise.reject(error);
             }
             else {
                 options.log("Upload success was acknowledged by the server.");
-                promise.success(successIndicator);
+                promise.resolve(successIndicator);
             }
         }
     }
@@ -85,26 +90,27 @@ qq.UploadSuccessAjaxRequester = function(o) {
 
     qq.extend(this, {
         /**
-         * Sends a request to the server, notifying it that a recently submitted file was successfully sent.
+         * Sends a request to the server, notifying it that a recently submitted
+         * file was successfully sent.
          *
          * @param id ID of the associated file
-         * @param spec `Object` with the properties that correspond to important values that we want to
-         * send to the server with this request.
-         * @returns {qq.Promise} A promise to be fulfilled when the response has been received and parsed.  The parsed
-         * payload of the response will be passed into the `failure` or `success` promise method.
+         * @param spec `Object` with the properties that correspond to important
+         * values that we want to send to the server with this request.
+         * @returns {Promise} A promise to be resolved when the response has
+         * been received and parsed.  The promise will be resolved with the
+         * parsed payload of the response on success, or will be rejected with
+         * an Error with a `response` property.
          */
         sendSuccessRequest: function(id, spec) {
-            var promise = new qq.Promise();
-
             options.log("Submitting upload success request/notification for " + id);
 
-            requester.initTransport(id)
-                .withParams(spec)
-                .send();
+            return new Promise(function(resolve, reject) {
+                pendingRequests[id] = {resolve: resolve, reject: reject};
 
-            pendingRequests[id] = promise;
-
-            return promise;
+                requester.initTransport(id)
+                    .withParams(spec)
+                    .send();
+            });
         }
     });
 };

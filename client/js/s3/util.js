@@ -238,12 +238,11 @@ qq.s3.util = qq.s3.util || (function() {
          *
          * @param spec Object with properties: `params`, `type`, `key`, `accessKey`, `acl`, `expectedStatus`, `successRedirectUrl`,
          * `reducedRedundancy`, `region`, `serverSideEncryption`, `version`, and `log()`, along with any options associated with `qq.s3.util.getPolicy()`.
-         * @returns {qq.Promise} Promise that will be fulfilled once all parameters have been determined.
+         * @returns {Promise} Promise that will be resolved once all parameters have been determined.
          */
         generateAwsParams: function(spec, signPolicyCallback) {
             var awsParams = {},
                 customParams = spec.params,
-                promise = new qq.Promise(),
                 sessionToken = spec.sessionToken,
                 drift = spec.clockDrift,
                 type = spec.type,
@@ -314,39 +313,39 @@ qq.s3.util = qq.s3.util || (function() {
                 awsParams[qq.s3.util.DATE_PARAM_NAME] = qq.s3.util.getV4PolicyDate(now, drift);
             }
 
-            // Invoke a promissory callback that should provide us with a base64-encoded policy doc and an
-            // HMAC signature for the policy doc.
-            signPolicyCallback(policyJson).then(
-                function(policyAndSignature, updatedAccessKey, updatedSessionToken) {
-                    awsParams.policy = policyAndSignature.policy;
+            return new Promise(function(resolve, reject) {
+                // Invoke a promissory callback that should provide us with a base64-encoded policy doc and an
+                // HMAC signature for the policy doc.
+                signPolicyCallback(policyJson).then(
+                    function(info) {
+                        awsParams.policy = info.policyAndSignature.policy;
 
-                    if (spec.signatureVersion === 2) {
-                        awsParams.signature = policyAndSignature.signature;
+                        if (spec.signatureVersion === 2) {
+                            awsParams.signature = info.policyAndSignature.signature;
 
-                        if (updatedAccessKey) {
-                            awsParams.AWSAccessKeyId = updatedAccessKey;
+                            if (info.updatedAccessKey) {
+                                awsParams.AWSAccessKeyId = info.updatedAccessKey;
+                            }
                         }
+                        else if (spec.signatureVersion === 4) {
+                            awsParams[qq.s3.util.V4_SIGNATURE_PARAM_NAME] = info.policyAndSignature.signature;
+                        }
+
+                        if (info.updatedSessionToken) {
+                            awsParams[qq.s3.util.SESSION_TOKEN_PARAM_NAME] = info.updatedSessionToken;
+                        }
+
+                        resolve(awsParams);
+                    },
+                    function(err) {
+                        var error = new Error(err.message || "Can't continue further with request to S3 as we did not receive " +
+                                                               "a valid signature and policy from the server.");
+                        error.error = err.error;
+                        log("Policy signing failed.  " + error.message, "error");
+                        reject(error);
                     }
-                    else if (spec.signatureVersion === 4) {
-                        awsParams[qq.s3.util.V4_SIGNATURE_PARAM_NAME] = policyAndSignature.signature;
-                    }
-
-                    if (updatedSessionToken) {
-                        awsParams[qq.s3.util.SESSION_TOKEN_PARAM_NAME] = updatedSessionToken;
-                    }
-
-                    promise.success(awsParams);
-                },
-                function(errorMessage) {
-                    errorMessage = errorMessage || "Can't continue further with request to S3 as we did not receive " +
-                                                   "a valid signature and policy from the server.";
-
-                    log("Policy signing failed.  " + errorMessage, "error");
-                    promise.failure(errorMessage);
-                }
-            );
-
-            return promise;
+                );
+            });
         },
 
         /**

@@ -34,81 +34,65 @@ qq.Exif = function(fileOrBlob, log) {
 
     // Find the byte offset, of Application Segment 1 (EXIF).
     // External callers need not supply any arguments.
-    function seekToApp1(offset, promise) {
-        var theOffset = offset,
-            thePromise = promise;
-        if (theOffset === undefined) {
-            theOffset = 2;
-            thePromise = new qq.Promise();
-        }
+    function seekToApp1(offset) {
+        var theOffset = offset === undefined ? 2 : offset;
 
-        qq.readBlobToHex(fileOrBlob, theOffset, 4).then(function(hex) {
-            var match = /^ffe([0-9])/.exec(hex),
-                segmentLength;
+        return new Promise(function(resolve, reject) {
+            qq.readBlobToHex(fileOrBlob, theOffset, 4).then(function(hex) {
+                var match = /^ffe([0-9])/.exec(hex),
+                    segmentLength;
 
-            if (match) {
-                if (match[1] !== "1") {
-                    segmentLength = parseInt(hex.slice(4, 8), 16);
-                    seekToApp1(theOffset + segmentLength + 2, thePromise);
+                if (match) {
+                    if (match[1] !== "1") {
+                        segmentLength = parseInt(hex.slice(4, 8), 16);
+                        seekToApp1(theOffset + segmentLength + 2).then(resolve, reject);
+                    }
+                    else {
+                        resolve(theOffset);
+                    }
                 }
                 else {
-                    thePromise.success(theOffset);
+                    reject(new Error("No EXIF header to be found!"));
                 }
-            }
-            else {
-                thePromise.failure("No EXIF header to be found!");
-            }
+            });
         });
-
-        return thePromise;
     }
 
     // Find the byte offset of Application Segment 1 (EXIF) for valid JPEGs only.
     function getApp1Offset() {
-        var promise = new qq.Promise();
-
-        qq.readBlobToHex(fileOrBlob, 0, 6).then(function(hex) {
-            if (hex.indexOf("ffd8") !== 0) {
-                promise.failure("Not a valid JPEG!");
-            }
-            else {
-                seekToApp1().then(function(offset) {
-                    promise.success(offset);
-                },
-                function(error) {
-                    promise.failure(error);
-                });
-            }
+        return new Promise(function(resolve, reject) {
+            qq.readBlobToHex(fileOrBlob, 0, 6).then(function(hex) {
+                if (hex.indexOf("ffd8") !== 0) {
+                    reject(new Error("Not a valid JPEG!"));
+                }
+                else {
+                    seekToApp1().then(resolve, reject);
+                }
+            });
         });
-
-        return promise;
     }
 
     // Determine the byte ordering of the EXIF header.
     function isLittleEndian(app1Start) {
-        var promise = new qq.Promise();
-
-        qq.readBlobToHex(fileOrBlob, app1Start + 10, 2).then(function(hex) {
-            promise.success(hex === "4949");
+        return new Promise(function(resolve) {
+            qq.readBlobToHex(fileOrBlob, app1Start + 10, 2).then(function(hex) {
+                resolve(hex === "4949");
+            });
         });
-
-        return promise;
     }
 
     // Determine the number of directory entries in the EXIF header.
     function getDirEntryCount(app1Start, littleEndian) {
-        var promise = new qq.Promise();
-
-        qq.readBlobToHex(fileOrBlob, app1Start + 18, 2).then(function(hex) {
-            if (littleEndian) {
-                return promise.success(parseLittleEndian(hex));
-            }
-            else {
-                promise.success(parseInt(hex, 16));
-            }
+        return new Promise(function(resolve) {
+            qq.readBlobToHex(fileOrBlob, app1Start + 18, 2).then(function(hex) {
+                if (littleEndian) {
+                    resolve(parseLittleEndian(hex));
+                }
+                else {
+                    resolve(parseInt(hex, 16));
+                }
+            });
         });
-
-        return promise;
     }
 
     // Get the IFD portion of the EXIF header as a hex string.
@@ -165,40 +149,39 @@ qq.Exif = function(fileOrBlob, log) {
         /**
          * Attempt to parse the EXIF header for the `Blob` associated with this instance.
          *
-         * @returns {qq.Promise} To be fulfilled when the parsing is complete.
+         * @returns {Promise} To be resolved when the parsing is complete.
          * If successful, the parsed EXIF header as an object will be included.
          */
         parse: function() {
-            var parser = new qq.Promise(),
-                onParseFailure = function(message) {
-                    log(qq.format("EXIF header parse failed: '{}' ", message));
-                    parser.failure(message);
-                };
+            return new Promise(function(resolve, reject) {
+                function onParseFailure(error) {
+                    log(qq.format("EXIF header parse failed: '{}' ", error.message));
+                    reject(error);
+                }
 
-            getApp1Offset().then(function(app1Offset) {
-                log(qq.format("Moving forward with EXIF header parsing for '{}'", fileOrBlob.name === undefined ? "blob" : fileOrBlob.name));
+                getApp1Offset().then(function(app1Offset) {
+                    log(qq.format("Moving forward with EXIF header parsing for '{}'", fileOrBlob.name === undefined ? "blob" : fileOrBlob.name));
 
-                isLittleEndian(app1Offset).then(function(littleEndian) {
+                    isLittleEndian(app1Offset).then(function(littleEndian) {
 
-                    log(qq.format("EXIF Byte order is {} endian", littleEndian ? "little" : "big"));
+                        log(qq.format("EXIF Byte order is {} endian", littleEndian ? "little" : "big"));
 
-                    getDirEntryCount(app1Offset, littleEndian).then(function(dirEntryCount) {
+                        getDirEntryCount(app1Offset, littleEndian).then(function(dirEntryCount) {
 
-                        log(qq.format("Found {} APP1 directory entries", dirEntryCount));
+                            log(qq.format("Found {} APP1 directory entries", dirEntryCount));
 
-                        getIfd(app1Offset, dirEntryCount).then(function(ifdHex) {
-                            var dirEntries = getDirEntries(ifdHex),
-                                tagValues = getTagValues(littleEndian, dirEntries);
+                            getIfd(app1Offset, dirEntryCount).then(function(ifdHex) {
+                                var dirEntries = getDirEntries(ifdHex),
+                                    tagValues = getTagValues(littleEndian, dirEntries);
 
-                            log("Successfully parsed some EXIF tags");
+                                log("Successfully parsed some EXIF tags");
 
-                            parser.success(tagValues);
+                                resolve(tagValues);
+                            }, onParseFailure);
                         }, onParseFailure);
                     }, onParseFailure);
                 }, onParseFailure);
-            }, onParseFailure);
-
-            return parser;
+            });
         }
     });
 

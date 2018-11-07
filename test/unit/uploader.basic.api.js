@@ -242,28 +242,14 @@ describe("uploader.basic.api.js", function () {
                 fineuploader._handleCheckedCallback(spec);
             }
 
-            it ("qq.Promise", function(done) {
+            it("Promise", function(done) {
                 var callback = function() {
-                        var promise = new qq.Promise();
-
+                    return new Promise(function(resolve) {
                         setTimeout(function() {
-                            promise.success("foobar");
+                            resolve("foobar");
                         }, 100);
-
-                        return promise;
-                    };
-
-                runTest(callback, done);
-            });
-
-            it ("Q.js", function(done) {
-                var callback = function() {
-                        return Q.Promise(function(resolve) {
-                            setTimeout(function() {
-                                resolve("foobar");
-                            }, 100);
-                        });
-                    };
+                    });
+                };
 
                 runTest(callback, done);
             });
@@ -285,26 +271,12 @@ describe("uploader.basic.api.js", function () {
                 fineuploader._handleCheckedCallback(spec);
             }
 
-            it ("qq.Promise", function(done) {
+            it("Promise", function(done) {
                 var callback = function() {
-                        var promise = new qq.Promise();
-
+                    return new Promise(function(resolve, reject) {
                         setTimeout(function() {
-                            promise.failure();
-                        }, 100);
-
-                        return promise;
-                    };
-
-                runTest(callback, done);
-            });
-
-            it ("Q.js", function(done) {
-                var callback = function() {
-                    return Q.Promise(function (resolve, reject) {
-                        setTimeout(function () {
                             reject();
-                        }, 100);
+                        }, 100);    
                     });
                 };
 

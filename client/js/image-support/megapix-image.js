@@ -74,17 +74,16 @@
      */
     function renderImageToDataURL(img, blob, options, doSquash) {
         var canvas = document.createElement("canvas"),
-            mime = options.mime || "image/jpeg",
-            promise = new qq.Promise();
+            mime = options.mime || "image/jpeg";
 
-        renderImageToCanvas(img, blob, canvas, options, doSquash)
-            .then(function() {
-                promise.success(
-                    canvas.toDataURL(mime, options.quality || 0.8)
-                );
-            });
-
-        return promise;
+        return new Promise(function(resolve) {
+            renderImageToCanvas(img, blob, canvas, options, doSquash)
+                .then(function() {
+                    resolve(
+                        canvas.toDataURL(mime, options.quality || 0.8)
+                    );
+                });
+        });
     }
 
     function maybeCalculateDownsampledDimensions(spec) {
@@ -111,7 +110,6 @@
             width = options.width,
             height = options.height,
             ctx = canvas.getContext("2d"),
-            promise = new qq.Promise(),
             modifiedDimensions;
 
         ctx.save();
@@ -191,9 +189,8 @@
         }
 
         canvas.qqImageRendered && canvas.qqImageRendered();
-        promise.success();
 
-        return promise;
+        return Promise.resolve();
     }
 
     function renderImageToCanvasWithCustomResizer(resizeInfo) {
@@ -202,7 +199,6 @@
             imageHeight = resizeInfo.imageHeight,
             imageWidth = resizeInfo.imageWidth,
             orientation = resizeInfo.orientation,
-            promise = new qq.Promise(),
             resize = resizeInfo.resize,
             sourceCanvas = document.createElement("canvas"),
             sourceCanvasContext = sourceCanvas.getContext("2d"),
@@ -217,23 +213,23 @@
 
         sourceCanvasContext.drawImage(image, 0, 0);
 
-        resize({
-            blob: blob,
-            height: targetHeight,
-            image: image,
-            sourceCanvas: sourceCanvas,
-            targetCanvas: targetCanvas,
-            width: targetWidth
-        })
-            .then(
-                function success() {
-                    targetCanvas.qqImageRendered && targetCanvas.qqImageRendered();
-                    promise.success();
-                },
-                promise.failure
-            );
-
-        return promise;
+        return new Promise(function(resolve, reject) {
+            resize({
+                blob: blob,
+                height: targetHeight,
+                image: image,
+                sourceCanvas: sourceCanvas,
+                targetCanvas: targetCanvas,
+                width: targetWidth
+            })
+                .then(
+                    function success() {
+                        targetCanvas.qqImageRendered && targetCanvas.qqImageRendered();
+                        resolve();
+                    },
+                    reject
+                );
+        });
     }
 
     /**

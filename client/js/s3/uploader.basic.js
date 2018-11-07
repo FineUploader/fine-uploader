@@ -255,30 +255,29 @@
                 },
 
                 onExpired: function() {
-                    var updateCredentials = new qq.Promise(),
-                        callbackRetVal = self._options.callbacks.onCredentialsExpired();
+                    var callbackRetVal = self._options.callbacks.onCredentialsExpired();
 
-                    if (qq.isGenericPromise(callbackRetVal)) {
-                        callbackRetVal.then(function(credentials) {
-                            try {
-                                self.setCredentials(credentials);
-                                updateCredentials.success();
-                            }
-                            catch (error) {
-                                self.log("Invalid credentials returned from onCredentialsExpired callback! (" + error.message + ")", "error");
-                                updateCredentials.failure("onCredentialsExpired did not return valid credentials.");
-                            }
-                        }, function(errorMsg) {
-                            self.log("onCredentialsExpired callback indicated failure! (" + errorMsg + ")", "error");
-                            updateCredentials.failure("onCredentialsExpired callback failed.");
-                        });
-                    }
-                    else {
-                        self.log("onCredentialsExpired callback did not return a promise!", "error");
-                        updateCredentials.failure("Unexpected return value for onCredentialsExpired.");
-                    }
-
-                    return updateCredentials;
+                    return new Promise(function(resolve, reject) {
+                        if (callbackRetVal instanceof Promise) {
+                            callbackRetVal.then(function(credentials) {
+                                try {
+                                    self.setCredentials(credentials);
+                                    resolve();
+                                }
+                                catch (error) {
+                                    self.log("Invalid credentials returned from onCredentialsExpired callback! (" + error.message + ")", "error");
+                                    reject(new Error("onCredentialsExpired did not return valid credentials."));
+                                }
+                            }, function(errorMsg) {
+                                self.log("onCredentialsExpired callback indicated failure! (" + errorMsg + ")", "error");
+                                reject(new Error("onCredentialsExpired callback failed."));
+                            });
+                        }
+                        else {
+                            self.log("onCredentialsExpired callback did not return a promise!", "error");
+                            reject(new Error("Unexpected return value for onCredentialsExpired."));
+                        }
+                    });
                 }
             };
 
@@ -287,29 +286,31 @@
 
         _determineObjectPropertyValue: function(id, property) {
             var maybe = this._options.objectProperties[property],
-                promise = new qq.Promise(),
+                promise,
                 self = this;
 
-            if (qq.isFunction(maybe)) {
-                maybe = maybe(id);
-                if (qq.isGenericPromise(maybe)) {
-                    promise = maybe;
+            promise = new Promise(function(resolve, reject) {
+                if (qq.isFunction(maybe)) {
+                    maybe = maybe(id);
+                    if (maybe instanceof Promise) {
+                        maybe.then(resolve, reject);
+                    }
+                    else {
+                        resolve(maybe);
+                    }
                 }
-                else {
-                    promise.success(maybe);
+                else if (qq.isString(maybe)) {
+                    resolve(maybe);
                 }
-            }
-            else if (qq.isString(maybe)) {
-                promise.success(maybe);
-            }
+            });
 
             promise.then(
                 function success(value) {
                     self["_" + property + "s"][id] = value;
                 },
 
-                function failure(errorMsg) {
-                    qq.log("Problem determining " + property + " for ID " + id + " (" + errorMsg + ")", "error");
+                function failure(error) {
+                    qq.log("Problem determining " + property + " for ID " + id + " (" + error.message + ")", "error");
                 }
             );
 
@@ -331,43 +332,46 @@
          *
          * @param id ID of the file
          * @param filename Name of the file
-         * @returns {qq.Promise} A promise that will be fulfilled when the key name has been determined (and will be passed to the caller via the success callback).
+         * @returns {Promise} A promise that will be resolved with the key name when it has been determined.
          * @private
          */
         _determineKeyName: function(id, filename) {
-            /*jshint -W015*/
-            var promise = new qq.Promise(),
-                keynameLogic = this._options.objectProperties.key,
-                extension = qq.getExtension(filename),
-                onGetKeynameFailure = promise.failure,
-                onGetKeynameSuccess = function(keyname, extension) {
-                    var keynameToUse = keyname;
+            var self = this;
 
-                    if (extension !== undefined) {
-                        keynameToUse += "." + extension;
-                    }
+            return new Promise(function(resolve, reject) {
+                /*jshint -W015*/
+                var keynameLogic = self._options.objectProperties.key,
+                    extension = qq.getExtension(filename),
+                    onGetKeynameFailure = function(reason) {
+                        reject(new Error(reason));
+                    },
+                    onGetKeynameSuccess = function(keyname, extension) {
+                        var keynameToUse = keyname;
 
-                    promise.success(keynameToUse);
-                };
+                        if (extension !== undefined) {
+                            keynameToUse += "." + extension;
+                        }
 
-            switch (keynameLogic) {
-                case "uuid":
-                    onGetKeynameSuccess(this.getUuid(id), extension);
-                    break;
-                case "filename":
-                    onGetKeynameSuccess(filename);
-                    break;
-                default:
-                    if (qq.isFunction(keynameLogic)) {
-                        this._handleKeynameFunction(keynameLogic, id, onGetKeynameSuccess, onGetKeynameFailure);
-                    }
-                    else {
-                        this.log(keynameLogic + " is not a valid value for the s3.keyname option!", "error");
-                        onGetKeynameFailure();
-                    }
-            }
+                        resolve(keynameToUse);
+                    };
 
-            return promise;
+                switch (keynameLogic) {
+                    case "uuid":
+                        onGetKeynameSuccess(self.getUuid(id), extension);
+                        break;
+                    case "filename":
+                        onGetKeynameSuccess(filename);
+                        break;
+                    default:
+                        if (qq.isFunction(keynameLogic)) {
+                            self._handleKeynameFunction(keynameLogic, id, onGetKeynameSuccess, onGetKeynameFailure);
+                        }
+                        else {
+                            self.log(keynameLogic + " is not a valid value for the s3.keyname option!", "error");
+                            onGetKeynameFailure();
+                        }
+                }
+            });
         },
 
         /**
@@ -392,7 +396,7 @@
                 },
                 keyname = keynameFunc.call(this, id);
 
-            if (qq.isGenericPromise(keyname)) {
+            if (keyname instanceof Promise) {
                 keyname.then(onSuccess, onFailure);
             }
             /*jshint -W116*/
@@ -405,21 +409,25 @@
         },
 
         _getEndpointSpecificParams: function(id, response, maybeXhr) {
-            var params = {
-                key: this.getKey(id),
-                uuid: this.getUuid(id),
-                name: this.getName(id),
-                bucket: this.getBucket(id)
-            };
+            var self = this;
 
-            if (maybeXhr && maybeXhr.getResponseHeader("ETag")) {
-                params.etag = maybeXhr.getResponseHeader("ETag");
-            }
-            else if (response.etag) {
-                params.etag = response.etag;
-            }
+            return this.getKey(id).then(function(key) {
+                var params = {
+                    key: key,
+                    uuid: self.getUuid(id),
+                    name: self.getName(id),
+                    bucket: self.getBucket(id)
+                };
 
-            return params;
+                if (maybeXhr && maybeXhr.getResponseHeader("ETag")) {
+                    params.etag = maybeXhr.getResponseHeader("ETag");
+                }
+                else if (response.etag) {
+                    params.etag = response.etag;
+                }
+
+                return params;
+            });
         },
 
         // Hooks into the base internal `_onSubmitDelete` to add key and bucket params to the delete file request.

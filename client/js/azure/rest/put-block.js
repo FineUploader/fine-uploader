@@ -45,10 +45,10 @@ qq.azure.PutBlock = function(o) {
             delete blockIdEntries[id];
 
             if (isError) {
-                promise.failure();
+                promise.reject();
             }
             else {
-                promise.success(blockIdEntry);
+                promise.resolve(blockIdEntry);
             }
         }
     }));
@@ -64,21 +64,20 @@ qq.azure.PutBlock = function(o) {
     qq.extend(this, {
         method: method,
         upload: function(id, xhr, sasUri, partNum, blob) {
-            var promise = new qq.Promise(),
-                blockId = createBlockId(partNum);
+            return new Promise(function(resolve, reject) {
+                var blockId = createBlockId(partNum);
 
-            promises[id] = promise;
+                promises[id] = {resolve: resolve, reject: reject};
 
-            options.log(qq.format("Submitting Put Block request for {} = part {}", id, partNum));
+                options.log(qq.format("Submitting Put Block request for {} = part {}", id, partNum));
 
-            endpoints[id] = qq.format("{}&comp=block&blockid={}", sasUri, encodeURIComponent(blockId));
-            blockIdEntries[id] = {part: partNum, id: blockId};
+                endpoints[id] = qq.format("{}&comp=block&blockid={}", sasUri, encodeURIComponent(blockId));
+                blockIdEntries[id] = {part: partNum, id: blockId};
 
-            requester.initTransport(id)
-                .withPayload(blob)
-                .send(xhr);
-
-            return promise;
+                requester.initTransport(id)
+                    .withPayload(blob)
+                    .send(xhr);
+            });
         }
     });
 };
