@@ -1,5 +1,5 @@
 <a href="http://fineuploader.com">
-   <img src="http://fineuploader.smartimage.com/pimg/a8680d51" width="300">
+   <img src="https://fineuploader.com/img/fineuploader-header-logo.png" width="300">
 </a>
 
 # Looking for additional maintainers - please [inquire within](https://github.com/FineUploader/fine-uploader/issues/1881).
