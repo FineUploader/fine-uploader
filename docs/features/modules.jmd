@@ -46,8 +46,8 @@ import qq from 'fine-uploader/lib/core'
 const uploader = new qq.FineUploaderBasic({...})
 ```
 
-You will find core builds for S3, Azure, and "all" in `lib/core/s3.js`, `lib/core/azure.js`,
-and `lib/core/all.js` (respectively)
+You will find core builds for S3, Azure, and "all" in `lib/core/s3/index.js`, `lib/core/azure/index.js`,
+and `lib/core/all/index.js` (respectively)
 
 
 ```javascript
@@ -139,13 +139,13 @@ commonjs({
         'node_modules/fine-uploader/**'
     ],
     namedExports: {
-        'node_modules/fine-uploader/lib/traditional.js': ['FineUploader']
+        'node_modules/fine-uploader/lib/traditional/index.js': ['FineUploader']
     }
 })
 ```
 
-If you are not using traditional Fine Uploader flavour, remember to change `node_modules/fine-uploader/lib/traditional.js` accordingly. 
-For example: for s3 Fine Uploader this should be `node_modules/fine-uploader/lib/s3.js`
+If you are not using traditional Fine Uploader flavour, remember to change `node_modules/fine-uploader/lib/traditional/index.js` accordingly. 
+For example: for s3 Fine Uploader this should be `node_modules/fine-uploader/lib/s3/index.js`
 
 
 ## CommonJS
@@ -161,8 +161,8 @@ var qq = require('fine-uploader/lib/core')
 var uploader = new qq.FineUploaderBasic({...})
 ```
 
-You will find core builds for S3, Azure, and "all" in `lib/core/s3.js`, `lib/core/azure.js`,
-and `lib/core/all.js` (respectively)
+You will find core builds for S3, Azure, and "all" in `lib/core/s3/index.js`, `lib/core/azure/index.js`,
+and `lib/core/all/index.js` (respectively)
 
 
 ```javascript

@@ -1,6 +1,7 @@
 // Type definitions for FineUploader 5.x.x
 // Project: http://fineuploader.com/
 // Definitions by: Sukhdeep Singh <https://github.com/SinghSukhdeep>
+//                 Bradley Ayers <https://github.com/bradleyayers>
 
 
 declare module "fine-uploader/lib/core" {
@@ -910,6 +911,10 @@ declare module "fine-uploader/lib/core" {
          */
         request?: RequestOptions;
         /**
+         * RetryOptions
+         */
+        retry?: RetryOptions;
+        /**
          * ScalingOptions
          */
         scaling?: ScalingOptions;
@@ -933,8 +938,6 @@ declare module "fine-uploader/lib/core" {
          * Core callback functions
          */
         callbacks?: CoreEvents;
-
-
     }
 
     /**
@@ -2691,6 +2694,14 @@ declare module "fine-uploader" {
 
 }
 
+declare module "fine-uploader/lib/all" {
+    import { azure } from 'fine-uploader/lib/azure';
+    export * from 'fine-uploader';
+    import { s3 } from 'fine-uploader/lib/s3';
+
+    export import azure = azure;
+    export import s3 = s3;
+}
 
 declare module "fine-uploader/lib/azure" {
 
@@ -2700,21 +2711,12 @@ declare module "fine-uploader/lib/azure" {
         UIDeleteFileOptions,
         UIMessages,
         UIPasteOptions,
+        UIRetryOptions,
         UIScalingOptions,
         UITextOptions
     } from 'fine-uploader';
 
-    import {
-        FineUploaderBasic as FineUploaderBasicCore,
-        ChunkingOptions,
-        CorsOptions,
-        RequestOptions,
-        CoreOptions,
-        ResumableFileObject,
-        PromiseOptions
-    } from 'fine-uploader/lib/core';
-
-
+    import { azure as azureCore } from 'fine-uploader/lib/core/azure';
 
     export namespace azure {
 
@@ -2770,6 +2772,99 @@ declare module "fine-uploader/lib/azure" {
              */
             setUploadSuccessParams(newParams: any, id?: number): void;
         }
+
+        /**
+         * AzureFailedUploadTextDisplayOptions
+         */
+        export interface AzureFailedUploadTextDisplayOptions {
+            /**
+             * You will most likely want to keep this at the default value of 'custom'. See the UI options documentation for more info on this option.
+             *
+             * @default `'custom'`
+             */
+            mode?: string;
+        }
+
+        /**
+         * AzureUIOptions
+         */
+        export interface AzureUIOptions extends UIOptions, AzureCoreOptions {
+            /**
+             * failedUploadText options
+             */
+            failedUploadTextDisplay?: AzureFailedUploadTextDisplayOptions;
+
+            /**
+             * chunking options
+             */
+            chunking?: AzureChunkingOptions;
+            /**
+             * cors options
+             */
+            cors?: AzureCorsOptions;
+            /**
+             * deleteFile options
+             */
+            deleteFile?: UIDeleteFileOptions;
+            /**
+             * messages
+             */
+            messages?: UIMessages;
+            /**
+             * paste UI options
+             */
+            paste?: UIPasteOptions;
+            /**
+             * UI scaling options
+             */
+            scaling?: UIScalingOptions;
+            /**
+             * UI text options
+             */
+            text?: UITextOptions;
+            /**
+             * RequestOptions
+             */
+            request?: AzureRequestOptions;
+            /**
+             * Retry options
+             */
+            retry?: UIRetryOptions;
+        }
+
+        export import AzureChunkingOptions = azureCore.AzureChunkingOptions;
+        export import AzureCorsOptions = azureCore.AzureCorsOptions;
+        export import AzureCoreOptions = azureCore.AzureCoreOptions;
+        export import AzureRequestOptions = azureCore.AzureRequestOptions;
+        export import AzureResumableFileObject = azureCore.AzureResumableFileObject;
+        
+    }
+
+}
+
+declare module "fine-uploader/lib/core/all" {
+    import { azure } from 'fine-uploader/lib/core/azure';
+    export * from 'fine-uploader/lib/core';
+    import { s3 } from 'fine-uploader/lib/core/s3';
+
+    export import azure = azure;
+    export import s3 = s3;
+}
+
+declare module "fine-uploader/lib/core/azure" {
+
+    import {
+        FineUploaderBasic as FineUploaderBasicCore,
+        ChunkingOptions,
+        CorsOptions,
+        RequestOptions,
+        RetryOptions,
+        CoreOptions,
+        ResumableFileObject,
+        PromiseOptions
+    } from 'fine-uploader/lib/core';
+
+    export namespace azure {
 
         export class FineUploaderBasic extends FineUploaderBasicCore {
 
@@ -2970,18 +3065,6 @@ declare module "fine-uploader/lib/azure" {
         }
 
         /**
-         * AzureFailedUploadTextDisplayOptions
-         */
-        export interface AzureFailedUploadTextDisplayOptions {
-            /**
-             * You will most likely want to keep this at the default value of 'custom'. See the UI options documentation for more info on this option.
-             *
-             * @default `'custom'`
-             */
-            mode?: string;
-        }
-
-        /**
          * Resumable file object type for Azure
          */
         export interface AzureResumableFileObject extends ResumableFileObject {
@@ -3021,51 +3104,6 @@ declare module "fine-uploader/lib/azure" {
             uploadSuccess?: AzureUploadSuccessOptions;
         }
 
-        /**
-         * AzureUIOptions
-         */
-        export interface AzureUIOptions extends UIOptions, AzureCoreOptions {
-            /**
-             * failedUploadText options
-             */
-            failedUploadTextDisplay?: AzureFailedUploadTextDisplayOptions;
-
-            /**
-             * chunking options
-             */
-            chunking?: AzureChunkingOptions;
-            /**
-             * cors options
-             */
-            cors?: AzureCorsOptions;
-            /**
-             * deleteFile options
-             */
-            deleteFile?: UIDeleteFileOptions;
-            /**
-             * messages
-             */
-            messages?: UIMessages;
-            /**
-             * paste UI options
-             */
-            paste?: UIPasteOptions;
-            /**
-             * UI scaling options
-             */
-            scaling?: UIScalingOptions;
-            /**
-             * UI text options
-             */
-            text?: UITextOptions;
-            /**
-             * RequestOptions
-             */
-            request?: AzureRequestOptions;
-
-        }
-
-
     }
 
 }
@@ -3079,25 +3117,25 @@ declare module "fine-uploader/lib/s3" {
         UIDeleteFileOptions,
         UIMessages,
         UIPasteOptions,
+        UIRetryOptions,
         UIScalingOptions,
         UITextOptions
     } from 'fine-uploader';
 
     import {
-        FineUploaderBasic as FineUploaderBasicCore,
         ChunkingOptions,
         CorsOptions,
         RequestOptions,
         CoreOptions,
         ResumableFileObject,
         CoreEvents,
-        PromiseOptions
+        PromiseOptions,
+        RetryOptions
     } from 'fine-uploader/lib/core';
 
-
+    import { s3 as s3Core } from 'fine-uploader/lib/core/s3';
 
     export namespace s3 {
-
 
         export class FineUploader extends FineUploaderCore {
 
@@ -3175,6 +3213,89 @@ declare module "fine-uploader/lib/s3" {
             setUploadSuccessParams(newParams: any, id?: number): void;
         }
 
+        /**
+         * S3UIOptions
+         */
+        export interface S3UIOptions extends UIOptions, S3CoreOptions {
+            /**
+             * failedUploadText options
+             */
+            failedUploadTextDisplay?: S3FailedUploadTextDisplayOptions;
+            /**
+             * chunking options
+             */
+            chunking?: S3ChunkingOptions;
+            /**
+             * cors options
+             */
+            cors?: S3CorsOptions;
+            /**
+             * request options
+             */
+            request?: S3RequestOptions;
+            /**
+             * deleteFile options
+             */
+            deleteFile?: UIDeleteFileOptions;
+            /**
+             * messages
+             */
+            messages?: UIMessages;
+            /**
+             * paste UI options
+             */
+            paste?: UIPasteOptions;
+            /**
+             * Retry options
+             */
+            retry?: UIRetryOptions;
+            /**
+             * UI scaling options
+             */
+            scaling?: UIScalingOptions;
+            /**
+             * UI text options
+             */
+            text?: UITextOptions;
+        }
+
+        export import S3ChunkingOptions = s3Core.S3ChunkingOptions;
+        export import S3CredentialsOptions = s3Core.S3CredentialsOptions;
+        export import S3CorsOptions = s3Core.S3CorsOptions;
+        export import S3iFrameSupportOptions = s3Core.S3iFrameSupportOptions;
+        export import BucketFunction = s3Core.BucketFunction;
+        export import HostFunction = s3Core.HostFunction;
+        export import KeyFunction = s3Core.KeyFunction;
+        export import S3ObjectPropertyOptions = s3Core.S3ObjectPropertyOptions;
+        export import S3RequestOptions = s3Core.S3RequestOptions;
+        export import S3CustomHeaderFunction = s3Core.S3CustomHeaderFunction;
+        export import S3SignatureOptions = s3Core.S3SignatureOptions;
+        export import S3UploadSuccessOptions = s3Core.S3UploadSuccessOptions;
+        export import S3CoreOptions = s3Core.S3CoreOptions;
+        export import S3FailedUploadTextDisplayOptions = s3Core.S3FailedUploadTextDisplayOptions;
+        export import OnCredentialsExpired = s3Core.OnCredentialsExpired;
+        export import S3Events = s3Core.S3Events;
+        export import S3ResumableFileObject = s3Core.S3ResumableFileObject;
+
+    }
+
+}
+
+declare module "fine-uploader/lib/core/s3" {
+
+    import {
+        FineUploaderBasic as FineUploaderBasicCore,
+        ChunkingOptions,
+        CorsOptions,
+        RequestOptions,
+        CoreOptions,
+        ResumableFileObject,
+        CoreEvents,
+        PromiseOptions
+    } from 'fine-uploader/lib/core';
+
+    export namespace s3 {
+
         export class FineUploaderBasic extends FineUploaderBasicCore {
 
             constructor(fineuploaderOptions?: S3CoreOptions);
@@ -3251,7 +3372,6 @@ declare module "fine-uploader/lib/s3" {
             setUploadSuccessParams(newParams: any, id?: number): void;
 
         }
-
 
         /**
          * S3CredentialsOptions
@@ -3584,48 +3704,6 @@ declare module "fine-uploader/lib/s3" {
         }
 
         /**
-         * S3UIOptions
-         */
-        export interface S3UIOptions extends UIOptions, S3CoreOptions {
-            /**
-             * failedUploadText options
-             */
-            failedUploadTextDisplay?: S3FailedUploadTextDisplayOptions;
-            /**
-             * chunking options
-             */
-            chunking?: S3ChunkingOptions;
-            /**
-             * cors options
-             */
-            cors?: S3CorsOptions;
-            /**
-             * request options
-             */
-            request?: S3RequestOptions;
-            /**
-             * deleteFile options
-             */
-            deleteFile?: UIDeleteFileOptions;
-            /**
-             * messages
-             */
-            messages?: UIMessages;
-            /**
-             * paste UI options
-             */
-            paste?: UIPasteOptions;
-            /**
-             * UI scaling options
-             */
-            scaling?: UIScalingOptions;
-            /**
-             * UI text options
-             */
-            text?: UITextOptions;
-        }
-
-        /**
          * Resumable file object type for S3
          */
         export interface S3ResumableFileObject extends ResumableFileObject {
@@ -3634,6 +3712,7 @@ declare module "fine-uploader/lib/s3" {
              */
             key?: string;
         }
+
     }
 
 }
