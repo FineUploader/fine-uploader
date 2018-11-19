@@ -542,6 +542,18 @@ var qq = function(element) {
         return navigator.userAgent.indexOf("Edge") >= 0;
     };
 
+    qq.edge15 = function() {
+        var ua = navigator.userAgent;
+        var edge = ua.indexOf("Edge/");
+        var edgeVersion = 0;
+
+        if (edge > 0) {
+            edgeVersion = parseInt(ua.substring(edge + 5, ua.indexOf(".", edge)), 10);
+        }
+
+        return edge && edgeVersion >= 15;
+    };
+
     qq.safari = function() {
         return navigator.vendor !== undefined && navigator.vendor.indexOf("Apple") !== -1;
     };
