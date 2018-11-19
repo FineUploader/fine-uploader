@@ -982,6 +982,7 @@
             return this._uploadData.retrieve({
                 status: [
                     qq.status.UPLOADING,
+                    qq.status.UPLOAD_FINALIZING,
                     qq.status.UPLOAD_RETRYING,
                     qq.status.QUEUED,
                     qq.status.SUBMITTING,
