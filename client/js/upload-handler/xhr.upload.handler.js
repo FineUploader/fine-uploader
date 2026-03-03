@@ -88,11 +88,7 @@ qq.XhrUploadHandler = function(spec) {
     qq.extend(this, {
         // Clear the cached chunk `Blob` after we are done with it, just in case the `Blob` bytes are stored in memory.
         clearCachedChunk: function(id, chunkIdx) {
-            var fileState = handler._getFileState(id);
-
-            if (fileState) {
-                delete fileState.temp.cachedChunks[chunkIdx];
-            }
+            delete handler._getFileState(id).temp.cachedChunks[chunkIdx];
         },
 
         clearXhr: function(id, chunkIdx) {
@@ -546,14 +542,11 @@ qq.XhrUploadHandler = function(spec) {
         _shouldChunkThisFile: function(id) {
             var state = handler._getFileState(id);
 
-            // file may no longer be available if it was recently cancelled
-            if (state) {
-                if (!state.chunking) {
-                    handler.reevaluateChunking(id);
-                }
-
-                return state.chunking.enabled;
+            if (!state.chunking) {
+                handler.reevaluateChunking(id);
             }
+
+            return state.chunking.enabled;
         }
     });
 };
